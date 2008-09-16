@@ -31,6 +31,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.query.OneRoundQuery;
 import org.efaps.util.EFapsException;
@@ -62,11 +63,9 @@ public class ListQuery extends AbstractQuery {
   private final Map<String, ListQuery> subSelects =
       new HashMap<String, ListQuery>();
 
-
-
   private OneRoundQuery query = null;
 
-  private Attribute expand;
+  private AttributeSet attributeSet;
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / desctructors
@@ -92,31 +91,32 @@ public class ListQuery extends AbstractQuery {
       if (this.instances.size() > 0) {
         this.query = new OneRoundQuery(this.instances, this.selects, this);
         this.query.execute();
-        for (final Map.Entry<String, ListQuery> sub : this.subSelects.entrySet()) {
+        for (final Map.Entry<String, ListQuery> sub : this.subSelects
+            .entrySet()) {
           while (this.query.next()) {
-            final Attribute attr = this.query.getAttribute(sub.getKey());
-            if ((attr != null) && (attr.getLink() != null)) {
-              if (this.query.getValue(sub.getKey()) != null) {
+            if (this.multiSelects.contains(sub.getKey())) {
+              sub.getValue().instances.addAll(this.instances);
+            } else {
+              final Attribute attr = this.query.getAttribute(sub.getKey());
+              if ((attr != null) && (attr.getLink() != null)) {
                 final Object value = this.query.getValue(sub.getKey());
-                //we must differ between ids that are returned and AdminObject
-                //(e.g. Person in case of CreatorLink)
-                if (value instanceof Number){
-                  final Long id = ((Number) value).longValue();
-                  if ((id != null) && (id != 0)) {
-                    sub.getValue().addInstance(attr.getLink(), id);
+                if (value != null) {
+                  // we must differ between ids that are returned and
+                  // AdminObject (e.g. Person in case of CreatorLink)
+                  if (value instanceof Number) {
+                    final Long id = ((Number) value).longValue();
+                    if ((id != null) && (id != 0)) {
+                      sub.getValue().addInstance(attr.getLink(), id);
+                    }
+                  } else if (value instanceof AbstractAdminObject) {
+                    sub.getValue().addInstance(attr.getLink(),
+                        ((AbstractAdminObject) value).getId());
                   }
-                } else if (value instanceof AbstractAdminObject){
-                  sub.getValue().addInstance(attr.getLink(),
-                      ((AbstractAdminObject) value).getId());
                 }
               }
             }
-            if (sub.getKey().contains("\\") && this.getExpand()==null){
-              sub.getValue().setExpand(attr);
-            }
           }
           this.query.beforeFirst();
-
           sub.getValue().execute();
         }
       }
@@ -128,10 +128,10 @@ public class ListQuery extends AbstractQuery {
 
 
   /**
-   * @param _expand
+   * @param set
    */
-  public void setExpand(final Attribute _expand) {
-   this.expand = _expand;
+  public void setExpand(final AttributeSet _set) {
+   this.attributeSet = _set;
   }
 
   public Set<String> getMultiSelects() {
@@ -291,7 +291,7 @@ public class ListQuery extends AbstractQuery {
   /**
    * @return the expand
    */
-  public Attribute getExpand() {
-    return this.expand;
+  public AttributeSet getAttributeSet() {
+    return this.attributeSet;
   }
 }

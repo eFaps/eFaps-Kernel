@@ -33,6 +33,7 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.MultipleAttributeTypeInterface;
 import org.efaps.admin.datamodel.SQLTable;
@@ -95,9 +96,9 @@ public class OneRoundQuery {
     this.instances = _instances;
     this.selects = _selects;
     this.listquery = _listquery;
-    if (this.listquery.getExpand()!=null){
-      this.mainSQLTable = this.listquery.getExpand().getTable();
-      this.type = this.listquery.getExpand().getLink();
+    if (this.listquery.getAttributeSet()!=null){
+      this.mainSQLTable = this.listquery.getAttributeSet().getMainTable();
+      this.type = this.listquery.getAttributeSet();
     } else {
       this.mainSQLTable = _instances.get(0).getType().getMainTable();
 
@@ -123,7 +124,7 @@ public class OneRoundQuery {
 
   public void execute() {
 
-    if (this.listquery.getExpand() == null){
+    if (this.listquery.getAttributeSet() == null){
       // make type mapping to instances
       for (final Instance instance : this.instances) {
         TypeMapping2Instances typeMapping =
@@ -165,7 +166,7 @@ public class OneRoundQuery {
       for (final SQLTableMapping2Attributes sqlTableMapping : this.sqlTableMappings
           .values()) {
         sqlTableMapping.setExpand(true);
-        sqlTableMapping.setLinkAttribute(this.listquery.getExpand());
+        sqlTableMapping.setAttributeSet((this.listquery.getAttributeSet()));
         curIndex = sqlTableMapping.evaluateSQLStatement(curIndex - 1);
       }
 
@@ -252,7 +253,7 @@ public class OneRoundQuery {
   }
 
   public List<Instance> getInstances() {
-    if (this.listquery.getExpand() != null) {
+    if (this.listquery.getAttributeSet() != null) {
       this.instances.clear();
       final SQLTableMapping2Attributes sqlTableMapping = this.sqlTableMappings
           .get(this.mainSQLTable);
@@ -288,6 +289,12 @@ public class OneRoundQuery {
   }
 
   /**
+   * @param key
+   */
+  public AttributeSet getAttributeSet(final String _expression) {
+   return (AttributeSet) Type.get(AttributeSet.evaluateName(getType().getName(), _expression));
+  }
+  /**
    * @return
    * @throws Exception
    */
@@ -310,8 +317,7 @@ public class OneRoundQuery {
     }
 
     final MultipleAttributeTypeInterface attrInterf
-            = (MultipleAttributeTypeInterface) this.listquery.getExpand()
-                                                             .newInstance();
+            =  this.listquery.getAttributeSet().getAttributeTypeInstance();
     ret = attrInterf.readValues(OneRoundQuery.this.cachedResult, indexes);
 
 
@@ -378,23 +384,25 @@ public class OneRoundQuery {
       for (final String select : OneRoundQuery.this.selects) {
         final Attribute attr = this.type.getAttribute(select);
         if (attr != null) {
-          if (attr.isMultiline()) {
-            for (final String subSelect : attr.getLink().getAttributes().keySet()) {
+          this.expr2Attr.put(select, attr);
+        } else {
+          final AttributeSet set = (AttributeSet) Type.get(AttributeSet
+              .evaluateName(this.type.getName(), select));
+          if (set != null) {
+            for (final String subSelect : set.getAttributes().keySet()) {
               if (!subSelect.equals("Type")) {
-                ListQuery subQuery =  OneRoundQuery.this.listquery.getSubSelects().get(attr.getName());
+                ListQuery subQuery = OneRoundQuery.this.listquery
+                    .getSubSelects().get(select);
                 if (subQuery == null) {
                   subQuery = new ListQuery();
-                  OneRoundQuery.this.listquery.getSubSelects().put(attr.getName(), subQuery);
+                  OneRoundQuery.this.listquery.getSubSelects().put(select, subQuery);
                 }
                 subQuery.addSelect(subSelect);
-                subQuery.setExpand(attr);
-
+                subQuery.setExpand(set);
               }
             }
             OneRoundQuery.this.listquery.getMultiSelects().add(select);
             this.multiExpr.add(select);
-          } else{
-            this.expr2Attr.put(select, attr);
           }
         }
       }
@@ -424,7 +432,7 @@ public class OneRoundQuery {
       // System.out.println("getValue.expression="+_expression);
       Object ret = null;
       final Attribute attr = this.expr2Attr.get(_expression);
-      if (attr != null && !attr.isMultiline()) {
+      if (attr != null) {
         final SQLTableMapping2Attributes sqlTable2attr =
             this.sqlTable2Attrs.get(attr.getTable());
         if (sqlTable2attr != null) {
@@ -497,7 +505,7 @@ public class OneRoundQuery {
 
     private boolean expandHasResult = true;
 
-    private Attribute linkAttribute;
+    private AttributeSet attributeSet;
 
 
 
@@ -516,11 +524,11 @@ public class OneRoundQuery {
     }
 
     /**
-     * @param _attribute
+     * @param attributeSet
      */
-    public void setLinkAttribute(final Attribute _attribute) {
-      this.linkAttribute = _attribute;
-      final String column = _attribute.getSqlColNames().get(0);
+    public void setAttributeSet(final AttributeSet _attributeSet) {
+      this.attributeSet = _attributeSet;
+     final String column = this.attributeSet.getSqlColNames().get(0);
       if(!this.col2index.containsKey(column)){
         this.col2index.put(column, this.index++);
         this.cols.add(column);
@@ -643,7 +651,7 @@ public class OneRoundQuery {
 
         sql.append(" from ").append(this.sqlTable.getSqlTable()).append(" where ");
         if (this.expand){
-          sql.append(this.linkAttribute.getSqlColNames().get(0));
+          sql.append(this.attributeSet.getSqlColNames().get(0));
         }else{
           sql.append(" ID ");
         }
@@ -665,7 +673,7 @@ public class OneRoundQuery {
         if (this.expand){
           int idx=1;
           for(final String col :this.cols){
-            if(col.equals(this.linkAttribute.getSqlColNames().get(0))){
+            if(col.equals(this.attributeSet.getSqlColNames().get(0))){
               keyIndex=idx;
             }
             idx++;
@@ -716,6 +724,8 @@ public class OneRoundQuery {
           this.attributes.toString()).toString();
     }
   }
+
+
 
 
 

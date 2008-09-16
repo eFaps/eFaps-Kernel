@@ -226,15 +226,21 @@ public class TypeUpdate extends AbstractUpdate
      */
     protected void updateInDB(final Instance _instance,
                               final String _typeName,
-                              final String _attrInstanceId)
+                              final long _setID)
         throws EFapsException
     {
       final long attrTypeId = getAttrTypeId(_typeName);
       final long sqlTableId = getSqlTableId(_typeName);
       final long typeLinkId = getTypeLinkId(_typeName);
 
+      final String type;
+      if (_setID>0) {
+        type = "Admin_DataModel_AttributeSetAttribute";
+      } else {
+        type = "Admin_DataModel_Attribute";
+      }
       final SearchQuery query = new SearchQuery();
-      query.setQueryTypes("Admin_DataModel_Attribute");
+      query.setQueryTypes(type);
       query.addWhereExprEqValue("Name", this.name);
       query.addWhereExprEqValue("ParentType", _instance.getId());
       query.addSelect("OID");
@@ -244,7 +250,7 @@ public class TypeUpdate extends AbstractUpdate
       if (query.next()) {
         update = new Update((String) query.get("OID"));
       } else {
-        update = new Insert("Admin_DataModel_Attribute");
+        update = new Insert(type);
         update.add("ParentType", "" + _instance.getId());
         update.add("Name", this.name);
       }
@@ -261,9 +267,10 @@ public class TypeUpdate extends AbstractUpdate
       if (this.defaultValue != null) {
         update.add("DefaultValue", this.defaultValue);
       }
-      if (_attrInstanceId!=null) {
-        update.add("ParentAttribute", _attrInstanceId);
+      if (_setID!=0){
+        update.add("ParentAttributeSet","" + _setID);
       }
+
       update.executeWithoutAccessCheck();
 
       for (final Event event : this.events) {
@@ -401,7 +408,7 @@ public class TypeUpdate extends AbstractUpdate
 
     private final List<Attribute> attributes = new ArrayList<Attribute>();
 
-    private String uuid;
+
 
     private String parentType;
     /**
@@ -417,15 +424,11 @@ public class TypeUpdate extends AbstractUpdate
       final String value = _tags.get(0);
       if ("name".equals(value))  {
         this.name = _text;
-      } else if ("uuid".equals(value))  {
-        this.uuid = _text;
       } else if ("type".equals(value))  {
         this.type = _text;
       } else if ("parent".equals(value))  {
         this.parentType = _text;
-      }
-
-      else if ("sqltable".equals(value))  {
+      } else if ("sqltable".equals(value))  {
           this.sqlTable = _text;
       } else if ("sqlcolumn".equals(value))  {
           this.sqlColumn = _text;
@@ -472,50 +475,50 @@ public class TypeUpdate extends AbstractUpdate
      */
     public void updateInDB(final Instance _instance, final String _typeName) throws EFapsException {
       final String name = _typeName + ":" + this.name;
-      long parentTypeId = 0;
+      final long parentTypeId = 0;
 
-      if ((this.parentType != null) && (this.parentType.length() > 0)) {
-        parentTypeId = getParentTypeId(this.parentType);
-      }
+//      if ((this.parentType != null) && (this.parentType.length() > 0)) {
+//        parentTypeId = getParentTypeId(this.parentType);
+//      }
 
-      // create the new type for this set
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes("Admin_DataModel_Type");
-      query.addWhereExprEqValue("Name", this.name);
-      query.addSelect("OID");
-      query.executeWithoutAccessCheck();
-      Update update = null;
-      if (query.next()) {
+//      // create the new type for this set
+//      SearchQuery query = new SearchQuery();
+//      query.setQueryTypes("Admin_DataModel_Type");
+//      query.addWhereExprEqValue("Name", this.name);
+//      query.addSelect("OID");
+//      query.executeWithoutAccessCheck();
+//      Update update = null;
+//      if (query.next()) {
+//
+//      } else {
+//        update = new Insert("Admin_DataModel_Type");
+//        update.add("Name", name);
+//        update.add("UUID", this.uuid );
+//      }
+//      if (parentTypeId>0) {
+//        update.add("ParentType","" + parentTypeId);
+//      }
 
-      } else {
-        update = new Insert("Admin_DataModel_Type");
-        update.add("Name", name);
-        update.add("UUID", this.uuid );
-      }
-      if (parentTypeId>0) {
-        update.add("ParentType","" + parentTypeId);
-      }
-
-      query.close();
-      update.executeWithoutAccessCheck();
-      this.instance = update.getInstance();
-      update.close();
+//      query.close();
+//      update.executeWithoutAccessCheck();
+//      this.instance = update.getInstance();
+//      update.close();
 
       final long attrTypeId = getAttrTypeId(_typeName);
       final long sqlTableId = getSqlTableId(_typeName);
 
       //create/update the attributSet
-      query = new SearchQuery();
-      query.setQueryTypes("Admin_DataModel_Attribute");
+      final SearchQuery query = new SearchQuery();
+      query.setQueryTypes("Admin_DataModel_AttributeSet");
       query.addWhereExprEqValue("Name", this.name);
       query.addWhereExprEqValue("ParentType", _instance.getId());
       query.addSelect("OID");
       query.executeWithoutAccessCheck();
-
+      Update update = null;
       if (query.next()) {
         update = new Update((String) query.get("OID"));
       } else {
-        update = new Insert("Admin_DataModel_Attribute");
+        update = new Insert("Admin_DataModel_AttributeSet");
         update.add("ParentType", "" + _instance.getId());
         update.add("Name", this.name);
       }
@@ -524,39 +527,39 @@ public class TypeUpdate extends AbstractUpdate
       update.add("AttributeType", "" + attrTypeId);
       update.add("Table", "" + sqlTableId);
       update.add("SQLColumn", this.sqlColumn);
-      update.add("TypeLink", "" + this.instance.getId());
+//      update.add("TypeLink", "" + this.instance.getId());
       update.executeWithoutAccessCheck();
-      final String attrInstanceId = update.getId();
+      final long setId = update.getInstance().getId();
       update.close();
 
 
-      //add the LinkAttribute
-      query = new SearchQuery();
-      query.setQueryTypes("Admin_DataModel_Attribute");
-      query.addWhereExprEqValue("Name", this.name);
-      query.addWhereExprEqValue("ParentType", this.instance.getId());
-      query.addSelect("OID");
-      query.executeWithoutAccessCheck();
-
-      if (query.next()) {
-        update = new Update((String) query.get("OID"));
-      } else {
-        update = new Insert("Admin_DataModel_Attribute");
-        update.add("ParentType", "" + this.instance.getId());
-        update.add("Name", this.name);
-      }
-      query.close();
-      this.type = "Link";
-      update.add("AttributeType", "" + getAttrTypeId("Link"));
-      update.add("Table", "" + sqlTableId);
-      update.add("SQLColumn", this.sqlColumn);
-      update.add("TypeLink", "" + _instance.getId());
-      update.executeWithoutAccessCheck();
-      update.close();
+//      //add the LinkAttribute
+//      query = new SearchQuery();
+//      query.setQueryTypes("Admin_DataModel_Attribute");
+//      query.addWhereExprEqValue("Name", this.name);
+//      query.addWhereExprEqValue("ParentType", this.instance.getId());
+//      query.addSelect("OID");
+//      query.executeWithoutAccessCheck();
+//
+//      if (query.next()) {
+//        update = new Update((String) query.get("OID"));
+//      } else {
+//        update = new Insert("Admin_DataModel_Attribute");
+//        update.add("ParentType", "" + this.instance.getId());
+//        update.add("Name", this.name);
+//      }
+//      query.close();
+//      this.type = "Link";
+//      update.add("AttributeType", "" + getAttrTypeId("Link"));
+//      update.add("Table", "" + sqlTableId);
+//      update.add("SQLColumn", this.sqlColumn);
+//      update.add("TypeLink", "" + _instance.getId());
+//      update.executeWithoutAccessCheck();
+//      update.close();
 
    // add the attributes to the new Type
       for (final Attribute attr : this.attributes) {
-        attr.updateInDB(this.instance, name, attrInstanceId);
+        attr.updateInDB(_instance, name, setId);
       }
 
     }
@@ -687,7 +690,7 @@ public class TypeUpdate extends AbstractUpdate
       super.updateInDB(_allLinkTypes);
 
       for (final Attribute attr : this.attributes) {
-        attr.updateInDB(this.instance, getValue("Name"), null);
+        attr.updateInDB(this.instance, getValue("Name"), 0);
       }
 
       for (final AttributeSet attrSet : this.attributeSets) {

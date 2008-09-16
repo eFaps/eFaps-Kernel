@@ -519,6 +519,13 @@ function _eFapsCreateDataModelTablesStep2()  {
   _exec(stmt, "Update type id for attributes",
               null, "update T_CMABSTRACT set TYPEID=" + typeIdAttr + " where TYPEID=-22000");
 
+  
+  text = "Insert Type for 'Admin_DataModel_AttributeSet'";
+  var typeIdAttrSet = _eFapsCreateInsertType(stmt, text, "a23b6c9f-5220-438f-93d0-f4651c3ba455", "Admin_DataModel_AttributeSet", "Admin_DataModel_Attribute");
+  
+  text = "Insert Type for 'Admin_DataModel_AttributeSetAttribute'";
+  var typeIdAttrSetAttr = _eFapsCreateInsertType(stmt, text, "f601ffc5-819c-41a0-8663-3e1b0fb35a9b", "Admin_DataModel_AttributeSetAttribute", "Admin_DataModel_Attribute");
+  
   /////////////////////////////////////////
   // insert 'admin property' 
 

@@ -71,13 +71,6 @@
       <sqlcolumn>DMTYPELINK</sqlcolumn>
     </attribute>
     <attribute>
-      <name>ParentAttribute</name>
-      <type>Link</type>
-      <typelink>Admin_DataModel_Attribute</typelink>
-      <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
-      <sqlcolumn>PARENTATTR</sqlcolumn>
-    </attribute>
-    <attribute>
       <name>DefaultValue</name>
       <type>String</type>
       <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>

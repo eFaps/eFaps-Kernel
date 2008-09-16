@@ -42,9 +42,9 @@ import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
 import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
-import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.Form;
@@ -251,7 +251,7 @@ public class Type extends AbstractDataModelObject {
    * @param _name
    *                name of the type name of the instance
    */
-  private Type(final long _id, final String _uuid, final String _name)
+  protected Type(final long _id, final String _uuid, final String _name)
   {
     super(_id, _uuid, _name);
     addAttribute(new Attribute(0, "Type", "", (SQLTable) null, AttributeType.get("Type"), null));
@@ -280,7 +280,7 @@ public class Type extends AbstractDataModelObject {
         }
       }
     }
-    for (Type child : getChildTypes()) {
+    for (final Type child : getChildTypes()) {
       if (child.getParentType().getId() == this.getId()) {
         child.addAttribute(_attribute.copy());
       }
@@ -297,10 +297,10 @@ public class Type extends AbstractDataModelObject {
   protected void addLink(final Attribute _attr)
   {
     getLinks().put(_attr.getParent().getName() + "\\" + _attr.getName(), _attr);
-    for (Type type : _attr.getParent().getChildTypes()) {
+    for (final Type type : _attr.getParent().getChildTypes()) {
       getLinks().put(type.getName() + "\\" + _attr.getName(), _attr);
     }
-    for (Type child : getChildTypes()) {
+    for (final Type child : getChildTypes()) {
       if (child.getParentType().getId() == this.getId()) {
         child.addLink(_attr);
       }
@@ -327,8 +327,8 @@ public class Type extends AbstractDataModelObject {
    * @return all attributes assigned from parameter <i>_class</i>
    */
   public final Set<Attribute> getAttributes(final Class<?> _class) {
-    Set<Attribute> ret = new HashSet<Attribute>();
-    for (Attribute attr : getAttributes().values()) {
+    final Set<Attribute> ret = new HashSet<Attribute>();
+    for (final Attribute attr : getAttributes().values()) {
       if (attr.getAttributeType().getClassRepr().isAssignableFrom(_class)) {
         ret.add(attr);
       }
@@ -435,14 +435,14 @@ public class Type extends AbstractDataModelObject {
       throws EFapsException
   {
     boolean hasAccess = true;
-    List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);
+    final List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);
     if (events != null) {
       final Parameter parameter = new Parameter();
       parameter.put(ParameterValues.INSTANCE, _instance);
       parameter.put(ParameterValues.ACCESSTYPE, _accessType);
 
       for (final EventDefinition event : events) {
-        Return ret = event.execute(parameter);
+        final Return ret = event.execute(parameter);
         hasAccess = ret.get(ReturnValues.TRUE) != null;
       }
     }
@@ -788,19 +788,19 @@ public class Type extends AbstractDataModelObject {
 
         stmt = con.getConnection().createStatement();
 
-        ResultSet rs = stmt.executeQuery(SQL_SELECT);
+        final ResultSet rs = stmt.executeQuery(SQL_SELECT);
         while (rs.next()) {
-          long id = rs.getLong(1);
-          String uuid = rs.getString(2).trim();
-          String name = rs.getString(3).trim();
-          boolean abstractType = rs.getBoolean(4);
-          long parentTypeId = rs.getLong(5);
+          final long id = rs.getLong(1);
+          final String uuid = rs.getString(2).trim();
+          final String name = rs.getString(3).trim();
+          final boolean abstractType = rs.getBoolean(4);
+          final long parentTypeId = rs.getLong(5);
           String sqlCacheExpr = rs.getString(6);
           sqlCacheExpr = sqlCacheExpr != null ? sqlCacheExpr.trim() : null;
           if (LOG.isDebugEnabled()) {
             LOG.debug("read type '" + name + "' (id = " + id + ")");
           }
-          Type type = new Type(id, uuid, name);
+          final Type type = new Type(id, uuid, name);
           type.setAbstractType(abstractType);
           if (type.getUUID().equals(USER_PERSON.uuid)) {
             type.setCache(Person.getCache());
@@ -825,7 +825,7 @@ public class Type extends AbstractDataModelObject {
       }
 
       // initialize parents
-      for (Map.Entry<Long, Long> entry : parents.entrySet()) {
+      for (final Map.Entry<Long, Long> entry : parents.entrySet()) {
         final Type child = Type.get(entry.getKey());
         final Type parent = Type.get(entry.getValue());
 // TODO: test if loop
@@ -845,16 +845,16 @@ public class Type extends AbstractDataModelObject {
 
       con.commit();
 
-    } catch (SQLException e) {
+    } catch (final SQLException e) {
       throw new CacheReloadException("could not read roles", e);
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       throw new CacheReloadException("could not read roles", e);
     }
     finally {
       if ((con != null) && con.isOpened()) {
         try {
           con.abort();
-        } catch (EFapsException e) {
+        } catch (final EFapsException e) {
           throw new CacheReloadException("could not read roles", e);
         }
       }

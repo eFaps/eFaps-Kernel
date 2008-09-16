@@ -24,7 +24,8 @@ import static org.efaps.admin.EFapsClassNames.ATTRTYPE_CREATOR_LINK;
 import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK;
 import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK_WITH_RANGES;
 import static org.efaps.admin.EFapsClassNames.ATTRTYPE_MODIFIER_LINK;
-import static org.efaps.admin.EFapsClassNames.ATTRTYPE_MULTILINEARRAY;
+import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESET;
+import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESETATTRIBUTE;
 import static org.efaps.admin.EFapsClassNames.USER_PERSON;
 
 import java.sql.ResultSet;
@@ -77,11 +78,12 @@ public class Attribute extends AbstractDataModelObject {
   private final static String SQL_SELECT
       = "select ID,"
              + "NAME,"
+             + "TYPEID,"
              + "DMTABLE,"
              + "DMTYPE,"
              + "DMATTRIBUTETYPE,"
              + "DMTYPELINK,"
-             + "PARENTATTR,"
+             + "PARENTSET,"
              + "SQLCOLUMN,"
              + "DEFAULTVAL "
        + "from V_ADMINATTRIBUTE";
@@ -148,13 +150,7 @@ public class Attribute extends AbstractDataModelObject {
    */
   private final boolean required;
 
-  private boolean multiline = false;
-
-  private Attribute parentAttribute;
-
-  private final Map<String,Attribute> childAttributes = new HashMap<String,Attribute>();
-
-
+  private AttributeSet parentSet;
 
   /**
    * This is the constructor for class {@link Attribute}. Every instance of
@@ -333,25 +329,14 @@ public class Attribute extends AbstractDataModelObject {
     return this.parent;
   }
 
-  public Attribute getParentAttribute() {
-    return this.parentAttribute;
+  public AttributeSet getParentSet() {
+    return this.parentSet;
   }
 
-  private void setParentAttribute(final Attribute _parentAttribute) {
-    this.parentAttribute = _parentAttribute;
+  private void setParentSet(final AttributeSet _parentSet) {
+    this.parentSet = _parentSet;
   }
 
-  private void addChildAttribute(final Attribute _childAttribute){
-    this.childAttributes.put(_childAttribute.getName(),_childAttribute);
-  }
-
-  public Map<String,Attribute> getChildAttributes() {
-    return this.childAttributes;
-  }
-
-  public Attribute getChildAttribute(final String _name){
-    return  this.childAttributes.get(_name);
-  }
   /**
    * This is the getter method for instance variable {@link #sqlColNames}.
    *
@@ -429,77 +414,73 @@ public class Attribute extends AbstractDataModelObject {
       Statement stmt = null;
       try {
         stmt = con.getConnection().createStatement();
-        final Map<Long,Attribute> id2AllAttribute = new HashMap<Long, Attribute>();
-        final Map<Attribute,Long> attribute2parentId = new HashMap<Attribute,Long>();
+        final Map<Long,AttributeSet> id2Set = new HashMap<Long, AttributeSet>();
+        final Map<Attribute,Long> attribute2setId = new HashMap<Attribute,Long>();
 
         final ResultSet rs = stmt.executeQuery(SQL_SELECT);
         while (rs.next()) {
           final long id = rs.getLong(1);
           final String name = rs.getString(2);
-          final long tableId = rs.getLong(3);
-          final long typeId = rs.getLong(4);
-          final long attrTypeId = rs.getLong(5);
-          final long typeLinkId = rs.getLong(6);
-          final long parentAttrId = rs.getLong(7);
-          final String sqlCol = rs.getString(8);
-          final String defaultval = rs.getString(9);
+          final long typeAttrId = rs.getLong(3);
+          final long tableId = rs.getLong(4);
+          final long typeId = rs.getLong(5);
+          final long attrTypeId = rs.getLong(6);
+          final long typeLinkId = rs.getLong(7);
+          final long parentSetId = rs.getLong(8);
+          final String sqlCol = rs.getString(9);
+          final String defaultval = rs.getString(10);
           final Type type = Type.get(typeId);
 
           log.debug("read attribute '" + type.getName() + "/" + name + "' "
               + "(id = " + id + ")");
 
-          final Attribute attr = new Attribute(id, name, sqlCol,
-                                         SQLTable.get(tableId),
-                                         AttributeType.get(attrTypeId),
-                                         defaultval);
-          attr.setParent(type);
-          id2AllAttribute.put(id,attr);
-          if (parentAttrId > 0){
-            attribute2parentId.put(attr, parentAttrId);
-          }
-          final UUID uuid = attr.getAttributeType().getUUID();
-          if (uuid.equals(ATTRTYPE_LINK.uuid) || uuid.equals(ATTRTYPE_LINK_WITH_RANGES.uuid)) {
-            final Type linkType = Type.get(typeLinkId);
-            attr.setLink(linkType);
-            linkType.addLink(attr);
-          } else if (uuid.equals(ATTRTYPE_CREATOR_LINK.uuid)) {
-            final Type linkType = Type.get(USER_PERSON);
-            attr.setLink(linkType);
-            linkType.addLink(attr);
-          } else if (uuid.equals(ATTRTYPE_MODIFIER_LINK.uuid)) {
-            final Type linkType = Type.get(USER_PERSON);
-            attr.setLink(linkType);
-            linkType.addLink(attr);
-          } else if (uuid.equals(ATTRTYPE_MULTILINEARRAY.uuid)) {
-            attr.setMultiline(true);
-            final Type linkType = Type.get(typeLinkId);
-            attr.setLink(linkType);
-            linkType.addLink(attr);
-          }
-          /*
-           * if ((attrType == 400) || (attrType == 401)) { Type linkType =
-           * Type.get(typeLinkId); attr.setLink(linkType);
-           * linkType.addLink(attr); } else if (attrType == 411) { Type linkType =
-           * Type.get("Admin_User_Person"); attr.setLink(linkType);
-           * linkType.addLink(attr); } else if (attrType == 412) { Type linkType =
-           * Type.get("Admin_User_Person"); attr.setLink(linkType);
-           * linkType.addLink(attr); } else if (attrType == 421) { Type linkType =
-           * Type.get("Admin_LifeCycle_Status"); attr.setLink(linkType);
-           * linkType.addLink(attr); }
-           */
-          type.addAttribute(attr);
+          final Type typeAttr = Type.get(typeAttrId);
 
-          getCache().add(attr);
+          if (typeAttr.getUUID().equals(DATAMODEL_ATTRIBUTESET.uuid)) {
+            final AttributeSet set = new AttributeSet(id,type.getName(),name,AttributeType.get(attrTypeId),sqlCol );
+            id2Set.put(id, set);
 
-          attr.readFromDB4Properties();
+          } else if (typeAttr.getUUID().equals(DATAMODEL_ATTRIBUTESETATTRIBUTE.uuid)) {
+            final AttributeSet parentset =  (AttributeSet) Type.get(parentSetId);
+            final Attribute attr = new Attribute(id, name, sqlCol, SQLTable
+                .get(tableId), AttributeType.get(attrTypeId), defaultval);
+            parentset.addAttribute(attr);
+            getCache().add(attr);
+            attr.readFromDB4Properties();
+            attr.setParentSet(parentset);
+          } else {
+            final Attribute attr = new Attribute(id, name, sqlCol, SQLTable
+                .get(tableId), AttributeType.get(attrTypeId), defaultval);
+            attr.setParent(type);
+            final UUID uuid = attr.getAttributeType().getUUID();
+            if (uuid.equals(ATTRTYPE_LINK.uuid)
+                || uuid.equals(ATTRTYPE_LINK_WITH_RANGES.uuid)) {
+              final Type linkType = Type.get(typeLinkId);
+              attr.setLink(linkType);
+              linkType.addLink(attr);
+            } else if (uuid.equals(ATTRTYPE_CREATOR_LINK.uuid)) {
+              final Type linkType = Type.get(USER_PERSON);
+              attr.setLink(linkType);
+              linkType.addLink(attr);
+            } else if (uuid.equals(ATTRTYPE_MODIFIER_LINK.uuid)) {
+              final Type linkType = Type.get(USER_PERSON);
+              attr.setLink(linkType);
+              linkType.addLink(attr);
+            }
+            type.addAttribute(attr);
+
+            getCache().add(attr);
+
+            attr.readFromDB4Properties();
+          }
+
         }
         rs.close();
 
-        for (final Entry<Attribute,Long> entry : attribute2parentId.entrySet()){
-          final Attribute parentAttr = id2AllAttribute.get(entry.getValue());
+        for (final Entry<Attribute,Long> entry : attribute2setId.entrySet()){
+          final AttributeSet parentset = id2Set.get(entry.getValue());
           final Attribute childAttr = entry.getKey();
-          childAttr.setParentAttribute(parentAttr);
-          parentAttr.addChildAttribute(childAttr);
+          parentset.addAttribute(childAttr);
         }
       }
       finally {
@@ -561,22 +542,6 @@ public class Attribute extends AbstractDataModelObject {
   static AttributeCache getCache() {
     return attributeCache;
   }
-
-  /**
-   * @param _multiline the multiline to set
-   */
-  protected void setMultiline(final boolean _multiline) {
-    this.multiline = _multiline;
-  }
-
-  /**
-   * @return the multiline
-   */
-  public boolean isMultiline() {
-    return this.multiline;
-  }
-
-
 
   /**
    * The instance method returns the string representation of this attribute.
