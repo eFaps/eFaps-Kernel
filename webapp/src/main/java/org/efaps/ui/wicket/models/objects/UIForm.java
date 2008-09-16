@@ -244,7 +244,7 @@ public class UIForm extends AbstractUIObject {
                 oid = fieldInstance.getOid();
               }
               if (field instanceof FieldSet) {
-                final AttributeSet set = (AttributeSet) Type.get(AttributeSet.evaluateName(getCallInstance().getType().getName(), field.getExpression()));
+                final AttributeSet set = AttributeSet.find(getCallInstance().getType().getName(), field.getExpression());
                 final Map<?, ?> tmp = (Map<?, ?>) query.get(field.getExpression());
                 final List<Instance> fieldins = new ArrayList<Instance>();
                 if (tmp != null) {
