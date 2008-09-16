@@ -29,12 +29,15 @@ import java.util.UUID;
 
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.RestartResponseException;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Image;
@@ -47,6 +50,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 
@@ -115,54 +119,77 @@ public class UIForm extends AbstractUIObject {
     int rowgroupcount = 1;
     FormRow row = new FormRow();
     final Form form = Form.get(this.formUUID);
-    final Type type = getCommand().getTargetCreateType();
-    FormElement formelement = new FormElement();
-    this.elements.add(new Element(ElementType.FORM, formelement));
 
-    for (final Field field : form.getFields()) {
-      if (field instanceof FieldGroup) {
-        final FieldGroup group = (FieldGroup) field;
-        if (getMaxGroupCount() < group.getGroupCount()) {
-          setMaxGroupCount(group.getGroupCount());
+    Type type = null;
+    if (isCreateMode()) {
+      type = getCommand().getTargetCreateType();
+    } else {
+      final List<EventDefinition> events = getCommand().getEvents(
+          EventType.UI_TABLE_EVALUATE);
+      for (final EventDefinition eventDef : events) {
+        final String tmp = eventDef.getProperty("Types");
+        if (tmp != null) {
+          type = Type.get(tmp);
         }
-        rowgroupcount = group.getGroupCount();
-      } else if (field instanceof FieldTable ){
-
-      } else if (field instanceof FieldHeading && field.isCreatable()){
-        this.elements.add(new Element(ElementType.HEADING,
-            new UIHeading((FieldHeading) field)));
-        formelement = new FormElement();
-        this.elements.add(new Element(ElementType.FORM, formelement));
-      } else if (field.isCreatable()){
-
-        final Attribute attr = type.getAttribute(field.getExpression());
-
-        String label;
-        if (field.getLabel() != null) {
-          label = field.getLabel();
-        } else if (attr != null)  {
-          label = attr.getParent().getName() + "/" + attr.getName() + ".Label";
-        } else {
-          label = "Unknown";
-        }
-        final Instance fieldInstance = getCallInstance();
-        final FieldValue fieldvalue = new FieldValue(new FieldDefinition(
-            "egal", field), attr, "", fieldInstance);
-
-        String strValue = null;
-        if (isCreateMode()) {
-          strValue = fieldvalue.getCreateHtml(getCallInstance());
-        }
-        final UIFormCell cell =
-          new UIFormCell(field, null, strValue, null, field.isRequired(), label);
-        row.add(cell);
       }
-      rowgroupcount--;
-      if (rowgroupcount < 1) {
-        rowgroupcount = 1;
-        if (row.getGroupCount() > 0) {
-          formelement.addRowModel(row);
-          row = new FormRow();
+    }
+    if (type!=null) {
+      FormElement formelement = new FormElement();
+      this.elements.add(new Element(ElementType.FORM, formelement));
+
+      for (final Field field : form.getFields()) {
+        if (field instanceof FieldGroup) {
+          final FieldGroup group = (FieldGroup) field;
+          if (getMaxGroupCount() < group.getGroupCount()) {
+            setMaxGroupCount(group.getGroupCount());
+          }
+          rowgroupcount = group.getGroupCount();
+        } else if (field instanceof FieldTable ){
+
+        } else if (field instanceof FieldHeading && field.isCreatable()){
+          this.elements.add(new Element(ElementType.HEADING,
+              new UIHeading((FieldHeading) field)));
+          formelement = new FormElement();
+          this.elements.add(new Element(ElementType.FORM, formelement));
+        } else if (field.isCreatable() && isCreateMode()
+                  || field.isSearchable() && isSearchMode()){
+
+          final Attribute attr = type.getAttribute(field.getExpression());
+
+          String label;
+          if (field.getLabel() != null) {
+            label = field.getLabel();
+          } else if (attr != null)  {
+            label = attr.getParent().getName() + "/" + attr.getName() + ".Label";
+          } else {
+            label = "Unknown";
+          }
+          final Instance fieldInstance = getCallInstance();
+          final FieldValue fieldvalue = new FieldValue(new FieldDefinition(
+              "egal", field), attr, "", fieldInstance);
+
+          String strValue = null;
+          if (isCreateMode()) {
+            strValue = fieldvalue.getCreateHtml(getCallInstance());
+          } else if (isSearchMode()) {
+            strValue = fieldvalue.getSearchHtml(getCallInstance());
+          }
+          final UIFormCell cell =
+            new UIFormCell(field, null, strValue, null, field.isRequired(), label);
+          if (isSearchMode()) {
+            cell.setReference(null);
+          }
+
+          row.add(cell);
+        }
+
+        rowgroupcount--;
+        if (rowgroupcount < 1) {
+          rowgroupcount = 1;
+          if (row.getGroupCount() > 0) {
+            formelement.addRowModel(row);
+            row = new FormRow();
+          }
         }
       }
     }
@@ -170,7 +197,7 @@ public class UIForm extends AbstractUIObject {
 
   public void execute() {
     try {
-      if (isCreateMode()) {
+      if (isCreateMode() || isSearchMode()) {
         createForm();
       } else {
         int rowgroupcount = 1;
@@ -349,11 +376,10 @@ public class UIForm extends AbstractUIObject {
               }
             }
           }
-
         }
       }
     } catch (final Exception e) {
-      //TODO exception fangen und schmeissen
+      throw new RestartResponseException(new ErrorPage(e));
     }
     super.setInitialised(true);
   }
