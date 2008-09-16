@@ -108,7 +108,7 @@ public class Edit implements EventExecution
 
     for (final FieldSet fieldset : fieldsets) {
 
-      final AttributeSet set  = AttributeSet.get(instance.getType().getName(), fieldset.getExpression());
+      final AttributeSet set  = AttributeSet.find(instance.getType().getName(), fieldset.getExpression());
 
       boolean updateExisting = true;
       int y = 0;
