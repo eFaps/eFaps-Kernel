@@ -43,5 +43,32 @@
       <sqltable>ClubWork_MemberSQLTable</sqltable>
       <sqlcolumn>NUMBER</sqlcolumn>
     </attribute>
+    
+    <attributeset>
+      <name>EmailSet</name>
+      <type>MultiLineArray</type>
+      <parent>ClubWork_AttributeAbstract</parent>
+      <sqltable>ClubWork_AttributeSQLTable</sqltable>
+      <sqlcolumn>ABSTRACTID</sqlcolumn>
+      <attribute>
+        <name>Description</name>
+        <type>LinkWithRanges</type>
+        <typelink>ClubWork_AttributeDefinitionEmail</typelink>
+        <sqltable>ClubWork_AttributeSQLTable</sqltable>
+        <sqlcolumn>DEFID</sqlcolumn>
+        <trigger name="Admin_User_Attribute2Locale_RV" event="RANGE_VALUE" 
+                 program="org.efaps.esjp.admin.datamodel.RangesValue">
+          <property name="Value">Value</property>
+          <property name="Type">ClubWork_AttributeDefinitionEmail</property>
+        </trigger>
+      </attribute>
+      <attribute>
+        <name>Email</name>
+        <type>String</type>
+        <sqltable>ClubWork_AttributeSQLTable</sqltable>
+        <sqlcolumn>VALUE</sqlcolumn>
+      </attribute>
+    </attributeset>
+    
   </definition>
 </datamodel-type>

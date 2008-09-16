@@ -23,21 +23,17 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" 
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
-          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<datamodel-type xmlns="http://www.efaps.org/xsd" 
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+                xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   
-  <uuid>28c19ec3-09d3-448e-b996-6aa303948d9f</uuid>
+  <uuid>af2a3596-db9e-4eeb-b689-5090b8924cb2</uuid>
   <file-application>eFaps-ClubWork</file-application>
   <file-revision>$Rev$</file-revision>
-  <description>Menu for the table of members.</description>
+  
   <definition>
-    <version-expression>(version==latest)</version-expression>
-    <name>ClubWork_MemberAbstractTable_Menu_Action</name>
-    <childs>
-      <child>ClubWork_MemberAbstractTable_Menu_Action_CreateMember</child>
-      <child>ClubWork_MemberAbstractTable_Menu_Action_CreateHonoredMember</child>
-    </childs>
+    <version-expression>(version==3) || (version==latest)</version-expression>
+    <name>ClubWork_HonoredMember</name>
+    <parent>ClubWork_MemberAbstract</parent>
   </definition>
-
-</ui-menu>
+</datamodel-type>

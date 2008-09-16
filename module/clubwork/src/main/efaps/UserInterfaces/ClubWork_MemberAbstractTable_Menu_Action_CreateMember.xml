@@ -23,21 +23,26 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" 
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
-          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  
-  <uuid>28c19ec3-09d3-448e-b996-6aa303948d9f</uuid>
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>2b981dea-6d43-4e90-98b4-00da70622223</uuid>
   <file-application>eFaps-ClubWork</file-application>
   <file-revision>$Rev$</file-revision>
-  <description>Menu for the table of members.</description>
+
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>ClubWork_MemberAbstractTable_Menu_Action</name>
-    <childs>
-      <child>ClubWork_MemberAbstractTable_Menu_Action_CreateMember</child>
-      <child>ClubWork_MemberAbstractTable_Menu_Action_CreateHonoredMember</child>
-    </childs>
+    <name>ClubWork_MemberAbstractTable_Menu_Action_CreateMember</name>
+    <!-- target definitions -->
+    <target>
+      <form>ClubWork_MemberAbstractForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Create"/>
+    </target>
+    <!-- properties -->
+    <property name="Target">modal</property>
+    <property name="TargetCreateType">ClubWork_Member</property>
+    <property name="TargetMode">create</property>
   </definition>
 
-</ui-menu>
+</ui-command>
