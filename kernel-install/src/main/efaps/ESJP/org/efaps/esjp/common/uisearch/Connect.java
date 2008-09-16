@@ -20,6 +20,7 @@
 
 package org.efaps.esjp.common.uisearch;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.efaps.admin.event.EventExecution;
@@ -45,28 +46,21 @@ public class Connect implements EventExecution
    */
   public Return execute(final Parameter _parameter) throws EFapsException
   {
-    Return ret = new Return();
-
-    Map<?, ?> properties =
+    final Return ret = new Return();
+    final Map<?, ?> properties =
         (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-    Instance parent = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    String childOids[] = (String[]) _parameter.get(ParameterValues.OTHERS);
+    final Instance parent = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final Map<?, ?> others = (HashMap<?, ?>) _parameter.get(ParameterValues.OTHERS);
 
-    String type = (String) properties.get("ConnectType");
-    String childAttr = (String) properties.get("ConnectChildAttribute");
-    String parentAttr = (String) properties.get("ConnectParentAttribute");
+    final String[] childOids = (String[]) others.get("selectedRow");
 
-    /*
-     * if (childAttr == null) { throw new Exception("Could not found child
-     * attribute '" + command.getConnectChildAttribute() + "' for type '" +
-     * type.getName() + "'"); } if (parentAttr == null) { throw new
-     * Exception("Could not found parent attribute '" +
-     * command.getConnectParentAttribute() + "' for type '" + type.getName() +
-     * "'"); }
-     */
-    for (String childOid : childOids) {
-      Instance child = new Instance(childOid);
-      Insert insert = new Insert(type);
+    final String type = (String) properties.get("ConnectType");
+    final String childAttr = (String) properties.get("ConnectChildAttribute");
+    final String parentAttr = (String) properties.get("ConnectParentAttribute");
+
+    for (final String childOid : childOids) {
+      final Instance child = new Instance(childOid);
+      final Insert insert = new Insert(type);
       insert.add(parentAttr, "" + parent.getId());
       insert.add(childAttr, "" + child.getId());
       insert.execute();
