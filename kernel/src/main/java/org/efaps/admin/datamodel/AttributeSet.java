@@ -23,7 +23,6 @@ package org.efaps.admin.datamodel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.UUID;
 
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -48,7 +47,7 @@ public class AttributeSet extends Type{
    * @throws CacheReloadException
    */
   protected AttributeSet(final long _id, final String _typeName, final String _name, final AttributeType _attributeType, final String _sqlColNames) throws CacheReloadException {
-    super(_id, UUID.randomUUID().toString(), _typeName  + ":" + _name);
+    super(_id, null, _typeName  + ":" + _name);
     getTypeCache().add(this);
     readFromDB4Properties();
     this.attributeType = _attributeType;
