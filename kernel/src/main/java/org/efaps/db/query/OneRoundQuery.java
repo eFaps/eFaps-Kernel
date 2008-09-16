@@ -386,20 +386,17 @@ public class OneRoundQuery {
         if (attr != null) {
           this.expr2Attr.put(select, attr);
         } else {
-          final AttributeSet set = (AttributeSet) Type.get(AttributeSet
-              .evaluateName(this.type.getName(), select));
+          final AttributeSet set = AttributeSet.find(this.type.getName(), select);
           if (set != null) {
             for (final String subSelect : set.getAttributes().keySet()) {
-              if (!subSelect.equals("Type")) {
-                ListQuery subQuery = OneRoundQuery.this.listquery
+              ListQuery subQuery = OneRoundQuery.this.listquery
                     .getSubSelects().get(select);
-                if (subQuery == null) {
-                  subQuery = new ListQuery();
-                  OneRoundQuery.this.listquery.getSubSelects().put(select, subQuery);
-                }
-                subQuery.addSelect(subSelect);
-                subQuery.setExpand(set);
+              if (subQuery == null) {
+                subQuery = new ListQuery();
+                OneRoundQuery.this.listquery.getSubSelects().put(select, subQuery);
               }
+              subQuery.addSelect(subSelect);
+              subQuery.setExpand(set);
             }
             OneRoundQuery.this.listquery.getMultiSelects().add(select);
             this.multiExpr.add(select);

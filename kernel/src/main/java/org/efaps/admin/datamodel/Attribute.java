@@ -445,14 +445,6 @@ public class Attribute extends AbstractDataModelObject {
                                                       tableId,
                                                       typeLinkId);
             id2Set.put(id, set);
-          } else if (typeAttr.getUUID().equals(DATAMODEL_ATTRIBUTESETATTRIBUTE.uuid)) {
-            final AttributeSet parentset =  (AttributeSet) Type.get(parentSetId);
-            final Attribute attr = new Attribute(id, name, sqlCol, SQLTable
-                .get(tableId), AttributeType.get(attrTypeId), defaultval);
-            parentset.addAttribute(attr);
-            getCache().add(attr);
-            attr.readFromDB4Properties();
-            attr.setParentSet(parentset);
           } else {
             final Attribute attr = new Attribute(id, name, sqlCol, SQLTable
                 .get(tableId), AttributeType.get(attrTypeId), defaultval);
@@ -463,22 +455,24 @@ public class Attribute extends AbstractDataModelObject {
               final Type linkType = Type.get(typeLinkId);
               attr.setLink(linkType);
               linkType.addLink(attr);
-            } else if (uuid.equals(ATTRTYPE_CREATOR_LINK.uuid)) {
-              final Type linkType = Type.get(USER_PERSON);
-              attr.setLink(linkType);
-              linkType.addLink(attr);
-            } else if (uuid.equals(ATTRTYPE_MODIFIER_LINK.uuid)) {
+            } else if (uuid.equals(ATTRTYPE_CREATOR_LINK.uuid)
+                || uuid.equals(ATTRTYPE_MODIFIER_LINK.uuid)) {
               final Type linkType = Type.get(USER_PERSON);
               attr.setLink(linkType);
               linkType.addLink(attr);
             }
-            type.addAttribute(attr);
+
+            if (typeAttr.getUUID().equals(DATAMODEL_ATTRIBUTESETATTRIBUTE.uuid)) {
+              final AttributeSet parentset =  (AttributeSet) Type.get(parentSetId);
+              parentset.addAttribute(attr);
+              attr.setParentSet(parentset);
+            } else {
+              type.addAttribute(attr);
+            }
 
             getCache().add(attr);
-
             attr.readFromDB4Properties();
           }
-
         }
         rs.close();
 

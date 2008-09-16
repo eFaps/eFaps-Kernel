@@ -73,6 +73,7 @@ public class AttributeSet extends Type{
       final Type parent = Type.get(_typeLinkId);
       this.setParentType(parent);
       parent.addChildType(this);
+      getAttributes().putAll(parent.getAttributes());
     }
 
   }
@@ -105,5 +106,20 @@ public class AttributeSet extends Type{
 
   public static AttributeSet get(final String _typeName, final String _name){
    return (AttributeSet) Type.get(evaluateName(_typeName, _name));
+  }
+
+  /**
+   * @param name
+   * @param expression
+   * @return
+   */
+  public static AttributeSet find(final String _typeName, final String _name) {
+    AttributeSet ret = (AttributeSet) Type.get(evaluateName(_typeName, _name));
+    if (ret==null){
+      if (Type.get(_typeName).getParentType()!=null) {
+        ret = AttributeSet.find(Type.get(_typeName).getParentType().getName(), _name);
+      }
+    }
+    return ret;
   }
 }
