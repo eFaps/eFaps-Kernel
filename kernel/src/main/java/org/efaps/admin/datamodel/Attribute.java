@@ -442,7 +442,8 @@ public class Attribute extends AbstractDataModelObject {
                                                       name,
                                                       AttributeType.get(attrTypeId),
                                                       sqlCol,
-                                                      tableId);
+                                                      tableId,
+                                                      typeLinkId);
             id2Set.put(id, set);
           } else if (typeAttr.getUUID().equals(DATAMODEL_ATTRIBUTESETATTRIBUTE.uuid)) {
             final AttributeSet parentset =  (AttributeSet) Type.get(parentSetId);

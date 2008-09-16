@@ -41,6 +41,7 @@ public class AttributeSet extends Type{
    * @param _id
    * @param _uuid
    * @param _name
+   * @param typeLinkId
    * @param attributeType
    * @throws CacheReloadException
    */
@@ -49,7 +50,8 @@ public class AttributeSet extends Type{
                         final String _name,
                         final AttributeType _attributeType,
                         final String _sqlColNames,
-                        final long _tableId) throws CacheReloadException {
+                        final long _tableId,
+                        final long _typeLinkId) throws CacheReloadException {
     super(_id, null, evaluateName(_type.getName(), _name));
 
     this.attributeName = (_name == null) ? null : _name.trim();
@@ -66,6 +68,13 @@ public class AttributeSet extends Type{
 
     attr.setLink(_type);
     _type.addLink(attr);
+
+    if (_typeLinkId > 0){
+      final Type parent = Type.get(_typeLinkId);
+      this.setParentType(parent);
+      parent.addChildType(this);
+    }
+
   }
 
   public AttributeType getAttributeType() {

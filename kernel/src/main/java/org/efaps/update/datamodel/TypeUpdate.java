@@ -31,6 +31,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -111,7 +112,7 @@ public class TypeUpdate extends AbstractUpdate
   /**
    * The class defines an attribute of a type.
    */
-  public class Attribute extends AbstractDefinition
+  public class AttributeDefinition extends AbstractDefinition
   {
     /** Name of the attribute. */
     protected String name = null;
@@ -396,7 +397,7 @@ public class TypeUpdate extends AbstractUpdate
     }
   }
 
-  public class AttributeSet extends Attribute {
+  public class AttributeSetDefinition extends AttributeDefinition {
 
 
     /**
@@ -404,11 +405,9 @@ public class TypeUpdate extends AbstractUpdate
      *
      * @see #readXML(List, Map, String)
      */
-    private Attribute curAttr = null;
+    private AttributeDefinition curAttr = null;
 
-    private final List<Attribute> attributes = new ArrayList<Attribute>();
-
-
+    private final List<AttributeDefinition> attributes = new ArrayList<AttributeDefinition>();
 
     private String parentType;
     /**
@@ -434,7 +433,7 @@ public class TypeUpdate extends AbstractUpdate
           this.sqlColumn = _text;
       } else if ("attribute".equals(value))  {
         if (_tags.size() == 1) {
-          this.curAttr = new Attribute();
+          this.curAttr = new AttributeDefinition();
           this.attributes.add(this.curAttr);
         } else {
           this.curAttr.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
@@ -474,35 +473,12 @@ public class TypeUpdate extends AbstractUpdate
      * @throws EFapsException
      */
     public void updateInDB(final Instance _instance, final String _typeName) throws EFapsException {
-      final String name = _typeName + ":" + this.name;
-      final long parentTypeId = 0;
+      final String name = AttributeSet.evaluateName(_typeName, this.name);
 
-//      if ((this.parentType != null) && (this.parentType.length() > 0)) {
-//        parentTypeId = getParentTypeId(this.parentType);
-//      }
-
-//      // create the new type for this set
-//      SearchQuery query = new SearchQuery();
-//      query.setQueryTypes("Admin_DataModel_Type");
-//      query.addWhereExprEqValue("Name", this.name);
-//      query.addSelect("OID");
-//      query.executeWithoutAccessCheck();
-//      Update update = null;
-//      if (query.next()) {
-//
-//      } else {
-//        update = new Insert("Admin_DataModel_Type");
-//        update.add("Name", name);
-//        update.add("UUID", this.uuid );
-//      }
-//      if (parentTypeId>0) {
-//        update.add("ParentType","" + parentTypeId);
-//      }
-
-//      query.close();
-//      update.executeWithoutAccessCheck();
-//      this.instance = update.getInstance();
-//      update.close();
+      long parentTypeId = 0;
+      if (this.parentType!=null) {
+        parentTypeId = getParentTypeId(this.parentType);
+      }
 
       final long attrTypeId = getAttrTypeId(_typeName);
       final long sqlTableId = getSqlTableId(_typeName);
@@ -527,38 +503,16 @@ public class TypeUpdate extends AbstractUpdate
       update.add("AttributeType", "" + attrTypeId);
       update.add("Table", "" + sqlTableId);
       update.add("SQLColumn", this.sqlColumn);
-//      update.add("TypeLink", "" + this.instance.getId());
+      if (parentTypeId > 0){
+        update.add("TypeLink", "" + parentTypeId);
+      }
+
       update.executeWithoutAccessCheck();
       final long setId = update.getInstance().getId();
       update.close();
 
-
-//      //add the LinkAttribute
-//      query = new SearchQuery();
-//      query.setQueryTypes("Admin_DataModel_Attribute");
-//      query.addWhereExprEqValue("Name", this.name);
-//      query.addWhereExprEqValue("ParentType", this.instance.getId());
-//      query.addSelect("OID");
-//      query.executeWithoutAccessCheck();
-//
-//      if (query.next()) {
-//        update = new Update((String) query.get("OID"));
-//      } else {
-//        update = new Insert("Admin_DataModel_Attribute");
-//        update.add("ParentType", "" + this.instance.getId());
-//        update.add("Name", this.name);
-//      }
-//      query.close();
-//      this.type = "Link";
-//      update.add("AttributeType", "" + getAttrTypeId("Link"));
-//      update.add("Table", "" + sqlTableId);
-//      update.add("SQLColumn", this.sqlColumn);
-//      update.add("TypeLink", "" + _instance.getId());
-//      update.executeWithoutAccessCheck();
-//      update.close();
-
    // add the attributes to the new Type
-      for (final Attribute attr : this.attributes) {
+      for (final AttributeDefinition attr : this.attributes) {
         attr.updateInDB(_instance, name, setId);
       }
 
@@ -594,19 +548,19 @@ public class TypeUpdate extends AbstractUpdate
      * @see #updateInDB
      * @see #addAttribute
      */
-    private final List<Attribute> attributes = new ArrayList<Attribute>();
+    private final List<AttributeDefinition> attributes = new ArrayList<AttributeDefinition>();
 
-    private final List<AttributeSet> attributeSets = new ArrayList<AttributeSet>();
+    private final List<AttributeSetDefinition> attributeSets = new ArrayList<AttributeSetDefinition>();
 
     /**
      * Current read attribute definition instance.
      *
      * @see #readXML(List, Map, String)
      */
-    private Attribute curAttr = null;
+    private AttributeDefinition curAttr = null;
 
 
-    private AttributeSet curAttrSet = null;
+    private AttributeSetDefinition curAttrSet = null;
     ///////////////////////////////////////////////////////////////////////////
     // instance methods
 
@@ -620,14 +574,14 @@ public class TypeUpdate extends AbstractUpdate
         addValue("Abstract", _text);
       } else if ("attribute".equals(value))  {
         if (_tags.size() == 1)  {
-          this.curAttr = new Attribute();
+          this.curAttr = new AttributeDefinition();
           this.attributes.add(this.curAttr);
         } else  {
           this.curAttr.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
         }
       } else if ("attributeset".equals(value)) {
         if (_tags.size() == 1) {
-          this.curAttrSet = new AttributeSet();
+          this.curAttrSet = new AttributeSetDefinition();
           this.attributeSets.add(this.curAttrSet);
         } else {
           this.curAttrSet.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
@@ -689,11 +643,11 @@ public class TypeUpdate extends AbstractUpdate
 
       super.updateInDB(_allLinkTypes);
 
-      for (final Attribute attr : this.attributes) {
+      for (final AttributeDefinition attr : this.attributes) {
         attr.updateInDB(this.instance, getValue("Name"), 0);
       }
 
-      for (final AttributeSet attrSet : this.attributeSets) {
+      for (final AttributeSetDefinition attrSet : this.attributeSets) {
         attrSet.updateInDB(this.instance, getValue("Name"));
       }
 

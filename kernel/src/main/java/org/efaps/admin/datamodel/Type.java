@@ -546,7 +546,7 @@ public class Type extends AbstractDataModelObject {
    *                child type to add
    * @see #childTypes
    */
-  private void addChildType(final Type _childType) {
+  protected void addChildType(final Type _childType) {
     // for (Attribute linkAttr: getLinks().values()) {
     // _childType.addLink(linkAttr);
     // }
@@ -587,6 +587,10 @@ public class Type extends AbstractDataModelObject {
   public Type getParentType()
   {
     return this.parentType;
+  }
+
+  protected void setParentType(final Type parentType) {
+    this.parentType = parentType;
   }
 
   /**
