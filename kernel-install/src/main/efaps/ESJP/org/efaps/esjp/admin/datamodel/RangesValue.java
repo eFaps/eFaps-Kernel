@@ -20,13 +20,8 @@
 
 package org.efaps.esjp.admin.datamodel;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.Vector;
 
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
@@ -39,10 +34,13 @@ import org.efaps.util.EFapsException;
 
 /**
  * This Class gets a Range from the Database.<br>
- * The Class makes a query against the Database, with the Type from the
+ * The Class makes a query against the Database, with the "Type" from the
  * Properties of the Parameters and returns a map sorted by the values. The key
- * returned is the ID, the Value returned can be specified by the Propertie
- * "Value".
+ * returned is the value, as specified by the Property "Value". The value of the
+ * map is the ID of the Objects.
+ * The sorting is done by using a TreeMap, that means that the Objects are
+ * sorted by their natural order.
+ * Both value and key are String.
  *
  * @author jmox
  * @version $Id$
@@ -63,42 +61,21 @@ public class RangesValue implements EventExecution
     final String value =
         (String) ((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
             .get("Value");
+
     final SearchQuery query = new SearchQuery();
-
-    final Map<String, String> map = new HashMap<String, String>();
-
     query.setQueryTypes(type);
     query.addSelect("ID");
     query.addSelect(value);
     query.execute();
 
+    final Map<String, String> map = new TreeMap<String, String>();
+
     while (query.next()) {
-      map.put(query.get("ID").toString(), query.get(value).toString());
+      map.put(query.get(value).toString(),query.get("ID").toString());
     }
-    // sort by Value
-    final List<Map.Entry<String, String>> list =
-        new Vector<Map.Entry<String, String>>(map.entrySet());
+    query.close();
 
-    Collections.sort(list,
-        new Comparator<Map.Entry<String, String>>() {
-
-          public int compare(Map.Entry<String, String> entry,
-                             Map.Entry<String, String> entry1) {
-            final String r = entry.getValue().toString();
-            final String r1 = entry1.getValue().toString();
-
-            return r.compareTo(r1);
-          }
-
-        });
-
-    final Map<String, String> map2 = new TreeMap<String, String>();
-
-    for (final Map.Entry<String, String> entry : list) {
-      map2.put(entry.getKey(), entry.getValue());
-    }
-
-    ret.put(ReturnValues.VALUES, map2);
+    ret.put(ReturnValues.VALUES, map);
 
     return ret;
   }

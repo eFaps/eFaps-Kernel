@@ -21,7 +21,7 @@
 package org.efaps.admin.datamodel.ui;
 
 import java.util.Iterator;
-import java.util.Map;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -51,11 +51,14 @@ public class LinkWithRangesUI extends AbstractUI {
       if (attribute.hasEvents(EventType.RANGE_VALUE)) {
 
         for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
-          ret.append((String) ((Map<?, ?>) values.get(ReturnValues.VALUES))
-              .get(_fieldValue.getValue().toString()));
+          final TreeMap<?, ?> treemap = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES));
+          for (final Entry<?,?> entry : treemap.entrySet()) {
+            if (entry.getValue().equals(_fieldValue.getValue().toString())) {
+              ret.append(entry.getKey().toString());
+            }
+          }
         }
       }
-
     } else {
 //      throw new EFapsException();
     }
@@ -75,16 +78,16 @@ public class LinkWithRangesUI extends AbstractUI {
               "\" size=\"1\">");
 
           final Iterator<?> iter =
-              ((Map<?, ?>) values.get(ReturnValues.VALUES)).entrySet()
+              ((TreeMap<?, ?>) values.get(ReturnValues.VALUES)).entrySet()
                   .iterator();
 
           while (iter.hasNext()) {
             final Entry<?, ?> entry = (Entry<?, ?>) iter.next();
-            ret.append("<option value=\"").append(entry.getKey());
-            if (_fieldValue.getValue().toString().equals(entry.getKey())) {
+            ret.append("<option value=\"").append(entry.getValue());
+            if (_fieldValue.getValue().toString().equals(entry.getValue())) {
               ret.append("\" selected=\"selected");
             }
-            ret.append("\">").append(entry.getValue()).append("</option>");
+            ret.append("\">").append(entry.getKey()).append("</option>");
           }
 
           ret.append("</select>");
@@ -110,12 +113,12 @@ public class LinkWithRangesUI extends AbstractUI {
             "\" size=\"1\">");
 
         final Iterator<?> iter =
-            ((Map<?, ?>) values.get(ReturnValues.VALUES)).entrySet().iterator();
+            ((TreeMap<?, ?>) values.get(ReturnValues.VALUES)).entrySet().iterator();
 
         while (iter.hasNext()) {
           final Entry<?, ?> entry = (Entry<?, ?>) iter.next();
-          ret.append("<option value=\"").append(entry.getKey()).append("\">")
-              .append(entry.getValue()).append("</option>");
+          ret.append("<option value=\"").append(entry.getValue()).append("\">")
+              .append(entry.getKey()).append("</option>");
         }
 
         ret.append("</select>");
