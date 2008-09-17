@@ -20,7 +20,9 @@
 
 package org.efaps.admin.datamodel;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -36,6 +38,8 @@ public class AttributeSet extends Type{
   private final AttributeType attributeType;
 
   private final String attributeName;
+
+  private final Set<String> setAttributes = new HashSet<String>();
 
   /**
    * @param _id
@@ -98,6 +102,20 @@ public class AttributeSet extends Type{
     return this.getAttribute(this.attributeName).getSqlColNames();
   }
 
+  @Override
+  protected void addAttribute(final Attribute _attribute) {
+    super.addAttribute(_attribute);
+    // in the superconstructur this method is called, so the set might not be
+    // initialised
+    if (this.setAttributes!=null) {
+      this.setAttributes.add(_attribute.getName());
+    }
+  }
+
+  public Set<String> getSetAttributes() {
+    return this.setAttributes;
+  }
+
   public static String evaluateName(final String _typeName, final String _name) {
     final StringBuilder ret = new StringBuilder();
     ret.append(_typeName).append(":").append(_name).toString();
@@ -122,4 +140,6 @@ public class AttributeSet extends Type{
     }
     return ret;
   }
+
+
 }

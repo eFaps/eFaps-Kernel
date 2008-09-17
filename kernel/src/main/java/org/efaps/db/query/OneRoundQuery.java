@@ -388,7 +388,7 @@ public class OneRoundQuery {
         } else {
           final AttributeSet set = AttributeSet.find(this.type.getName(), select);
           if (set != null) {
-            for (final String subSelect : set.getAttributes().keySet()) {
+            for (final String subSelect : set.getSetAttributes()) {
               ListQuery subQuery = OneRoundQuery.this.listquery
                     .getSubSelects().get(select);
               if (subQuery == null) {
