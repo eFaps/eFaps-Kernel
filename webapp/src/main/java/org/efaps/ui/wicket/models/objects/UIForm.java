@@ -242,7 +242,7 @@ public class UIForm extends AbstractUIObject {
                     new UIHeading((FieldHeading) field)));
                 addNew = true;
               }
-            } else {
+            } else if (!(isViewMode() && !field.isViewable())) {
               if (addNew) {
                 formelement = new FormElement();
                 this.elements.add(new Element(ElementType.FORM, formelement));
@@ -254,8 +254,8 @@ public class UIForm extends AbstractUIObject {
               if (field.getLabel() != null) {
                 label = field.getLabel();
               } else if (attr != null) {
-                 label = attr.getParent().getName() + "/" + attr.getName() +
-                 ".Label";
+                label = attr.getParent().getName() + "/" + attr.getName()
+                    + ".Label";
               } else {
                 label = "Unknown";
               }
@@ -263,42 +263,48 @@ public class UIForm extends AbstractUIObject {
               String oid = null;
               Instance fieldInstance;
               if (field.getAlternateOID() != null) {
-                fieldInstance = new Instance((String) query.get(field.getAlternateOID()));
-              } else  {
+                fieldInstance = new Instance((String) query.get(field
+                    .getAlternateOID()));
+              } else {
                 fieldInstance = getCallInstance();
               }
               if (fieldInstance != null) {
                 oid = fieldInstance.getOid();
               }
               if (field instanceof FieldSet) {
-                final AttributeSet set = AttributeSet.find(getCallInstance().getType().getName(), field.getExpression());
-                final Map<?, ?> tmp = (Map<?, ?>) query.get(field.getExpression());
+                final AttributeSet set = AttributeSet.find(getCallInstance()
+                    .getType().getName(), field.getExpression());
+                final Map<?, ?> tmp = (Map<?, ?>) query.get(field
+                    .getExpression());
                 final List<Instance> fieldins = new ArrayList<Instance>();
                 if (tmp != null) {
-                    fieldins.addAll(query.getInstances(field.getExpression()));
+                  fieldins.addAll(query.getInstances(field.getExpression()));
                 }
                 int y = 0;
                 boolean add = true;
                 final UIFormCellSet cellset = new UIFormCellSet(field, oid, "",
-                    "", isEditMode() ? field.isRequired() : false, label, isEditMode());
-                final Iterator<Instance> iter  = fieldins.iterator();
+                    "", isEditMode() ? field.isRequired() : false, label,
+                    isEditMode());
+                final Iterator<Instance> iter = fieldins.iterator();
                 while (add) {
                   int x = 0;
-                  if (iter.hasNext()){
+                  if (iter.hasNext()) {
                     cellset.addInstance(y, iter.next());
                   }
-                  for (final String attrName : ((FieldSet)field).getOrder() ) {
+                  for (final String attrName : ((FieldSet) field).getOrder()) {
                     final Attribute child = set.getAttribute(attrName);
                     if (isEditMode()) {
                       final FieldValue fieldvalue = new FieldValue(
                           new FieldDefinition("egal", field), child, "",
                           getCallInstance());
-                      cellset.addDefiniton(x,fieldvalue.getCreateHtml(getCallInstance()));
+                      cellset.addDefiniton(x, fieldvalue
+                          .getCreateHtml(getCallInstance()));
                     }
                     if (tmp == null) {
                       add = false;
                     } else {
-                      final List<?> tmplist = (List<?>) tmp.get(child.getName());
+                      final List<?> tmplist = (List<?>) tmp
+                          .get(child.getName());
                       if (y < tmplist.size()) {
                         final Object value = tmplist.get(y);
                         final FieldValue fieldvalue = new FieldValue(
@@ -320,8 +326,9 @@ public class UIForm extends AbstractUIObject {
                   y++;
                 }
 
-                // we only add multiline if we have a value or we are in editmodus
-                if (tmp != null || isEditMode()){
+                // we only add multiline if we have a value or we are in
+                // editmodus
+                if (tmp != null || isEditMode()) {
                   row.add(cellset);
                 }
               } else {
@@ -353,31 +360,24 @@ public class UIForm extends AbstractUIObject {
                       icon = image.getUrl();
                     }
                   }
-
-                  // if we have ViewMode and the field is not Viewable than we
-                  // don't
-                  // add the Cell to the row
-                  if (!(isViewMode() && !field.isViewable())) {
-
-                    final UIFormCell cell = new UIFormCell(field, oid,
-                        strValue, icon, isEditMode() ? field.isRequired()
-                            : false, label);
-                    row.add(cell);
-                  }
+                  final UIFormCell cell = new UIFormCell(field, oid, strValue,
+                      icon, isEditMode() ? field.isRequired() : false, label);
+                  row.add(cell);
                 }
               }
-              rowgroupcount--;
-              if (rowgroupcount < 1) {
-                rowgroupcount = 1;
-                if (row.getGroupCount() > 0) {
-                  formelement.addRowModel(row);
-                  row = new FormRow();
-                }
+            }
+            rowgroupcount--;
+            if (rowgroupcount < 1) {
+              rowgroupcount = 1;
+              if (row.getGroupCount() > 0) {
+                formelement.addRowModel(row);
+                row = new FormRow();
               }
             }
           }
         }
       }
+
     } catch (final Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
