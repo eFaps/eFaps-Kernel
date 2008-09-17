@@ -64,11 +64,15 @@ public class ValuePanel extends Panel{
     nf.setMinimumIntegerDigits(2);
     nf.setMaximumIntegerDigits(2);
 
-    final long valueid = set.getInstance(asd.getY()).getId();
+    long valueid=0;
+
     final StringBuilder bld = new StringBuilder();
-    bld.append("<input type=\"hidden\" value=\"")
-    .append(valueid).append("\" name=\"hiddenId")
-    .append(set.getName()).append(nf.format(asd.getY())).append("\"");
+    if (set.isEditMode()){
+      valueid = set.getInstance(asd.getY()).getId();
+      bld.append("<input type=\"hidden\" value=\"")
+        .append(valueid).append("\" name=\"hiddenId")
+        .append(set.getName()).append(nf.format(asd.getY())).append("\"/>");
+    }
     for (int x = 0; x<asd.getX();x++){
       bld.append("<td>");
       final String value = set.getXYValue(x, asd.getY());
@@ -93,14 +97,15 @@ public class ValuePanel extends Panel{
 
     table.add(new LabelComponent("label", bld.toString()));
     if (set.isEditMode()) {
+      final WebMarkupContainer td = new WebMarkupContainer("removeTD");
+      table.add(td);
       final AjaxRemove remove = new AjaxRemove("remove",valueid,set.getName());
-      table.add(remove);
+      td.add(remove);
       final StaticImageComponent image = new StaticImageComponent("removeIcon");
       image.setReference(YPanel.ICON_DELETE);
       remove.add(image);
-
     } else {
-      table.add( new WebMarkupContainer("remove").setVisible(false));
+      table.add( new WebMarkupContainer("removeTD").setVisible(false));
     }
   }
 
