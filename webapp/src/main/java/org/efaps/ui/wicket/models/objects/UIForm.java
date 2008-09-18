@@ -248,7 +248,10 @@ public class UIForm extends AbstractUIObject {
                 this.elements.add(new Element(ElementType.FORM, formelement));
                 addNew = false;
               }
-              final Attribute attr = query.getAttribute(field.getExpression());
+              Attribute attr = null;
+              if (field.getExpression()!=null) {
+                attr = query.getAttribute(field.getExpression());
+              }
               // evaluate the label of the field
               String label;
               if (field.getLabel() != null) {
@@ -332,7 +335,11 @@ public class UIForm extends AbstractUIObject {
                   row.add(cellset);
                 }
               } else {
-                final Object value = query.get(field.getExpression());
+                Object value = null;
+                if (field.getExpression()!=null){
+                  value = query.get(field.getExpression());
+                }
+
                 final FieldValue fieldvalue = new FieldValue(
                     new FieldDefinition("egal", field), attr, value,
                     fieldInstance);
