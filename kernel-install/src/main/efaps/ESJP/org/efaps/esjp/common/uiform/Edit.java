@@ -20,6 +20,7 @@
 
 package org.efaps.esjp.common.uiform;
 
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.FieldSet;
+import org.efaps.db.Checkin;
 import org.efaps.db.Context;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -136,41 +138,60 @@ public class Edit implements EventExecution
         }
         y++;
       }
-
-      // add new Values
-      final String[] newOnes = (String[]) others.get(fieldset.getName()+"eFapsNew");
-      if (newOnes != null) {
-        for (final String newOne : newOnes) {
-          final Insert insert = new Insert(set);
-          insert.add(set.getAttribute(fieldset.getExpression()),
-              ((Long) instance.getId()).toString());
-          int x = 0;
-          for (final String attrName : fieldset.getOrder()) {
-            final Attribute child = set.getAttribute(attrName);
-            final String fieldName = fieldset.getName() + "eFapsNew"
-                + nf.format(Integer.parseInt(newOne)) + nf.format(x);
-            System.out.println(fieldName);
-            if (context.getParameters().containsKey(fieldName)) {
-              System.out.println(context.getParameter(fieldName));
-              insert.add(child, context.getParameter(fieldName));
+      if (others!=null) {
+        // add new Values
+        final String[] newOnes = (String[]) others.get(fieldset.getName()+"eFapsNew");
+        if (newOnes != null) {
+          for (final String newOne : newOnes) {
+            final Insert insert = new Insert(set);
+            insert.add(set.getAttribute(fieldset.getExpression()),
+                ((Long) instance.getId()).toString());
+            int x = 0;
+            for (final String attrName : fieldset.getOrder()) {
+              final Attribute child = set.getAttribute(attrName);
+              final String fieldName = fieldset.getName() + "eFapsNew"
+                  + nf.format(Integer.parseInt(newOne)) + nf.format(x);
+              System.out.println(fieldName);
+              if (context.getParameters().containsKey(fieldName)) {
+                System.out.println(context.getParameter(fieldName));
+                insert.add(child, context.getParameter(fieldName));
+              }
+              x++;
             }
-            x++;
+            insert.execute();
           }
-          insert.execute();
         }
-      }
 
-      //remove Values
-      final String[] removeOnes = (String[]) others.get(fieldset.getName()+"eFapsRemove");
-      if (removeOnes != null) {
-        for (final String removeOne : removeOnes) {
-          final Delete delete = new Delete(set,removeOne);
-          delete.execute();
+        //remove Values
+        final String[] removeOnes = (String[]) others.get(fieldset.getName()+"eFapsRemove");
+        if (removeOnes != null) {
+          for (final String removeOne : removeOnes) {
+            final Delete delete = new Delete(set,removeOne);
+            delete.execute();
 
+          }
         }
       }
     }
 
+    // check if we have a fileupload field
+    if (context.getFileParameters().size() > 0) {
+      for (final Field field : command.getTargetForm().getFields()) {
+        if (field.getExpression() == null && field.isEditable()) {
+          final Context.FileParameter fileItem =
+              context.getFileParameters().get(field.getName());
+          if (fileItem != null) {
+            final Checkin checkin = new Checkin(instance);
+            try {
+              checkin.execute(fileItem.getName(), fileItem.getInputStream(),
+                  (int) fileItem.getSize());
+            } catch (final IOException e) {
+              throw new EFapsException(this.getClass(), "execute", e, _parameter);
+            }
+          }
+        }
+      }
+    }
 
     return ret;
   }
