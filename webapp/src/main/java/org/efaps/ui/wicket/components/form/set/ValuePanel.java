@@ -148,8 +148,8 @@ public class ValuePanel extends Panel{
         newvalues[oldvalues.length] = this.valueID.toString();
         newmap.put(keyString,newvalues);
       }
-      this.getParent().setVisible(false);
-      _target.addComponent(this.getParent());
+      this.getParent().getParent().setVisible(false);
+      _target.addComponent(this.getParent().getParent());
 
     }
 
