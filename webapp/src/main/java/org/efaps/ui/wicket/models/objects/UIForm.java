@@ -181,14 +181,13 @@ public class UIForm extends AbstractUIObject {
           }
 
           row.add(cell);
-        }
-
-        rowgroupcount--;
-        if (rowgroupcount < 1) {
-          rowgroupcount = 1;
-          if (row.getGroupCount() > 0) {
-            formelement.addRowModel(row);
-            row = new FormRow();
+          rowgroupcount--;
+          if (rowgroupcount < 1) {
+            rowgroupcount = 1;
+            if (row.getGroupCount() > 0) {
+              formelement.addRowModel(row);
+              row = new FormRow();
+            }
           }
         }
       }
@@ -372,13 +371,13 @@ public class UIForm extends AbstractUIObject {
                   row.add(cell);
                 }
               }
-            }
-            rowgroupcount--;
-            if (rowgroupcount < 1) {
-              rowgroupcount = 1;
-              if (row.getGroupCount() > 0) {
-                formelement.addRowModel(row);
-                row = new FormRow();
+              rowgroupcount--;
+              if (rowgroupcount < 1) {
+                rowgroupcount = 1;
+                if (row.getGroupCount() > 0) {
+                  formelement.addRowModel(row);
+                  row = new FormRow();
+                }
               }
             }
           }
