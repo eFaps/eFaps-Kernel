@@ -57,7 +57,7 @@ public class CheckoutServlet extends HttpServlet {
    * @see #PARAM_OID
    */
   @Override
-  protected void doGet(HttpServletRequest _req, HttpServletResponse _res)
+  protected void doGet(final HttpServletRequest _req, final HttpServletResponse _res)
                                                                          throws ServletException,
                                                                          IOException {
     final String oid = _req.getParameter(PARAM_OID);
@@ -65,14 +65,15 @@ public class CheckoutServlet extends HttpServlet {
     try {
       final Checkout checkout = new Checkout(oid);
       checkout.preprocess();
+      if (checkout.getFileName() != null) {
+        _res.setContentType(getServletContext().getMimeType(
+                checkout.getFileName()));
+        _res.setContentLength((int) checkout.getFileLength());
+        _res.addHeader("Content-Disposition", "inline; filename=\""
+              + checkout.getFileName() + "\"");
 
-      _res.setContentType(getServletContext().getMimeType(
-          checkout.getFileName()));
-      _res.addHeader("Content-Disposition", "inline; filename=\""
-          + checkout.getFileName() + "\"");
-
-      checkout.execute(_res.getOutputStream());
-
+        checkout.execute(_res.getOutputStream());
+      }
     } catch (final IOException e) {
       throw e;
     } catch (final ServletException e) {
