@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.components.footer;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -41,7 +42,6 @@ import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
-
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -82,12 +82,14 @@ public class UploadBehavior extends AbstractBehavior implements
   }
 
   public void onSubmit() {
+    final UIForm uiForm = (UIForm) this.component.getPage().getDefaultModelObject();
+
     try {
-      executeEvents();
+      executeEvents(uiForm.getNewValues());
     } catch (final EFapsException e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
-    final UIForm uiForm = (UIForm) this.component.getPage().getDefaultModelObject();
+
     String script;
     if (uiForm.getTarget() == Target.MODAL) {
 
@@ -135,12 +137,12 @@ public class UploadBehavior extends AbstractBehavior implements
    * @return true if the ESJP returned the ReturnValue.TRUE , else false
    * @throws EFapsException
    */
-  private boolean executeEvents() throws EFapsException {
+  private boolean executeEvents(final Map<String,String[]> _other) throws EFapsException {
 
     boolean ret = true;
     final List<Return> returns =
         ((AbstractUIObject) this.component.getParent().getDefaultModelObject())
-            .executeEvents(null);
+            .executeEvents(_other);
     for (final Return oneReturn : returns) {
       if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()) {
         ret = false;
