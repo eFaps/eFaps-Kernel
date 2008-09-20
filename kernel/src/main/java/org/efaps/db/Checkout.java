@@ -59,8 +59,12 @@ public class Checkout extends AbstractAction {
    */
   private String fileName = null;
 
+  private long fileLength;
+
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
+
+
 
   /**
    * Constructor with object id as string.
@@ -109,15 +113,21 @@ public class Checkout extends AbstractAction {
 
     final Type type = getInstance().getType();
     final String fileName = type.getProperty(PROPERTY_STORE_ATTR_FILE_NAME);
+    final String size = type.getProperty(PROPERTY_STORE_ATTR_FILE_LENGTH);
 
     final SearchQuery query = new SearchQuery();
     query.setObject(getInstance());
     query.addSelect(fileName);
+    query.addSelect(size);
     // try {
     query.executeWithoutAccessCheck();
     if (query.next()) {
       final Object value = query.get(fileName);
-      this.fileName = value.toString();
+      if (value != null) {
+        this.fileName = value.toString();
+        final Long filelength = (Long) query.get(size);
+        this.fileLength = filelength;
+      }
     }
     // } finally {
     query.close();
@@ -190,10 +200,10 @@ public class Checkout extends AbstractAction {
       store.read(_out);
       store.commit();
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("could not checkout " + super.getInstance(), e);
       throw e;
-    } catch (Throwable e) {
+    } catch (final Throwable e) {
       LOG.error("could not checkout " + super.getInstance(), e);
       throw new EFapsException(getClass(),
           "executeWithoutAccessCheck.Throwable", e);
@@ -272,10 +282,10 @@ public class Checkout extends AbstractAction {
               .getId());
       in = store.read();
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("could not checkout " + super.getInstance(), e);
       throw e;
-    } catch (Throwable e) {
+    } catch (final Throwable e) {
       LOG.error("could not checkout " + super.getInstance(), e);
       throw new EFapsException(getClass(),
           "executeWithoutAccessCheck.Throwable", e);
@@ -301,4 +311,15 @@ public class Checkout extends AbstractAction {
   public String getFileName() {
     return this.fileName;
   }
+
+  /**
+   * This is the getter method for instance variable {@link #fileLength}.
+   *
+   * @return the fileName of the instance variable {@link #fileLength}.
+   * @see #fileLength
+   */
+  public long getFileLength() {
+    return this.fileLength;
+  }
+
 }
