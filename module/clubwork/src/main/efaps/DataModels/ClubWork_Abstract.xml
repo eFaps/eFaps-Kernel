@@ -100,7 +100,27 @@
       <sqlcolumn>FORENAME</sqlcolumn>
     </attribute>
     
-
+    <attribute>
+      <name>ImageFileName</name>
+      <type>String</type>
+      <sqltable>ClubWork_AbstractSQLTable</sqltable>
+      <sqlcolumn>IMGFILENAME</sqlcolumn>
+    </attribute>
+    
+    <attribute>
+      <name>ImageFileLength</name>
+      <type>Integer</type>
+      <sqltable>ClubWork_AbstractSQLTable</sqltable>
+      <sqlcolumn>IMGFILELENGTH</sqlcolumn>
+    </attribute>
+    
+    
+       <!-- property definitions -->
+    <property name="StoreAttributeFileLength">ImageFileLength</property>
+    <property name="StoreAttributeFileName">ImageFileName</property>
+    <property name="StoreCompress">GZIP</property>
+    <property name="StoreResource">org.efaps.db.transaction.VFSStoreResource</property>
+    <property name="StoreVFSName">eFaps/store/documents</property>
     
   </definition>
 </datamodel-type>

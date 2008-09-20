@@ -27,17 +27,16 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   
-  <uuid>41eadd74-0139-4542-be7a-f15906c2aa78</uuid>
+  <uuid>aef91c46-7d88-4b9c-9ae7-1af66530d580</uuid>
   <file-application>eFaps-ClubWork</file-application>
   <file-revision>$Rev$</file-revision>
   <description>Main menu to get into ClubWork</description>
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>ClubWork_MyDesk</name>
+    <name>ClubWork_AttributeDefinitionMyDesk</name>
     <childs>
-      <child>ClubWork_MemberAbstractMyDesk</child>
-      <child>ClubWork_AffiliatedAbstractMyDesk</child>
-      <child>ClubWork_AttributeDefinitionMyDesk</child>
+      <child>ClubWork_AttributeDefinitionAbstract</child>
+      <child>ClubWork_AttributeDefinitionEmail</child>
     </childs>
   </definition>
 

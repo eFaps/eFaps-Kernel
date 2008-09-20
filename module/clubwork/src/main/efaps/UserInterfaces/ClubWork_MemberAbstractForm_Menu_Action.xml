@@ -36,6 +36,7 @@
     <name>ClubWork_MemberAbstractForm_Menu_Action</name>
     <childs>
       <child>ClubWork_MemberAbstractForm_Menu_Action_Edit</child>
+      <child>ClubWork_MemberAbstractForm_Menu_Action_AddImage</child>
     </childs>
   </definition>
 

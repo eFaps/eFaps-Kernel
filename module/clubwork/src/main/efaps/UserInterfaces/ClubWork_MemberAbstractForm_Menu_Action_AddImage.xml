@@ -23,22 +23,25 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" 
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
-          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  
-  <uuid>41eadd74-0139-4542-be7a-f15906c2aa78</uuid>
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>1e8d2afe-3e75-44e2-b086-eee89dfef311</uuid>
   <file-application>eFaps-ClubWork</file-application>
   <file-revision>$Rev$</file-revision>
-  <description>Main menu to get into ClubWork</description>
+
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>ClubWork_MyDesk</name>
-    <childs>
-      <child>ClubWork_MemberAbstractMyDesk</child>
-      <child>ClubWork_AffiliatedAbstractMyDesk</child>
-      <child>ClubWork_AttributeDefinitionMyDesk</child>
-    </childs>
+    <name>ClubWork_MemberAbstractForm_Menu_Action_AddImage</name>
+    <!-- target definitions -->
+    <target>
+      <form>ClubWork_FileUploadForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Edit"/>
+    </target>
+    <!-- properties -->
+    <property name="Target">modal</property>
+    <property name="TargetMode">edit</property>
   </definition>
 
-</ui-menu>
+</ui-command>

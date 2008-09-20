@@ -23,22 +23,30 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" 
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
-          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  
-  <uuid>41eadd74-0139-4542-be7a-f15906c2aa78</uuid>
+<ui-form xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>785e08ce-6bc7-43b2-af0e-d7d6d7c1ed0a</uuid>
   <file-application>eFaps-ClubWork</file-application>
   <file-revision>$Rev$</file-revision>
-  <description>Main menu to get into ClubWork</description>
+
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>ClubWork_MyDesk</name>
-    <childs>
-      <child>ClubWork_MemberAbstractMyDesk</child>
-      <child>ClubWork_AffiliatedAbstractMyDesk</child>
-      <child>ClubWork_AttributeDefinitionMyDesk</child>
-    </childs>
+    <name>ClubWork_FileUploadForm</name>
+    <!-- fields -->
+    
+    <field name="upload">
+      <property name="Label">ClubWork_FileUploadForm/Upload.Label</property>
+      <property name="Searchable">false</property>
+      <property name="Editable">true</property>
+      <property name="Creatable">false</property>
+      <property name="Viewable">true</property>
+      <trigger name="ClubWork_FileUploadForm/FileUpload"
+               event="UI_FIELD_VALUE" 
+               program="org.efaps.esjp.common.file.FileField"
+               method="getFieldValueUI"/>
+    </field>
   </definition>
 
-</ui-menu>
+</ui-form>

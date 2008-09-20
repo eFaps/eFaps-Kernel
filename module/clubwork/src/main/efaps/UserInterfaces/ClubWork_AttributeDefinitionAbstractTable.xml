@@ -23,22 +23,34 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" 
+<ui-table xmlns="http://www.efaps.org/xsd" 
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   
-  <uuid>41eadd74-0139-4542-be7a-f15906c2aa78</uuid>
+  <uuid>e42a44fa-5c96-46bc-921e-d12a0cbea80e</uuid>
   <file-application>eFaps-ClubWork</file-application>
   <file-revision>$Rev$</file-revision>
-  <description>Main menu to get into ClubWork</description>
+  
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>ClubWork_MyDesk</name>
-    <childs>
-      <child>ClubWork_MemberAbstractMyDesk</child>
-      <child>ClubWork_AffiliatedAbstractMyDesk</child>
-      <child>ClubWork_AttributeDefinitionMyDesk</child>
-    </childs>
+    <name>ClubWork_AttributeDefinitionAbstractTable</name>
+    <!-- fields -->
+    <field name="type">
+      <property name="Expression">Type</property>
+      <property name="Label">ClubWork_AttributeDefinitionAbstract/Type.Label</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    <field name="value">
+      <property name="Expression">Value</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Label">ClubWork_AttributeDefinitionAbstract/Value.Label</property>
+    </field>
+    <field name="buttonOpenInNewWindow">
+      <icon>eFapsActionNewWindow</icon>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Target">popup</property>
+      <property name="Width">15px</property>
+    </field>
   </definition>
 
-</ui-menu>
+</ui-table>

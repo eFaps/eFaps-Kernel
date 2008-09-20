@@ -59,6 +59,28 @@
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
+    <field name="imageGroup" character="Group">
+      <property name="Creatable">false</property>
+      <property name="GroupCount">2</property>
+    </field>
+    <field name="image4View">
+      <property name="Label">ClubWork_MemberAbstract/Image.Label</property>
+      <property name="Searchable">false</property>
+      <property name="Editable">false</property>
+      <property name="Creatable">false</property>
+      <property name="Viewable">true</property>
+      <trigger name="ClubWork_MemberAbstractForm/Image4View"
+               event="UI_FIELD_VALUE" 
+               program="org.efaps.esjp.common.file.ImageField"
+               method="getViewFieldValueUI"/>
+    </field>
+    <field name="imageLength">
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">ImageFileLength</property>
+      <property name="Required">false</property>
+      <property name="Searchable">true</property>
+    </field>
     <field name="createGroup" character="Group">
       <property name="Creatable">false</property>
       <property name="GroupCount">2</property>
@@ -105,6 +127,16 @@
       <property name="Label">ClubWork_MemberAbstractForm/EmailSet.Label</property>
       <property name="Searchable">true</property>
       <property name="Order">Description|Email</property>
+    </field>
+  <field name="affiliatedheader" character="Heading">
+      <property name="Level">1</property>
+      <property name="Label">Admin_User_Person/Affiliated.Heading</property>
+    </field>
+    <field name="affiliatedtable" character="Target">
+      <table>ClubWork_MemberAbstractTable</table>
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
+        <property name="Expand">ClubWork_MemberAbstract2AffiliatedAbstract\FromLink.ToLink</property>
+      </evaluate>
     </field>
   </definition>
 
