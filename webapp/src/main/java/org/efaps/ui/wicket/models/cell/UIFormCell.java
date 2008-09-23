@@ -52,13 +52,19 @@ public class UIFormCell extends UITableCell {
    */
   private final String name;
 
+  private final boolean hideLabel;
+
+  private final int rowSpan;
+
   public UIFormCell(final Field _field, final String _oid,
-                       final String _cellValue, final String _icon,
-                       final boolean _required, final String _label) {
+                    final String _cellValue, final String _icon,
+                    final boolean _required, final String _label) {
     super(_field, _oid, _cellValue, _icon);
     this.required = _required;
     this.cellLabel = DBProperties.getProperty(_label);
     this.name = _field.getName();
+    this.hideLabel = _field.isHideLabel();
+    this.rowSpan = _field.getRowSpan();
   }
 
   /**
@@ -85,8 +91,17 @@ public class UIFormCell extends UITableCell {
    * @return value of instance variable {@link #name}
    */
 
+  @Override
   public String getName() {
     return this.name;
+  }
+
+  public boolean isHideLabel() {
+    return this.hideLabel;
+  }
+
+  public int getRowSpan() {
+    return this.rowSpan;
   }
 
 }

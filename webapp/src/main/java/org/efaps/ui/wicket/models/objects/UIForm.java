@@ -139,11 +139,13 @@ public class UIForm extends AbstractUIObject {
 
       for (final Field field : form.getFields()) {
         if (field instanceof FieldGroup) {
-          final FieldGroup group = (FieldGroup) field;
-          if (getMaxGroupCount() < group.getGroupCount()) {
-            setMaxGroupCount(group.getGroupCount());
+          if (field.isCreatable()) {
+            final FieldGroup group = (FieldGroup) field;
+            if (getMaxGroupCount() < group.getGroupCount()) {
+              setMaxGroupCount(group.getGroupCount());
+            }
+            rowgroupcount = group.getGroupCount();
           }
-          rowgroupcount = group.getGroupCount();
         } else if (field instanceof FieldTable ){
 
         } else if (field instanceof FieldHeading && field.isCreatable()){
@@ -200,6 +202,7 @@ public class UIForm extends AbstractUIObject {
         createForm();
       } else {
         int rowgroupcount = 1;
+        int rowspan = 1;
         FormRow row = new FormRow();
         ListQuery query = null;
 
@@ -371,12 +374,20 @@ public class UIForm extends AbstractUIObject {
                   row.add(cell);
                 }
               }
+
+              if (field.getRowSpan() > 0){
+                rowspan = field.getRowSpan();
+              }
               rowgroupcount--;
               if (rowgroupcount < 1) {
                 rowgroupcount = 1;
                 if (row.getGroupCount() > 0) {
                   formelement.addRowModel(row);
                   row = new FormRow();
+                  if (rowspan > 1) {
+                    rowspan--;
+                    row.setRowSpan(true);
+                  }
                 }
               }
             }
@@ -453,8 +464,23 @@ public class UIForm extends AbstractUIObject {
 
     private final List<UIFormCell> values = new ArrayList<UIFormCell>();
 
+    private boolean rowSpan = false;
+
+
     public void add(final UIFormCell _cellmodel) {
       this.values.add(_cellmodel);
+    }
+
+    /**
+     * @param b
+     */
+    public void setRowSpan(final boolean _rowspan) {
+      this.rowSpan  = _rowspan;
+
+    }
+
+    public boolean isRowSpan() {
+      return this.rowSpan;
     }
 
     public List<UIFormCell> getValues() {

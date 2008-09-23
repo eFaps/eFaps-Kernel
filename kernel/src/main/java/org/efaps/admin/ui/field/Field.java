@@ -250,6 +250,16 @@ public class Field extends AbstractUserInterfaceObject {
   private boolean viewable = true;
 
   /**
+   * Should the Label been hiden.
+   */
+  private boolean hideLabel = false;
+
+  /**
+   * Should rows been spanned.
+   */
+  private int rowSpan = 0;
+
+  /**
    * Standart-Constructor
    */
   public Field() {
@@ -442,6 +452,8 @@ public class Field extends AbstractUserInterfaceObject {
       setFilterable("true".equals(_value));
     } else if ("Hidden".equals(_name)) {
       setHidden("true".equals(_value));
+    } else if ("HideLabel".equals(_name)) {
+      setHideLabel("true".equals(_value));
     } else if ("HRef".equals(_name)) {
       setReference(RequestHandler.replaceMacrosInUrl(_value));
     } else if ("Icon".equals(_name)) {
@@ -481,6 +493,8 @@ public class Field extends AbstractUserInterfaceObject {
       }
     } else if ("Rows".equals(_name)) {
       setRows(Integer.parseInt(_value));
+    } else if ("RowSpan".equals(_name)) {
+      setRowSpan(Integer.parseInt(_value));
     } else if ("Searchable".equals(_name)) {
       setSearchable("true".equals(_value));
     } else if ("ShowTypeIcon".equals(_name)) {
@@ -773,6 +787,23 @@ public class Field extends AbstractUserInterfaceObject {
   public boolean isHidden() {
     return this.hidden;
   }
+
+  public boolean isHideLabel() {
+    return this.hideLabel;
+  }
+
+  public void setHideLabel(final boolean _hideLabel) {
+    this.hideLabel = _hideLabel;
+  }
+
+  public int getRowSpan() {
+    return this.rowSpan;
+  }
+
+  public void setRowSpan(final int _rowSpan) {
+    this.rowSpan = _rowSpan;
+  }
+
 
   /**
    * This is the setter method for instance variable {@link #reference}.

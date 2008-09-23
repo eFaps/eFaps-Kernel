@@ -51,18 +51,22 @@ public class RowPanel extends Panel {
     add(cellRepeater);
 
     for (final UIFormCell cell : row.getValues()) {
+      if (!cell.isHideLabel()) {
+        final Label labelCell =
+            new Label(cellRepeater.newChildId(), cell.getCellLabel());
+        cellRepeater.add(labelCell);
 
-      final Label labelCell =
-          new Label(cellRepeater.newChildId(), cell.getCellLabel());
-      cellRepeater.add(labelCell);
-
-      if (cell.isRequired()) {
-        labelCell.add(new SimpleAttributeModifier("class",
-            "eFapsFormLabelRequired"));
-        labelCell.setOutputMarkupId(true);
-        _formPanel.addRequiredComponent(cell.getName(), labelCell);
-      } else {
-        labelCell.add(new SimpleAttributeModifier("class", "eFapsFormLabel"));
+        if (cell.isRequired()) {
+          labelCell.add(new SimpleAttributeModifier("class",
+              "eFapsFormLabelRequired"));
+          labelCell.setOutputMarkupId(true);
+          _formPanel.addRequiredComponent(cell.getName(), labelCell);
+        } else {
+          labelCell.add(new SimpleAttributeModifier("class", "eFapsFormLabel"));
+        }
+        if (cell.getRowSpan()>0) {
+          labelCell.add(new SimpleAttributeModifier ("rowspan", ((Integer)cell.getRowSpan()).toString()));
+        }
       }
       Panel valueCell;
       if (cell instanceof UIFormCellSet) {
@@ -73,9 +77,22 @@ public class RowPanel extends Panel {
               ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
                   .getPageMapName()));
       }
+      if (cell.getRowSpan()>0) {
+        valueCell.add(new SimpleAttributeModifier ("rowspan", ((Integer)cell.getRowSpan()).toString()));
+      }
 
-      final Integer colspan =
+
+      Integer colspan =
         2 * (_formmodel.getMaxGroupCount() - _model.getObject().getGroupCount()) + 1;
+
+      if (cell.isHideLabel()) {
+        colspan++;
+      }
+
+      if (row.isRowSpan()){
+        colspan = colspan - 2;
+
+      }
       valueCell.add(new SimpleAttributeModifier("colspan", colspan.toString()));
       cellRepeater.add(valueCell);
       valueCell.add(new SimpleAttributeModifier("class", "eFapsFormValue"));
