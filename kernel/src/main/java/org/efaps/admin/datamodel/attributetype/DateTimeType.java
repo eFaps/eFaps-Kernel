@@ -23,10 +23,14 @@ package org.efaps.admin.datamodel.attributetype;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
+import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
+import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
@@ -55,6 +59,19 @@ public class DateTimeType extends AbstractType {
   public void set(final Object _value) {
     if (_value instanceof Date) {
       setValue(new Timestamp((((Date) _value)).getTime()));
+    } else if (_value instanceof String) {
+      try {
+        final DateFormat format =
+          DateFormat.getDateTimeInstance(DateFormat.DEFAULT,
+              DateFormat.DEFAULT, Context.getThreadContext().getLocale());
+        setValue(new Timestamp((format.parse((String) _value)).getTime()));
+      } catch (final EFapsException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (final ParseException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
   }
 
@@ -103,7 +120,7 @@ public class DateTimeType extends AbstractType {
    * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
    */
   public Object get() {
-    return value;
+    return this.value;
   }
 
   @Override
