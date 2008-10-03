@@ -23,32 +23,20 @@
 
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-
-  <uuid>3cb43e1c-57c4-4b26-a0d7-799030d369c7</uuid>
+<ui-menu  xmlns="http://www.efaps.org/xsd" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+  
+  <uuid>73bf1ca1-955d-462f-8101-6ea94cdd0c45</uuid>
   <file-application>eFaps-ClubWork</file-application>
   <file-revision>$Rev$</file-revision>
-
+  
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>ClubWork_MemberAbstract_TypeTree</name>
-    <!-- targets -->
-    <target>
-      <menu>ClubWork_MemberAbstractForm_Menu</menu>
-      <form>ClubWork_MemberAbstractForm</form>        
-    </target>
-    <!-- type tree for -->
-    <type>ClubWork_MemberAbstract</type>
-    <!-- childs -->
+    <name>ClubWork_MemberAbstract_TypeTree_FeeMembership_Menu</name>
     <childs>
-      <child>ClubWork_MemberAbstract_TypeTree_Affiliated</child>
-      <child>ClubWork_MemberAbstract_TypeTree_FeeMembership</child>
+      <child>ClubWork_MemberAbstract_TypeTree_FeeMembership_Menu_Action</child>
     </childs>
-    <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
   </definition>
 
 </ui-menu>

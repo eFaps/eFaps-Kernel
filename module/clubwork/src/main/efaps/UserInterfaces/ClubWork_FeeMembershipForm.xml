@@ -27,60 +27,28 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>c6b488bc-8357-4c69-976e-5baade7e2c5f</uuid>
+  <uuid>5368104b-2d4e-4510-ae60-021c0f1cdc15</uuid>
   <file-application>eFaps-ClubWork</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>ClubWork_MemberAbstractForm</name>
+    <name>ClubWork_FeeMembershipForm</name>
     <!-- fields -->
-    <field name="nameGroup" character="Group">
-      <property name="Creatable">false</property>
-      <property name="GroupCount">2</property>
-    </field>
-    <field name="name">
+    <field name="description">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>
       <property name="Editable">true</property>
-      <property name="Expression">Name</property>
+      <property name="Expression">Description</property>
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
-    <field name="image4View">
-      <property name="HideLabel">true</property>
-      <property name="RowSpan">3</property>
-      <property name="Label">ClubWork_MemberAbstract/Image.Label</property>
-      <property name="Searchable">false</property>
-      <property name="Editable">false</property>
-      <property name="Creatable">false</property>
-      <property name="Viewable">true</property>
-      <trigger name="ClubWork_MemberAbstractForm/Image4View"
-               event="UI_FIELD_VALUE" 
-               program="org.efaps.esjp.common.file.ImageField"
-               method="getViewFieldValueUI"/>
-    </field>
-    <field name="forename">
+    <field name="date">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>
       <property name="Editable">true</property>
-      <property name="Expression">Forename</property>
+      <property name="Expression">Date</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
-    </field>
-    <field name="number">
-      <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
-      <property name="Expression">Number</property>
-      <property name="Required">true</property>
-      <property name="Searchable">true</property>
-    </field>
-    <field name="imageLength">
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
-      <property name="Expression">ImageFileLength</property>
-      <property name="Required">false</property>
       <property name="Searchable">true</property>
     </field>
     <field name="createGroup" character="Group">
@@ -121,25 +89,7 @@
       <property name="Expression">Modified</property>
       <property name="Searchable">true</property>
     </field>
-    <field name="EmailSet" character="Set">
-      <property name="Columns">40</property>
-      <property name="Creatable">false</property>
-      <property name="Editable">true</property>
-      <property name="Expression">EmailSet</property>
-      <property name="Label">ClubWork_MemberAbstractForm/EmailSet.Label</property>
-      <property name="Searchable">true</property>
-      <property name="Order">Description|Email</property>
-    </field>
-  <field name="affiliatedheader" character="Heading">
-      <property name="Level">1</property>
-      <property name="Label">Admin_User_Person/Affiliated.Heading</property>
-    </field>
-    <field name="affiliatedtable" character="Target">
-      <table>ClubWork_MemberAbstractTable</table>
-      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
-        <property name="Expand">ClubWork_MemberAbstract2AffiliatedAbstract\FromLink.ToLink</property>
-      </evaluate>
-    </field>
+    
   </definition>
 
 </ui-form>
