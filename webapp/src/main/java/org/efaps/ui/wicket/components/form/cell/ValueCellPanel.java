@@ -20,16 +20,22 @@
 
 package org.efaps.ui.wicket.components.form.cell;
 
+import java.util.Date;
+
 import org.apache.wicket.PageMap;
+import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
+import org.efaps.ui.wicket.components.form.DateFieldWithPicker;
+import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
@@ -43,7 +49,7 @@ import org.efaps.ui.wicket.models.cell.UIFormCell;
 public class ValueCellPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
-
+  DateFieldWithPicker dateTextField = null;
   public ValueCellPanel(final String _wicketId, final IModel<UIFormCell> _model,
                         final boolean _ajaxLink) {
     super(_wicketId, _model);
@@ -56,8 +62,17 @@ public class ValueCellPanel extends Panel {
       } else {
         this.add(new StaticImageComponent("icon", uiFormCell.getIcon()));
       }
+      if ("DateTime".equals(uiFormCell.getTypeName())) {
+        this.dateTextField = new DateFieldWithPicker("label",
+            new Model<Date>(new Date()),
+            new StyleDateConverter(false),
+            uiFormCell.getName());
 
-      this.add(new LabelComponent("label", new Model<String>(uiFormCell.getCellValue())));
+        this.add(this.dateTextField);
+
+      } else {
+        this.add(new LabelComponent("label", new Model<String>(uiFormCell.getCellValue())));
+      }
       this.add(new WebMarkupContainer("link").setVisible(false));
 
     } else {
@@ -87,5 +102,13 @@ public class ValueCellPanel extends Panel {
 
   }
 
+  @Override
+  protected void onAfterRender() {
+    super.onAfterRender();
+    if (this.dateTextField!=null) {
+      final FormPanel formpanel = this.findParent(FormPanel.class);
+      formpanel.addDateComponent(this.dateTextField);
+    }
+  }
 
 }

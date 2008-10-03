@@ -31,6 +31,7 @@ import org.apache.wicket.authorization.IAuthorizationStrategy;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
+
 import org.efaps.ui.wicket.pages.login.LoginPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 
@@ -78,7 +79,7 @@ public class EFapsApplication extends WebApplication {
     getMarkupSettings().setStripComments(true);
     getMarkupSettings().setCompressWhitespace(true);
     getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
-    // getDebugSettings().setAjaxDebugModeEnabled(false);
+    getDebugSettings().setAjaxDebugModeEnabled(false);
     super.getSecuritySettings().setAuthorizationStrategy(
         new EFapsFormBasedAuthorizationStartegy());
   }

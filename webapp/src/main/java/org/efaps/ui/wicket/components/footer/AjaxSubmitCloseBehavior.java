@@ -42,6 +42,7 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.form.DateFieldWithPicker;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
@@ -96,6 +97,8 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
         this.getComponent().getRequestCycle().getRequest().getParameters(
             "selectedRow");
     others.put("selectedRow", other);
+
+    convertDateFieldValues();
     if (checkForRequired(_target) && (validateForm(_target))) {
 
       if (this.uiObject instanceof UIForm
@@ -171,6 +174,23 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
     }
   }
 
+  /**
+   *
+   */
+  private void convertDateFieldValues() {
+    for (final DateFieldWithPicker datepicker : getFormPanel().getDateComponents()) {
+      final Map<String, String[]> map =
+        this.getComponent().getRequestCycle().getRequest().getParameterMap();
+
+      if (map.containsKey(datepicker.getInputName())) {
+        final String[] value = map.get(datepicker.getInputName());
+
+        map.put(datepicker.getInputName(),new String[]{datepicker.getDateAsString(value[0])});
+      }
+    }
+
+  }
+
   private void doFileUpload(final AjaxRequestTarget _target) {
     final StringBuilder script = new StringBuilder();
     script.append("var f=document.getElementById('").append(
@@ -229,7 +249,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
   }
 
   /**
-   * executes the Validation-Events related to the CommandAbstract wich called
+   * executes the Validation-Events related to the CommandAbstract which called
    * this Form
    *
    * @param _target
@@ -269,26 +289,9 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
       return true;
     }
 
-    final Iterator<?> iterator = this.form.iterator();
-    FormPanel container = null;
-    while (iterator.hasNext()) {
-      final Object object = iterator.next();
-      if (object instanceof WebMarkupContainer) {
-        final Iterator<?> iterator2 = ((WebMarkupContainer) object).iterator();
-        while (iterator2.hasNext()) {
-          final Object object2 = iterator2.next();
-          if (object2 instanceof FormPanel) {
-            container = (FormPanel) object2;
-            break;
-          }
-        }
-        break;
-      }
-    }
-
     final Map<?, ?> map =
         this.getComponent().getRequestCycle().getRequest().getParameterMap();
-    for (final Entry<String, Label> entry : container.getRequiredComponents()
+    for (final Entry<String, Label> entry : getFormPanel().getRequiredComponents()
         .entrySet()) {
 
       final String[] values = (String[]) map.get(entry.getKey());
@@ -303,6 +306,27 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
     }
     if (!ret) {
       showDialog(_target, "MandatoryDialog");
+    }
+    return ret;
+  }
+
+
+  private FormPanel getFormPanel() {
+    FormPanel ret = null;
+    final Iterator<?> iterator = this.form.iterator();
+    while (iterator.hasNext()) {
+      final Object object = iterator.next();
+      if (object instanceof WebMarkupContainer) {
+        final Iterator<?> iterator2 = ((WebMarkupContainer) object).iterator();
+        while (iterator2.hasNext()) {
+          final Object object2 = iterator2.next();
+          if (object2 instanceof FormPanel) {
+            ret = (FormPanel) object2;
+            break;
+          }
+        }
+        break;
+      }
     }
     return ret;
   }

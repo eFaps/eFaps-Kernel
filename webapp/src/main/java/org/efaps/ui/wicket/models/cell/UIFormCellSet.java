@@ -55,7 +55,7 @@ public class UIFormCellSet extends UIFormCell{
   public UIFormCellSet(final Field _field, final String _oid,
       final String value, final String _icon, final boolean _required,
       final String _label, final boolean _edit) {
-    super(_field, _oid, value, _icon, _required, _label);
+    super(_field, _oid, value, _icon, _required, _label,"");
     this.editMode = _edit;
   }
 

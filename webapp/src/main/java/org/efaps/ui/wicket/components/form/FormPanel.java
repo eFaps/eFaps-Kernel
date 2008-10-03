@@ -21,7 +21,9 @@
 package org.efaps.ui.wicket.components.form;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.basic.Label;
@@ -57,6 +59,9 @@ public class FormPanel extends Panel {
 
   private final Map<String, Label> requiredComponents =
       new HashMap<String, Label>();
+
+  private final Set<DateFieldWithPicker> dateComponents
+                                      = new HashSet<DateFieldWithPicker>();
 
   public FormPanel(final String _wicketId, final Page _page,
                    final IModel<UIForm> _model,
@@ -97,6 +102,14 @@ public class FormPanel extends Panel {
 
   public void addRequiredComponent(final String _name, final Label _label) {
     this.requiredComponents.put(_name, _label);
+  }
+
+  public void addDateComponent(final DateFieldWithPicker _datePicker) {
+    this.dateComponents.add(_datePicker);
+  }
+
+  public Set<DateFieldWithPicker> getDateComponents() {
+    return this.dateComponents;
   }
 
 }

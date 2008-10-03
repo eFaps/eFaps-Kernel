@@ -56,15 +56,25 @@ public class UIFormCell extends UITableCell {
 
   private final int rowSpan;
 
+  private final String typeName;
+
+
+
   public UIFormCell(final Field _field, final String _oid,
                     final String _cellValue, final String _icon,
-                    final boolean _required, final String _label) {
+                    final boolean _required, final String _label,
+                    final String _typeName) {
     super(_field, _oid, _cellValue, _icon);
     this.required = _required;
     this.cellLabel = DBProperties.getProperty(_label);
     this.name = _field.getName();
     this.hideLabel = _field.isHideLabel();
     this.rowSpan = _field.getRowSpan();
+    this.typeName = _typeName;
+  }
+
+  public String getTypeName() {
+    return this.typeName;
   }
 
   /**
