@@ -278,6 +278,7 @@
             <xsd:enumeration value="Boolean" />
             <xsd:enumeration value="Created" />
             <xsd:enumeration value="CreatorLink" />
+            <xsd:enumeration value="Date"></xsd:enumeration>
             <xsd:enumeration value="DateTime"></xsd:enumeration>
             <xsd:enumeration value="Integer" />
             <xsd:enumeration value="Link" />
@@ -288,7 +289,10 @@
             <xsd:enumeration value="OID" />
             <xsd:enumeration value="Password"></xsd:enumeration>
             <xsd:enumeration value="PersonLink"></xsd:enumeration>
+            <xsd:enumeration value="PolicyLink"></xsd:enumeration>
+            <xsd:enumeration value="Real"></xsd:enumeration>
             <xsd:enumeration value="String" />
+            <xsd:enumeration value="Time"></xsd:enumeration>
             <xsd:enumeration value="Type" />
           </xsd:restriction>
         </xsd:simpleType>
