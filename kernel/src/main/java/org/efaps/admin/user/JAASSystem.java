@@ -293,21 +293,21 @@ public class JAASSystem extends AbstractAdminObject {
                 getMethod(system.personJAASPrincipleClass,
                     personMethodFirstName, "person first name", name, id);
             if (method != null) {
-              system.personMethodAttributes.put(Person.AttrName.FirstName,
+              system.personMethodAttributes.put(Person.AttrName.FIRSTNAME,
                   method);
             }
             method =
                 getMethod(system.personJAASPrincipleClass,
                     personMethodLastName, "person last name", name, id);
             if (method != null) {
-              system.personMethodAttributes.put(Person.AttrName.LastName,
+              system.personMethodAttributes.put(Person.AttrName.LASTNAME,
                   method);
             }
             method =
                 getMethod(system.personJAASPrincipleClass, personMethodEmail,
                     "person email", name, id);
             if (method != null) {
-              system.personMethodAttributes.put(Person.AttrName.Email, method);
+          //    system.personMethodAttributes.put(Person.AttrName.Email, method);
             }
             if ((roleClassName != null) && (roleClassName.trim().length() > 0)) {
               system.roleJAASPrincipleClass =
@@ -332,7 +332,7 @@ public class JAASSystem extends AbstractAdminObject {
 
               cache.add(system);
             }
-          } catch (ClassNotFoundException e) {
+          } catch (final ClassNotFoundException e) {
             LOG.error("could not get a class for JAAS System '"
                 + name
                 + "' (id = "
@@ -351,16 +351,16 @@ public class JAASSystem extends AbstractAdminObject {
 
       con.commit();
 
-    } catch (SQLException e) {
+    } catch (final SQLException e) {
       throw new CacheReloadException("could not read roles", e);
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       throw new CacheReloadException("could not read roles", e);
     }
     finally {
       if ((con != null) && con.isOpened()) {
         try {
           con.abort();
-        } catch (EFapsException e) {
+        } catch (final EFapsException e) {
           throw new CacheReloadException("could not read roles", e);
         }
       }
@@ -394,7 +394,7 @@ public class JAASSystem extends AbstractAdminObject {
     if ((_method != null) && (_method.trim().length() > 0)) {
       try {
         ret = _class.getMethod(_method.trim(), new Class[] {});
-      } catch (NoSuchMethodException e) {
+      } catch (final NoSuchMethodException e) {
         LOG.error("could not get a "
             + _type
             + " method for JAAS System '"
@@ -402,7 +402,7 @@ public class JAASSystem extends AbstractAdminObject {
             + "' (id = "
             + _jaasId
             + ")", e);
-      } catch (SecurityException e) {
+      } catch (final SecurityException e) {
         LOG.error("could not get a "
             + _type
             + " method for JAAS System '"
@@ -492,7 +492,7 @@ public class JAASSystem extends AbstractAdminObject {
      */
     public Set<JAASSystem> getAllJAASSystems() {
       final Set<JAASSystem> ret = new HashSet<JAASSystem>();
-      for (Map.Entry<Long, JAASSystem> entry : getCache4Id().entrySet()) {
+      for (final Map.Entry<Long, JAASSystem> entry : getCache4Id().entrySet()) {
         ret.add(entry.getValue());
       }
       return ret;
