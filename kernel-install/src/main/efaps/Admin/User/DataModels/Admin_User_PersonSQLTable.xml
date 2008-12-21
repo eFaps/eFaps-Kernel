@@ -42,7 +42,9 @@
       <!-- columns -->
       <column name="FIRSTNAME"  type="STRING_SHORT" length="128" not-null="true"/>
       <column name="LASTNAME"   type="STRING_SHORT" length="128" not-null="true"/>
-      <column name="EMAIL"      type="STRING_SHORT" length="128" />
+      <column name="TIMZONE"    type="STRING_SHORT" length="128" />
+      <column name="CHRONOLOGY" type="STRING_SHORT" length="128" />
+      <column name="LOCALE"     type="INTEGER"/>
       <column name="PASSWORD"   type="STRING_SHORT" length="128"/>
       <column name="LASTLOGIN"  type="DATETIME"/>
       <column name="LOGINTRY"   type="DATETIME"/>
@@ -64,13 +66,17 @@
                  T_USERABSTRACT.STATUS,
                  T_USERPERSON.FIRSTNAME,
                  T_USERPERSON.LASTNAME,
-                 T_USERPERSON.EMAIL,
+                 T_USERPERSON.TIMZONE,
+                 T_USERPERSON.CHRONOLOGY,
+                 T_ADLANG.LANG,
                  T_USERPERSON.PASSWORD,
                  T_USERPERSON.LOGINTRY,
                  T_USERPERSON.LOGINTRIES
              from T_USERABSTRACT
              join T_USERPERSON
                on T_USERABSTRACT.ID=T_USERPERSON.ID
+             left join T_ADLANG
+               on T_ADLANG.ID=T_USERPERSON.ID  
       </sql>
     </database>
   </definition>
@@ -84,7 +90,9 @@
       <!-- columns -->
       <column name="FIRSTNAME"  type="STRING_SHORT" length="128" not-null="true"/>
       <column name="LASTNAME"   type="STRING_SHORT" length="128" not-null="true"/>
-      <column name="EMAIL"      type="STRING_SHORT" length="128" />
+      <column name="TIMZONE"    type="STRING_SHORT" length="128" />
+      <column name="CHRONOLOGY" type="STRING_SHORT" length="128" />
+      <column name="LOCALE"     type="INTEGER"/>
       <column name="PASSWORD"   type="STRING_SHORT" length="128"/>
       <column name="LASTLOGIN"  type="DATETIME"/>
       <column name="LOGINTRY"   type="DATETIME"/>
