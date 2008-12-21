@@ -23,14 +23,15 @@ package org.efaps.ui.servlet;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +95,7 @@ public class StaticContentServlet extends HttpServlet {
    * @see #PARAM_OID
    */
   @Override
-  protected void doGet(HttpServletRequest _req, HttpServletResponse _res)
+  protected void doGet(final HttpServletRequest _req, final HttpServletResponse _res)
                                                                          throws ServletException,
                                                                          IOException {
     String contentName = _req.getRequestURI();
@@ -170,7 +171,7 @@ public class StaticContentServlet extends HttpServlet {
     }
   }
 
-  private boolean supportsCompression(HttpServletRequest _req) {
+  private boolean supportsCompression(final HttpServletRequest _req) {
     boolean ret = false;
     final String accencoding = _req.getHeader("Accept-Encoding");
     if (accencoding != null) {
@@ -208,9 +209,9 @@ public class StaticContentServlet extends HttpServlet {
           final String file = (String) query.get("FileName");
           final String oid = (String) query.get("OID");
           final Long filelength = (Long) query.get("FileLength");
-          final Date time = (Date) query.get("Modified");
-          cache.add(new ContentMapper(name, file, oid, filelength, time
-              .getTime()));
+          final DateTime datetime = (DateTime) query.get("Modified");
+          cache.add(new ContentMapper(name, file, oid, filelength,
+                                      datetime.getMillis()));
         }
         query.close();
       }

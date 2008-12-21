@@ -23,13 +23,16 @@ package org.efaps.ui.servlet;
 import static org.efaps.admin.EFapsClassNames.IMAGE;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkout;
@@ -39,8 +42,6 @@ import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.CacheReloadInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The servlet checks out user interface images depending on the
@@ -162,9 +163,9 @@ public class ImageServlet extends HttpServlet
           final String file = (String) query.get("FileName");
           final String oid = (String) query.get("OID");
           final Long filelength = (Long) query.get("FileLength");
-          final Date time = (Date) query.get("Modified");
-          cache
-              .add(new ImageMapper(name, file, oid, filelength, time.getTime()));
+          final DateTime time = (DateTime) query.get("Modified");
+          cache.add(new ImageMapper(name, file, oid, filelength,
+                                    time.getMillis()));
         }
         query.close();
       }

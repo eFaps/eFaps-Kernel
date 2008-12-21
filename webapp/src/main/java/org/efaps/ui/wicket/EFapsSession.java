@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.wicket.Component;
@@ -41,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.user.UserAttributesSet;
-import org.efaps.admin.user.UserAttributesSet.UserAttributesDefinition;
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
@@ -392,16 +390,8 @@ public class EFapsSession extends WebSession {
 
           Context.begin(this.userName, super.getLocale(),
               this.sessionAttributes, parameters, fileParams);
-
-          if (Context.getThreadContext().containsUserAttribute(
-              UserAttributesDefinition.LOCALE.name)) {
-            final Locale locale =
-                new Locale(Context.getThreadContext().getUserAttribute(
-                    UserAttributesDefinition.LOCALE.name));
             // set the locale in the context and in the session
-            Context.getThreadContext().setLocale(locale);
-            setLocale(locale);
-          }
+            setLocale(Context.getThreadContext().getLocale());
 
         }
       } catch (final EFapsException e) {

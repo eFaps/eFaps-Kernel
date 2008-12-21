@@ -62,7 +62,7 @@ public class ValueCellPanel extends Panel {
       } else {
         this.add(new StaticImageComponent("icon", uiFormCell.getIcon()));
       }
-      if ("DateTime".equals(uiFormCell.getTypeName())) {
+      if ("Date".equals(uiFormCell.getTypeName())) {
         this.dateTextField = new DateFieldWithPicker("label",
             new Model<Date>(new Date()),
             new StyleDateConverter(false),

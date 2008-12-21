@@ -31,6 +31,9 @@ import java.util.UUID;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
@@ -49,8 +52,6 @@ import org.efaps.db.ListQuery;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author jmox
@@ -73,7 +74,7 @@ public class UITable extends AbstractUIObject {
 
     public String value;
 
-    private UserAttributeKey(String _value) {
+    private UserAttributeKey(final String _value) {
       this.value = _value;
     }
   }
@@ -267,9 +268,8 @@ public class UITable extends AbstractUIObject {
    * @param _instMapper
    * @param _query
    */
-  private void executeRowResult(
-                                final Map<Instance, List<Instance>> _instMapper,
-                                final ListQuery _query, List<Field> _fields) {
+  private void executeRowResult(final Map<Instance, List<Instance>> _instMapper,
+                                final ListQuery _query, final List<Field> _fields) {
     try {
       while (_query.next()) {
 
@@ -277,6 +277,7 @@ public class UITable extends AbstractUIObject {
         final Instance instance = _query.getInstance();
         final StringBuilder oids = new StringBuilder();
         boolean first = true;
+        if(_instMapper.get(instance)!=null){
         for (final Instance oneInstance : _instMapper.get(instance)) {
           if (first) {
             first = false;
@@ -284,7 +285,7 @@ public class UITable extends AbstractUIObject {
             oids.append("|");
           }
           oids.append(oneInstance.getOid());
-        }
+        }}
         final UIRow row = new UIRow(oids.toString());
         Attribute attr = null;
 
@@ -504,7 +505,7 @@ public class UITable extends AbstractUIObject {
    * @param tableId
    *                the tableId to set
    */
-  public void setTableId(int tableId) {
+  public void setTableId(final int tableId) {
     this.tableId = tableId;
   }
 
@@ -732,7 +733,7 @@ public class UITable extends AbstractUIObject {
    * @param showCheckBoxes
    *                the showCheckBoxes to set
    */
-  public void setShowCheckBoxes(boolean showCheckBoxes) {
+  public void setShowCheckBoxes(final boolean showCheckBoxes) {
     this.showCheckBoxes = showCheckBoxes;
   }
 
@@ -791,7 +792,7 @@ public class UITable extends AbstractUIObject {
    * @param tableUUID
    *                the tableUUID to set
    */
-  protected void setTableUUID(UUID tableUUID) {
+  protected void setTableUUID(final UUID tableUUID) {
     this.tableUUID = tableUUID;
   }
 
@@ -813,7 +814,7 @@ public class UITable extends AbstractUIObject {
       final int index = sortKey;
       Collections.sort(this.values, new Comparator<UIRow>() {
 
-        public int compare(UIRow _rowModel1, UIRow _rowModel2) {
+        public int compare(final UIRow _rowModel1, final UIRow _rowModel2) {
 
           final String value1 =
               (_rowModel1.getValues().get(index)).getCellValue();
