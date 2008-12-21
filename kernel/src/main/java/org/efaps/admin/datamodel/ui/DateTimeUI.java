@@ -20,8 +20,9 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import java.text.DateFormat;
-import java.util.Date;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
@@ -32,21 +33,28 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class DateTimeUI extends AbstractUI {
+
+
+  /**
+   * @param _fieldValue  Feildvalue the view must be evaluated for
+   * @throws EFapsException on error
+   * @return STring with the value for the field
+   */
   @Override
-  public String getViewHtml(final FieldValue _fieldValue) throws EFapsException {
+  public String getViewHtml(final FieldValue _fieldValue)
+        throws EFapsException {
     String ret = null;
 
-    if (_fieldValue.getValue() instanceof Date) {
-      final Date value = (Date) _fieldValue.getValue();
-
-      if (value != null) {
-        final DateFormat format =
-            DateFormat.getDateTimeInstance(DateFormat.DEFAULT,
-                DateFormat.DEFAULT, Context.getThreadContext().getLocale());
-        ret = format.format(value);
+    if (_fieldValue.getValue() instanceof DateTime) {
+      final DateTime datetime = (DateTime) _fieldValue.getValue();
+      if (datetime != null) {
+        final DateTimeFormatter formatter = DateTimeFormat.mediumDateTime();
+        //format the Date with the Chronology from the user context
+        ret = datetime.withChronology(Context.getThreadContext()
+                                      .getChronology()).toString(formatter);
       }
     } else {
-      // throw new EFapsException(null, ret, null);
+      //TODO throw new EFapsException
     }
     return ret;
   }

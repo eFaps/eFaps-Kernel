@@ -23,14 +23,18 @@ package org.efaps.admin.datamodel.attributetype;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
-import org.efaps.db.Context;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.chrono.ISOChronology;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+
+import org.efaps.admin.common.SystemAttribute;
 import org.efaps.db.query.CachedResult;
-import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
@@ -39,38 +43,56 @@ import org.efaps.util.EFapsException;
 public class DateTimeType extends AbstractType {
 
   /**
+   * @see #getValue
+   * @see #setValue
+   */
+  private DateTime value = null;
+
+  /**
    * @todo test that only one value is given for indexes
    */
   @Override
   public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
-    setValue(_rs.getTimestamp(_indexes.get(0).intValue()));
+    setValue(_rs.getDateTime(_indexes.get(0).intValue()));
     return getValue();
   }
 
   // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * @param _context
-   *          context for this request
+   * The value that can be set is a Date, a DateTime or a String
+   * yyyy-MM-dd'T'HH:mm:ss.SSSZZ. It will be normalized to ISO Calender with
+   * TimeZone from SystemAttribute Admin_Common_DataBaseTimeZone. In case that
+   * the SystemAttribute is missing UTC will be used.
+   *
+   *
    * @param _value
    *          new value to set
    */
   @Override
   public void set(final Object _value) {
-    if (_value instanceof Date) {
-      setValue(new Timestamp((((Date) _value)).getTime()));
-    } else if (_value instanceof String) {
-      try {
-        final DateFormat format =
-          DateFormat.getDateTimeInstance(DateFormat.DEFAULT,
-              DateFormat.DEFAULT, Context.getThreadContext().getLocale());
-        setValue(new Timestamp((format.parse((String) _value)).getTime()));
-      } catch (final EFapsException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (final ParseException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+    if (_value != null) {
+      // reads the Value from "Admin_Common_DataBaseTimeZone"
+      final SystemAttribute attributeTZ = SystemAttribute.get(
+                  UUID.fromString("4ac2983c-eeda-4420-aba9-f06f76a74a88"));
+      final String timezoneID = attributeTZ == null ? null
+                                                 : attributeTZ.getStringValue();
+      final ISOChronology chron;
+      if (timezoneID != null) {
+        final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
+        chron = ISOChronology.getInstance(timezone);
+      } else {
+        chron = ISOChronology.getInstanceUTC();
+      }
+      if (_value instanceof Date) {
+        final DateTime datetime = new DateTime(_value);
+        this.value = datetime.withChronology(chron);
+      } else if (_value instanceof DateTime) {
+        this.value = ((DateTime) _value)
+                        .withChronology(chron);
+      } else if (_value instanceof String) {
+        final DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
+        this.value = fmt.parseDateTime((String) _value);
       }
     }
   }
@@ -78,18 +100,19 @@ public class DateTimeType extends AbstractType {
   // ///////////////////////////////////////////////////////////////////////////
 
   // ///////////////////////////////////////////////////////////////////////////
-
+  /**
+   * Method to update the DateTime Object.
+   * @param _object   not used in this case
+   * @param _stmt     prepared Statement that will be used
+   * @param _index    indexs
+   * @throws SQLException if prepared Statement is extended with invalid value
+   */
   @Override
   public void update(final Object _object, final PreparedStatement _stmt,
-      final List<Integer> _index) throws SQLException {
-    _stmt.setTimestamp(_index.get(0), getValue());
+                     final List<Integer> _index) throws SQLException {
+    _stmt.setTimestamp(_index.get(0), new Timestamp(this.value.getMillis()));
   }
 
-  /**
-   * @see #getValue
-   * @see #setValue
-   */
-  private Timestamp value = null;
 
   // ///////////////////////////////////////////////////////////////////////////
 
@@ -101,7 +124,7 @@ public class DateTimeType extends AbstractType {
    * @see #value
    * @see #getValue
    */
-  public void setValue(final Timestamp _value) {
+  public final void setValue(final DateTime _value) {
     this.value = _value;
   }
 
@@ -112,9 +135,10 @@ public class DateTimeType extends AbstractType {
    * @see #value
    * @see #setValue
    */
-  public Timestamp getValue() {
+  public DateTime getValue() {
     return this.value;
   }
+
 
   /* (non-Javadoc)
    * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()

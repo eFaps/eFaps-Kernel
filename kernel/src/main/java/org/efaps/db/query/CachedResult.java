@@ -30,6 +30,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.chrono.ISOChronology;
+
+import org.efaps.admin.common.SystemAttribute;
 
 /**
  * The class is used to cache all results from a eFaps search query. Multiple
@@ -325,19 +332,34 @@ public class CachedResult {
   }
 
   /**
+   * Get an DateTime instance from an index position. The DateTime will be
+   * always with the ISO8601 Calendar and the Timezone as defined ins system
+   * attribute Admin_Common_DataBaseTimeZone.
+   *
    * @param _index
    *          column index
    * @return time stamp representation for the object on given column index for
    *         time stamp and date instances, otherwise <code>null</code>
    * @see #currentRow
    */
-  public Timestamp getTimestamp(final int _index) {
-    Timestamp ret = null;
+  public DateTime getDateTime(final int _index) {
+    DateTime ret = null;
     final Object obj = getObject(_index);
-    if (obj instanceof Timestamp) {
-      ret = (Timestamp) obj;
-    } else if (obj instanceof Date) {
-      ret = new Timestamp(((Date) obj).getTime());
+    if (obj instanceof Timestamp || obj instanceof Date) {
+   // reads the Value from "Admin_Common_DataBaseTimeZone"
+      final SystemAttribute attributeTZ = SystemAttribute.get(
+                  UUID.fromString("4ac2983c-eeda-4420-aba9-f06f76a74a88"));
+      final String timezoneID = attributeTZ == null ? null
+                                                 : attributeTZ.getStringValue();
+      final ISOChronology chron;
+      if (timezoneID != null) {
+        final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
+        chron = ISOChronology.getInstance(timezone);
+      } else {
+        chron = ISOChronology.getInstanceUTC();
+      }
+
+      ret = new DateTime(obj, chron);
     }
     return ret;
   }
