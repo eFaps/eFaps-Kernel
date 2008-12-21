@@ -63,8 +63,7 @@ public class UserAttributesSet {
    */
   public enum UserAttributesDefinition {
 
-    ATTRIBUTE("Admin_User_Attribute", "Key", "Value"),
-    LOCALE("Admin_User_Attribute2Locale", null, "Locale.Language");
+    ATTRIBUTE("Admin_User_Attribute", "Key", "Value");
 
     /**
      * stores the name of the Type

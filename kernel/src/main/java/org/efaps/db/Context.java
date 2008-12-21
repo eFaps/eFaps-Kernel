@@ -43,6 +43,11 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import org.joda.time.Chronology;
+import org.joda.time.DateTimeZone;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
@@ -54,8 +59,6 @@ import org.efaps.db.transaction.StoreResource;
 import org.efaps.db.transaction.VFSStoreResource;
 import org.efaps.init.INamingBinds;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -91,13 +94,13 @@ public class Context implements INamingBinds
 
   static  {
     try {
-      InitialContext initCtx = new InitialContext();
-      javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
+      final InitialContext initCtx = new InitialContext();
+      final javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
 
       DBTYPE = (AbstractDatabase) envCtx.lookup(RESOURCE_DBTYPE);
       DATASOURCE = (DataSource) envCtx.lookup(RESOURCE_DATASOURCE);
       TRANSMANAG = (TransactionManager) envCtx.lookup(RESOURCE_TRANSMANAG);
-    } catch (NamingException e) {
+    } catch (final NamingException e) {
       e.printStackTrace();
       throw new Error(e);
     }
@@ -151,16 +154,6 @@ public class Context implements INamingBinds
   private Person person = null;
 
   /**
-   * The instance variable stores the locale object defined by the user
-   * interface (locale object of the current logged in eFaps user).
-   * The information is needed to create localised information within eFaps.
-   *
-   * @see #getLocale
-   * @see #setLocale(Locale)
-   */
-  private  Locale locale;
-
-  /**
    * The parameters used to open a new thread context are stored in this
    * instance variable (e.g. the request parameters from a http servlet are
    * stored in this variable).
@@ -200,6 +193,12 @@ public class Context implements INamingBinds
    */
   private Map<String, Object> sessionAttributes = new HashMap<String, Object>();
 
+  private DateTimeZone timezone;
+
+  private Locale locale;
+
+  private Chronology chronology;
+
   /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
@@ -210,18 +209,14 @@ public class Context implements INamingBinds
    * @see #locale
    */
   private Context(final Transaction _transaction,
-                  final Person _person,
                   final Locale _locale,
                   final Map<String, Object> _sessionAttributes,
                   final Map<String, String[]> _parameters,
                   final Map<String, FileParameter> _fileParameters)
                                                       throws EFapsException  {
-    if (LOG.isDebugEnabled())  {
-      LOG.debug("create new context for " + _person);
-    }
+
     this.transaction = _transaction;
-    this.person = _person;
-    this.locale = _locale;
+
     this.parameters = (_parameters == null)
                               ? new HashMap<String, String[]>()
                               : _parameters;
@@ -234,7 +229,7 @@ public class Context implements INamingBinds
 try  {
     setConnection(DATASOURCE.getConnection());
   getConnection().setAutoCommit(true);
-} catch (SQLException e)  {
+} catch (final SQLException e)  {
   LOG.error("could not get a sql connection", e);
 // TODO: LOG + Exception
 e.printStackTrace();
@@ -253,7 +248,7 @@ e.printStackTrace();
     }
     try  {
       getConnection().close();
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
     }
   }
 
@@ -273,7 +268,7 @@ e.printStackTrace();
   public boolean allConnectionClosed()  {
     boolean closed = true;
 
-    for (ConnectionResource con : this.connectionStore)  {
+    for (final ConnectionResource con : this.connectionStore)  {
       if (con.isOpened())  {
         closed = false;
         break;
@@ -281,7 +276,7 @@ e.printStackTrace();
     }
 
     if (closed)  {
-      for (StoreResource store : this.storeStore)  {
+      for (final StoreResource store : this.storeStore)  {
         if (store.isOpened())  {
           closed = false;
           break;
@@ -305,20 +300,20 @@ e.printStackTrace();
     }
     try  {
       getConnection().close();
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
     }
     setConnection(null);
     if ((THREADCONTEXT.get() != null) && (THREADCONTEXT.get() == this))  {
       THREADCONTEXT.set(null);
     }
     // check if all JDBC connection are close...
-    for (ConnectionResource con : this.connectionStore)  {
+    for (final ConnectionResource con : this.connectionStore)  {
       try  {
         if ((con.getConnection() != null) && !con.getConnection().isClosed())  {
           con.getConnection().close();
           LOG.error("connection was not closed!");
         }
-      } catch (SQLException e)  {
+      } catch (final SQLException e)  {
         LOG.error("QLException is thrown while trying to get close status of "
                   + "connection or while trying to close", e);
       }
@@ -332,7 +327,7 @@ e.printStackTrace();
   public void abort() throws EFapsException  {
     try  {
       this.transaction.setRollbackOnly();
-    } catch (SystemException e)  {
+    } catch (final SystemException e)  {
       throw new EFapsException(getClass(), "abort.SystemException", e);
     }
   }
@@ -350,7 +345,7 @@ e.printStackTrace();
     if (this.connectionStack.isEmpty())  {
 try  {
       con = new ConnectionResource(this, DATASOURCE.getConnection());
-} catch (SQLException e)  {
+} catch (final SQLException e)  {
 e.printStackTrace();
   throw new EFapsException(getClass(), "getConnectionResource.SQLException", e);
 }
@@ -368,7 +363,7 @@ e.printStackTrace();
   /**
    *
    */
-  public void returnConnectionResource(ConnectionResource _con)  {
+  public void returnConnectionResource(final ConnectionResource _con)  {
 //System.out.println("returnConnectionResource.con="+_con);
     if (_con == null)  {
 // throw new EFapsException();
@@ -390,7 +385,7 @@ e.printStackTrace();
     StoreResource storeRsrc = null;
 
 // TODO: dynamic class loading instead of hard coded store resource name
-String provider  = _type.getProperty("StoreResource");
+final String provider  = _type.getProperty("StoreResource");
 if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
   storeRsrc = new JDBCStoreResource(this, _type, _fileId);
 } else  {
@@ -425,7 +420,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
   public String getParameter(final String _key)  {
     String value = null;
     if (this.parameters != null)  {
-      String[] values = this.parameters.get(_key);
+      final String[] values = this.parameters.get(_key);
       if ((values != null) && (values.length > 0))  {
         value = values[0];
       }
@@ -683,19 +678,16 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * @return value of instance variable {@link #locale}
    * @see #locale
    */
-  public final Locale getLocale()  {
+  public final Locale getLocale() {
     return this.locale;
   }
 
-  /**
-   * This is the setter method for the instance variable
-   * {@link #locale}.
-   *
-   * @param _locale
-   *                the locale to set
-   */
-  public void setLocale(final Locale _locale) {
-    this.locale = _locale;
+  public final DateTimeZone getTimezone() {
+    return this.timezone;
+  }
+
+  public final Chronology getChronology() {
+    return this.chronology;
   }
 
   /**
@@ -730,7 +722,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * @see #THREADCONTEXT
    */
   public static Context getThreadContext() throws EFapsException  {
-    Context context = THREADCONTEXT.get();
+    final Context context = THREADCONTEXT.get();
     if (context == null)  {
       throw new EFapsException(Context.class,
           "getThreadContext.NoContext4ThreadDefined");
@@ -781,28 +773,31 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
 
     try  {
       TRANSMANAG.begin();
-    } catch (SystemException e)  {
+    } catch (final SystemException e)  {
       throw new EFapsException(Context.class, "begin.beginSystemException", e);
-    } catch (NotSupportedException e) {
+    } catch (final NotSupportedException e) {
       throw new EFapsException(Context.class,
                                "begin.beginNotSupportedException", e);
     }
     Transaction transaction;
     try  {
       transaction = TRANSMANAG.getTransaction();
-    } catch (SystemException e)  {
+    } catch (final SystemException e)  {
       throw new EFapsException(Context.class,
           "begin.getTransactionSystemException", e);
     }
     final Context context = new Context(transaction,
-                                        null,
                                         (_locale == null) ? Locale.ENGLISH : _locale,
                                         _sessionAttributes,
                                         _parameters,
                                         _fileParameters);
     THREADCONTEXT.set(context);
-    if (_userName != null)  {
+
+    if (_userName != null) {
       context.person = Person.get(_userName);
+      context.locale = context.person.getLocale();
+      context.timezone = context.person.getTimeZone();
+      context.chronology = context.person.getChronology();
     }
     return context;
   }
@@ -814,27 +809,27 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
   public static void commit() throws EFapsException  {
     try  {
       TRANSMANAG.commit();
-    } catch (IllegalStateException e) {
+    } catch (final IllegalStateException e) {
       throw new EFapsException(Context.class,
           "commit.IllegalStateException",
           e);
-    } catch (SecurityException e) {
+    } catch (final SecurityException e) {
       throw new EFapsException(Context.class,
           "commit.SecurityException",
           e);
-    } catch (HeuristicMixedException e) {
+    } catch (final HeuristicMixedException e) {
       throw new EFapsException(Context.class,
           "commit.HeuristicMixedException",
           e);
-    } catch (HeuristicRollbackException e) {
+    } catch (final HeuristicRollbackException e) {
       throw new EFapsException(Context.class,
           "commit.HeuristicRollbackException",
           e);
-    } catch (RollbackException e) {
+    } catch (final RollbackException e) {
       throw new EFapsException(Context.class,
           "commit.RollbackException",
           e);
-    } catch (SystemException e) {
+    } catch (final SystemException e) {
       throw new EFapsException(Context.class,
           "commit.SystemException",
           e);
@@ -850,15 +845,15 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
           throws EFapsException  {
     try  {
       TRANSMANAG.rollback();
-    } catch (IllegalStateException e)  {
+    } catch (final IllegalStateException e)  {
       throw new EFapsException(Context.class,
           "rollback.IllegalStateException",
           e);
-    } catch (SecurityException e)  {
+    } catch (final SecurityException e)  {
       throw new EFapsException(Context.class,
           "rollback.SecurityException",
           e);
-    } catch (SystemException e)  {
+    } catch (final SystemException e)  {
       throw new EFapsException(Context.class,
           "rollback.SystemException",
           e);
@@ -879,7 +874,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
   public static boolean isTMActive() throws EFapsException  {
     try  {
       return TRANSMANAG.getStatus() == Status.STATUS_ACTIVE;
-    } catch (SystemException e)  {
+    } catch (final SystemException e)  {
       throw new EFapsException(Context.class,
                                "isTMActive.SystemException",
                                e);
@@ -897,7 +892,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
   public static boolean isTMNoTransaction() throws EFapsException  {
     try  {
       return TRANSMANAG.getStatus() == Status.STATUS_NO_TRANSACTION;
-    } catch (SystemException e)  {
+    } catch (final SystemException e)  {
       throw new EFapsException(Context.class,
                                "isTMNoTransaction.SystemException",
                                e);
@@ -916,7 +911,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
   public static boolean isTMMarkedRollback() throws EFapsException  {
     try  {
       return TRANSMANAG.getStatus() == Status.STATUS_MARKED_ROLLBACK;
-    } catch (SystemException e)  {
+    } catch (final SystemException e)  {
       throw new EFapsException(Context.class,
                                "isTMMarkedRollback.SystemException",
                                e);

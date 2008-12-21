@@ -31,11 +31,18 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.joda.time.Chronology;
+import org.joda.time.DateTimeZone;
+import org.joda.time.chrono.ISOChronology;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.common.SystemAttribute;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -48,8 +55,6 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.CacheReloadInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -67,11 +72,13 @@ public class Person extends AbstractUserObject {
    */
   public enum AttrName {
     /** Attribute Name for the First Name of the person. */
-    FirstName("FIRSTNAME"),
+    FIRSTNAME("FIRSTNAME"),
     /** Attribute Name for the Last Name of the person. */
-    LastName("LASTNAME"),
-    /** Attribute Name for the Email Adresse of the person. */
-    Email("EMAIL");
+    LASTNAME("LASTNAME"),
+    /** Attribute Name for the Chronology of the person. */
+    CHRONOLOGY("CHRONOLOGY"),
+    TIMZONE("TIMZONE"),
+    LOCALE("LANG"),;
 
     /** The name of the depending SQL column for an attribute name */
     public final String sqlColumn;
@@ -260,21 +267,37 @@ public class Person extends AbstractUserObject {
    * @return attribute value of first name
    */
   public String getFirstName() {
-    return this.attrValues.get(AttrName.FirstName);
+    return this.attrValues.get(AttrName.FIRSTNAME);
   }
 
   /**
    * @return attribute value of last name
    */
   public String getLastName() {
-    return this.attrValues.get(AttrName.LastName);
+    return this.attrValues.get(AttrName.LASTNAME);
+  }
+
+  public Locale getLocale() {
+    return this.attrValues.get(AttrName.LOCALE)!=null
+        ? new Locale(this.attrValues.get(AttrName.LOCALE))
+        : Locale.ENGLISH;
   }
 
   /**
-   * @return attribute value of email
+   * @return
    */
-  public String getEmail() {
-    return this.attrValues.get(AttrName.Email);
+  public DateTimeZone getTimeZone() {
+    return this.attrValues.get(AttrName.TIMZONE)!=null
+            ? DateTimeZone.forID(this.attrValues.get(AttrName.TIMZONE))
+            : DateTimeZone.UTC;
+  }
+
+  /**
+   * @return
+   */
+  public Chronology getChronology() {
+    //TODO this.attrValues.get(AttrName.CHRONOLOGY) auswerten
+    return ISOChronology.getInstance(getTimeZone());
   }
 
   /**
@@ -1450,4 +1473,5 @@ public class Person extends AbstractUserObject {
     }
 
   }
+
 }

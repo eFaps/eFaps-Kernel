@@ -37,6 +37,13 @@
     <parent>Admin_User_AttributeAbstract</parent>
     <!-- attributes -->
     <attribute>
+      <name>UserLink</name>
+      <type>Link</type>
+      <typelink>Admin_User_Abstract</typelink>
+      <sqltable>Admin_User_AttributeAbstractSQLTable</sqltable>
+      <sqlcolumn>USERABSTRACTID</sqlcolumn>
+    </attribute>
+    <attribute>
       <name>Key</name>
       <type>String</type>
       <sqltable>Admin_User_AttributeSQLTable</sqltable>
