@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -45,7 +46,7 @@ public class DateUI extends AbstractUI {
     String ret = null;
 
     if (_fieldValue.getValue() instanceof DateTime) {
-      final DateTime datetime = (DateTime) _fieldValue.getValue();
+      final DateMidnight datetime = ((DateTime) _fieldValue.getValue()).toDateMidnight();
       if (datetime != null) {
         final DateTimeFormatter formatter = DateTimeFormat.mediumDate();
         //format the Date with the Chronology from the user context
