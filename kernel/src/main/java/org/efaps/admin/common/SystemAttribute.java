@@ -43,7 +43,7 @@ public class SystemAttribute implements CacheObjectInterface {
 
   /**
    * this static Variable contains the SQL-Statment used to retrieve the
-   * SystemAttributes from the efps-Database
+   * SystemAttributes from the efps-Database.
    */
   private static final String SQL_SELECT =
       " select ID, UUID, NAME, VALUE from V_COMMONSYSATTRIBUTE";
@@ -58,8 +58,7 @@ public class SystemAttribute implements CacheObjectInterface {
           return CacheReloadInterface.Priority.SystemAttribute.number;
         };
 
-        public void reloadCache() throws CacheReloadException
-        {
+        public void reloadCache() throws CacheReloadException {
           SystemAttribute.initialise();
         };
       });
@@ -94,8 +93,16 @@ public class SystemAttribute implements CacheObjectInterface {
    */
   private final Object value;
 
-  public SystemAttribute(final long _id, final String _uuid, final String _name,
-                        final Object _value) {
+  /**
+   * Constructor setting instance variables.
+   *
+   * @param _id     id of the Systemattribute
+   * @param _uuid   uuid of the Systemattribute
+   * @param _name   name of the Systemattribute
+   * @param _value  value of the Systemattribute
+   */
+  protected SystemAttribute(final long _id, final String _uuid,
+                            final String _name, final Object _value) {
     this.id = _id;
     this.uuid = UUID.fromString(_uuid);
     this.name = _name;
@@ -104,30 +111,31 @@ public class SystemAttribute implements CacheObjectInterface {
 
   /**
    * static method used to initialise the SystemAttributes<br>
-   * (It is called from the RunLevel-Definitions)
+   * (It is called from the RunLevel-Definitions).
    *
-   * @throws CacheReloadException
+   * @throws CacheReloadException on error
    */
   public static void initialise() throws CacheReloadException {
 
     try {
 
-      ConnectionResource con =
+      final ConnectionResource con =
           Context.getThreadContext().getConnectionResource();
-      Statement stmt = con.getConnection().createStatement();
-      ResultSet resultset = stmt.executeQuery(SQL_SELECT);
+      final Statement stmt = con.getConnection().createStatement();
+      final ResultSet resultset = stmt.executeQuery(SQL_SELECT);
 
       while (resultset.next()) {
-        long id = resultset.getLong(1);
-        String uuid = resultset.getString(2).trim();
-        String name = resultset.getString(3).trim();
-        Object value = resultset.getObject(4);
-        SystemAttribute sysatt = new SystemAttribute(id, uuid, name, value);
+        final long id = resultset.getLong(1);
+        final String uuid = resultset.getString(2).trim();
+        final String name = resultset.getString(3).trim();
+        final Object value = resultset.getObject(4);
+        final SystemAttribute sysatt
+                      = new SystemAttribute(id, uuid, name, value);
         getSytemAttributeCache().add(sysatt);
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       throw new CacheReloadException("could not read SystemAttribute", e);
-    } catch (SQLException e) {
+    } catch (final SQLException e) {
       throw new CacheReloadException("could not read SystemAttribute", e);
     }
 
@@ -136,7 +144,7 @@ public class SystemAttribute implements CacheObjectInterface {
   /**
    * Returns for given parameter <i>_id</i> the instance of class
    * {@link #SytemAttribute()}.
-   *
+   * @param _id  id of the Systemattribute
    * @return instance of class {@link #SytemAttribute()}
    */
   public static SystemAttribute get(final long _id) {
@@ -146,7 +154,7 @@ public class SystemAttribute implements CacheObjectInterface {
   /**
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link #SytemAttribute()}.
-   *
+   * @param _name  name of the Systemattribute
    * @return instance of class {@link #SytemAttribute()}
    */
   public static SystemAttribute get(final String _name) {
@@ -155,8 +163,9 @@ public class SystemAttribute implements CacheObjectInterface {
 
   /**
    * Returns for given parameter <i>_uuid</i> the instance of class
-   * {@link #SytemAttribute()}
+   * {@link #SytemAttribute()}.
    *
+   * @param _uuid  uuid of the Systemattribute
    * @return instance of class {@link #SytemAttribute()}
    */
   public static SystemAttribute get(final UUID _uuid) {
@@ -178,7 +187,7 @@ public class SystemAttribute implements CacheObjectInterface {
    *
    * @return value of instance variable {@link #id}
    */
-  public long getId() {
+  public final long getId() {
     return this.id;
   }
 
@@ -187,7 +196,7 @@ public class SystemAttribute implements CacheObjectInterface {
    *
    * @return value of instance variable {@link #uuid}
    */
-  public UUID getUUID() {
+  public final UUID getUUID() {
     return this.uuid;
   }
 
@@ -196,7 +205,7 @@ public class SystemAttribute implements CacheObjectInterface {
    *
    * @return value of instance variable {@link #name}
    */
-  public String getName() {
+  public final String getName() {
     return this.name;
   }
 
@@ -205,38 +214,38 @@ public class SystemAttribute implements CacheObjectInterface {
    *
    * @return value of instance variable {@link #value}
    */
-  public Object getValue() {
+  public final Object getValue() {
     return this.value;
   }
 
   /**
    * Method that returns the Value of the instance variable {@link #value}
-   * casted to String;
+   * casted to String.
    *
    * @return value of instance variable {@link #value} as String
    */
-  public String getStringValue() {
-    return this.value.toString().trim();
+  public final String getStringValue() {
+    return this.value == null ? null : this.value.toString().trim();
   }
 
   /**
    * Method that returns the Value of the instance variable {@link #value}
-   * casted to Integer;
+   * casted to Integer.
    *
    * @return value of instance variable {@link #value} as Integer
    */
-  public int getIntegerValue() {
+  public final int getIntegerValue() {
     return Integer.parseInt(this.value.toString());
   }
 
   /**
    * Method that returns the Value of the instance variable {@link #value}
-   * casted to Boolean;
+   * casted to Boolean.
    *
    * @return value of instance variable {@link #value} as boolean, true if the
    *         Object equals "true", else false
    */
-  public boolean getBooleanValue() {
+  public final boolean getBooleanValue() {
     return Boolean.parseBoolean(this.value.toString());
   }
 
