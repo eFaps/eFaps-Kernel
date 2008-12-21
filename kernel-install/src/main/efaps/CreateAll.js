@@ -443,7 +443,7 @@ function _eFapsCreateDataModelTablesStep1()  {
   _eFapsCreateAttrType(stmt, null, '41451b64-cb24-4e77-8d9e-5b6eb58df56f', 'Integer',        'org.efaps.admin.datamodel.attributetype.IntegerType',        'org.efaps.admin.datamodel.ui.StringUI',  null, null);
   _eFapsCreateAttrType(stmt, null, 'd4a96228-1af9-448b-8f0b-7fe2790835af', 'Real',           'org.efaps.admin.datamodel.attributetype.RealType',           'org.efaps.admin.datamodel.ui.StringUI',  null, null);
   _eFapsCreateAttrType(stmt, null, '7fb3799d-4e31-45a3-8c5e-4fbf445ec3c1', 'Boolean',        'org.efaps.admin.datamodel.attributetype.BooleanType',        'org.efaps.admin.datamodel.ui.BooleanUI',  null, null);
-  _eFapsCreateAttrType(stmt, null, '68ce3aa6-e3e8-40bb-b48f-2a67948c2e7e', 'Date',           'org.efaps.admin.datamodel.attributetype.StringType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, '68ce3aa6-e3e8-40bb-b48f-2a67948c2e7e', 'Date',           'org.efaps.admin.datamodel.attributetype.DateTimeType',       'org.efaps.admin.datamodel.ui.DateUI',  null, null);
   _eFapsCreateAttrType(stmt, null, 'd8ddc848-115e-4abf-be66-0856ac64b21a', 'Time',           'org.efaps.admin.datamodel.attributetype.StringType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null);
   _eFapsCreateAttrType(stmt, null, 'e764db0f-70f2-4cd4-b2fe-d23d3da72f78', 'DateTime',       'org.efaps.admin.datamodel.attributetype.DateTimeType',       'org.efaps.admin.datamodel.ui.DateTimeUI',null, null);
   _eFapsCreateAttrType(stmt, null, '513d35f5-58e2-4243-acd2-5fec5359778a', 'Created',        'org.efaps.admin.datamodel.attributetype.CreatedType',        'org.efaps.admin.datamodel.ui.DateTimeUI',null, 1   );
