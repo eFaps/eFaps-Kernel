@@ -63,7 +63,15 @@
       EFAPS_LOGGER.info("    Update '" + EFAPS_USERNAME + "' Password"); c.getPerson().setPassword(c, EFAPS_PASSWORD);
 
       EFAPS_LOGGER.info("    Activate Person '" + EFAPS_USERNAME + "'"); var update = new Update(Type.get("Admin_User_Abstract"), "1");
-      update.add("Status","true"); update.executeWithoutAccessCheck();
+      update.add("Status","true"); 
+      update.executeWithoutAccessCheck();
+      
+      EFAPS_LOGGER.info("    Setting default TimeZone, Chronology and Locale for  Person '" + EFAPS_USERNAME + "'"); 
+      var update2 = new Update(Type.get("Admin_User_Person"), "1");
+      update2.add("TimeZone","UTC");
+      update2.add("Locale","1");
+      update2.add("Chronology","ISO");
+      update2.executeWithoutAccessCheck();
 
       EFAPS_LOGGER.info("    Activate Role 'Administration'"); var update = new Update(Type.get("Admin_User_Abstract"), "2"); update.add("Status","true");
       update.executeWithoutAccessCheck();
