@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,7 +183,7 @@ public class InsertObject extends AbstractObject {
    * @param _object
    *                Child to be added
    */
-  public void addChild(AbstractObject _object) {
+  public void addChild(final AbstractObject _object) {
     List<AbstractObject> list = this.childs.get(_object.getType());
     if (list == null) {
 
@@ -217,7 +218,7 @@ public class InsertObject extends AbstractObject {
    * @param _Object
    *                ForeignObject to be added
    */
-  public void addLink(ForeignObject _Object) {
+  public void addLink(final ForeignObject _Object) {
     this.links.add(_Object);
 
   }
@@ -230,14 +231,14 @@ public class InsertObject extends AbstractObject {
    * @param _Name
    *                Name of the Attribute
    */
-  public void addUniqueAttribute(String _unique, String _Name) {
+  public void addUniqueAttribute(final String _unique, final String _Name) {
     if (_unique != null && _unique.equals("true")) {
       this.uniqueAttributes.add(_Name);
     }
   }
 
   @Override
-  public void setID(String _id) {
+  public void setID(final String _id) {
     this.id = _id;
   }
 
@@ -362,9 +363,9 @@ public class InsertObject extends AbstractObject {
       }
 
       for (final Entry<String, Object> element : this.getAttributes().entrySet()) {
-        if (element.getValue() instanceof Timestamp) {
+        if (element.getValue() instanceof DateTime) {
 
-          UpIn.add(element.getKey().toString(), (Timestamp) element.getValue());
+          UpIn.add(element.getKey().toString(), (DateTime) element.getValue());
 
         } else {
           UpIn.add(element.getKey().toString(), element.getValue().toString());
@@ -466,7 +467,7 @@ public class InsertObject extends AbstractObject {
    * @param _URL
    *                URL to the File of the CheckinObject
    */
-  public void setCheckinObject(String _Name, String _URL) {
+  public void setCheckinObject(final String _Name, final String _URL) {
     this.ceckInObject = new CheckinObject(_Name, _URL);
 
   }
@@ -540,7 +541,7 @@ public class InsertObject extends AbstractObject {
      * @param _url
      *                URL to the File
      */
-    public CheckinObject(String _name, String _url) {
+    public CheckinObject(final String _name, final String _url) {
       this.name = _name.trim();
       this.url = _url.trim();
     }

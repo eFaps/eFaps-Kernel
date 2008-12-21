@@ -20,7 +20,6 @@
 
 package org.efaps.importer;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +27,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.efaps.db.Insert;
 import org.efaps.util.EFapsException;
 
@@ -56,11 +57,11 @@ public class RootObject extends AbstractObject {
   final static Map<String, OrderObject> ORDER =
       new HashMap<String, OrderObject>();
 
-  public void setDateFormat(String _DateFormat) {
+  public void setDateFormat(final String _DateFormat) {
     DATEFORMAT = _DateFormat;
   }
 
-  public void addOrder(OrderObject _order) {
+  public void addOrder(final OrderObject _order) {
 
     ORDER.put(_order.getType(), _order);
   }
@@ -82,11 +83,11 @@ public class RootObject extends AbstractObject {
   }
 
   @Override
-  public void setID(String _ID) {
+  public void setID(final String _ID) {
     // not needed here
   }
 
-  public void addChild(AbstractObject _Object) {
+  public void addChild(final AbstractObject _Object) {
     this.CHILDS.add(_Object);
   }
 
@@ -103,8 +104,8 @@ public class RootObject extends AbstractObject {
 
         for (final Entry<String, Object> element : object.getAttributes()
             .entrySet()) {
-          if (element.getValue() instanceof Timestamp) {
-            insert.add(element.getKey().toString(), (Timestamp) element
+          if (element.getValue() instanceof DateTime) {
+            insert.add(element.getKey().toString(), (DateTime) element
                 .getValue());
 
           } else {
@@ -164,7 +165,7 @@ public class RootObject extends AbstractObject {
   }
 
   @Override
-  public Object getAttribute(String _attribute) {
+  public Object getAttribute(final String _attribute) {
     // not needed here
     return null;
   }
