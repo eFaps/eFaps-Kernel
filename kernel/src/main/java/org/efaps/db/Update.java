@@ -22,7 +22,6 @@ package org.efaps.db;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -31,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -172,7 +172,7 @@ public class Update {
       final Parameter parameter = new Parameter();
       parameter.put(ParameterValues.NEW_VALUES, this.values);
       parameter.put(ParameterValues.INSTANCE, getInstance());
-      for (EventDefinition evenDef : triggers) {
+      for (final EventDefinition evenDef : triggers) {
         evenDef.execute(parameter);
       }
       return true;
@@ -221,7 +221,7 @@ public class Update {
   // ///////////////////////////////////////////////////////////////////////////
   // timestamp methods
 
-  public Status add(final String _attr, final Timestamp _value)
+  public Status add(final String _attr, final DateTime _value)
                                                                throws EFapsException {
     final Attribute attr = getInstance().getType().getAttribute(_attr);
     if (attr == null) {
@@ -236,7 +236,7 @@ public class Update {
    * @param _value
    *                new attribute value
    */
-  public Status add(final Attribute _attr, final Timestamp _value)
+  public Status add(final Attribute _attr, final DateTime _value)
                                                                   throws EFapsException {
     return add(_attr, _value, true);
   }
@@ -251,7 +251,7 @@ public class Update {
       final List<Return> returns =
           _attr.executeEvents(EventType.VALIDATE, ParameterValues.NEW_VALUES,
               _value);
-      for (Return ret : returns) {
+      for (final Return ret : returns) {
         if ((ret.get(ReturnValues.TRUE) == null)) {
           return new Status(ret.get(ReturnValues.VALUES), _attr, _value);
         }
@@ -293,14 +293,14 @@ public class Update {
     boolean ret = false;
 
     if (_type.getUniqueKeys() != null) {
-      for (org.efaps.admin.datamodel.UniqueKey uk : _type.getUniqueKeys()) {
+      for (final org.efaps.admin.datamodel.UniqueKey uk : _type.getUniqueKeys()) {
 
         final SearchQuery query = new SearchQuery();
         query.setQueryTypes(_type.getName());
         query.setExpandChildTypes(true);
 
         boolean testNeeded = false;
-        for (Attribute attr : uk.getAttributes()) {
+        for (final Attribute attr : uk.getAttributes()) {
           final AttributeTypeInterface value =
               this.mapAttr2Value.get(attr.getName());
           if (value != null) {
@@ -395,7 +395,7 @@ public class Update {
               "executeWithoutTrigger.UniqueKeyError");
         }
 
-        for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
+        for (final Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
             .entrySet()) {
           final SQLTable table = entry.getKey();
           final Map<?, ?> expressions = entry.getValue();
@@ -414,7 +414,7 @@ public class Update {
           }
         }
         con.commit();
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOG.error("Update of '" + this.instance + "' not possible", e);
         throw new EFapsException(getClass(),
             "executeWithoutTrigger.SQLException", e, this.instance);
