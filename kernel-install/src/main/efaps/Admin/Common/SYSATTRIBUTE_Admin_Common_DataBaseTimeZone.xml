@@ -17,9 +17,9 @@
   limitations under the License.
 
   Author:          jmox
-  Revision:        $Rev: 1937 $
-  Last Changed:    $Date: 2008-07-24 15:46:58 -0500 (Thu, 24 Jul 2008) $
-  Last Changed By: $Author: tmo $
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
 
 -->
 
@@ -29,7 +29,7 @@
 
   <uuid>4ac2983c-eeda-4420-aba9-f06f76a74a88</uuid>
   <file-application>eFaps-Kernel</file-application>
-  <file-revision>$Rev: 1937 $</file-revision>
+  <file-revision>$Rev$</file-revision>
   <description>
     This attribute defines the timezone the database server is running in. This 
     is necessary to use the current timezone functionalities from the database
