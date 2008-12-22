@@ -101,6 +101,9 @@ public class Update {
 
   }
 
+  public Update(final String _type, final String _id) throws EFapsException {
+    this(Type.get(_type),_id);
+  }
   /**
    */
   public Update(final String _oid) throws EFapsException {
