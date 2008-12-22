@@ -54,7 +54,7 @@
       <type>String</type>
       <sqltable>Admin_User_PersonSQLTable</sqltable>
       <sqlcolumn>TIMZONE</sqlcolumn>
-      <defaultvalue>GMT</defaultvalue>
+      <defaultvalue>UTC</defaultvalue>
     </attribute>
     <attribute>
       <name>Chronology</name>
@@ -136,11 +136,17 @@
     </attribute>
     <attribute>
       <name>Locale</name>
-      <type>Link</type>
+      <type>LinkWithRanges</type>
       <typelink>Admin_Language</typelink>
       <sqltable>Admin_User_PersonSQLTable</sqltable>
       <sqlcolumn>LOCALE</sqlcolumn>
       <defaultvalue>1</defaultvalue>
+      <trigger program="org.efaps.esjp.admin.datamodel.RangesValue" 
+               name="Admin_User_Person_LocaleRange" 
+               event="RANGE_VALUE">
+        <property name="Value">Language</property>
+        <property name="Type">Admin_Language</property>
+      </trigger>
     </attribute>
     
     <attributeset>
