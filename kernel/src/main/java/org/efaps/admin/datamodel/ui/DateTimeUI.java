@@ -49,9 +49,10 @@ public class DateTimeUI extends AbstractUI {
       final DateTime datetime = (DateTime) _fieldValue.getValue();
       if (datetime != null) {
         final DateTimeFormatter formatter = DateTimeFormat.mediumDateTime();
-        //format the Date with the Chronology from the user context
-        ret = datetime.withChronology(Context.getThreadContext()
-                                      .getChronology()).toString(formatter);
+        //format the Date with the Locale and Chronology from the user context
+        ret = datetime.withChronology(
+            Context.getThreadContext().getChronology()).toString(
+            formatter.withLocale(Context.getThreadContext().getLocale()));
       }
     } else {
       //TODO throw new EFapsException
