@@ -76,7 +76,7 @@
              join T_USERPERSON
                on T_USERABSTRACT.ID=T_USERPERSON.ID
              left join T_ADLANG
-               on T_ADLANG.ID=T_USERPERSON.ID  
+               on T_ADLANG.ID=T_USERPERSON.LOCALE  
       </sql>
     </database>
   </definition>
