@@ -178,17 +178,19 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
    *
    */
   private void convertDateFieldValues() {
-    for (final DateFieldWithPicker datepicker : getFormPanel().getDateComponents()) {
-      final Map<String, String[]> map =
-        this.getComponent().getRequestCycle().getRequest().getParameterMap();
+    final FormPanel formpl = getFormPanel();
+    if (formpl != null) {
+      for (final DateFieldWithPicker datepicker : formpl.getDateComponents()) {
+        final Map<String, String[]> map =
+          this.getComponent().getRequestCycle().getRequest().getParameterMap();
 
-      if (map.containsKey(datepicker.getInputName())) {
-        final String[] value = map.get(datepicker.getInputName());
-
-        map.put(datepicker.getInputName(),new String[]{datepicker.getDateAsString(value[0])});
+        if (map.containsKey(datepicker.getInputName())) {
+          final String[] value = map.get(datepicker.getInputName());
+          map.put(datepicker.getInputName(),
+                  new String[]{datepicker.getDateAsString(value[0])});
+        }
       }
     }
-
   }
 
   private void doFileUpload(final AjaxRequestTarget _target) {
