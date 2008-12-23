@@ -68,7 +68,7 @@
                  T_USERPERSON.LASTNAME,
                  T_USERPERSON.TIMZONE,
                  T_USERPERSON.CHRONOLOGY,
-                 T_ADLANG.LANG,
+                 T_ADLANG.LANG as LOCALE,
                  T_USERPERSON.PASSWORD,
                  T_USERPERSON.LOGINTRY,
                  T_USERPERSON.LOGINTRIES

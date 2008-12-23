@@ -39,7 +39,6 @@ import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Chronology;
 import org.joda.time.DateTimeZone;
-import org.joda.time.chrono.ISOChronology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +49,7 @@ import org.efaps.admin.datamodel.attributetype.PasswordType;
 import org.efaps.db.Context;
 import org.efaps.db.Update;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.util.ChronologyType;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
@@ -77,14 +77,39 @@ public class Person extends AbstractUserObject {
     LASTNAME("LASTNAME"),
     /** Attribute Name for the Chronology of the person. */
     CHRONOLOGY("CHRONOLOGY"),
+    /** Attribute Name for the Timezone of the person. */
     TIMZONE("TIMZONE"),
-    LOCALE("LANG"),;
+    /** Attribute Name for the Locale of the person. */
+    LOCALE("LOCALE", true);
 
-    /** The name of the depending SQL column for an attribute name */
-    public final String sqlColumn;
+    /**
+     * The name of the depending SQL column for an attribute in the table.
+     */
+    private final String sqlColumn;
 
+    /**
+     * The name of the depending SQL column for an attribute in the table.
+     */
+    private final boolean integer;
+
+    /**
+     * Constructor setting the instance variables.
+     *
+     * @param _sqlColumn    name of the column in the table
+     */
     private AttrName(final String _sqlColumn) {
+      this(_sqlColumn, false);
+    }
+
+    /**
+     * Constructor setting the instance variables.
+     *
+     * @param _sqlColumn    name of the column in the table
+     * @param _integer      is the column a integer column
+     */
+    private AttrName(final String _sqlColumn, final boolean _integer) {
       this.sqlColumn = _sqlColumn;
+      this.integer = _integer;
     }
 
   }
@@ -95,14 +120,14 @@ public class Person extends AbstractUserObject {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Logger LOG = LoggerFactory.getLogger(Person.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Person.class);
 
   /**
    * Stores all instances of class {@link Person}.
    *
    * @see #getCache
    */
-  private final static Cache<Person> cache = new PersonCache();
+  private static final Cache<Person> CACHE = new PersonCache();
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -142,19 +167,19 @@ public class Person extends AbstractUserObject {
    * @see #commitAttrValuesInDB
    * @see #AttrName
    */
-  private final Set<AttrName> attrUpdated = new HashSet<AttrName>();
+  private final Map<AttrName, String> attrUpdated =
+       new HashMap<AttrName, String>();
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
    * The constructor creates a new instance of class {@link Person} and sets the
-   * {@link #name} and {@link #id}.
+   * {@link #key} and {@link #id}.
    *
-   * @param _id
-   *                id of the person to set
-   * @param _name
-   *                name of the person to set
+   * @param _id       id of the person to set
+   * @param _name     name of the person to set
+   * @param _status   status of the person to set
    */
   private Person(final long _id, final String _name, final boolean _status) {
     super(_id, null, _name, _status);
@@ -277,27 +302,53 @@ public class Person extends AbstractUserObject {
     return this.attrValues.get(AttrName.LASTNAME);
   }
 
+  /**
+   * Method to get the Locale of this Person. Default is the "English" Locale.
+   *
+   * @return Locale of this Person
+   */
   public Locale getLocale() {
-    return this.attrValues.get(AttrName.LOCALE)!=null
+    return this.attrValues.get(AttrName.LOCALE) != null
         ? new Locale(this.attrValues.get(AttrName.LOCALE))
         : Locale.ENGLISH;
   }
 
   /**
-   * @return
+   * Method to get the Timezone of this Person. Default is the "UTC" Timezone.
+   *
+   * @return Timezone of this Person
    */
   public DateTimeZone getTimeZone() {
-    return this.attrValues.get(AttrName.TIMZONE)!=null
+    return this.attrValues.get(AttrName.TIMZONE) != null
             ? DateTimeZone.forID(this.attrValues.get(AttrName.TIMZONE))
             : DateTimeZone.UTC;
   }
 
   /**
-   * @return
+   * Method to get the Chronology of this Person. Default is the
+   * "ISO8601" Chronology.
+   *
+   * @return Chronology of this Person
    */
   public Chronology getChronology() {
-    //TODO this.attrValues.get(AttrName.CHRONOLOGY) auswerten
-    return ISOChronology.getInstance(getTimeZone());
+    return getChronologyType().getInstance(getTimeZone());
+  }
+
+  /**
+   * Method to get the ChronologyType of this Person. Default is the
+   * "ISO8601" ChronologyType.
+   *
+   * @return ChronologyType of this Person
+   */
+  public ChronologyType getChronologyType() {
+    final String chronoKey = this.attrValues.get(AttrName.CHRONOLOGY);
+    final ChronologyType chronoType;
+    if (chronoKey != null) {
+      chronoType = ChronologyType.getByKey(chronoKey);
+    } else {
+      chronoType = ChronologyType.ISO8601;
+    }
+    return chronoType;
   }
 
   /**
@@ -305,19 +356,31 @@ public class Person extends AbstractUserObject {
    * Only after calling method {@link #commitAttrValuesInDB} the updated
    * attribute value is stored in the database!
    *
-   * @param _attrName
-   *                name of attribute to update
-   * @param _value
-   *                new value to set
+   * @param _attrName     name of attribute to update
+   * @param _value        new value to set directly
+   */
+  public void updateAttrValue(final AttrName _attrName, final String _value) {
+    this.updateAttrValue(_attrName, _value, _value);
+  }
+
+  /**
+   * Updates a value for an attribute in the cache and marks then as modified.
+   * Only after calling method {@link #commitAttrValuesInDB} the updated
+   * attribute value is stored in the database!
+   *
+   * @param _attrName     name of attribute to update
+   * @param _value        new value to set directly
+   * @param _updateValue  new value to be set in the database
    * @see #attrUpdated
    * @see #attrValues
    */
-  public void updateAttrValue(final AttrName _attrName, final String _value) {
+  public void updateAttrValue(final AttrName _attrName, final String _value,
+                              final String _updateValue) {
     synchronized (this.attrUpdated) {
       synchronized (this.attrValues) {
         this.attrValues.put(_attrName, _value);
       }
-      this.attrUpdated.add(_attrName);
+      this.attrUpdated.put(_attrName, _updateValue);
     }
   }
 
@@ -325,15 +388,15 @@ public class Person extends AbstractUserObject {
    * Commits update attribute defined in {@link #attrUpdated} with method
    * {@link #updateAttrValue} to the database. After database update,
    * {@link #attrUpdated} is cleared.
-   *
+   * @throws EFapsException on error
    * @see #attrUpdated
    * @see #attrValues
    * @see #updateAttrValue
+   *
    */
   public void commitAttrValuesInDB() throws EFapsException {
     synchronized (this.attrUpdated) {
       if (this.attrUpdated.size() > 0) {
-
         ConnectionResource rsrc = null;
         try {
           final Context context = Context.getThreadContext();
@@ -344,7 +407,7 @@ public class Person extends AbstractUserObject {
           try {
             cmd.append("update T_USERPERSON set ");
             boolean first = true;
-            for (final AttrName attrName : this.attrUpdated) {
+            for (final AttrName attrName : this.attrUpdated.keySet()) {
               if (first) {
                 first = false;
               } else {
@@ -356,40 +419,35 @@ public class Person extends AbstractUserObject {
             stmt = rsrc.getConnection().prepareStatement(cmd.toString());
 
             int col = 1;
-            for (final AttrName attrName : this.attrUpdated) {
-              final String tmp = this.attrValues.get(attrName);
-              stmt.setString(col, tmp == null ? null : tmp.trim());
+            for (final AttrName attrName : this.attrUpdated.keySet()) {
+              final String tmp = this.attrUpdated.get(attrName);
+              if (attrName.integer) {
+                stmt.setInt(col, tmp == null ? 0
+                    : Integer.parseInt(tmp.trim()));
+              } else {
+                stmt.setString(col, tmp == null ? null : tmp.trim());
+              }
               col++;
             }
 
             final int rows = stmt.executeUpdate();
             if (rows == 0) {
-              LOG.error("could not update '"
-                  + cmd.toString()
-                  + "' person with user name '"
-                  + getName()
-                  + "' (id = "
-                  + getId()
-                  + ")");
+              LOG.error("could not update '" + cmd.toString()
+                  + "' person with user name '" + getName() + "' (id = "
+                  + getId() + ")");
               throw new EFapsException(Person.class,
                   "commitAttrValuesInDB.NotUpdated", cmd.toString(), getName(),
                   getId());
             }
             // TODO: update modified date
-
           } catch (final SQLException e) {
-            LOG.error("could not update '"
-                + cmd.toString()
-                + "' person with user name '"
-                + getName()
-                + "' (id = "
-                + getId()
-                + ")", e);
+            LOG.error("could not update '" + cmd.toString()
+                + "' person with user name '" + getName() + "' (id = "
+                + getId() + ")", e);
             throw new EFapsException(Person.class,
                 "commitAttrValuesInDB.SQLException", e, cmd.toString(),
                 getName(), getId());
-          }
-          finally {
+          } finally {
             try {
               if (stmt != null) {
                 stmt.close();
@@ -402,8 +460,7 @@ public class Person extends AbstractUserObject {
           }
 
           rsrc.commit();
-        }
-        finally {
+        } finally {
           if ((rsrc != null) && rsrc.isOpened()) {
             rsrc.abort();
           }
@@ -570,8 +627,7 @@ public class Person extends AbstractUserObject {
             + "'", e);
         throw new EFapsException(getClass(), "updateLastLogin.SQLException", e,
             cmd.toString(), getName());
-      }
-      finally {
+      } finally {
         try {
           if (stmt != null) {
             stmt.close();
@@ -582,8 +638,7 @@ public class Person extends AbstractUserObject {
         }
       }
       rsrc.commit();
-    }
-    finally {
+    } finally {
       if ((rsrc != null) && rsrc.isOpened()) {
         rsrc.abort();
       }
@@ -599,8 +654,7 @@ public class Person extends AbstractUserObject {
    */
   public void setPassword(final Context _context,
                           final String _newPasswd)
-  throws Exception
-  {
+  throws Exception {
     final Type type = Type.get(USER_PERSON);
 
     if (_newPasswd.length() == 0) {
@@ -686,8 +740,7 @@ public class Person extends AbstractUserObject {
             + "possible", e);
         throw new EFapsException(Person.class,
             "readFromDBAttributes.SQLException", e, getName(), getId());
-      }
-      finally {
+      } finally {
         try {
           if (stmt != null) {
             stmt.close();
@@ -697,8 +750,7 @@ public class Person extends AbstractUserObject {
         }
       }
       rsrc.commit();
-    }
-    finally {
+    } finally {
       if ((rsrc != null) && rsrc.isOpened()) {
         rsrc.abort();
       }
@@ -996,8 +1048,7 @@ public class Person extends AbstractUserObject {
    *
    * @throws EFapsException if the last login information could not be updated
    */
-  public void updateLastLogin() throws EFapsException
-  {
+  public void updateLastLogin() throws EFapsException {
     ConnectionResource rsrc = null;
     try {
       final Context context = Context.getThreadContext();
@@ -1094,7 +1145,7 @@ public class Person extends AbstractUserObject {
    * @param _id
    *                id to search in the cache
    * @return instance of class {@link Person}
-   * @see #cache
+   * @see #CACHE
    * @see #getFromDB
    */
   public static Person get(final long _id) throws EFapsException {
@@ -1119,7 +1170,7 @@ public class Person extends AbstractUserObject {
    * @param _name
    *                name to search in the cache
    * @return instance of class {@link Person}
-   * @see #cache
+   * @see #CACHE
    * @see #getFromDB
    */
   public static Person get(final String _name) throws EFapsException {
@@ -1403,12 +1454,12 @@ public class Person extends AbstractUserObject {
   }
 
   /**
-   * Static getter method for the type hashtable {@link #cache}.
+   * Static getter method for the type hashtable {@link #CACHE}.
    *
-   * @return value of static variable {@link #cache}
+   * @return value of static variable {@link #CACHE}
    */
   public static Cache<Person> getCache() {
-    return cache;
+    return CACHE;
   }
 
   // ///////////////////////////////////////////////////////////////////////////
