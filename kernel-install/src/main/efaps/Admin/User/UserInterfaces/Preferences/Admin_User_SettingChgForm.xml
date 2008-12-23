@@ -33,14 +33,34 @@
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_User_LocaleChgForm</name>
+    <name>Admin_User_SettingChgForm</name>
     <!-- fields -->
-    <field name="locale">
+    <field name="TimeZone4Edit">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Expression">TimeZone</property>
+      <trigger program="org.efaps.esjp.admin.user.TimeZoneUI"
+               method="get4Setting" 
+               name="Admin_User_SettingChgForm/TimeZone4Edit" 
+               event="UI_FIELD_VALUE"/>
+    </field>
+    <field name="Chronology4Edit">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Expression">Chronology</property>
+      <trigger program="org.efaps.esjp.admin.user.ChronologyUI"
+               method="get4Setting" 
+               name="Admin_User_SettingChgForm/Chronology4Edit" 
+               event="UI_FIELD_VALUE"/>
+    </field>
+    <field name="Locale">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>
       <property name="Expression">Locale</property>
-      <property name="Required">true</property>
-      <property name="Label">Admin_User_LocaleChgForm/Locale.Label</property>
+      <trigger program="org.efaps.esjp.admin.user.ChgSetting"
+               method="getLocale4Setting" 
+               name="Admin_User_SettingChgForm/Locale" 
+               event="UI_FIELD_VALUE"/>
     </field>
   </definition>
 </ui-form>

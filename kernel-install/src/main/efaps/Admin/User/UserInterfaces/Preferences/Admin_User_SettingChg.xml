@@ -33,14 +33,14 @@
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_User_LocaleChg</name>
+    <name>Admin_User_SettingChg</name>
     <target>
-      <form>Admin_User_LocaleChgForm</form>
-      <execute program="org.efaps.esjp.admin.user.UserAttribute2Locale"/>
+      <form>Admin_User_SettingChgForm</form>
+      <execute program="org.efaps.esjp.admin.user.ChgSetting"/>
     </target>
     <!-- properties -->
     <property name="Target">modal</property>
-    <property name="TargetCreateType">Admin_User_Attribute2Locale</property>
+    <property name="TargetCreateType">Admin_User_Person</property>
     <property name="TargetMode">create</property>
     <property name="WindowHeight">255</property>
     <property name="WindowWidth">380</property>

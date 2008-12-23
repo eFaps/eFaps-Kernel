@@ -31,6 +31,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -48,7 +49,8 @@ public class TimeZoneUI implements EventExecution
   public Return execute(final Parameter _parameter)
       throws EFapsException
   {
-    final Instance instance = (Instance) _parameter.get(ParameterValues.CALL_INSTANCE);
+    final Instance instance
+                    = (Instance) _parameter.get(ParameterValues.CALL_INSTANCE);
 
     final SearchQuery query = new SearchQuery();
     query.setObject(instance);
@@ -58,6 +60,16 @@ public class TimeZoneUI implements EventExecution
     if (query.next()) {
       actualTz = (String) query.get("TimeZone");
     }
+
+    final Return retVal = new Return();
+    retVal.put(ReturnValues.VALUES, getField(actualTz));
+
+    return retVal;
+  }
+
+  private StringBuilder getField(final String _actualTz) {
+    final StringBuilder ret = new StringBuilder();
+
     final Set<?> timezoneIds = DateTimeZone.getAvailableIDs();
     final TreeSet<String> sortedTimeZoneIds = new TreeSet<String>();
 
@@ -65,11 +77,10 @@ public class TimeZoneUI implements EventExecution
       sortedTimeZoneIds.add((String) id);
     }
 
-    final StringBuilder ret = new StringBuilder();
     ret.append("<select size=\"1\" name=\"TimeZone4Edit\">");
     for (final String tzId : sortedTimeZoneIds) {
       ret.append("<option");
-      if (actualTz.equals(tzId)) {
+      if (_actualTz.equals(tzId)) {
         ret.append(" selected=\"selected\" ");
       }
       ret.append(" value=\"").append(tzId).append("\">")
@@ -77,8 +88,16 @@ public class TimeZoneUI implements EventExecution
     }
 
     ret.append("</select>");
+    return ret;
+  }
+
+
+  public Return get4Setting(final Parameter _parameter)
+      throws EFapsException {
+
     final Return retVal = new Return();
-    retVal.put(ReturnValues.VALUES, ret);
+    retVal.put(ReturnValues.VALUES,
+                  getField(Context.getThreadContext().getTimezone().getID()));
 
     return retVal;
   }

@@ -36,7 +36,7 @@
     <name>Common_Main_Preferences</name>
     <childs>
       <child>Admin_User_PwdChg</child>
-      <child>Admin_User_LocaleChg</child>
+      <child>Admin_User_SettingChg</child>
     </childs>
   </definition>
 </ui-menu>
