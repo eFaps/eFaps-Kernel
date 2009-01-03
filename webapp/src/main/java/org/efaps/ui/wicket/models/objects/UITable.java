@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003-2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,16 +60,28 @@ import org.efaps.util.EFapsException;
 public class UITable extends AbstractUIObject {
 
   /**
-   * this enum holds the Values used as part of the key for the UserAttributes
-   * wich belong to a TableModel
+   * This enum holds the Values used as part of the key for the UserAttributes
+   * wich belong to a TableModel.
    *
    * @author jmox
    * @version $Id$
    */
   public static enum UserAttributeKey {
+    /**
+     * Key used for the order of Columns.
+     */
     COLUMNORDER("columnOrder"),
+    /**
+     * Key used for the widths of Columns.
+     */
     COLUMNWIDTH("columnWidths"),
+    /**
+     * Key used for the sort direction.
+     */
     SORTDIRECTION("sortDirection"),
+    /**
+     * Key used for the Column.
+     */
     SORTKEY("sortKey");
 
     public String value;
@@ -84,9 +96,9 @@ public class UITable extends AbstractUIObject {
    */
   private static final Logger LOG = LoggerFactory.getLogger(UITable.class);
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance variables
-
+  /**
+   * Serial Id.
+   */
   private static final long serialVersionUID = 1L;
 
   /**
@@ -105,22 +117,22 @@ public class UITable extends AbstractUIObject {
   private int filterKeyInt = 0;
 
   /**
-   * contains the sequential numbers of the filter
+   * Contains the sequential numbers of the filter.
    */
   private String[] filterSequence;
 
   /**
-   * The instance Map contains the Values to be filtered
+   * The instance Map contains the Values to be filtered.
    */
   private List<String> filterValues = new ArrayList<String>();
 
   /**
-   * The instance Array holds the Label for the Columns
+   * The instance Array holds the Label for the Columns.
    */
   private final List<UITableHeader> headers = new ArrayList<UITableHeader>();
 
   /**
-   * This instance variable sores if the Table should show CheckBodes
+   * This instance variable sores if the Table should show CheckBodes.
    */
   private boolean showCheckBoxes;
 
@@ -155,7 +167,7 @@ public class UITable extends AbstractUIObject {
 
   /**
    * This instance variable stores if the Widths of the Columns are set by
-   * UserAttributes
+   * UserAttributes.
    */
   private boolean userWidths = false;
 
@@ -173,15 +185,21 @@ public class UITable extends AbstractUIObject {
   private int widthWeight;
 
   /**
-   * Constructor
+   * Constructor setting the parameters.
    *
-   * @param _parameters
+   * @param _parameters PageParameters
    */
   public UITable(final PageParameters _parameters) {
     super(_parameters);
     initialise();
   }
 
+  /**
+   * Constructor setting the uuid and OID.
+   *
+   * @param _commandUUID  UUID of the Command
+   * @param _oid          OID of the instance
+   */
   public UITable(final UUID _commandUUID, final String _oid) {
     super(_commandUUID, _oid);
     initialise();
@@ -219,7 +237,7 @@ public class UITable extends AbstractUIObject {
 
       // evaluate for all expressions in the table
       final ListQuery query = new ListQuery(instances);
-      final List<Integer> userWidths = getUserWidths();
+      final List<Integer> userWidthList = getUserWidths();
 
       final List<Field> fields = getUserSortedColumns();
 
@@ -235,14 +253,15 @@ public class UITable extends AbstractUIObject {
         if (field.getName().equals(this.sortKey)) {
           sortdirection = this.getSortDirection();
         }
-        final UITableHeader headermodel = new UITableHeader(field, sortdirection);
+        final UITableHeader headermodel
+                                    = new UITableHeader(field, sortdirection);
         this.headers.add(headermodel);
         if (!field.isFixedWidth()) {
-          if (userWidths != null) {
+          if (userWidthList != null) {
             if (this.isShowCheckBoxes()) {
-              headermodel.setWidth(userWidths.get(i + 1));
+              headermodel.setWidth(userWidthList.get(i + 1));
             } else {
-              headermodel.setWidth(userWidths.get(i));
+              headermodel.setWidth(userWidthList.get(i));
             }
           }
           this.widthWeight += field.getWidth();
@@ -262,14 +281,16 @@ public class UITable extends AbstractUIObject {
   }
 
   /**
-   * this method works together with {@link #execute()} to fill this Model with
-   * Data
+   * This method works together with {@link #execute()} to fill this Model with
+   * Data.
    *
-   * @param _instMapper
-   * @param _query
+   * @param _instMapper   Map of instances
+   * @param _query        Query with results
+   * @param _fields       List of the Fields
    */
   private void executeRowResult(final Map<Instance, List<Instance>> _instMapper,
-                                final ListQuery _query, final List<Field> _fields) {
+                                final ListQuery _query,
+                                final List<Field> _fields) {
     try {
       while (_query.next()) {
 
@@ -277,15 +298,16 @@ public class UITable extends AbstractUIObject {
         final Instance instance = _query.getInstance();
         final StringBuilder oids = new StringBuilder();
         boolean first = true;
-        if(_instMapper.get(instance)!=null){
-        for (final Instance oneInstance : _instMapper.get(instance)) {
-          if (first) {
-            first = false;
-          } else {
-            oids.append("|");
+        if (_instMapper.get(instance) != null) {
+          for (final Instance oneInstance : _instMapper.get(instance)) {
+            if (first) {
+              first = false;
+            } else {
+              oids.append("|");
+            }
+            oids.append(oneInstance.getOid());
           }
-          oids.append(oneInstance.getOid());
-        }}
+        }
         final UIRow row = new UIRow(oids.toString());
         Attribute attr = null;
 
@@ -302,16 +324,15 @@ public class UITable extends AbstractUIObject {
           final FieldValue fieldvalue =
               new FieldValue(new FieldDefinition("egal", field), attr, value,
                   instance);
-          if (value == null) {
-            strValue = "";
+          if (this.isCreateMode() && field.isEditable()) {
+            strValue = fieldvalue.getCreateHtml(getCallInstance(), instance);
+          } else if (this.isEditMode() && field.isEditable()) {
+            strValue = fieldvalue.getEditHtml(getCallInstance(), instance);
           } else {
-            if (this.isCreateMode() && field.isEditable()) {
-              strValue = fieldvalue.getCreateHtml(getCallInstance());
-            } else if (this.isEditMode() && field.isEditable()) {
-              strValue = fieldvalue.getEditHtml(getCallInstance());
-            } else {
-              strValue = fieldvalue.getViewHtml(getCallInstance());
-            }
+            strValue = fieldvalue.getViewHtml(getCallInstance(), instance);
+          }
+          if (strValue == null) {
+            strValue = "";
           }
           String icon = field.getIcon();
           if (field.getAlternateOID() == null) {
@@ -344,7 +365,7 @@ public class UITable extends AbstractUIObject {
   }
 
   /**
-   * prepares the filter to be used in getValues
+   * Prepares the filter to be used in getValues.
    *
    * @see #getValues()
    */
@@ -373,7 +394,7 @@ public class UITable extends AbstractUIObject {
   /**
    * This is the setter method for the instance variable {@link #filterKeyInt}.
    *
-   * @param _selectedFilter
+   * @param _filterkey
    *                new value for instance variable {@link #filterKeyInt}
    * @see #filterKeyInt
    * @see #getFilterKey
@@ -395,9 +416,6 @@ public class UITable extends AbstractUIObject {
   }
 
   /**
-   * This Map is used for contruction of the items in a myfaces "<h:selectManyCheckbox>".
-   * It produces Selectboxes with a sequential number as value and the
-   * Fieldvalue as the Label.
    *
    * @return Map
    * @throws EFapsException
@@ -502,35 +520,34 @@ public class UITable extends AbstractUIObject {
   /**
    * This is the setter method for the instance variable {@link #tableId}.
    *
-   * @param tableId
+   * @param _tableId
    *                the tableId to set
    */
-  public void setTableId(final int tableId) {
-    this.tableId = tableId;
+  public void setTableId(final int _tableId) {
+    this.tableId = _tableId;
   }
 
   /**
    * This method generates the Key for a UserAttribute by using the UUID of the
-   * Command and the given UserAttributeKey, so that for every Tabel a unique
-   * key for sorting etc, is created
+   * Command and the given UserAttributeKey, so that for every Table a unique
+   * key for sorting etc, is created.
    *
-   * @param _key
-   *                UserAttributeKey the Key is wanted
-   * @return
+   * @param _key    UserAttributeKey the Key is wanted
+   * @return String with the key
    */
   public String getUserAttributeKey(final UserAttributeKey _key) {
     return super.getCommandUUID() + "-" + _key.value;
   }
 
   /**
-   * this method looks if for this TableModel a UserAttribute for the sorting of
+   * This method looks if for this TableModel a UserAttribute for the sorting of
    * the Columns exist. If they exist the Fields will be sorted as defined by
    * the User. If no definition of the User exist the Original default sorting
    * of the columns will be used. In the Case that the Definition of the Table
    * was altered Field wich are not sorted yet will be sorted in at the last
    * position.
    *
-   * @return
+   * @return  List of fields
    */
   private List<Field> getUserSortedColumns() {
     final List<Field> fields = this.getTable().getFields();
@@ -570,8 +587,8 @@ public class UITable extends AbstractUIObject {
   }
 
   /**
-   * this method retieves the UserAttribute for the ColumnWidths and evaluates
-   * the string
+   * This method retieves the UserAttribute for the ColumnWidths and evaluates
+   * the string.
    *
    * @return List with the values of the columns in Pixel
    */
@@ -652,7 +669,7 @@ public class UITable extends AbstractUIObject {
   }
 
   /**
-   * method that initialises the TableModel
+   * Method that initializes the TableModel.
    */
   private void initialise() {
     final AbstractCommand command = getCommand();
@@ -670,16 +687,16 @@ public class UITable extends AbstractUIObject {
       }
 
       // set show check boxes
-      boolean showCheckBoxes = getCommand().isTargetShowCheckBoxes();
-      if (!showCheckBoxes) {
+      boolean showCheckBoxesTmp = getCommand().isTargetShowCheckBoxes();
+      if (!showCheckBoxesTmp) {
         final UUID cldUUID = UUID.fromString(getParameter("command"));
         if (cldUUID != null) {
           final AbstractCommand cmd = getCommand(cldUUID);
-          showCheckBoxes =
+          showCheckBoxesTmp =
               (cmd != null) && cmd.hasEvents(EventType.UI_COMMAND_EXECUTE);
         }
       }
-      this.showCheckBoxes = showCheckBoxes;
+      this.showCheckBoxes = showCheckBoxesTmp;
       // get the User spesific Attributes if exist overwrite the defaults
       try {
         if (Context.getThreadContext().containsUserAttribute(
@@ -692,8 +709,8 @@ public class UITable extends AbstractUIObject {
             getUserAttributeKey(UserAttributeKey.SORTDIRECTION))) {
           this.sortDirection =
               SortDirection
-                  .getEnum((Context.getThreadContext()
-                      .getUserAttribute(getUserAttributeKey(UserAttributeKey.SORTDIRECTION))));
+                  .getEnum((Context.getThreadContext().getUserAttribute(
+                         getUserAttributeKey(UserAttributeKey.SORTDIRECTION))));
         }
       } catch (final EFapsException e) {
         // we don't throw an error because this are only Usersettings
@@ -704,7 +721,7 @@ public class UITable extends AbstractUIObject {
   }
 
   /**
-   * are the values of the Rows filtered or not
+   * Are the values of the Rows filtered or not.
    *
    * @return true if filtered, else false
    */
@@ -728,13 +745,13 @@ public class UITable extends AbstractUIObject {
   }
 
   /**
-   * This is the setter method for the instance variable {@link #showCheckBoxes}.
+   * This is the setter method for the
+   * instance variable {@link #showCheckBoxes}.
    *
-   * @param showCheckBoxes
-   *                the showCheckBoxes to set
+   * @param _showCheckBoxes    the showCheckBoxes to set
    */
-  public void setShowCheckBoxes(final boolean showCheckBoxes) {
-    this.showCheckBoxes = showCheckBoxes;
+  public void setShowCheckBoxes(final boolean _showCheckBoxes) {
+    this.showCheckBoxes = _showCheckBoxes;
   }
 
   /**
@@ -800,26 +817,24 @@ public class UITable extends AbstractUIObject {
    * The instance method sorts the table values depending on the sort key in
    * {@link #sortKey} and the sort direction in {@link #sortDirection}.
    */
-  public boolean sort() {
-
+  public void sort() {
     if (getSortKey() != null && getSortKey().length() > 0) {
-      int sortKey = 0;
+      int sortKeyTmp = 0;
       for (int i = 0; i < getTable().getFields().size(); i++) {
         final Field field = getTable().getFields().get(i);
         if (field.getName().equals(getSortKey())) {
-          sortKey = i;
+          sortKeyTmp = i;
           break;
         }
       }
-      final int index = sortKey;
+      final int index = sortKeyTmp;
       Collections.sort(this.values, new Comparator<UIRow>() {
 
         public int compare(final UIRow _rowModel1, final UIRow _rowModel2) {
-
-          final String value1 =
-              (_rowModel1.getValues().get(index)).getCellValue();
-          final String value2 =
-              (_rowModel2.getValues().get(index)).getCellValue();
+          final String value1 = (_rowModel1.getValues().get(index))
+              .getCellValue();
+          final String value2 = (_rowModel2.getValues().get(index))
+              .getCellValue();
           return value1.compareTo(value2);
         }
       });
@@ -827,14 +842,5 @@ public class UITable extends AbstractUIObject {
         Collections.reverse(this.values);
       }
     }
-
-    return true;
   }
-
-
-
-
-
-
-
 }

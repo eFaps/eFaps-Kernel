@@ -22,6 +22,9 @@ package org.efaps.admin.datamodel.ui;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -31,16 +34,13 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
  * @todo description
  * @version $Id$
  */
-public class FieldValue implements Comparable<Object>
-{
+public class FieldValue implements Comparable<Object> {
   /**
    * Logger for this class
    */
@@ -125,27 +125,32 @@ public class FieldValue implements Comparable<Object>
    *
    * @param _callInstance   instance for which this field is called (not the
    *                        same as the instance of the field...)
+   * @param _instance       instance of the field (needed for tabel fields)
    * @param _htmlType       which HTML output must be done (create, edit,
    *                        view...)
+   * @throws EFapsException on error
    * @return string from called field value events or <code>null</code> if no
    *         field value event is defined
+   *
    */
   protected String executeEvents(final Instance _callInstance,
+                                 final Instance _instance,
                                  final HtmlType _htmlType)
-      throws EFapsException
-  {
+      throws EFapsException {
     String ret = null;
     this.htmlType = _htmlType;
     if ((this.fieldDef.getField() != null)
         && this.fieldDef.getField().hasEvents(EventType.UI_FIELD_VALUE)) {
 
-      final List<EventDefinition> events = this.fieldDef.getField().getEvents(EventType.UI_FIELD_VALUE);
+      final List<EventDefinition> events =
+                this.fieldDef.getField().getEvents(EventType.UI_FIELD_VALUE);
 
       final StringBuilder html = new StringBuilder();
       if (events != null) {
         final Parameter parameter = new Parameter();
         parameter.put(ParameterValues.UIOBJECT, this);
         parameter.put(ParameterValues.CALL_INSTANCE, _callInstance);
+        parameter.put(ParameterValues.INSTANCE, _instance);
         for (final EventDefinition evenDef : events) {
           final Return retu = evenDef.execute(parameter);
           if (retu.get(ReturnValues.VALUES) != null) {
@@ -167,12 +172,12 @@ public class FieldValue implements Comparable<Object>
    * @see #executeEvents
    * @see #getClassUI
    */
-  public String getCreateHtml(final Instance _callInstance)
-      throws EFapsException
-  {
+  public String getCreateHtml(final Instance _callInstance,
+                              final Instance _instance)
+      throws EFapsException {
     String ret = null;
 
-    ret = executeEvents(_callInstance, HtmlType.CREATEHTML);
+    ret = executeEvents(_callInstance, _instance, HtmlType.CREATEHTML);
     if (ret == null) {
       final UIInterface classUI = getClassUI();
       if (classUI != null)  {
@@ -187,12 +192,12 @@ public class FieldValue implements Comparable<Object>
    * @see #executeEvents
    * @see #getClassUI
    */
-  public String getViewHtml(final Instance _callInstance)
-      throws EFapsException
-  {
+  public String getViewHtml(final Instance _callInstance,
+                            final Instance _instance)
+        throws EFapsException {
     String ret = null;
 
-    ret = executeEvents(_callInstance, HtmlType.VIEWHTML);
+    ret = executeEvents(_callInstance, _instance, HtmlType.VIEWHTML);
     if (ret == null) {
       final UIInterface classUI = getClassUI();
       if (classUI != null)  {
@@ -207,12 +212,12 @@ public class FieldValue implements Comparable<Object>
    * @see #executeEvents
    * @see #getClassUI
    */
-  public String getEditHtml(final Instance _callInstance)
-      throws EFapsException
-  {
+  public String getEditHtml(final Instance _callInstance,
+                            final Instance _instance)
+      throws EFapsException {
     String ret = null;
 
-    ret = executeEvents(_callInstance, HtmlType.EDITHTML);
+    ret = executeEvents(_callInstance, _instance, HtmlType.EDITHTML);
     if (ret == null) {
       final UIInterface classUI = getClassUI();
       if (classUI != null)  {
@@ -226,12 +231,12 @@ public class FieldValue implements Comparable<Object>
    * @see #executeEvents
    * @see #getClassUI
    */
-  public String getSearchHtml(final Instance _callInstance)
-      throws EFapsException
-  {
+  public String getSearchHtml(final Instance _callInstance,
+                              final Instance _instance)
+      throws EFapsException {
     String ret = null;
 
-    ret = executeEvents(_callInstance, HtmlType.SEARCHHTML);
+    ret = executeEvents(_callInstance, _instance, HtmlType.SEARCHHTML);
     if (ret == null) {
       final UIInterface classUI = getClassUI();
       if (classUI != null)  {
@@ -249,8 +254,7 @@ public class FieldValue implements Comparable<Object>
    *         or <code>null</code> if not attribute is defined
    * @see #attribute
    */
-  public UIInterface getClassUI()
-  {
+  public UIInterface getClassUI() {
     return (this.attribute == null)
            ? null
            : this.attribute.getAttributeType().getUI();
@@ -259,8 +263,7 @@ public class FieldValue implements Comparable<Object>
   /**
    * @param _target target field value to compare to
    */
-  public int compareTo(final Object _target)
-  {
+  public int compareTo(final Object _target) {
     final FieldValue target = (FieldValue) _target;
 
     int ret = 0;

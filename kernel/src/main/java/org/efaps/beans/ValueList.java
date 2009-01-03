@@ -67,9 +67,9 @@ public class ValueList {
    * @return String with the Values, wich looks like the original
    */
   public String getValueList() {
-    StringBuffer buf = new StringBuffer();
+    final StringBuffer buf = new StringBuffer();
 
-    for (Token token : this.tokens) {
+    for (final Token token : this.tokens) {
       switch (token.type) {
         case EXPRESSION:
           buf.append("$<").append(token.value).append(">");
@@ -88,7 +88,7 @@ public class ValueList {
    * @param _expression
    *                String with the expression
    */
-  public void addExpression(String _expression) {
+  public void addExpression(final String _expression) {
     this.tokens.add(new Token(TokenType.EXPRESSION, _expression));
     getExpressions().add(_expression);
   }
@@ -112,7 +112,7 @@ public class ValueList {
    * @see {@link #makeString(AbstractQuery)}
    */
   public void makeSelect(final AbstractQuery _query) throws EFapsException {
-    for (String expression : getExpressions()) {
+    for (final String expression : getExpressions()) {
       _query.addSelect(expression);
     }
   }
@@ -133,15 +133,15 @@ public class ValueList {
   {
     final StringBuilder buf = new StringBuilder();
 
-    for (Token token : this.tokens) {
+    for (final Token token : this.tokens) {
       switch (token.type) {
         case EXPRESSION:
-          Attribute attr = _query.getAttribute(token.value);
-          Object value = _query.get(token.value);
+          final Attribute attr = _query.getAttribute(token.value);
+          final Object value = _query.get(token.value);
           buf.append((new FieldValue(new FieldDefinition(null, null),
                                      attr,
                                      value,
-                                     null)).getViewHtml(_callInstance));
+                                     null)).getViewHtml(_callInstance, null));
           break;
         case TEXT:
           buf.append(token.value);
@@ -182,7 +182,7 @@ public class ValueList {
      * @param _type
      * @param _value
      */
-    Token(TokenType _type, String _value) {
+    Token(final TokenType _type, final String _value) {
       this.type = _type;
       this.value = _value;
     }

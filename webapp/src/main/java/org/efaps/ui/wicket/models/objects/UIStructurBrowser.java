@@ -33,6 +33,7 @@ import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
@@ -177,7 +178,7 @@ public class UIStructurBrowser extends AbstractUIObject {
    *                PageParameters needed to initialise this
    *                StructurBrowserModel
    */
-  public UIStructurBrowser(PageParameters _parameters) {
+  public UIStructurBrowser(final PageParameters _parameters) {
     super(_parameters);
     initialise();
     this.root = true;
@@ -355,11 +356,11 @@ public class UIStructurBrowser extends AbstractUIObject {
                   instance);
           if (value != null) {
             if (this.isCreateMode() && field.isEditable()) {
-              strValue = fieldvalue.getCreateHtml(getCallInstance());
+              strValue = fieldvalue.getCreateHtml(getCallInstance(), instance);
             } else if (this.isEditMode() && field.isEditable()) {
-              strValue = fieldvalue.getEditHtml(getCallInstance());
+              strValue = fieldvalue.getEditHtml(getCallInstance(), instance);
             } else {
-              strValue = fieldvalue.getViewHtml(getCallInstance());
+              strValue = fieldvalue.getViewHtml(getCallInstance(), instance);
             }
           } else {
             strValue = "";
@@ -671,7 +672,7 @@ public class UIStructurBrowser extends AbstractUIObject {
     return this;
   }
 
-  public void setObject(Object arg0) {
+  public void setObject(final Object arg0) {
     // TODO Auto-generated method stub
 
   }
