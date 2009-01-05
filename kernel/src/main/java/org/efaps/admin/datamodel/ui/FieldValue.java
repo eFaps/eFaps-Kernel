@@ -41,18 +41,37 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class FieldValue implements Comparable<Object> {
+
   /**
-   * Logger for this class
+   * Logger for this class.
    */
   private static final Logger LOG = LoggerFactory.getLogger(FieldValue.class);
 
+  /**
+   * Enum used to identify for what kind of html document this Fieldvalue is
+   * used.
+   *
+   */
   public enum HtmlType {
+
+    /**
+     * Key used to identify a html document for create.
+     */
     CREATEHTML,
 
+    /**
+     * Key used to identify a html document for view.
+     */
     VIEWHTML,
 
+    /**
+     * Key used to identify a html document for edit.
+     */
     EDITHTML,
 
+    /**
+     * Key used to identify a html document for search.
+     */
     SEARCHHTML;
   }
 
@@ -98,19 +117,17 @@ public class FieldValue implements Comparable<Object> {
   // /////////////////////////////////////////////////////////////////////////
   // constructors / desctructors
 
+
   /**
-   * Constructor initilize all instance variables.
-   *
-   * @see #fieldDef
-   * @see #attribute
-   * @see #value
-   * @see #instance
+   * @param _fieldDef   field definition this value belongs to
+   * @param _attr       attribute the value belongs to
+   * @param _value      value of the FieldValue
+   * @param _instance   Instance the Value belongs to
    */
   public FieldValue(final FieldDefinition _fieldDef,
                     final Attribute _attr,
                     final Object _value,
-                    final Instance _instance)
-  {
+                    final Instance _instance) {
     this.fieldDef = _fieldDef;
     this.attribute = _attr;
     this.value = _value;
@@ -246,6 +263,15 @@ public class FieldValue implements Comparable<Object> {
     return ret;
   }
 
+  public Object getObject4Html() throws EFapsException {
+    Object ret = null;
+    final UIInterface classUI = getClassUI();
+    if (classUI != null) {
+      ret = classUI.getObject4Html(this);
+    }
+    return ret;
+  }
+
   /**
    * The user interface implementing this attribute is returned. If no
    * attribute for this field is defined, a <code>null</code> is returned.
@@ -294,8 +320,7 @@ public class FieldValue implements Comparable<Object> {
    * @return value of instance variable {@link #instance}
    * @see #instance
    */
-  public Instance getInstance()
-  {
+  public Instance getInstance() {
     return this.instance;
   }
 
@@ -305,8 +330,7 @@ public class FieldValue implements Comparable<Object> {
    * @return value of field variable {@link #fieldDef}
    * @see #field
    */
-  public FieldDefinition getFieldDef()
-  {
+  public FieldDefinition getFieldDef() {
     return this.fieldDef;
   }
 
@@ -316,8 +340,7 @@ public class FieldValue implements Comparable<Object> {
    * @return value of instance variable {@link #value}
    * @see #value
    */
-  public Object getValue()
-  {
+  public Object getValue() {
     return this.value;
   }
 
@@ -327,8 +350,7 @@ public class FieldValue implements Comparable<Object> {
    * @return value of instance variable {@link #attribute}
    * @see #attribute
    */
-  public Attribute getAttribute()
-  {
+  public Attribute getAttribute() {
     return this.attribute;
   }
 
@@ -338,8 +360,7 @@ public class FieldValue implements Comparable<Object> {
    * @return value of instance variable {@link #htmlType}
    * @see #htmlType
    */
-  public HtmlType getHtmlType()
-  {
+  public HtmlType getHtmlType() {
     return this.htmlType;
   }
 }

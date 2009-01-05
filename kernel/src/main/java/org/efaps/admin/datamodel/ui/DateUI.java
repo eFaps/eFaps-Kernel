@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003-2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,8 @@ import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO description
+ * Class to represent a Date for the userinterface.
+ *
  * @author jmox
  * @version $Id$
  */
@@ -59,5 +60,11 @@ public class DateUI extends AbstractUI {
       //TODO throw new EFapsException
     }
     return ret;
+  }
+
+  @Override
+  public Object getObject4Html(final FieldValue _fieldValue)
+      throws EFapsException {
+    return _fieldValue.getValue();
   }
 }
