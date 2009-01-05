@@ -738,11 +738,13 @@
               <xsd:enumeration value="Expression" />
               <xsd:enumeration value="Filterable" />
               <xsd:enumeration value="GroupCount" />
+              <xsd:enumeration value="HideLabel" />
               <xsd:enumeration value="HRef" />
               <xsd:enumeration value="Label" />
               <xsd:enumeration value="Level"></xsd:enumeration>
               <xsd:enumeration value="Order"></xsd:enumeration>
               <xsd:enumeration value="Required" />
+              <xsd:enumeration value="RowSpan"></xsd:enumeration>
               <xsd:enumeration value="Searchable" />
               <xsd:enumeration value="ShowTypeIcon" />
               <xsd:enumeration value="SortAble" />
