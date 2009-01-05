@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -27,26 +27,21 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>c45b5b98-484c-4b89-be2f-172c8d9865dd</uuid>
+  <uuid>40f4c682-458c-4fbd-bebd-709fe46f75d8</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_UI_MenuTree_Childs</name>
+    <name>Admin_UI_MenuTree_Childs_Menu_Action_MoveUp</name>
     <!-- target definitions -->
     <target>
-      <menu>Admin_UI_MenuTree_Childs_Menu</menu>
-      <table>Admin_UI_Menu_Childs</table>
-      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
-        <property name="Expand">Admin_UI_Menu2Command\FromMenu.ToCommand</property>
-      </evaluate>
+      <execute program="org.efaps.esjp.admin.ui.MenuChilds" 
+               method="moveChildUp"/>
     </target>
     <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
-    <property name="TargetShowCheckBoxes">true</property>
-    <property name="TargetTableSortKey">sortid</property>
+    <property name="AskUser">true</property>
+    <property name="Submit">true</property>
   </definition>
 
 </ui-command>
