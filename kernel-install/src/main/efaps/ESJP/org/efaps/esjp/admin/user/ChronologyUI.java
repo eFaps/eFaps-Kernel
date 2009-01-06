@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003-2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,37 +33,97 @@ import org.efaps.util.ChronologyType;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO description
+ * ESJP is used to get the value, and to render the fields for chronology.
  *
  * @author jmox
  * @version $Id$
  */
 @EFapsUUID("d24a6606-95ac-427d-9689-31182dd71cd8")
-public class ChronologyUI implements EventExecution
-{
+public class ChronologyUI implements EventExecution {
 
+  /**
+   * Method is called from within the form Admin_User_Person to retieve the
+   * value for the chronology.
+   *
+   * @param _parameter Parameters as passed from eFaps
+   * @return Return containing the timezone
+   * @throws EFapsException on error
+   */
   public Return execute(final Parameter _parameter)
-      throws EFapsException
-  {
+      throws EFapsException {
+    final Return retVal = new Return();
     final Instance instance
                     = (Instance) _parameter.get(ParameterValues.CALL_INSTANCE);
-
-    final SearchQuery query = new SearchQuery();
-    query.setObject(instance);
-    query.addSelect("Chronology");
-    query.execute();
-    String actualChrono = ChronologyType.ISO8601.getKey();
-    if (query.next()) {
-      actualChrono = (String) query.get("Chronology");
+    if (instance != null) {
+      final SearchQuery query = new SearchQuery();
+      query.setObject(instance);
+      query.addSelect("Chronology");
+      query.execute();
+      String actualChrono = ChronologyType.ISO8601.getKey();
+      if (query.next()) {
+        actualChrono = (String) query.get("Chronology");
+      }
+      retVal.put(ReturnValues.VALUES,
+                 ChronologyType.getByKey(actualChrono).getLabel());
     }
+    return retVal;
+  }
+
+  /**
+   * Method is called from within the form Admin_User_Person to render
+   * a drop down field with all Chronologies.
+   *
+   * @param _parameter Parameters as passed from eFaps
+   * @return Return containing a drop down
+   * @throws EFapsException on error
+   */
+  public Return get4Edit(final Parameter _parameter) throws EFapsException {
+    final Return retVal = new Return();
+
+    final Instance instance
+                    = (Instance) _parameter.get(ParameterValues.CALL_INSTANCE);
+    //set a default
+    String actualChrono = ChronologyType.ISO8601.getKey();
+    if (instance != null) {
+      final SearchQuery query = new SearchQuery();
+      query.setObject(instance);
+      query.addSelect("Chronology");
+      query.execute();
+      if (query.next()) {
+        actualChrono = (String) query.get("Chronology");
+      }
+    }
+    retVal.put(ReturnValues.VALUES, getField(actualChrono));
+    return retVal;
+
+  }
+
+  /**
+   * Method is called from within the form Admin_User_SettingChgForm to render
+   * a drop down field with all Chronologies.
+   *
+   * @param _parameter Parameters as passed from eFaps
+   * @return Return containing a drop down
+   * @throws EFapsException on error
+   */
+  public Return get4Setting(final Parameter _parameter)
+      throws EFapsException {
 
     final Return retVal = new Return();
+    final String actualChrono = Context.getThreadContext()
+                                    .getPerson().getChronologyType().getKey();
     retVal.put(ReturnValues.VALUES,
-               ChronologyType.getByKey(actualChrono).getLabel());
+               getField(actualChrono));
 
     return retVal;
   }
 
+  /**
+   * Method to build a drop down field for html containing all chronology.
+   *
+   * @param _actualChrono actual selected chronology
+   * @return StringBuilder with drop down
+   */
   private StringBuilder getField(final String _actualChrono) {
     final StringBuilder ret = new StringBuilder();
 
@@ -79,37 +139,5 @@ public class ChronologyUI implements EventExecution
 
     ret.append("</select>");
     return ret;
-  }
-
-  public Return get4Edit(final Parameter _parameter) throws EFapsException {
-    final Instance instance
-      = (Instance) _parameter.get(ParameterValues.CALL_INSTANCE);
-
-    final SearchQuery query = new SearchQuery();
-    query.setObject(instance);
-    query.addSelect("Chronology");
-    query.execute();
-    String actualChrono = ChronologyType.ISO8601.getKey();
-    if (query.next()) {
-      actualChrono = (String) query.get("Chronology");
-    }
-
-    final Return retVal = new Return();
-    retVal.put(ReturnValues.VALUES, getField(actualChrono));
-
-    return retVal;
-
-  }
-
-  public Return get4Setting(final Parameter _parameter)
-      throws EFapsException {
-
-    final Return retVal = new Return();
-    final String actualChrono = Context.getThreadContext()
-                                    .getPerson().getChronologyType().getKey();
-    retVal.put(ReturnValues.VALUES,
-               getField(actualChrono));
-
-    return retVal;
   }
 }

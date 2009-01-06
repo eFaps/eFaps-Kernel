@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003-2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,36 +37,69 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO description
+ * ESJP is used to get the value, and to render the fields for timezone.
  *
  * @author jmox
  * @version $Id$
  */
 @EFapsUUID("122112fd-9bd8-4855-8948-6837272195eb")
-public class TimeZoneUI implements EventExecution
-{
+public class TimeZoneUI implements EventExecution {
 
+  /**
+   * Method is called from within the form Admin_User_Person to retieve the
+   * value for the timezone.
+   *
+   * @param _parameter Parameters as passed from eFaps
+   * @return Return containing the timezone
+   * @throws EFapsException on error
+   */
   public Return execute(final Parameter _parameter)
-      throws EFapsException
-  {
+      throws EFapsException {
+    final Return retVal = new Return();
+
     final Instance instance
                     = (Instance) _parameter.get(ParameterValues.CALL_INSTANCE);
-
-    final SearchQuery query = new SearchQuery();
-    query.setObject(instance);
-    query.addSelect("TimeZone");
-    query.execute();
+    //set a default value
     String actualTz = "UTC";
-    if (query.next()) {
-      actualTz = (String) query.get("TimeZone");
-    }
 
-    final Return retVal = new Return();
+    if (instance != null) {
+      final SearchQuery query = new SearchQuery();
+      query.setObject(instance);
+      query.addSelect("TimeZone");
+      query.execute();
+      if (query.next()) {
+        actualTz = (String) query.get("TimeZone");
+      }
+    }
     retVal.put(ReturnValues.VALUES, getField(actualTz));
 
     return retVal;
   }
 
+  /**
+   * Method is called from within the form Admin_User_SettingChgForm to render
+   * a drop down field with all Timezones.
+   *
+   * @param _parameter Parameters as passed from eFaps
+   * @return Return containing a drop down
+   * @throws EFapsException on error
+   */
+  public Return get4Setting(final Parameter _parameter)
+      throws EFapsException {
+
+    final Return retVal = new Return();
+    retVal.put(ReturnValues.VALUES,
+               getField(Context.getThreadContext().getTimezone().getID()));
+
+    return retVal;
+  }
+
+  /**
+   * Method to build a drop down field for html containing all timezone.
+   *
+   * @param _actualTz actual timezone
+   * @return StringBuilder with drop down
+   */
   private StringBuilder getField(final String _actualTz) {
     final StringBuilder ret = new StringBuilder();
 
@@ -89,16 +122,5 @@ public class TimeZoneUI implements EventExecution
 
     ret.append("</select>");
     return ret;
-  }
-
-
-  public Return get4Setting(final Parameter _parameter)
-      throws EFapsException {
-
-    final Return retVal = new Return();
-    retVal.put(ReturnValues.VALUES,
-                  getField(Context.getThreadContext().getTimezone().getID()));
-
-    return retVal;
   }
 }
