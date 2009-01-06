@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,25 +32,34 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
+ * Class contains some method need to create a Person and to connect the person
+ * to a role.
+ *
  * @author jmox
  * @version $Id$
  */
 @EFapsUUID("1b777261-6da1-4003-87e4-2937e44ff269")
-public class Person
-{
+public class Person {
 
+  /**
+   * Method called to connect a Person to a Role.
+   * @param _parameter Parameter as past from eFaps to an esjp
+   * @return  empty Return
+   * @throws EFapsException on error
+   */
   public Return connectPerson2RoleUI(final Parameter _parameter)
-      throws EFapsException
-  {
-    final Return ret = new Return();
+      throws EFapsException {
 
-    final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-    final Instance parent = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    final String childOids[] = (String[]) _parameter.get(ParameterValues.OTHERS);
+    final Map<?, ?> properties
+                    = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+
+    final Instance parent = _parameter.getInstance();
+
+    final String[] childOids = _parameter.getParameterValues("selectedRow");
 
     final String type = (String) properties.get("ConnectType");
 
-    for (String childOid : childOids) {
+    for (final String childOid : childOids) {
       final Instance child = new Instance(childOid);
       final Insert insert = new Insert(type);
       insert.add("UserFromLink", "" + parent.getId());
@@ -59,7 +68,7 @@ public class Person
       insert.execute();
     }
 
-    return ret;
+    return new Return();
 
   }
 
@@ -67,20 +76,22 @@ public class Person
    * This method inserts the JAASSystem for a User into the eFaps-Database.<br>
    * It is executed on a INSERT_POST Trigger on the Type User_Person.
    *
-   * @param _parameter
+   * @param _parameter Parameter as past from eFaps to en esjp
    * @return null
-   * @throws EFapsException
+   * @throws EFapsException on error
    */
   public Return insertJaaskeyTrg(final Parameter _parameter)
-      throws EFapsException
-  {
-    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    final Map<?, ?> values =(Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
+      throws EFapsException {
+    final Instance instance = _parameter.getInstance();
+
+    final Map<?, ?> values =
+                      (Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
 
     final String jaassystemid = getJAASSystemID();
     if (jaassystemid != null) {
       final Insert insert = new Insert("Admin_User_JAASKey");
-      insert.add("Key", values.get(instance.getType().getAttribute("Name")).toString());
+      insert.add("Key", values.get(instance.getType().getAttribute("Name"))
+                            .toString());
       insert.add("JAASSystemLink", getJAASSystemID());
       insert.add("UserLink", ((Long) instance.getId()).toString());
       insert.execute();
@@ -89,14 +100,13 @@ public class Person
   }
 
   /**
-   * get the ID of the JAASSYstem for eFaps
+   * Get the ID of the JAASSYstem for eFaps.
    *
    * @return ID of the JAASSYSTEM, NULL if not found
-   * @throws EFapsException
+   * @throws EFapsException on error
    */
   private String getJAASSystemID()
-      throws EFapsException
-  {
+      throws EFapsException {
     String objId = null;
 
     final SearchQuery query = new SearchQuery();
