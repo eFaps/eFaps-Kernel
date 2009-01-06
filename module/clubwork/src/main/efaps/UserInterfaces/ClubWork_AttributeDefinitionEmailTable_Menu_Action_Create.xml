@@ -23,29 +23,26 @@
 
 -->
 
-<ui-command xmlns="http://www.efaps.org/xsd" 
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  
-  <uuid>f90fa5bc-ec50-4763-9e56-84acde172c94</uuid>
+
+  <uuid>cd66157b-d3a7-4e69-a716-d5b9b97f10a9</uuid>
   <file-application>eFaps-ClubWork</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>ClubWork_AttributeDefinitionEmail</name>
+    <name>ClubWork_AttributeDefinitionEmailTable_Menu_Action_Create</name>
     <!-- target definitions -->
     <target>
-      <menu>ClubWork_AttributeDefinitionEmailTable_Menu</menu>
-      <table>ClubWork_AttributeDefinitionAbstractTable</table>
-      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
-        <property name="Types">ClubWork_AttributeDefinitionEmail</property>
-        <property name="ExpandChildTypes">false</property>
-      </evaluate>
+      <form>ClubWork_AttributeDefinitionAbstractForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Create"/>
     </target>
-    <!-- property definitions -->
-    <property name="Target">content</property>
-    <property name="TargetShowCheckBoxes">true</property>
-    <property name="TargetTableSortKey">name</property>
+    <!-- properties -->
+    <property name="Target">modal</property>
+    <property name="TargetCreateType">ClubWork_AttributeDefinitionEmail</property>
+    <property name="TargetMode">create</property>
   </definition>
- </ui-command>
+
+</ui-command>

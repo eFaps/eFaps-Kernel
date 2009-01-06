@@ -28,9 +28,9 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <object type="ClubWork_AttributeDefinitionEmail">
-    <attribute name="Value">work</attribute>
+    <attribute name="Value">work:</attribute>
   </object>
   <object type="ClubWork_AttributeDefinitionEmail">
-    <attribute name="Value">private</attribute>
+    <attribute name="Value">private:</attribute>
   </object>
 </import>
