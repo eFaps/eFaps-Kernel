@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,21 +25,24 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+
 import org.efaps.db.Instance;
 
 /**
  * Class witch is used for parsing Parameters to the Events.
  *
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class Parameter  {
+
   /**
-   * This enum holds the definitions of Parameters, to be accessed
+   * This enum holds the definitions of Parameters, to be accessed.
    */
   public enum ParameterValues {
+
     /**
-     * Holds an AccessType, used for AccessCheck-Programs
+     * Holds an AccessType, used for AccessCheck-Programs.
      */
     ACCESSTYPE,
 
@@ -56,7 +59,7 @@ public class Parameter  {
     CALL_INSTANCE,
 
     /**
-     * Holds an Instance
+     * Holds an Instance.
      * */
     INSTANCE,
 
@@ -73,31 +76,45 @@ public class Parameter  {
     PARAMETERS,
 
     /**
-     * Holds the Properties of the trigger
+     * Holds the Properties of the trigger.
      */
     PROPERTIES,
 
     /**
-     * Place mark for additional Informations
+     * Place mark for additional Informations.
      */
     OTHERS,
 
     /**
-     * Holds the UserInterfaceObject on which the event is called
+     * Holds the UserInterfaceObject on which the event is called.
      */
     UIOBJECT;
   }
 
-  private final Map<ParameterValues, Object> map = new HashMap<ParameterValues, Object>();
+  /**
+   * Map used as the store for this Parameter.
+   */
+  private final Map<ParameterValues, Object> map
+                                      = new HashMap<ParameterValues, Object>();
 
+  /**
+   * Put an object into the underlying map.
+   * @param _key key to the object
+   * @param _value  object
+   */
   public void put(final ParameterValues _key,
-                  final Object _value)
-  {
+                  final Object _value) {
     this.map.put(_key, _value);
   }
 
-  public Object get(final ParameterValues _key)
-  {
+
+  /**
+   * Method to get an object from the underlying map.
+   *
+   * @param _key key  to the object
+   * @return  object from the underlying map
+   */
+  public Object get(final ParameterValues _key) {
     return this.map.get(_key);
   }
 
@@ -108,8 +125,7 @@ public class Parameter  {
    * @return call instance of this parameter; or if not defined
    *         <code>null</code>
    */
-  public Instance getCallInstance()
-  {
+  public Instance getCallInstance() {
     return (Instance) this.map.get(ParameterValues.CALL_INSTANCE);
   }
 
@@ -118,8 +134,7 @@ public class Parameter  {
    *
    * @return instance of this parameter; or if not defined <code>null</code>
    */
-  public Instance getInstance()
-  {
+  public Instance getInstance() {
     return (Instance) this.map.get(ParameterValues.INSTANCE);
   }
 
@@ -130,9 +145,8 @@ public class Parameter  {
    *         <code>null</code>
    */
   @SuppressWarnings("unchecked")
-  public Map<String,String[]> getParameters()
-  {
-    return (Map<String,String[]>) this.map.get(ParameterValues.PARAMETERS);
+  public Map<String, String[]> getParameters() {
+    return (Map<String, String[]>) this.map.get(ParameterValues.PARAMETERS);
   }
 
   /**
@@ -145,9 +159,8 @@ public class Parameter  {
    *         not exists
    * @see #getParameters  to get the map of parameters
    */
-  public String[] getParameterValues(final String _key)
-  {
-    final Map<String,String[]> params = getParameters();
+  public String[] getParameterValues(final String _key) {
+    final Map<String, String[]> params = getParameters();
     return (params != null)
            ? params.get(_key)
            : null;
@@ -162,16 +175,19 @@ public class Parameter  {
    * @return value for given key or <code>null</code> if not exists
    * @see #getParameterValues to get the string array for given key
    */
-  public String getParameterValue(final String _key)
-  {
+  public String getParameterValue(final String _key) {
     final String[] paramValues = getParameterValues(_key);
     return ((paramValues != null) && (paramValues.length > 0))
            ? paramValues[0]
            : null;
   }
 
-  public Set<?> entrySet()
-  {
+  /**
+   * Method to get the entry set of the underlying map.
+   *
+   * @return entry set
+   */
+  public Set<?> entrySet() {
     return this.map.entrySet();
   }
 
@@ -181,8 +197,7 @@ public class Parameter  {
    * @return string representation of this parameter instance.
    */
   @Override
-  public String toString()
-  {
+  public String toString() {
     return new ToStringBuilder(this)
                 .appendSuper(super.toString())
                 .append("map", this.map.toString())
