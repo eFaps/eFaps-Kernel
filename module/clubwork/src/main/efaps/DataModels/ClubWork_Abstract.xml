@@ -101,6 +101,13 @@
     </attribute>
     
     <attribute>
+      <name>Birthday</name>
+      <type>Date</type>
+      <sqltable>ClubWork_AbstractSQLTable</sqltable>
+      <sqlcolumn>BIRTHDAY</sqlcolumn>
+    </attribute>
+    
+    <attribute>
       <name>ImageFileName</name>
       <type>String</type>
       <sqltable>ClubWork_AbstractSQLTable</sqltable>

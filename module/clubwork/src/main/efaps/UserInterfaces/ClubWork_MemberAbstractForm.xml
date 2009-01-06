@@ -121,6 +121,11 @@
       <property name="Expression">Modified</property>
       <property name="Searchable">true</property>
     </field>
+    <field name="birthday">
+      <property name="Creatable">false</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Birthday</property>
+    </field>
     <field name="EmailSet" character="Set">
       <property name="Columns">40</property>
       <property name="Creatable">false</property>
@@ -130,9 +135,9 @@
       <property name="Searchable">true</property>
       <property name="Order">Description|Email</property>
     </field>
-  <field name="affiliatedheader" character="Heading">
+    <field name="affiliatedheader" character="Heading">
       <property name="Level">1</property>
-      <property name="Label">Admin_User_Person/Affiliated.Heading</property>
+      <property name="Label">ClubWork_MemberAbstractForm/Affiliated.Heading</property>
     </field>
     <field name="affiliatedtable" character="Target">
       <table>ClubWork_MemberAbstractTable</table>

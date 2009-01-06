@@ -94,7 +94,7 @@
     
     <attribute>
       <name>Date</name>
-      <type>DateTime</type>
+      <type>Date</type>
       <sqltable>ClubWork_FeeSQLTable</sqltable>
       <sqlcolumn>DATE</sqlcolumn>
     </attribute>
