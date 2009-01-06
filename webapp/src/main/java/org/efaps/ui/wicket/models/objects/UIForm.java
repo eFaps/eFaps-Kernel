@@ -177,7 +177,7 @@ public class UIForm extends AbstractUIObject {
             strValue = fieldvalue.getSearchHtml(getCallInstance(), null);
           }
           final UIFormCell cell =
-            new UIFormCell(field, null, strValue, null, field.isRequired(), label, attr.getAttributeType().getName());
+            new UIFormCell(field, null, null, strValue, null, field.isRequired(), label, attr.getAttributeType().getName());
           if (isSearchMode()) {
             cell.setReference(null);
           }
@@ -372,7 +372,7 @@ public class UIForm extends AbstractUIObject {
                     }
                   }
                   final String uiType = attr!=null?attr.getAttributeType().getName():"";
-                  final UIFormCell cell = new UIFormCell(field, oid, strValue,
+                  final UIFormCell cell = new UIFormCell(field, oid,fieldvalue.getObject4Html() , strValue,
                       icon, isEditMode() ? field.isRequired() : false, label,uiType);
                   row.add(cell);
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003-2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,45 +34,56 @@ import org.efaps.admin.ui.field.Field;
  */
 public class UIFormCell extends UITableCell {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
   /**
-   * instance variable storing the Value for the first cell as a Label
+   * Instance variable storing the Value for the first cell as a Label.
    */
   private final String cellLabel;
 
   /**
-   * instance variable storing if in case of edit or create this field is
-   * required
+   * Instance variable storing if in case of edit or create this field is
+   * required.
    */
   private final boolean required;
 
   /**
-   * instance variable storing the name of the field
+   * Stored if the label should be hidden.
    */
-  private final String name;
-
   private final boolean hideLabel;
 
+  /**
+   * Stores the number of rows that must be spanned.
+   */
   private final int rowSpan;
 
+  /**
+   * Stores the name of the type.
+   */
   private final String typeName;
 
 
 
   public UIFormCell(final Field _field, final String _oid,
-                    final String _cellValue, final String _icon,
-                    final boolean _required, final String _label,
-                    final String _typeName) {
-    super(_field, _oid, _cellValue, _icon);
+                    final Object _origValue, final String _cellValue,
+                    final String _icon, final boolean _required,
+                    final String _label, final String _typeName) {
+    super(_field, _oid, _origValue, _cellValue, _icon);
     this.required = _required;
     this.cellLabel = DBProperties.getProperty(_label);
-    this.name = _field.getName();
     this.hideLabel = _field.isHideLabel();
     this.rowSpan = _field.getRowSpan();
     this.typeName = _typeName;
   }
 
+  /**
+   * This is the getter method for the instance variable {@link #typeName}.
+   *
+   * @return value of instance variable {@link #typeName}
+   */
   public String getTypeName() {
     return this.typeName;
   }
@@ -96,20 +107,19 @@ public class UIFormCell extends UITableCell {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #name}.
+   * This is the getter method for the instance variable {@link #hideLabel}.
    *
-   * @return value of instance variable {@link #name}
+   * @return value of instance variable {@link #hideLabel}
    */
-
-  @Override
-  public String getName() {
-    return this.name;
-  }
-
   public boolean isHideLabel() {
     return this.hideLabel;
   }
 
+  /**
+   * This is the getter method for the instance variable {@link #rowSpan}.
+   *
+   * @return value of instance variable {@link #rowSpan}
+   */
   public int getRowSpan() {
     return this.rowSpan;
   }

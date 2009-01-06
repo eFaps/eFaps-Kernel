@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003-2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,19 +40,30 @@ import org.joda.time.format.ISODateTimeFormat;
  */
 public class DateFieldWithPicker extends DateTextField {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
+
+  /**
+   * Name of the inputfield.
+   */
   private final String inputName;
 
   /**
-   * @param id
-   * @param model
-   * @param converter
+   * @param _wicketId   wicketId of the Component
+   * @param _model      model for the Component
+   * @param _converter  converter for the Component
+   * @param _inputName  name of the input field
    */
-  public DateFieldWithPicker(final String id, final IModel<Date> model,
-      final DateConverter converter, final String _inputName) {
-    super(id, model, converter);
+  public DateFieldWithPicker(final String _wicketId,
+                             final IModel<Date> _model,
+                             final DateConverter _converter,
+                             final String _inputName) {
+
+    super(_wicketId, _model, _converter);
     this.inputName = _inputName;
-    this.add(new DatePicker(){
+    this.add(new DatePicker() {
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -65,7 +76,8 @@ public class DateFieldWithPicker extends DateTextField {
   public String getDateAsString(final String _value) {
     String ret = null;
 
-    final DateTimeFormatter fmt = DateTimeFormat.forPattern(this.getTextFormat());
+    final DateTimeFormatter fmt =
+                              DateTimeFormat.forPattern(this.getTextFormat());
     fmt.withLocale(getLocale());
     final DateTime dt = fmt.parseDateTime(_value);
     final DateTimeFormatter isofmt = ISODateTimeFormat.dateTime();

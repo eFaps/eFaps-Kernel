@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003-2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.joda.time.DateTime;
 
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.components.LabelComponent;
@@ -39,6 +40,7 @@ import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
+import org.efaps.ui.wicket.models.objects.UIForm;
 
 /**
  * TODO description
@@ -48,10 +50,19 @@ import org.efaps.ui.wicket.models.cell.UIFormCell;
  */
 public class ValueCellPanel extends Panel {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
-  DateFieldWithPicker dateTextField = null;
+
+  /**
+   * Instance field needed in case that a field needs a datefield.
+   */
+  private DateFieldWithPicker dateTextField = null;
+
+
   public ValueCellPanel(final String _wicketId, final IModel<UIFormCell> _model,
-                        final boolean _ajaxLink) {
+                        final UIForm _formmodel, final boolean _ajaxLink) {
     super(_wicketId, _model);
 
     final UIFormCell uiFormCell = (UIFormCell) super.getDefaultModelObject();
@@ -62,16 +73,23 @@ public class ValueCellPanel extends Panel {
       } else {
         this.add(new StaticImageComponent("icon", uiFormCell.getIcon()));
       }
-      if ("Date".equals(uiFormCell.getTypeName())) {
+      // in case of create or edit for a Date
+      if ((_formmodel.isCreateMode() || _formmodel.isEditMode())
+          && "Date".equals(uiFormCell.getTypeName())) {
+
+        final Date date = _formmodel.isCreateMode() ? new Date()
+                    : ((DateTime) uiFormCell.getOrigValue()).toDate();
+
         this.dateTextField = new DateFieldWithPicker("label",
-            new Model<Date>(new Date()),
-            new StyleDateConverter(false),
-            uiFormCell.getName());
+                                                  new Model<Date>(date),
+                                                  new StyleDateConverter(false),
+                                                  uiFormCell.getName());
 
         this.add(this.dateTextField);
 
       } else {
-        this.add(new LabelComponent("label", new Model<String>(uiFormCell.getCellValue())));
+        this.add(new LabelComponent("label",
+                                 new Model<String>(uiFormCell.getCellValue())));
       }
       this.add(new WebMarkupContainer("link").setVisible(false));
 
@@ -95,20 +113,18 @@ public class ValueCellPanel extends Panel {
       } else {
         link.add(new StaticImageComponent("linkIcon", uiFormCell.getIcon()));
       }
-      link
-          .add(new LabelComponent("linkLabel", new Model<String>(uiFormCell.getCellValue())));
+      link.add(new LabelComponent("linkLabel",
+                                 new Model<String>(uiFormCell.getCellValue())));
       this.add(link);
     }
-
   }
 
   @Override
   protected void onAfterRender() {
     super.onAfterRender();
-    if (this.dateTextField!=null) {
+    if (this.dateTextField != null) {
       final FormPanel formpanel = this.findParent(FormPanel.class);
       formpanel.addDateComponent(this.dateTextField);
     }
   }
-
 }

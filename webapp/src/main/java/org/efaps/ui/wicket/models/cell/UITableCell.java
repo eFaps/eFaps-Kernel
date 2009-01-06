@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003-2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,48 +33,69 @@ import org.efaps.admin.ui.field.Field;
  * @author jmox
  * @version $Id:CellModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class UITableCell  implements IClusterable{
+public class UITableCell  implements IClusterable {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
   /**
-   * instance variable storing the oid for the model
+   * instance variable storing the oid for the model.
    */
   private final String oid;
 
   /**
-   * instance variable storing the reference of the field
+   * instance variable storing the reference of the field.
    */
   private String reference;
 
   /**
-   * instance variable storing the actual value of the field
+   * Variable storing the value as it was retrieved from the eFaps-Database by
+   * a query.
+   */
+  private final Object origValue;
+
+  /**
+   * Variable storing the string representation of the value.
+   * of the field.
    */
   private final String cellValue;
 
   /**
-   * instance variable storing the icon of the field
+   * instance variable storing the icon of the field.
    */
   private final String icon;
 
   /**
-   * instance variable storing the target of the field
+   * instance variable storing the target of the field.
    */
   private final Target target;
 
   /**
-   * instance variable storing if the cell is fixed width
+   * instance variable storing if the cell is fixed width.
    */
   private final boolean fixedWidth;
 
   /**
-   * instance variable storing the name of the field
+   * Instance variable storing the name of the field.
    */
   private final String name;
 
+
+
+  /**
+   * @param _field      Field
+   * @param _oid        oid of the cell
+   * @param _origValue  original Value
+   * @param _cellvalue  Value for the cell
+   * @param _icon       icon of the cell
+   */
   public UITableCell(final Field _field, final String _oid,
-                        final String _cellvalue, final String _icon) {
+                     final Object _origValue, final String _cellvalue,
+                     final String _icon) {
     super();
+    this.origValue = _origValue;
     this.reference = _field.getReference();
     this.target = _field.getTarget();
     this.oid = _oid;
@@ -115,11 +136,19 @@ public class UITableCell  implements IClusterable{
   }
 
   /**
+   * This is the getter method for the instance variable {@link #origValue}.
+   *
+   * @return value of instance variable {@link #origValue}
+   */
+  public  Object getOrigValue() {
+    return this.origValue;
+  }
+
+  /**
    * This is the getter method for the instance variable {@link #cellvalue}.
    *
    * @return value of instance variable {@link #cellvalue}
    */
-
   public String getCellValue() {
     return this.cellValue;
   }
@@ -154,9 +183,9 @@ public class UITableCell  implements IClusterable{
   }
 
   /**
-   * This method returns if the field is a link which makes a checkout
+   * This method returns if the field is a link which makes a checkout.
    *
-   * @return
+   * @return true if it is a checkout
    */
   public boolean isCheckOut() {
     return this.reference.contains("/servlet/checkout");

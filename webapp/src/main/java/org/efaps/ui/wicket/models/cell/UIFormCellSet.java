@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003-2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.efaps.db.Instance;
  * @author jmox
  * @version $Id$
  */
-public class UIFormCellSet extends UIFormCell{
+public class UIFormCellSet extends UIFormCell {
 
   private static final long serialVersionUID = 1L;
 
@@ -40,9 +40,14 @@ public class UIFormCellSet extends UIFormCell{
 
   private int newCount = 0;
 
-  public boolean isEditMode() {
-    return this.editMode;
-  }
+  private final Map<Integer,Map<Integer,String>> xy2value
+                                = new HashMap<Integer,Map<Integer,String>>();
+
+  private final Map<Integer,String> x2definition
+                                = new HashMap<Integer,String>();
+
+  private final Map<Integer,Instance> y2Instance
+                                = new HashMap<Integer, Instance>();
 
   /**
    * @param _field
@@ -55,15 +60,18 @@ public class UIFormCellSet extends UIFormCell{
   public UIFormCellSet(final Field _field, final String _oid,
       final String value, final String _icon, final boolean _required,
       final String _label, final boolean _edit) {
-    super(_field, _oid, value, _icon, _required, _label,"");
+    super(_field, _oid, null, value, _icon, _required, _label, "");
     this.editMode = _edit;
   }
 
-  public int getNewCount(){
+  public int getNewCount() {
     return this.newCount++;
   }
 
-  private final Map<Integer,Map<Integer,String>> xy2value = new HashMap<Integer,Map<Integer,String>>();
+  public boolean isEditMode() {
+    return this.editMode;
+  }
+
 
   /**
    * @param child
@@ -84,7 +92,7 @@ public class UIFormCellSet extends UIFormCell{
   public int getYsize() {
     final Map<Integer, String> xmap = this.xy2value.get(0);
     int ret = 0;
-    if (xmap!=null) {
+    if (xmap != null) {
       ret = xmap.size();
     }
     return ret;
@@ -102,12 +110,12 @@ public class UIFormCellSet extends UIFormCell{
   public String getXYValue(final int _x, final int _y) {
     String ret = null;
     final Map<Integer, String> xmap = this.xy2value.get(_x);
-    if (xmap!=null){
+    if (xmap != null){
       ret = xmap.get(_y);
     }
     return ret;
   }
-  private final Map<Integer,String> x2definition = new HashMap<Integer,String>();
+
 
   public void addDefiniton(final int _x, final String _definition) {
     this.x2definition.put(_x, _definition);
@@ -121,7 +129,6 @@ public class UIFormCellSet extends UIFormCell{
     return this.x2definition.get(_x);
   }
 
-  private final Map<Integer,Instance> y2Instance = new HashMap<Integer, Instance>();
   /**
    * @param y
    * @param next

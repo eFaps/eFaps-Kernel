@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003-2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,24 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
+/**
+ * TODO description
+ *
+ * @author jmox
+ * @version $Id$
+ */
 public class RowPanel extends Panel {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
   public RowPanel(final String _wicketId, final IModel<FormRow> _model,
                   final UIForm _formmodel, final Page _page,
                   final FormPanel _formPanel) {
     super(_wicketId, _model);
+
     final FormRow row = (FormRow) super.getDefaultModelObject();
     final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
     add(cellRepeater);
@@ -64,32 +74,37 @@ public class RowPanel extends Panel {
         } else {
           labelCell.add(new SimpleAttributeModifier("class", "eFapsFormLabel"));
         }
-        if (cell.getRowSpan()>0) {
-          labelCell.add(new SimpleAttributeModifier ("rowspan", ((Integer)cell.getRowSpan()).toString()));
+        if (cell.getRowSpan() > 0) {
+          labelCell.add(new SimpleAttributeModifier("rowspan",
+                                     ((Integer) cell.getRowSpan()).toString()));
         }
       }
       Panel valueCell;
       if (cell instanceof UIFormCellSet) {
-        valueCell = new YPanel(cellRepeater.newChildId(),new FormCellSetModel((UIFormCellSet)cell));
+        valueCell = new YPanel(cellRepeater.newChildId(),
+                               new FormCellSetModel((UIFormCellSet) cell));
       } else {
          valueCell =
-          new ValueCellPanel(cellRepeater.newChildId(), new FormCellModel( cell),
-              ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
-                  .getPageMapName()));
+          new ValueCellPanel(cellRepeater.newChildId(),
+                             new FormCellModel(cell),
+                             _formmodel,
+                          ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
+                                                      .getPageMapName()));
       }
-      if (cell.getRowSpan()>0) {
-        valueCell.add(new SimpleAttributeModifier ("rowspan", ((Integer)cell.getRowSpan()).toString()));
+      if (cell.getRowSpan() > 0) {
+        valueCell.add(new SimpleAttributeModifier("rowspan",
+                                    ((Integer) cell.getRowSpan()).toString()));
       }
-
 
       Integer colspan =
-        2 * (_formmodel.getMaxGroupCount() - _model.getObject().getGroupCount()) + 1;
+        2 * (_formmodel.getMaxGroupCount() - _model.getObject().getGroupCount())
+        + 1;
 
       if (cell.isHideLabel()) {
         colspan++;
       }
 
-      if (row.isRowSpan()){
+      if (row.isRowSpan()) {
         colspan = colspan - 2;
 
       }
