@@ -44,7 +44,7 @@ import org.efaps.ui.wicket.models.objects.UIForm;
  * @author jmox
  * @version $Id$
  */
-public class ValuePanel extends Panel{
+public class ValuePanel extends Panel {
   /**
    *
    */
@@ -54,26 +54,29 @@ public class ValuePanel extends Panel{
    * @param id
    * @param model
    */
-  public ValuePanel(final String _id, final IModel<?> model, final Item<XYValue> _item) {
-    super(_id, model);
+  public ValuePanel(final String _wicketId, final IModel<?> model,
+                    final Item<XYValue> _item) {
+    super(_wicketId, model);
     final XYValue asd = (XYValue) _item.getDefaultModelObject();
     final UIFormCellSet set = (UIFormCellSet) super.getDefaultModelObject();
-    final Pattern tagpattern = Pattern.compile("</?\\w+((\\s+\\w+(\\s*=\\s*(?:\".*?\"|'.*?'|[^'\">\\s]+))?)+\\s*|\\s*)/?>");
-    final StringBuilder regex = new StringBuilder().append("(?i)name\\s*=\\s*\"(?-i)").append(set.getName()).append("\"");
-    final NumberFormat nf= NumberFormat.getInstance();
+    final Pattern tagpattern = Pattern
+        .compile("</?\\w+((\\s+\\w+(\\s*=\\s*(?:\".*?\"|'.*?'|[^'\">\\s]+))?)+\\s*|\\s*)/?>");
+    final StringBuilder regex = new StringBuilder()
+      .append("(?i)name\\s*=\\s*\"(?-i)").append(set.getName()).append("\"");
+    final NumberFormat nf = NumberFormat.getInstance();
     nf.setMinimumIntegerDigits(2);
     nf.setMaximumIntegerDigits(2);
 
-    long valueid=0;
+    long valueid = 0;
 
     final StringBuilder bld = new StringBuilder();
-    if (set.isEditMode()){
+    if (set.isEditMode()) {
       valueid = set.getInstance(asd.getY()).getId();
       bld.append("<input type=\"hidden\" value=\"")
         .append(valueid).append("\" name=\"hiddenId")
         .append(set.getName()).append(nf.format(asd.getY())).append("\"/>");
     }
-    for (int x = 0; x<asd.getX();x++){
+    for (int x = 0; x < asd.getX(); x++) {
       bld.append("<td>");
       final String value = set.getXYValue(x, asd.getY());
       final Matcher matcher = tagpattern.matcher(value);
@@ -82,13 +85,14 @@ public class ValuePanel extends Panel{
         value.substring(start , matcher.start());
         bld.append(value.substring(start , matcher.start()));
         final String tag = matcher.group();
-        final StringBuilder name = new StringBuilder().append(" name=\"").append(set.getName())
-        .append(nf.format(asd.getY())).append(nf.format(x)).append("\" ");
-        ;
+        final StringBuilder name = new StringBuilder()
+          .append(" name=\"").append(set.getName())
+          .append(nf.format(asd.getY())).append(nf.format(x)).append("\" ");
+
         bld.append(tag.replaceAll(regex.toString(), name.toString()));
-        start= matcher.end();
+        start = matcher.end();
       }
-      bld.append(value.substring(start ,value.length()));
+      bld.append(value.substring(start, value.length()));
       bld.append("</td>");
     }
     final WebMarkupContainer table = new WebMarkupContainer("eFpasSetValueTable");
@@ -99,13 +103,15 @@ public class ValuePanel extends Panel{
     if (set.isEditMode()) {
       final WebMarkupContainer td = new WebMarkupContainer("removeTD");
       table.add(td);
-      final AjaxRemove remove = new AjaxRemove("remove",valueid,set.getName());
+      final AjaxRemove remove = new AjaxRemove("remove",
+                                               valueid,
+                                               set.getName());
       td.add(remove);
       final StaticImageComponent image = new StaticImageComponent("removeIcon");
       image.setReference(YPanel.ICON_DELETE);
       remove.add(image);
     } else {
-      table.add( new WebMarkupContainer("removeTD").setVisible(false));
+      table.add(new WebMarkupContainer("removeTD").setVisible(false));
     }
   }
 
@@ -128,9 +134,7 @@ public class ValuePanel extends Panel{
       this.name = _name;
    }
 
-    /* (non-Javadoc)
-     * @see org.apache.wicket.ajax.markup.html.AjaxLink#onClick(org.apache.wicket.ajax.AjaxRequestTarget)
-     */
+
     @Override
     public void onClick(final AjaxRequestTarget _target) {
       final UIForm formmodel = (UIForm) this.getPage().getDefaultModelObject();
@@ -150,9 +154,6 @@ public class ValuePanel extends Panel{
       }
       this.getParent().getParent().setVisible(false);
       _target.addComponent(this.getParent().getParent());
-
     }
-
   }
-
 }
