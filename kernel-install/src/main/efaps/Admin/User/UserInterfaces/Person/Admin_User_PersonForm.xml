@@ -136,6 +136,10 @@
       <property name="Editable">false</property>
       <property name="Viewable">true</property>
       <property name="Expression">TimeZone</property>
+      <trigger program="org.efaps.esjp.admin.access.AccessOnField" 
+               method="viewOnly"
+               name="Admin_User_PersonForm/TimeZone4View" 
+               event="UI_ACCESSCHECK"></trigger>
     </field>
     <field name="TimeZone4Edit">
       <property name="Columns">40</property>
@@ -155,8 +159,12 @@
       <property name="Expression">Chronology</property>
       <trigger program="org.efaps.esjp.admin.user.ChronologyUI" 
                method="execute"
-               name="Admin_User_PersonForm/Chronology4View" 
+               name="Admin_User_PersonForm/Chronology4View.UI_FIELD_VALUE" 
                event="UI_FIELD_VALUE"/>
+      <trigger program="org.efaps.esjp.admin.access.AccessOnField" 
+               method="viewOnly"
+               name="Admin_User_PersonForm/Chronology4View.UI_ACCESSCHECK" 
+               event="UI_ACCESSCHECK"></trigger>
     </field>
     <field name="Chronology4Edit">
       <property name="Columns">40</property>
