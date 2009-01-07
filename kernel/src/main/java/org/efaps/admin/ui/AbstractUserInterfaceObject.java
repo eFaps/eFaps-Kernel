@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,8 @@ import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * This Class is the Abstract Class for all UserInterfaces in eFaps.<br/> In
- * this Class only a few Methods are defined wich are commun to all Class inside
- * the UserInterface Package. With this Class all
+ * this Class only a few Methods are defined which are common to all Class
+ * inside the UserInterface Package. With this Class all
  * <code>UserInterfaceObjects</code> can be initialized, the Access is checked
  * and the Triggers for the <code>UserInterfaceObjects</code> are handled.
  *
@@ -60,8 +60,24 @@ import org.efaps.util.cache.CacheReloadInterface;
  */
 public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance variables
+  /**
+   * This enum id used to define the different Modes a Target of a Command can
+   * have, like create, edit etc.
+   */
+  public static enum TargetMode {
+    /** TargetMode for connect. */
+    CONNECT,
+    /** TargetMode for connect. */
+    CREATE,
+    /** TargetMode for create. */
+    EDIT,
+    /** TargetMode for edit. */
+    SEARCH,
+    /** TargetMode for unkown. */
+    UNKNOWN,
+    /** TargetMode for view. */
+    VIEW;
+  }
 
   /**
    * The instance variable is an Access HashSet to store all users (person,
@@ -69,22 +85,16 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
    *
    * @see #getAccess
    */
-  private final Set<AbstractUserObject> access =
-      new HashSet<AbstractUserObject>();
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // constructors / destructors
+  private final Set<AbstractUserObject> access
+                                        = new HashSet<AbstractUserObject>();
 
   /**
    * Constructor to set the id, the uuid and the name of the user interface
    * object.
    *
-   * @param _id
-   *                id to set
-   * @param _uuid
-   *                uuid to set (as String)
-   * @param _name
-   *                name to set
+   * @param _id     id to set
+   * @param _uuid   uuid to set (as String)
+   * @param _name   name to set
    */
   protected AbstractUserInterfaceObject(final long _id, final String _uuid,
                                         final String _name) {
@@ -97,11 +107,10 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
    * The instance method reads all needed information for this user interface
    * object. Here, only the properties are read from the database
    *
-   * @param _context
-   *                context for this request
    * @see #readFromDB4Properties
    * @see #readFromDB4Links
    * @see #readFromDB4Access
+   * @throws CacheReloadException on error during reload
    */
   protected void readFromDB() throws CacheReloadException {
     readFromDB4Properties();
@@ -112,9 +121,8 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
   /**
    * The instance method reads the access for this user interface object.
    *
-   * @param _context
-   *                for this request
    * @todo use SearchQuery
+   * @throws CacheReloadException on error during reload
    */
   private void readFromDB4Access() throws CacheReloadException {
     Statement stmt = null;
@@ -137,45 +145,46 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
         }
       }
       resultset.close();
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new CacheReloadException("could not read access for "
           + "'"
           + getName()
           + "'", e);
-    }
-    finally {
+    } finally {
       if (stmt != null) {
         try {
           stmt.close();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
         }
       }
     }
   }
 
   /**
-   * Check, if the user of the context has access to this user interface object.<br>
+   * Check, if the user of the context has access to this user interface object.
+   * <br>
    * The Check is made in the following order: <br>
    * <ol>
-   * <li>If no access Uuser or role is assigned to this user interface object,
-   * all user have access and the return is <i>true</i> => go on with Step 3</li>
+   * <li>If no access User or role is assigned to this user interface object,
+   *     all user have access and the return is <i>true</i>
+   *      => go on with Step 3</li>
    * <li>else check if the context person is assigned to one of the user
    * objects.</li>
    * <li> if Step 1 or Step 2 have <i>true</i> and the context an Event of the
    * Type <code>TriggerEvent.ACCESSCHECK</code>, the return of the trigger
    * initiated program is returned</li>
    * </ol>
-   *
+   * @param _targetMode targetmode of the access
    * @return <i>true</i> if context user has access, otherwise <i>false</i> is
    *         returned
-   * @throws EFapsException
+   * @throws EFapsException on error
    */
-  public boolean hasAccess() throws EFapsException {
+  public boolean hasAccess(final TargetMode _targetMode) throws EFapsException {
     boolean ret = false;
     if (getAccess().isEmpty()) {
       ret = true;
     } else {
-      for (AbstractUserObject userObject : getAccess()) {
+      for (final AbstractUserObject userObject : getAccess()) {
         if (userObject.isAssigned()) {
           ret = true;
           break;
@@ -189,10 +198,10 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
 
       final Parameter parameter = new Parameter();
       parameter.put(ParameterValues.UIOBJECT, this);
-      for (EventDefinition event : events) {
+      parameter.put(ParameterValues.ACCESSMODE, _targetMode);
+      for (final EventDefinition event : events) {
         final Return retIn = event.execute(parameter);
         ret = retIn.get(ReturnValues.TRUE) != null;
-
       }
     }
     return ret;
@@ -216,8 +225,7 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
   /**
    * Initialise the cache of Userinterfaces.
    *
-   * @param _context
-   *                eFaps context for this request
+   * @throws CacheReloadException on error during reload
    */
   public static void initialise() throws CacheReloadException {
     Image.getCache().initialise();
@@ -235,18 +243,25 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
   }
 
   /**
-   * Inner Class to store the UserInterfaces in aCache
+   * Inner Class to store the UserInterfaces in a Cache.
    *
    * @param <UIObj>
    */
-  static protected class UserInterfaceObjectCache<UIObj extends AbstractUserInterfaceObject>
+  protected static class UserInterfaceObjectCache<UIObj extends AbstractUserInterfaceObject>
       extends Cache<UIObj> {
 
     // /////////////////////////////////////////////////////////////////////////
     // instance variables
 
+    /**
+     * Stores the caller class.
+     */
     private final Class<UIObj> callerClass;
 
+    /**
+     * Constructor.
+     * @param _callerClass callerClass
+     */
     protected UserInterfaceObjectCache(final Class<UIObj> _callerClass) {
       super(new CacheReloadInterface() {
 
@@ -264,28 +279,26 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
     /**
      * All cached user interface objects are read into the cache.
      *
-     * @see #initialise
+     * @throws CacheReloadException on error during reload
      */
     protected void readFromDB() throws CacheReloadException {
-      for (UIObj uiObj : getCache4Id().values()) {
+      for (final UIObj uiObj : getCache4Id().values()) {
         uiObj.readFromDB();
       }
     }
 
     /**
-     * Initialise the cache of a specific user interface object type. Initialise
+     * Initialize the cache of a specific user interface object type. Initialize
      * means, that all all objects of this user interface type are read from the
      * database and stored in the cache. If the eFaps admin type itself is not
-     * defined, that initialiase does nothing (this could happen in the create
-     * phase).<br/> After initialise, the user interface object itself is read
+     * defined, that initialize does nothing (this could happen in the create
+     * phase).<br/> After initialize, the user interface object itself is read
      * with method {@link #readFromDB}.
      *
-     * @param _context
-     *                eFaps context for this request
      * @see #readFromDB
+     * @throws CacheReloadException on error during reload
      */
-    protected void initialise() throws CacheReloadException
-    {
+    protected void initialise() throws CacheReloadException {
       final Class<UIObj> uiObjClass = getCallerClass();
       try {
         if (Type.get(getEFapsClassName()) != null) {
@@ -306,36 +319,36 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
             add(uiObj2);
           }
         }
-      } catch (NoSuchMethodException e) {
+      } catch (final NoSuchMethodException e) {
         throw new CacheReloadException("class '"
             + uiObjClass.getName()
             + "' does not implement contructor (Long, String, String)", e);
-      } catch (InstantiationException e) {
+      } catch (final InstantiationException e) {
         throw new CacheReloadException("could not instantiate class '"
             + uiObjClass.getName()
             + "'", e);
-      } catch (IllegalAccessException e) {
+      } catch (final IllegalAccessException e) {
         throw new CacheReloadException("could not access class '"
             + uiObjClass.getName()
             + "'", e);
-      } catch (InvocationTargetException e) {
+      } catch (final InvocationTargetException e) {
         throw new CacheReloadException(
             "could not invoce constructor of class '"
                 + uiObjClass.getName()
                 + "'", e);
-      } catch (EFapsException e) {
+      } catch (final EFapsException e) {
         throw new CacheReloadException("could not initialise cache", e);
       }
     }
 
     /**
-     * read an <code>UserInterfaceObject</code> from the Database
+     * Read an <code>UserInterfaceObject</code> from the Database.
      *
      * @see #read(SearchQuery)
      * @param _id
      *                ID of the <code>UserInterfaceObject</code> to search for
      * @return <code>UserInterfaceObject</code>
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     protected UIObj read(final long _id) throws EFapsException {
       try {
@@ -345,21 +358,20 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
         query.addSelect("ID");
         query.addSelect("Name");
         return read(query);
-      } catch (Throwable e) {
+      } catch (final Throwable e) {
         throw new EFapsException(UserInterfaceObjectCache.class,
             "read.Throwable4Id", e, _id);
       }
     }
 
     /**
-     * read an <code>UserInterfaceObject</code> from the Database
+     * Read an <code>UserInterfaceObject</code> from the Database.
      *
      * @see #read(SearchQuery)
-     * @param _name
-     *                Name of the <code>UserInterfaceObject</code> to search
+     * @param _name   Name of the <code>UserInterfaceObject</code> to search
      *                for
-     * @return<code>UserInterfaceObject</code>
-     * @throws EFapsException
+     * @return UserInterfaceObject
+     * @throws EFapsException on error
      */
     protected UIObj read(final String _name) throws EFapsException {
       try {
@@ -369,27 +381,28 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
         query.addSelect("ID");
         query.addSelect("Name");
         return read(query);
-      } catch (Throwable e) {
+      } catch (final Throwable e) {
         throw new EFapsException(UserInterfaceObjectCache.class,
             "read.Throwable4Name", e, _name);
       }
     }
 
     /**
-     * get the <code>EFapsClassName</code> of this
-     * <code>UserInterfaceObject</code>
+     * Get the <code>EFapsClassName</code> of this
+     * <code>UserInterfaceObject</code>.
      *
      * @return <code>EFapsClassName</code>
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     private EFapsClassNames getEFapsClassName() throws EFapsException {
       final Class<UIObj> uiObjClass = getCallerClass();
       try {
-        return ((EFapsClassNames) uiObjClass.getField("EFAPS_CLASSNAME").get(null));
-      } catch (NoSuchFieldException e) {
+        return ((EFapsClassNames) uiObjClass.getField("EFAPS_CLASSNAME")
+                                                                  .get(null));
+      } catch (final NoSuchFieldException e) {
         throw new EFapsException(UserInterfaceObjectCache.class,
-            "getEFapsClassName.EFapsClassNameNotExist", e, uiObjClass.getName());
-      } catch (IllegalAccessException e) {
+           "getEFapsClassName.EFapsClassNameNotExist", e, uiObjClass.getName());
+      } catch (final IllegalAccessException e) {
         throw new EFapsException(UserInterfaceObjectCache.class,
             "getEFapsClassName.EFapsClassNameNotAccessable", e, uiObjClass
                 .getName());
@@ -397,14 +410,14 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
     }
 
     /**
-     * This Method is called to return a <code>UserInterfaceObject</code>
+     * This Method is called to return a <code>UserInterfaceObject</code>.
      *
      * @see #read(long)
      * @see #read(String)
      * @param _query
      *                <code>SearchQuery</code> to be called
      * @return <code>UserInterfaceObject</code>
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     private UIObj read(final SearchQuery _query) throws EFapsException {
       UIObj uiObj = null;
@@ -420,23 +433,23 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
           add(uiObj);
           uiObj.readFromDB();
         }
-      } catch (NoSuchMethodException e) {
+      } catch (final NoSuchMethodException e) {
         throw new EFapsException(UserInterfaceObjectCache.class,
             "read.ConstructorNotFound", e, uiObjClass.getName());
-      } catch (SecurityException e) {
+      } catch (final SecurityException e) {
         throw new EFapsException(UserInterfaceObjectCache.class,
             "read.ConstructorNotAccessable", e, uiObjClass.getName());
-      } catch (IllegalArgumentException e) {
+      } catch (final IllegalArgumentException e) {
         throw new EFapsException(UserInterfaceObjectCache.class,
             "read.ConstructorWithCorrectArgumentsNotExists", e, uiObjClass
                 .getName());
-      } catch (InstantiationException e) {
+      } catch (final InstantiationException e) {
         throw new EFapsException(UserInterfaceObjectCache.class,
             "read.ClassIsNotClass", e, uiObjClass.getName());
-      } catch (IllegalAccessException e) {
+      } catch (final IllegalAccessException e) {
         throw new EFapsException(UserInterfaceObjectCache.class,
             "read.ConstructorNotPublic", e, uiObjClass.getName());
-      } catch (InvocationTargetException e) {
+      } catch (final InvocationTargetException e) {
         final Throwable t = e.getCause();
         if (t instanceof EFapsException) {
           throw (EFapsException) t;
@@ -444,14 +457,13 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
           throw new EFapsException(UserInterfaceObjectCache.class,
               "read.UIObjectNotInstanceable", t, uiObjClass.getName());
         }
-      } catch (Throwable e) {
+      } catch (final Throwable e) {
         throw new EFapsException(UserInterfaceObjectCache.class,
             "read.Throwable", e);
-      }
-      finally {
+      } finally {
         try {
           _query.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
       }
       return uiObj;
@@ -461,9 +473,10 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
     // getter and setter methods
 
     /**
-     * get the CallerClass
+     * Get the CallerClass.
      *
      * @see #callerClasscallerClass
+     * @return UIObject
      */
     private Class<UIObj> getCallerClass() {
       return this.callerClass;

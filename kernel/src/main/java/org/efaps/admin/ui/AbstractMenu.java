@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -38,7 +39,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @author tmo
  * @version $Id$
  */
-abstract public class AbstractMenu extends AbstractCommand {
+public abstract class AbstractMenu extends AbstractCommand {
 
   /**
    * All sub commands or menus are store in the tree map. The tree map is used
@@ -55,12 +56,12 @@ abstract public class AbstractMenu extends AbstractCommand {
   /**
    * Constructor to set the id,uuid and name of the menu object.
    *
-   * @param _id
-   *                id of the command to set
-   * @param _name
-   *                name of the command to set
+   * @param _id     id of the command to set
+   * @param _uuid   UUID of the command to set
+   * @param _name   name of the command to set
    */
-  protected AbstractMenu(final long _id, final String _uuid, final String _name) {
+  protected AbstractMenu(final long _id, final String _uuid,
+                         final String _name) {
     super(_id, _uuid, _name);
   }
 
@@ -73,7 +74,7 @@ abstract public class AbstractMenu extends AbstractCommand {
    * @param _id
    *                id of the sub command / menu to add
    */
-  abstract protected void add(final long _sortId, final long _id);
+  protected abstract void add(final long _sortId, final long _id);
 
   /**
    * Add a command to the menu structure.
@@ -105,18 +106,19 @@ abstract public class AbstractMenu extends AbstractCommand {
    * menu. If yes, the user is allowed to access this menu instance, other the
    * user is not allowed to access this menu.
    *
+   * @param _targetMode TargetMode of the Command
    * @return <i>true</i>if context user has access, otherwise <i>false</i> is
    *         returned
-   * @throws EFapsException
+   * @throws EFapsException on error
    */
   @Override
-  public boolean hasAccess() throws EFapsException {
-    boolean ret = super.hasAccess();
+  public boolean hasAccess(final TargetMode _targetMode) throws EFapsException {
+    boolean ret = super.hasAccess(_targetMode);
 
     if (ret && getCommands().size() > 0) {
       ret = false;
-      for (AbstractCommand cmd : getCommands()) {
-        if (cmd.hasAccess()) {
+      for (final AbstractCommand cmd : getCommands()) {
+        if (cmd.hasAccess(_targetMode)) {
           ret = true;
           break;
         }
@@ -127,13 +129,14 @@ abstract public class AbstractMenu extends AbstractCommand {
 
   /**
    * Returns all information from the menu as string.
+   * @return String representation of this AbstractMenu
    */
   @Override
   public String toString() {
     final ToStringBuilder buf =
         new ToStringBuilder(this).appendSuper(super.toString());
 
-    for (AbstractCommand cmd : getCommands()) {
+    for (final AbstractCommand cmd : getCommands()) {
       buf.append(" ").append(cmd);
     }
     return buf.toString();
@@ -159,9 +162,8 @@ abstract public class AbstractMenu extends AbstractCommand {
    * object. The method extends the original method, because the sub menus and
    * commands must be read.
    *
-   * @param _context
-   *                eFaps context for this request
    * @see #readFromDB4Childs
+   * @throws  CacheReloadException on error during load
    */
   @Override
   protected void readFromDB() throws CacheReloadException {
@@ -173,12 +175,11 @@ abstract public class AbstractMenu extends AbstractCommand {
    * The instance method gets all sub menus and commands and adds them to this
    * menu instance via method {@link #add(long)}.
    *
-   * @param _context  eFaps context for this request
    * @see #readFromDB
    * @see #add(long)
+   *  @throws  CacheReloadException on error during load
    */
-  private void readFromDB4Childs() throws CacheReloadException
-  {
+  private void readFromDB4Childs() throws CacheReloadException {
     try {
       final Instance menuInst = new Instance(Type.get(MENU), getId());
       final SearchQuery query = new SearchQuery();
@@ -192,7 +193,7 @@ abstract public class AbstractMenu extends AbstractCommand {
         final long sortId = (Long) query.get("ID");
         add(sortId, commandId);
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       throw new CacheReloadException("could not read childs for menu '"
           + getName()
           + "'", e);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ import org.efaps.util.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- * This class represents the Commands wich enable the interaction with a User.<br>
+ * This class represents the Commands which enable the interaction with a User.
+ * <br>
  * Buttons in the UserInterface a represented by this Class.
  *
  * @author tmo
@@ -49,73 +50,75 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
   // static Variables
 
   /**
-   * This enum is used to define the Sortdirection of a Field
+   * This enum is used to define the Sortdirection of a Field.
    */
   public static enum SortDirection {
+
+    /**
+     * Sortdirection descending.
+     */
     DESCENDING("desc"),
+
+    /**
+     * Sortdirection ascending.
+     */
     ASCENDING("asc"),
+
+    /**
+     * Sortdirection none.
+     */
     NONE("");
 
+    /**
+     * Variable storing the value.
+     */
     public final String value;
 
     /**
-     * private constructor setting the value for the enum
+     * Private constructor setting the value for the enum.
      *
-     * @param _value
+     * @param _value value
      */
-    private SortDirection(String _value) {
+    private SortDirection(final String _value) {
       this.value = _value;
-      mapper.put(this.value, this);
+      MAPPER.put(this.value, this);
     }
 
     /**
-     * method to get a SortDirection by his value
+     * Method to get a SortDirection by its value.
      *
-     * @param _value
+     * @param _value  Value for sort direction
      * @return SortDirection
      */
     public static SortDirection getEnum(final String _value) {
-      return mapper.get(_value);
+      return MAPPER.get(_value);
     }
   }
 
   /**
-   * this map is used as a store by the enum SortDirection for the method
-   * getEnum
+   * This map is used as a store by the enum SortDirection for the method
+   * getEnum.
    */
-  private static final Map<String, SortDirection> mapper =
-      new HashMap<String, SortDirection>();
+  private static final Map<String, SortDirection> MAPPER =
+                                          new HashMap<String, SortDirection>();
 
   /**
-   * This enum id used to define the different Targets a Command can have
+   * This enum id used to define the different Targets a Command can have.
    */
   public static enum Target {
-    /** The target of the href is the content frame */
+    /** The target of the href is the content frame. */
     CONTENT,
-    /** The target of the href is the hidden frame */
+    /** The target of the href is the hidden frame. */
     HIDDEN,
-    /** The target of the href is a Modal Window */
+    /** The target of the href is a Modal Window. */
     MODAL,
-    /** The target of the href is a new Popup Window */
+    /** The target of the href is a new Popup Window. */
     POPUP,
     /**
      * The target of the href is not known. This is maybe, if a javascript
      * function is directly called.
      */
     UNKNOWN;
-  }
-
-  /**
-   * This enum id used to define the different Modes a Target of a Command can
-   * have, like create, edit etc.
-   */
-  public static enum TargetMode {
-    CONNECT,
-    CREATE,
-    EDIT,
-    SEARCH,
-    UNKNOWN,
-    VIEW;
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -167,7 +170,8 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
 
   /**
    * If the value is set to <i>true</i>. the commands submits the current form
-   * to the given href url and the given target. The default value is <i>false</i>.
+   * to the given href url and the given target. The default value is
+   * <i>false</i>.
    *
    * @see #isSubmit
    * @see #setSubmit
@@ -211,6 +215,9 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    */
   private Type targetCreateType = null;
 
+  /**
+   * Is the target Menu/Command the default.
+   */
   private boolean targetDefaultMenu = true;
 
   /**
@@ -300,7 +307,8 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
   private String targetTitle = null;
 
   /**
-   * The instance variable stores the window height of the popup window ({@link #target}
+   * The instance variable stores the window height of the popup window
+   * ({@link #target}
    * is set to {@link #TARGET_POPUP}). The default value is <i>400</i>.
    *
    * @see #getWindowHeight
@@ -309,7 +317,8 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
   private int windowHeight = 400;
 
   /**
-   * The instance variable stores the window width of the popup window ({@link #target}
+   * The instance variable stores the window width of the popup window
+   * ({@link #target}
    * is set to {@link #TARGET_POPUP}). The default value is <i>600</i>.
    *
    * @see #getWindowWidth
@@ -323,15 +332,13 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * Constructor to set the id and name of the command object. The constructor
    * also sets the label of the command and the titel of the target.
    *
-   * @param _id
-   *                id of the command to set
-   * @param _name
-   *                name of the command to set
-   * @param _uuid
-   *                uuid of the command to set
+   * @param _id     id of the command to set
+   * @param _name   name of the command to set
+   * @param _uuid   uuid of the command to set
    * @see #label
    */
-  protected AbstractCommand(long _id, final String _uuid, final String _name) {
+  protected AbstractCommand(final long _id, final String _uuid,
+                            final String _name) {
     super(_id, _uuid, _name);
     setLabel(_name + ".Label");
     setTargetTitle(_name + ".Title");
@@ -343,7 +350,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
   /**
    * Add a new role for access to this command.
    *
-   * @param _role
+   * @param _role Role to add
    * @see #access
    * @see #getAccess
    */
@@ -377,7 +384,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
   }
 
   /**
-   * This method returns the Property of the Label and not the name
+   * This method returns the Property of the Label and not the name.
    *
    * @return String
    */
@@ -495,14 +502,13 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * This is the setter method for the instance variable
    * {@link #targetConnectAttribute}.
    *
-   * @param _targetConnectAttribute
-   *                new value for instance variable
-   *                {@link #targetConnectAttribute}
+   * @param _targetConnectAttr  new value for instance variable
+   *                            {@link #targetConnectAttribute}
    * @see #targetConnectAttribute
    * @see #getTargetConnectAttribute
    */
-  public void setTargetConnectAttribute(final Attribute _targetConnectAttribute) {
-    this.targetConnectAttribute = _targetConnectAttribute;
+  public void setTargetConnectAttribute(final Attribute _targetConnectAttr) {
+    this.targetConnectAttribute = _targetConnectAttr;
   }
 
   /**
@@ -544,11 +550,10 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * This is the setter method for the instance variable
    * {@link #targetDefaultMenu}.
    *
-   * @param targetDefaultMenu
-   *                the targetDefaultMenu to set
+   * @param _targetDefaultMenu the targetDefaultMenu to set
    */
-  public void setTargetDefaultMenu(boolean targetDefaultMenu) {
-    this.targetDefaultMenu = targetDefaultMenu;
+  public void setTargetDefaultMenu(final boolean _targetDefaultMenu) {
+    this.targetDefaultMenu = _targetDefaultMenu;
   }
 
   /**
@@ -705,7 +710,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #getTargetTableFilters
    */
   private void setTargetTableFilters(
-                                     final List<TargetTableFilter> _targetTableFilters) {
+      final List<TargetTableFilter> _targetTableFilters) {
     this.targetTableFilters = _targetTableFilters;
   }
 
@@ -732,7 +737,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #getTargetTableSortDirection
    */
   public void setTargetTableSortDirection(
-                                          final SortDirection _targetTableSortDirection) {
+      final SortDirection _targetTableSortDirection) {
     this.targetTableSortDirection = _targetTableSortDirection;
   }
 
@@ -984,14 +989,14 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @param _toId       to id
    * @param _toType     to type
    * @param _toName     to name
+   * @throws Exception on error
    */
   @Override
   protected void setLinkProperty(final EFapsClassNames _linkType,
                                  final long _toId,
                                  final EFapsClassNames _toType,
                                  final String _toName)
-      throws Exception
-  {
+      throws Exception {
     switch (_linkType) {
       case LINK_ICON:
         setIcon(RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE
@@ -1019,12 +1024,12 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    *
    * @param _name     name of the property
    * @param _value    value of the property
+   * @throws CacheReloadException on error during reload
    */
   @Override
   protected void setProperty(final String _name,
                              final String _value)
-      throws CacheReloadException
-  {
+      throws CacheReloadException {
     if ("AskUser".equals(_name)) {
       if ("true".equalsIgnoreCase(_value)) {
         setAskUser(true);
@@ -1113,7 +1118,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
   /**
    * The class stores the filter of the target table.
    */
-  public class TargetTableFilter {
+  public final class TargetTableFilter {
 
     /**
      * The instance variable stores the sql clause.
