@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,9 @@ import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.tree.AbstractTree;
 import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.Model;
+
 import org.efaps.admin.ui.AbstractCommand;
-import org.efaps.admin.ui.AbstractCommand.TargetMode;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
@@ -170,7 +171,7 @@ public class MenuTree extends AbstractTree {
       private static final long serialVersionUID = 1L;
 
       @Override
-      public void onComponentTag(Component component, ComponentTag tag) {
+      public void onComponentTag(final Component component, final ComponentTag tag) {
         super.onComponentTag(component, tag);
         if (getTreeState().isNodeSelected(node)) {
           tag.put("class", "eFapsMenuTreeRowSelected");
@@ -381,8 +382,8 @@ public class MenuTree extends AbstractTree {
     }
 
     @Override
-    protected void onComponentTagBody(MarkupStream markupStream,
-                                      ComponentTag openTag) {
+    protected void onComponentTagBody(final MarkupStream markupStream,
+                                      final ComponentTag openTag) {
       final Response response = RequestCycle.get().getResponse();
 
       for (int i = this.level - 1; i >= 0; --i) {

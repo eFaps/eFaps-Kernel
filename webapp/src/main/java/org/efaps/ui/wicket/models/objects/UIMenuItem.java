@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.RestartResponseException;
+
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractMenu;
@@ -272,7 +273,7 @@ public class UIMenuItem extends AbstractUIObject  {
     try {
       if (command instanceof AbstractMenu) {
         for (final AbstractCommand subCmd : ((AbstractMenu) command).getCommands()) {
-          if (subCmd != null && subCmd.hasAccess()) {
+          if (subCmd != null && subCmd.hasAccess(getMode())) {
             this.childs
                 .add(new UIMenuItem(subCmd.getUUID(), getOid()));
           }
@@ -436,7 +437,7 @@ public class UIMenuItem extends AbstractUIObject  {
 
 
 
-  public void setObject(UIMenuItem arg0) {
+  public void setObject(final UIMenuItem arg0) {
     // TODO Auto-generated method stub
 
   }

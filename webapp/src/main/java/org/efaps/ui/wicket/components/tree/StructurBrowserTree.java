@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,9 +46,10 @@ import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.AbstractReadOnlyModel;
+
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
-import org.efaps.admin.ui.AbstractCommand.TargetMode;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
@@ -150,7 +151,7 @@ public class StructurBrowserTree extends DefaultAbstractTree {
         private static final long serialVersionUID = 1L;
 
         @Override
-        protected void onComponentTag(ComponentTag tag) {
+        protected void onComponentTag(final ComponentTag tag) {
           super.onComponentTag(tag);
           tag.put("style", "background-image: url('" + model.getImage() + "')");
         }
@@ -319,7 +320,7 @@ public class StructurBrowserTree extends DefaultAbstractTree {
       private static final long serialVersionUID = 1L;
 
       @Override
-      public void onComponentTag(Component component, ComponentTag tag) {
+      public void onComponentTag(final Component component, final ComponentTag tag) {
         super.onComponentTag(component, tag);
         if (getTreeState().isNodeSelected(node)) {
           tag.put("class", "row-selected");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
  */
 
 package org.efaps.ui.wicket.behaviors.update;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 
-import org.efaps.admin.ui.AbstractCommand.TargetMode;
 
 /**
  * This Interface is used for Behaviors wich are stored in
@@ -35,38 +35,38 @@ import org.efaps.admin.ui.AbstractCommand.TargetMode;
 public interface UpdateInterface {
 
   /**
-   * This method should return if the class should respond on a Ajaxrequest
+   * This method should return if the class should respond on a Ajaxrequest.
    *
-   * @return
+   * @return true if ajax
    */
-  public boolean isAjaxCallback();
+  boolean isAjaxCallback();
 
   /**
-   * Thi smethod should return the CallBackScript of the Behavior
+   * Thi smethod should return the CallBackScript of the Behavior.
    *
-   * @return
+   * @return ajax callback
    */
-  public String getAjaxCallback();
+  String getAjaxCallback();
 
   /**
-   * Method used to set the Oid
+   * Method used to set the Oid.
    *
-   * @param _oid
+   * @param _oid oid to set
    */
-  public void setOid(final String _oid);
+  void setOid(final String _oid);
 
   /**
-   * Method used to set the TargetMode
+   * Method used to set the TargetMode.
    *
-   * @param _mode
+   * @param _mode mode to set
    */
-  public void setMode(final TargetMode _mode);
+  void setMode(final TargetMode _mode);
 
   /**
-   * returns the Id of this Behavior
+   * returns the Id of this Behavior.
    *
-   * @return
+   * @return id
    */
-  public String getId();
+  String getId();
 
 }
