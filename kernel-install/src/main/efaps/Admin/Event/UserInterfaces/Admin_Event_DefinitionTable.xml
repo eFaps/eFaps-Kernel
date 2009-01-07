@@ -42,18 +42,18 @@
       <property name="Filterable">true</property>
       <property name="Width">3</property>
     </field>
+    <field name="name">
+      <property name="Expression">Name</property>
+      <property name="Label">Admin_Event_Definition/Name.Label</property>
+      <property name="AlternateOID">OID</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Width">3</property>
+    </field>
     <field name="abstract">
       <property name="Expression">Abstract.Name</property>
       <property name="Label">Admin_Event_Definition/Abstract.Label</property>
       <property name="ShowTypeIcon">true</property>
       <property name="AlternateOID">Abstract.OID</property>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Width">3</property>
-    </field>
-    <field name="name">
-      <property name="Expression">Name</property>
-      <property name="Label">Admin_Event_Definition/Name.Label</property>
-      <property name="AlternateOID">OID</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Width">3</property>
     </field>
