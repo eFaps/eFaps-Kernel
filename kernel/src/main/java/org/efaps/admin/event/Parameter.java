@@ -47,6 +47,11 @@ public class Parameter  {
     ACCESSTYPE,
 
     /**
+     * Holds the mode of the access for the ui.
+     */
+    ACCESSMODE,
+
+    /**
      * Call instance, means
      * <ul>
      * <li>for a web table, the instance for which the table values are
