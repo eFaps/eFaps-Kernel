@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,91 +115,10 @@ public class UIForm extends AbstractUIObject {
     return Form.get(this.formUUID);
   }
 
-  private void createForm() throws EFapsException{
-    int rowgroupcount = 1;
-    FormRow row = new FormRow();
-    final Form form = Form.get(this.formUUID);
-
-    Type type = null;
-    if (isCreateMode()) {
-      type = getCommand().getTargetCreateType();
-    } else {
-      final List<EventDefinition> events = getCommand().getEvents(
-          EventType.UI_TABLE_EVALUATE);
-      for (final EventDefinition eventDef : events) {
-        final String tmp = eventDef.getProperty("Types");
-        if (tmp != null) {
-          type = Type.get(tmp);
-        }
-      }
-    }
-    if (type!=null) {
-      FormElement formelement = new FormElement();
-      this.elements.add(new Element(ElementType.FORM, formelement));
-
-      for (final Field field : form.getFields()) {
-        if (field instanceof FieldGroup) {
-          if (field.isCreatable()) {
-            final FieldGroup group = (FieldGroup) field;
-            if (getMaxGroupCount() < group.getGroupCount()) {
-              setMaxGroupCount(group.getGroupCount());
-            }
-            rowgroupcount = group.getGroupCount();
-          }
-        } else if (field instanceof FieldTable ){
-
-        } else if (field instanceof FieldHeading && field.isCreatable()){
-          this.elements.add(new Element(ElementType.HEADING,
-              new UIHeading((FieldHeading) field)));
-          formelement = new FormElement();
-          this.elements.add(new Element(ElementType.FORM, formelement));
-        } else if (field.isCreatable() && isCreateMode()
-                  || field.isSearchable() && isSearchMode()){
-
-          final Attribute attr = type.getAttribute(field.getExpression());
-
-          String label;
-          if (field.getLabel() != null) {
-            label = field.getLabel();
-          } else if (attr != null)  {
-            label = attr.getParent().getName() + "/" + attr.getName() + ".Label";
-          } else {
-            label = "Unknown";
-          }
-          final Instance fieldInstance = getCallInstance();
-          final FieldValue fieldvalue = new FieldValue(new FieldDefinition(
-              "egal", field), attr, "", fieldInstance);
-
-          String strValue = null;
-          if (isCreateMode()) {
-            strValue = fieldvalue.getCreateHtml(getCallInstance(), null);
-          } else if (isSearchMode()) {
-            strValue = fieldvalue.getSearchHtml(getCallInstance(), null);
-          }
-          final UIFormCell cell =
-            new UIFormCell(field, null, null, strValue, null, field.isRequired(), label, attr.getAttributeType().getName());
-          if (isSearchMode()) {
-            cell.setReference(null);
-          }
-
-          row.add(cell);
-          rowgroupcount--;
-          if (rowgroupcount < 1) {
-            rowgroupcount = 1;
-            if (row.getGroupCount() > 0) {
-              formelement.addRowModel(row);
-              row = new FormRow();
-            }
-          }
-        }
-      }
-    }
-  }
-
   public void execute() {
     try {
       if (isCreateMode() || isSearchMode()) {
-        createForm();
+        execute4CreateSearch();
       } else {
         int rowgroupcount = 1;
         int rowspan = 1;
@@ -251,7 +170,7 @@ public class UIForm extends AbstractUIObject {
                 addNew = false;
               }
               Attribute attr = null;
-              if (field.getExpression()!=null) {
+              if (field.getExpression() != null) {
                 attr = query.getAttribute(field.getExpression());
               }
               // evaluate the label of the field
@@ -332,7 +251,6 @@ public class UIForm extends AbstractUIObject {
                   }
                   y++;
                 }
-
                 // we only add multiline if we have a value or we are in
                 // editmodus
                 if (tmp != null || isEditMode()) {
@@ -340,7 +258,7 @@ public class UIForm extends AbstractUIObject {
                 }
               } else {
                 Object value = null;
-                if (field.getExpression()!=null){
+                if (field.getExpression() != null) {
                   value = query.get(field.getExpression());
                 }
 
@@ -364,7 +282,8 @@ public class UIForm extends AbstractUIObject {
                 String icon = field.getIcon();
                 if (fieldInstance != null) {
                   oid = fieldInstance.getOid();
-                  if (field.isShowTypeIcon() && fieldInstance.getType() != null) {
+                  if (field.isShowTypeIcon()
+                      && fieldInstance.getType() != null) {
                     final Image image = Image.getTypeIcon(fieldInstance
                         .getType());
                     if (image != null) {
@@ -402,6 +321,94 @@ public class UIForm extends AbstractUIObject {
       throw new RestartResponseException(new ErrorPage(e));
     }
     super.setInitialised(true);
+  }
+
+  private void execute4CreateSearch() throws EFapsException{
+    int rowgroupcount = 1;
+    FormRow row = new FormRow();
+    final Form form = Form.get(this.formUUID);
+
+    Type type = null;
+    if (isCreateMode()) {
+      type = getCommand().getTargetCreateType();
+    } else {
+      final List<EventDefinition> events = getCommand().getEvents(
+          EventType.UI_TABLE_EVALUATE);
+      if (events != null) {
+        for (final EventDefinition eventDef : events) {
+          final String tmp = eventDef.getProperty("Types");
+          if (tmp != null) {
+            type = Type.get(tmp);
+            break;
+          }
+        }
+      }
+    }
+
+    FormElement formelement = new FormElement();
+    this.elements.add(new Element(ElementType.FORM, formelement));
+
+    for (final Field field : form.getFields()) {
+      if (field instanceof FieldGroup) {
+        if (field.isCreatable()) {
+          final FieldGroup group = (FieldGroup) field;
+          if (getMaxGroupCount() < group.getGroupCount()) {
+            setMaxGroupCount(group.getGroupCount());
+          }
+          rowgroupcount = group.getGroupCount();
+        }
+      } else if (field instanceof FieldTable) {
+        // if it is a FieldTable we don't do anything
+      } else if (field instanceof FieldHeading && field.isCreatable()) {
+        this.elements.add(new Element(ElementType.HEADING, new UIHeading(
+            (FieldHeading) field)));
+        formelement = new FormElement();
+        this.elements.add(new Element(ElementType.FORM, formelement));
+      } else if (field.isCreatable() && isCreateMode() || field.isSearchable()
+          && isSearchMode()) {
+
+        final Attribute attr = type != null
+                               ? type.getAttribute(field.getExpression())
+                               : null;
+
+        String label;
+        if (field.getLabel() != null) {
+          label = field.getLabel();
+        } else if (attr != null) {
+          label = attr.getParent().getName() + "/" + attr.getName() + ".Label";
+        } else {
+          label = "Unknown";
+        }
+        final Instance fieldInstance = getCallInstance();
+        final FieldValue fieldvalue = new FieldValue(new FieldDefinition(
+            "egal", field), attr, "", fieldInstance);
+
+        String strValue = null;
+        if (isCreateMode()) {
+          strValue = fieldvalue.getCreateHtml(getCallInstance(), null);
+        } else if (isSearchMode()) {
+          strValue = fieldvalue.getSearchHtml(getCallInstance(), null);
+        }
+        final String attrTypeName = attr != null
+                                    ? attr.getAttributeType().getName()
+                                    : null;
+        final UIFormCell cell = new UIFormCell(field, null, null, strValue,
+                  null, field.isRequired(), label, attrTypeName);
+        if (isSearchMode()) {
+          cell.setReference(null);
+        }
+
+        row.add(cell);
+        rowgroupcount--;
+        if (rowgroupcount < 1) {
+          rowgroupcount = 1;
+          if (row.getGroupCount() > 0) {
+            formelement.addRowModel(row);
+            row = new FormRow();
+          }
+        }
+      }
+    }
   }
 
   /**
