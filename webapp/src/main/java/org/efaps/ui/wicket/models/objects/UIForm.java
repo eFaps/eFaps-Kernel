@@ -477,7 +477,7 @@ public class UIForm extends AbstractUIObject {
           }
           rowgroupcount = group.getGroupCount();
         }
-      //} else if (field instanceof FieldTable) {
+      } else if (field instanceof FieldTable) {
         // if it is a FieldTable we don't do anything
       } else if (field instanceof FieldHeading && field.isCreatable()) {
         this.elements.add(new Element(ElementType.HEADING, new UIHeading(
