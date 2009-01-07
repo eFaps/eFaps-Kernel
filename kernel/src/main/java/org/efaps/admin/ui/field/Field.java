@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,10 +53,10 @@ public class Field extends AbstractUserInterfaceObject {
   /**
    * The static variable defines the class name in eFaps.
    */
-  public final static EFapsClassNames EFAPS_CLASSNAME = FIELD;
+  public static final EFapsClassNames EFAPS_CLASSNAME = FIELD;
 
   /**
-   * Logger for this class
+   * Logger for this class.
    */
   private static final Logger LOG = LoggerFactory.getLogger(Field.class);
 
@@ -220,14 +220,14 @@ public class Field extends AbstractUserInterfaceObject {
   private UIInterface classUI = null;
 
   /**
-   * This field can be sorted in a Webtable
+   * This field can be sorted in a Webtable.
    *
    * @see #isSortAble()
    */
   private boolean sortAble = true;
 
   /**
-   * This field can be filtered in a Webtable
+   * This field can be filtered in a Webtable.
    *
    * @see #isFilterable()
    * @see #setFilterable(boolean)
@@ -235,22 +235,22 @@ public class Field extends AbstractUserInterfaceObject {
   private boolean filterable = false;
 
   /**
-   * The width of the field as weighted int
+   * The width of the field as weighted int.
    */
   private int width;
 
   /**
-   * is the width of this field fixed or or weighted
+   * Is the width of this field fixed or or weighted.
    */
   private boolean fixedWidth = false;
 
   /**
-   * is this field in case of targetmode view viewable
+   * Is this field in case of targetmode view viewable.
    */
   private boolean viewable = true;
 
   /**
-   * Should the Label been hiden.
+   * Should the Label been hidden.
    */
   private boolean hideLabel = false;
 
@@ -260,7 +260,7 @@ public class Field extends AbstractUserInterfaceObject {
   private int rowSpan = 0;
 
   /**
-   * Standart-Constructor
+   * Standart-Constructor.
    */
   public Field() {
     super(0, null, null);
@@ -269,10 +269,9 @@ public class Field extends AbstractUserInterfaceObject {
   /**
    * This is the constructor of the field class.
    *
-   * @param _id
-   *                id of the field instance
-   * @param _name
-   *                name of the field instance
+   * @param _id      id of the field instance
+   * @param _uuid    UUID of the field instance
+   * @param _name    name of the field instance
    */
   public Field(final long _id, final String _uuid, final String _name) {
     super(_id, _uuid, _name);
@@ -282,11 +281,10 @@ public class Field extends AbstractUserInterfaceObject {
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Field}.
    *
-   * @param _id
-   *                id to search in the cache
+   * @param _id   id to search in the cache
    * @return instance of class {@link Field}
    */
-  static public Field get(final long _id) {
+  public static Field get(final long _id) {
     AbstractCollection col = null;
 
     try {
@@ -375,11 +373,14 @@ public class Field extends AbstractUserInterfaceObject {
   // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * @param _context  eFaps context for this request
+   *
+   * Set a link property for the field.
+   *
    * @param _linkType type of the link property
    * @param _toId     to id
    * @param _toType   to type
    * @param _toName   to name
+   * @throws Exception on error
    */
   @Override
   protected void setLinkProperty(final EFapsClassNames _linkType,
@@ -400,16 +401,13 @@ public class Field extends AbstractUserInterfaceObject {
   /**
    * The instance method sets a new property value.
    *
-   * @param _context
-   *                eFaps context for this request
-   * @param _name
-   *                name of the property
-   * @param _value
-   *                value of the property
+   * @param _name   name of the property
+   * @param _value  value of the property
+   * @throws CacheReloadException on problems with the cache
    */
   @Override
   protected void setProperty(final String _name, final String _value)
-                                                                     throws CacheReloadException {
+      throws CacheReloadException {
     if ("AlternateOID".equals(_name)) {
       setAlternateOID(_value);
     } else if ("ClassNameUI".equals(_name)) {
@@ -699,7 +697,7 @@ public class Field extends AbstractUserInterfaceObject {
   }
 
   /**
-   * This is the getter method for instance variable {@link #filterable}
+   * This is the getter method for instance variable {@link #filterable}.
    *
    * @return the value of the instance variable {@link #filterable}
    * @see #filterable
@@ -710,8 +708,9 @@ public class Field extends AbstractUserInterfaceObject {
   }
 
   /**
-   * This is the setter method for instance variable {@link #filterable}
+   * This is the setter method for instance variable {@link #filterable}.
    *
+   * @param _filterable set instance variable to this
    * @see #filterable
    * @see #setFilterable
    */
@@ -768,8 +767,7 @@ public class Field extends AbstractUserInterfaceObject {
   /**
    * This is the setter method for instance variable {@link #hidden}.
    *
-   * @param _hidden
-   *                new value for instance variable {@link #hidden}
+   * @param _hidden  new value for instance variable {@link #hidden}
    * @see #hidden
    * @see #isHidden
    */
@@ -788,18 +786,39 @@ public class Field extends AbstractUserInterfaceObject {
     return this.hidden;
   }
 
+  /**
+   * This is the getter method for instance variable {@link #hideLabel}.
+   *
+   * @return the value of the instance variable {@link #hideLabel}.
+   */
   public boolean isHideLabel() {
     return this.hideLabel;
   }
 
+  /**
+   * This is the setter method for instance variable {@link #hideLabel}.
+   *
+   * @param _hideLabel  new value for instance variable {@link #hideLabel}
+   *
+   */
   public void setHideLabel(final boolean _hideLabel) {
     this.hideLabel = _hideLabel;
   }
 
+  /**
+   * This is the getter method for instance variable {@link #rowSpan}.
+   *
+   * @return the value of the instance variable {@link #rowSpan}.
+   */
   public int getRowSpan() {
     return this.rowSpan;
   }
 
+  /**
+   * This is the setter method for instance variable {@link #rowSpan}.
+   *
+   * @param _rowSpan  new value for instance variable {@link #rowSpan}
+   */
   public void setRowSpan(final int _rowSpan) {
     this.rowSpan = _rowSpan;
   }
