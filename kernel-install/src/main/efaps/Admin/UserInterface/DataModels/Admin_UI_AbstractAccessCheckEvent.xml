@@ -37,6 +37,7 @@
     <parent>Admin_Event_Definition</parent>
     <!-- event for type? -->
     <event-for type="Admin_UI_Direct"/>
+    <event-for type="Admin_UI_Field"/>
   </definition>
 
   <definition>
