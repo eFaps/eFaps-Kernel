@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,19 +41,39 @@ import org.efaps.jaas.SetPasswordHandler;
 import org.efaps.jaas.efaps.UserLoginModule.UpdateException;
 import org.efaps.util.EFapsException;
 
+/**
+ * Esjp used to change th epassword for a user.
+ *
+ * @author jmox
+ * @version $Id$
+ */
 @EFapsUUID("ff1b1140-3da0-491f-8bf4-c42f71ea4343")
-public class Password
-{
+public class Password {
 
+  /**
+   * Key used for the field for the old password.
+   */
   private static String PWDOLD = "passwordold";
 
+  /**
+   * Key used for the field for the new password.
+   */
   private static String PWDNEW = "passwordnew";
 
+  /**
+   * Key used for the field for the new password repetition.
+   */
   private static String PWDNEWREPEAT = "passwordnew2";
 
+  /**
+   * Method is called to change the password of a user in the efpas database.
+   *
+   * @param _parameter Parameter as passed from eFaps to esjp
+   * @return Return
+   * @throws EFapsException on error
+   */
   public Return changePwdUI(final Parameter _parameter)
-      throws EFapsException
-  {
+      throws EFapsException {
 
     final Context context = Context.getThreadContext();
     final String passwordold = context.getParameter(PWDOLD);
@@ -78,9 +98,16 @@ public class Password
     return ret;
   }
 
+  /**
+   * Method is called from a command to validate the form. It checks if the
+   * new password and the repetition are equal.
+   *
+   * @param _parameter Parameter as passed from eFaps to esjp
+   * @return Return with true if equal
+   * @throws EFapsException on error
+   */
   public Return validateFormUI(final Parameter _parameter)
-      throws EFapsException
-  {
+      throws EFapsException {
     final Return ret = new Return();
     final Context context = Context.getThreadContext();
     final String passwordnew = context.getParameter(PWDNEW);
@@ -96,10 +123,10 @@ public class Password
   }
 
   /**
-   * this method is called fiurst
+   * This method is called first to render simple inputfields.
    *
-   * @param _parameter
-   * @return
+   * @param _parameter Parameter as passed from eFaps to esjp
+   * @return Return
    */
   public Return getFieldValueUI(final Parameter _parameter) {
     final StringBuilder ret = new StringBuilder();
@@ -123,20 +150,18 @@ public class Password
   }
 
   /**
-   * executed on a validateevent on the attribute
+   * Executed on a validate event on the attribute.
    *
-   * @param _parameter
-   * @return
-   * @throws EFapsException
+   * @param _parameter Parameter as passed from eFaps to esjp
+   * @return Return
+   * @throws EFapsException on error
    */
   public Return validatePwdValue(final Parameter _parameter)
-      throws EFapsException
-  {
+      throws EFapsException {
     final Return ret = new Return();
-    final Context context = Context.getThreadContext();
-    final String passwordnew = context.getParameter(PWDNEW);
-
-    if (passwordnew.length() > SystemAttribute.get(
+    final String newPwd = (String) _parameter.get(ParameterValues.NEW_VALUES);
+    //Admin_User_PwdLengthMin
+    if (newPwd.length() > SystemAttribute.get(
         UUID.fromString("bb26c4a4-65a8-41e9-bc64-5fe0148cf805"))
         .getIntegerValue()) {
       ret.put(ReturnValues.TRUE, "true");
@@ -148,27 +173,28 @@ public class Password
   }
 
   /**
-   * this method is used from Admins wich have the Role Common_Main_PwdChg to
-   * set a Password for a User
+   * This method is used from Admins which have the Role Common_Main_PwdChg to
+   * set a Password for a User.
    *
-   * @param _parameter
-   * @return
-   * @throws EFapsException
+   * @param _parameter Parameter as passed from eFaps to esjp
+   * @return Return
+   * @throws EFapsException on error
    */
   public Return setPwdValueUI(final Parameter _parameter)
-      throws EFapsException
-  {
+      throws EFapsException {
     final Return ret = new Return();
-    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final Instance instance = _parameter.getInstance();
 
     // Common_Main_PwdChg
-    final Role setpwdRole = Role.get(UUID.fromString("2c101471-43e3-4c97-9045-f48f5b12b6ed"));
+    final Role setpwdRole
+            = Role.get(UUID.fromString("2c101471-43e3-4c97-9045-f48f5b12b6ed"));
+
     if (Context.getThreadContext().getPerson().isAssigned(setpwdRole)) {
 
-      final String password = Context.getThreadContext().getParameter("setpassword");
+      final String pwd = Context.getThreadContext().getParameter("setpassword");
 
       final Update update = new Update(instance);
-      final Status status = update.add("Password", password);
+      final Status status = update.add("Password", pwd);
       if ((status.isOk())) {
         update.execute();
         ret.put(ReturnValues.TRUE, "true");

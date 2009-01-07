@@ -2,7 +2,7 @@
 
 <!--
 
-  Copyright 2003-2008 The eFaps Team
+  Copyright 2003 - 2009 The eFaps Team
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          tmo
+  Author:          jmox
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -40,9 +40,10 @@
       <property name="Creatable">true</property>
       <property name="Required">true</property>
       <property name="Label">Admin_User_PwdChgForm.passwordold.Label</property>
-      <trigger name="Common_Main_PwdChgForm/passwordold" event="UI_FIELD_VALUE" program="org.efaps.esjp.admin.user.Password"
-        method="getFieldValueUI"
-      >
+      <trigger name="Common_Main_PwdChgForm/passwordold" 
+               event="UI_FIELD_VALUE" 
+               program="org.efaps.esjp.admin.user.Password"
+               method="getFieldValueUI">
       </trigger>
     </field>
     <field name="passwordnew">
@@ -50,9 +51,10 @@
       <property name="Creatable">true</property>
       <property name="Required">true</property>
       <property name="Label">Admin_User_PwdChgForm.passwordnew.Label</property>
-      <trigger name="Common_Main_PwdChgForm/passwordnew" event="UI_FIELD_VALUE" program="org.efaps.esjp.admin.user.Password"
-        method="getFieldValueUI"
-      >
+      <trigger name="Common_Main_PwdChgForm/passwordnew" 
+               event="UI_FIELD_VALUE" 
+               program="org.efaps.esjp.admin.user.Password"
+               method="getFieldValueUI">
       </trigger>
     </field>
     <field name="passwordnew2">
@@ -60,9 +62,10 @@
       <property name="Creatable">true</property>
       <property name="Required">true</property>
       <property name="Label">Admin_User_PwdChgForm.passwordnew2.Label</property>
-      <trigger name="Common_Main_PwdChgForm/passwordnew2" event="UI_FIELD_VALUE" program="org.efaps.esjp.admin.user.Password"
-        method="getFieldValueUI"
-      >
+      <trigger name="Common_Main_PwdChgForm/passwordnew2" 
+               event="UI_FIELD_VALUE" 
+               program="org.efaps.esjp.admin.user.Password"
+               method="getFieldValueUI">
       </trigger>
     </field>
   </definition>
