@@ -86,16 +86,14 @@
 }
 
 .eFapsSplitHeaderClosed {
-  position: absolute;
   background-color: #EFEBDE;
   border-left-style: solid;
   border-left-width: 1px;
   border-right-style: solid;
-  border-right-width: 5px;
+  border-right-width: 2px;
   border-color: black;
   z-index: 20;
   height: 100%;
-  width: 90%;
 }
 
 .eFapsSplitTitel {
