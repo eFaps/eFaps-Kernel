@@ -37,5 +37,16 @@
 
     <name>ClubWork_Member</name>
     <parent>ClubWork_MemberAbstract</parent>
+    
+    <trigger name="ClubWork_Member_INSERT_POST" 
+             event="INSERT_POST" 
+             program="org.efaps.esjp.common.history.HistoryTrigger">
+      <property name="Type">Common_History_Insert</property>
+    </trigger>
+    <trigger name="ClubWork_Member_UPDATE_POST" 
+             event="UPDATE_POST" 
+             program="org.efaps.esjp.common.history.HistoryTrigger">
+      <property name="Type">Common_History_Update</property>
+    </trigger>
   </definition>
 </datamodel-type>

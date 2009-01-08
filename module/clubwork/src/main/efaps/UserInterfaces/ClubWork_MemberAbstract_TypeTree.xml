@@ -45,6 +45,7 @@
     <childs>
       <child>ClubWork_MemberAbstract_TypeTree_Affiliated</child>
       <child>ClubWork_MemberAbstract_TypeTree_FeeMembership</child>
+      <child>Common_History_Abstract</child>
     </childs>
     <!-- properties -->
     <property name="Target">content</property>
