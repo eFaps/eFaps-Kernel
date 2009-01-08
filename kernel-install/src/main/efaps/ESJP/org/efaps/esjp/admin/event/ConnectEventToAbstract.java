@@ -45,12 +45,12 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 @EFapsUUID("3e6ba860-22ff-486b-b424-27a0ee9e72f2")
-public class ConnectEventToAbstract
-{
+public class ConnectEventToAbstract {
   /**
    * UUID of the program type.
    */
-  static private final UUID UUID_PROGRAM = UUID.fromString("11043a35-f73c-481c-8c77-00306dbce824");
+  private static final UUID UUID_PROGRAM
+                      = UUID.fromString("11043a35-f73c-481c-8c77-00306dbce824");
 
   /**
    * Shows a drop down list of all allowed event types depending on the parent
@@ -59,12 +59,12 @@ public class ConnectEventToAbstract
    * @param _parameter  parameters from the field type4NotView of the form
    *                    Admin_Event_Definition
    * @return HTML string with the drop down list
-   * @throws EFapsException
+   * @throws EFapsException on error
    */
   public Return getEventTypesUI(final Parameter _parameter)
-      throws EFapsException
-  {
-    final FieldValue fieldvalue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+      throws EFapsException {
+    final FieldValue fieldvalue
+                      = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
     final HtmlType htmlType = fieldvalue.getHtmlType();
 
     final Instance callInstance = _parameter.getCallInstance();
@@ -86,7 +86,7 @@ public class ConnectEventToAbstract
     }
 
     // evaluate all possible event types
-    final Map<String,Long> map = new TreeMap<String,Long>();
+    final Map<String, Long> map = new TreeMap<String, Long>();
     for (final Type type : parentInstance.getType().getAllowedEventTypes())  {
       collectAllowedEventTypes(map, type);
     }
@@ -95,7 +95,7 @@ public class ConnectEventToAbstract
     final StringBuilder ret = new StringBuilder();
     ret.append("<select name=\"").append(fieldName).append("\" size=\"1\">");
 
-    for (Map.Entry<String, Long> entry : map.entrySet())  {
+    for (final Map.Entry<String, Long> entry : map.entrySet())  {
         ret.append("<option value=\"").append(entry.getValue()).append("\"");
         if (selectedId == entry.getValue())  {
           ret.append(" selected=\"selected\"");
@@ -115,19 +115,19 @@ public class ConnectEventToAbstract
   /**
    * Evaluates given event type and adds them to the allowed event types map.
    *
-   * @param map   map in which the information about the event types are stored
+   * @param _map   map in which the information about the event types are stored
    * @param _type current event type to collect to the map
    */
-  protected void collectAllowedEventTypes(final Map<String,Long> map,
-                                          final Type _type)
-  {
+  protected void collectAllowedEventTypes(final Map<String, Long> _map,
+                                          final Type _type) {
     if (!_type.isAbstractType())  {
-      final String labelName = new StringBuilder(_type.getName()).append(".Label").toString();
-      map.put(DBProperties.getProperty(labelName),
+      final String labelName = new StringBuilder(_type.getName())
+                                                  .append(".Label").toString();
+      _map.put(DBProperties.getProperty(labelName),
               _type.getId());
     }
     for (final Type childType : _type.getChildTypes())  {
-      collectAllowedEventTypes(map, childType);
+      collectAllowedEventTypes(_map, childType);
     }
   }
 
@@ -140,12 +140,13 @@ public class ConnectEventToAbstract
    *                    Admin_Event_Definition
    * @return HTML with the drop down list for all existing programs within
    *         eFaps
-   * @throws EFapsException
+   * @throws EFapsException on error
    * @see #UUID_PROGRAM
    */
   public Return getProgramsUI(final Parameter _parameter) throws EFapsException
   {
-    final FieldValue fieldvalue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+    final FieldValue fieldvalue
+                      = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
     final HtmlType htmlType = fieldvalue.getHtmlType();
 
     // selected program (if mode edit)
@@ -194,16 +195,17 @@ public class ConnectEventToAbstract
    * on the web form Admin_Event_Definition.
    *
    * @param _parameter  from the form Admin_Event_Definition in mode create
+   * @return empty Return
+   * @throws EFapsException on error
    */
-  public void createNewEventUI(final Parameter _parameter)
-      throws EFapsException
-  {
+  public Return createNewEventUI(final Parameter _parameter)
+      throws EFapsException {
     final Instance callInstance  = _parameter.getCallInstance();
-    final String eventTypeId     = _parameter.getParameterValue("type4NotView");
-    final String name            = _parameter.getParameterValue("name");
-    final String index           = _parameter.getParameterValue("index");
-    final String programId       = _parameter.getParameterValue("program4NotView");
-    final String method          = _parameter.getParameterValue("method");
+    final String eventTypeId = _parameter.getParameterValue("type4NotView");
+    final String name = _parameter.getParameterValue("name");
+    final String index = _parameter.getParameterValue("index");
+    final String programId = _parameter.getParameterValue("program4NotView");
+    final String method = _parameter.getParameterValue("method");
 
     final Type eventType = Type.get(Long.parseLong(eventTypeId));
 
@@ -214,5 +216,6 @@ public class ConnectEventToAbstract
     insert.add("JavaProg", programId);
     insert.add("Method", method);
     insert.execute();
+    return new Return();
   }
 }
