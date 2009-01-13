@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,135 +20,119 @@
 
 package org.efaps.update.program;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_JAVASCRIPT;
+import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_JAVASCRIPT2JAVASCRIPT;
+
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.program.staticsource.JavaScriptImporter;
 import org.efaps.update.LinkInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.efaps.util.EFapsException;
 
 /**
- * TODO description
+ * Class to update a javascript into eFaps.
  *
  * @author jmox
  * @version $Id$
  */
 public class JavaScriptUpdate extends AbstractSourceUpdate {
 
-  public static String TYPENAME = "Admin_Program_JavaScript";
-
-  public static String ANNOTATION_VERSION = "@version";
-
-  public static String ANNOTATION_EXTENDS = "@extends";
+  /**
+   * Link from JavaScript extending JavaScript.
+   */
+  private static final Link LINK2SUPER =
+      new Link(Type.get(ADMIN_PROGRAM_JAVASCRIPT2JAVASCRIPT).getName(),
+               "From",
+                Type.get(ADMIN_PROGRAM_JAVASCRIPT).getName(),
+                "To");
 
   /**
-   * Logging instance used to give logging information of this class.
+   * Set off all links for this JavaScriptUpdate.
    */
-  private final static Logger LOG = LoggerFactory.getLogger(CSSUpdate.class);
-
-  private int version = 0;
-
-  /** Link from CSS extending CSS */
-  private final static Link LINK2SUPER =
-      new Link("Admin_Program_JavaScript2JavaScript", "From", TYPENAME, "To");
-
-  protected final static Set<Link> ALLLINKS = new HashSet<Link>();
-  {
+  private static final Set<Link> ALLLINKS = new HashSet<Link>();
+  static {
     ALLLINKS.add(LINK2SUPER);
   }
 
-  protected JavaScriptUpdate(final URL _url)
-  {
-    super(_url, TYPENAME, ALLLINKS);
+  /**
+   * Constructor.
+   *
+   * @param _url URL of the file
+   */
+  protected JavaScriptUpdate(final URL _url) {
+    super(_url, Type.get(ADMIN_PROGRAM_JAVASCRIPT).getName(), ALLLINKS);
   }
 
-  public static JavaScriptUpdate readFile(final URL _root,
-                                          final URL _url)
-  {
+  /**
+   * Read the file.
+   *
+   * @param _url URL to the file
+   * @return  JavaScriptUpdate
+   */
+  public static JavaScriptUpdate readFile(final URL _url) {
     final JavaScriptUpdate ret = new JavaScriptUpdate(_url);
-    final JavaScriptDefinition definition = ret.new JavaScriptDefinition(_root, _url);
+    final JavaScriptDefinition definition = ret.new JavaScriptDefinition(_url);
     ret.addDefinition(definition);
 
-    String thisLine;
-    try {
-      final BufferedReader in =
-          new BufferedReader(new FileReader(_url.getPath()));
-      while ((thisLine = in.readLine()) != null) {
-        if (thisLine.contains(ANNOTATION_VERSION)) {
-          String versionstr =
-              thisLine.substring(thisLine.indexOf(ANNOTATION_VERSION)
-                  + ANNOTATION_VERSION.length());
-          versionstr = versionstr.trim();
-          if (Character.isDigit(versionstr.charAt(0))) {
-            ret.version = Integer.parseInt(versionstr.substring(0, 1));
-          }
-          for (int i = 0; i < versionstr.length(); i++) {
-            if (!Character.isDigit(versionstr.charAt(i))) {
-              ret.version = Integer.parseInt(versionstr.substring(0, i));
-              break;
-            }
-          }
-        }
-        if (thisLine.contains(ANNOTATION_EXTENDS)) {
-          String parent =
-              thisLine.substring(thisLine.indexOf(ANNOTATION_EXTENDS)
-                  + ANNOTATION_EXTENDS.length());
-          parent = parent.trim();
-          if (parent.indexOf(" ") > 0) {
-            parent = parent.substring(0, parent.indexOf(" "));
-          }
-          definition.assignSuper(parent.trim());
-        }
-      }
-      in.close();
-
-    } catch (final FileNotFoundException e) {
-      LOG.error(_url.toString() + " could not be found", e);
-    } catch (final IOException e) {
-      LOG.error(_url.toString() + " is not readable", e);
-    }
-
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.efaps.update.program.AbstractSourceUpdate#getVersion()
-   */
-  @Override
-  protected Long getVersion()
-  {
-    long ret;
-    if (this.version > 0) {
-      ret = this.version;
-    } else {
-      ret = super.getVersion();
-    }
     return ret;
   }
 
   /**
-   * TODO description
+   * Definition for the JavaScript.
    *
    * @author jmox
    * @version $Id$
    */
   public class JavaScriptDefinition extends SourceDefinition {
 
-    public JavaScriptDefinition(final URL _rootUrl,
-                                final URL _url)
-    {
-      super(_rootUrl, _url);
+    /**
+     * Importer for the css.
+     */
+    private JavaScriptImporter sourceCode = null;
+
+    /**
+     * Construtor.
+     *
+     * @param _url URL to the css file
+     *
+     */
+    public JavaScriptDefinition(final URL _url) {
+      super(_url);
     }
 
-    public void assignSuper(final String _super) {
-      addLink(LINK2SUPER, new LinkInstance(_super));
+    /**
+     * Search the instance.
+     *
+     * @throws EFapsException if the Java source code could not be read or the
+     *                        file could not be accessed because of the wrong
+     *                        URL
+     */
+    @Override
+    protected void searchInstance() throws EFapsException {
+      if (this.sourceCode == null) {
+        this.sourceCode = new JavaScriptImporter(getUrl());
+      }
+      setName(this.sourceCode.getProgramName());
+
+      if (this.sourceCode.getEFapsUUID() != null) {
+        addValue("UUID", this.sourceCode.getEFapsUUID().toString());
+      }
+
+      if (this.sourceCode.getRevision() != null) {
+        addValue("Revision", this.sourceCode.getRevision());
+      }
+
+      if (this.sourceCode.getExtendSource() != null) {
+        addLink(LINK2SUPER,
+                new LinkInstance(this.sourceCode.getExtendSource()));
+      }
+
+      if (this.instance == null) {
+        this.instance = this.sourceCode.searchInstance();
+      }
     }
   }
 }

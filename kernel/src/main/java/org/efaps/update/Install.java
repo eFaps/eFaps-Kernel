@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,8 @@ import java.util.Map.Entry;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.xml.sax.SAXException;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
@@ -46,7 +48,6 @@ import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.importer.DataImport;
 import org.efaps.update.dbproperty.DBPropertiesUpdate;
 import org.efaps.util.EFapsException;
-import org.xml.sax.SAXException;
 
 /**
  * TODO description
@@ -55,8 +56,7 @@ import org.xml.sax.SAXException;
  * @author jmox
  * @version $Id$
  */
-public class Install
-{
+public class Install {
   /**
    * List of all import classes. The order is also used for the import order.
    *
@@ -98,7 +98,7 @@ public class Install
   private final Map<Class<? extends AbstractUpdate>, List<AbstractUpdate>> cache =
       new HashMap<Class<? extends AbstractUpdate>, List<AbstractUpdate>>();
 
-  private URL rootDir;
+
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -261,70 +261,71 @@ public class Install
    * @throws IOException
    * @throws FileNotFoundException
    * @see #initialised
+   * @throws EFapsException on error
    */
   protected void initialise()
-      throws EFapsException
-  {
+      throws EFapsException  {
+
     if (!this.initialised) {
       this.initialised = true;
       this.cache.clear();
 
       for (final FileType fileType : FileType.values()) {
 
-        if (fileType == FileType.XML)  {
+        if (fileType == FileType.XML) {
           for (final InstallFile file : this.files) {
             if (file.getType() == fileType) {
-try  {
-  SaxHandler handler = new SaxHandler();
-  AbstractUpdate elem = handler.parse(file.getUrl());
+              try {
+                final SaxHandler handler = new SaxHandler();
+                final AbstractUpdate elem = handler.parse(file.getUrl());
 
-  List<AbstractUpdate> list = this.cache.get(elem.getClass());
-  if (list == null)  {
-    list = new ArrayList<AbstractUpdate>();
-    this.cache.put(elem.getClass(), list);
-  }
-  list.add(handler.elem);
-} catch (Exception e)  {
-  System.out.println("Error in File "+file);
-  e.printStackTrace();
-  throw new Error(e);
-}
+                List<AbstractUpdate> list = this.cache.get(elem.getClass());
+                if (list == null) {
+                  list = new ArrayList<AbstractUpdate>();
+                  this.cache.put(elem.getClass(), list);
+                }
+                list.add(handler.elem);
+              } catch (final Exception e) {
+                e.printStackTrace();
+                throw new Error(e);
+              }
             }
           }
-System.out.println(""+this.cache);
-        } else
-        for (final Class<? extends AbstractUpdate> updateClass : fileType.clazzes)  {
+        } else {
+          for (final Class<? extends AbstractUpdate> updateClass
+                                                          : fileType.clazzes) {
 
-          final List<AbstractUpdate> list = new ArrayList<AbstractUpdate>();
-          this.cache.put(updateClass, list);
+            final List<AbstractUpdate> list = new ArrayList<AbstractUpdate>();
+            this.cache.put(updateClass, list);
 
-          Method method = null;
-          try  {
-            method = updateClass.getMethod("readFile", URL.class, URL.class);
-          } catch (SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-          } catch (NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-          }
-          for (final InstallFile file : this.files) {
-            if (file.getType() == fileType) {
-              Object obj = null;
-              try {
-                obj = method.invoke(null, this.rootDir, file.getUrl());
-              } catch (IllegalArgumentException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-              } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-              } catch (InvocationTargetException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-              }
-              if (obj != null) {
-                list.add((AbstractUpdate) obj);
+            Method method = null;
+            try {
+              method = updateClass.getMethod("readFile", URL.class);
+            } catch (final SecurityException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            } catch (final NoSuchMethodException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+            for (final InstallFile file : this.files) {
+              if (file.getType() == fileType) {
+                Object obj = null;
+                try {
+                  obj = method.invoke(null, file.getUrl());
+                } catch (final IllegalArgumentException e) {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
+                } catch (final IllegalAccessException e) {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
+                } catch (final InvocationTargetException e) {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
+                }
+                if (obj != null) {
+                  list.add((AbstractUpdate) obj);
+                }
               }
             }
           }
@@ -409,15 +410,6 @@ System.out.println(""+this.cache);
     return this.files;
   }
 
-  /**
-   * This is the setter method for the instance variable {@link #rootDir}.
-   *
-   * @param _rootDir  the rootDir to set
-   */
-  public void setRootDir(final URL _rootDir)
-  {
-    this.rootDir = _rootDir;
-  }
 
   /**
    * Returns a string representation with values of all instance variables.

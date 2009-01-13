@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
-import org.efaps.update.LinkInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import org.efaps.update.LinkInstance;
 
 /**
  * @author tmo
@@ -102,7 +103,7 @@ public class MenuUpdate extends CommandUpdate {
    * @param _url      URL of the file depending of the root URL
    * @return menu update definition read by digester
    */
-  public static MenuUpdate readFile(final URL _root, final URL _url)
+  public static MenuUpdate readFile(final URL _url)
   {
     MenuUpdate ret = null;
 

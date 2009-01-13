@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ import java.util.UUID;
  * @author tmo
  * @version $Id$
  */
-public enum EFapsClassNames
-{
+public enum EFapsClassNames {
   ATTRTYPE_LINK("440f472f-7be2-41d3-baec-4a2f0e4e5b31"),
   ATTRTYPE_LINK_WITH_RANGES("9d6b2e3e-68ce-4509-a5f0-eae42323a696"),
   ATTRTYPE_CREATOR_LINK("76122fe9-8fde-4dd4-a229-e48af0fb4083"),
@@ -84,6 +83,14 @@ public enum EFapsClassNames
   ADMIN_PROGRAM_JAVACLASS("9118e1e3-ed4c-425d-8578-8d1f1d385110"),
   ADMIN_PROGRAM_STATICCOMPILED("76fb464e-1d14-4437-ad23-092ab12669dd"),
 
+  ADMIN_PROGRAM_CSS("f5a5bcf6-3cc7-4530-a5a0-7808a392381b"),
+  ADMIN_PROGRAM_CSS2CSS("9d69ef63-b248-4f50-9130-5f33d64d81f0"),
+  ADMIN_PROGRAM_CSSCOMPILED("0607ea90-b48f-4b76-96f5-67cab19bd7b1"),
+
+  ADMIN_PROGRAM_JAVASCRIPT("1c9ce325-7e4f-401f-aeb8-74e2e0c9e224"),
+  ADMIN_PROGRAM_JAVASCRIPT2JAVASCRIPT("2d24e861-580c-43ad-a59c-3266021ea190"),
+  ADMIN_PROGRAM_JAVASCRIPTCOMPILED("0607ea90-b48f-4b76-96f5-67cab19bd7b1"),
+
   ADMIN_COMMON_VERSION("1bb051f3-b664-43db-b409-c0c4009f5972");
 
   /**
@@ -91,13 +98,12 @@ public enum EFapsClassNames
    * of this enumeration. Because such variable could not be defined as static
    * within enumeration definitions.
    */
-  private static class Mapper
-  {
+  private static class Mapper {
     /**
      * Mapping between the UUID and the enumeration instance.
      */
-    static private HashMap<UUID, EFapsClassNames> mapper
-            = new HashMap<UUID, EFapsClassNames>();
+    private static HashMap<UUID, EFapsClassNames> MAPPER
+                                      = new HashMap<UUID, EFapsClassNames>();
   }
 
   /**
@@ -108,7 +114,7 @@ public enum EFapsClassNames
   private EFapsClassNames(final String _uuid)
   {
     this.uuid = UUID.fromString(_uuid);
-    Mapper.mapper.put(this.uuid, this);
+    Mapper.MAPPER.put(this.uuid, this);
   }
 
   /**
@@ -118,6 +124,6 @@ public enum EFapsClassNames
    */
   static public EFapsClassNames getEnum(final UUID _uuid)
   {
-    return Mapper.mapper.get(_uuid);
+    return Mapper.MAPPER.get(_uuid);
   }
 }

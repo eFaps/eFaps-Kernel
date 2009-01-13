@@ -34,8 +34,6 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class JavaUpdate extends AbstractSourceUpdate {
-  /////////////////////////////////////////////////////////////////////////////
-  // constructors
 
   /**
    * Constructor to initialize the type of Java programs.
@@ -45,62 +43,40 @@ public class JavaUpdate extends AbstractSourceUpdate {
     super(_url, "Admin_Program_Java");
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // static methods
-
   /**
    * If the extension of the file is <code>.java</code>, the method returns
    * an instance of this class. The instance of this class owns one definition
    * instance where the code and the name is defined.
    *
-   * @param _root     root URL
    * @param _url      URL of the file depending of the root URL
    * @return Java update definition read by digester
    */
-  public static JavaUpdate readFile(final URL _root,
-                                    final URL _url)
-  {
+  public static JavaUpdate readFile(final URL _url) {
     final JavaUpdate ret = new JavaUpdate(_url);
-    final JavaDefinition definition = ret.new JavaDefinition(_root, _url);
+    final JavaDefinition definition = ret.new JavaDefinition(_url);
     ret.addDefinition(definition);
     return ret;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  // class for the definitions
-
   /**
    * The Java definition holds the code and the name of the Java class.
    */
-  public class JavaDefinition extends SourceDefinition
-  {
+  public class JavaDefinition extends SourceDefinition {
 
-    ///////////////////////////////////////////////////////////////////////////
-    // instance variables
+   /**
+    * Importer for the esjp.
+    */
+   private ESJPImporter javaCode = null;
 
-    /**
-     *
+   /**
+     * @param _url URL to the java file
      */
-    private ESJPImporter javaCode = null;
-
-    ///////////////////////////////////////////////////////////////////////////
-    // instance methods
-
-    /**
-     * @param _rootUrl
-     * @param _fileUrl
-     */
-    protected JavaDefinition(final URL _rootUrl,
-                             final URL _fileUrl)
-    {
-      super(_rootUrl, _fileUrl);
+    protected JavaDefinition(final URL _url) {
+      super(_url);
     }
 
     /**
-     * Reads the Java source code which is in the path {@link #root} with file
-     * name {@link #file}.
+     * Search the instance.
      *
      * @throws EFapsException if the Java source code could not be read or the
      *                        file could not be accessed because of the wrong
@@ -111,7 +87,7 @@ public class JavaUpdate extends AbstractSourceUpdate {
       if (this.javaCode == null) {
         this.javaCode = new ESJPImporter(getUrl());
       }
-      setName(this.javaCode.getClassName());
+      setName(this.javaCode.getProgramName());
 
       if (this.javaCode.getEFapsUUID() != null) {
         this.addValue("UUID", this.javaCode.getEFapsUUID().toString());
@@ -130,11 +106,11 @@ public class JavaUpdate extends AbstractSourceUpdate {
      * of the Java source code is needed after the update in the database.
      *
      * @param _allLinkTypes   all link types to update
+     * @throws EFapsException on error
      */
     @Override
     public void updateInDB(final Set<Link> _allLinkTypes)
-        throws EFapsException
-    {
+        throws EFapsException {
       super.updateInDB(_allLinkTypes);
       this.javaCode.updateDB(this.instance);
     }

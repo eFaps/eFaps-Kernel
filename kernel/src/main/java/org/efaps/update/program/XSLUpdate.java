@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,25 +32,21 @@ public class XSLUpdate extends AbstractSourceUpdate {
 
   public static String TYPENAME = "Admin_Program_XSL";
 
-  protected XSLUpdate(final URL _url)
-  {
+  protected XSLUpdate(final URL _url) {
     super(_url, TYPENAME);
   }
 
-  public static XSLUpdate readFile(final URL _root, final URL _url)
-  {
+  public static XSLUpdate readFile(final URL _url) {
     final XSLUpdate ret = new XSLUpdate(_url);
-    final XSLDefinition definition = ret.new XSLDefinition(_root, _url);
+    final XSLDefinition definition = ret.new XSLDefinition( _url);
     ret.addDefinition(definition);
     return ret;
   }
 
   public class XSLDefinition extends SourceDefinition {
 
-    public XSLDefinition(final URL _rootUrl,
-                         final URL _url)
-    {
-      super(_rootUrl, _url);
+    public XSLDefinition(final URL _url) {
+      super( _url);
     }
 
   }

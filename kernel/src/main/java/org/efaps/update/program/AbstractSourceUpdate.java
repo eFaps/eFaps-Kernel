@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,20 @@
 
 package org.efaps.update.program;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+
 import org.efaps.db.Checkin;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.datamodel.SQLTableUpdate.Definition;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO description
+ * ABstract class for all kind of sources. eg. java, css, js.
  *
  * @author jmox
  * @version $Id$
@@ -41,31 +41,35 @@ import org.efaps.util.EFapsException;
 public abstract class AbstractSourceUpdate extends AbstractUpdate {
 
   /**
-   * Constructor setting the Name iof the Type to be imported/updated
+   * Constructor setting the Name of the Type to be imported/updated.
    *
-   * @param _modelTypeName
+   * @param _url URL to the file
+   * @param _modelTypeName name of the type
    */
   protected AbstractSourceUpdate(final URL _url,
-                                 final String _modelTypeName)
-  {
+                                 final String _modelTypeName) {
     this(_url, _modelTypeName, null);
   }
-
+  /**
+   * Constructor setting the Name of the Type to be imported/updated.
+   *
+   * @param _url URL to the file
+   * @param _modelTypeName name of the type
+   * @param _linkTypes set of links
+   */
   protected AbstractSourceUpdate(final URL _url,
-                                 final String modelTypeName,
-                                 final Set<Link> linkTypes)
-  {
-    super(_url, modelTypeName, linkTypes);
+                                 final String _modelTypeName,
+                                 final Set<Link> _linkTypes) {
+    super(_url, _modelTypeName, _linkTypes);
   }
 
   /**
    * get the Version of this Update. Override id to use other than 1. To set the
    * Version to the last Version return {@link #getMaxVersion()}
    *
-   * @return
+   * @return 1
    */
-  protected Long getVersion()
-  {
+  protected Long getVersion() {
     return new Long(1);
   }
 
@@ -76,18 +80,17 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
    * @see Definition
    */
   @Override
-  protected AbstractDefinition newDefinition()
-  {
+  protected AbstractDefinition newDefinition() {
     throw new Error("not allowed");
   }
 
   /**
-   * TODO description
+   * Class used as the definition for one source.
    */
-  public abstract class SourceDefinition extends AbstractDefinition
-  {
+  public abstract class SourceDefinition extends AbstractDefinition {
+
     /**
-     * instance variable holding the URL to the file to be imported
+     * Instance variable holding the URL to the file to be imported.
      */
     private URL fileUrl;
 
@@ -96,45 +99,37 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
      * calculating the name of the source object (file url minus root url).
      * The path separators are replaces by points.
      *
-     * @param _rootUrl  URL to the root
      * @param _fileUrl  URL to the file (incl. root).
      */
-    protected SourceDefinition(final URL _rootUrl,
-                               final URL _fileUrl)
-    {
+    protected SourceDefinition(final URL _fileUrl) {
       // searched by attribute Name
       super("Name");
-      // calculating name of file in eFaps
       this.fileUrl = _fileUrl;
-      final String rootStr = _rootUrl.toString();
-      final String urlStr = this.fileUrl.toString();
-      final String name = urlStr.substring(urlStr.lastIndexOf(rootStr)
-                                           + rootStr.length())
-                                .replace(File.separator, ".");
-      setName(name);
     }
 
     /**
      * Updates / creates the instance in the database. If a file
      * name is given, this file is checked in
      *
-     * @param _instance     instance to update (or null if instance is to create)
-     * @param _allLinkTypes
+     * @param _allLinkTypes set of links
+     * @throws EFapsException on error
      */
     @Override
     public void updateInDB(final Set<Link> _allLinkTypes)
-        throws EFapsException
-    {
+        throws EFapsException {
       super.updateInDB(_allLinkTypes);
 
       if (getValue("Name") != null) {
         final Checkin checkin = new Checkin(this.instance);
         try {
           final InputStream in = this.fileUrl.openStream();
-          checkin.executeWithoutAccessCheck(getValue("Name"), in, in.available());
+          checkin.executeWithoutAccessCheck(getValue("Name"),
+                                            in,
+                                            in.available());
           in.close();
-        } catch (IOException e) {
-          throw new EFapsException(getClass(), "updateInDB.IOException", e, getValue("Name"));
+        } catch (final IOException e) {
+          throw new EFapsException(getClass(), "updateInDB.IOException",
+                                   e, getValue("Name"));
         }
       }
     }
@@ -147,25 +142,25 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
      *
      * @return value of instance variable {@link #fileUrl}
      */
-    public URL getUrl()
-    {
+    public URL getUrl() {
       return this.fileUrl;
     }
 
     /**
      * This is the setter method for the instance variable {@link #fileUrl}.
      *
-     * @param url
-     *                the url to set
+     * @param _url  the url to set
      */
-    public void setUrl(URL url)
-    {
-      this.fileUrl = url;
+    public void setUrl(final URL _url) {
+      this.fileUrl = _url;
     }
 
+    /**
+     * Method returns a String representation of this class.
+     * @return String representation
+     */
     @Override
-    public String toString()
-    {
+    public String toString() {
       return new ToStringBuilder(this)
               .appendSuper(super.toString())
               .append("url", this.fileUrl)
