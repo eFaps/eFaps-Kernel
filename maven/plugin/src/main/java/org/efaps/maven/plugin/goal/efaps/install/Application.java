@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,22 +33,22 @@ import java.util.TreeSet;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.update.Install;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
  * @author jmox
  * @version $Id$
  */
-public class Application
-{
+public class Application {
   /////////////////////////////////////////////////////////////////////////////
   // static variables
 
@@ -200,8 +200,6 @@ public class Application
     final Map<String,Long> latestVersions = this.install.getLatestVersions();
     Context.rollback();
     final Long latestVersion = latestVersions.get(this.application);
-
-    this.install.setRootDir(this.eFapsDir.toURL());
 
     LOG.info("Install application '" + this.application + "'");
 
