@@ -35,7 +35,9 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
@@ -43,14 +45,14 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.BundleContext;
+
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.init.StartupDatabaseConnection;
 import org.efaps.init.StartupException;
 import org.efaps.update.Install;
 import org.efaps.util.EFapsException;
-import org.osgi.framework.BundleContext;
-
 /**
  * The activator class controls the plug-in life cycle
  *
@@ -80,7 +82,7 @@ public class EfapsPlugin extends AbstractUIPlugin
   /**
    * Shared eFaps plug-in instance.
    */
-  private static EfapsPlugin plugin;
+  private static EfapsPlugin PLUGIN;
 
   /**
    * eFaps plug-in console.
@@ -118,13 +120,13 @@ public class EfapsPlugin extends AbstractUIPlugin
       throws Exception
   {
     super.start(context);
-    plugin = this;
+    PLUGIN = this;
 
     this.console = new MessageConsole(translate(null, "plugin.console"), null);
     this.console.activate();
     ConsolePlugin.getDefault().getConsoleManager().addConsoles(new IConsole[]{this.console});
     for (final LogLevel logLevel : LogLevel.values())  {
-      MessageConsoleStream stream = console.newMessageStream();
+      final MessageConsoleStream stream = this.console.newMessageStream();
       stream.setActivateOnWrite(true);
       stream.setColor(Display.getCurrent().getSystemColor(logLevel.color));
       this.streams.put(logLevel, stream);
@@ -141,7 +143,7 @@ public class EfapsPlugin extends AbstractUIPlugin
     ConsolePlugin.getDefault().getConsoleManager().removeConsoles(new IConsole[]{ this.console });
     this.console = null;
     this.streams.clear();
-    plugin = null;
+    PLUGIN = null;
     super.stop(context);
   }
 
@@ -182,7 +184,7 @@ public class EfapsPlugin extends AbstractUIPlugin
     // prepare connection properties
     final String propsStr = this.getPluginPreferences().getString("dbproperties");
     final Map<String,String> props = new HashMap<String,String>();
-    for (final String group : propsStr.split("\n")) {
+    for (final String group : propsStr.split("[\n\r]")) {
       final int index = group.indexOf('=');
       final String key = (index > 0)
                          ? group.substring(0, index).trim()
@@ -199,7 +201,7 @@ public class EfapsPlugin extends AbstractUIPlugin
                                         props,
                                         "org.objectweb.jotm.Current");
       this.initialized = true;
-    } catch (StartupException e) {
+    } catch (final StartupException e) {
       logError("connect.logException", e);
     }
 
@@ -237,13 +239,13 @@ public class EfapsPlugin extends AbstractUIPlugin
         logError("reloadCache.logFailed");
       }
       finished = true;
-    } catch (Exception e) {
+    } catch (final Exception e) {
       logError("reloadCache.logException", e);
     } finally  {
       if (!finished)  {
         try {
           Context.rollback();
-        } catch (EFapsException e) {
+        } catch (final EFapsException e) {
           e.printStackTrace();
         }
       }
@@ -261,21 +263,48 @@ public class EfapsPlugin extends AbstractUIPlugin
    * @param _file   file used to update
    * @return
    */
-  public boolean update(final String _file)
+  public boolean update(final String _file, final Shell _shell)
   {
     boolean updated = false;
 
     final File file = new File(_file);
+    final String ending = _file.substring(_file.lastIndexOf(".") + 1);
+
+
+    final String type;
+
+    if ("java".equals(ending)) {
+      type = "source-java";
+    } else if ("js".equals(ending)) {
+      type = "source-js";
+    } else if ("css".equals(ending)) {
+      type = "source-css";
+    } else {
+      type = "install-xml";
+    }
+
+    final Install install = new Install();
+    // in case of css,java,js we have to get the root folder
+    if (!"install-xml".equals(type)) {
+      final DirectoryDialog fDialog = new  DirectoryDialog (_shell);
+      final String folder = fDialog.open();
+      try {
+          install.setRootDir((new File(folder)).toURL());
+        } catch (final MalformedURLException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+    }
 
     logInfo("update.logStart", file.getName());
 
-    final Install install = new Install();
-
+    //
     boolean read = false;
     try {
-      install.addFile(file.toURL(), "install-xml");
+      install.addFile(file.toURL(), type);
+     // install.setRootDir(_rootDir)
       read = true;
-    } catch (MalformedURLException e) {
+    } catch (final MalformedURLException e) {
       logError("update.logException", e);
     }
 
@@ -289,13 +318,13 @@ public class EfapsPlugin extends AbstractUIPlugin
           updated = true;
         }
         finished = true;
-      } catch (Exception e) {
+      } catch (final Exception e) {
         logError("update.logException", e);
       } finally  {
         if (!finished)  {
           try {
             Context.rollback();
-          } catch (EFapsException e) {
+          } catch (final EFapsException e) {
             e.printStackTrace();
           }
         }
@@ -317,12 +346,17 @@ public class EfapsPlugin extends AbstractUIPlugin
       throws EFapsException
   {
     boolean started = false;
-    final String user = this.getPluginPreferences().getString("name");
-    if ((user == null) || (user.length() == 0))  {
-      println(getClass(), LogLevel.ERROR, "startTransaction.logNoUser");
-    } else  {
-      Context.begin(user);
-      started = true;
+    try {
+      final String user = this.getPluginPreferences().getString("name");
+      if ((user == null) || (user.length() == 0))  {
+        println(getClass(), LogLevel.ERROR, "startTransaction.logNoUser");
+      } else  {
+        Context.begin(user);
+        started = true;
+      }
+    } catch (final Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
     return started;
   }
@@ -334,7 +368,7 @@ public class EfapsPlugin extends AbstractUIPlugin
    */
   public static EfapsPlugin getDefault()
   {
-    return plugin;
+    return PLUGIN;
   }
 
   /**
@@ -361,7 +395,7 @@ public class EfapsPlugin extends AbstractUIPlugin
     try  {
       ret = this.bundle.getString(key);
       ret = MessageFormat.format(ret, _arguments);
-    } catch (MissingResourceException e)  {
+    } catch (final MissingResourceException e)  {
       ret = new StringBuilder().append("!!!").append(_key).append("!!!").toString();
     }
     return ret;
@@ -485,7 +519,7 @@ public class EfapsPlugin extends AbstractUIPlugin
     stream.println(text.toString());
     try {
       stream.flush();
-    } catch (IOException e) {
+    } catch (final IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
@@ -500,4 +534,5 @@ public class EfapsPlugin extends AbstractUIPlugin
   {
     ConsolePlugin.getDefault().getConsoleManager().showConsoleView(this.console);
   }
+
 }

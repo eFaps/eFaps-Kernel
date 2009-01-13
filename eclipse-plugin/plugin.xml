@@ -332,7 +332,7 @@
             id="org.efaps.eclipse.decorators.command"
             label="eFaps User Interface Command Decorator"
             lightweight="true"
-            location="TOP_LEFT"
+            location="UNDERLAY"
             state="true">
          <enablement>
             <and>
@@ -450,8 +450,8 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
-            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            class="org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImages"
+            contributorClass="org.eclipse.ui.part.EditorActionBarContributor"
             icon="icons/user/Admin_User_GroupImage.gif"
             id="org.efaps.eclipse.editors.user.group"
             name="eFaps User Group Editor">
@@ -460,8 +460,8 @@
          </contentTypeBinding>
       </editor>
       <editor
-            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
-            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            class="org.efaps.eclipse.editors.XMLEditor"
+            contributorClass="org.eclipse.ui.part.EditorActionBarContributor"
             icon="icons/user/Admin_User_JAASSystemImage.gif"
             id="org.efaps.eclipse.editors.user.jaassystem"
             name="eFaps User JAAS System Editor">
@@ -470,8 +470,8 @@
          </contentTypeBinding>
       </editor>
       <editor
-            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
-            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            class="org.efaps.eclipse.editors.XMLEditor"
+            contributorClass="org.eclipse.ui.part.EditorActionBarContributor"
             icon="icons/user/Admin_User_RoleImage.gif"
             id="org.efaps.eclipse.editors.user.role"
             name="eFaps User Role Editor">
@@ -480,8 +480,8 @@
          </contentTypeBinding>
       </editor>
       <editor
-            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
-            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            class="org.efaps.eclipse.editors.XMLEditor"
+            contributorClass="org.eclipse.ui.part.EditorActionBarContributor"
             icon="icons/common_dbproperties/Admin_Common_DBPropertiesBundleImage.gif"
             id="org.efaps.eclipse.editors.common.dbproperties"
             name="eFaps Common DB Properties Editor">
@@ -490,8 +490,8 @@
          </contentTypeBinding>
       </editor>
       <editor
-            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
-            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            class="org.efaps.eclipse.editors.XMLEditor"
+            contributorClass="org.eclipse.ui.part.EditorActionBarContributor"
             icon="icons/common_systemattribute/Admin_Common_SystemAttributeImage.gif"
             id="org.efaps.eclipse.editors.common.systemattribute"
             name="eFaps Common System Attribute Editor">
@@ -500,8 +500,8 @@
          </contentTypeBinding>
       </editor>
       <editor
-            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
-            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            class="org.efaps.eclipse.editors.XMLEditor"
+            contributorClass="org.eclipse.ui.part.EditorActionBarContributor"
             icon="icons/datamodel/Admin_DataModel_TypeImage.gif"
             id="org.efaps.eclipse.editors.datamodel.type"
             name="eFaps Data Model Type Editor">
@@ -510,8 +510,8 @@
          </contentTypeBinding>
       </editor>
       <editor
-            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
-            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            class="org.efaps.eclipse.editors.XMLEditor"
+            contributorClass="org.eclipse.ui.part.EditorActionBarContributor"
             icon="icons/datamodel/Admin_DataModel_SQLTableImage.gif"
             id="org.efaps.eclipse.editors.datamodel.sqltable"
             name="eFaps Data Model SQL Table Editor">
@@ -520,8 +520,8 @@
          </contentTypeBinding>
       </editor>
       <editor
-            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
-            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            class="org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImages"
+            contributorClass="org.eclipse.ui.part.EditorActionBarContributor"
             icon="icons/userinterface/Admin_UI_CommandImage.gif"
             id="org.efaps.eclipse.editors.command"
             name="eFaps User Interface Command Editor">
@@ -530,8 +530,8 @@
          </contentTypeBinding>
       </editor>
       <editor
-            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
-            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            class="org.efaps.eclipse.editors.XMLEditor"
+            contributorClass="org.eclipse.ui.part.EditorActionBarContributor"
             icon="icons/userinterface/Admin_UI_FormImage.gif"
             id="org.efaps.eclipse.editors.form"
             name="eFaps User Interface Form Editor">
@@ -540,8 +540,8 @@
          </contentTypeBinding>
       </editor>
       <editor
-            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
-            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            class="org.efaps.eclipse.editors.XMLEditor"
+            contributorClass="org.eclipse.ui.part.EditorActionBarContributor"
             icon="icons/userinterface/Admin_UI_ImageImage.gif"
             id="org.efaps.eclipse.editors.image"
             name="eFaps User Interface Image Editor">
@@ -550,8 +550,8 @@
          </contentTypeBinding>
       </editor>
       <editor
-            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
-            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            class="org.efaps.eclipse.editors.XMLEditor"
+            contributorClass="org.eclipse.ui.part.EditorActionBarContributor"
             icon="icons/userinterface/Admin_UI_MenuImage.gif"
             id="org.efaps.eclipse.editors.menu"
             name="eFaps User Interface Menu Editor">
@@ -560,8 +560,8 @@
          </contentTypeBinding>
       </editor>
       <editor
-            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
-            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            class="org.efaps.eclipse.editors.XMLEditor"
+            contributorClass="org.eclipse.ui.part.EditorActionBarContributor"
             icon="icons/userinterface/Admin_UI_SearchImage.gif"
             id="org.efaps.eclipse.editors.search"
             name="eFaps User Interface Search Editor">
@@ -570,8 +570,8 @@
          </contentTypeBinding>
       </editor>
       <editor
-            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
-            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            class="org.efaps.eclipse.editors.XMLEditor"
+            contributorClass="org.eclipse.ui.part.EditorActionBarContributor"
             icon="icons/userinterface/Admin_UI_TableImage.gif"
             id="org.efaps.eclipse.editors.table"
             name="eFaps User Interface Table Editor">
@@ -595,10 +595,6 @@
             name="%plugin.command.connect">
          <defaultHandler
                class="org.efaps.eclipse.handlers.ConnectHandler">
-            <parameter
-                  name="EclipsePlugin.parameter4"
-                  value="EclipsePlugin.parameter4">
-            </parameter>
          </defaultHandler>
       </command>
       <command
@@ -606,10 +602,6 @@
             name="%plugin.command.reloadCache">
          <defaultHandler
                class="org.efaps.eclipse.handlers.ReloadCacheHandler">
-            <parameter
-                  name="EclipsePlugin.parameter5"
-                  value="EclipsePlugin.parameter5">
-            </parameter>
          </defaultHandler>
       </command>
       <command
@@ -617,10 +609,6 @@
             name="%plugin.command.update">
          <defaultHandler
                class="org.efaps.eclipse.handlers.UpdateHandler">
-            <parameter
-                  name="EclipsePlugin.parameter1"
-                  value="EclipsePlugin.parameter1">
-            </parameter>
          </defaultHandler>
       </command>
    </extension>
@@ -668,8 +656,9 @@
                id="org.efaps.eclipse.toolbars.sampleToolbar">
             <command
                   commandId="org.efaps.eclipse.command.update"
-                  icon="icons/datamodel/Admin_DataModel_Type+Delete+Image.gif"
+                  icon="icons/datamodel/Admin_DataModel_Type+Edit+Image.gif"
                   id="org.efaps.eclipse.toolbars.updateCommand"
+                  label="%plugin.toolbar.updateCommand.Label"
                   tooltip="Say hello world">
             </command>
          </toolbar>

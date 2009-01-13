@@ -41,7 +41,6 @@ public class ConnectHandler extends AbstractHandler
    * @see EfapsPlugin#connect()     called method to connect to eFaps data base
    * @see EfapsPlugin#reloadCache() called method to reload the eFaps cache
    */
-  @Override
   public Object execute(final ExecutionEvent _event) throws ExecutionException
   {
     boolean connected = EfapsPlugin.getDefault().connect() && EfapsPlugin.getDefault().reloadCache();

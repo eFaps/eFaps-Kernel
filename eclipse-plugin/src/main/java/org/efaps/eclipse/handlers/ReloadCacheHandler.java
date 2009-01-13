@@ -24,6 +24,7 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+
 import org.efaps.eclipse.EfapsPlugin;
 
 /**
@@ -38,12 +39,18 @@ public class ReloadCacheHandler  extends AbstractHandler
    * in the workbench UI.
    * @see IWorkbenchWindowActionDelegate#run
    */
-  @Override
   public Object execute(final ExecutionEvent _event)
       throws ExecutionException
   {
-    if (!EfapsPlugin.getDefault().reloadCache())  {
-      EfapsPlugin.getDefault().showError(_event, getClass(), "execute.failed");
+    final EfapsPlugin plugin = EfapsPlugin.getDefault();
+    if (plugin.isInitialized()) {
+      if (!plugin.reloadCache())  {
+        EfapsPlugin.getDefault().showError(_event, getClass(), "execute.failed");
+      }
+    } else {
+      EfapsPlugin.getDefault().showError(_event,
+                                        getClass(),
+                                        "execute.notInitialized");
     }
     return null;
   }

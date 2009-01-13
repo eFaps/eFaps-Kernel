@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,14 +49,14 @@ implements IWorkbenchPreferencePage {
     super(FieldEditorPreferencePage.GRID);
     this.setPreferenceStore(org.efaps.eclipse.EfapsPlugin.getDefault().getPreferenceStore());
   }
-  
+
   /* (non-Javadoc)
    * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
    */
   @Override
   protected void createFieldEditors() {
     final Composite parent = getFieldEditorParent();
-    
+
     final StringFieldEditor nameField = new StringFieldEditor(
         "name",
         "eFaps Login Name",
@@ -86,7 +86,7 @@ implements IWorkbenchPreferencePage {
         parent);
     addField(factoryField);
 
-    MyTextEditor test = new MyTextEditor(getFieldEditorParent());
+    final MyTextEditor test = new MyTextEditor(getFieldEditorParent());
 //  test.setPage(this);
 //  test.setPreferenceStore(getPreferenceStore());
 //  test.load();
@@ -100,14 +100,14 @@ implements IWorkbenchPreferencePage {
   /* (non-Javadoc)
    * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
    */
-  public void init(IWorkbench _workbench) {
+  public void init(final IWorkbench _workbench) {
     // TODO Auto-generated method stub
-    
+
   }
 
 
   class MyTextEditor extends StringFieldEditor {
-    
+
     MyTextEditor(final Composite _parent)  {
       super("dbproperties", "Database Properties", _parent);
     }
@@ -120,7 +120,8 @@ implements IWorkbenchPreferencePage {
      * but must call <code>super.doFillIntoGrid</code>.
      * </p>
      */
-    protected void doFillIntoGrid(Composite parent, int numColumns) {
+    @Override
+    protected void doFillIntoGrid(final Composite parent, final int numColumns) {
       super.doFillIntoGrid(parent, numColumns);
 
       final Text textField = getTextControl();
@@ -133,8 +134,9 @@ implements IWorkbenchPreferencePage {
       gd.verticalAlignment = GridData.FILL;
       gd.grabExcessVerticalSpace = true;
       textField.setLayoutData(gd);
+
     }
-    
+
     /**
      * Returns this field editor's text control.
      * <p>
@@ -144,29 +146,33 @@ implements IWorkbenchPreferencePage {
      * @param parent the parent
      * @return the text control
      */
-    public Text getTextControl(Composite parent) {
+    @Override
+    public Text getTextControl(final Composite parent) {
       Text textField = getTextControl();
 
       if (textField == null) {
         textField = new Text(parent, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
         textField.setFont(parent.getFont());
         textField.addKeyListener(new KeyAdapter() {
-          public void keyPressed(KeyEvent e) {
+          @Override
+          public void keyPressed(final KeyEvent e) {
             clearErrorMessage();
           }
         });
         textField.addFocusListener(new FocusAdapter() {
-          public void focusGained(FocusEvent e) {
+          @Override
+          public void focusGained(final FocusEvent e) {
             refreshValidState();
           }
 
-          public void focusLost(FocusEvent e) {
+          @Override
+          public void focusLost(final FocusEvent e) {
             valueChanged();
             clearErrorMessage();
           }
         });
         textField.addDisposeListener(new DisposeListener() {
-          public void widgetDisposed(DisposeEvent event) {
+          public void widgetDisposed(final DisposeEvent event) {
 //            textField = null;
           }
         });

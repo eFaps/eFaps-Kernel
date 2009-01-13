@@ -25,10 +25,12 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.handlers.HandlerUtil;
+
 import org.efaps.eclipse.EfapsPlugin;
 
 /**
@@ -47,21 +49,28 @@ public class UpdateHandler extends AbstractHandler {
    * the command has been executed, so extract extract the needed information
    * from the application context.
    */
-  @Override
   public Object execute(final ExecutionEvent _event)
       throws ExecutionException
   {
     final IEditorPart activeEditor = HandlerUtil.getActiveEditor(_event);
+    final Shell shell = HandlerUtil.getActiveShell(_event);
+
     if (activeEditor != null)  {
       final IEditorInput input = activeEditor.getEditorInput();
       if (input instanceof IFileEditorInput)  {
         final IFile file = ((IFileEditorInput) input).getFile();
         final IPath filePath = file.getLocation();
-
-        if (!EfapsPlugin.getDefault().update(filePath.toString()))  {
+        final EfapsPlugin plugin = EfapsPlugin.getDefault();
+        if (plugin.isInitialized()) {
+          if (!EfapsPlugin.getDefault().update(filePath.toString(), shell))  {
+            EfapsPlugin.getDefault().showError(_event,
+                                               getClass(),
+                                               "execute.failed");
+          }
+        } else {
           EfapsPlugin.getDefault().showError(_event,
-                                             getClass(),
-                                             "execute.failed");
+                                            getClass(),
+                                            "execute.notInitialized");
         }
       }
     }
