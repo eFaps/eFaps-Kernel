@@ -37,21 +37,25 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 /**
+ * Class is used to render the Preference Page for the eFpas eclipse Plugin.
+ *
  * @author tmo
  * @version $Id$
  */
-public class PreferencePage
-extends FieldEditorPreferencePage
-implements IWorkbenchPreferencePage {
+public class PreferencePage extends FieldEditorPreferencePage
+    implements IWorkbenchPreferencePage {
 
-  public PreferencePage()
-  {
+  /**
+   * Constructor.
+   */
+  public PreferencePage() {
     super(FieldEditorPreferencePage.GRID);
-    this.setPreferenceStore(org.efaps.eclipse.EfapsPlugin.getDefault().getPreferenceStore());
+    this.setPreferenceStore(org.efaps.eclipse.EfapsPlugin.getDefault()
+                                                        .getPreferenceStore());
   }
 
-  /* (non-Javadoc)
-   * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
+  /**
+   * Method created the fields in the preference page.
    */
   @Override
   protected void createFieldEditors() {
@@ -97,17 +101,25 @@ implements IWorkbenchPreferencePage {
     //addField(test);
   }
 
-  /* (non-Javadoc)
-   * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
+  /**
+   * Method is not used. For api reasons only.
+   * @param _workbench Workbench
    */
   public void init(final IWorkbench _workbench) {
     // TODO Auto-generated method stub
-
   }
 
 
+  /**
+   * Texteditor for the settings.
+   *
+   */
   class MyTextEditor extends StringFieldEditor {
 
+    /**Constructor setting the parent.
+     *
+     * @param _parent Parent
+     */
     MyTextEditor(final Composite _parent)  {
       super("dbproperties", "Database Properties", _parent);
     }
@@ -119,15 +131,18 @@ implements IWorkbenchPreferencePage {
      * framework method contributes the text field. Subclasses may override
      * but must call <code>super.doFillIntoGrid</code>.
      * </p>
+     * @param _parent Parent
+     * @param _numColumns Number of columns
      */
     @Override
-    protected void doFillIntoGrid(final Composite parent, final int numColumns) {
-      super.doFillIntoGrid(parent, numColumns);
+    protected void doFillIntoGrid(final Composite _parent,
+                                  final int _numColumns) {
+      super.doFillIntoGrid(_parent, _numColumns);
 
       final Text textField = getTextControl();
 
       final GridData gd = new GridData();
-      gd.horizontalSpan = numColumns - 1;
+      gd.horizontalSpan = _numColumns - 1;
       gd.horizontalAlignment = GridData.FILL;
       gd.grabExcessHorizontalSpace = true;
       gd.verticalSpan = 15;
@@ -143,36 +158,37 @@ implements IWorkbenchPreferencePage {
      * The control is created if it does not yet exist
      * </p>
      *
-     * @param parent the parent
+     * @param _parent the parent
      * @return the text control
      */
     @Override
-    public Text getTextControl(final Composite parent) {
+    public Text getTextControl(final Composite _parent) {
       Text textField = getTextControl();
 
       if (textField == null) {
-        textField = new Text(parent, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-        textField.setFont(parent.getFont());
+        textField = new Text(_parent, SWT.MULTI | SWT.BORDER
+                                                | SWT.V_SCROLL | SWT.H_SCROLL);
+        textField.setFont(_parent.getFont());
         textField.addKeyListener(new KeyAdapter() {
           @Override
-          public void keyPressed(final KeyEvent e) {
+          public void keyPressed(final KeyEvent _event) {
             clearErrorMessage();
           }
         });
         textField.addFocusListener(new FocusAdapter() {
           @Override
-          public void focusGained(final FocusEvent e) {
+          public void focusGained(final FocusEvent _event) {
             refreshValidState();
           }
 
           @Override
-          public void focusLost(final FocusEvent e) {
+          public void focusLost(final FocusEvent _event) {
             valueChanged();
             clearErrorMessage();
           }
         });
         textField.addDisposeListener(new DisposeListener() {
-          public void widgetDisposed(final DisposeEvent event) {
+          public void widgetDisposed(final DisposeEvent _event) {
 //            textField = null;
           }
         });

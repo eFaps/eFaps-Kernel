@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,29 +29,32 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import org.efaps.eclipse.EfapsPlugin;
 
 /**
- * Our sample handler extends AbstractHandler, an IHandler base class.
- * @see org.eclipse.core.commands.IHandler
- * @see org.eclipse.core.commands.AbstractHandler
+ * Class is uded to call the efaps update method. Used for xml, css, js, and
+ * java.
+ *
+ * @author tmo
+ * @author jmox
+ * @version $Id$
  */
 public class UpdateHandler extends AbstractHandler {
-  /**
-   * The constructor.
-   */
-  public UpdateHandler() {
-  }
 
   /**
-   * the command has been executed, so extract extract the needed information
-   * from the application context.
+   * The action has been activated. The argument of the method represents the
+   * 'real' action sitting in the workbench UI.
+   *
+   * @see IWorkbenchWindowActionDelegate#run
+   * @param _event  execution event
+   * @throws ExecutionException on error
+   * @return null
    */
   public Object execute(final ExecutionEvent _event)
-      throws ExecutionException
-  {
+      throws ExecutionException {
     final IEditorPart activeEditor = HandlerUtil.getActiveEditor(_event);
     final Shell shell = HandlerUtil.getActiveShell(_event);
 
@@ -74,7 +77,6 @@ public class UpdateHandler extends AbstractHandler {
         }
       }
     }
-
     return null;
   }
 }

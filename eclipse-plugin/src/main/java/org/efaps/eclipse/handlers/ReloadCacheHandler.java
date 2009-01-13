@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,29 +28,35 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.efaps.eclipse.EfapsPlugin;
 
 /**
+ * Class is used to call the eFaps reload cache method.
+ *
  * @author tmo
  * @version $Id$
  */
-public class ReloadCacheHandler  extends AbstractHandler
-{
+public class ReloadCacheHandler  extends AbstractHandler {
+
   /**
-   * The action has been activated. The argument of the
-   * method represents the 'real' action sitting
-   * in the workbench UI.
+   * The action has been activated. The argument of the method represents the
+   * 'real' action sitting in the workbench UI.
+   *
    * @see IWorkbenchWindowActionDelegate#run
+   * @param _event  execution event
+   * @throws ExecutionException on error
+   * @return null
    */
   public Object execute(final ExecutionEvent _event)
-      throws ExecutionException
-  {
+      throws ExecutionException {
     final EfapsPlugin plugin = EfapsPlugin.getDefault();
     if (plugin.isInitialized()) {
       if (!plugin.reloadCache())  {
-        EfapsPlugin.getDefault().showError(_event, getClass(), "execute.failed");
+        EfapsPlugin.getDefault().showError(_event,
+                                           getClass(),
+                                           "execute.failed");
       }
     } else {
       EfapsPlugin.getDefault().showError(_event,
-                                        getClass(),
-                                        "execute.notInitialized");
+                                         getClass(),
+                                         "execute.notInitialized");
     }
     return null;
   }

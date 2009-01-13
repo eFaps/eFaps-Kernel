@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,31 +20,31 @@
 
 package org.efaps.eclipse.logger;
 
-import org.efaps.eclipse.EfapsPlugin;
+import static org.slf4j.helpers.MessageFormatter.arrayFormat;
+import static org.slf4j.helpers.MessageFormatter.format;
+
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
-import static org.slf4j.helpers.MessageFormatter.arrayFormat;
-import static org.slf4j.helpers.MessageFormatter.format;
+import org.efaps.eclipse.EfapsPlugin;
 
 /**
  * This class is a wrapper for the simple logging facade to print the logging
  * information to the eclipse console of the eFaps eclipse plugin.
- * 
+ *
  * @see Logger    interface of the simple logging facade
  * @author tmo
  * @version $Id$
  */
-public class SLF4JOverEclipseConsole implements Logger
-{
+public class SLF4JOverEclipseConsole implements Logger {
   /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
   /**
    * @see Logger#getName()
+   * @return null
    */
-  public String getName()
-  {
+  public String getName() {
     // TODO Auto-generated method stub
     return null;
   }
@@ -54,50 +54,62 @@ public class SLF4JOverEclipseConsole implements Logger
 
   /**
    * Is debug logging currently enabled?
+   * @return false
    */
-  public boolean isDebugEnabled()
-  {
+  public boolean isDebugEnabled() {
     return false;
   }
 
   /**
    * @see Logger#isDebugEnabled(Marker)
+   * @param _marker marker
+   * @return false
    */
-  public boolean isDebugEnabled(final Marker _marker)
-  {
+  public boolean isDebugEnabled(final Marker _marker) {
     return isDebugEnabled();
   }
 
   /**
-   * @see Logger#debug(String)
+   * Method to add a debug message to the logger.
+   *
+   * @param _text   message
    */
-  public void debug(final String _text)
-  {
+  public void debug(final String _text) {
     if (isDebugEnabled())  {
       EfapsPlugin.getDefault().println(EfapsPlugin.LogLevel.DEBUG, _text);
     }
   }
 
   /**
-   * @see Logger#debug(String, Object)
+   * Method to add a debug message to the logger.
+   *
+   * @param _messagePattern   message
+   * @param _arg             Objects to add
+   *
    */
   public void debug(final String _messagePattern,
-                    final Object _arg)
-  {
+                    final Object _arg) {
     debug(format(_messagePattern, _arg));
   }
 
   /**
-   * @see Logger#debug(String, Object[])
+   * Method to add a debug message to the logger.
+   *
+   * @param _messagePattern   message
+   * @param _args             Objects to add
+   *
    */
   public void debug(final String _messagePattern,
-                    final Object[] _args)
-  {
+                    final Object[] _args) {
     debug(arrayFormat(_messagePattern, _args));
   }
 
   /**
-   * @see Logger#debug(String, Throwable)
+   * Method to add a debug message to the logger.
+   *
+   * @param _text         message
+   * @param _e            Throwable to add
+   *
    */
   public void debug(final String _text, final Throwable _e) {
     if (isDebugEnabled())  {
@@ -106,62 +118,85 @@ public class SLF4JOverEclipseConsole implements Logger
   }
 
   /**
-   * @see Logger#debug(Marker, String)
+   * Method to add a debug message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _text           message
+   *
    */
   public void debug(final Marker _marker,
-                    final String _text)
-  {
+                    final String _text) {
     debug(_text);
   }
 
   /**
-   * @see Logger#debug(String, Object, Object)
+   * Method to add a debug message to the logger.
+   *
+   * @param _messagePattern message
+   * @param _arg1            Object to add
+   * @param _arg2            Object to add
+   *
    */
   public void debug(final String _messagePattern,
                     final Object _arg1,
-                    final Object _arg2)
-  {
+                    final Object _arg2) {
     debug(format(_messagePattern, _arg1, _arg2));
   }
 
   /**
-   * @see Logger#debug(Marker, String, Object)
+   * Method to add a debug message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _arg            Object to add
+   *
    */
   public void debug(final Marker _marker,
                     final String _messagePattern,
-                    final Object _arg)
-  {
+                    final Object _arg) {
     debug(format(_messagePattern, _arg));
   }
 
   /**
-   * @see Logger#debug(Marker, String, Object[])
+   * Method to add a debug message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _args           Objects to add
+   *
    */
   public void debug(final Marker _marker,
                     final String _messagePattern,
-                    final Object[] _args)
-  {
+                    final Object[] _args) {
     debug(arrayFormat(_messagePattern, _args));
   }
 
   /**
-   * @see Logger#debug(Marker, String, Throwable)
+   * Method to add a debug message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _text           message
+   * @param _e              Throwable to add
+   *
    */
   public void debug(final Marker _marker,
                     final String _text,
-                    final Throwable _e)
-  {
+                    final Throwable _e) {
     debug(_text, _e);
   }
 
   /**
-   * @see Logger#debug(Marker, String, Object, Object)
+   * Method to add a debug message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _arg1           object to add
+   * @param _arg2           object to add
    */
   public void debug(final Marker _marker,
                     final String _messagePattern,
                     final Object _arg1,
-                    final Object _arg2)
-  {
+                    final Object _arg2) {
     debug(format(_messagePattern, _arg1, _arg2));
   }
 
@@ -170,50 +205,62 @@ public class SLF4JOverEclipseConsole implements Logger
 
   /**
    * Is error logging currently enabled?
+   * @return true
    */
-  public boolean isErrorEnabled()
-  {
+  public boolean isErrorEnabled() {
     return true;
   }
 
   /**
    * @see Logger#isErrorEnabled(Marker)
+   * @param _marker marker
+   * @return false
    */
-  public boolean isErrorEnabled(final Marker _marker)
-  {
+  public boolean isErrorEnabled(final Marker _marker) {
     return isErrorEnabled();
   }
 
   /**
-   * @see Logger#error(String)
+   * Method to add a error message to the logger.
+   *
+   * @param _text   message
    */
-  public void error(final String _text)
-  {
+  public void error(final String _text) {
     if (isErrorEnabled())  {
       EfapsPlugin.getDefault().println(EfapsPlugin.LogLevel.ERROR, _text);
     }
   }
 
   /**
-   * @see Logger#error(String, Object)
+   * Method to add a error message to the logger.
+   *
+   * @param _messagePattern   message
+   * @param _arg             Objects to add
+   *
    */
   public void error(final String _messagePattern,
-                    final Object _arg)
-  {
+                    final Object _arg) {
     error(format(_messagePattern, _arg));
   }
 
   /**
-   * @see Logger#error(String, Object[])
+   * Method to add a error message to the logger.
+   *
+   * @param _messagePattern   message
+   * @param _args             Objects to add
+   *
    */
   public void error(final String _messagePattern,
-                    final Object[] _args)
-  {
+                    final Object[] _args) {
     error(arrayFormat(_messagePattern, _args));
   }
 
   /**
-   * @see Logger#error(String, Throwable)
+   * Method to add a error message to the logger.
+   *
+   * @param _text         message
+   * @param _e            Throwable to add
+   *
    */
   public void error(final String _text, final Throwable _e) {
     if (isErrorEnabled())  {
@@ -222,62 +269,85 @@ public class SLF4JOverEclipseConsole implements Logger
   }
 
   /**
-   * @see Logger#error(Marker, String)
+   * Method to add a error message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _text           message
+   *
    */
   public void error(final Marker _marker,
-                    final String _text)
-  {
+                    final String _text) {
     error(_text);
   }
 
   /**
-   * @see Logger#error(String, Object, Object)
+   * Method to add a error message to the logger.
+   *
+   * @param _messagePattern message
+   * @param _arg1            Object to add
+   * @param _arg2            Object to add
+   *
    */
   public void error(final String _messagePattern,
                     final Object _arg1,
-                    final Object _arg2)
-  {
+                    final Object _arg2) {
     error(format(_messagePattern, _arg1, _arg2));
   }
 
   /**
-   * @see Logger#error(Marker, String, Object)
+   * Method to add a error message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _arg            Object to add
+   *
    */
   public void error(final Marker _marker,
                     final String _messagePattern,
-                    final Object _arg)
-  {
+                    final Object _arg) {
     error(format(_messagePattern, _arg));
   }
 
   /**
-   * @see Logger#error(Marker, String, Object[])
+   * Method to add a error message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _args           Objects to add
+   *
    */
   public void error(final Marker _marker,
                     final String _messagePattern,
-                    final Object[] _args)
-  {
+                    final Object[] _args) {
     error(arrayFormat(_messagePattern, _args));
   }
 
   /**
-   * @see Logger#error(Marker, String, Throwable)
+   * Method to add a error message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _text           message
+   * @param _e              Throwable to add
+   *
    */
   public void error(final Marker _marker,
                     final String _text,
-                    final Throwable _e)
-  {
+                    final Throwable _e) {
     error(_text, _e);
   }
 
   /**
-   * @see Logger#error(Marker, String, Object, Object)
+   * Method to add a error message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _arg1           object to add
+   * @param _arg2           object to add
    */
   public void error(final Marker _marker,
                     final String _messagePattern,
                     final Object _arg1,
-                    final Object _arg2)
-  {
+                    final Object _arg2) {
     error(format(_messagePattern, _arg1, _arg2));
   }
 
@@ -286,116 +356,151 @@ public class SLF4JOverEclipseConsole implements Logger
 
   /**
    * Is info logging currently enabled?
+   *
+   * @return true
    */
-  public boolean isInfoEnabled()
-  {
+  public boolean isInfoEnabled() {
     return true;
   }
 
   /**
    * @see Logger#isInfoEnabled(Marker)
+   * @param _marker marker
+   * @return true
    */
-  public boolean isInfoEnabled(final Marker _marker)
-  {
+  public boolean isInfoEnabled(final Marker _marker) {
     return isInfoEnabled();
   }
 
   /**
-   * @see Logger#info(String)
+   * Method to add a info message to the logger.
+   *
+   * @param _text   message
    */
-  public void info(final String _text) 
-  {
+  public void info(final String _text) {
     if (isInfoEnabled())  {
       EfapsPlugin.getDefault().println(EfapsPlugin.LogLevel.INFO, _text);
     }
   }
 
   /**
-   * @see Logger#info(String, Object)
+   * Method to add a info message to the logger.
+   *
+   * @param _messagePattern   message
+   * @param _arg             Objects to add
+   *
    */
   public void info(final String _messagePattern,
-                   final Object _arg)
-  {
+                   final Object _arg) {
     info(format(_messagePattern, _arg));
   }
 
   /**
-   * @see Logger#info(String, Object[])
+   * Method to add a info message to the logger.
+   *
+   * @param _messagePattern   message
+   * @param _args             Objects to add
+   *
    */
   public void info(final String _messagePattern,
-                   final Object[] _args)
-  {
+                   final Object[] _args) {
     info(arrayFormat(_messagePattern, _args));
   }
 
   /**
-   * @see Logger#info(String, Throwable)
+   * Method to add a info message to the logger.
+   *
+   * @param _text         message
+   * @param _e            Throwable to add
+   *
    */
   public void info(final String _text,
-                   final Throwable _e)
-  {
+                   final Throwable _e) {
     if (isInfoEnabled())  {
       EfapsPlugin.getDefault().println(EfapsPlugin.LogLevel.INFO, _text, _e);
     }
   }
 
   /**
-   * @see Logger#info(Marker, String)
+   * Method to add a info message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _text           message
+   *
    */
   public void info(final Marker _marker,
-                   final String _text)
-  {
+                   final String _text) {
     info(_text);
   }
 
   /**
-   * @see Logger#info(String, Object, Object)
+   * Method to add a info message to the logger.
+   *
+   * @param _messagePattern message
+   * @param _arg1            Object to add
+   * @param _arg2            Object to add
+   *
    */
   public void info(final String _messagePattern,
                    final Object _arg1,
-                   final Object _arg2)
-  {
+                   final Object _arg2) {
     info(format(_messagePattern, _arg1, _arg2));
   }
 
   /**
-   * @see Logger#info(Marker, String, Object)
+   * Method to add a info message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _arg            Object to add
+   *
    */
   public void info(final Marker _marker,
                    final String _messagePattern,
-                   final Object _arg)
-  {
+                   final Object _arg) {
     info(format(_messagePattern, _arg));
   }
 
   /**
-   * @see Logger#info(Marker, String, Object[])
+   * Method to add a info message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _args           Objects to add
+   *
    */
   public void info(final Marker _marker,
                    final String _messagePattern,
-                   final Object[] _args)
-  {
+                   final Object[] _args) {
     info(arrayFormat(_messagePattern, _args));
   }
 
   /**
-   * @see Logger#info(Marker, String, Throwable)
+   * Method to add a info message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _text           message
+   * @param _e              Throwable to add
+   *
    */
   public void info(final Marker _marker,
                    final String _text,
-                   final Throwable _e)
-  {
+                   final Throwable _e) {
     info(_text, _e);
   }
 
   /**
-   * @see Logger#info(Marker, String, Object, Object)
+   * Method to add a info message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _arg1           object to add
+   * @param _arg2           object to add
    */
   public void info(final Marker _marker,
                    final String _messagePattern,
                    final Object _arg1,
-                   final Object _arg2)
-  {
+                   final Object _arg2) {
     info(format(_messagePattern, _arg1, _arg2));
   }
 
@@ -404,6 +509,7 @@ public class SLF4JOverEclipseConsole implements Logger
 
   /**
    * Is trace logging currently enabled?
+   * @return false
    */
   public boolean isTraceEnabled() {
     return false;
@@ -411,108 +517,143 @@ public class SLF4JOverEclipseConsole implements Logger
 
   /**
    * @see Logger#isTraceEnabled(Marker)
+   * @param _marker marker
+   * @return false
    */
-  public boolean isTraceEnabled(final Marker _marker)
-  {
+  public boolean isTraceEnabled(final Marker _marker) {
     return isTraceEnabled();
   }
 
   /**
-   * @see Logger#trace(String)
+   * Method to add a trace message to the logger.
+   *
+   * @param _text   message
    */
-  public void trace(final String _text)
-  {
+  public void trace(final String _text) {
     if (isTraceEnabled())  {
       EfapsPlugin.getDefault().println(EfapsPlugin.LogLevel.TRACE, _text);
     }
   }
 
   /**
-   * @see Logger#trace(String, Object)
+   * Method to add a trace message to the logger.
+   *
+   * @param _messagePattern   message
+   * @param _arg             Objects to add
+   *
    */
   public void trace(final String _messagePattern,
-                    final Object _arg)
-  {
+                    final Object _arg) {
     trace(format(_messagePattern, _arg));
   }
 
   /**
-   * @see Logger#trace(String, Object[])
+   * Method to add a trace message to the logger.
+   *
+   * @param _messagePattern   message
+   * @param _args             Objects to add
+   *
    */
   public void trace(final String _messagePattern,
-                    final Object[] _args)
-  {
+                    final Object[] _args) {
     trace(arrayFormat(_messagePattern, _args));
   }
 
   /**
-   * @see Logger#trace(String, Throwable)
+   * Method to add a trace message to the logger.
+   *
+   * @param _text         message
+   * @param _e            Throwable to add
+   *
    */
   public void trace(final String _text,
-                    final Throwable _e)
-  {
+                    final Throwable _e) {
     if (isTraceEnabled())  {
       EfapsPlugin.getDefault().println(EfapsPlugin.LogLevel.TRACE, _text, _e);
     }
   }
 
   /**
-   * @see Logger#trace(Marker, String)
+   * Method to add a trace message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _text           message
+   *
    */
   public void trace(final Marker _marker,
-                    final String _text)
-  {
+                    final String _text) {
     trace(_text);
   }
 
   /**
-   * @see Logger#trace(String, Object, Object)
+   * Method to add a trace message to the logger.
+   *
+   * @param _messagePattern message
+   * @param _arg1            Object to add
+   * @param _arg2            Object to add
+   *
    */
   public void trace(final String _messagePattern,
                     final Object _arg1,
-                    final Object _arg2)
-  {
+                    final Object _arg2) {
     trace(format(_messagePattern, _arg1, _arg2));
   }
 
   /**
-   * @see Logger#trace(Marker, String, Object)
+   * Method to add a trace message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _arg            Object to add
+   *
    */
   public void trace(final Marker _marker,
                     final String _messagePattern,
-                    final Object _arg)
-  {
+                    final Object _arg) {
     trace(format(_messagePattern, _arg));
   }
 
   /**
-   * @see Logger#trace(Marker, String, Object[])
+   * Method to add a trace message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _args           Objects to add
+   *
    */
   public void trace(final Marker _marker,
                     final String _messagePattern,
-                    final Object[] _args)
-  {
+                    final Object[] _args) {
     trace(arrayFormat(_messagePattern, _args));
   }
 
   /**
-   * @see Logger#trace(Marker, String, Throwable)
+   * Method to add a trace message to the logger.
+   *
+   * @see Logger#warn(Marker, String, Throwable)
+   * @param _marker         Marker
+   * @param _text           message
+   * @param _e              Throwable to add
    */
   public void trace(final Marker _marker,
                     final String _text,
-                    final Throwable _e)
-  {
+                    final Throwable _e) {
     trace(_text, _e);
   }
 
   /**
-   * @see Logger#trace(Marker, String, Object, Object)
+   * Method to add a trace message to the logger.
+   *
+   * @see Logger#warn(Marker, String, Object, Object)
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _arg1           object to add
+   * @param _arg2           object to add
    */
   public void trace(final Marker _marker,
                     final String _messagePattern,
                     final Object _arg1,
-                    final Object _arg2)
-  {
+                    final Object _arg2) {
     trace(format(_messagePattern, _arg1, _arg2));
   }
 
@@ -521,118 +662,152 @@ public class SLF4JOverEclipseConsole implements Logger
 
   /**
    * Is warn logging currently enabled?
+   * @return false
    */
-  public boolean isWarnEnabled()
-  {
+  public boolean isWarnEnabled() {
     return false;
   }
 
   /**
-   * (non-Javadoc)
+   * (non-Javadoc).
    * @see Logger#isWarnEnabled(Marker)
    * @see #isWarnEnabled()
+   * @param _marker marker
+   * @return false
    */
-  public boolean isWarnEnabled(final Marker _marker)
-  {
+  public boolean isWarnEnabled(final Marker _marker) {
     return isWarnEnabled();
   }
 
   /**
-   * @see Logger#warn(String)
+   * Method to add a warn message to the logger.
+   *
+   * @param _text   message
    */
-  public void warn(final String _text)
-  {
+  public void warn(final String _text) {
     if (isWarnEnabled())  {
       EfapsPlugin.getDefault().println(EfapsPlugin.LogLevel.WARN, _text);
     }
   }
 
   /**
-   * @see Logger#warn(String, Object)
+   * Method to add a warn message to the logger.
+   *
+   * @param _messagePattern   message
+   * @param _arg             Objects to add
+   *
    */
   public void warn(final String _messagePattern,
-                   final Object _arg)
-  {
+                   final Object _arg) {
     warn(format(_messagePattern, _arg));
   }
 
   /**
-   * @see Logger#warn(String, Object[])
+   * Method to add a warn message to the logger.
+   *
+   * @param _messagePattern   message
+   * @param _args             Objects to add
+   *
    */
   public void warn(final String _messagePattern,
-                   final Object[] _args)
-  {
+                   final Object[] _args) {
     warn(arrayFormat(_messagePattern, _args));
   }
 
   /**
-   * @see Logger#warn(String, Throwable)
+   * Method to add a warn message to the logger.
+   *
+   * @param _text         message
+   * @param _e            Throwable to add
+   *
    */
   public void warn(final String _text,
-                   final Throwable _e)
-  {
+                   final Throwable _e) {
     if (isWarnEnabled())  {
       EfapsPlugin.getDefault().println(EfapsPlugin.LogLevel.WARN, _text, _e);
     }
   }
 
   /**
-   * @see Logger#warn(Marker, String)
+   * Method to add a warn message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _text           message
+   *
    */
   public void warn(final Marker _marker,
-                   final String _text)
-  {
+                   final String _text) {
     warn(_text);
   }
 
   /**
-   * @see Logger#warn(String, Object, Object)
+   * Method to add a warn message to the logger.
+   *
+   * @param _messagePattern message
+   * @param _arg1            Object to add
+   * @param _arg2            Object to add
+   *
    */
   public void warn(final String _messagePattern,
                    final Object _arg1,
-                   final Object _arg2)
-  {
+                   final Object _arg2) {
     warn(format(_messagePattern, _arg1, _arg2));
   }
 
   /**
-   * @see Logger#warn(Marker, String, Object)
+   * Method to add a warn message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _arg            Object to add
+   *
    */
   public void warn(final Marker _marker,
                    final String _messagePattern,
-                   final Object _arg)
-  {
+                   final Object _arg) {
     warn(format(_messagePattern, _arg));
   }
 
   /**
-   * @see Logger#warn(Marker, String, Object[])
+   * Method to add a warn message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _args           Objects to add
+   *
    */
   public void warn(final Marker _marker,
                    final String _messagePattern,
-                   final Object[] _args)
-  {
+                   final Object[] _args) {
     warn(arrayFormat(_messagePattern, _args));
   }
 
   /**
-   * @see Logger#warn(Marker, String, Throwable)
+   * Method to add a warn message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _text           message
+   * @param _e              Throwable to add
+   *
    */
   public void warn(final Marker _marker,
                    final String _text,
-                   final Throwable _e)
-  {
+                   final Throwable _e) {
     warn(_text, _e);
   }
 
   /**
-   * @see Logger#warn(Marker, String, Object, Object)
+   * Method to add a warn message to the logger.
+   *
+   * @param _marker         Marker
+   * @param _messagePattern message
+   * @param _arg1           object to add
+   * @param _arg2           object to add
    */
   public void warn(final Marker _marker,
                    final String _messagePattern,
                    final Object _arg1,
-                   final Object _arg2)
-  {
+                   final Object _arg2) {
     warn(format(_messagePattern, _arg1, _arg2));
   }
 }

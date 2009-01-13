@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,23 +53,42 @@ import org.efaps.init.StartupDatabaseConnection;
 import org.efaps.init.StartupException;
 import org.efaps.update.Install;
 import org.efaps.util.EFapsException;
+
 /**
- * The activator class controls the plug-in life cycle
+ * The activator class controls the plug-in life cycle.
  *
  * @author tmo
+ * @author jmox
+ * @version $Id$
  */
-public class EfapsPlugin extends AbstractUIPlugin
-{
+public class EfapsPlugin extends AbstractUIPlugin {
+
+  /**
+   * Enum is used to define the colors for the different log levels.
+   */
   public enum LogLevel  {
+    /** Color for log level debug. */
     DEBUG(SWT.COLOR_BLUE),
+    /** Color for log level error. */
     ERROR(SWT.COLOR_DARK_RED),
+    /** Color for log level info. */
     INFO(SWT.COLOR_BLACK),
+    /** Color for log level trace. */
     TRACE(SWT.COLOR_DARK_RED),
+    /** Color for log level warn. */
     WARN(SWT.COLOR_DARK_MAGENTA);
 
-    final int color;
+    /**
+     * Color of the log level.
+     */
+    private final int color;
 
-    LogLevel(final int _color)  {
+    /**
+     * Constructor setting instance variable.
+     *
+     * @param _color Color
+     */
+    private LogLevel(final int _color)  {
       this.color = _color;
     }
   }
@@ -95,36 +114,43 @@ public class EfapsPlugin extends AbstractUIPlugin
    *
    * @see LogLevel
    */
-  private final Map<LogLevel,MessageConsoleStream> streams = new HashMap<LogLevel,MessageConsoleStream>();
+  private final Map<LogLevel, MessageConsoleStream> streams
+                                = new HashMap<LogLevel, MessageConsoleStream>();
 
-
-  private boolean initialized = false;
-
-  private final  ResourceBundle bundle = ResourceBundle.getBundle("plugin");
 
   /**
-   * The constructor
-   * @throws Exception
-   * @throws IOException
+   * Stores if this Plugin was initialized.
    */
-  public EfapsPlugin()
-  {
+  private boolean initialized = false;
+
+  /**
+   * Bundle for this Plugin.
+   */
+  private final ResourceBundle bundle = ResourceBundle.getBundle("plugin");
+
+  /**
+   * The constructor.
+   *
+   */
+  public EfapsPlugin() {
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+  /**
+   * Method is called on the start (load) of the Plugin.
+   *
+   * @param _context Context for the Bundle
+   * @throws Exception on error
    */
   @Override
-  public void start(final BundleContext context)
-      throws Exception
-  {
-    super.start(context);
+  public void start(final BundleContext _context)
+      throws Exception {
+    super.start(_context);
     PLUGIN = this;
 
     this.console = new MessageConsole(translate(null, "plugin.console"), null);
     this.console.activate();
-    ConsolePlugin.getDefault().getConsoleManager().addConsoles(new IConsole[]{this.console});
+    ConsolePlugin.getDefault().getConsoleManager()
+                                    .addConsoles(new IConsole[]{this.console});
     for (final LogLevel logLevel : LogLevel.values())  {
       final MessageConsoleStream stream = this.console.newMessageStream();
       stream.setActivateOnWrite(true);
@@ -134,56 +160,42 @@ public class EfapsPlugin extends AbstractUIPlugin
   }
 
   /**
-   * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+   * Method is called on the stop (unload) of the Plugin.
+   *
+   * @param _context Context for the Bundle
+   * @throws Exception on error
    */
   @Override
-  public void stop(final BundleContext context)
-      throws Exception
-  {
-    ConsolePlugin.getDefault().getConsoleManager().removeConsoles(new IConsole[]{ this.console });
+  public void stop(final BundleContext _context)
+      throws Exception {
+    ConsolePlugin.getDefault().getConsoleManager()
+                                .removeConsoles(new IConsole[]{ this.console });
     this.console = null;
     this.streams.clear();
     PLUGIN = null;
-    super.stop(context);
+    super.stop(_context);
   }
 
-
-  /*private boolean displayConsoleView()
-  {
-    try
-    {
-      IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-      if( activeWorkbenchWindow != null )
-      {
-        IWorkbenchPage activePage = activeWorkbenchWindow.getActivePage();
-        if( activePage != null )
-          activePage.showView(IConsoleConstants.ID_CONSOLE_VIEW, null, IWorkbenchPage.VIEW_VISIBLE);
-      }
-
-    } catch (PartInitException partEx) {
-      return false;
-    }
-
-    return true;
-  }*/
   /**
+   * Method to connect to the eFaps database.
    *
    * @return <i>true</i> if connection to database is initialized, otherwise
    *         <i>false</i>
    */
-  public boolean connect()
-  {
+  public boolean connect() {
     logInfo("connect.logInit");
 
-    final String type = this.getPluginPreferences().getString("dbtype");
+    final String type = getPluginPreferences().getString("dbtype");
     logInfo("connect.logDatabaseType", type);
 
-    final String factory = this.getPluginPreferences().getString("dbfactory");
+    final String factory = getPluginPreferences().getString("dbfactory");
     logInfo("connect.logFactory", factory);
 
     // prepare connection properties
-    final String propsStr = this.getPluginPreferences().getString("dbproperties");
-    final Map<String,String> props = new HashMap<String,String>();
+    final String propsStr = getPluginPreferences().getString("dbproperties");
+
+    final Map<String, String> props = new HashMap<String, String>();
+
     for (final String group : propsStr.split("[\n\r]")) {
       final int index = group.indexOf('=');
       final String key = (index > 0)
@@ -211,9 +223,11 @@ public class EfapsPlugin extends AbstractUIPlugin
 
     return this.initialized;
   }
-
-  public void disconnect()
-  {
+  /**
+   * Method to disconnect to the eFaps database.
+   *
+   */
+  public void disconnect() {
     println(LogLevel.INFO, "disconnect from eFaps");
   }
 
@@ -222,8 +236,7 @@ public class EfapsPlugin extends AbstractUIPlugin
    *
    * @return <i>true</i> if cache is reloaded; otherwise <i>false</i>
    */
-  public boolean reloadCache()
-  {
+  public boolean reloadCache() {
     boolean reloaded = false;
     logInfo("reloadCache.logStart");
 
@@ -253,18 +266,23 @@ public class EfapsPlugin extends AbstractUIPlugin
     return reloaded;
   }
 
-  public boolean isInitialized()
-  {
+  /**
+   * Getter method for instance variable {@link #initialized}.
+   *
+   * @return value for instance variable {@link #initialized}
+   */
+  public boolean isInitialized() {
     return this.initialized;
   }
 
   /**
+   * Method is used to update a file in eFaps.
    *
    * @param _file   file used to update
-   * @return
+   * @param _shell  Shell of the workspace
+   * * @return <i>true</i> if update succeeded, otherwise <i>false</i>
    */
-  public boolean update(final String _file, final Shell _shell)
-  {
+  public boolean update(final String _file, final Shell _shell) {
     boolean updated = false;
 
     final File file = new File(_file);
@@ -286,7 +304,7 @@ public class EfapsPlugin extends AbstractUIPlugin
     final Install install = new Install();
     // in case of css,java,js we have to get the root folder
     if (!"install-xml".equals(type)) {
-      final DirectoryDialog fDialog = new  DirectoryDialog (_shell);
+      final DirectoryDialog fDialog = new  DirectoryDialog(_shell);
       final String folder = fDialog.open();
       try {
           install.setRootDir((new File(folder)).toURL());
@@ -340,11 +358,10 @@ public class EfapsPlugin extends AbstractUIPlugin
    *
    * @return <i>true</i> if transaction could be started, otherwise
    *         <i>false</i>
-   * @throws EFapsException
+   * @throws EFapsException on error
    */
   protected boolean startTransaction()
-      throws EFapsException
-  {
+      throws EFapsException {
     boolean started = false;
     try {
       final String user = this.getPluginPreferences().getString("name");
@@ -362,12 +379,11 @@ public class EfapsPlugin extends AbstractUIPlugin
   }
 
   /**
-   * Returns the shared instance
+   * Returns the shared instance.
    *
    * @return the shared instance
    */
-  public static EfapsPlugin getDefault()
-  {
+  public static EfapsPlugin getDefault() {
     return PLUGIN;
   }
 
@@ -386,17 +402,19 @@ public class EfapsPlugin extends AbstractUIPlugin
    */
   public String translate(final Class<?> _clazz,
                           final String _key,
-                          final Object... _arguments)
-  {
+                          final Object... _arguments) {
+
     final String key = (_clazz == null)
                        ? _key
-                       : new StringBuilder().append(_clazz.getName()).append('.').append(_key).toString();
+                       : new StringBuilder().append(_clazz.getName())
+                                         .append('.').append(_key).toString();
     String ret;
     try  {
       ret = this.bundle.getString(key);
       ret = MessageFormat.format(ret, _arguments);
     } catch (final MissingResourceException e)  {
-      ret = new StringBuilder().append("!!!").append(_key).append("!!!").toString();
+      ret = new StringBuilder().append("!!!")
+                                        .append(_key).append("!!!").toString();
     }
     return ret;
   }
@@ -408,14 +426,14 @@ public class EfapsPlugin extends AbstractUIPlugin
    * @param _event  event for which the information message must be shown
    * @param _clazz  class for which the information must be shown
    * @param _text   key of the text property
-   * @throws ExecutionException
+   * @throws ExecutionException on error
    */
   public void showInfo(final ExecutionEvent _event,
                        final Class<?> _clazz,
                        final String _text)
-      throws ExecutionException
-  {
-    final IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(_event);
+      throws ExecutionException {
+    final IWorkbenchWindow window
+                        = HandlerUtil.getActiveWorkbenchWindowChecked(_event);
     MessageDialog.openInformation(window.getShell(),
                                   translate(null, "name"),
                                   translate(_clazz, _text));
@@ -428,14 +446,14 @@ public class EfapsPlugin extends AbstractUIPlugin
    * @param _event  event for which the information message must be shown
    * @param _clazz  class for which the error must be shown
    * @param _text   key of the text property
-   * @throws ExecutionException
+   * @throws ExecutionException on error
    */
   public void showError(final ExecutionEvent _event,
                         final Class<?> _clazz,
                         final String _text)
-      throws ExecutionException
-  {
-    final IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(_event);
+      throws ExecutionException {
+    final IWorkbenchWindow window
+                          = HandlerUtil.getActiveWorkbenchWindowChecked(_event);
     MessageDialog.openError(window.getShell(),
                             translate(null, "name"),
                             translate(_clazz, _text));
@@ -443,31 +461,41 @@ public class EfapsPlugin extends AbstractUIPlugin
   }
 
 
+  /**
+   * Method to log a info to the console stream.
+   *
+   * @param _key        Key of the log
+   * @param _arguments  Arguments
+   */
   public void logInfo(final String _key,
-                      final Object... _arguments)
-  {
+                      final Object... _arguments) {
     println(getClass(), LogLevel.INFO, _key, _arguments);
   }
 
+  /**
+   * Method to log a error to the console stream.
+   *
+   * @param _key        Key of the log
+   * @param _arguments  Arguments
+   */
   public void logError(final String _key,
-                       final Object... _arguments)
-  {
+                       final Object... _arguments) {
     println(getClass(), LogLevel.ERROR, _key, _arguments);
   }
 
   /**
-   *
-   * @param _clazz
-   * @param _logLevel
-   * @param _key
-   * @param _arguments
+   * Method used to print to the console stream.
+   * @param _clazz      Class
+   * @param _logLevel   loglevel
+   * @param _key        Key
+   * @param _arguments  Arguments
    */
   public void println(final Class<?> _clazz,
                       final LogLevel _logLevel,
                       final String _key,
-                      final Object... _arguments)
-  {
-    if ((_arguments != null) && (_arguments.length > 0) && (_arguments[0] instanceof Throwable))  {
+                      final Object... _arguments) {
+    if ((_arguments != null) && (_arguments.length > 0)
+                                    && (_arguments[0] instanceof Throwable))  {
       final Throwable e = (Throwable) _arguments[0];
       final Object[] args = new Object[_arguments.length];
       args[0] = e.toString();
@@ -481,15 +509,14 @@ public class EfapsPlugin extends AbstractUIPlugin
   }
 
   /**
-   * Prints a text to the console stream
+   * Prints a text to the console stream.
    *
    * @param _logLevel   log level (used to add to the output)
    * @param _text       text to print
    * @see #println(LogLevel, String, Throwable)
    */
   public void println(final LogLevel _logLevel,
-                      final String _text)
-  {
+                      final String _text) {
     println(_logLevel, _text, null);
   }
 
@@ -503,8 +530,7 @@ public class EfapsPlugin extends AbstractUIPlugin
    */
   public void println(final LogLevel _logLevel,
                       final String _text,
-                      final Throwable _e)
-  {
+                      final Throwable _e) {
     showConsole();
     final MessageConsoleStream stream = this.streams.get(_logLevel);
     final StringBuilder text = new StringBuilder()
@@ -530,9 +556,9 @@ public class EfapsPlugin extends AbstractUIPlugin
    *
    * @see #console    eFaps plugin console
    */
-  public void showConsole()
-  {
-    ConsolePlugin.getDefault().getConsoleManager().showConsoleView(this.console);
+  public void showConsole() {
+    ConsolePlugin.getDefault().getConsoleManager()
+                                                 .showConsoleView(this.console);
   }
-
 }
+
