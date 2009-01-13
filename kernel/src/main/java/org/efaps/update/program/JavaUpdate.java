@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,16 +33,15 @@ import org.efaps.util.EFapsException;
  * @author tmo
  * @version $Id$
  */
-public class JavaUpdate extends AbstractSourceUpdate
-{
+public class JavaUpdate extends AbstractSourceUpdate {
   /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
    * Constructor to initialize the type of Java programs.
+   * @param _url url to the file
    */
-  public JavaUpdate(final URL _url)
-  {
+  public JavaUpdate(final URL _url) {
     super(_url, "Admin_Program_Java");
   }
 
@@ -108,24 +107,20 @@ public class JavaUpdate extends AbstractSourceUpdate
      *                        URL
      */
     @Override
-    protected void searchInstance()
-        throws EFapsException
-    {
-      if (this.javaCode == null)  {
-//        try {
-          this.javaCode = new ESJPImporter(getUrl());
-/*        } catch (MalformedURLException e) {
-          throw new EFapsException(getClass(),
-                                   "readJavaCode.MalformedURLException",
-                                   e,
-                                   getUrl().toString());
-        }
-*/      }
+    protected void searchInstance() throws EFapsException {
+      if (this.javaCode == null) {
+        this.javaCode = new ESJPImporter(getUrl());
+      }
       setName(this.javaCode.getClassName());
-if (this.javaCode.eFapsUUID != null)  {
-      this.addValue("UUID", this.javaCode.eFapsUUID.toString());
-}
-      if (this.instance == null)  {
+
+      if (this.javaCode.getEFapsUUID() != null) {
+        this.addValue("UUID", this.javaCode.getEFapsUUID().toString());
+      }
+
+      if (this.javaCode.getRevision() != null) {
+        this.addValue("Revision", this.javaCode.getRevision());
+      }
+      if (this.instance == null) {
         this.instance = this.javaCode.searchInstance();
       }
     }

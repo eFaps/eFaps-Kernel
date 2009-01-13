@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,15 +48,14 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo encoding from java files!
  */
-public class ESJPImporter
-{
+public class ESJPImporter {
   /////////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
    * Defines the encoding of the ESJP source code within eFaps.
    */
-  private final static String ENCODING = "UTF8";
+  private static final String ENCODING = "UTF8";
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -64,24 +63,29 @@ public class ESJPImporter
   /**
    * Java source code itself.
    */
-  final StringBuilder code = new StringBuilder();
+  private final StringBuilder code = new StringBuilder();
 
   /**
    * URL of the source file in file system (or in jar, ...).
    */
-  final URL url;
+  private final URL url;
 
   /**
    * Name of the class in eFaps.
    *
    * @see #getClassName
    */
-  final String className;
+  private final String className;
 
   /**
    * eFaps UUID of the class.
    */
-  public final UUID eFapsUUID;
+  private final UUID eFapsUUID;
+
+  /**
+   * eFaps revision of the class.
+   */
+  private final String revision;
 
   /////////////////////////////////////////////////////////////////////////////
   // constructor / destructor
@@ -93,13 +97,14 @@ public class ESJPImporter
    * @param _url    url to the ESJP source code
    * @see #readCode
    * @see #evalClassName
+   * @throws EFapsException on error
    */
-  public ESJPImporter(final URL _url) throws EFapsException
-  {
+  public ESJPImporter(final URL _url) throws EFapsException {
     this.url = _url;
     readCode();
     this.className = evalClassName();
     this.eFapsUUID = evalUUID();
+    this.revision = evalRevision();
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -114,12 +119,13 @@ public class ESJPImporter
    */
   public void updateDB(final Instance _instance) throws EFapsException  {
     try {
-      final InputStream is = new ByteArrayInputStream(this.code.toString().getBytes(ENCODING));
+      final InputStream is
+           = new ByteArrayInputStream(this.code.toString().getBytes(ENCODING));
       final Checkin checkin = new Checkin(_instance);
       checkin.executeWithoutAccessCheck(this.className,
                                         is,
                                         this.code.length());
-    } catch (UnsupportedEncodingException e) {
+    } catch (final UnsupportedEncodingException e) {
       throw new EFapsException(getClass(),
                                "updateDB.UnsupportedEncodingException",
                                e);
@@ -153,7 +159,7 @@ public class ESJPImporter
 
   /**
    *
-   * @throws EFapsException
+   * @throws EFapsException on error
    * @see #searchInstance
    * @see #createInstance
    * @see #updateDB
@@ -172,14 +178,14 @@ public class ESJPImporter
    * Creates an instance of an ESJP in eFaps for given name.
    *
    * @return new created instance
-   * @throws EFapsException
+   * @throws EFapsException on error
    */
   protected Instance createInstance() throws EFapsException  {
     final Type esjpType = Type.get(ADMIN_PROGRAM_JAVA);
     final Insert insert = new Insert(esjpType);
     insert.add("Name", this.className);
-    if (this.eFapsUUID != null)  {
-      insert.add("UUID", this.eFapsUUID.toString());
+    if (this.getEFapsUUID() != null)  {
+      insert.add("UUID", this.getEFapsUUID().toString());
     }
     insert.execute();
 
@@ -204,7 +210,7 @@ public class ESJPImporter
         this.code.append(buf, 0, length);
       }
       reader.close();
-    } catch (IOException e)  {
+    } catch (final IOException e)  {
       throw new EFapsException(getClass(),
                                "readCode.IOException",
                                e,
@@ -216,9 +222,10 @@ public class ESJPImporter
    * This Method extracts the package name and sets the name of this Java
    * definition (the name is the package name together with the name of the
    * file excluding the <code>.java</code>).
+   *
+   * @return classname of the esjp
    */
-  protected String evalClassName()
-  {
+  protected String evalClassName() {
     final String urlPath = this.url.getPath();
     String name = urlPath.substring(urlPath.lastIndexOf('/') + 1);
     name = name.substring(0, name.lastIndexOf('.'));
@@ -232,28 +239,46 @@ public class ESJPImporter
                                    .replaceFirst(";$", "");
       name = pkg + "." + name;
     }
-
-    // regular expression for the eFaps UUID (defined as type annotation)
-//@EFapsUUID("6e9283bb-06a7-40a5-8420-becc4cff72f5")
-
-
     return name;
   }
 
-  protected UUID evalUUID()
-  {
+  /**
+   * This Method extracts the UUID from the esjp.
+   *
+   * @return UUID of the esjp
+   */
+  protected UUID evalUUID() {
     UUID uuid = null;
 
-    final Pattern uuidPattern = Pattern.compile("@EFapsUUID ?\\( ?\\\"[0-9a-z\\-]*\\\" ?\\)");
+    final Pattern uuidPattern =
+                 Pattern.compile("@EFapsUUID ?\\( ?\\\"[0-9a-z\\-]*\\\" ?\\)");
     final Matcher uuidMatcher = uuidPattern.matcher(this.code);
     if (uuidMatcher.find()) {
       final String uuidStr = uuidMatcher.group()
-                                        .replaceFirst("^@EFapsUUID ?\\( ?\\\"", "")
-                                        .replaceFirst("\\\" ?\\)", "");
+                                    .replaceFirst("^@EFapsUUID ?\\( ?\\\"", "")
+                                    .replaceFirst("\\\" ?\\)", "");
       uuid = UUID.fromString(uuidStr);
     }
 
     return uuid;
+  }
+
+  /**
+   * This Method extracts the Revision from the esjp.
+   *
+   * @return Revision of the esjp
+   */
+  protected String evalRevision() {
+    String ret = null;
+    final Pattern revisionPattern =
+                        Pattern.compile("@EFapsRevision ?\\( ?\\\".*\\\" ?\\)");
+    final Matcher revisionMatcher = revisionPattern.matcher(this.code);
+    if (revisionMatcher.find()) {
+      ret = revisionMatcher.group()
+                                 .replaceFirst("^@EFapsRevision ?\\( ?\\\"", "")
+                                 .replaceFirst("\\\" ?\\)", "");
+    }
+    return ret;
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -267,5 +292,23 @@ public class ESJPImporter
    */
   public String getClassName() {
     return this.className;
+  }
+
+  /**
+   * Getter Method for instance variable {@link #eFapsUUID}.
+   *
+   * @return value for instance variable {@link #eFapsUUID}
+   */
+  public UUID getEFapsUUID() {
+    return this.eFapsUUID;
+  }
+
+  /**
+   * Getter Method for instance variable {@link #revision}.
+   *
+   * @return value for instance variable {@link #revision}
+   */
+  public String getRevision() {
+    return this.revision;
   }
 }
