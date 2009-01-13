@@ -29,15 +29,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for the UUID of an esjp.
+ * Annotation for the Revision of an esjp.
  *
- * @author tmo
+ * @author jmox
  * @version $Id$
  */
 @Documented
 @Retention(RUNTIME)
 @Target(TYPE)
 @Inherited
-public @interface EFapsUUID {
+public @interface EFapsRevision {
   String value();
 }
