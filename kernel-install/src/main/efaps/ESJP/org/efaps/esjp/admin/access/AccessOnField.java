@@ -25,6 +25,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.util.EFapsException;
@@ -37,6 +38,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 @EFapsUUID("216703cb-15e7-423e-9d71-46497b63e374")
+@EFapsRevision("$Rev$")
 public class AccessOnField implements EventExecution {
 
   /**
