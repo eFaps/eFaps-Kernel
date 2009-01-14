@@ -93,7 +93,7 @@ public class ConnectEventToAbstract {
       collectAllowedEventTypes(map, type);
     }
 
-    final String fieldName = fieldvalue.getFieldDef().getField().getName();
+    final String fieldName = fieldvalue.getField().getName();
     final StringBuilder ret = new StringBuilder();
     ret.append("<select name=\"").append(fieldName).append("\" size=\"1\">");
 
@@ -172,7 +172,7 @@ public class ConnectEventToAbstract {
     query.execute();
 
     // build drop down list
-    final String fieldName = fieldvalue.getFieldDef().getField().getName();
+    final String fieldName = fieldvalue.getField().getName();
     final StringBuilder ret = new StringBuilder();
     ret.append("<select name=\"").append(fieldName).append("\" size=\"1\">");
     while (query.next())  {

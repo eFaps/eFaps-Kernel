@@ -50,13 +50,17 @@ import org.efaps.admin.ui.field.Field;
  */
 @EFapsUUID("7f08c93d-96fd-474a-a1f0-772d610deaba")
 @EFapsRevision("$Rev$")
-public class FileField
-{
+public class FileField {
 
-  public Return getFieldValueUI(final Parameter _parameter)
-  {
-    final FieldValue fieldvalue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
-    final Field field = fieldvalue.getFieldDef().getField();
+  /**
+   * Method to get the FieldValue for the FileField.
+   * @param _parameter Parameter as passed by the eFaps.
+   * @return  Return
+   */
+  public Return getFieldValueUI(final Parameter _parameter) {
+    final FieldValue fieldvalue =
+                          (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+    final Field field = fieldvalue.getField();
 
     final StringBuilder ret = new StringBuilder();
     ret.append("<input ")

@@ -140,7 +140,7 @@ public class Password {
     final Return retVal = new Return();
 
     if (htmltype == HtmlType.CREATEHTML) {
-      final String fieldName = fieldvalue.getFieldDef().getField().getName();
+      final String fieldName = fieldvalue.getField().getName();
       ret.append("<br/>&nbsp;").append("<input name=\"").append(fieldName)
           .append("\" type=\"password\" size=\"20\">").append(
               "&nbsp;<br/><br/>");
