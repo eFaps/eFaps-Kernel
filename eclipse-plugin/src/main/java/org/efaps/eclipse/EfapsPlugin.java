@@ -35,7 +35,6 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -302,17 +301,6 @@ public class EfapsPlugin extends AbstractUIPlugin {
     }
 
     final Install install = new Install();
-    // in case of css,java,js we have to get the root folder
-    if (!"install-xml".equals(type)) {
-      final DirectoryDialog fDialog = new  DirectoryDialog(_shell);
-      final String folder = fDialog.open();
-      try {
-          install.setRootDir((new File(folder)).toURL());
-        } catch (final MalformedURLException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-    }
 
     logInfo("update.logStart", file.getName());
 
@@ -320,7 +308,6 @@ public class EfapsPlugin extends AbstractUIPlugin {
     boolean read = false;
     try {
       install.addFile(file.toURL(), type);
-     // install.setRootDir(_rootDir)
       read = true;
     } catch (final MalformedURLException e) {
       logError("update.logException", e);
