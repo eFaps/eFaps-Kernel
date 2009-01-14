@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,17 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
+ * This class is used as the value for a field. It can be used to get the
+ * for the user interface necessary strings etc.
+ *
  * @author tmo
- * @todo description
+ * @author jmox
+ *
  * @version $Id$
  */
 public class FieldValue implements Comparable<Object> {
@@ -75,9 +80,6 @@ public class FieldValue implements Comparable<Object> {
     SEARCHHTML;
   }
 
-  ///////////////////////////////////////////////////////////////////////////
-  // instance variables
-
   /**
    * Store the HTML type for which the events must be executed.
    *
@@ -105,7 +107,7 @@ public class FieldValue implements Comparable<Object> {
    *
    * @see #getFieldDef
    */
-  private final FieldDefinition fieldDef;
+  private final Field field;
 
   /**
    * The instance variable stores the value for this form value.
@@ -114,26 +116,48 @@ public class FieldValue implements Comparable<Object> {
    */
   private final Object value;
 
-  // /////////////////////////////////////////////////////////////////////////
-  // constructors / desctructors
+  /**
+   * Stores the UIInterface belonging to this fieldvalue.
+   */
+  private final UIInterface ui;
 
 
   /**
-   * @param _fieldDef   field definition this value belongs to
+   * Construtor used to evaluate the value from the database by using one of the
+   * getter methods for html.
+   *
+   * @param _field      field this value belongs to
    * @param _attr       attribute the value belongs to
    * @param _value      value of the FieldValue
    * @param _instance   Instance the Value belongs to
    */
-  public FieldValue(final FieldDefinition _fieldDef,
+  public FieldValue(final Field _field,
                     final Attribute _attr,
                     final Object _value,
                     final Instance _instance) {
-    this.fieldDef = _fieldDef;
+    this.field = _field;
     this.attribute = _attr;
     this.value = _value;
     this.instance = _instance;
+    this.ui = (_attr == null) ? null : _attr.getAttributeType().getUI();
   }
 
+  /**
+   * Constructor used in case of comparison.
+   *
+   * @param _field          field this value belongs to
+   * @param _ui             UIInterface this value belongs to
+   * @param _compareValue   value to be compared
+   */
+  public FieldValue(final Field _field,
+                    final UIInterface _ui,
+                    final Object _compareValue) {
+    this.ui = _ui;
+    this.field = _field;
+    this.value = _compareValue;
+    this.instance = null;
+    this.attribute = null;
+  }
   // /////////////////////////////////////////////////////////////////////////
   // instance methods
 
@@ -156,11 +180,11 @@ public class FieldValue implements Comparable<Object> {
       throws EFapsException {
     String ret = null;
     this.htmlType = _htmlType;
-    if ((this.fieldDef.getField() != null)
-        && this.fieldDef.getField().hasEvents(EventType.UI_FIELD_VALUE)) {
+    if ((this.field != null)
+        && this.field.hasEvents(EventType.UI_FIELD_VALUE)) {
 
       final List<EventDefinition> events =
-                this.fieldDef.getField().getEvents(EventType.UI_FIELD_VALUE);
+                              this.field.getEvents(EventType.UI_FIELD_VALUE);
 
       final StringBuilder html = new StringBuilder();
       if (events != null) {
@@ -185,9 +209,14 @@ public class FieldValue implements Comparable<Object> {
   }
 
   /**
+   * Method to get html code for this FieldValue in case of create.
    *
    * @see #executeEvents
-   * @see #getClassUI
+   *
+   * @param _callInstance   Instance that called the html code
+   * @param _instance       instance that is part of the html code
+   * @throws EFapsException on error
+   * @return html code as a String
    */
   public String getCreateHtml(final Instance _callInstance,
                               final Instance _instance)
@@ -196,38 +225,22 @@ public class FieldValue implements Comparable<Object> {
 
     ret = executeEvents(_callInstance, _instance, HtmlType.CREATEHTML);
     if (ret == null) {
-      final UIInterface classUI = getClassUI();
-      if (classUI != null)  {
-        ret = classUI.getCreateHtml(this);
+      if (this.ui != null)  {
+        ret = this.ui.getCreateHtml(this);
       }
     }
     return ret;
   }
 
   /**
+   * Method to get html code for this FieldValue in case of edit.
    *
    * @see #executeEvents
-   * @see #getClassUI
-   */
-  public String getViewHtml(final Instance _callInstance,
-                            final Instance _instance)
-        throws EFapsException {
-    String ret = null;
-
-    ret = executeEvents(_callInstance, _instance, HtmlType.VIEWHTML);
-    if (ret == null) {
-      final UIInterface classUI = getClassUI();
-      if (classUI != null)  {
-        ret = classUI.getViewHtml(this);
-      }
-    }
-    return ret;
-  }
-
-  /**
    *
-   * @see #executeEvents
-   * @see #getClassUI
+   * @param _callInstance   Instance that called the html code
+   * @param _instance       instance that is part of the html code
+   * @throws EFapsException on error
+   * @return html code as a String
    */
   public String getEditHtml(final Instance _callInstance,
                             final Instance _instance)
@@ -236,17 +249,22 @@ public class FieldValue implements Comparable<Object> {
 
     ret = executeEvents(_callInstance, _instance, HtmlType.EDITHTML);
     if (ret == null) {
-      final UIInterface classUI = getClassUI();
-      if (classUI != null)  {
-        ret = classUI.getEditHtml(this);
+      if (this.ui != null)  {
+        ret = this.ui.getEditHtml(this);
       }
     }
     return ret;
   }
 
   /**
+   * Method to get html code for this FieldValue in case of search.
+   *
    * @see #executeEvents
-   * @see #getClassUI
+   *
+   * @param _callInstance   Instance that called the html code
+   * @param _instance       instance that is part of the html code
+   * @throws EFapsException on error
+   * @return html code as a String
    */
   public String getSearchHtml(final Instance _callInstance,
                               final Instance _instance)
@@ -255,19 +273,46 @@ public class FieldValue implements Comparable<Object> {
 
     ret = executeEvents(_callInstance, _instance, HtmlType.SEARCHHTML);
     if (ret == null) {
-      final UIInterface classUI = getClassUI();
-      if (classUI != null)  {
-        ret = classUI.getSearchHtml(this);
+      if (this.ui != null)  {
+        ret = this.ui.getSearchHtml(this);
       }
     }
     return ret;
   }
 
-  public Object getObject4Html() throws EFapsException {
+  /**
+   * Method to get html code for this FieldValue in case of view.
+   *
+   * @see #executeEvents
+   *
+   * @param _callInstance   Instance that called the html code
+   * @param _instance       instance that is part of the html code
+   * @throws EFapsException on error
+   * @return html code as a String
+   */
+  public String getViewHtml(final Instance _callInstance,
+                            final Instance _instance)
+        throws EFapsException {
+    String ret = null;
+
+    ret = executeEvents(_callInstance, _instance, HtmlType.VIEWHTML);
+    if (ret == null) {
+      if (this.ui != null)  {
+        ret = this.ui.getViewHtml(this);
+      }
+    }
+    return ret;
+  }
+
+  /**
+   * Method is used to retrieve the value that mut be used for comparison.
+   * @return  Object
+   * @throws EFapsException on error
+   */
+  public Object getObject4Compare() throws EFapsException {
     Object ret = null;
-    final UIInterface classUI = getClassUI();
-    if (classUI != null) {
-      ret = classUI.getObject4Html(this);
+    if (this.ui != null) {
+      ret = this.ui.getObject4Compare(this);
     }
     return ret;
   }
@@ -281,13 +326,14 @@ public class FieldValue implements Comparable<Object> {
    * @see #attribute
    */
   public UIInterface getClassUI() {
-    return (this.attribute == null)
-           ? null
-           : this.attribute.getAttributeType().getUI();
+    return this.ui;
   }
 
   /**
-   * @param _target target field value to compare to
+   * Method to compare this FieldValue to a target FieldValue.
+   *
+   * @param _target field value to compare to
+   * @return 0 if smaller, else -1
    */
   public int compareTo(final Object _target) {
     final FieldValue target = (FieldValue) _target;
@@ -311,9 +357,6 @@ public class FieldValue implements Comparable<Object> {
     return ret;
   }
 
-  ///////////////////////////////////////////////////////////////////////////
-  // getter and setter methods
-
   /**
    * This is the getter method for the instance variable {@link #instance}.
    *
@@ -324,15 +367,6 @@ public class FieldValue implements Comparable<Object> {
     return this.instance;
   }
 
-  /**
-   * This is the getter method for the field variable {@link #fieldDef}.
-   *
-   * @return value of field variable {@link #fieldDef}
-   * @see #field
-   */
-  public FieldDefinition getFieldDef() {
-    return this.fieldDef;
-  }
 
   /**
    * This is the getter method for the instance variable {@link #value}.
@@ -362,5 +396,14 @@ public class FieldValue implements Comparable<Object> {
    */
   public HtmlType getHtmlType() {
     return this.htmlType;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #field}.
+   *
+   * @return value of instance variable {@link #field}
+   */
+  public Field getField() {
+    return this.field;
   }
 }

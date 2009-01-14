@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,47 +34,70 @@ import org.efaps.util.EFapsException;
 /**
  * This Class is the representation of
  * {@link org.efaps.admin.datamodel.attributetype.LinkWithRanges} for the
- * Userinterface.<br>
- * Depending on the accessmode (e.g. edit) the Value of a Field is presented in
- * an editable or noneditable mode.
+ * user interface.<br>
+ * Depending on the access mode (e.g. edit) the Value of a Field is presented in
+ * an editable or non editable mode.
  *
  * @author jmox
  * @version $Id$
  */
 public class LinkWithRangesUI extends AbstractUI {
+
+  /**
+   * Needed for serialization.
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * Method to get the Value for viewing in an html document.
+   *
+   * @param _fieldValue Fieldvalue the representation is requested
+   * @return value for field
+   * @throws EFapsException on error
+   */
   @Override
-  public String getViewHtml(final FieldValue _fieldValue) throws EFapsException {
+  public String getViewHtml(final FieldValue _fieldValue)
+      throws EFapsException {
+
     final StringBuilder ret = new StringBuilder();
     final Attribute attribute = _fieldValue.getAttribute();
 
     if (_fieldValue.getValue() != null) {
       if (attribute.hasEvents(EventType.RANGE_VALUE)) {
 
-        for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
-          final TreeMap<?, ?> treemap = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES));
-          for (final Entry<?,?> entry : treemap.entrySet()) {
+        for (final Return values
+                            : attribute.executeEvents(EventType.RANGE_VALUE)) {
+          final TreeMap<?, ?> treemap
+                            = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES));
+          for (final Entry<?, ?> entry : treemap.entrySet()) {
             if (entry.getValue().equals(_fieldValue.getValue().toString())) {
               ret.append(entry.getKey().toString());
             }
           }
         }
       }
-    } else {
-//      throw new EFapsException();
     }
     return ret.toString();
   }
-
+  /**
+   * Method to get the Value for viewing in an html document.
+   *
+   * @param _fieldValue Fieldvalue the representation is requested
+   * @return dropdown with values
+   * @throws EFapsException on error
+   */
   @Override
-  public String getEditHtml(final FieldValue _fieldValue) throws EFapsException {
+  public String getEditHtml(final FieldValue _fieldValue)
+      throws EFapsException {
     final StringBuilder ret = new StringBuilder();
     final Attribute attribute = _fieldValue.getAttribute();
     if (_fieldValue.getValue() != null) {
       if (attribute.hasEvents(EventType.RANGE_VALUE)) {
-        for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
+        for (final Return values
+                            : attribute.executeEvents(EventType.RANGE_VALUE)) {
 
           ret.append("<select name=\"").append(
-              _fieldValue.getFieldDef().getField().getName()).append(
+              _fieldValue.getField().getName()).append(
               "\" size=\"1\">");
 
           final Iterator<?> iter =
@@ -93,27 +116,32 @@ public class LinkWithRangesUI extends AbstractUI {
           ret.append("</select>");
         }
       }
-
-    } else {
-      // throw new EFapsException();
     }
     return ret.toString();
   }
-
+  /**
+   * Method to get the Value for viewing in an html document.
+   *
+   * @param _fieldValue Fieldvalue the representation is requested
+   * @return dropdown with values
+   * @throws EFapsException on error
+   */
   @Override
   public String getCreateHtml(final FieldValue _fieldValue)
       throws EFapsException {
     final StringBuilder ret = new StringBuilder();
     final Attribute attribute = _fieldValue.getAttribute();
     if (attribute.hasEvents(EventType.RANGE_VALUE)) {
-      for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
+      for (final Return values
+                             : attribute.executeEvents(EventType.RANGE_VALUE)) {
 
         ret.append("<select name=\"").append(
-            _fieldValue.getFieldDef().getField().getName()).append(
+            _fieldValue.getField().getName()).append(
             "\" size=\"1\">");
 
         final Iterator<?> iter =
-            ((TreeMap<?, ?>) values.get(ReturnValues.VALUES)).entrySet().iterator();
+                  ((TreeMap<?, ?>) values.get(ReturnValues.VALUES))
+                                                         .entrySet().iterator();
 
         while (iter.hasNext()) {
           final Entry<?, ?> entry = (Entry<?, ?>) iter.next();
@@ -123,18 +151,25 @@ public class LinkWithRangesUI extends AbstractUI {
 
         ret.append("</select>");
       }
-    } else {
-      // throw new EFapsException();
     }
     return ret.toString();
   }
 
+  /**
+   * Method to get the Value for viewing in an html document.
+   *
+   * @param _fieldValue Fieldvalue the representation is requested
+   * @return value for field
+   * @throws EFapsException on error
+   */
   @Override
   public String getSearchHtml(final FieldValue _fieldValue)
       throws EFapsException {
-    final Field field = _fieldValue.getFieldDef().getField();
-    return "<input type=\"text\" " + "size=\"" + field.getCols() + "\" "
-        + "name=\"" + field.getName() + "\" " + "value=\"*\"" + "/>";
+    final Field field = _fieldValue.getField();
+    return new StringBuilder().append("<input type=\"text\" ")
+                .append("size=\"").append(field.getCols()).append("\" ")
+                .append("name=\"").append(field.getName()).append("\" ")
+                .append("value=\"*\"").append("/>").toString();
   }
 
 }

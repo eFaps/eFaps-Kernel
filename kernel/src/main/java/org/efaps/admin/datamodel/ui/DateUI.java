@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2009 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ package org.efaps.admin.datamodel.ui;
 
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeComparator;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -29,7 +30,7 @@ import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**
- * Class to represent a Date for the userinterface.
+ * Class to represent a Date for the user interface.
  *
  * @author jmox
  * @version $Id$
@@ -37,8 +38,15 @@ import org.efaps.util.EFapsException;
 public class DateUI extends AbstractUI {
 
   /**
+   * Needed for serialization.
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * Method to get the Value for viewing in an html document.
+   *
    * @param _fieldValue  Feildvalue the view must be evaluated for
-   * @throws EFapsException on error
+   * @throws EFapsException if value is not DateTime
    * @return STring with the value for the field
    */
   @Override
@@ -57,14 +65,44 @@ public class DateUI extends AbstractUI {
             formatter.withLocale(Context.getThreadContext().getLocale()));
       }
     } else {
-      //TODO throw new EFapsException
+      throw new EFapsException(this.getClass(),
+                               "getViewHtml.noDateTime",
+                               (Object[]) null);
     }
     return ret;
   }
 
+  /**
+   * Method to get the Object for use in case of comparison.
+   *
+   * @param _fieldValue Fieldvalue the representation is requested
+   * @return value
+   * @throws EFapsException on error
+   */
   @Override
-  public Object getObject4Html(final FieldValue _fieldValue)
+  public Object getObject4Compare(final FieldValue _fieldValue)
       throws EFapsException {
     return _fieldValue.getValue();
   }
+
+  /**
+   * Method to compare the values.
+   *
+   * @param _fieldValue first Value
+   * @param _fieldValue2 second Value
+   * @return 0
+   */
+  @Override
+  public int compare(final FieldValue _fieldValue,
+      final FieldValue _fieldValue2) {
+    int ret = 0;
+    if (_fieldValue.getValue() instanceof DateTime
+        && _fieldValue2.getValue() instanceof DateTime) {
+
+      ret = DateTimeComparator.getDateOnlyInstance()
+                  .compare(_fieldValue.getValue(), _fieldValue2.getValue());
+    }
+    return ret;
+  }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,29 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.util.EFapsException;
 
 /**
+ * Class to represent a Date for the user interface.
+ *
  * @author tmo
  * @author jmox
  * @version $Id$
  */
 public class TypeUI extends AbstractUI {
+
+  /**
+   * Needed for serialization.
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * Method to get the Value for view in an html document.
+   *
+   * @param _fieldValue Fieldvalue the representation is requested
+   * @return "create"
+   * @throws EFapsException on error
+   */
   @Override
-  public String getViewHtml(FieldValue _fieldValue) throws EFapsException {
+  public String getViewHtml(final FieldValue _fieldValue)
+      throws EFapsException {
     String ret = null;
 
     if (_fieldValue.getValue() instanceof Type) {
@@ -42,13 +58,23 @@ public class TypeUI extends AbstractUI {
       ret = DBProperties.getProperty(name + ".Label");
 
     } else {
-      // throw new EFapsException();
+      throw new EFapsException(this.getClass(),
+                               "getViewHtml.noType",
+                               (Object[]) null);
     }
     return ret;
   }
 
+  /**
+   * Method to compare the values.
+   *
+   * @param _fieldValue first Value
+   * @param _fieldValue2 second Value
+   * @return 0
+   */
   @Override
-  public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2) {
+  public int compare(final FieldValue _fieldValue,
+                     final FieldValue _fieldValue2) {
     String value = null;
     String value2 = null;
     if (_fieldValue.getValue() instanceof Type) {

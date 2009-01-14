@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,15 +32,23 @@ import org.efaps.util.EFapsException;
  */
 public class PasswordUI extends AbstractUI {
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Needed for serialization.
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * Method to get the Value for editing in an html document.
    *
-   * @see org.efaps.admin.datamodel.ui.AbstractUI#getEditHtml(org.efaps.admin.datamodel.ui.FieldValue)
+   * @param _fieldValue Fieldvalue the representation is requested
+   * @return password field
+   * @throws EFapsException on error
    */
   @Override
-  public String getEditHtml(final FieldValue _fieldValue) throws EFapsException {
-    StringBuffer ret = new StringBuffer();
-    Field field = _fieldValue.getFieldDef().getField();
+  public String getEditHtml(final FieldValue _fieldValue)
+      throws EFapsException {
+    final StringBuffer ret = new StringBuffer();
+    final Field field = _fieldValue.getField();
     ret.append("<input type=\"password\" size=\"").append(field.getCols())
         .append("\" name=\"").append(field.getName()).append(
             "\" " + "value=\"\">");

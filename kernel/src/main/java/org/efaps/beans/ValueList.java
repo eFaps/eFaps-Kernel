@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.db.AbstractQuery;
 import org.efaps.db.Instance;
@@ -44,27 +43,29 @@ import org.efaps.util.EFapsException;
 public class ValueList {
 
   /**
-   * enum used to differ expression parts from text parts
+   * Enum used to differ expression parts from text parts.
    */
   public enum TokenType {
+    /** Used for token of type expression. */
     EXPRESSION,
+    /** Used for token of type text. */
     TEXT
   }
 
   /**
-   * holds the Expressions used in this ValueList
+   * Holds the Expressions used in this ValueList.
    */
   private final Set<String> expressions = new HashSet<String>();
 
   /**
-   * holds the tokens of this ValueList
+   * Holds the tokens of this ValueList.
    */
   private final ArrayList<Token> tokens = new ArrayList<Token>();
 
   /**
-   * get the ValueList
+   * Get the ValueList.
    *
-   * @return String with the Values, wich looks like the original
+   * @return String with the Values, which looks like the original
    */
   public String getValueList() {
     final StringBuffer buf = new StringBuffer();
@@ -77,13 +78,15 @@ public class ValueList {
         case TEXT:
           buf.append(token.value);
           break;
+        default:
+          break;
       }
     }
     return buf.toString();
   }
 
   /**
-   * add an Expression to this ValueList
+   * Add an Expression to this ValueList.
    *
    * @param _expression
    *                String with the expression
@@ -94,21 +97,19 @@ public class ValueList {
   }
 
   /**
-   * add Text to the Tokens
+   * Add Text to the Tokens.
    *
-   * @param _text
-   *                Text to be added
+   * @param _text Text to be added
    */
   public void addText(final String _text) {
     this.tokens.add(new Token(TokenType.TEXT, _text));
   }
 
   /**
-   * This method adds the expressions of this ValueList to the given query
+   * This method adds the expressions of this ValueList to the given query.
    *
-   * @param _query
-   *                AbstractQuery the expressions should be added
-   * @throws EFapsException
+   * @param _query  AbstractQuery the expressions should be added
+   * @throws EFapsException on error
    * @see {@link #makeString(AbstractQuery)}
    */
   public void makeSelect(final AbstractQuery _query) throws EFapsException {
@@ -124,13 +125,12 @@ public class ValueList {
    * @param _callInstance instance on which the query was called
    * @param _query        AbstractQuery the ValueString should be retrieved
    * @return String with the actuall Value of this ValueList
-   * @throws Exception
+   * @throws Exception on error
    * @see {@link #makeSelect(AbstractQuery)}
    */
   public String makeString(final Instance _callInstance,
                            final AbstractQuery _query)
-      throws Exception
-  {
+      throws Exception {
     final StringBuilder buf = new StringBuilder();
 
     for (final Token token : this.tokens) {
@@ -138,13 +138,15 @@ public class ValueList {
         case EXPRESSION:
           final Attribute attr = _query.getAttribute(token.value);
           final Object value = _query.get(token.value);
-          buf.append((new FieldValue(new FieldDefinition(null, null),
+          buf.append((new FieldValue(null,
                                      attr,
                                      value,
                                      null)).getViewHtml(_callInstance, null));
           break;
         case TEXT:
           buf.append(token.value);
+          break;
+        default:
           break;
       }
     }
@@ -162,31 +164,29 @@ public class ValueList {
   }
 
   /**
-   * this private class holds the Definitios of the ValueList
+   * This private class holds the Definitios of the ValueList.
    */
-  private class Token {
+  private final class Token {
 
     /**
-     * this instance variable holds the Type of this token
+     * This instance variable holds the Type of this token.
      */
     private final TokenType type;
 
     /**
-     * this instance variable holds the value of this token
+     * This instance variable holds the value of this token.
      */
     private final String value;
 
     /**
-     * Constructor setting the instance variables
+     * Constructor setting the instance variables.
      *
-     * @param _type
-     * @param _value
+     * @param _type   TokenType
+     * @param _value  Value for the token
      */
-    Token(final TokenType _type, final String _value) {
+    private Token(final TokenType _type, final String _value) {
       this.type = _type;
       this.value = _value;
     }
-
   }
-
 }
