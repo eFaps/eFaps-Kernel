@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,12 @@
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
+ */
+
+/* 
+ * @eFapsPackage  org.efaps.ui.wicket.components.button
+ * @eFapsUUID     a742d113-b1c7-4cd2-918d-87c8c522fa50
+ * @eFapsRevision $Rev$
  */
 
 .eFapsButton {

@@ -15,6 +15,13 @@
  * limitations under the License.
  */
 
+/* 
+ * @eFapsPackage  org.efaps.ui.wicket.components.tree
+ * @eFapsUUID     9f4accae-350a-4fa1-802a-180bb67455c1
+ * @eFapsRevision $Rev$
+ */
+
+
 div.wicket-tree {
   font-family: arial, verdana, helvetica, sans-serif;
   font-size: 9pt;  

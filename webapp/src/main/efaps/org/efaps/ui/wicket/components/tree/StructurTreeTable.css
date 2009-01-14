@@ -14,6 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/* 
+ * @eFapsPackage  org.efaps.ui.wicket.components.tree
+ * @eFapsUUID     8adcb99e-a521-4f44-9472-6aa8ef413866
+ * @eFapsRevision $Rev$
+ */
  
 /**
  * a_   columns
@@ -21,6 +27,7 @@
  * c_   column-inner
  * d_   column-inner-first
  */
+
 
 div.wicket-tree-table {
   background-color: white;

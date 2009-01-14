@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,13 @@
  * Last Changed:    $Date$
  * Last Changed By: $Author$
  */
-
+ 
+ /* 
+ * @eFapsPackage  org.efaps.ui.wicket.pages.content
+ * @eFapsUUID     fa279e81-bf53-4e93-b063-185e1f40f4d0
+ * @eFapsRevision $Rev$
+ */
+ 
 body {
   background-color: white;
   overflow: hidden;

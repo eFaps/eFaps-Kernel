@@ -1,3 +1,8 @@
+/* 
+ * @eFapsPackage  org.efaps.ui.wicket.components.menu
+ * @eFapsUUID     9f323ef3-73aa-4255-85d6-e2b471a6b801
+ * @eFapsRevision $Rev$
+ */
 
 // directory of where all the images are
 var cmThemeOfficeBase = '/eFaps/servlet/image/org.efaps.ui.wicket.components.menu.';

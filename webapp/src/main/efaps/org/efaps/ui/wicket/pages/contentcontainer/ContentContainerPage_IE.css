@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,12 @@
  * Last Changed By: $Author$
  */
 
-/* @version 2 */ 
-/* @extends org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage.css */
-
+/* 
+ * @eFapsPackage  org.efaps.ui.wicket.pages.contentcontainer
+ * @eFapsUUID     fb196d5b-5ae1-446d-8423-51c36a104c23
+ * @eFapsRevision $Rev$
+ * @eFapsExtends  org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage.css
+ */
 
 /* extending for IE */
 

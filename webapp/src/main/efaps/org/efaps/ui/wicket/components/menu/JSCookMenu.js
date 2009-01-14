@@ -22,6 +22,12 @@
 	DEALINGS IN THE SOFTWARE.
 */
 
+/* 
+ * @eFapsPackage  org.efaps.ui.wicket.components.menu
+ * @eFapsUUID     908836f5-8a4f-447a-a628-945d118393ad
+ * @eFapsRevision $Rev$
+ */
+
 // default node properties
 var _cmNodeProperties =
 {

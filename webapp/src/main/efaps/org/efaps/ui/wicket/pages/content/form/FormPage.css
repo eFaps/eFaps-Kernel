@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,12 @@
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
+ */
+
+/* 
+ * @eFapsPackage  org.efaps.ui.wicket.pages.content.form
+ * @eFapsUUID     fc702787-b573-42f5-91b5-38f70981a240
+ * @eFapsRevision $Rev$
  */
 
 #eFapsContentDiv {

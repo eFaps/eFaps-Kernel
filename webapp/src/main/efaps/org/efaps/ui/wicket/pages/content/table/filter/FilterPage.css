@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,12 @@
  * Last Changed By: $Author$
  */
 
+ /* 
+ * @eFapsPackage  org.efaps.ui.wicket.pages.content.table.filter
+ * @eFapsUUID     bc399180-055c-4149-ac41-5b1a3c11ca80
+ * @eFapsRevision $Rev$
+ */
+ 
 .eFapsFilterTable {
   font-family: arial, verdana, helvetica, sans-serif;
   font-size: 8pt;

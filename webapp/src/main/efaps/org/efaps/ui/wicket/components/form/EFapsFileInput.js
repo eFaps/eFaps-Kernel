@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,16 @@
  */
 
 /* 
+ * @eFapsPackage  org.efaps.ui.wicket.components.form
+ * @eFapsUUID     b9aca56b-392a-4da8-98a6-886df32bb8d0
+ * @eFapsRevision $Rev$
+ */
+
+/* 
  * This script is needed because when a AjaxSubmit is done with the script from 
  * wicket the elements are serialized and filtered. The Filter does not pass the 
- * values from inputs of type "file". Therefor this script creates hidden inputs 
- * with the sam name and value as the filtered one. 
+ * values from inputs of type "file". Therefore this script creates hidden inputs 
+ * with the same name and value as the filtered one. 
  * The script is executed as a precondition script for the ajaxsubmitbehavior 
  * from wicket, therefore it must return true to allow the ajaxcall to advance.
  */

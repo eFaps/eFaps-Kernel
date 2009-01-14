@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,11 @@
  * Last Changed By: $Author$
  */
  
+ /* 
+ * @eFapsPackage  org.efaps.ui.wicket.components.split
+ * @eFapsUUID     718846d1-99ef-4e55-b9a8-400ce35678ce
+ * @eFapsRevision $Rev$
+ */
  
 .eFapsSplitImageContract {
   position: absolute;

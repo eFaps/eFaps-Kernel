@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,12 @@
  * Last Changed By: $Author$
  */
 
+/* 
+ * @eFapsPackage  org.efaps.ui.wicket.components.footer
+ * @eFapsUUID     f4ed6682-e08c-4963-a422-ef39ea28ce6f
+ * @eFapsRevision $Rev$
+ */
+ 
 .eFapsFooter {
   background: #DDDECB;
   border-bottom: 1px solid;

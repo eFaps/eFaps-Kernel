@@ -1,5 +1,5 @@
  /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,13 @@
  * Last Changed By: $Author$
  */
  
+ /* 
+ * @eFapsPackage  org.efaps.ui.wicket.pages.main
+ * @eFapsUUID     7014a635-2c09-4ac8-918f-1edb2d22596d
+ * @eFapsRevision $Rev$
+ * 
+ */
+
 function eFapsSetIFrameHeight() {
   total = window.innerHeight;
   logo = document.getElementById('eFapsLogo').offsetHeight;

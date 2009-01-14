@@ -1,8 +1,5 @@
-//@version 2
-//@extends org.efaps.ui.wicket.components.menu.JSCookMenu.js
-
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +17,13 @@
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
+ */
+
+/* 
+ * @eFapsPackage  org.efaps.ui.wicket.components.menu
+ * @eFapsUUID     db395bd5-2771-437e-bd0e-5c189ceb4d41
+ * @eFapsRevision $Rev$
+ * @eFapsExtends  org.efaps.ui.wicket.components.menu.JSCookMenu.js
  */
 
 //
