@@ -25,12 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.datamodel.ui.FieldValue.HtmlType;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
-import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
@@ -39,7 +36,7 @@ import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment
+ * Class is used to render a css into a readable html.
  *
  * @author jmox
  * @version $Id$
@@ -48,32 +45,30 @@ import org.efaps.util.EFapsException;
 @EFapsRevision("$Rev$")
 public class Css implements EventExecution {
 
+  /**
+   * Method is called as UI_FIELD_VALUE event from inside form
+   * "Admin_Program_CSSForm".
+   *
+   * @param _parameter as passed from eFaps
+   * @throws EFapsException on error
+   * @return Return with value for field
+   */
   public Return execute(final Parameter _parameter) throws EFapsException {
     final Return ret = new Return();
-    final FieldValue fieldvalue = (FieldValue) _parameter
-        .get(ParameterValues.UIOBJECT);
-    final Instance instance = (Instance) _parameter
-        .get(ParameterValues.CALL_INSTANCE);
+
+    final Instance instance = _parameter.getCallInstance();
 
     final Checkout checkout = new Checkout(instance);
     final InputStream ins = checkout.execute();
-    final BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
+    final BufferedReader reader
+                               = new BufferedReader(new InputStreamReader(ins));
     final StringBuilder strb = new StringBuilder();
-
-    if (HtmlType.EDITHTML.equals(fieldvalue.getHtmlType())) {
-      strb.append("<textarea>");
-    }
 
     String line = null;
     try {
       while ((line = reader.readLine()) != null) {
-        strb.append(line);
-        if (HtmlType.VIEWHTML.equals(fieldvalue.getHtmlType())) {
-          strb.append("<br/>");
-        } else if (HtmlType.EDITHTML.equals(fieldvalue.getHtmlType())) {
-          strb.append("/n");
-        }
-
+        strb.append(line.replaceAll("\\s", "&nbsp;"));
+        strb.append("<br/>");
       }
     } catch (final IOException e) {
       e.printStackTrace();
@@ -84,9 +79,7 @@ public class Css implements EventExecution {
         e.printStackTrace();
       }
     }
-    if (HtmlType.EDITHTML.equals(fieldvalue.getHtmlType())) {
-      strb.append("</textarea>");
-    }
+
     ret.put(ReturnValues.VALUES, strb.toString());
 
     return ret;
