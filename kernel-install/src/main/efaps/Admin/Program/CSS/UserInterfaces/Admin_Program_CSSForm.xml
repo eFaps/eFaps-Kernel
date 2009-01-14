@@ -98,9 +98,13 @@
     </field>
     <field name="css">
       <property name="Label">Admin_Program_CSSForm/css.Label</property>
-      <property name="Editable">true</property>
-      <trigger name="Admin_Program_CSSForm/css" event="UI_FIELD_VALUE" 
-          program="org.efaps.esjp.admin.program.Css" />
+      <property name="Editable">false</property>
+      <property name="Creatable">false</property>
+      <property name="Searchable">false</property>
+      <trigger name="Admin_Program_CSSForm/css" 
+               event="UI_FIELD_VALUE" 
+               program="org.efaps.esjp.admin.program.FormatOutput"
+               method="css" />
     </field>
 
 
