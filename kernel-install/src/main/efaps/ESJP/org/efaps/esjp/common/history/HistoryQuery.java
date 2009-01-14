@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
  */
 
 package org.efaps.esjp.common.history;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +27,12 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
+
 
 /**
  * @author jmox
@@ -39,6 +40,7 @@ import org.efaps.util.EFapsException;
  * @todo description
  */
 @EFapsUUID("6a954943-d7b8-45e2-b211-3b5f4731e64a")
+@EFapsRevision("$Rev$")
 public class HistoryQuery implements EventExecution
 {
 

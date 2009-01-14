@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;
@@ -37,7 +38,15 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
+
+/**
+ * TODO description!
+ *
+ * @author jmox
+ * @version $Id$
+ */
 @EFapsUUID("9dd18ca7-95a9-4ce1-91ea-5aaf7c227240")
+@EFapsRevision("$Rev$")
 public class AccessCheckOnSourceVersion implements EventExecution {
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -159,7 +168,7 @@ public class AccessCheckOnSourceVersion implements EventExecution {
 
   }
 
-  public Return execute(Parameter _parameter) {
+  public Return execute(final Parameter _parameter) {
     final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     final AccessType accessType =
         (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);

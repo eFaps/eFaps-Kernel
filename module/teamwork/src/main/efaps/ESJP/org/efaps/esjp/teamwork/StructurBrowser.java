@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,15 +29,23 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
+/**
+ * TODO description!
+ *
+ * @author jmox
+ * @version $Id$
+ */
 @EFapsUUID("42f5f290-0575-479b-b6fa-29ed1771e0cd")
+@EFapsRevision("$Rev$")
 public class StructurBrowser implements EventExecution {
 
-  public Return execute(Parameter _parameter) throws EFapsException {
+  public Return execute(final Parameter _parameter) throws EFapsException {
     Return ret = null;
     final String method = (String) _parameter.get(ParameterValues.OTHERS);
     if (method.equals("execute")) {
@@ -50,7 +58,7 @@ public class StructurBrowser implements EventExecution {
     return ret;
   }
 
-  private Return internalExecute(Parameter _parameter) throws EFapsException {
+  private Return internalExecute(final Parameter _parameter) throws EFapsException {
     final Return ret = new Return();
     final Map<?, ?> properties =
         (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
@@ -79,7 +87,7 @@ public class StructurBrowser implements EventExecution {
 
   }
 
-  private Return checkForChildren(Parameter _parameter) throws EFapsException {
+  private Return checkForChildren(final Parameter _parameter) throws EFapsException {
     final Return ret = new Return();
     final Map<?, ?> properties =
         (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
@@ -98,7 +106,7 @@ public class StructurBrowser implements EventExecution {
     return ret;
   }
 
-  private Return addChildren(Parameter _parameter) throws EFapsException {
+  private Return addChildren(final Parameter _parameter) throws EFapsException {
     final Return ret = new Return();
 
     final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
@@ -124,7 +132,7 @@ public class StructurBrowser implements EventExecution {
 
   }
 
-  private String getId(Instance _instance) {
+  private String getId(final Instance _instance) {
     final String ret = _instance.getOid();
     return ret.substring(ret.indexOf(".") + 1);
   }

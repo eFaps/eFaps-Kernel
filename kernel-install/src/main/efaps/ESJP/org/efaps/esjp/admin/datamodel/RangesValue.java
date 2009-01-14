@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -46,6 +47,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 @EFapsUUID("6e9283bb-06a7-40a5-8420-becc4cff72f5")
+@EFapsRevision("$Rev$")
 public class RangesValue implements EventExecution
 {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Delete;
 import org.efaps.util.EFapsException;
@@ -44,6 +45,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 @EFapsUUID("b8d99ead-ceb1-4ee8-bf6f-d1022cc4485f")
+@EFapsRevision("$Rev$")
 public class CommonDelete implements EventExecution
 {
   /**
@@ -69,7 +71,7 @@ public class CommonDelete implements EventExecution
         delIdx = Integer.parseInt(delIdxStr);
       }
 
-      for (String rowOids : allOids) {
+      for (final String rowOids : allOids) {
         final String[] colOids = rowOids.split("\\|");
         (new Delete(colOids[delIdx])).execute();
       }

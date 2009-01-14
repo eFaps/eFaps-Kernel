@@ -34,6 +34,7 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.field.Field;
@@ -53,6 +54,7 @@ import org.efaps.util.EFapsException;
  * @todo description
  */
 @EFapsUUID("d9ba2b85-8b9a-46b0-929e-8e938e7d5577")
+@EFapsRevision("$Rev$")
 public class Edit implements EventExecution {
 
   /**

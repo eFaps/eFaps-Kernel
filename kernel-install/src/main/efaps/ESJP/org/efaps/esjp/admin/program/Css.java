@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Checkout;
 import org.efaps.db.Instance;
@@ -39,11 +40,12 @@ import org.efaps.util.EFapsException;
 
 /**
  * TODO comment
- * 
+ *
  * @author jmox
  * @version $Id$
  */
 @EFapsUUID("27dcb0e6-bd78-4442-a9d6-05f491a2900f")
+@EFapsRevision("$Rev$")
 public class Css implements EventExecution {
 
   public Return execute(final Parameter _parameter) throws EFapsException {

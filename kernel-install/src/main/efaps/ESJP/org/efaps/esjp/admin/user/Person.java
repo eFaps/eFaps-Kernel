@@ -25,6 +25,7 @@ import java.util.Map;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -39,6 +40,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 @EFapsUUID("1b777261-6da1-4003-87e4-2937e44ff269")
+@EFapsRevision("$Rev$")
 public class Person {
 
   /**

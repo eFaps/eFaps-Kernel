@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
@@ -41,6 +42,7 @@ import org.efaps.util.EFapsException;
  * @todo description
  */
 @EFapsUUID("11b5668b-de34-4cb5-985c-b3f10686e72c")
+@EFapsRevision("$Rev$")
 public class HistoryTrigger implements EventExecution
 {
   /**
@@ -48,37 +50,37 @@ public class HistoryTrigger implements EventExecution
    */
   public Return execute(final Parameter _parameter) throws EFapsException
   {
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    Map<?, ?> values = (Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
-    Map<?, ?> properties =
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final Map<?, ?> values = (Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
+    final Map<?, ?> properties =
         (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-    String type = (String) properties.get("Type");
+    final String type = (String) properties.get("Type");
 
     Insert insert = new Insert(type);
     insert.add("ForID", ((Long) instance.getId()).toString());
     insert.add("ForType", ((Long) instance.getType().getId()).toString());
     if ("Common_History_AddChild".equals(type)
         || "Common_History_RemoveChild".equals(type)) {
-      Context context = Context.getThreadContext();
-      String oid = context.getParameter("oid");
-      String typeid = oid.substring(0, oid.indexOf("."));
-      String toid = oid.substring(oid.indexOf(".") + 1);
+      final Context context = Context.getThreadContext();
+      final String oid = context.getParameter("oid");
+      final String typeid = oid.substring(0, oid.indexOf("."));
+      final String toid = oid.substring(oid.indexOf(".") + 1);
       insert.add("ToType", typeid);
       insert.add("ToID", toid);
     }
 
     insert.execute();
-    String ID = insert.getId();
+    final String ID = insert.getId();
 
     insert.close();
 
     if (values != null) {
-      Iterator<?> iter = values.entrySet().iterator();
+      final Iterator<?> iter = values.entrySet().iterator();
 
       while (iter.hasNext()) {
-        Entry<?, ?> entry = (Entry<?, ?>) iter.next();
-        Attribute attr = (Attribute) entry.getKey();
-        String value = entry.getValue().toString();
+        final Entry<?, ?> entry = (Entry<?, ?>) iter.next();
+        final Attribute attr = (Attribute) entry.getKey();
+        final String value = entry.getValue().toString();
 
         insert = new Insert("Common_History_Attributes");
         insert.add("HistoryID", ID);

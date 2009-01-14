@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,13 +32,21 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Delete;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
+/**
+ * TODO description!
+ *
+ * @author jmox
+ * @version $Id$
+ */
 @EFapsUUID("df9925c2-3afe-4282-a04a-4a938af1a53f")
+@EFapsRevision("$Rev$")
 public class CascadeDelete implements EventExecution {
 
   /**
@@ -48,7 +56,7 @@ public class CascadeDelete implements EventExecution {
   private static final Logger LOG =
       LoggerFactory.getLogger(CascadeDelete.class);
 
-  public Return execute(Parameter _parameter) {
+  public Return execute(final Parameter _parameter) {
     final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     final List<String> toDelete = new ArrayList<String>();
 

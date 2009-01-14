@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Person.AttrName;
@@ -36,6 +37,7 @@ import org.efaps.util.EFapsException;
  *  TODO description , accesscheck
  */
 @EFapsUUID("55bc2ba5-1797-469d-bb6c-1d3710f246dc")
+@EFapsRevision("$Rev$")
 public class ChgSetting implements EventExecution {
 
   public Return execute(final Parameter _parameter) throws EFapsException {

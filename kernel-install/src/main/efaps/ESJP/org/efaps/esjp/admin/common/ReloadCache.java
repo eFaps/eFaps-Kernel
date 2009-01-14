@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,16 @@
 
 package org.efaps.esjp.admin.common;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class to reload the Cache.<br>
@@ -39,6 +41,7 @@ import org.slf4j.LoggerFactory;
  * @todo use EFapsException
  */
 @EFapsUUID("1d4f1263-9315-4f59-bd5e-bd364f907bac")
+@EFapsRevision("$Rev$")
 public class ReloadCache implements EventExecution
 {
   /**
@@ -55,7 +58,7 @@ public class ReloadCache implements EventExecution
     try  {
       RunLevel.init("webapp");
       RunLevel.execute();
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       LOG.error("execute\nparameter:\n" + _parameter
                   + "\nException is:\n" + e);
     }

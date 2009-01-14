@@ -31,6 +31,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
@@ -48,6 +49,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 @EFapsUUID("ff1b1140-3da0-491f-8bf4-c42f71ea4343")
+@EFapsRevision("$Rev$")
 public class Password {
 
   /**

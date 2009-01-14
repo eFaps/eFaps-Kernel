@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,24 @@
  */
 
 package org.efaps.esjp.common.uitable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 /**
  * The ESJP is used to launch an expand-query against the eFaps-Database, wich
@@ -70,6 +72,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id:QueryExpand.java 1563 2007-10-28 14:07:41Z tmo $
  */
 @EFapsUUID("41945470-bcc3-4d91-b16b-6357932ead5e")
+@EFapsRevision("$Rev$")
 public class QueryExpand implements EventExecution
 {
   /**

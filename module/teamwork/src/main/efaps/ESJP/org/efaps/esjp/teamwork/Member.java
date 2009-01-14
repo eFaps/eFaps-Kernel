@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
@@ -51,6 +52,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 @EFapsUUID("f2d99e6a-107f-4980-bd58-7ce4a7b1d26d")
+@EFapsRevision("$Rev$")
 public class Member implements EventExecution {
 
   /**
@@ -64,7 +66,7 @@ public class Member implements EventExecution {
    * @param _parameter
    * @return null
    */
-  public Return insertNewMember(Parameter _parameter) {
+  public Return insertNewMember(final Parameter _parameter) {
 
     final Iterator<?> iter =
         ((Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES)).entrySet()
@@ -187,7 +189,7 @@ public class Member implements EventExecution {
     return ID;
   }
 
-  public Return editMember(Parameter _parameter) {
+  public Return editMember(final Parameter _parameter) {
     System.out.print("geht doch");
 
     final Return ret = new Return();
@@ -196,7 +198,7 @@ public class Member implements EventExecution {
     return ret;
   }
 
-  public Return execute(Parameter _parameter) {
+  public Return execute(final Parameter _parameter) {
 
     final Iterator<?> iter =
         ((Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES)).entrySet()
@@ -247,7 +249,7 @@ public class Member implements EventExecution {
    * @param _parameter
    * @return null
    */
-  public Return insertCollectionCreator(Parameter _parameter) {
+  public Return insertCollectionCreator(final Parameter _parameter) {
 
     final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     final String abstractlink = ((Long) instance.getId()).toString();
@@ -308,7 +310,7 @@ public class Member implements EventExecution {
    * @param _parameter
    * @return
    */
-  public Return removeMember(Parameter _parameter) {
+  public Return removeMember(final Parameter _parameter) {
     final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     final String tempID = ((Long) instance.getId()).toString();
 

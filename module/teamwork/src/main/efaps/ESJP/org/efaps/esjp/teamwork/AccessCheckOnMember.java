@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;
@@ -46,6 +47,7 @@ import org.efaps.util.EFapsException;
  *          nicht erlaubt
  */
 @EFapsUUID("57627004-8033-4f13-b828-683cf387d891")
+@EFapsRevision("$Rev$")
 public class AccessCheckOnMember implements EventExecution {
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -144,7 +146,7 @@ public class AccessCheckOnMember implements EventExecution {
 
   }
 
-  public Return execute(Parameter _parameter) {
+  public Return execute(final Parameter _parameter) {
     final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     final AccessType accessType =
         (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);

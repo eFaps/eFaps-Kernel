@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.field.Field;
@@ -36,8 +40,6 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -45,6 +47,7 @@ import org.slf4j.LoggerFactory;
  * @todo description
  */
 @EFapsUUID("d6988849-9412-4f83-980f-a596750f6340")
+@EFapsRevision("$Rev$")
 public class QuerySearch implements EventExecution
 {
   /**
@@ -74,7 +77,7 @@ public class QuerySearch implements EventExecution
     final SearchQuery query = new SearchQuery();
     query.setQueryTypes(types);
     query.setExpandChildTypes(expandChildTypes);
-    for (Field field : command.getTargetForm().getFields()) {
+    for (final Field field : command.getTargetForm().getFields()) {
       final String value = context.getParameter(field.getName());
       if ((value != null) && (value.length() > 0) && (!value.equals("*"))) {
         query.addWhereExprMatchValue(field.getExpression(), value);

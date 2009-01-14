@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,20 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.ui.wicket.util.FileFormat;
 import org.efaps.ui.xml.XMLExport;
 import org.efaps.util.EFapsException;
 
+/**
+ * TODO description!
+ *
+ * @author jmox
+ * @version $Id$
+ */
 @EFapsUUID("fd1ecee1-a882-4fbe-8b3c-5e5c3ed4d6b7")
+@EFapsRevision("$Rev$")
 public class CreateXML implements EventExecution
 {
 
@@ -41,7 +49,7 @@ public class CreateXML implements EventExecution
   {
     final Return ret = new Return();
     final XMLExport export = new XMLExport(_parameter.get(ParameterValues.OTHERS));
-    String mimetype =
+    final String mimetype =
         (String) ((HashMap<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
             .get("MimeType");
 
