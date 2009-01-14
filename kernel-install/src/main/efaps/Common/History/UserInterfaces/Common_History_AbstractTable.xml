@@ -50,7 +50,7 @@
       <property name="Expression">Creator</property>
       <property name="Label">Common_History_Abstract/Creator.Label</property>
     </field>
-     <field name="creator">
+     <field name="created">
       <property name="Expression">Created</property>
       <property name="Label">Common_History_Abstract/Created.Label</property>
     </field>
