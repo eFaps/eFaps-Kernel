@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,7 +141,8 @@ public class TypeUpdate extends AbstractUpdate
                            final String _text)
     {
       final String value = _tags.get(0);
-      if ("defaultvalue".equals(value))  {
+      if ("defaultvalue".equals(value)) {
+        this.defaultValue = _text;
       } else if ("name".equals(value))  {
         this.name = _text;
       } else if ("sqlcolumn".equals(value))  {
@@ -181,30 +182,6 @@ public class TypeUpdate extends AbstractUpdate
       } else  {
         super.readXML(_tags, _attributes, _text);
       }
-    }
-
-    /**
-     *
-     * @param _name
-     * @param _type
-     * @param _sqltable
-     * @param _sqlcolumn
-     * @param _typelink
-     * @param _defaultvalue
-     */
-    public void setDefinitions(final String _name,
-                               final String _type,
-                               final String _sqltable,
-                               final String _sqlcolumn,
-                               final String _typelink,
-                               final String _defaultvalue)
-    {
-      this.name = _name;
-      this.type = _type;
-      this.sqlTable = _sqltable;
-      this.sqlColumn = _sqlcolumn;
-      this.typeLink = _typelink;
-      this.defaultValue = _defaultvalue;
     }
 
     @Override
