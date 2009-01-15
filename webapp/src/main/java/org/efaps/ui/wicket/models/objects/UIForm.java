@@ -34,7 +34,6 @@ import org.apache.wicket.RestartResponseException;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -320,13 +319,14 @@ public class UIForm extends AbstractUIObject {
     }
     int idy = 0;
     boolean add = true;
-    final UIFormCellSet cellset = new UIFormCellSet(_field,
-                                     _oid,
-                                     "",
-                                     "",
-                                     isEditMode() ? _field.isRequired() : false,
-                                     _label,
-                                     isEditMode());
+    final UIFormCellSet cellset
+        = new UIFormCellSet(new FieldValue(_field, null, "", getCallInstance()),
+                            _oid,
+                            "",
+                            "",
+                            isEditMode() ? _field.isRequired() : false,
+                            _label,
+                            isEditMode());
 
     final Iterator<Instance> iter = fieldins.iterator();
 
@@ -338,8 +338,8 @@ public class UIForm extends AbstractUIObject {
       for (final String attrName : ((FieldSet) _field).getOrder()) {
         final Attribute child = set.getAttribute(attrName);
         if (isEditMode()) {
-          final FieldValue fValue = new FieldValue(new FieldDefinition(
-              "egal", _field), child, "", getCallInstance());
+          final FieldValue fValue
+                         = new FieldValue(_field, child, "", getCallInstance());
 
           cellset.addDefiniton(idx,
                                fValue.getCreateHtml(getCallInstance(), null));
@@ -351,8 +351,8 @@ public class UIForm extends AbstractUIObject {
           if (idy < tmplist.size()) {
             final Object value = tmplist.get(idy);
 
-            final FieldValue fieldvalue = new FieldValue(new FieldDefinition(
-                "egal", _field), child, value, getCallInstance());
+            final FieldValue fieldvalue
+                      = new FieldValue(_field, child, value, getCallInstance());
 
             String tmpStr = null;
             if (isEditMode() && _field.isEditable()) {
@@ -397,8 +397,7 @@ public class UIForm extends AbstractUIObject {
     }
 
     final FieldValue fieldvalue
-        = new FieldValue(new FieldDefinition("egal",  _field), _attr, value,
-                                                              _fieldInstance);
+                        = new FieldValue(_field, _attr, value, _fieldInstance);
 
     String strValue = null;
     if (isEditMode() && _field.isEditable()) {
@@ -427,14 +426,13 @@ public class UIForm extends AbstractUIObject {
                             ? _attr.getAttributeType().getName()
                             : "";
 
-      _row.add(new UIFormCell(_field,
-                               oid,
-                               fieldvalue.getObject4Html(),
-                               strValue,
-                               icon,
-                               isEditMode() ? _field.isRequired() : false,
-                               _label,
-                               uiType));
+      _row.add(new UIFormCell(fieldvalue,
+                              oid,
+                              strValue,
+                              icon,
+                              isEditMode() ? _field.isRequired() : false,
+                              _label,
+                              uiType));
     }
   }
 
@@ -500,8 +498,8 @@ public class UIForm extends AbstractUIObject {
           label = "Unknown";
         }
         final Instance fieldInstance = getCallInstance();
-        final FieldValue fieldvalue = new FieldValue(new FieldDefinition(
-            "egal", field), attr, "", fieldInstance);
+        final FieldValue fieldvalue
+                              = new FieldValue(field, attr, "", fieldInstance);
 
         String strValue = null;
         if (isCreateMode()) {
@@ -512,8 +510,10 @@ public class UIForm extends AbstractUIObject {
         final String attrTypeName = attr != null
                                     ? attr.getAttributeType().getName()
                                     : null;
-        final UIFormCell cell = new UIFormCell(field, null, null, strValue,
-                  null, field.isRequired(), label, attrTypeName);
+        final UIFormCell cell = new UIFormCell(field,
+                                               strValue,
+                                               label,
+                                               attrTypeName);
         if (isSearchMode()) {
           cell.setReference(null);
         }

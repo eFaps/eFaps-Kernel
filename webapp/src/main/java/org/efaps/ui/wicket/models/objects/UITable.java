@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2009 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
@@ -54,6 +53,8 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
+ * TODO description!
+ *
  * @author jmox
  * @version $Id$
  */
@@ -84,10 +85,24 @@ public class UITable extends AbstractUIObject {
      */
     SORTKEY("sortKey");
 
-    public String value;
+    /**
+     * Value of the user attribute.
+     */
+    private final String value;
 
+    /**
+     * Constructor setting the instance variable.
+     * @param _value Value
+     */
     private UserAttributeKey(final String _value) {
       this.value = _value;
+    }
+
+    /**
+     * @return the value
+     */
+    public String getValue() {
+      return this.value;
     }
   }
 
@@ -205,11 +220,17 @@ public class UITable extends AbstractUIObject {
     initialise();
   }
 
+  /**
+   * Method to get the List of Instances for the table.
+   * @return List with List of instances
+   * @throws EFapsException on error
+   */
   @SuppressWarnings("unchecked")
   protected List<List<Instance>> getInstanceLists() throws EFapsException {
     final List<Return> ret =
         getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-            ParameterValues.INSTANCE, new Instance(super.getOid()));
+                                   ParameterValues.INSTANCE,
+                                   new Instance(super.getOid()));
     final List<List<Instance>> lists =
         (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
     return lists;
@@ -322,8 +343,7 @@ public class UITable extends AbstractUIObject {
           }
 
           final FieldValue fieldvalue =
-              new FieldValue(new FieldDefinition("egal", field), attr, value,
-                  instance);
+                                  new FieldValue(field, attr, value, instance);
           if (this.isCreateMode() && field.isEditable()) {
             strValue = fieldvalue.getCreateHtml(getCallInstance(), instance);
           } else if (this.isEditMode() && field.isEditable()) {
@@ -353,9 +373,8 @@ public class UITable extends AbstractUIObject {
                 icon = image.getUrl();
               }
             }
-
           }
-          row.add(new UITableCell(field, oid, fieldvalue.getObject4Html(), strValue, icon));
+          row.add(new UITableCell(fieldvalue, oid, strValue, icon));
         }
         this.values.add(row);
       }
@@ -394,8 +413,7 @@ public class UITable extends AbstractUIObject {
   /**
    * This is the setter method for the instance variable {@link #filterKeyInt}.
    *
-   * @param _filterkey
-   *                new value for instance variable {@link #filterKeyInt}
+   * @param _filterkey new value for instance variable {@link #filterKeyInt}
    * @see #filterKeyInt
    * @see #getFilterKey
    */
@@ -411,6 +429,12 @@ public class UITable extends AbstractUIObject {
 
   }
 
+  /**
+   * This is the setter method for the instance variable
+   * {@link #filterSequence}.
+   *
+   * @param _filter new value for instance variable {@link #filterSequence}
+   */
   public void setFilter(final String[] _filter) {
     this.filterSequence = _filter;
   }
@@ -455,12 +479,16 @@ public class UITable extends AbstractUIObject {
     return this.sortDirection;
   }
 
+  /**
+   * Method to set he sort direction.
+   * @param _sortdirection sort direction to set
+   */
   public void setSortDirection(final SortDirection _sortdirection) {
     this.sortDirection = _sortdirection;
     try {
       Context.getThreadContext().setUserAttribute(
           getUserAttributeKey(UserAttributeKey.SORTDIRECTION),
-          _sortdirection.value);
+                             _sortdirection.value);
     } catch (final EFapsException e) {
       // we don't throw an error because this are only Usersettings
       LOG.error("error during the retrieve of UserAttributes", e);
@@ -536,7 +564,7 @@ public class UITable extends AbstractUIObject {
    * @return String with the key
    */
   public String getUserAttributeKey(final UserAttributeKey _key) {
-    return super.getCommandUUID() + "-" + _key.value;
+    return super.getCommandUUID() + "-" + _key.getValue();
   }
 
   /**
@@ -763,14 +791,17 @@ public class UITable extends AbstractUIObject {
     return this.userWidths;
   }
 
+  /**
+   * Method to remove the filter.
+   */
   public void removeFilter() {
     this.filterSequence = null;
     this.filterKey = null;
     this.filterValues.clear();
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Method to reset the Model.
    *
    * @see org.efaps.ui.wicket.models.AbstractModel#resetModel()
    */
@@ -781,6 +812,11 @@ public class UITable extends AbstractUIObject {
     this.headers.clear();
   }
 
+  /**
+   * Method to set the order of the columns.
+   *
+   * @param _markupsIds ids of the columns as a string with ; separated
+   */
   public void setColumnOrder(final String _markupsIds) {
     final StringTokenizer tokens = new StringTokenizer(_markupsIds, ";");
     final StringBuilder columnOrder = new StringBuilder();
@@ -806,11 +842,10 @@ public class UITable extends AbstractUIObject {
   /**
    * This is the setter method for the instance variable {@link #tableUUID}.
    *
-   * @param tableUUID
-   *                the tableUUID to set
+   * @param _tableUUID  the tableUUID to set
    */
-  protected void setTableUUID(final UUID tableUUID) {
-    this.tableUUID = tableUUID;
+  protected void setTableUUID(final UUID _tableUUID) {
+    this.tableUUID = _tableUUID;
   }
 
   /**
@@ -831,11 +866,18 @@ public class UITable extends AbstractUIObject {
       Collections.sort(this.values, new Comparator<UIRow>() {
 
         public int compare(final UIRow _rowModel1, final UIRow _rowModel2) {
-          final String value1 = (_rowModel1.getValues().get(index))
-              .getCellValue();
-          final String value2 = (_rowModel2.getValues().get(index))
-              .getCellValue();
-          return value1.compareTo(value2);
+
+          final FieldValue fValue1
+           = new FieldValue(getTable().getFields().get(index),
+                           _rowModel1.getValues().get(index).getUiClass(),
+                           _rowModel1.getValues().get(index).getCompareValue());
+
+          final FieldValue fValue2
+           = new FieldValue(getTable().getFields().get(index),
+                           _rowModel2.getValues().get(index).getUiClass(),
+                           _rowModel2.getValues().get(index).getCompareValue());
+
+          return fValue1.compareTo(fValue2);
         }
       });
       if (getSortDirection() == SortDirection.DESCENDING) {

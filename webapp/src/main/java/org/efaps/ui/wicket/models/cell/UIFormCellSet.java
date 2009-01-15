@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2009 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,9 @@ package org.efaps.ui.wicket.models.cell;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment
@@ -50,17 +51,21 @@ public class UIFormCellSet extends UIFormCell {
                                 = new HashMap<Integer, Instance>();
 
   /**
-   * @param _field
+   * @param _fieldValue
    * @param _oid
-   * @param value
-   * @param values
+   * @param _value
+   * @param _icon
    * @param _required
    * @param _label
+   * @param _edit
+   * @throws EFapsException
    */
-  public UIFormCellSet(final Field _field, final String _oid,
-      final String value, final String _icon, final boolean _required,
-      final String _label, final boolean _edit) {
-    super(_field, _oid, null, value, _icon, _required, _label, "");
+  public UIFormCellSet(final FieldValue _fieldValue, final String _oid,
+                       final String _value, final String _icon,
+                       final boolean _required,final String _label,
+                       final boolean _edit)
+      throws EFapsException {
+    super(_fieldValue, _oid, _value, _icon, _required, _label, "");
     this.editMode = _edit;
   }
 

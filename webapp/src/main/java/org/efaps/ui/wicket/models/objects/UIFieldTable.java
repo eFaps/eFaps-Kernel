@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class UIFieldTable extends UITable implements IFormElement{
   private final String name;
 
   public UIFieldTable(final UUID _commanduuid, final String _oid,
-                         final FieldTable _fieldTable) {
+      final FieldTable _fieldTable) {
     super(_commanduuid, _oid);
     setTableUUID(_fieldTable.getTargetTable().getUUID());
     this.id = _fieldTable.getId();
@@ -62,15 +62,15 @@ public class UIFieldTable extends UITable implements IFormElement{
     try {
       if (Context.getThreadContext().containsUserAttribute(
           getUserAttributeKey(UserAttributeKey.SORTKEY))) {
-        super.setSortKey(Context.getThreadContext().getUserAttribute(
+        setSortKey(Context.getThreadContext().getUserAttribute(
             getUserAttributeKey(UserAttributeKey.SORTKEY)));
       }
       if (Context.getThreadContext().containsUserAttribute(
           getUserAttributeKey(UserAttributeKey.SORTDIRECTION))) {
-        super
-            .setSortDirection(SortDirection
-                .getEnum((Context.getThreadContext()
-                    .getUserAttribute(getUserAttributeKey(UserAttributeKey.SORTDIRECTION)))));
+        setSortDirection(SortDirection
+            .getEnum((Context.getThreadContext()
+                .getUserAttribute(getUserAttributeKey(UserAttributeKey
+                                                            .SORTDIRECTION)))));
       }
     } catch (final EFapsException e) {
       // we don't throw an error because this are only Usersettings
@@ -95,8 +95,8 @@ public class UIFieldTable extends UITable implements IFormElement{
    * @see org.efaps.ui.wicket.models.TableModel#getUserAttributeKey(org.efaps.ui.wicket.models.TableModel.UserAttributeKey)
    */
   @Override
-  public String getUserAttributeKey(UserAttributeKey _key) {
-    return super.getCommandUUID() + "-" + this.name + "-" + _key.value;
+  public String getUserAttributeKey(final UserAttributeKey _key) {
+    return super.getCommandUUID() + "-" + this.name + "-" + _key.getValue();
   }
 
 }

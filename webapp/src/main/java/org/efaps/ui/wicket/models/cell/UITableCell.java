@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2009 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,10 @@ package org.efaps.ui.wicket.models.cell;
 
 import org.apache.wicket.IClusterable;
 
+import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.ui.AbstractCommand.Target;
-import org.efaps.admin.ui.field.Field;
+import org.efaps.util.EFapsException;
 
 /**
  * This class represents the model wich is used for rendering the components of
@@ -33,7 +35,7 @@ import org.efaps.admin.ui.field.Field;
  * @author jmox
  * @version $Id:CellModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class UITableCell  implements IClusterable {
+public class UITableCell implements IClusterable {
 
   /**
    * Needed for serialization.
@@ -52,9 +54,10 @@ public class UITableCell  implements IClusterable {
 
   /**
    * Variable storing the value as it was retrieved from the eFaps-Database by
-   * a query.
+   * a query. The value is used for comparisons and to be able to access the
+   * original value.
    */
-  private final Object origValue;
+  private final Object compareValue;
 
   /**
    * Variable storing the string representation of the value.
@@ -82,27 +85,32 @@ public class UITableCell  implements IClusterable {
    */
   private final String name;
 
-
+  /**
+   * Stores the underlying user interface class for this cell.
+   */
+  private final UIInterface uiClass;
 
   /**
-   * @param _field      Field
+   * Constructor.
+   *
+   * @param _fieldValue FieldValue
    * @param _oid        oid of the cell
-   * @param _origValue  original Value
    * @param _cellvalue  Value for the cell
    * @param _icon       icon of the cell
+   * @throws EFapsException on error
    */
-  public UITableCell(final Field _field, final String _oid,
-                     final Object _origValue, final String _cellvalue,
-                     final String _icon) {
-    super();
-    this.origValue = _origValue;
-    this.reference = _field.getReference();
-    this.target = _field.getTarget();
+  public UITableCell(final FieldValue _fieldValue, final String _oid,
+                     final String _cellvalue, final String _icon)
+      throws EFapsException  {
+    this.uiClass =  _fieldValue.getClassUI();
+    this.compareValue =  _fieldValue.getObject4Compare();
+    this.reference = _fieldValue.getField().getReference();
+    this.target = _fieldValue.getField().getTarget();
+    this.name = _fieldValue.getField().getName();
+    this.fixedWidth = _fieldValue.getField().isFixedWidth();
     this.oid = _oid;
     this.cellValue = _cellvalue;
     this.icon = _icon;
-    this.fixedWidth = _field.isFixedWidth();
-    this.name = _field.getName();
   }
 
   /**
@@ -136,12 +144,12 @@ public class UITableCell  implements IClusterable {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #origValue}.
+   * This is the getter method for the instance variable {@link #compareValue}.
    *
-   * @return value of instance variable {@link #origValue}
+   * @return value of instance variable {@link #compareValue}
    */
-  public  Object getOrigValue() {
-    return this.origValue;
+  public  Object getCompareValue() {
+    return (this.compareValue == null) ? this.cellValue : this.compareValue;
   }
 
   /**
@@ -200,5 +208,12 @@ public class UITableCell  implements IClusterable {
     return this.name;
   }
 
-
+  /**
+   * This is the getter method for the instance variable {@link #uiClass}.
+   *
+   * @return value of instance variable {@link #uiClass}
+   */
+  public UIInterface getUiClass() {
+    return this.uiClass;
+  }
 }

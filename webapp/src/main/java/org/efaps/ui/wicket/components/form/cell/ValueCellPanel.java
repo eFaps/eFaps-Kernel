@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2009 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.objects.UIForm;
 
 /**
- * TODO description
+ * TODO description!
  *
  * @author jmox
  * @version $Id$
@@ -61,6 +61,14 @@ public class ValueCellPanel extends Panel {
   private DateFieldWithPicker dateTextField = null;
 
 
+  /**
+   * Constructor.
+   *
+   * @param _wicketId     wicket id of the component
+   * @param _model        model of the component
+   * @param _formmodel    model of the form
+   * @param _ajaxLink     is this panel an ajax link
+   */
   public ValueCellPanel(final String _wicketId, final IModel<UIFormCell> _model,
                         final UIForm _formmodel, final boolean _ajaxLink) {
     super(_wicketId, _model);
@@ -78,9 +86,9 @@ public class ValueCellPanel extends Panel {
           && "Date".equals(uiFormCell.getTypeName())) {
 
         final Date date = (_formmodel.isCreateMode()
-                            || uiFormCell.getOrigValue() == null)
+                            || uiFormCell.getCompareValue() == null)
                     ? new Date()
-                    : ((DateTime) uiFormCell.getOrigValue()).toDate();
+                    : ((DateTime) uiFormCell.getCompareValue()).toDate();
 
         this.dateTextField = new DateFieldWithPicker("label",
                                                   new Model<Date>(date),

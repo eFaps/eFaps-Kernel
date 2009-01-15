@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2009 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@
 
 package org.efaps.ui.wicket.models.cell;
 
+import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.util.EFapsException;
 
 /**
  * This class represents the model wich is used for rendering the components of
@@ -63,29 +65,62 @@ public class UIFormCell extends UITableCell {
   /**
    * Stores the name of the type.
    */
-  private final String typeName;
+  private final String attrTypeName;
+
+  /**
+   * Constructor used on search and create.
+   *
+   * @param _field        Field for the Cell
+   * @param _cellValue    Value of the Cell
+   * @param _label        Label for the Cell
+   * @param _attrTypeName Name of the Type of Attribute
+   * @throws EFapsException on error
+   */
+  public UIFormCell(final Field _field, final String _cellValue ,
+                    final String _label, final String _attrTypeName)
+      throws EFapsException {
+    this (new FieldValue(_field, null, null, null),
+          null,
+          _cellValue,
+          null,
+          _field.isRequired(),
+          _label,
+          _attrTypeName);
+  }
 
 
-
-  public UIFormCell(final Field _field, final String _oid,
-                    final Object _origValue, final String _cellValue,
-                    final String _icon, final boolean _required,
-                    final String _label, final String _typeName) {
-    super(_field, _oid, _origValue, _cellValue, _icon);
+  /**
+   * Constructor.
+   *
+   * @param _fieldValue     FieldValue used for this Cell
+   * @param _oid            OID of the Cell
+   * @param _cellValue      Value for the Cell
+   * @param _icon           icon of the cell
+   * @param _required       is the cell required
+   * @param _label          Label of the Cell
+   * @param _attrTypeName   Name of the Type of Attribute
+   * @throws EFapsException on error
+   */
+  public UIFormCell(final FieldValue _fieldValue, final String _oid,
+                    final String _cellValue, final String _icon,
+                    final boolean _required, final String _label,
+                    final String _attrTypeName)
+      throws EFapsException {
+    super(_fieldValue, _oid, _cellValue, _icon);
     this.required = _required;
     this.cellLabel = DBProperties.getProperty(_label);
-    this.hideLabel = _field.isHideLabel();
-    this.rowSpan = _field.getRowSpan();
-    this.typeName = _typeName;
+    this.hideLabel = _fieldValue.getField().isHideLabel();
+    this.rowSpan = _fieldValue.getField().getRowSpan();
+    this.attrTypeName = _attrTypeName;
   }
 
   /**
-   * This is the getter method for the instance variable {@link #typeName}.
+   * This is the getter method for the instance variable {@link #attrTypeName}.
    *
-   * @return value of instance variable {@link #typeName}
+   * @return value of instance variable {@link #attrTypeName}
    */
   public String getTypeName() {
-    return this.typeName;
+    return this.attrTypeName;
   }
 
   /**

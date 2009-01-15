@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
@@ -58,13 +57,14 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.RequestHandler;
 
 /**
- * This class is used to provide the Model for the StructurBrowser for eFpas.<br>
+ * This class is used to provide the Model for the StructurBrowser for eFpas.
+ * <br>
  * It is used in tow different cases. In one case it is a TreeTable, where the
- * Table will be provided with aditional information in columns. In the other
+ * Table will be provided with additional information in columns. In the other
  * case a Tree only.<br>
- * The concept of this class is to provide a Model wich connects throught the
- * eFaps-kernel to the eFaps-DataBase and turn it to a Standart TreeModel from
- * <code>javax.swing.tree</code>. wich will be used from the Component to
+ * The concept of this class is to provide a Model which connects through the
+ * eFaps-kernel to the eFaps-DataBase and turn it to a Standard TreeModel from
+ * <code>javax.swing.tree</code>. which will be used from the Component to
  * render the Tree and the Table. This leads to a very similar behavior of the
  * WebApp GUI to a swing GUI. <br>
  * This model works asyncron. That means only the actually in the GUI rendered
@@ -73,7 +73,7 @@ import org.efaps.util.RequestHandler;
  * to be able to render expand-links for every node it will only be checked if
  * it is a potential parent (if it has childs). In the case of expanding this
  * Node the children will be retrieved and rendered.<br>
- * To access the eFaps-Database a esjp is used, wich will be used in three
+ * To access the eFaps-Database a esjp is used, which will be used in three
  * different cases. To distinguish the use of the esjp some extra Parameters
  * will be passed to the esjp when calling it.
  *
@@ -82,6 +82,9 @@ import org.efaps.util.RequestHandler;
  */
 public class UIStructurBrowser extends AbstractUIObject {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
   /**
@@ -92,19 +95,19 @@ public class UIStructurBrowser extends AbstractUIObject {
   private UUID tableuuid;
 
   /**
-   * this instance variable holds the childs of this StructurBrowserModel
+   * This instance variable holds the childs of this StructurBrowserModel.
    */
-  private final List<UIStructurBrowser> childs =
-      new ArrayList<UIStructurBrowser>();
+  private final List<UIStructurBrowser> childs
+                                          = new ArrayList<UIStructurBrowser>();
 
   /**
-   * this instance variable holds the columns in case of a TableTree
+   * Holds the columns in case of a TableTree.
    */
   private final List<String> columns = new ArrayList<String>();
 
   /**
-   * this instance variable holds the label of the Node wich will be presented
-   * in the GUI
+   * Holds the label of the Node wich will be presented
+   * in the GUI.
    *
    * @see #toString()
    * @see #getLabel()
@@ -114,26 +117,26 @@ public class UIStructurBrowser extends AbstractUIObject {
   private String label;
 
   /**
-   * this instance variable holds the Name of the Field the StructurBrowser
-   * should be in, in case of a TableTree
+   * Holds the Name of the Field the StructurBrowser
+   * should be in, in case of a TableTree.
    */
   private String browserFieldName;
 
   /**
-   * this instance variable holds the headers for the Table, in case of a
-   * TableTree
+   * Holds the headers for the Table, in case of a
+   * TableTree.
    */
   private final List<UITableHeader> headers = new ArrayList<UITableHeader>();
 
   /**
-   * this instance variable holds the SortDirection for the Headers, (right now
-   * it is final but might be changed later)
+   * Holds the SortDirection for the Headers, (right now
+   * it is final but might be changed later).
    */
   private final SortDirection sortDirection = SortDirection.NONE;
 
   /**
-   * this instance variable holds, if this StructurBrowserModel is the Root of a
-   * tree
+   * This instance variable holds, if this StructurBrowserModel is the Root of a
+   * tree.
    */
   private final boolean root;
 
@@ -148,14 +151,14 @@ public class UIStructurBrowser extends AbstractUIObject {
   private boolean parent;
 
   /**
-   * this instance variable holds the Value for the Label as it is difined in
-   * the DBProperties
+   * Holds the Value for the Label as it is difined in
+   * the DBProperties.
    */
   private String valueLabel;
 
   /**
-   * this instancevariable contains the url for the Image that will be presented
-   * in GUI
+   * Contains the url for the Image that will be presented
+   * in GUI.
    */
   private String image;
 
@@ -171,8 +174,8 @@ public class UIStructurBrowser extends AbstractUIObject {
   private Boolean direction = null;
 
   /**
-   * standart constructor, if called this StructurBrowserModel will be defined
-   * as root
+   * Standart constructor, if called this StructurBrowserModel will be defined
+   * as root.
    *
    * @param _parameters
    *                PageParameters needed to initialise this
@@ -185,11 +188,11 @@ public class UIStructurBrowser extends AbstractUIObject {
   }
 
   /**
-   * internal constructor, it is used to set that this StructurBrowserModel is
-   * not a root
+   * Internal constructor, it is used to set that this StructurBrowserModel is
+   * not a root.
    *
-   * @param _commandUUID
-   * @param _oid
+   * @param _commandUUID  UUID of the command
+   * @param _oid          OID
    */
   private UIStructurBrowser(final UUID _commandUUID, final String _oid) {
     super(_commandUUID, _oid);
@@ -198,18 +201,18 @@ public class UIStructurBrowser extends AbstractUIObject {
   }
 
   /**
-   * method used to initialise this StructurBrowserModel
+   * Method used to initialize this StructurBrowserModel.
    */
-  private void initialise()
-  {
+  private void initialise() {
     final AbstractCommand command = getCommand();
     if ((command != null) && (command.getTargetTable() != null)) {
       this.tableuuid = command.getTargetTable().getUUID();
       this.browserFieldName = command.getProperty("TargetStructurBrowserField");
     } else {
       if ("true".equals(command.getProperty("TargetStructurBrowser"))) {
-        final String label = Menu.getTypeTreeMenu(getCallInstance().getType()).getLabel();
-        this.valueLabel = DBProperties.getProperty(label);
+        final String tmplabel
+                = Menu.getTypeTreeMenu(getCallInstance().getType()).getLabel();
+        this.valueLabel = DBProperties.getProperty(tmplabel);
       }
     }
   }
@@ -225,8 +228,7 @@ public class UIStructurBrowser extends AbstractUIObject {
    * @see #executeTreeTable(List)
    */
   @SuppressWarnings("unchecked")
-  public void execute()
-  {
+  public void execute() {
     List<Return> ret;
     try {
       if (this.tableuuid == null) {
@@ -250,9 +252,9 @@ public class UIStructurBrowser extends AbstractUIObject {
 
   /**
    * This method is called in case of a Tree from the {@link #execute()}method
-   * to fill this StructurBrowserModel with live
+   * to fill this StructurBrowserModel with live.
    *
-   * @param _lists
+   * @param _lists  List of Object
    */
   private void executeTree(final List<List<Object[]>> _lists) {
     try {
@@ -292,10 +294,11 @@ public class UIStructurBrowser extends AbstractUIObject {
   }
 
   /**
-   * This method is called in case of a TreeTable from the {@link #execute()}method
-   * to fill this StructurBrowserModel with live
+   * This method is called in case of a TreeTable from the
+   * {@link #execute()} method
+   * to fill this StructurBrowserModel with live.
    *
-   * @param _lists
+   * @param _lists List of Objects
    */
   private void executeTreeTable(final List<List<Object[]>> _lists) {
     try {
@@ -352,8 +355,7 @@ public class UIStructurBrowser extends AbstractUIObject {
           }
 
           final FieldValue fieldvalue =
-              new FieldValue(new FieldDefinition("egal", field), attr, value,
-                  instance);
+                                  new FieldValue(field, attr, value, instance);
           if (value != null) {
             if (this.isCreateMode() && field.isEditable()) {
               strValue = fieldvalue.getCreateHtml(getCallInstance(), instance);
@@ -401,7 +403,7 @@ public class UIStructurBrowser extends AbstractUIObject {
   }
 
   /**
-   * this method is used to check if a node has potential children
+   * This method is used to check if a node has potential children.
    *
    * @param _instance
    *                Instance of a Node to be checked
@@ -412,17 +414,19 @@ public class UIStructurBrowser extends AbstractUIObject {
     try {
       final List<Return> ret =
           getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-              ParameterValues.INSTANCE, _instance, ParameterValues.OTHERS,
-              "checkForChildren");
-      return (ret.isEmpty() ? false : ret.get(0).get(ReturnValues.TRUE) != null);
+                                      ParameterValues.INSTANCE,
+                                      _instance,
+                                      ParameterValues.OTHERS,
+                                      "checkForChildren");
+      return (ret.isEmpty() ? false
+                            : ret.get(0).get(ReturnValues.TRUE) != null);
     } catch (final EFapsException e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
-
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Method to reset the Model.
    *
    * @see org.efaps.ui.wicket.models.AbstractModel#resetModel()
    */
@@ -442,16 +446,16 @@ public class UIStructurBrowser extends AbstractUIObject {
   }
 
   /**
-   * has this StructurBrowserModel childs
+   * Has this StructurBrowserModel childs.
    *
-   * @return
+   * @return true if has children, else false
    */
   public boolean hasChilds() {
     return !this.childs.isEmpty();
   }
 
   /**
-   * get the TreeModel used in the Component to construct the actuall tree
+   * Get the TreeModel used in the Component to construct the actual tree.
    *
    * @see #addNode(DefaultMutableTreeNode, List)
    * @return TreeModel of this StructurBrowseModel
@@ -465,23 +469,21 @@ public class UIStructurBrowser extends AbstractUIObject {
   }
 
   /**
-   * recursive method used to fill the TreeModel
+   * Recursive method used to fill the TreeModel.
    *
    * @see #getTreeModel()
-   * @param parent
-   *                ParentNode children schould be added
-   * @param childs
-   *                List<StructurBrowserModel>to be added as childs
+   * @param _parent   ParentNode children should be added
+   * @param _childs   to be added as childs
    */
-  private void addNode(final DefaultMutableTreeNode parent,
-                       final List<UIStructurBrowser> childs) {
-    for (int i = 0; i < childs.size(); i++) {
+  private void addNode(final DefaultMutableTreeNode _parent,
+                       final List<UIStructurBrowser> _childs) {
+    for (int i = 0; i < _childs.size(); i++) {
       final DefaultMutableTreeNode childNode =
-          new DefaultMutableTreeNode(childs.get(i));
-      parent.add(childNode);
-      if (childs.get(i).hasChilds()) {
-        addNode(childNode, childs.get(i).childs);
-      } else if (childs.get(i).isParent()) {
+          new DefaultMutableTreeNode(_childs.get(i));
+      _parent.add(childNode);
+      if (_childs.get(i).hasChilds()) {
+        addNode(childNode, _childs.get(i).childs);
+      } else if (_childs.get(i).isParent()) {
         childNode.add(new BogusNode());
       }
     }
@@ -489,18 +491,17 @@ public class UIStructurBrowser extends AbstractUIObject {
 
   /**
    * This method should be called to add children to a Node in the Tree.<br>
-   * e.g. in a standart implementation the children would be added to the Tree
+   * e.g. in a standard implementation the children would be added to the Tree
    * on the expand-Event of the tree. The children a retrieved from an esjp with
-   * the EventType UI_TABLE_EVALUATE. To differ the different methods wich can
+   * the EventType UI_TABLE_EVALUATE. To differ the different methods which can
    * call the same esjp, this method adds the ParameterValues.OTHERS with
    * "addChildren".
    *
-   * @param parent
-   *                the DefaultMutableTreeNode the new Children schould be added
+   * @param _parent  the DefaultMutableTreeNode the new children should be added
    */
   @SuppressWarnings("unchecked")
-  public void addChildren(final DefaultMutableTreeNode parent) {
-    parent.removeAllChildren();
+  public void addChildren(final DefaultMutableTreeNode _parent) {
+    _parent.removeAllChildren();
     List<Return> ret;
     try {
       ret =
@@ -515,14 +516,14 @@ public class UIStructurBrowser extends AbstractUIObject {
       } else {
         this.executeTreeTable(lists);
       }
-      addNode(parent, this.childs);
+      addNode(_parent, this.childs);
     } catch (final EFapsException e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
   }
 
   /**
-   * get the Value of a Column identified by the index of the Column
+   * Get the Value of a Column identified by the index of the Column.
    *
    * @param _index
    *                index of the Column
@@ -535,11 +536,10 @@ public class UIStructurBrowser extends AbstractUIObject {
   /**
    * This is the setter method for the instance variable {@link #label}.
    *
-   * @param label
-   *                the label to set
+   * @param _label    the label to set
    */
-  private void setLabel(final String label) {
-    this.label = label;
+  private void setLabel(final String _label) {
+    this.label = _label;
   }
 
   /**
@@ -584,8 +584,7 @@ public class UIStructurBrowser extends AbstractUIObject {
   /**
    * This is the setter method for the instance variable {@link #image}.
    *
-   * @param image
-   *                the image to set
+   * @param _url   the url of the image to set
    */
   private void setImage(final String _url) {
     if (_url != null) {
@@ -605,17 +604,17 @@ public class UIStructurBrowser extends AbstractUIObject {
   /**
    * This is the setter method for the instance variable {@link #direction}.
    *
-   * @param direction
-   *                the direction to set
+   * @param _direction    the direction to set
    */
-  public void setDirection(final Boolean direction) {
-    this.direction = direction;
+  public void setDirection(final Boolean _direction) {
+    this.direction = _direction;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * (non-Javadoc).
    *
    * @see org.apache.wicket.model.Model#toString()
+   * @return label
    */
   @Override
   public String toString() {
@@ -623,19 +622,20 @@ public class UIStructurBrowser extends AbstractUIObject {
   }
 
   /**
-   * this method is updateing the Label, by requering the eFaps-DataBase
+   * This method is updating the Label, by querying the eFaps-DataBase.
    */
   public void requeryLabel() {
     try {
-      final ValueParser parser = new ValueParser(new StringReader(this.valueLabel));
-      final ValueList valuelist = parser.ExpressionString();
+      final ValueParser parser
+                          = new ValueParser(new StringReader(this.valueLabel));
+      final ValueList valList = parser.ExpressionString();
 
       final SearchQuery query = new SearchQuery();
       query.setObject(getCallInstance());
-      valuelist.makeSelect(query);
+      valList.makeSelect(query);
       query.execute();
       if (query.next()) {
-        setLabel(valuelist.makeString(new Instance(getOid()), query).toString());
+        setLabel(valList.makeString(new Instance(getOid()), query).toString());
       }
     } catch (final Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
@@ -643,10 +643,9 @@ public class UIStructurBrowser extends AbstractUIObject {
   }
 
   /**
-   * method to add a new BogusNode to the given Node
+   * Method to add a new BogusNode to the given Node.
    *
-   * @param _parent
-   *                Parent a BogusNode should be added
+   * @param _parent Parent a BogusNode should be added
    */
   public void addBogusNode(final DefaultMutableTreeNode _parent) {
     _parent.add(new BogusNode());
@@ -655,7 +654,7 @@ public class UIStructurBrowser extends AbstractUIObject {
   /**
    * This class is used to add a ChildNode under a ParentNode, if the ParentNode
    * actually has some children. By using this class it then can very easy be
-   * distinguished between Nodes wich where expanded and Nodes wich still need
+   * distinguished between Nodes which where expanded and Nodes which still need
    * to be expanded.
    *
    * @author jmox
@@ -663,23 +662,10 @@ public class UIStructurBrowser extends AbstractUIObject {
    */
   public class BogusNode extends DefaultMutableTreeNode {
 
+    /**
+     * Needed for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
   }
-
-  public Object getObject() {
-    // TODO Auto-generated method stub
-    return this;
-  }
-
-  public void setObject(final Object arg0) {
-    // TODO Auto-generated method stub
-
-  }
-
-  public void detach() {
-    // TODO Auto-generated method stub
-
-  }
-
 }
