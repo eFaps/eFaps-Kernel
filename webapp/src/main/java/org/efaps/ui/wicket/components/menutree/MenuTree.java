@@ -67,36 +67,66 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  */
 public class MenuTree extends AbstractTree {
 
-  private static final long serialVersionUID = 1L;
-
-  public static final EFapsContentReference ICON_REMOVE =
-      new EFapsContentReference(MenuTree.class, "Remove.gif");
-
-  public static final EFapsContentReference ICON_GOINTO =
-      new EFapsContentReference(MenuTree.class, "GoInto.gif");
-
-  public static final EFapsContentReference ICON_GOUP =
-      new EFapsContentReference(MenuTree.class, "GoUp.gif");
-
-  public static final EFapsContentReference ICON_CHILDCLOSED =
-      new EFapsContentReference(MenuTree.class, "ChildClosed.gif");
-
-  public static final EFapsContentReference ICON_CHILDOPENED =
-      new EFapsContentReference(MenuTree.class, "ChildOpened.gif");
-
-  public static final EFapsContentReference CSS =
-      new EFapsContentReference(MenuTree.class, "MenuTree.css");
+  /**
+   * Reference to icon for remove button.
+   */
+  public static final EFapsContentReference ICON_REMOVE
+                      = new EFapsContentReference(MenuTree.class, "Remove.gif");
+  /**
+   * Reference to icon for go into button.
+   */
+  public static final EFapsContentReference ICON_GOINTO
+                      = new EFapsContentReference(MenuTree.class, "GoInto.gif");
 
   /**
-   * this Instancevariable holds the key wich is used to retrieve a item of this
-   * ListMenuPanel from the Map in the Session
-   * {@link #org.efaps.ui.wicket.EFapsSession}
+   * Reference to icon for go up button.
+   */
+  public static final EFapsContentReference ICON_GOUP
+                        = new EFapsContentReference(MenuTree.class, "GoUp.gif");
+
+  /**
+   * Reference to icon for closed child button.
+   */
+  public static final EFapsContentReference ICON_CHILDCLOSED
+                 = new EFapsContentReference(MenuTree.class, "ChildClosed.gif");
+
+  /**
+   * Reference to icon for open child button.
+   */
+  public static final EFapsContentReference ICON_CHILDOPENED
+                 = new EFapsContentReference(MenuTree.class, "ChildOpened.gif");
+
+  /**
+   * Reference to style sheet for the menutree.
+   */
+  public static final EFapsContentReference CSS
+                   = new EFapsContentReference(MenuTree.class, "MenuTree.css");
+
+  /**
+   * Needed for serialization.
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * This Instance variable holds the key which is used to retrieve a item of
+   * this ListMenuPanel from the Map in the Session
+   * {@link #org.efaps.ui.wicket.EFapsSession}.
    */
   private final String menuKey;
 
-  private final Map<String, DefaultMutableTreeNode> oidToNode =
-      new HashMap<String, DefaultMutableTreeNode>();
+  /**
+   * Map stores the oid to node.
+   */
+  private final Map<String, DefaultMutableTreeNode> oidToNode
+                                = new HashMap<String, DefaultMutableTreeNode>();
 
+  /**
+   * Constructor used for a new MenuTree.
+   *
+   * @param _wicketId     wicket id of the component
+   * @param _parameters   page parameters
+   * @param _menukey      key to the menu
+   */
   public MenuTree(final String _wicketId, final PageParameters _parameters,
                   final String _menukey) {
     super(_wicketId);
@@ -105,11 +135,12 @@ public class MenuTree extends AbstractTree {
     treestate.expandAll();
 
     this.menuKey = _menukey;
-    final UIMenuItem model =
-        new UIMenuItem(UUID.fromString(_parameters.getString("command")),
-            _parameters.getString("oid"));
+    final UIMenuItem model
+             = new UIMenuItem(UUID.fromString(_parameters.getString("command")),
+                              _parameters.getString("oid"));
 
-    this.setDefaultModel(new Model<Serializable>((Serializable) model.getTreeModel()));
+    this.setDefaultModel(new Model<Serializable>((Serializable) model
+                                                              .getTreeModel()));
 
     add(StaticHeaderContributor.forCss(CSS));
     ((EFapsSession) this.getSession()).putIntoCache(this.menuKey, this);
@@ -138,8 +169,15 @@ public class MenuTree extends AbstractTree {
     this.add(update);
   }
 
-  public MenuTree(final String _wicketId, final TreeModel _model,
-                  final String _menukey) {
+  /**
+   * Constructor used from the ajax links for go into and go up.
+   *
+   * @param _wicketId   wicket id of the component
+   * @param _model      model for the tree
+   * @param _menukey    key to the menu
+   */
+  protected MenuTree(final String _wicketId, final TreeModel _model,
+                     final String _menukey) {
     super(_wicketId);
     this.menuKey = _menukey;
     this.setDefaultModel(new Model<Serializable>((Serializable) _model));
@@ -155,110 +193,6 @@ public class MenuTree extends AbstractTree {
   }
 
   /**
-   * Populates the tree item. It creates all necesary components for the tree to
-   * work properly.
-   *
-   * @param item
-   * @param level
-   */
-  @Override
-  protected void populateTreeItem(final WebMarkupContainer item, final int level) {
-    final DefaultMutableTreeNode node =
-        (DefaultMutableTreeNode) item.getDefaultModelObject();
-
-    item.add(new AbstractBehavior() {
-
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void onComponentTag(final Component component, final ComponentTag tag) {
-        super.onComponentTag(component, tag);
-        if (getTreeState().isNodeSelected(node)) {
-          tag.put("class", "eFapsMenuTreeRowSelected");
-        } else {
-          tag.put("class", "eFapsMenuTreeRow");
-        }
-      }
-    });
-
-    final UIMenuItem model = (UIMenuItem) node.getUserObject();
-    if (model.isHeader()) {
-      ((EFapsSession) this.getSession()).addUpdateBehaviors(model.getOid(),
-          (AjaxUpdateBehavior) getBehaviors(AjaxUpdateBehavior.class).get(0));
-      this.oidToNode.put(model.getOid(), node);
-    }
-
-    item.add(new Intendation("intend", level));
-
-    final AjaxMenuTreeLink link = new AjaxMenuTreeLink("link", node);
-    item.add(link);
-    final Label label = new Label("label", model.getLabel());
-    link.add(label);
-
-    if (node.children().hasMoreElements()
-        && !node.isRoot()
-        && !model.isStepInto()) {
-      final AjaxExpandLink expandLink = new AjaxExpandLink("expandLink", node);
-      item.add(expandLink);
-      if (getTreeState().isNodeExpanded(node)) {
-        expandLink.add(new StaticImageComponent("expandIcon",
-            ICON_CHILDOPENED));
-      } else {
-        expandLink.add(new StaticImageComponent("expandIcon",
-            ICON_CHILDCLOSED));
-      }
-    } else {
-      item.add(new WebMarkupContainer("expandLink").setVisible(false));
-    }
-
-    if (model.isHeader()) {
-      label.add(new SimpleAttributeModifier("class", "eFapsMenuTreeHeader"));
-
-      String imageUrl = model.getImage();
-      if (imageUrl == null) {
-        imageUrl = model.getTypeImage();
-      }
-      if (imageUrl == null) {
-        link.add(new WebMarkupContainer("icon").setVisible(false));
-      } else {
-        link.add(new StaticImageComponent("icon", imageUrl));
-      }
-
-      if (node.isRoot()) {
-        item.add(new WebMarkupContainer("goIntolink").setVisible(false));
-        item.add(new WebMarkupContainer("removelink").setVisible(false));
-        item.add(new WebMarkupContainer("goUplink").setVisible(false));
-      } else if (model.isStepInto()) {
-        item.add(new WebMarkupContainer("goIntolink").setVisible(false));
-        item.add(new WebMarkupContainer("removelink").setVisible(false));
-        final AjaxGoUpLink goUplink = new AjaxGoUpLink("goUplink", node);
-        item.add(goUplink);
-        goUplink.add(new StaticImageComponent("goUpIcon", ICON_GOUP));
-      } else {
-        final AjaxGoIntoLink goIntolink =
-            new AjaxGoIntoLink("goIntolink", node);
-        item.add(goIntolink);
-        goIntolink.add(new StaticImageComponent("goIntoIcon",
-            ICON_GOINTO));
-
-        final AjaxRemoveLink removelink =
-            new AjaxRemoveLink("removelink", node);
-        item.add(removelink);
-        removelink.add(new StaticImageComponent("removeIcon",
-            ICON_REMOVE));
-        item.add(new WebMarkupContainer("goUplink").setVisible(false));
-      }
-    } else {
-      label.add(new SimpleAttributeModifier("class", "eFapsMenuTreeItem"));
-      link.add(new WebMarkupContainer("icon").setVisible(false));
-      item.add(new WebMarkupContainer("goIntolink").setVisible(false));
-      item.add(new WebMarkupContainer("removelink").setVisible(false));
-      item.add(new WebMarkupContainer("goUplink").setVisible(false));
-    }
-
-  }
-
-  /**
    * This is the getter method for the instance variable {@link #menuKey}.
    *
    * @return value of instance variable {@link #menuKey}
@@ -267,6 +201,12 @@ public class MenuTree extends AbstractTree {
     return this.menuKey;
   }
 
+  /**
+   * Method to add a child menu.
+   *
+   * @param _parameters   Page parameters
+   * @param _target       ajax target
+   */
   public void addChildMenu(final PageParameters _parameters,
                            final AjaxRequestTarget _target) {
 
@@ -312,6 +252,123 @@ public class MenuTree extends AbstractTree {
     updateTree(_target);
   }
 
+  /**
+   * Populates the tree item. It creates all necessary components for the tree
+   * to work properly.
+   *
+   * @param _item item to populate
+   * @param _level level of the item
+   */
+  @Override
+  protected void populateTreeItem(final WebMarkupContainer _item,
+                                  final int _level) {
+
+    final DefaultMutableTreeNode node
+                       = (DefaultMutableTreeNode) _item.getDefaultModelObject();
+
+    final UIMenuItem model = (UIMenuItem) node.getUserObject();
+
+    // mark the item as selected/not selected
+    _item.add(new AbstractBehavior() {
+
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void onComponentTag(final Component _component,
+                                 final ComponentTag _tag) {
+        super.onComponentTag(_component, _tag);
+        _tag.put("title", model.getLabel());
+        if (getTreeState().isNodeSelected(node)) {
+          _tag.put("class", "eFapsMenuTreeRowSelected");
+        } else {
+          _tag.put("class", "eFapsMenuTreeRow");
+        }
+      }
+    });
+
+    // if we have a header store it to be accessible through the oid
+    if (model.isHeader()) {
+      ((EFapsSession) this.getSession()).addUpdateBehaviors(model.getOid(),
+          (AjaxUpdateBehavior) getBehaviors(AjaxUpdateBehavior.class).get(0));
+      this.oidToNode.put(model.getOid(), node);
+    }
+
+    _item.add(new Indentation("intend", _level));
+
+    final AjaxMenuTreeLink link = new AjaxMenuTreeLink("link", node);
+    _item.add(link);
+
+    final Label label = new Label("label", model.getLabel());
+    link.add(label);
+
+    if (node.children().hasMoreElements() && !node.isRoot()
+          && !model.isStepInto()) {
+
+      final AjaxExpandLink expandLink = new AjaxExpandLink("expandLink", node);
+      _item.add(expandLink);
+
+      if (getTreeState().isNodeExpanded(node)) {
+        expandLink.add(new StaticImageComponent("expandIcon",
+                                                ICON_CHILDOPENED));
+      } else {
+        expandLink.add(new StaticImageComponent("expandIcon",
+                                                ICON_CHILDCLOSED));
+      }
+    } else {
+      _item.add(new WebMarkupContainer("expandLink").setVisible(false));
+    }
+
+    if (model.isHeader()) {
+      label.add(new SimpleAttributeModifier("class", "eFapsMenuTreeHeader"));
+
+      String imageUrl = model.getImage();
+      if (imageUrl == null) {
+        imageUrl = model.getTypeImage();
+      }
+      if (imageUrl == null) {
+        link.add(new WebMarkupContainer("icon").setVisible(false));
+      } else {
+        link.add(new StaticImageComponent("icon", imageUrl));
+      }
+
+      if (node.isRoot()) {
+        _item.add(new WebMarkupContainer("goIntolink").setVisible(false));
+        _item.add(new WebMarkupContainer("removelink").setVisible(false));
+        _item.add(new WebMarkupContainer("goUplink").setVisible(false));
+      } else if (model.isStepInto()) {
+        _item.add(new WebMarkupContainer("goIntolink").setVisible(false));
+        _item.add(new WebMarkupContainer("removelink").setVisible(false));
+        final AjaxGoUpLink goUplink = new AjaxGoUpLink("goUplink", node);
+        _item.add(goUplink);
+        goUplink.add(new StaticImageComponent("goUpIcon", ICON_GOUP));
+      } else {
+        final AjaxGoIntoLink goIntolink
+                                      = new AjaxGoIntoLink("goIntolink", node);
+        _item.add(goIntolink);
+        goIntolink.add(new StaticImageComponent("goIntoIcon", ICON_GOINTO));
+
+        final AjaxRemoveLink removelink
+                                      = new AjaxRemoveLink("removelink", node);
+        _item.add(removelink);
+        removelink.add(new StaticImageComponent("removeIcon", ICON_REMOVE));
+        _item.add(new WebMarkupContainer("goUplink").setVisible(false));
+      }
+    } else {
+      label.add(new SimpleAttributeModifier("class", "eFapsMenuTreeItem"));
+      link.add(new WebMarkupContainer("icon").setVisible(false));
+      _item.add(new WebMarkupContainer("goIntolink").setVisible(false));
+      _item.add(new WebMarkupContainer("removelink").setVisible(false));
+      _item.add(new WebMarkupContainer("goUplink").setVisible(false));
+    }
+
+  }
+
+  /**
+   * Method to change the content of the page.
+   *
+   * @param _model      Model of the item
+   * @param _target     Target
+   */
   public void changeContent(final UIMenuItem _model,
                             final AjaxRequestTarget _target) {
 
@@ -359,9 +416,8 @@ public class MenuTree extends AbstractTree {
               });
     }
 
-    final InlineFrame component =
-        (InlineFrame) getPage().get(
-            ((ContentContainerPage) getPage()).getInlinePath());
+    final InlineFrame component = (InlineFrame) getPage().get(
+                          ((ContentContainerPage) getPage()).getInlinePath());
     page.setOutputMarkupId(true);
 
     component.replaceWith(page);
@@ -369,35 +425,64 @@ public class MenuTree extends AbstractTree {
 
   }
 
-  public class Intendation extends WebMarkupContainer {
+  /**
+   * Class is used to produce indentations.
+   *
+   */
+  public class Indentation extends WebMarkupContainer {
 
+    /**
+     * Needed for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Stores the level of indentation.
+     */
     private final int level;
 
-    public Intendation(final String _wicketId, final int _level) {
+    /**
+     * Constructor.
+     *
+     * @param _wicketId   wicket id of the component
+     * @param _level      level of indentation
+     */
+    public Indentation(final String _wicketId, final int _level) {
       super(_wicketId);
       this.level = _level;
       setRenderBodyOnly(true);
     }
-
+    /**
+     * Render the indentation.
+     * @param _markupStream  markup stream
+     * @param _openTag       open Tag
+     *
+     */
     @Override
-    protected void onComponentTagBody(final MarkupStream markupStream,
-                                      final ComponentTag openTag) {
+    protected void onComponentTagBody(final MarkupStream _markupStream,
+                                      final ComponentTag _openTag) {
       final Response response = RequestCycle.get().getResponse();
-
       for (int i = this.level - 1; i >= 0; --i) {
         response.write("<td class=\"eFapsMenuTreeIntend\"><div></div></td>");
       }
-
     }
-
   }
 
+  /**
+   * Behavior to update the menu tree via ajax.
+   *
+   */
   public class AjaxUpdateBehavior extends AbstractAjaxUpdateBehavior {
 
+    /**
+     * Needed for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Respond doing the update.
+     * @param _target ajax target
+     */
     @Override
     protected void respond(final AjaxRequestTarget _target) {
       final DefaultMutableTreeNode node = MenuTree.this.oidToNode.get(getOid());
@@ -412,7 +497,10 @@ public class MenuTree extends AbstractTree {
       }
 
     }
-
+    /**
+     * Method to get the ajax callback.
+     * @return String containing the script
+     */
     @Override
     public String getAjaxCallback() {
       String ret = "";
@@ -421,6 +509,5 @@ public class MenuTree extends AbstractTree {
       }
       return ret;
     }
-
   }
 }
