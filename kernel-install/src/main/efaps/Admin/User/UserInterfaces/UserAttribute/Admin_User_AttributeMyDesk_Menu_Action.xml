@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -27,20 +27,16 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>f04d0d76-97ef-4bb6-9d36-3e667d504f46</uuid>
+  <uuid>3214ef80-2e71-4ab2-912a-9c2d01e519c2</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_User_AbstractMyDesk</name>
+    <name>Admin_User_AttributeMyDesk_Menu_Action</name>
     <!-- childs -->
     <childs>
-      <child>Admin_User_PersonMyDesk</child>
-      <child>Admin_User_RoleMyDesk</child>
-      <child>Admin_User_GroupMyDesk</child>
-      <child>Admin_User_JAASSystemMyDesk</child>
-      <child>Admin_User_AttributeMyDesk</child>
+      <child>Admin_User_AttributeMyDesk_Menu_Action_Delete</child>
     </childs>
   </definition>
 
