@@ -53,7 +53,7 @@
       <property name="ShowTypeIcon">true</property>
       <property name="Expression">UserLink.Name</property>
       <property name="Label">Admin_User_Attribute/UserLink.Label</property>
-      <property name="Filterable"></property>
+      <property name="Filterable">true</property>
       <property name="AlternateOID">UserLink.OID</property>
     </field>
   </definition>
