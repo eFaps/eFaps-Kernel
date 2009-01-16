@@ -63,7 +63,7 @@ public class DateTimeUI extends AbstractUI {
             Context.getThreadContext().getChronology()).toString(
             formatter.withLocale(Context.getThreadContext().getLocale()));
       }
-    } else {
+    } else if (_fieldValue.getValue() != null) {
       throw new EFapsException(this.getClass(),
                                 "getViewHtml.noDateTime",
                                 (Object[]) null);
