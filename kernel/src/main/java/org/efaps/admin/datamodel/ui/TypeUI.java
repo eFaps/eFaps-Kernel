@@ -77,13 +77,16 @@ public class TypeUI extends AbstractUI {
                      final FieldValue _fieldValue2) {
     String value = null;
     String value2 = null;
-    if (_fieldValue.getValue() instanceof Type) {
-      final Type type = ((Type) _fieldValue.getValue());
-      value = DBProperties.getProperty(type.getName() + ".Label");
-    }
-    if (_fieldValue2.getValue() instanceof Type) {
-      final Type type = ((Type) _fieldValue2.getValue());
-      value2 = DBProperties.getProperty(type.getName() + ".Label");
+    if (_fieldValue.getValue() instanceof Type
+        && _fieldValue2.getValue() instanceof Type) {
+      value = DBProperties.getProperty(((Type) _fieldValue.getValue())
+          .getName() + ".Label");
+      value2 = DBProperties.getProperty(((Type) _fieldValue2.getValue())
+          .getName() + ".Label");
+    } else if (_fieldValue.getValue() instanceof String
+        && _fieldValue2.getValue() instanceof String) {
+      value = (String) _fieldValue.getValue();
+      value2 = (String) _fieldValue2.getValue();
     }
 
     return value.compareTo(value2);
