@@ -41,7 +41,7 @@
       <execute program="org.efaps.esjp.common.uiform.Create"/>
     </target>
     <!-- properties -->
-    <property name="Target">popup</property>
+    <property name="Target">modal</property>
     <property name="TargetConnectAttribute">Admin_UI_Field/Collection</property>
     <property name="TargetCreateType">Admin_UI_Field</property>
     <property name="TargetMode">create</property>
