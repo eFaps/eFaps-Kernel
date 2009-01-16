@@ -51,6 +51,23 @@ public class AccessOnField implements EventExecution {
     return null;
   }
 
+  /**
+   * Method is used to deny access in EDITMODE.
+   *
+   * @param _parameter Parameter as passed from eFaps to an esjp
+   * @return Return with True if VIEW, else false
+   */
+  public Return hideOnEdit(final Parameter _parameter) {
+    final TargetMode mode
+                      = (TargetMode) _parameter.get(ParameterValues.ACCESSMODE);
+
+    final Return ret = new Return();
+
+    if (!mode.equals(TargetMode.EDIT)) {
+      ret.put(ReturnValues.TRUE, true);
+    }
+    return ret;
+  }
 
   /**
    * Method is used to give access only on VIEWMODE.
