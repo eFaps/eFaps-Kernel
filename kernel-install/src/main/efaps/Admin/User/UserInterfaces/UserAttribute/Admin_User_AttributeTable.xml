@@ -48,6 +48,14 @@
       <property name="Expression">Value</property>
       <property name="Label">Admin_User_Attribute/Value.Label</property>
     </field>
+    <field name="user">
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="ShowTypeIcon">true</property>
+      <property name="Expression">UserLink.Name</property>
+      <property name="Label">Admin_User_Attribute/UserLink.Label</property>
+      <property name="Filterable"></property>
+      <property name="AlternateOID">UserLink.OID</property>
+    </field>
   </definition>
 
 </ui-table>
