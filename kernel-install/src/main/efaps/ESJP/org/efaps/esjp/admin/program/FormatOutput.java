@@ -118,7 +118,8 @@ public class FormatOutput implements EventExecution {
     String line = null;
     try {
       while ((line = reader.readLine()) != null) {
-        strb.append(line.replaceAll("\\s", "&nbsp;"));
+        strb.append(line.replaceAll("\\s", "&nbsp;").replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;").replaceAll("\\s", "&nbsp;"));
         strb.append("<br/>");
       }
     } catch (final IOException e) {
@@ -159,7 +160,8 @@ public class FormatOutput implements EventExecution {
     String line = null;
     try {
       while ((line = reader.readLine()) != null) {
-        strb.append(line.replaceAll("\\s", "&nbsp;"));
+        strb.append(line.replaceAll("\\s", "&nbsp;").replaceAll("<", "&lt;")
+                        .replaceAll(">", "&gt;").replaceAll("\\s", "&nbsp;"));
         strb.append("<br/>");
       }
     } catch (final IOException e) {
