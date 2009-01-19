@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
@@ -62,10 +63,10 @@ public class UIFormCellSet extends UIFormCell {
    */
   public UIFormCellSet(final FieldValue _fieldValue, final String _oid,
                        final String _value, final String _icon,
-                       final boolean _required,final String _label,
+                       final TargetMode _targetmode, final String _label,
                        final boolean _edit)
       throws EFapsException {
-    super(_fieldValue, _oid, _value, _icon, _required, _label, "");
+    super(_fieldValue, _oid, _value, _icon, _targetmode, _label, "");
     this.editMode = _edit;
   }
 

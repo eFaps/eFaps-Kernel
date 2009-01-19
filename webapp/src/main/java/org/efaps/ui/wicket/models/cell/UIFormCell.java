@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.models.cell;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
 
@@ -72,18 +73,20 @@ public class UIFormCell extends UITableCell {
    *
    * @param _field        Field for the Cell
    * @param _cellValue    Value of the Cell
+   * * @param _targetmode     targetmode for the cell
    * @param _label        Label for the Cell
    * @param _attrTypeName Name of the Type of Attribute
    * @throws EFapsException on error
    */
   public UIFormCell(final Field _field, final String _cellValue ,
-                    final String _label, final String _attrTypeName)
+                    final TargetMode _targetmode, final String _label,
+                    final String _attrTypeName)
       throws EFapsException {
     this (new FieldValue(_field, null, null, null),
           null,
           _cellValue,
           null,
-          _field.isRequired(),
+          _targetmode,
           _label,
           _attrTypeName);
   }
@@ -96,18 +99,22 @@ public class UIFormCell extends UITableCell {
    * @param _oid            OID of the Cell
    * @param _cellValue      Value for the Cell
    * @param _icon           icon of the cell
-   * @param _required       is the cell required
+   * @param _targetmode     targetmode for the cell
    * @param _label          Label of the Cell
    * @param _attrTypeName   Name of the Type of Attribute
    * @throws EFapsException on error
    */
   public UIFormCell(final FieldValue _fieldValue, final String _oid,
                     final String _cellValue, final String _icon,
-                    final boolean _required, final String _label,
+                    final TargetMode _targetmode, final String _label,
                     final String _attrTypeName)
       throws EFapsException {
     super(_fieldValue, _oid, _cellValue, _icon);
-    this.required = _required;
+    this.required = _fieldValue.getField().isRequired()
+                      && ((_fieldValue.getField().isEditable()
+                            && _targetmode.equals(TargetMode.EDIT))
+                        || (_fieldValue.getField().isEditable()
+                              && _targetmode.equals(TargetMode.CREATE)));
     this.cellLabel = DBProperties.getProperty(_label);
     this.hideLabel = _fieldValue.getField().isHideLabel();
     this.rowSpan = _fieldValue.getField().getRowSpan();

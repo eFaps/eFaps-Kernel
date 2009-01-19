@@ -324,7 +324,7 @@ public class UIForm extends AbstractUIObject {
                             _oid,
                             "",
                             "",
-                            isEditMode() ? _field.isRequired() : false,
+                            this.getMode(),
                             _label,
                             isEditMode());
 
@@ -430,7 +430,7 @@ public class UIForm extends AbstractUIObject {
                               oid,
                               strValue,
                               icon,
-                              isEditMode() ? _field.isRequired() : false,
+                              this.getMode(),
                               _label,
                               uiType));
     }
@@ -512,6 +512,7 @@ public class UIForm extends AbstractUIObject {
                                     : null;
         final UIFormCell cell = new UIFormCell(field,
                                                strValue,
+                                               this.getMode(),
                                                label,
                                                attrTypeName);
         if (isSearchMode()) {
