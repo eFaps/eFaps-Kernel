@@ -59,7 +59,16 @@
       <property name="Required">false</property>
       <property name="Label">Admin_Common_DBPropertiesForm/BundleID.Name</property>
     </field>
-
+    <field name="localeheader" character="Heading">
+      <property name="Level">1</property>
+      <property name="Label">Admin_Common_DBPropertiesForm/Locale.Heading</property>
+    </field>
+    <field name="localetable" character="Target">
+      <table>Admin_Common_DBPropertiesLocalTable</table>
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
+        <property name="Expand">Admin_Common_DBPropertiesLocal\PropertyID</property>
+      </evaluate>
+    </field>
   </definition>
 
 </ui-form>

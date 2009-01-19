@@ -27,21 +27,23 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>62e69a67-0aac-436d-aa84-5d028183b950</uuid>
+  <uuid>02d3c281-606d-45df-bb8b-19345acf249a</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_Common_DBPropertiesBundleTree_Menu_Action_Edit</name>
+    <name>Admin_Common_DBPropertiesTree_Local_Menu_Action_Create</name>
     <!-- target definitions -->
     <target>
-      <form>Admin_Common_DBPropertiesBundleForm</form>
-      <execute program="org.efaps.esjp.common.uiform.Edit"/>
+      <form>Admin_Common_DBPropertiesLocalForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Create"/>
     </target>
     <!-- properties -->
     <property name="Target">modal</property>
-    <property name="TargetMode">edit</property>
+    <property name="TargetCreateType">Admin_Common_DBPropertiesLocal</property>
+    <property name="TargetConnectAttribute">Admin_Common_DBPropertiesLocal/PropertyID</property>
+    <property name="TargetMode">create</property>
   </definition>
 
 </ui-command>
