@@ -2,7 +2,7 @@
 
 <!--
 
-  Copyright 2003-2008 The eFaps Team
+  Copyright 2003 - 2009 The eFaps Team
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@
     <type>Admin_UI_Table</type>
     <!-- childs -->
     <childs>
-      <child>Admin_UI_CollectionTree_Fields</child>
+      <child>Admin_UI_TableTree_Fields</child>
       <child>Admin_Common_AbstractTree_Properties</child>
       <child>Admin_UI_DirectTree_Used</child>
     </childs>

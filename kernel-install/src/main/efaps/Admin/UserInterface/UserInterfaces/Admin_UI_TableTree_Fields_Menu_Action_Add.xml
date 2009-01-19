@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2003-2008 The eFaps Team
+ Copyright 2003 - 2009 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,25 +27,24 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>58792eac-f3c8-4dc3-8420-6dbfa0530cd6</uuid>
+  <uuid>9078e686-0191-4b0f-ad1c-33670a5e0fd5</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_UI_CollectionTree_Fields</name>
+    <name>Admin_UI_TableTree_Fields_Menu_Action_Add</name>
+    <icon>Admin_UI_Field+Create+Image</icon>
     <!-- target definitions -->
     <target>
-      <menu>Admin_UI_CollectionTree_Fields_Menu</menu>
-      <table>Admin_UI_FieldList</table>
-      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
-        <property name="Expand">Admin_UI_Field\Collection</property>
-      </evaluate>
+      <form>Admin_UI_FieldForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Create"/>
     </target>
     <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
-    <property name="TargetShowCheckBoxes">true</property>
+    <property name="Target">modal</property>
+    <property name="TargetConnectAttribute">Admin_UI_Field/Collection</property>
+    <property name="TargetCreateType">Admin_UI_Field</property>
+    <property name="TargetMode">create</property>
   </definition>
 
 </ui-command>

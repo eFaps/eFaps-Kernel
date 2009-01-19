@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2003-2008 The eFaps Team
+ Copyright 2003 - 2009 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -27,13 +27,13 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>9078e686-0191-4b0f-ad1c-33670a5e0fd5</uuid>
+  <uuid>6bb19c68-d2b2-453f-b3a6-75a5e373c30f</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_UI_CollectionTree_Fields_Menu_Action_Add</name>
+    <name>Admin_UI_FormTree_Fields_Menu_Action_AddFieldSet</name>
     <icon>Admin_UI_Field+Create+Image</icon>
     <!-- target definitions -->
     <target>
@@ -43,7 +43,7 @@
     <!-- properties -->
     <property name="Target">modal</property>
     <property name="TargetConnectAttribute">Admin_UI_Field/Collection</property>
-    <property name="TargetCreateType">Admin_UI_Field</property>
+    <property name="TargetCreateType">Admin_UI_FieldSet</property>
     <property name="TargetMode">create</property>
   </definition>
 
