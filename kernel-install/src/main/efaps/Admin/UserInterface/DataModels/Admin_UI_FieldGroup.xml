@@ -32,7 +32,16 @@
   <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version-expression>(version==6) || (version==latest)</version-expression>
+    <version-expression>(version==latest)</version-expression>
+    <name>Admin_UI_FieldGroup</name>
+    <parent>Admin_UI_Field</parent>
+    <trigger program="org.efaps.esjp.admin.ui.FieldDeleteTrigger"
+             name="Admin_UI_FieldGroup.DELETE_PRE" 
+             event="DELETE_PRE"/>
+  </definition>
+
+  <definition>
+    <version-expression>(version==6)</version-expression>
     <name>Admin_UI_FieldGroup</name>
     <parent>Admin_UI_Field</parent>
   </definition>

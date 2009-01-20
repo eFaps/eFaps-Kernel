@@ -31,8 +31,25 @@
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
+ <definition>
+    <version-expression>(version==latest)</version-expression>
+    <name>Admin_UI_Field</name>
+    <parent>Admin_Abstract</parent>
+    <!-- attributes -->
+    <attribute>
+      <name>Collection</name>
+      <type>Link</type>
+      <typelink>Admin_UI_Collection</typelink>
+      <sqltable>Admin_UI_FieldSQLTable</sqltable>
+      <sqlcolumn>COLLECTION</sqlcolumn>
+    </attribute>
+    <trigger program="org.efaps.esjp.admin.ui.FieldDeleteTrigger"
+             name="Admin_UI_Field.DELETE_PRE" 
+             event="DELETE_PRE"/>
+  </definition>
+
   <definition>
-    <version-expression>(version==6) || (version==latest)</version-expression>
+    <version-expression>(version==6)</version-expression>
     <name>Admin_UI_Field</name>
     <parent>Admin_Abstract</parent>
     <!-- attributes -->
