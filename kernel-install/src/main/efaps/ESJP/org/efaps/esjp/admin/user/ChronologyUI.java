@@ -20,6 +20,7 @@
 
 package org.efaps.esjp.admin.user;
 
+import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
@@ -56,18 +57,22 @@ public class ChronologyUI implements EventExecution {
     final Return retVal = new Return();
     final Instance instance
                     = (Instance) _parameter.get(ParameterValues.CALL_INSTANCE);
-    if (instance != null) {
+
+    String actualChrono = ChronologyType.ISO8601.getKey();
+
+    if (instance != null && instance.getType().getUUID().equals(
+                                    EFapsClassNames.USER_PERSON.getUuid())) {
       final SearchQuery query = new SearchQuery();
       query.setObject(instance);
       query.addSelect("Chronology");
       query.execute();
-      String actualChrono = ChronologyType.ISO8601.getKey();
       if (query.next()) {
         actualChrono = (String) query.get("Chronology");
       }
-      retVal.put(ReturnValues.VALUES,
-                 ChronologyType.getByKey(actualChrono).getLabel());
     }
+    retVal.put(ReturnValues.VALUES,
+               ChronologyType.getByKey(actualChrono).getLabel());
+
     return retVal;
   }
 
@@ -86,7 +91,8 @@ public class ChronologyUI implements EventExecution {
                     = (Instance) _parameter.get(ParameterValues.CALL_INSTANCE);
     //set a default
     String actualChrono = ChronologyType.ISO8601.getKey();
-    if (instance != null) {
+    if (instance != null && instance.getType().getUUID().equals(
+                                      EFapsClassNames.USER_PERSON.getUuid())) {
       final SearchQuery query = new SearchQuery();
       query.setObject(instance);
       query.addSelect("Chronology");

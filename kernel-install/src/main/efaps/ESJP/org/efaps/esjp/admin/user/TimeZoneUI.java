@@ -25,6 +25,7 @@ import java.util.TreeSet;
 
 import org.joda.time.DateTimeZone;
 
+import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
@@ -64,7 +65,8 @@ public class TimeZoneUI implements EventExecution {
     //set a default value
     String actualTz = "UTC";
 
-    if (instance != null) {
+    if (instance != null && instance.getType().getUUID().equals(
+                                      EFapsClassNames.USER_PERSON.getUuid())) {
       final SearchQuery query = new SearchQuery();
       query.setObject(instance);
       query.addSelect("TimeZone");
