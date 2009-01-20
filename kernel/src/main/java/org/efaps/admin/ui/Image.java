@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.util.RequestHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -42,25 +43,33 @@ public class Image extends AbstractUserInterfaceObject {
   /**
    * The static variable defines the class name in eFaps.
    */
-  public final static EFapsClassNames EFAPS_CLASSNAME = IMAGE;
+  public static final EFapsClassNames EFAPS_CLASSNAME = IMAGE;
 
   /**
    * Logging instance used in this class.
    */
-  private final static Logger LOG = LoggerFactory.getLogger(Menu.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Menu.class);
 
   /**
    * Stores the mapping from type to tree menu.
    */
-  private final static Map<Type, Image> TYPE2IMAGE = new HashMap<Type, Image>();
+  private static final Map<Type, Image> TYPE2IMAGE = new HashMap<Type, Image>();
+
+
+  /**
+   * Stores all instances of class {@link Image}.
+   *
+   * @see #getCache
+   */
+  private static UserInterfaceObjectCache<Image> CACHE
+                             = new UserInterfaceObjectCache<Image>(Image.class);
 
   /**
    * Constructor to set the id and name of the command object.
    *
-   * @param _id
-   *                id of the command to set
-   * @param _name
-   *                name of the command to set
+   * @param _id     id of the command to set
+   * @param _uuid   uuid of the command to set
+   * @param _name   name of the command to set
    */
   public Image(final Long _id, final String _uuid, final String _name) {
     super(_id, _uuid, _name);
@@ -69,22 +78,18 @@ public class Image extends AbstractUserInterfaceObject {
   /**
    * Sets the link properties for this object.
    *
-   * @param _linkType
-   *                type of the link property
-   * @param _toId
-   *                to id
-   * @param _toType
-   *                to type
-   * @param _toName
-   *                to name
+   * @param _linkType   type of the link property
+   * @param _toId       to id
+   * @param _toType     to type
+   * @param _toName     to name
+   * @throws Exception on error
    */
   @Override
   protected void setLinkProperty(final EFapsClassNames _linkType,
                                  final long _toId,
                                  final EFapsClassNames _toType,
                                  final String _toName)
-      throws Exception
-  {
+      throws Exception {
     switch (_linkType) {
       case LINK_ICONISTYPEICONFOR:
         final Type type = Type.get(_toId);
@@ -123,7 +128,7 @@ public class Image extends AbstractUserInterfaceObject {
    * @return instance of class {@link Image}
    * @see #getCache
    */
-  static public Image get(final long _id) {
+  public static Image get(final long _id) {
     return getCache().get(_id);
   }
 
@@ -136,7 +141,7 @@ public class Image extends AbstractUserInterfaceObject {
    * @return instance of class {@link Image}
    * @see #getCache
    */
-  static public Image get(final String _name) {
+  public static Image get(final String _name) {
     return getCache().get(_name);
   }
 
@@ -149,7 +154,7 @@ public class Image extends AbstractUserInterfaceObject {
    * @return instance of class {@link Image}
    * @see #getCache
    */
-  static public Image get(final UUID _uuid) {
+  public static Image get(final UUID _uuid) {
     return getCache().get(_uuid);
   }
 
@@ -157,13 +162,13 @@ public class Image extends AbstractUserInterfaceObject {
    * Returns for given type the type tree menu. If no type tree menu is defined
    * for the type, it is searched if for parent type a menu is defined.
    *
-   * @param _type
-   *                type for which the type tree menu is searched
-   * @return type tree menu for given type if found; otherwise <code>null</code>.
+   * @param _type   type for which the type tree menu is searched
+   * @return Image for type tree menu for given type if found;
+   *                otherwise <code>null</code>.
    */
   public static Image getTypeIcon(final Type _type) {
     Image ret = TYPE2IMAGE.get(_type);
-    if ((ret == null) && (_type.getParentType() != null)) {
+    if ((ret == null) && (_type != null) && (_type.getParentType() != null)) {
       ret = getTypeIcon(_type.getParentType());
     }
     return ret;
@@ -174,15 +179,8 @@ public class Image extends AbstractUserInterfaceObject {
    *
    * @return value of static variable {@link #cache}
    */
-  static UserInterfaceObjectCache<Image> getCache() {
-    return cache;
+  public static UserInterfaceObjectCache<Image> getCache() {
+    return CACHE;
   }
 
-  /**
-   * Stores all instances of class {@link Image}.
-   *
-   * @see #getCache
-   */
-  static private UserInterfaceObjectCache<Image> cache =
-      new UserInterfaceObjectCache<Image>(Image.class);
 }
