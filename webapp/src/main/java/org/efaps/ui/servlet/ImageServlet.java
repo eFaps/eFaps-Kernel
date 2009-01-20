@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,23 +51,23 @@ import org.efaps.util.cache.CacheReloadInterface;
  * @author tmo
  * @version $Id:ImageServlet.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class ImageServlet extends HttpServlet
-{
-  // ///////////////////////////////////////////////////////////////////////////
-  // static variables
+public class ImageServlet extends HttpServlet {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = -2469349574113406199L;
 
   /**
    * Logging instance used in this class.
    */
-  private final static Logger LOG = LoggerFactory.getLogger(ImageServlet.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ImageServlet.class);
 
   /**
    * The cache stores all instance of class {@link #ImageMappe}.
    */
-  private static Cache<ImageMapper> cache =
-      new Cache<ImageMapper>(new CacheReloadInterface() {
+  private static Cache<ImageMapper> CACHE
+   = new Cache<ImageMapper>(new CacheReloadInterface() {
 
         public int priority() {
           return 20000;
@@ -78,36 +78,32 @@ public class ImageServlet extends HttpServlet
         };
       });
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance methods
-
   /**
    * The method checks the image from the user interface image object out and
    * returns them in a output stream to the web client. The name of the user
    * interface image object must given as name at the end of the path.
    *
-   * @param _req
-   *                request variable
-   * @param _res
-   *                response variable
+   * @param _req  request variable
+   * @param _res  response variable
    * @see #PARAM_ATTRNAME
    * @see #PARAM_OID
+   * @throws ServletException on error
+   * @throws IOException on error
    */
   @Override
   protected void doGet(final HttpServletRequest _req,
                        final HttpServletResponse _res)
-      throws ServletException, IOException
-  {
+      throws ServletException, IOException {
     String imgName = _req.getRequestURI();
 
     imgName = imgName.substring(imgName.lastIndexOf('/') + 1);
 
     try {
-      if (!cache.hasEntries()) {
+      if (!CACHE.hasEntries()) {
         loadCache();
       }
 
-      final ImageMapper imageMapper = cache.get(imgName);
+      final ImageMapper imageMapper = CACHE.get(imgName);
 
       if (imageMapper != null) {
         final Checkout checkout = new Checkout(imageMapper.oid);
@@ -141,16 +137,15 @@ public class ImageServlet extends HttpServlet
    * name and object id. The cache is needed to reference from an image name to
    * the object id and the original file name.
    *
-   * @throws Exception
-   *                 if searchquery fails
-   * @see #cache
+   * @throws CacheReloadException if search query fails
+   * @see #CACHE
    * @see #ImageMapper
    */
   private static void loadCache() throws CacheReloadException {
     try {
-      synchronized (cache) {
+      synchronized (CACHE) {
         final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(Type.get(IMAGE.uuid).getName());
+        query.setQueryTypes(Type.get(IMAGE.getUuid()).getName());
         query.addSelect("Name");
         query.addSelect("FileName");
         query.addSelect("OID");
@@ -164,7 +159,7 @@ public class ImageServlet extends HttpServlet
           final String oid = (String) query.get("OID");
           final Long filelength = (Long) query.get("FileLength");
           final DateTime time = (DateTime) query.get("Modified");
-          cache.add(new ImageMapper(name, file, oid, filelength,
+          CACHE.add(new ImageMapper(name, file, oid, filelength,
                                     time.getMillis()));
         }
         query.close();
@@ -179,7 +174,7 @@ public class ImageServlet extends HttpServlet
    * The class is used to map from the administrational image name to the image
    * file name and image object id.
    */
-  private static class ImageMapper implements CacheObjectInterface {
+  private static final class ImageMapper implements CacheObjectInterface {
 
     /**
      * The instance variable stores the administational name of the image.
@@ -196,21 +191,28 @@ public class ImageServlet extends HttpServlet
      */
     private final String oid;
 
+    /**
+     * Lenght of the image in long.
+     */
     private final long filelength;
 
+    /**
+     * Time the image was last retrieved.
+     */
     private final Long time;
 
     /**
-     * @param _name   administrational name of the image
-     * @param _file   file name of the image
-     * @param _oid    object id of the image
+     * @param _name       administrational name of the image
+     * @param _file       file name of the image
+     * @param _oid        object id of the image
+     * @param _filelength lenght of the file
+     * @param _time       time
      */
     private ImageMapper(final String _name,
                         final String _file,
                         final String _oid,
                         final Long _filelength,
-                        final Long _time)
-    {
+                        final Long _time) {
       this.name = _name;
       this.oid = _oid;
       this.file = _file;
@@ -224,8 +226,7 @@ public class ImageServlet extends HttpServlet
      * @return value of instance variable {@link #name}
      * @see #name
      */
-    public String getName()
-    {
+    public String getName() {
       return this.name;
     }
 
@@ -235,8 +236,7 @@ public class ImageServlet extends HttpServlet
      *
      * @return always <code>null</code>
      */
-    public UUID getUUID()
-    {
+    public UUID getUUID() {
       return null;
     }
 
@@ -246,8 +246,7 @@ public class ImageServlet extends HttpServlet
      *
      * @return always <code>0</code>
      */
-    public long getId()
-    {
+    public long getId() {
       return 0;
     }
   }
