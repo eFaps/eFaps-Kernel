@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,11 +47,10 @@ import org.efaps.util.cache.CacheReloadException;
 /**
  * @author tmo
  * @version $Id$
- * @todo description
+ * TODO description
  */
 public abstract class AbstractCollection
-    extends AbstractUserInterfaceObject
-{
+    extends AbstractUserInterfaceObject {
   /**
    * Instance variable for all field expressions.
    *
@@ -59,8 +58,8 @@ public abstract class AbstractCollection
    * @see #getFieldExprIndex
    * @see #getAllFieldExpr
    */
-  private final Map<String, Integer> allFieldExpr =
-      new HashMap<String, Integer>();
+  private final Map<String, Integer> allFieldExpr
+                                      = new HashMap<String, Integer>();
 
   /**
    * All fields of the collection are stored sorted belonging to the id of the
@@ -87,23 +86,22 @@ public abstract class AbstractCollection
   private String select = null;
 
   /**
-   * Constructor passing on to the superconstructor
+   * Constructor passing on to the super constructor.
    *
-   * @param _id
-   * @param _uuid
-   * @param _name
+   * @param _id       id of this collection
+   * @param _uuid     uuid of this collection
+   * @param _name     name of this collection
    */
   protected AbstractCollection(final long _id,
                                final String _uuid,
-                               final String _name)
-  {
+                               final String _name) {
     super(_id, _uuid, _name);
   }
 
   /**
-   * method to add a Field to this Collection
+   * Method to add a Field to this Collection.
    *
-   * @param _field
+   * @param _field Field to add to this collection
    */
   public void add(final Field _field) {
     this.fields.put(_field.getId(), _field);
@@ -126,8 +124,7 @@ public abstract class AbstractCollection
    * the field expression is already added, the old index is returned, so a
    * expression is only added once.
    *
-   * @param _expr
-   *                field expression to add
+   * @param _expr   field expression to add
    * @return index of the field expression
    * @see #getFieldExprIndex
    * @see #getAllFieldExpr
@@ -154,8 +151,7 @@ public abstract class AbstractCollection
    * For the parameter <i>_expr</i> the index in the list of all field
    * expressions is returned.
    *
-   * @param _expr
-   *                expression for which the index is searched
+   * @param _expr   expression for which the index is searched
    * @return index of the field expression
    * @see #addFieldExpr
    * @see #getAllFieldExpr
@@ -176,6 +172,7 @@ public abstract class AbstractCollection
    * object.
    *
    * @see #readFromDB4Fields
+   * @throws CacheReloadException on error
    */
   @Override
   protected void readFromDB() throws CacheReloadException {
@@ -185,6 +182,8 @@ public abstract class AbstractCollection
 
   /**
    * Read all fields related to this collection object.
+   *
+   * @throws CacheReloadException on error
    */
   private void readFromDB4Fields() throws CacheReloadException {
     try {
@@ -202,13 +201,13 @@ public abstract class AbstractCollection
         final String name = (String) query.get("Name");
         Field field;
         final Type type = (Type) query.get("Type");
-        if (FIELDHEADING.uuid.equals(type.getUUID())) {
+        if (FIELDHEADING.getUuid().equals(type.getUUID())) {
           field = new FieldHeading(id, null, name);
-        } else if (FIELDTABLE.uuid.equals(type.getUUID())) {
+        } else if (FIELDTABLE.getUuid().equals(type.getUUID())) {
           field = new FieldTable(id, null, name);
-        } else if (FIELDGROUP.uuid.equals(type.getUUID())) {
+        } else if (FIELDGROUP.getUuid().equals(type.getUUID())) {
           field = new FieldGroup(id, null, name);
-        } else if (FIELDSET.uuid.equals(type.getUUID())) {
+        } else if (FIELDSET.getUuid().equals(type.getUUID())) {
           field = new FieldSet(id, null, name);
         } else {
           field = new Field(id, null, name);
@@ -233,8 +232,6 @@ public abstract class AbstractCollection
   public List<Field> getFields() {
     return new ArrayList<Field>(this.fields.values());
   }
-
-  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * @see #allFieldExpr
@@ -277,6 +274,11 @@ public abstract class AbstractCollection
     return this.select;
   }
 
+  /**
+   * Method to get the whole mapo of fields.
+   *
+   * @return  Map
+   */
   public Map<Long, Field> getFieldsMap() {
     return this.fields;
   }

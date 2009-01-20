@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ public class Type extends AbstractDataModelObject {
    *
    * @see #get
    */
-  private static Cache<Type> typeCache =
+  private static Cache<Type> TYPECACHE =
       new Cache<Type>(new CacheReloadInterface() {
 
         public int priority() {
@@ -199,14 +199,6 @@ public class Type extends AbstractDataModelObject {
   private final Form formCreate = null;
 
   /**
-   * The instance variable stores the attribute used to represent this type.
-   *
-   * @see #getViewAttribute
-   * @see #setViewAttribute
-   */
-  private final Attribute viewAttribute = null;
-
-  /**
    * The instance variable stores all unique keys of this type instance.
    *
    * @see #getUniqueKeys
@@ -237,28 +229,23 @@ public class Type extends AbstractDataModelObject {
    */
   private final Set<Type> allowedEventTypes = new HashSet<Type>();
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // constructors
-
   /**
    * This is the constructor for class Type. Every instance of class Type must
    * have a name (parameter <i>_name</i>).
    *
-   * @param _id
-   *                id of th type
-   * @param _uuid
-   *                universal unique identifier
-   * @param _name
-   *                name of the type name of the instance
+   * @param _id     id of th type
+   * @param _uuid   universal unique identifier
+   * @param _name   name of the type name of the instance
    */
-  protected Type(final long _id, final String _uuid, final String _name)
-  {
+  protected Type(final long _id, final String _uuid, final String _name) {
     super(_id, _uuid, _name);
-    addAttribute(new Attribute(0, "Type", "", (SQLTable) null, AttributeType.get("Type"), null));
+    addAttribute(new Attribute(0,
+                               "Type",
+                               "",
+                               (SQLTable) null,
+                               AttributeType.get("Type"),
+                               null));
   }
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance methods
 
   /**
    * Add an attribute to this type and all child types of this type.
@@ -294,8 +281,7 @@ public class Type extends AbstractDataModelObject {
    * @param _attr   attribute with the link to this type
    * @todo description of algorithm
    */
-  protected void addLink(final Attribute _attr)
-  {
+  protected void addLink(final Attribute _attr) {
     getLinks().put(_attr.getParent().getName() + "\\" + _attr.getName(), _attr);
     for (final Type type : _attr.getParent().getChildTypes()) {
       getLinks().put(type.getName() + "\\" + _attr.getName(), _attr);
@@ -355,8 +341,8 @@ public class Type extends AbstractDataModelObject {
    * Search in the cache for the object with the given <i>_id</i> and returns
    * this Object.
    *
+   * @param _id id of the cached type
    * @return cache object for given parameter <i>_id</i>
-   * @param _id
    */
   public CacheObjectInterface getCacheObject(final long _id) {
     return getCache().get(_id);
@@ -366,12 +352,10 @@ public class Type extends AbstractDataModelObject {
    * Tests, if this type is kind of the type in the parameter (question is, is
    * this type a child of the parameter type).
    *
-   * @param _type
-   *                type to test for parent
+   * @param _type   type to test for parent
    * @return true if this type is a child, otherwise false
    */
-  public boolean isKindOf(final Type _type)
-  {
+  public boolean isKindOf(final Type _type) {
     boolean ret = false;
     Type type = this;
     while ((type != null) && (type.getId() != _type.getId())) {
@@ -393,8 +377,7 @@ public class Type extends AbstractDataModelObject {
    * @see org.efaps.admin.AbstractAdminObject#getProperty
    */
   @Override
-  public String getProperty(final String _name)
-  {
+  public String getProperty(final String _name) {
     String value = super.getProperty(_name);
     if ((value == null) && (getParentType() != null)) {
       value = getParentType().getProperty(_name);
@@ -412,28 +395,24 @@ public class Type extends AbstractDataModelObject {
   public String toString() {
     return new ToStringBuilder(this)
                 .appendSuper(super.toString())
-                .append("parentType", getParentType() != null ? getParentType().getName() : "")
+                .append("parentType",
+                       getParentType() != null ? getParentType().getName() : "")
                 .append("uniqueKey", getUniqueKeys())
                 .toString();
   }
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance methods used for access management
 
   /**
    * Checks, if the current context user has all access defined in the list of
    * access types for the given instance.
    *
    * @param _instance     instance for which the access must be checked
-   * @param _accessTypes  list of access types which must be checked
-   * @param <i>true </i> if the current context user has access, otherwise
-   *                <i>false</i>.
-   * @see #accessChecks
+   * @param _accessType   list of access types which must be checked
+   * @throws EFapsException on error
+   * @return true if user has access, else false
    */
   public boolean hasAccess(final Instance _instance,
                            final AccessType _accessType)
-      throws EFapsException
-  {
+      throws EFapsException {
     boolean hasAccess = true;
     final List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);
     if (events != null) {
@@ -455,8 +434,7 @@ public class Type extends AbstractDataModelObject {
    * @param _accessSet    new access to assign to this type instance
    * @see #accessSets
    */
-  public void addAccessSet(final AccessSet _accessSet)
-  {
+  public void addAccessSet(final AccessSet _accessSet) {
     this.accessSets.add(_accessSet);
   }
 
@@ -466,29 +444,26 @@ public class Type extends AbstractDataModelObject {
    * @return value of instance variable {@link #accessSets}
    * @see #accessSets
    */
-  public Set<AccessSet> getAccessSets()
-  {
+  public Set<AccessSet> getAccessSets() {
     return this.accessSets;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // instance methods used to initialise this type instance
-
   /**
+   *
    * Sets the link properties for this object.
    *
    * @param _linkType   type of the link property
    * @param _toId       to id
    * @param _toType     to type
    * @param _toName     to name
+   * @throws Exception on error
    */
   @Override
   protected void setLinkProperty(final EFapsClassNames _linkType,
                                  final long _toId,
                                  final EFapsClassNames _toType,
                                  final String _toName)
-      throws Exception
-  {
+      throws Exception {
     switch (_linkType) {
       case DATAMODEL_TYPEEVENTISALLOWEDFOR:
         final Type eventType = get(_toId);
@@ -505,26 +480,23 @@ public class Type extends AbstractDataModelObject {
    * @param _name   name of the property
    * @param _value  value of the property
    * @see #addUniqueKey
-   * @see #setViewAttribute
+   * @throws CacheReloadException on error
    */
   @Override
   protected void setProperty(final String _name,
                              final String _value)
-      throws CacheReloadException
-  {
+      throws CacheReloadException {
     if (_name.startsWith("UniqueKey")) {
       addUniqueKey(_value);
-    } else if (_name.equals("ViewAttribute")) {
-      // setViewAttribute(_context, _value);
     } else {
       super.setProperty(_name, _value);
     }
   }
 
   /**
-   * First, the instance method initiliase the set of unique keys ({@link #uniqueKeys})
-   * if needed. The a new unique key is created and added to the list of unique
-   * keys in {@link #uniqueKeys}.
+   * First, the instance method initialize the set of unique keys
+   * ({@link #uniqueKeys}) if needed. The a new unique key is created and added
+   * to the list of unique keys in {@link #uniqueKeys}.
    *
    * @param _attrList
    *                string with comma separated list of attribute names
@@ -542,25 +514,14 @@ public class Type extends AbstractDataModelObject {
    * are also defined as child type of this type.<br/> Also for all parent
    * types (of this type), the child type (with sub child types) are added.
    *
-   * @param _childType
-   *                child type to add
+   * @param _childType child type to add
    * @see #childTypes
    */
   protected void addChildType(final Type _childType) {
-    // for (Attribute linkAttr: getLinks().values()) {
-    // _childType.addLink(linkAttr);
-    // }
-    // for (Type subChildType : _childType.getChildTypes()) {
-    // getChildTypes().add(subChildType);
-    // for (Attribute linkAttr: getLinks().values()) {
-    // subChildType.addLink(linkAttr);
-    // }
-    // }
     Type parent = this;
     while (parent != null) {
       parent.getChildTypes().add(_childType);
       parent.getChildTypes().addAll(_childType.getChildTypes());
-      // System.out.println("childTypes("+parent.getName()+")="+parent.getChildTypes());
       parent = parent.getParentType();
     }
   }
@@ -568,8 +529,6 @@ public class Type extends AbstractDataModelObject {
   /**
    * For the given type it is tested if a store is defined for the type.
    *
-   * @param _type
-   *                type to test
    * @return <i>true</i> if a store resource is defined for the type, otherwise
    *         <i>false</i> is returned
    */
@@ -584,13 +543,17 @@ public class Type extends AbstractDataModelObject {
    * @see #parentType
    * @see #setParentType
    */
-  public Type getParentType()
-  {
+  public Type getParentType() {
     return this.parentType;
   }
 
-  protected void setParentType(final Type parentType) {
-    this.parentType = parentType;
+  /**
+   * Setter method for instance variable {@link #parentType}.
+   *
+   * @param _parentType parent to set
+   */
+  protected void setParentType(final Type _parentType) {
+    this.parentType = _parentType;
   }
 
   /**
@@ -599,8 +562,7 @@ public class Type extends AbstractDataModelObject {
    * @return value of instance variable {@link #childTypes}
    * @see #childTypes
    */
-  public Set<Type> getChildTypes()
-  {
+  public Set<Type> getChildTypes() {
     return this.childTypes;
   }
 
@@ -610,8 +572,7 @@ public class Type extends AbstractDataModelObject {
    * @return value of instance variable {@link #attributes}
    * @see #attributes
    */
-  public Map<String, Attribute> getAttributes()
-  {
+  public Map<String, Attribute> getAttributes() {
     return this.attributes;
   }
 
@@ -622,8 +583,7 @@ public class Type extends AbstractDataModelObject {
    * @see #setCache
    * @see #cache
    */
-  public Cache<?> getCache()
-  {
+  public Cache<?> getCache() {
     return this.cache;
   }
 
@@ -635,8 +595,7 @@ public class Type extends AbstractDataModelObject {
    * @see #getCache
    * @see #cache
    */
-  private void setCache(final Cache<?> _cache)
-  {
+  private void setCache(final Cache<?> _cache) {
     this.cache = _cache;
   }
 
@@ -646,8 +605,7 @@ public class Type extends AbstractDataModelObject {
    * @return value of instance variable {@link #tables}
    * @see #tables
    */
-  public Set<SQLTable> getTables()
-  {
+  public Set<SQLTable> getTables() {
     return this.tables;
   }
 
@@ -658,8 +616,7 @@ public class Type extends AbstractDataModelObject {
    * @see #setMainTable
    * @see #mainTable
    */
-  public SQLTable getMainTable()
-  {
+  public SQLTable getMainTable() {
     return this.mainTable;
   }
 
@@ -671,8 +628,7 @@ public class Type extends AbstractDataModelObject {
    * @see #getMainTable
    * @see #mainTable
    */
-  private void setMainTable(final SQLTable _mainTable)
-  {
+  private void setMainTable(final SQLTable _mainTable) {
     this.mainTable = _mainTable;
   }
 
@@ -683,8 +639,7 @@ public class Type extends AbstractDataModelObject {
    * @see #setFormView
    * @see #formView
    */
-  public Form getFormView()
-  {
+  public Form getFormView() {
     return this.formView;
   }
 
@@ -706,21 +661,8 @@ public class Type extends AbstractDataModelObject {
    * @see #setFormCreate
    * @see #formCreate
    */
-  public Form getFormCreate()
-  {
+  public Form getFormCreate() {
     return this.formCreate;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #viewAttribute}.
-   *
-   * @return value of instance variable {@link #viewAttribute}
-   * @see #setViewAttribute
-   * @see #viewAttribute
-   */
-  public Attribute getViewAttribute()
-  {
-    return this.viewAttribute;
   }
 
   /**
@@ -730,8 +672,7 @@ public class Type extends AbstractDataModelObject {
    * @see #setUniqueKeys
    * @see #uniqueKeys
    */
-  public Collection<UniqueKey> getUniqueKeys()
-  {
+  public Collection<UniqueKey> getUniqueKeys() {
     return this.uniqueKeys;
   }
 
@@ -743,8 +684,7 @@ public class Type extends AbstractDataModelObject {
    * @see #getUniqueKeys
    * @see #uniqueKeys
    */
-  private void setUniqueKeys(final Collection<UniqueKey> _uniqueKeys)
-  {
+  private void setUniqueKeys(final Collection<UniqueKey> _uniqueKeys) {
     this.uniqueKeys = _uniqueKeys;
   }
 
@@ -754,8 +694,7 @@ public class Type extends AbstractDataModelObject {
    * @return value of instance variable {@link #links}
    * @see #links
    */
-  public Map<String, Attribute> getLinks()
-  {
+  public Map<String, Attribute> getLinks() {
     return this.links;
   }
 
@@ -765,19 +704,15 @@ public class Type extends AbstractDataModelObject {
    * @return value of instance variable {@link #allowedEventTypes}
    * @see #allowedEventTypes
    */
-  public Set<Type> getAllowedEventTypes()
-  {
+  public Set<Type> getAllowedEventTypes() {
     return this.allowedEventTypes;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // static methods
-
   /**
-   * Initialise the cache of types.
+   * Initialize the cache of types.
+   * @throws CacheReloadException on error
    */
-  protected static void initialise() throws CacheReloadException
-  {
+  protected static void initialise() throws CacheReloadException {
     ConnectionResource con = null;
     try {
       // to store parent informations
@@ -806,9 +741,9 @@ public class Type extends AbstractDataModelObject {
           }
           final Type type = new Type(id, uuid, name);
           type.setAbstractType(abstractType);
-          if (type.getUUID().equals(USER_PERSON.uuid)) {
+          if (type.getUUID().equals(USER_PERSON.getUuid())) {
             type.setCache(Person.getCache());
-          } else if (type.getUUID().equals(USER_ROLE.uuid)) {
+          } else if (type.getUUID().equals(USER_ROLE.getUuid())) {
             type.setCache(Role.getCache());
           }
 
@@ -820,9 +755,7 @@ public class Type extends AbstractDataModelObject {
           }
         }
         rs.close();
-
-      }
-      finally {
+      } finally {
         if (stmt != null) {
           stmt.close();
         }
@@ -853,8 +786,7 @@ public class Type extends AbstractDataModelObject {
       throw new CacheReloadException("could not read roles", e);
     } catch (final EFapsException e) {
       throw new CacheReloadException("could not read roles", e);
-    }
-    finally {
+    } finally {
       if ((con != null) && con.isOpened()) {
         try {
           con.abort();
@@ -868,52 +800,49 @@ public class Type extends AbstractDataModelObject {
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Type}.
    *
+   * @param _id id of the type to get
    * @return instance of class {@link Type}
    */
-  public static Type get(final long _id)
-  {
+  public static Type get(final long _id) {
     return getTypeCache().get(_id);
   }
 
   /**
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Type}.
-   *
+   * @param _name name of the type to get
    * @return instance of class {@link Type}
    */
-  public static Type get(final String _name)
-  {
+  public static Type get(final String _name) {
     return getTypeCache().get(_name);
   }
 
   /**
    * Returns for given parameter <i>_uuid</i> the instance of class
    * {@link Type}.
-   *
+   * @param _uuid uuid of the type to get
    * @return instance of class {@link Type}
    */
-  public static Type get(final UUID _uuid)
-  {
+  public static Type get(final UUID _uuid) {
     return getTypeCache().get(_uuid);
   }
 
   /**
    * Returns for given parameter <i>_className</i> the instance of class
    * {@link Type}.
-   *
+   * @param _className classname of the type to get
    * @return instance of class {@link Type}
    */
-  public static Type get(final EFapsClassNames _className)
-  {
-    return getTypeCache().get(_className.uuid);
+  public static Type get(final EFapsClassNames _className) {
+    return getTypeCache().get(_className.getUuid());
   }
 
   /**
-   * Static getter method for the type hashtable {@link #typeCache}.
+   * Static getter method for the type hashtable {@link #TYPECACHE}.
    *
-   * @return value of static variable {@link #typeCache}
+   * @return value of static variable {@link #TYPECACHE}
    */
   static Cache<Type> getTypeCache() {
-    return typeCache;
+    return TYPECACHE;
   }
 }
