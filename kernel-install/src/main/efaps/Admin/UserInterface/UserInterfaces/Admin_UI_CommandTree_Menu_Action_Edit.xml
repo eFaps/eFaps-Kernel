@@ -40,7 +40,7 @@
       <execute program="org.efaps.esjp.common.uiform.Edit"/>
     </target>
     <!-- properties -->
-    <property name="Target">popup</property>
+    <property name="Target">modal</property>
     <property name="TargetMode">edit</property>
   </definition>
 
