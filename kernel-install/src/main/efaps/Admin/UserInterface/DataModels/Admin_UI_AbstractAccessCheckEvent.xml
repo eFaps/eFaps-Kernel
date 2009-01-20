@@ -35,6 +35,9 @@
     <version-expression>(version==latest)</version-expression>
     <name>Admin_UI_AbstractAccessCheckEvent</name>
     <parent>Admin_Event_Definition</parent>
+    <trigger program="org.efaps.esjp.admin.event.EventDeleteTrigger" 
+             name="Admin_UI_AbstractAccessCheckEvent.DELETE_PRE" 
+             event="DELETE_PRE"/>
     <!-- event for type? -->
     <event-for type="Admin_UI_Direct"/>
     <event-for type="Admin_UI_Field"/>

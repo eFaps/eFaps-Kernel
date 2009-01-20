@@ -35,6 +35,9 @@
     <version-expression>(version==latest)</version-expression>
     <name>Admin_UI_CommandExecuteEvent</name>
     <parent>Admin_Event_Definition</parent>
+    <trigger program="org.efaps.esjp.admin.event.EventDeleteTrigger" 
+             name="Admin_UI_CommandExecuteEvent.DELETE_PRE" 
+             event="DELETE_PRE"/>
     <!-- event for type? -->
     <event-for type="Admin_UI_Command"/>
   </definition>

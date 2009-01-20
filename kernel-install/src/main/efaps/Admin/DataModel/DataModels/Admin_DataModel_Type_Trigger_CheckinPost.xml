@@ -30,12 +30,18 @@
   <uuid>e72097ed-82a0-4720-babc-b035a1d9e5ca</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
-
-  <!-- create type -->
   <definition>
-    <version-expression>(version==6) || (version==latest)</version-expression>
+    <version-expression>(version==latest)</version-expression>
+    <name>Admin_DataModel_Type_Trigger_CheckinPost</name>
+    <parent>Admin_DataModel_Type_Trigger</parent>
+    <trigger program="org.efaps.esjp.admin.event.EventDeleteTrigger" 
+             name="Admin_DataModel_Type_Trigger_CheckinPost.DELETE_PRE" 
+             event="DELETE_PRE"/>
+  </definition>
+  
+  <definition>
+    <version-expression>(version==6)</version-expression>
     <name>Admin_DataModel_Type_Trigger_CheckinPost</name>
     <parent>Admin_DataModel_Type_Trigger</parent>
   </definition>
-
 </datamodel-type>

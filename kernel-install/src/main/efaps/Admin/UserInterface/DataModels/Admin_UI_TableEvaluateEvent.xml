@@ -35,6 +35,9 @@
     <version-expression>(version==latest)</version-expression>
     <name>Admin_UI_TableEvaluateEvent</name>
     <parent>Admin_Event_Definition</parent>
+    <trigger program="org.efaps.esjp.admin.event.EventDeleteTrigger" 
+             name="Admin_UI_TableEvaluateEvent.DELETE_PRE" 
+             event="DELETE_PRE"/>
     <!-- event for type? -->
     <event-for type="Admin_UI_Command"/>
     <event-for type="Admin_UI_Field"/>

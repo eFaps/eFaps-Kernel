@@ -32,9 +32,17 @@
   <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version-expression>(version==6) || (version==latest)</version-expression>
+    <version-expression>(version==latest)</version-expression>
+    <name>Admin_DataModel_Type_Trigger_CheckoutPost</name>
+    <parent>Admin_DataModel_Type_Trigger</parent>
+    <trigger program="org.efaps.esjp.admin.event.EventDeleteTrigger" 
+             name="Admin_DataModel_Type_Trigger_CheckoutPost.DELETE_PRE" 
+             event="DELETE_PRE"/>
+  </definition>
+  
+  <definition>
+    <version-expression>(version==6)</version-expression>
     <name>Admin_DataModel_Type_Trigger_CheckoutPost</name>
     <parent>Admin_DataModel_Type_Trigger</parent>
   </definition>
-
 </datamodel-type>

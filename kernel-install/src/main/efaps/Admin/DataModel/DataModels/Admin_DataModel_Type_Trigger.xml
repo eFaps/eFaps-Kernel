@@ -36,6 +36,9 @@
     <name>Admin_DataModel_Type_Trigger</name>
     <parent>Admin_Event_Definition</parent>
     <abstract>true</abstract>
+    <trigger program="org.efaps.esjp.admin.event.EventDeleteTrigger" 
+             name="Admin_DataModel_Type_Trigger.DELETE_PRE" 
+             event="DELETE_PRE"/>
     <!-- event for type? -->
     <event-for type="Admin_DataModel_Type"/>
   </definition>

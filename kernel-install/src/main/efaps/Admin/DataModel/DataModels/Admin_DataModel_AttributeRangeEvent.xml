@@ -35,6 +35,9 @@
     <version-expression>(version==latest)</version-expression>
     <name>Admin_DataModel_AttributeRangeEvent</name>
     <parent>Admin_Event_Definition</parent>
+    <trigger program="org.efaps.esjp.admin.event.EventDeleteTrigger" 
+             name="Admin_DataModel_AttributeRangeEvent.DELETE_PRE" 
+             event="DELETE_PRE"></trigger>
     <!-- event for type? -->
     <event-for type="Admin_DataModel_Attribute"/>
   </definition>
