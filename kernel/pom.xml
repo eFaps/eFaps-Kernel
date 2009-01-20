@@ -82,9 +82,6 @@
         <executions>
           <execution>
             <phase>process-resources</phase>
-            <configuration>
-              <packageName>org.efaps.beans.valueparser</packageName>
-            </configuration>
             <goals>
               <goal>javacc</goal>
             </goals>
