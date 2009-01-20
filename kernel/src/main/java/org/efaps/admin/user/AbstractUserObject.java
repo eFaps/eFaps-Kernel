@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,35 +26,30 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
  * @version $Id$
- * @todo description
+ * TODO description
  */
 public abstract class AbstractUserObject extends AbstractAdminObject {
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // static variables
 
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Logger LOG =
-      LoggerFactory.getLogger(AbstractUserObject.class);
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance variables
+  private static final Logger LOG
+                          = LoggerFactory.getLogger(AbstractUserObject.class);
 
   /**
-   * instance variable holding the Status (activ, inactiv)
+   * Instance variable holding the Status (activ, inactiv).
    */
   private boolean status;
 
@@ -62,12 +57,12 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
   // Constructor
 
   /**
-   * Constructor to set the id and name of the user object.
+   * Constructor to set instance varaibles of the user object.
    *
-   * @param _id
-   *                id to set
-   * @param _name
-   *                name to set
+   * @param _id       id to set
+   * @param _uuid     uuid to set
+   * @param _name     name to set
+   * @param _status   status toi set
    */
   protected AbstractUserObject(final long _id, final String _uuid,
                                final String _name, final boolean _status) {
@@ -83,27 +78,25 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
    * Checks, if the given person is assigned to this user object. The method
    * must be overwritten by the special implementations.
    *
-   * @param _person
-   *                person to test
+   * @param _person     person to test
    * @return <i>true</i> if the person is assigned to this user object,
    *         otherwise <i>false</i>
    * @see #persons
    * @see #getPersons
    */
-  abstract public boolean hasChildPerson(final Person _person);
+  public abstract boolean hasChildPerson(final Person _person);
 
   /**
    * Checks, if the context user is assigned to this user object. The instance
    * method uses {@link #hasChildPerson} to test this.
    *
-   * @param _context
-   *                context for this request
    * @see #hasChildPerson
+   * @return true if person is assigned
    */
   public boolean isAssigned() {
     try {
       return hasChildPerson(Context.getThreadContext().getPerson());
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("could not read Person ", e);
     }
     return false;
@@ -121,8 +114,7 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
    */
   public void assignToJAASSystem(final JAASSystem _jaasSystem,
                                  final String _jaasKey)
-      throws EFapsException
-  {
+      throws EFapsException {
 
     ConnectionResource rsrc = null;
     try {
@@ -171,7 +163,7 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
               "assignToJAASSystem.NotInserted", _jaasSystem.getName(),
               _jaasKey, toString());
         }
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOG.error("could not execute '"
             + cmd.toString()
             + "' to assign user object '"
@@ -183,19 +175,18 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
             + "'", e);
         throw new EFapsException(getClass(), "assignToJAASSystem.SQLException",
             e, cmd.toString(), _jaasSystem.getName(), _jaasKey, toString());
-      }
-      finally {
+      } finally {
         try {
           if (stmt != null) {
             stmt.close();
           }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
+          LOG.error("Could not close a statement.", e);
         }
       }
 
       rsrc.commit();
-    }
-    finally {
+    } finally {
       if ((rsrc != null) && rsrc.isOpened()) {
         rsrc.abort();
       }
@@ -215,8 +206,7 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
   protected void assignToUserObjectInDb(final Type _assignType,
                                         final JAASSystem _jaasSystem,
                                         final AbstractUserObject _object)
-      throws EFapsException
-  {
+      throws EFapsException {
     ConnectionResource rsrc = null;
     try {
       final Context context = Context.getThreadContext();
@@ -264,7 +254,7 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
           throw new EFapsException(getClass(), "assignInDb.NotInserted",
               _jaasSystem.getName(), _object.getName(), getName());
         }
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOG.error("could not execute '"
             + cmd.toString()
             + "' to assign user object '"
@@ -276,18 +266,17 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
             + "' ", e);
         throw new EFapsException(getClass(), "assignInDb.SQLException", e, cmd
             .toString(), getName());
-      }
-      finally {
+      } finally {
         try {
           if (stmt != null) {
             stmt.close();
           }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
+          LOG.error("Could not close a statement.", e);
         }
       }
       rsrc.commit();
-    }
-    finally {
+    } finally {
       if ((rsrc != null) && rsrc.isOpened()) {
         rsrc.abort();
       }
@@ -297,20 +286,18 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
   /**
    * Unassign this user object from the given user object for given JAAS system.
    *
-   * @param _unassignType
-   *                type used to unassign (in other words the relationship type)
-   * @param _jaasSystem
-   *                JAAS system for which this user object is unassigned from
-   *                given object
-   * @param _object
-   *                user object from which this user object is unassigned
-   * @throws EFapsException
-   *                 if unassignment could not be done
+   * @param _unassignType   type used to unassign (in other words the
+   *                        relationship type)
+   * @param _jaasSystem     JAAS system for which this user object is unassigned
+   *                        from given object
+   * @param _object         user object from which this user object is
+   *                        unassigned
+   * @throws EFapsException if unassignment could not be done
    */
   protected void unassignFromUserObjectInDb(final Type _unassignType,
                                             final JAASSystem _jaasSystem,
                                             final AbstractUserObject _object)
-                                                                             throws EFapsException {
+    throws EFapsException {
 
     ConnectionResource rsrc = null;
     try {
@@ -327,7 +314,7 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
         stmt = rsrc.getConnection().createStatement();
         stmt.executeUpdate(cmd.toString());
 
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOG.error("could not execute '"
             + cmd.toString()
             + "' to unassign user object '"
@@ -340,19 +327,17 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
         throw new EFapsException(getClass(),
             "unassignFromUserObjectInDb.SQLException", e, cmd.toString(),
             getName());
-      }
-      finally {
+      } finally {
         try {
           if (stmt != null) {
             stmt.close();
           }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
+          LOG.error("Could not close a statement.", e);
         }
       }
-
       rsrc.commit();
-    }
-    finally {
+    } finally {
       if ((rsrc != null) && rsrc.isOpened()) {
         rsrc.abort();
       }
@@ -363,34 +348,44 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
 
   /**
    * Returns for given parameter <i>_id</i> the instance of class
-   * {@link AbstractUserObject}.
+   * {@link AbstractUserObject}. The returned AbstractUserObject can be a
+   * {@link Person}, {@link Role} or {@link Group}. The method first searches
+   * for a Person, if not found for a Role and if again not found for a Group.
    *
-   * @param _id
-   *                id to search in the cache
+   * @param _id       id to search in the cache
    * @return instance of class {@link AbstractUserObject}
+   * @throws EFapsException on error
    */
-  static public AbstractUserObject getUserObject(final long _id)
-                                                                throws Exception {
-    AbstractUserObject ret = Role.get(_id);
+  public static AbstractUserObject getUserObject(final long _id)
+      throws EFapsException {
+    AbstractUserObject ret = Person.get(_id);
     if (ret == null) {
-      ret = Person.get(_id);
+      ret = Role.get(_id);
+    }
+    if (ret == null) {
+      ret = Group.get(_id);
     }
     return ret;
   }
 
   /**
    * Returns for given parameter <i>_name</i> the instance of class
-   * {@link AbstractUserObject}.
+   * {@link AbstractUserObject}.The returned AbstractUserObject can be a
+   * {@link Person}, {@link Role} or {@link Group}. The method first searches
+   * for a Person, if not found for a Role and if again not found for a Group.
    *
-   * @param _name
-   *                name to search in the cache
+   * @param _name   name to search in the cache
    * @return instance of class {@link AbstractUserObject}
+   * @throws EFapsException on error
    */
-  static public AbstractUserObject getUserObject(final String _name)
-                                                                    throws Exception {
-    AbstractUserObject ret = Role.get(_name);
+  public static AbstractUserObject getUserObject(final String _name)
+      throws EFapsException {
+    AbstractUserObject ret = Person.get(_name);
     if (ret == null) {
-      ret = Person.get(_name);
+      ret = Role.get(_name);
+    }
+    if (ret == null) {
+      ret = Group.get(_name);
     }
     return ret;
   }
@@ -414,6 +409,11 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
     this.status = _status;
   }
 
+  /**
+   * Method to set the status of a UserObject in the eFaps Database.
+   * @param _status status to set
+   * @throws EFapsException on error
+   */
   protected void setStatusInDB(final boolean _status) throws EFapsException {
     ConnectionResource rsrc = null;
     try {
@@ -438,7 +438,7 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
           throw new EFapsException(getClass(), "setStatusInDB.NotUpdated", cmd
               .toString(), getName());
         }
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOG.error("could not execute '"
             + cmd.toString()
             + "' to update status information for person '"
@@ -446,20 +446,18 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
             + "'", e);
         throw new EFapsException(getClass(), "setStatusInDB.SQLException", e,
             cmd.toString(), getName());
-      }
-      finally {
+      } finally {
         try {
           if (stmt != null) {
             stmt.close();
           }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
           throw new EFapsException(getClass(), "setStatusInDB.SQLException", e,
               cmd.toString(), getName());
         }
       }
       rsrc.commit();
-    }
-    finally {
+    } finally {
       if ((rsrc != null) && rsrc.isOpened()) {
         rsrc.abort();
       }
