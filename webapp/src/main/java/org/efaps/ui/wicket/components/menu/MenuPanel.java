@@ -37,36 +37,47 @@ import org.efaps.ui.wicket.models.objects.UISearchItem;
  */
 public class MenuPanel extends Panel {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
-  public MenuPanel(final String _id, final IModel<?> _model) {
-    this(_id, _model, null);
+  /**
+   * Constructor.
+   *
+   * @param _wicketId     wicket id for the component
+   * @param _model        model for this component
+   */
+  public MenuPanel(final String _wicketId, final IModel<?> _model) {
+    this(_wicketId, _model, null);
   }
 
-  public MenuPanel(final String _id, final IModel<?> _model,
+  /**
+   * Constructor.
+   *
+   * @param _wicketId       wicket id for this component
+   * @param _model    model for this component
+   * @param _form     form
+   */
+  public MenuPanel(final String _wicketId, final IModel<?> _model,
                    final FormContainer _form) {
-    super(_id,  _model);
+    super(_wicketId,  _model);
 
     final AbstractUIObject model = (AbstractUIObject) _model.getObject();
 
-    if (model.getCommand().getTargetMenu() != null) {
-      final MenuContainer menu =
-          new MenuContainer("eFapsMenu", new MenuItemModel(new UIMenuItem(model.getCommand()
-              .getTargetMenu().getUUID(), model.getOid())), _form);
-      add(menu);
-    } else if (model.getMode() == TargetMode.SEARCH
+    if (model.getMode() == TargetMode.SEARCH
         && model.getCallingCommandUUID() != null) {
-      final MenuContainer menu =
-          new MenuContainer("eFapsMenu", new MenuItemModel(new UISearchItem(model
-              .getCallingCommand().getTargetSearch().getUUID())), _form);
-
+      final MenuContainer menu = new MenuContainer("eFapsMenu",
+          new MenuItemModel(new UISearchItem(model.getCallingCommand()
+              .getTargetSearch().getUUID())), _form);
+      add(menu);
+    } else if (model.getCommand().getTargetMenu() != null) {
+      final MenuContainer menu = new MenuContainer("eFapsMenu",
+          new MenuItemModel(new UIMenuItem(model.getCommand().getTargetMenu()
+              .getUUID(), model.getOid())), _form);
       add(menu);
     } else {
       add(new WebMarkupContainer("eFapsMenu"));
     }
-
   }
-
-
-
 }
