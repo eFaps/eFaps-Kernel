@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,13 @@ package org.efaps.ui.wicket.components.menu;
 import java.util.Iterator;
 
 import org.apache.wicket.PageMap;
-import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.string.CssUtils;
 import org.apache.wicket.util.string.JavascriptUtils;
+
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
@@ -43,112 +42,125 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
+ * Class is responsible to render the Menu for eFaps.
  * @author tmo
  * @author jmox
  * @version $Id:MenuContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class MenuContainer extends AbstractParentMarkupContainer {
 
+  /**
+   * Content reference to the theme java script.
+   */
+  public static final EFapsContentReference THEME
+                  = new EFapsContentReference(MenuContainer.class, "theme.js");
+
+  /**
+   * Content reference to the EFapsExtension java script.
+   */
+  public static final EFapsContentReference EFAPSEXTENSION
+          = new EFapsContentReference(MenuContainer.class, "EFapsExtension.js");
+
+  /**
+   * Content reference to the EFapsMenu stylesheet.
+   */
+   public static final EFapsContentReference CSS
+             = new EFapsContentReference(MenuContainer.class, "EFapsMenu.css");
+   /**
+   * Content reference to the an image.
+   */
+   public static final EFapsContentReference IMG_BLANK
+                 = new EFapsContentReference(MenuContainer.class, "blank.gif");
+
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
-  public static final EFapsContentReference THEME =
-      new EFapsContentReference(MenuContainer.class, "theme.js");
 
-  public static final EFapsContentReference EFAPSEXTENSION =
-      new EFapsContentReference(MenuContainer.class, "EFapsExtension.js");
-
-  public static final EFapsContentReference CSS =
-      new EFapsContentReference(MenuContainer.class, "theme.css");
-
-  public static final EFapsContentReference IMG_BLANK =
-      new EFapsContentReference(MenuContainer.class, "blank.gif");
-
-  private static String HEADER_RESOURCE =
-      CssUtils.INLINE_OPEN_TAG
-          + "span.eFapsMenuLabel  {\n "
-          + "  vertical-align: middle;\n "
-          + "}\n"
-          + "img.eFapsMenuMainImage {\n"
-          + "   padding-left: 2px;\n"
-          + "   vertical-align: bottom;\n"
-          + "   width: 16px;\n"
-          + "   height: 16px;\n"
-          + "}\n"
-          + "img.eFapsMenuMainBlankImage  {\n"
-          + "  vertical-align: bottom;\n"
-          + "  width: 2px;\n"
-          + "  height: 16px;\n "
-          + "}\n"
-          + "img.eFapsMenuSubImage {\n"
-          + " vertical-align: bottom;\n"
-          + "  width: 16px;\n"
-          + "  height: 16px;"
-          + "\n}\n"
-          + CssUtils.INLINE_CLOSE_TAG;
-
+  /**
+   * Variable stores the form, so it can be accessed by links.
+   */
   private final FormContainer form;
 
+  /**
+   * Counter for the children of this menu.
+   */
   private Integer childID = 0;
 
-  public MenuContainer(final String _id, final IModel<?> _model) {
-    this(_id, _model, null);
+  /**
+   * Constructor.
+   *
+   * @param _wicketId     wicket id
+   * @param _model        model of this component
+   */
+  public MenuContainer(final String _wicketId, final IModel<?> _model) {
+    this(_wicketId, _model, null);
   }
 
-  public MenuContainer(final String _id, final IModel<?> _model,
+  /**
+   * Constructor.
+   *
+   * @param _wicketId     wicket id
+   * @param _model        model of this component
+   * @param _form         form
+   */
+  public MenuContainer(final String _wicketId, final IModel<?> _model,
                        final FormContainer _form) {
-    super(_id, _model);
+    super(_wicketId, _model);
     this.form = _form;
-    add(new StringHeaderContributor(HEADER_RESOURCE));
     add(StaticHeaderContributor.forCss(CSS));
     add(StaticHeaderContributor.forJavaScript(EFAPSEXTENSION));
     add(StaticHeaderContributor.forJavaScript(THEME));
 
-    initialise();
-  }
-
-  private void initialise() {
     final UIMenuItem model = (UIMenuItem) super.getDefaultModelObject();
     for (final UIMenuItem menuItem : model.getChilds()) {
       addLink(menuItem);
     }
   }
 
+  /**
+   * Method to get a new wicket id for a child of this menu.
+   *
+   * @return new id
+   */
   private String getNewChildId() {
     return "ItemLink" + (this.childID++).toString();
   }
 
+  /**
+   * Recursive method to dd a Link or a child to one Item in the Menu.
+   *
+   * @param _menuItem   menu item to add
+   */
   private void addLink(final UIMenuItem _menuItem) {
     final MenuItemModel model = new MenuItemModel(_menuItem);
+    // if we have no more childs we add a lnk
     if (!_menuItem.hasChilds()) {
       if (_menuItem.getTarget() != Target.UNKNOWN) {
         if (_menuItem.getTarget() == Target.MODAL) {
-          final AjaxOpenModalComponent item =
-              new AjaxOpenModalComponent(getNewChildId(), model);
+          final AjaxOpenModalComponent item = new AjaxOpenModalComponent(
+              getNewChildId(), model);
           this.add(item);
         } else {
-          final StandardLink item =
-              new StandardLink(getNewChildId(), model);
+          final StandardLink item = new StandardLink(getNewChildId(), model);
           this.add(item);
         }
       } else {
         if (_menuItem.getCommand().isSubmit()) {
-          final AjaxSubmitComponent item =
-              new AjaxSubmitComponent(getNewChildId(), new MenuItemModel(_menuItem),
-                  this.form);
+          final AjaxSubmitComponent item = new AjaxSubmitComponent(
+              getNewChildId(), new MenuItemModel(_menuItem), this.form);
           this.add(item);
         } else if (super.getDefaultModelObject() instanceof UISearchItem) {
 
-          final SearchLink item =
-              new SearchLink(getNewChildId(), new MenuItemModel(_menuItem));
+          final SearchLink item = new SearchLink(getNewChildId(),
+              new MenuItemModel(_menuItem));
           this.add(item);
 
         }
       }
-    } else if (_menuItem.getCommand().hasEvents(
-        EventType.UI_COMMAND_EXECUTE)) {
-
-      final StandardLink item =
-          new StandardLink(getNewChildId(), model);
+    } else if (_menuItem.getCommand().hasEvents(EventType.UI_COMMAND_EXECUTE)) {
+      final StandardLink item = new StandardLink(getNewChildId(), model);
       this.add(item);
     }
     if (_menuItem.getReference() != null) {
@@ -157,20 +169,23 @@ public class MenuContainer extends AbstractParentMarkupContainer {
         this.add(new LogOutLink(getNewChildId(), model));
       }
     }
+    //add the children
     for (final UIMenuItem childs : _menuItem.getChilds()) {
       addLink(childs);
     }
   }
 
+  /**
+   * Before rendering the urls of all items must be evaluated.
+   */
   @Override
   protected void onBeforeRender() {
-
     final Iterator<?> childs = this.iterator();
     while (childs.hasNext()) {
       final Object child = childs.next();
       if (child instanceof StandardLink) {
         final StandardLink item = (StandardLink) child;
-        final UIMenuItem childModel = (UIMenuItem) item.getModelObject();
+        final UIMenuItem childModel = item.getModelObject();
 
         String url = (String) item.urlFor(ILinkListener.INTERFACE);
         if (childModel.getTarget() == Target.POPUP) {
@@ -184,27 +199,18 @@ public class MenuContainer extends AbstractParentMarkupContainer {
           final String tmp = popup.getPopupJavaScript().replaceAll("'", "\"");
           url = "javascript:" + tmp.replace("return false;", "");
         }
-
         childModel.setURL(url);
-
-      } else if (child instanceof AjaxOpenModalComponent) {
-        final AjaxOpenModalComponent item = (AjaxOpenModalComponent) child;
+      } else if (child instanceof AbstractMenuItemAjaxComponent) {
+        final AbstractMenuItemAjaxComponent item
+                                        = (AbstractMenuItemAjaxComponent) child;
         final UIMenuItem childModel = (UIMenuItem) item.getDefaultModelObject();
 
         final String url = item.getJavaScript();
-
         childModel.setURL(url);
 
-      } else if (child instanceof AjaxSubmitComponent) {
-        final AjaxSubmitComponent item = (AjaxSubmitComponent) child;
-        final UIMenuItem childModel = (UIMenuItem) item.getDefaultModelObject();
-
-        final String url = item.getJavaScript();
-
-        childModel.setURL(url);
       } else if (child instanceof SearchLink) {
         final SearchLink item = (SearchLink) child;
-        final UIMenuItem childModel = (UIMenuItem) item.getModelObject();
+        final UIMenuItem childModel = item.getModelObject();
 
         final String url = (String) item.urlFor(ILinkListener.INTERFACE);
 
@@ -214,16 +220,26 @@ public class MenuContainer extends AbstractParentMarkupContainer {
     }
     super.onBeforeRender();
   }
-
+  /**
+   * On the tag of the component the script must be rendered.
+   * @param _markupStream markup stream
+   * @param _openTag      tag
+   */
   @Override
   protected void onComponentTagBody(final MarkupStream _markupStream,
                                     final ComponentTag _openTag) {
 
     super.replaceComponentTagBody(_markupStream, _openTag,
-        convertToHtml(_openTag));
+        convert2Html(_openTag));
   }
 
-  public String convertToHtml(final ComponentTag _openTag) {
+  /**
+   * Method to convert all menu items to html code.
+   *
+   * @param _openTag  tag to be used
+   * @return  String with valid html code
+   */
+  private String convert2Html(final ComponentTag _openTag) {
     final CharSequence id = _openTag.getString("id");
 
     final UIMenuItem model = (UIMenuItem) super.getDefaultModelObject();
@@ -234,20 +250,28 @@ public class MenuContainer extends AbstractParentMarkupContainer {
         .append("=[");
 
     for (final UIMenuItem menuItem : model.getChilds()) {
-      convertToHtml(menuItem, html, true, new StringBuilder());
+      convertItem2Html(menuItem, html, true, new StringBuilder());
       html.append(",\n");
     }
 
     html.append("];").append("cmDraw ('").append(id).append("', ").append(id)
-        .append(", 'hbr', cmThemeOffice);").append(
-            JavascriptUtils.SCRIPT_CLOSE_TAG);
+        .append(", 'hbr', cmThemeOffice);")
+        .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
 
     return html.toString();
   }
 
-  public void convertToHtml(final UIMenuItem _menuItem,
-                            final StringBuilder _html, final boolean _isMain,
-                            final StringBuilder _prefix) {
+  /**
+   * Recursive method to render one item.
+   * @param _menuItem   menu item to be rendered
+   * @param _html       html to be appended to
+   * @param _isMain     is this the first item or a recursive call
+   * @param _prefix     prefix for an item
+   */
+  private void convertItem2Html(final UIMenuItem _menuItem,
+                             final StringBuilder _html,
+                             final boolean _isMain,
+                             final StringBuilder _prefix) {
 
     _html.append("['");
     if (_menuItem.getImage() != null) {
@@ -284,8 +308,8 @@ public class MenuContainer extends AbstractParentMarkupContainer {
     _html.append("'");
     for (final UIMenuItem menuItem : _menuItem.getChilds()) {
       _html.append("\n").append(_prefix).append("  ,");
-      convertToHtml(menuItem, _html, false, new StringBuilder(_prefix)
-          .append("  "));
+      convertItem2Html(menuItem, _html, false,
+                    new StringBuilder(_prefix).append("  "));
     }
     _html.append("]");
   }

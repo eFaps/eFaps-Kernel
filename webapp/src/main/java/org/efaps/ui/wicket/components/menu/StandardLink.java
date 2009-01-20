@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,57 +43,82 @@ import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
 
 /**
+ * Class renderes a standart link for the menu.
+ *
  * @author jmox
  * @version $Id$
  */
 public class StandardLink extends AbstractMenuItemLink {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
-  public StandardLink(String _id, final IModel<UIMenuItem> _model) {
-    super(_id, _model);
+  /**
+   * Constructor.
+   *
+   * @param _wicketId     wicket id of this component
+   * @param _model  model for this component
+   */
+  public StandardLink(final String _wicketId, final IModel<UIMenuItem> _model) {
+    super(_wicketId, _model);
   }
 
+  /**
+   * On click it is evaluated what must be responded.
+   */
   @Override
   public void onClick() {
-    final UIMenuItem model = (UIMenuItem) super.getModelObject();
+    final UIMenuItem model = super.getModelObject();
 
     final AbstractCommand command = model.getCommand();
+
+    // in case of popup store the opener model in the session
     if (command.getTarget() == Target.POPUP) {
-      ((EFapsSession) this.getSession()).setOpenerModel(this.getPage()
-          .getDefaultModel());
+      ((EFapsSession) getSession()).setOpenerModel(getPage().getDefaultModel());
     }
-    final PageParameters para =
-        new PageParameters("command=" + command.getUUID());
+
+    final PageParameters para = new PageParameters();
+    para.add("command", command.getUUID().toString());
     para.add("oid", model.getOid());
+
     if (command.getTargetTable() != null) {
       if (command.getProperty("TargetStructurBrowserField") != null) {
-        final InlineFrame iframe =
-            new InlineFrame(MainPage.IFRAME_WICKETID, PageMap
-                .forName(MainPage.IFRAME_PAGEMAP_NAME),
-                StructurBrowserPage.class, para);
-        this.getPage().addOrReplace(iframe);
+        final InlineFrame iframe
+            = new InlineFrame(MainPage.IFRAME_WICKETID,
+                              PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
+                              StructurBrowserPage.class,
+                              para);
+        getPage().addOrReplace(iframe);
       } else {
-        if (this.getPage() instanceof MainPage) {
-          final InlineFrame iframe =
-              new InlineFrame(MainPage.IFRAME_WICKETID, PageMap
-                  .forName(MainPage.IFRAME_PAGEMAP_NAME), TablePage.class, para);
+        if (getPage() instanceof MainPage) {
+          final InlineFrame iframe
+              = new InlineFrame(MainPage.IFRAME_WICKETID,
+                                PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
+                                TablePage.class,
+                                para);
 
-          this.getPage().addOrReplace(iframe);
+          getPage().addOrReplace(iframe);
         } else {
-          this.setResponsePage(TablePage.class, para);
+          final TablePage table = new TablePage(para,
+                                           getPopupSettings().getPageMap(null));
+          setResponsePage(table);
         }
       }
     } else if (command.getTargetForm() != null
         || command.getTargetSearch() != null) {
-      if (this.getPage() instanceof MainPage
-          && command.getTargetSearch() == null) {
-        final InlineFrame iframe =
-            new InlineFrame(MainPage.IFRAME_WICKETID, PageMap
-                .forName(MainPage.IFRAME_PAGEMAP_NAME), FormPage.class, para);
+      if (getPage() instanceof MainPage && command.getTargetSearch() == null) {
+        final InlineFrame iframe
+              = new InlineFrame(MainPage.IFRAME_WICKETID,
+                                PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
+                                FormPage.class,
+                                para);
         this.getPage().addOrReplace(iframe);
       } else {
-        this.setResponsePage(FormPage.class, para);
+        final FormPage formpage
+                = new FormPage(para, null, getPopupSettings().getPageMap(null));
+        setResponsePage(formpage);
       }
     } else {
       try {
@@ -104,17 +129,13 @@ public class StandardLink extends AbstractMenuItemLink {
             getRequestCycle().setRequestTarget(
                 new FileRequestTarget((File) object));
           }
-
         }
-
       } catch (final EFapsException e) {
         throw new RestartResponseException(new ErrorPage(e));
       }
       if ("true".equals(command.getProperty("NoUpdateAfterCOMMAND"))) {
-        this.getRequestCycle().setRequestTarget(null);
+        getRequestCycle().setRequestTarget(null);
       }
-
     }
-
   }
 }
