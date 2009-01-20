@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,7 @@ import org.efaps.util.EFapsException;
  * @author tmo
  * @version $Id$
  */
-public class Context implements INamingBinds
-{
+public final class Context implements INamingBinds {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
@@ -81,7 +80,7 @@ public class Context implements INamingBinds
   private static AbstractDatabase DBTYPE = null;
 
   /**
-   *
+   * Datasource.
    */
   private static DataSource DATASOURCE = null;
 
@@ -95,7 +94,8 @@ public class Context implements INamingBinds
   static  {
     try {
       final InitialContext initCtx = new InitialContext();
-      final javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
+      final javax.naming.Context envCtx
+                      = (javax.naming.Context) initCtx.lookup("java:comp/env");
 
       DBTYPE = (AbstractDatabase) envCtx.lookup(RESOURCE_DBTYPE);
       DATASOURCE = (DataSource) envCtx.lookup(RESOURCE_DATASOURCE);
@@ -136,6 +136,9 @@ public class Context implements INamingBinds
   private final Stack<ConnectionResource> connectionStack
                                       = new Stack<ConnectionResource>();
 
+  /**
+   * Transaction for the context.
+   */
   private final Transaction transaction;
 
   /**
@@ -181,7 +184,8 @@ public class Context implements INamingBinds
    * @see #getRequestAttribute
    * @see #setRequestAttribute
    */
-  private final Map<String, Object> requestAttributes = new HashMap<String, Object>();
+  private final Map<String, Object> requestAttributes
+                                                = new HashMap<String, Object>();
 
   /**
    * A map to be able to set attributes with a lifetime of a session (e.g. as
@@ -193,27 +197,39 @@ public class Context implements INamingBinds
    */
   private Map<String, Object> sessionAttributes = new HashMap<String, Object>();
 
+  /**
+   * Holds the timezone belonging to the user of this context.
+   */
   private DateTimeZone timezone;
 
+  /**
+   * Holds the locale belonging to the user of this context.
+   */
   private Locale locale;
 
+  /**
+   * Holds the chronology belonging to the user of this context.
+   */
   private Chronology chronology;
 
-  /////////////////////////////////////////////////////////////////////////////
-  // constructors / destructors
 
   /**
-   * Constructor for
+   * Private Constructor.
+   * @see #begin(String, Locale, Map, Map, Map)
    *
-   * @see #person
-   * @see #locale
+   * @param _transaction        Transaction to be used in this context
+   * @param _locale             Locale to be used in this context
+   * @param _sessionAttributes  attributes belonging to this session
+   * @param _parameters         parameters beloonging to this session
+   * @param _fileParameters     paramters for file up/download
+   * @throws EFapsException on error
    */
   private Context(final Transaction _transaction,
                   final Locale _locale,
                   final Map<String, Object> _sessionAttributes,
                   final Map<String, String[]> _parameters,
                   final Map<String, FileParameter> _fileParameters)
-                                                      throws EFapsException  {
+    throws EFapsException  {
 
     this.transaction = _transaction;
 
@@ -226,14 +242,13 @@ public class Context implements INamingBinds
     this.sessionAttributes = (_sessionAttributes == null)
                               ? new HashMap<String, Object>()
                               : _sessionAttributes;
-try  {
-    setConnection(DATASOURCE.getConnection());
-  getConnection().setAutoCommit(true);
-} catch (final SQLException e)  {
-  LOG.error("could not get a sql connection", e);
-// TODO: LOG + Exception
-e.printStackTrace();
-}
+    try  {
+      setConnection(DATASOURCE.getConnection());
+      getConnection().setAutoCommit(true);
+    } catch (final SQLException e)  {
+      LOG.error("could not get a sql connection", e);
+      // TODO: LOG + Exception
+    }
   }
 
 
@@ -241,19 +256,20 @@ e.printStackTrace();
    * Destructor of class <code>Context</code>.
    */
   @Override
-  public final void finalize()  {
+  public void finalize()  {
     if (LOG.isDebugEnabled())  {
       LOG.debug("finalize context for " + this.person);
       LOG.debug("connection is " + getConnection());
     }
-    try  {
-      getConnection().close();
-    } catch (final Exception e)  {
+
+    if (this.connection != null) {
+      try {
+        this.connection.close();
+      } catch (final SQLException e) {
+        LOG.error("could not close a sql connection", e);
+      }
     }
   }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance methods
 
   /**
    * The method tests if all resources (JDBC connection and store resources)
@@ -298,10 +314,14 @@ e.printStackTrace();
       LOG.debug("close context for " + this.person);
       LOG.debug("connection is " + getConnection());
     }
-    try  {
-      getConnection().close();
-    } catch (final Exception e)  {
+    if (this.connection != null) {
+      try {
+        this.connection.close();
+      } catch (final SQLException e) {
+        LOG.error("could not close a sql connection", e);
+      }
     }
+
     setConnection(null);
     if ((THREADCONTEXT.get() != null) && (THREADCONTEXT.get() == this))  {
       THREADCONTEXT.set(null);
@@ -322,7 +342,9 @@ e.printStackTrace();
 
 
   /**
+   *  Method to abort the transaction.
    *
+   *  @throws EFapsException if setting of rollback was not successfully
    */
   public void abort() throws EFapsException  {
     try  {
@@ -338,25 +360,23 @@ e.printStackTrace();
    * returned.
    *
    * @return opened connection resource
+   * @throws EFapsException if connection resource cannot be created
    */
   public ConnectionResource getConnectionResource() throws EFapsException  {
     ConnectionResource con = null;
 
     if (this.connectionStack.isEmpty())  {
-try  {
-      con = new ConnectionResource(this, DATASOURCE.getConnection());
-} catch (final SQLException e)  {
-e.printStackTrace();
-  throw new EFapsException(getClass(), "getConnectionResource.SQLException", e);
-}
+      try  {
+        con = new ConnectionResource(this, DATASOURCE.getConnection());
+      } catch (final SQLException e)  {
+        throw new EFapsException(getClass(),
+                                 "getConnectionResource.SQLException", e);
+      }
       this.connectionStore.add(con);
     } else  {
       con = this.connectionStack.pop();
     }
-
     con.open();
-//System.out.println("getConnectionResource.con="+con);
-
     return con;
   }
 
@@ -372,25 +392,38 @@ e.printStackTrace();
   }
 
   /**
+   * Method to get the sore resource.
+   *
+   * @param _instance Instance to get the StoreResource for
+   * @throws EFapsException on error
+   * @return StoreResource
    * @see #getStoreResource(Type,long)
    */
-  public StoreResource getStoreResource(final Instance _instance) throws EFapsException  {
+  public StoreResource getStoreResource(final Instance _instance)
+      throws EFapsException {
     return getStoreResource(_instance.getType(), _instance.getId());
   }
 
   /**
+   * Method to get the sore resource.
    *
+   * @param _type     Type to get the StoreResource for
+   * @param _fileId   Id to get the StoreResource for
+   * @throws EFapsException on error
+   * @return StoreResource
+   * @see #getStoreResource(Type,long)
    */
-  public StoreResource getStoreResource(final Type _type, final long _fileId) throws EFapsException  {
+  public StoreResource getStoreResource(final Type _type, final long _fileId)
+      throws EFapsException {
     StoreResource storeRsrc = null;
 
-// TODO: dynamic class loading instead of hard coded store resource name
-final String provider  = _type.getProperty("StoreResource");
-if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
-  storeRsrc = new JDBCStoreResource(this, _type, _fileId);
-} else  {
-  storeRsrc = new VFSStoreResource(this, _type, _fileId);
-}
+    // TODO: dynamic class loading instead of hard coded store resource name
+    final String provider  = _type.getProperty("StoreResource");
+    if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
+      storeRsrc = new JDBCStoreResource(this, _type, _fileId);
+    } else  {
+      storeRsrc = new VFSStoreResource(this, _type, _fileId);
+    }
     storeRsrc.open();
     this.storeStore.add(storeRsrc);
     return storeRsrc;
@@ -415,7 +448,10 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
   }
 
   /**
+   * Method to get a parameter from the context.
    *
+   * @param _key Key for the parameter
+   * @return  String value of the parameter
    */
   public String getParameter(final String _key)  {
     String value = null;
@@ -475,8 +511,9 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * attributes. If the request attributes previously contained a mapping for
    * this key, the old value is replaced by the specified value.
    *
-   * @param _key    key name of the attribute to set
-   * @return
+   * @param _key      key name of the attribute to set
+   * @param _value    _value of the attribute to set
+   * @return Object
    * @see #requestAttributes
    * @see #containsRequestAttribute
    * @see #getRequestAttribute
@@ -532,8 +569,9 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * attributes. If the session attributes previously contained a mapping for
    * this key, the old value is replaced by the specified value.
    *
-   * @param _key    key name of the attribute to set
-   * @return
+   * @param _key      key name of the attribute to set
+   * @param _value    value of the attribute to set
+   * @return Object
    * @see #sessionAttributes
    * @see #containsSessionAttribute
    * @see #getSessionAttribute
@@ -543,19 +581,18 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
   }
 
   /**
-   * This method retriefs a UserAttribute of the Person this Context belongs to.
-   * The UserAttributes are stored in the {@link #sessionAttributes} Map,
+   * This method retrieves a UserAttribute of the Person this Context belongs
+   * to. The UserAttributes are stored in the {@link #sessionAttributes} Map,
    * therefore are thought to be valid for one session.
    *
-   * @param _key
-   *                key to Search for
+   * @param _key  key to Search for
    * @return String with the value
-   * @throws EFapsException
+   * @throws EFapsException on error
    */
   public String getUserAttribute(final String _key) throws EFapsException {
     if (containsSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)) {
-      return ((UserAttributesSet) getSessionAttribute(UserAttributesSet.CONTEXTMAPKEY))
-          .getString(_key);
+      return ((UserAttributesSet) getSessionAttribute(
+                            UserAttributesSet.CONTEXTMAPKEY)).getString(_key);
     } else {
       throw new EFapsException(Context.class,
           "getUserAttribute.NoSessionAttribute");
@@ -567,15 +604,16 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * to exists.The UserAttributes are stored in the {@link #sessionAttributes}
    * Map, therefore are thought to be valid for one session.
    *
-   * @param _key
-   *                key to Search for
+   * @param _key key to Search for
    * @return true if found, else false
-   * @throws EFapsException
+   *
+   * @throws EFapsException on error
    */
-  public boolean containsUserAttribute(final String _key) throws EFapsException {
+  public boolean containsUserAttribute(final String _key)
+      throws EFapsException {
     if (containsSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)) {
-      return ((UserAttributesSet) getSessionAttribute(UserAttributesSet.CONTEXTMAPKEY))
-          .containsKey(_key);
+      return ((UserAttributesSet) getSessionAttribute(
+                          UserAttributesSet.CONTEXTMAPKEY)).containsKey(_key);
     } else {
       throw new EFapsException(Context.class,
           "getUserAttribute.NoSessionAttribute");
@@ -583,30 +621,38 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
   }
 
   /**
-   * set a new UserAttribute for the UserAttribute of the Person this
+   * Set a new UserAttribute for the UserAttribute of the Person this
    * Context.The UserAttributes are stored in the {@link #sessionAttributes}
    * Map, therefore are thought to be valid for one session.
    *
-   * @param _key
-   *                Key of the UserAttribute
-   * @param _value
-   *                Value of the UserAttribute
-   * @throws EFapsException
+   * @param _key    Key of the UserAttribute
+   * @param _value  Value of the UserAttribute
+   * @throws EFapsException on error
    */
   public void setUserAttribute(final String _key, final String _value)
-                                                                      throws EFapsException {
+      throws EFapsException {
     if (containsSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)) {
-      ((UserAttributesSet) getSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)).set(
-          _key, _value);
+      ((UserAttributesSet) getSessionAttribute(
+          UserAttributesSet.CONTEXTMAPKEY)).set(_key, _value);
     } else {
       throw new EFapsException(Context.class,
           "getUserAttributes.NoSessionAttribute");
     }
   }
 
+  /**
+   * Set a new UserAttribute for the UserAttribute of the Person this
+   * Context.The UserAttributes are stored in the {@link #sessionAttributes}
+   * Map, therefore are thought to be valid for one session.
+   *
+   * @param _key          Key of the UserAttribute
+   * @param _value        Value of the UserAttribute
+   * @param _definition   Definition
+   * @throws EFapsException on error
+   */
   public void setUserAttribute(final String _key, final String _value,
                                final UserAttributesDefinition _definition)
-                                                                          throws EFapsException {
+    throws EFapsException {
     if (containsSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)) {
       ((UserAttributesSet) getSessionAttribute(UserAttributesSet.CONTEXTMAPKEY))
           .set(_key, _value, _definition);
@@ -618,9 +664,15 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
 
 
 
+  /**
+   * Method to get the UserAttributesSet of the user of this context.
+   * @return UserAttributesSet
+   * @throws EFapsException on error
+   */
   public UserAttributesSet getUserAttributes() throws EFapsException {
     if (containsSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)) {
-      return (UserAttributesSet) getSessionAttribute(UserAttributesSet.CONTEXTMAPKEY);
+      return (UserAttributesSet) getSessionAttribute(
+                                              UserAttributesSet.CONTEXTMAPKEY);
     } else {
       throw new EFapsException(Context.class,
           "getUserAttributes.NoSessionAttribute");
@@ -637,7 +689,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * @see #connection
    * @see #setConnection
    */
-  public final Connection getConnection()  {
+  public Connection getConnection()  {
     return this.connection;
   }
 
@@ -658,7 +710,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * @return value of instance variable {@link #transaction}
    * @see #transaction
    */
-  public final Transaction getTransaction()  {
+  public Transaction getTransaction()  {
     return this.transaction;
   }
 
@@ -668,7 +720,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * @return value of instance variable {@link #person}
    * @see #person
    */
-  public final Person getPerson()  {
+  public Person getPerson()  {
     return this.person;
   }
 
@@ -678,15 +730,27 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * @return value of instance variable {@link #locale}
    * @see #locale
    */
-  public final Locale getLocale() {
+  public Locale getLocale() {
     return this.locale;
   }
 
-  public final DateTimeZone getTimezone() {
+  /**
+   * This is the getter method for instance variable {@link #timezone}.
+   *
+   * @return value of instance variable {@link #timezone}
+   * @see #timezone
+   */
+  public DateTimeZone getTimezone() {
     return this.timezone;
   }
 
-  public final Chronology getChronology() {
+  /**
+   * This is the getter method for instance variable {@link #chronology}.
+   *
+   * @return value of instance variable {@link #chronology}
+   * @see #locale
+   */
+  public Chronology getChronology() {
     return this.chronology;
   }
 
@@ -696,7 +760,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * @return value of instance variable {@link #parameters}
    * @see #parameters
    */
-  public final Map < String, String[] > getParameters()  {
+  public Map < String, String[] > getParameters()  {
     return this.parameters;
   }
 
@@ -706,12 +770,9 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * @return value of instance variable {@link #fileParameters}
    * @see #fileParameters
    */
-  public final Map<String, FileParameter> getFileParameters()  {
+  public Map<String, FileParameter> getFileParameters()  {
     return this.fileParameters;
   }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // static methods
 
   /**
    * The method checks if for the current thread a context object is defined.
@@ -731,30 +792,39 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
   }
 
   /**
+   * Method to get a new Context.
+   *
    * @see #begin(String, Locale, Map, Map, Map)
+   * @throws EFapsException on error
+   * @return new Context
    */
   public static Context begin() throws EFapsException {
     return begin(null, null, null, null, null);
   }
 
   /**
-   * @todo embed exceptions
+   * Method to get a new Context.
+   *
    * @see #begin(String, Locale, Map, Map, Map)
+   * @param _userName Naem of the user the Context must be created for
+   * @throws EFapsException on error
+   * @return new Context
+   *
    */
   public static Context begin(final String _userName)
-                                           throws EFapsException  {
+    throws EFapsException  {
     return begin(_userName, null, null, null, null);
   }
 
   /**
    * For current thread a new context object must be created.
    *
-   * @param _transaction    transaction of the new thread
-   * @param _userName       name of current user to set
-   * @param _locale         locale instance (which langage settings has the
-   *                        user)
-   * @param _parameters     map with parameters for this thread context
-   * @param _fileParameters map with file parameters
+   * @param _userName           name of current user to set
+   * @param _locale             locale instance (which language settings has the
+   *                            user)
+   * @param _sessionAttributes  attributes for this session
+   * @param _parameters         map with parameters for this thread context
+   * @param _fileParameters     map with file parameters
    * @return new context of thread
    * @throws EFapsException if a new transaction could not be started or
    *                        if current thread context is already set
@@ -787,10 +857,10 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
           "begin.getTransactionSystemException", e);
     }
     final Context context = new Context(transaction,
-                                        (_locale == null) ? Locale.ENGLISH : _locale,
-                                        _sessionAttributes,
-                                        _parameters,
-                                        _fileParameters);
+                                   (_locale == null) ? Locale.ENGLISH : _locale,
+                                   _sessionAttributes,
+                                    _parameters,
+                                    _fileParameters);
     THREADCONTEXT.set(context);
 
     if (_userName != null) {
@@ -806,34 +876,25 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * @throws EFapsException if commit of the transaction manager failed
    * @todo description
    */
-  public static void commit() throws EFapsException  {
-    try  {
+  public static void commit() throws EFapsException {
+    try {
       TRANSMANAG.commit();
     } catch (final IllegalStateException e) {
       throw new EFapsException(Context.class,
-          "commit.IllegalStateException",
-          e);
+                               "commit.IllegalStateException", e);
     } catch (final SecurityException e) {
-      throw new EFapsException(Context.class,
-          "commit.SecurityException",
-          e);
+      throw new EFapsException(Context.class, "commit.SecurityException", e);
     } catch (final HeuristicMixedException e) {
       throw new EFapsException(Context.class,
-          "commit.HeuristicMixedException",
-          e);
+                               "commit.HeuristicMixedException", e);
     } catch (final HeuristicRollbackException e) {
       throw new EFapsException(Context.class,
-          "commit.HeuristicRollbackException",
-          e);
+          "commit.HeuristicRollbackException", e);
     } catch (final RollbackException e) {
-      throw new EFapsException(Context.class,
-          "commit.RollbackException",
-          e);
+      throw new EFapsException(Context.class, "commit.RollbackException", e);
     } catch (final SystemException e) {
-      throw new EFapsException(Context.class,
-          "commit.SystemException",
-          e);
-    } finally  {
+      throw new EFapsException(Context.class, "commit.SystemException", e);
+    } finally {
       getThreadContext().close();
     }
   }
@@ -847,16 +908,13 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
       TRANSMANAG.rollback();
     } catch (final IllegalStateException e)  {
       throw new EFapsException(Context.class,
-          "rollback.IllegalStateException",
-          e);
+                               "rollback.IllegalStateException", e);
     } catch (final SecurityException e)  {
       throw new EFapsException(Context.class,
-          "rollback.SecurityException",
-          e);
+                               "rollback.SecurityException", e);
     } catch (final SystemException e)  {
       throw new EFapsException(Context.class,
-          "rollback.SystemException",
-          e);
+                               "rollback.SystemException", e);
     } finally  {
       getThreadContext().close();
     }
@@ -926,6 +984,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * data model definition is stored).
    *
    * @see #DBTYPE
+   * @return AbstractDatabase
    */
   public static AbstractDatabase getDbType()  {
     return DBTYPE;
@@ -946,23 +1005,23 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
      *
      * @throws IOException if the close failed
      */
-    public abstract void close() throws IOException;
+    void close() throws IOException;
 
     /**
      * Returns the input stream of the file for which this file parameter is
-     * defined
+     * defined.
      *
      * @return input stream of the file
      * @throws IOException if the input stream could not be returned
      */
-    public abstract InputStream getInputStream() throws IOException;
+    InputStream getInputStream() throws IOException;
 
     /**
      * Returns the size of the file for which this file parameter is defined.
      *
      * @return size of file
      */
-    public abstract long getSize();
+    long getSize();
 
     /**
      * Returns the content type of the file for which this file parameter is
@@ -970,7 +1029,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
      *
      * @return content type of the file
      */
-    public abstract String getContentType();
+    String getContentType();
 
     /**
      * Returns the name of the file for which this file parameter is
@@ -978,7 +1037,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
      *
      * @return name of file
      */
-    public abstract String getName();
+    String getName();
 
     /**
      * Returns the name of the parameter for which this file parameter is
@@ -986,7 +1045,6 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
      *
      * @return parameter name
      */
-    public abstract String getParameterName();
+    String getParameterName();
   }
-
 }
