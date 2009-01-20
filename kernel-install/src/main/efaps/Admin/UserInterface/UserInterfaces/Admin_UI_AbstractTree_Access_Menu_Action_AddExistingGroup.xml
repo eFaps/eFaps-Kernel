@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2003-2008 The eFaps Team
+ Copyright 2003 - 2009 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -27,26 +27,24 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>dd4731c9-a441-4405-b725-be872f3d0d87</uuid>
+  <uuid>6488af41-c52f-4c45-b27f-2de89b596736</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_UI_AbstractTree_Access</name>
-    <!-- target definitions -->
+    <name>Admin_UI_AbstractTree_Access_Menu_Action_AddExistingGroup</name>
+    <!-- target definition -->
     <target>
-      <menu>Admin_UI_AbstractTree_Access_Menu</menu>
-      <table>Admin_User_AbstractTable</table>
-      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
-        <property name="Expand">Admin_UI_Access\UILink.UserLink</property>
-      </evaluate>
+      <search>Admin_UI_AbstractTree_Access_Menu_Action_AddExistingGroup_Search</search>
+      <execute program="org.efaps.esjp.common.uisearch.Connect">
+        <property name="ConnectChildAttribute">UserLink</property>
+        <property name="ConnectParentAttribute">UILink</property>
+        <property name="ConnectType">Admin_UI_Access</property>
+      </execute>
     </target>
-    
     <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
-    <property name="TargetShowCheckBoxes">true</property>
+    <property name="Target">popup</property>
   </definition>
 
 </ui-command>
