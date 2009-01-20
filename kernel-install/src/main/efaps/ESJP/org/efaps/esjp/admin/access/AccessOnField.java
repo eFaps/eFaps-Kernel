@@ -70,6 +70,24 @@ public class AccessOnField implements EventExecution {
   }
 
   /**
+   * Method is used to deny access in SearchMode.
+   *
+   * @param _parameter Parameter as passed from eFaps to an esjp
+   * @return Return with True if VIEW, else false
+   */
+  public Return hideOnSearch(final Parameter _parameter) {
+    final TargetMode mode
+                      = (TargetMode) _parameter.get(ParameterValues.ACCESSMODE);
+
+    final Return ret = new Return();
+
+    if (!mode.equals(TargetMode.SEARCH)) {
+      ret.put(ReturnValues.TRUE, true);
+    }
+    return ret;
+  }
+
+  /**
    * Method is used to give access only on VIEWMODE.
    *
    * @param _parameter Parameter as passed from eFaps to an esjp

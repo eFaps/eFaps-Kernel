@@ -150,6 +150,10 @@
       <trigger program="org.efaps.esjp.admin.user.TimeZoneUI" 
                name="Admin_User_PersonForm/TimeZone4Edit" 
                event="UI_FIELD_VALUE"/>
+      <trigger program="org.efaps.esjp.admin.access.AccessOnField" 
+               method="hideOnSearch"
+               name="Admin_User_PersonForm/TimeZone4Edit.UI_ACCESSCHECK" 
+               event="UI_ACCESSCHECK"/>
     </field>
     <field name="Chronology4View">
       <property name="Columns">40</property>
@@ -164,7 +168,7 @@
       <trigger program="org.efaps.esjp.admin.access.AccessOnField" 
                method="viewOnly"
                name="Admin_User_PersonForm/Chronology4View.UI_ACCESSCHECK" 
-               event="UI_ACCESSCHECK"></trigger>
+               event="UI_ACCESSCHECK"/>
     </field>
     <field name="Chronology4Edit">
       <property name="Columns">40</property>
@@ -176,6 +180,10 @@
                method="get4Edit"
                name="Admin_User_PersonForm/Chronology4Edit" 
                event="UI_FIELD_VALUE"/>
+      <trigger program="org.efaps.esjp.admin.access.AccessOnField" 
+               method="hideOnSearch"
+               name="Admin_User_PersonForm/Chronology4Edit.UI_ACCESSCHECK" 
+               event="UI_ACCESSCHECK"/>
     </field>
     <field name="Locale">
       <property name="Columns">40</property>
