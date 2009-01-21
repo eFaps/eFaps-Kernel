@@ -153,8 +153,9 @@ public class MenuContainer extends AbstractParentMarkupContainer {
           this.add(item);
         } else if (super.getDefaultModelObject() instanceof UISearchItem) {
 
-          final SearchLink item = new SearchLink(getNewChildId(),
-              new MenuItemModel(_menuItem));
+          final AjaxSearchComponent item
+                        = new AjaxSearchComponent(getNewChildId(),
+                                                  new MenuItemModel(_menuItem));
           this.add(item);
 
         }
@@ -208,9 +209,9 @@ public class MenuContainer extends AbstractParentMarkupContainer {
         final String url = item.getJavaScript();
         childModel.setURL(url);
 
-      } else if (child instanceof SearchLink) {
-        final SearchLink item = (SearchLink) child;
-        final UIMenuItem childModel = item.getModelObject();
+      } else if (child instanceof AjaxSearchComponent) {
+        final AjaxSearchComponent item = (AjaxSearchComponent) child;
+        final UIMenuItem childModel = (UIMenuItem) item.getDefaultModelObject();
 
         final String url = (String) item.urlFor(ILinkListener.INTERFACE);
 

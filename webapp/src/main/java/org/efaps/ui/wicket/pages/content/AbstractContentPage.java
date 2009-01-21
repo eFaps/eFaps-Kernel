@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,11 @@
 package org.efaps.ui.wicket.pages.content;
 
 import org.apache.wicket.IPageMap;
+import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
+
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.footer.FooterPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
@@ -94,7 +97,10 @@ public abstract class AbstractContentPage extends AbstractMergePage {
    * @param _form
    */
   protected void addComponents(final FormContainer _form) {
-
+    // set the title for the Page
+    add(new StringHeaderContributor("<title>"
+        + DBProperties.getProperty("Logo.Version.Label")
+        + "</title>"));
     add(StaticHeaderContributor.forCss(CSS));
 
     add(this.modal);
@@ -103,7 +109,7 @@ public abstract class AbstractContentPage extends AbstractMergePage {
     final AbstractUIObject uiObject = (AbstractUIObject) super.getDefaultModelObject();
     add(new HeadingPanel("titel", uiObject.getTitle()));
 
-    add(new MenuPanel("menu", (IModel<?>) super.getDefaultModel(), _form));
+    add(new MenuPanel("menu", super.getDefaultModel(), _form));
     WebMarkupContainer footerpanel;
     if (uiObject.isCreateMode() || uiObject.isEditMode() || uiObject.isSearchMode()) {
       footerpanel = new FooterPanel("footer",  super.getDefaultModel(), this.modalWindow, _form);

@@ -79,7 +79,7 @@ public class EFapsApplication extends WebApplication {
     getMarkupSettings().setStripComments(true);
     getMarkupSettings().setCompressWhitespace(true);
     getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
-    getDebugSettings().setAjaxDebugModeEnabled(false);
+    getDebugSettings().setAjaxDebugModeEnabled(true);
     super.getSecuritySettings().setAuthorizationStrategy(
         new EFapsFormBasedAuthorizationStartegy());
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
@@ -34,41 +35,60 @@ import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.models.objects.UITable;
 
 /**
- * TODO description
+ * Class is used to render a cell inside a table.
  *
  * @author jmox
  * @version $Id:CellPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class CellPanel extends Panel {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
-  public CellPanel(final String _id, final String _oid) {
-    super(_id);
-    this.add(new CheckBoxComponent("checkbox", _oid));
-    this.add(new WebMarkupContainer("link").setVisible(false));
-    this.add(new WebMarkupContainer("icon").setVisible(false));
-    this.add(new WebMarkupContainer("label").setVisible(false));
+  /**
+   * Constructor used to get a cell which only contains a check box.
+   *
+   * @param _wicketId     wicket id for this component
+   * @param _oid          oid for the ceck box
+   */
+  public CellPanel(final String _wicketId, final String _oid) {
+    super(_wicketId);
+    add(new CheckBoxComponent("checkbox", _oid));
+    add(new WebMarkupContainer("link").setVisible(false));
+    add(new WebMarkupContainer("icon").setVisible(false));
+    add(new WebMarkupContainer("label").setVisible(false));
   }
 
-  public CellPanel(final String _wicketId, final IModel<UITableCell> _cellmodel,
+  /**
+   * Constructor for all cases minus checkbox.
+   *
+   * @see #CellPanel(String, String)
+   * @param _wicketId         wicket id for this component
+   * @param _model            model for this component
+   * @param _updateListMenu   must the list be updated
+   * @param _uitable          uitable
+   */
+  public CellPanel(final String _wicketId, final IModel<UITableCell> _model,
                    final boolean _updateListMenu, final UITable _uitable) {
-    super(_wicketId, _cellmodel);
+    super(_wicketId, _model);
     final UITableCell cellmodel = (UITableCell) super.getDefaultModelObject();
+    // set the title of the cell
+    add(new SimpleAttributeModifier("title", cellmodel.getCellValue()));
+    // make the checkbox invisible
+    add(new WebMarkupContainer("checkbox").setVisible(false));
 
-    this.add(new SimpleAttributeModifier("title", cellmodel.getCellValue()));
-
-    this.add(new WebMarkupContainer("checkbox").setVisible(false));
     WebMarkupContainer celllink;
     if (cellmodel.getReference() == null) {
       celllink = new WebMarkupContainer("link");
       celllink.setVisible(false);
     } else {
       if (_updateListMenu && cellmodel.getTarget() != Target.POPUP) {
-        celllink = new AjaxLinkContainer("link", _cellmodel);
+        celllink = new AjaxLinkContainer("link", _model);
       } else {
         if (cellmodel.isCheckOut()) {
-          celllink = new CheckOutLink("link", _cellmodel);
+          celllink = new CheckOutLink("link", _model);
         } else {
           if (_uitable.isSearchMode()
               && cellmodel.getTarget() != Target.POPUP) {
@@ -77,10 +97,10 @@ public class CellPanel extends Panel {
               celllink = new WebMarkupContainer("link");
               celllink.setVisible(false);
             } else {
-              celllink = new AjaxOpenerLink("link", _cellmodel);
+              celllink = new AjaxLoadInOpenerLink("link", _model);
             }
           } else {
-            celllink = new ContentContainerLink<UITableCell>("link", _cellmodel);
+            celllink = new ContentContainerLink<UITableCell>("link", _model);
             if (cellmodel.getTarget() == Target.POPUP) {
               final PopupSettings popup =
                   new PopupSettings(PageMap.forName("popup"));
@@ -90,7 +110,7 @@ public class CellPanel extends Panel {
         }
       }
     }
-    this.add(celllink);
+    add(celllink);
 
     if (celllink.isVisible()) {
       celllink.add(new LabelComponent("linklabel", new Model<String>(cellmodel
@@ -101,17 +121,16 @@ public class CellPanel extends Panel {
       } else {
         celllink.add(new StaticImageComponent("linkicon", cellmodel.getIcon()));
       }
-      this.add(new WebMarkupContainer("icon").setVisible(false));
-      this.add(new WebMarkupContainer("label").setVisible(false));
+      add(new WebMarkupContainer("icon").setVisible(false));
+      add(new WebMarkupContainer("label").setVisible(false));
     } else {
-      this
-          .add(new LabelComponent("label", new Model<String>(cellmodel.getCellValue())));
+      add(new LabelComponent("label",
+                             new Model<String>(cellmodel.getCellValue())));
       if (cellmodel.getIcon() == null) {
-        this.add(new WebMarkupContainer("icon").setVisible(false));
+        add(new WebMarkupContainer("icon").setVisible(false));
       } else {
-        this.add(new StaticImageComponent("icon", cellmodel.getIcon()));
+        add(new StaticImageComponent("icon", cellmodel.getIcon()));
       }
-
     }
   }
 }

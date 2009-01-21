@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-20078 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,12 @@
 package org.efaps.ui.wicket.pages.content.form;
 
 import org.apache.wicket.IPageMap;
+import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
@@ -89,26 +91,60 @@ public class FormPage extends AbstractContentPage {
 
     final FormContainer form = new FormContainer("form");
     add(form);
+    super.addComponents(form);
 
     final UIForm model = (UIForm) super.getDefaultModelObject();
 
     if (!model.isInitialised()) {
       model.execute();
     }
-    super.addComponents(form);
 
     final WebMarkupContainer script = new WebMarkupContainer("selectscript");
     this.add(script);
     script.setVisible(model.isCreateMode()
         || model.isEditMode()
         || model.isSearchMode());
+    updateFormContainer(this, form, model);
+//    int i = 0;
+//    final RepeatingView elementRepeater = new RepeatingView("elementRepeater");
+//    form.add(elementRepeater);
+//    for (final Element element : model.getElements()) {
+//      if (element.getType().equals(ElementType.FORM)) {
+//        elementRepeater.add(new FormPanel(elementRepeater.newChildId(), this,
+//            new FormModel(model), (FormElement) element.getElement()));
+//      } else if (element.getType().equals(ElementType.HEADING)) {
+//        final UIHeading headingmodel = (UIHeading) element.getElement();
+//        elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(),
+//            headingmodel.getLabel(), headingmodel.getLevel()));
+//      } else if (element.getType().equals(ElementType.TABLE)) {
+//        i++;
+//
+//        final UIFieldTable fieldTable = (UIFieldTable) element.getElement();
+//        fieldTable.setTableId(i);
+//        final TablePanel table =
+//            new TablePanel(elementRepeater.newChildId(), new TableModel(fieldTable), this);
+//        final HeaderPanel header =
+//            new HeaderPanel(elementRepeater.newChildId(), table);
+//        elementRepeater.add(header);
+//        elementRepeater.add(table);
+//      }
+//    }
+  }
+
+  public static void updateFormContainer(final Page _page, final FormContainer _form, final UIForm _model) {
+
+    if (!_model.isInitialised()) {
+      _model.execute();
+    }
+
+
     int i = 0;
     final RepeatingView elementRepeater = new RepeatingView("elementRepeater");
-    form.add(elementRepeater);
-    for (final Element element : model.getElements()) {
+    _form.add(elementRepeater);
+    for (final Element element : _model.getElements()) {
       if (element.getType().equals(ElementType.FORM)) {
-        elementRepeater.add(new FormPanel(elementRepeater.newChildId(), this,
-            new FormModel(model), (FormElement) element.getElement()));
+        elementRepeater.add(new FormPanel(elementRepeater.newChildId(), _page,
+            new FormModel(_model), (FormElement) element.getElement()));
       } else if (element.getType().equals(ElementType.HEADING)) {
         final UIHeading headingmodel = (UIHeading) element.getElement();
         elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(),
@@ -119,14 +155,12 @@ public class FormPage extends AbstractContentPage {
         final UIFieldTable fieldTable = (UIFieldTable) element.getElement();
         fieldTable.setTableId(i);
         final TablePanel table =
-            new TablePanel(elementRepeater.newChildId(), new TableModel(fieldTable), this);
+            new TablePanel(elementRepeater.newChildId(), new TableModel(fieldTable), _page);
         final HeaderPanel header =
             new HeaderPanel(elementRepeater.newChildId(), table);
         elementRepeater.add(header);
         elementRepeater.add(table);
-
       }
     }
-
   }
 }

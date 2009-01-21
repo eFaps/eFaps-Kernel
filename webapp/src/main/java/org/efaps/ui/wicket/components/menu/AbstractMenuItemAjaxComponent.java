@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,23 +25,34 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 
 /**
+ * Base class for all menu item inside the JSCookMenu using ajax.
+ *
  * @author jmox
  * @version $Id$
  */
 public abstract class AbstractMenuItemAjaxComponent extends WebComponent {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
-  public AbstractMenuItemAjaxComponent(final String _id,
+  /**
+   * Constructor.
+   *
+   * @param _wicketId   wicket id of this component
+   * @param _model      model for this component
+   */
+  public AbstractMenuItemAjaxComponent(final String _wicketId,
                                        final IModel<?> _model) {
-    super(_id, _model);
+    super(_wicketId, _model);
   }
 
   /**
-   * for the JSCookMenu nothing must be renderd, because JavaScript is used to
-   * create the Menu
+   * For the JSCookMenu nothing must be rendered, because JavaScript is used to
+   * create the Menu.
    *
-   * @see org.apache.wicket.markup.html.WebComponent#onRender(org.apache.wicket.markup.MarkupStream)
+   * @param _markupStream MarkupStream
    */
   @Override
   protected void onRender(final MarkupStream _markupStream) {
@@ -49,8 +60,8 @@ public abstract class AbstractMenuItemAjaxComponent extends WebComponent {
   }
 
   /**
-   * This Method must return the Javascript wich should be executed by the
-   * JSCooKMenu
+   * This Method must return the JavaScript which is executed by the
+   * JSCooKMenu.
    *
    * @return String with the JavaScript
    */
