@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,16 +39,16 @@ import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.CacheReloadInterface;
 
 /**
- * TODO description
+ * TODO description.
  *
  * @author jmox
  * @version $Id$
  */
-public final class BundleMaker
-{
+public final class BundleMaker {
+
   /**
    * Map is used to map a List of Names representing StaticSources from the
-   * eFaps-DataBase, to a Key for a Bundle
+   * eFaps-DataBase, to a Key for a Bundle.
    *
    * @see #BUNDLES
    */
@@ -56,7 +56,7 @@ public final class BundleMaker
       new HashMap<List<String>, String>();
 
   /**
-   * Map is used to store the relation between a Key and a Bundle
+   * Map is used to store the relation between a Key and a Bundle.
    *
    * @see #BUNDLEMAPPER
    */
@@ -81,7 +81,7 @@ public final class BundleMaker
       });
 
   /**
-   * a private Constructor is used to make a singelton
+   * a private Constructor is used to make a singelton.
    */
   private BundleMaker() {
   }
@@ -89,20 +89,20 @@ public final class BundleMaker
   /**
    * this static method is used to get from a List of Names representing
    * StaticSources the a key to Bundle. The method first checks if the a key for
-   * the List allready exist and if exists returns the key. Otherwise a new Key
+   * the List already exist and if exists returns the key. Otherwise a new Key
    * will be created using the method {@link #createNewKey(List, Class)}
    *
    * @param _names
    *                List of Names representing StaticSources
    * @param _bundleclass
-   *                The Class that will be instandiated in the case that the key
-   *                did not allready exist
+   *                The Class that will be instantiated in the case that the key
+   *                did not already exist
    * @return the Key to a Bundle
-   * @throws EFapsException
+   * @throws EFapsException on error
    */
   public static String getBundleKey(final List<String> _names,
                                     final Class<?> _bundleclass)
-                                                                throws EFapsException {
+      throws EFapsException {
     mergeList(_names);
     String key;
     synchronized (BUNDLEMAPPER) {
@@ -120,8 +120,7 @@ public final class BundleMaker
    * This method removes all duplicated entries from the List from the end. <br>
    * e.g. a List like ABAACD will lead to a list like BACD
    *
-   * @param _names
-   *                List of Names representing StaticSources
+   * @param _names   List of Names representing StaticSources
    */
   private static void mergeList(final List<String> _names) {
     final Set<String> compare = new HashSet<String>();
@@ -136,18 +135,16 @@ public final class BundleMaker
   }
 
   /**
-   * creates a new Key and instanciates the BundleInterface
+   * Creates a new Key and instantiates the BundleInterface.
    *
-   * @param _names
-   *                List of Names representing StaticSources
-   * @param _bundleclass
-   *                The Class to be instanciated
+   * @param _names        List of Names representing StaticSources
+   * @param _bundleclass  The Class to be instantiated
    * @return the Key to a Bundle
-   * @throws EFapsException
+   * @throws EFapsException on error
    */
   private static String createNewKey(final List<String> _names,
-                                     Class<?> _bundleclass)
-                                                           throws EFapsException {
+                                     final Class<?> _bundleclass)
+      throws EFapsException {
     final StringBuilder builder = new StringBuilder();
     final List<String> oids = new ArrayList<String>();
     String ret = null;
@@ -159,9 +156,11 @@ public final class BundleMaker
         if (builder.length() > 0) {
           builder.append("-");
         }
-        final String oid = CACHE.get(name).getOid();
-        builder.append(oid);
-        oids.add(oid);
+        if (CACHE.get(name) != null) {
+          final String oid = CACHE.get(name).getOid();
+          builder.append(oid);
+          oids.add(oid);
+        }
       }
       ret = builder.toString();
 
@@ -183,10 +182,9 @@ public final class BundleMaker
   }
 
   /**
-   * does a Bundle for the Key exist
+   * Does a Bundle for the Key exist.
    *
-   * @param _key
-   *                key to search for
+   * @param _key    key to search for
    * @return true if found, else false
    */
   public static boolean containsKey(final String _key) {
@@ -194,10 +192,9 @@ public final class BundleMaker
   }
 
   /**
-   * get a Bundle for a specific key
+   * Get a Bundle for a specific key.
    *
-   * @param _key
-   *                key to get the Bundle for
+   * @param _key    key to get the Bundle for
    * @return the bundle if exist, else null
    */
   public static BundleInterface getBundle(final String _key) {
@@ -205,9 +202,9 @@ public final class BundleMaker
   }
 
   /**
-   * method to load the StaticCompiledSources into the Cache
+   * Method to load the StaticCompiledSources into the Cache.
    *
-   * @throws CacheReloadException
+   * @throws CacheReloadException on erro
    */
   private static void loadCache() throws CacheReloadException {
     try {
@@ -231,7 +228,7 @@ public final class BundleMaker
   }
 
   /**
-   * This class represents one StaticCompiledSource from the eFaps-DataBase
+   * This class represents one StaticCompiledSource from the eFaps-DataBase.
    *
    * @author jmox
    * @version $Id$
@@ -239,29 +236,48 @@ public final class BundleMaker
   private static class StaticCompiledSource implements CacheObjectInterface {
 
     /**
-     * the Name for the StaticCompiledSource
+     * The Name for the StaticCompiledSource.
      */
     private final String name;
 
     /**
-     * the oid for this StaticCompiledSource
+     * The oid for this StaticCompiledSource.
      */
     private final String oid;
 
+    /**
+     * Constructor.
+     *
+     * @param _oid    oid of the source
+     * @param _name   name of the source
+     */
     public StaticCompiledSource(final String _oid, final String _name) {
       this.name = _name;
       this.oid = _oid;
     }
 
+    /**
+     * not used.
+     * @return 0
+     */
     public long getId() {
       // not needed here
       return 0;
     }
 
+    /**
+     * Getter method for instance variable {@link #name}.
+     *
+     * @return value of instance variable {@link #name}
+     */
     public String getName() {
       return this.name;
     }
 
+    /**
+     * not used.
+     * @return null
+     */
     public UUID getUUID() {
       // not needed here
       return null;
@@ -275,7 +291,5 @@ public final class BundleMaker
     public String getOid() {
       return this.oid;
     }
-
   }
-
 }
