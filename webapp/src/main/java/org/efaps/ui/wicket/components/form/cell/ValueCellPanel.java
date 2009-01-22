@@ -43,7 +43,7 @@ import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.objects.UIForm;
 
 /**
- * TODO description!
+ * Class renders a cell in a Form.
  *
  * @author jmox
  * @version $Id$
@@ -74,8 +74,9 @@ public class ValueCellPanel extends Panel {
     super(_wicketId, _model);
 
     final UIFormCell uiFormCell = (UIFormCell) super.getDefaultModelObject();
-
-    if (uiFormCell.getReference() == null) {
+    // if we don't have a reference or we are inside a modal window
+    if (uiFormCell.getReference() == null
+              || _formmodel.getTarget().equals(Target.MODAL)) {
       if (uiFormCell.getIcon() == null) {
         this.add(new WebComponent("icon").setVisible(false));
       } else {
@@ -129,6 +130,9 @@ public class ValueCellPanel extends Panel {
     }
   }
 
+  /**
+   * After rendering the datefields are added to the parent.
+   */
   @Override
   protected void onAfterRender() {
     super.onAfterRender();
