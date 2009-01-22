@@ -34,6 +34,7 @@
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>Admin_UI_AbstractTree_Access_Menu_Action_AddExistingPerson</name>
+    <icon>Admin_User_Person+Add+Image</icon>
     <!-- target definition -->
     <target>
       <search>Admin_UI_AbstractTree_Access_Menu_Action_AddExistingPerson_Search</search>
