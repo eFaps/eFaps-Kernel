@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
@@ -40,12 +41,12 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.DateFieldWithPicker;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -54,33 +55,37 @@ import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO description
+ * TODO description.
  *
  * @author jmox
  * @version $Id$
  */
 public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
   /**
-   * Instance variable storing the model, because the superclasses of a
+   * Instance variable storing the model, because the super classes of a
    * behavior, doesn't store the model.
    */
   private final AbstractUIObject uiObject;
 
-  /** Instance variable storing the form to be submited. */
+  /**
+   * Instance variable storing the form to be submited.
+   */
   private final FormContainer form;
 
   /**
-   * Constructor
+   * Constructor.
    *
-   * @param _uiobject
-   * @param _form
+   * @param _uiobject UUIOBject
+   * @param _form     form
    */
   public AjaxSubmitCloseBehavior(final AbstractUIObject _uiobject,
                                  final FormContainer _form) {
@@ -89,13 +94,17 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
     this.form = _form;
   }
 
+  /**
+   * On submit the action must be done.
+   *
+   * @param _target AjaxRequestTarget
+   */
   @Override
   protected void onSubmit(final AjaxRequestTarget _target) {
 
-    final Map<String, String[]> others = new HashMap<String,String[]>();
-    final String[] other =
-        this.getComponent().getRequestCycle().getRequest().getParameters(
-            "selectedRow");
+    final Map<String, String[]> others = new HashMap<String, String[]>();
+    final String[] other = getComponent().getRequestCycle().getRequest()
+        .getParameters("selectedRow");
     others.put("selectedRow", other);
 
     convertDateFieldValues();
@@ -104,21 +113,17 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
       if (this.uiObject instanceof UIForm
           && ((UIForm) this.uiObject).isFileUpload()) {
         doFileUpload(_target);
-
       } else {
-
         if (this.uiObject instanceof UIForm) {
           others.putAll(((UIForm) this.uiObject).getNewValues());
         }
-
         try {
           if (!executeEvents(_target, others)) {
             return;
           }
-
         } catch (final EFapsException e) {
           final ModalWindowContainer modal =
-              ((AbstractContentPage) this.getComponent().getPage()).getModal();
+              ((AbstractContentPage) getComponent().getPage()).getModal();
           modal.setPageCreator(new ModalWindow.PageCreator() {
 
             private static final long serialVersionUID = 1L;
@@ -131,29 +136,30 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
           return;
         }
 
-        final FooterPanel footer =
-            this.getComponent().findParent(FooterPanel.class);
-
+        final FooterPanel footer = getComponent().findParent(FooterPanel.class);
+        // if inside a modal
         if (this.uiObject.getCommand().getTarget() == Target.MODAL) {
           footer.getModalWindow().setReloadChild(true);
           footer.getModalWindow().close(_target);
         } else {
-          final AbstractModel<?> openermodel =
-              (AbstractModel<?>) ((EFapsSession) Session.get()).getOpenerModel();
+          final Opener opener = ((EFapsSession) Session.get())
+              .getOpener(this.uiObject.getOpenerId());
+
           Class<? extends Page> clazz;
-          if (openermodel instanceof TableModel) {
+          if (opener.getModel() instanceof TableModel) {
             clazz = TablePage.class;
           } else {
             clazz = FormPage.class;
           }
-         final AbstractUIObject uiobject =  (AbstractUIObject) openermodel.getObject();
-          final CharSequence url =
-              this.form.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
-                   clazz, uiobject.getPageParameters());
-          _target.appendJavascript("opener.location.href = '"
-              + url
-              + "'; self.close();");
 
+          final PageParameters parameters = new PageParameters();
+          parameters.add(Opener.OPENER_PARAKEY, this.uiObject.getOpenerId());
+
+          final CharSequence url = this.form.urlFor(PageMap.forName(opener
+              .getPageMapName()), clazz, parameters);
+
+          _target.appendJavascript("opener.location.href = '" + url
+              + "'; self.close();");
         }
         footer.setSuccess(true);
 
@@ -175,14 +181,14 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
   }
 
   /**
-   *
+   * Method used to convert the date value from the ui in date values for eFaps.
    */
   private void convertDateFieldValues() {
     final FormPanel formpl = getFormPanel();
     if (formpl != null) {
       for (final DateFieldWithPicker datepicker : formpl.getDateComponents()) {
         final Map<String, String[]> map =
-          this.getComponent().getRequestCycle().getRequest().getParameterMap();
+          getComponent().getRequestCycle().getRequest().getParameterMap();
 
         if (map.containsKey(datepicker.getInputName())) {
           final String[] value = map.get(datepicker.getInputName());
@@ -193,24 +199,35 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
     }
   }
 
+  /**
+   * Method to enable file upload.
+   *
+   * @param _target AjaxRequestTarget
+   */
   private void doFileUpload(final AjaxRequestTarget _target) {
     final StringBuilder script = new StringBuilder();
-    script.append("var f=document.getElementById('").append(
-        this.form.getMarkupId()).append("');f.onsubmit=undefined;f.action=\"")
-        .append(this.form.getActionUrl()).append("\";f.submit();");
+    script.append("var f=document.getElementById('")
+          .append(this.form.getMarkupId())
+          .append("');f.onsubmit=undefined;f.action=\"")
+          .append(this.form.getActionUrl())
+          .append("\";f.submit();");
     this.form.setFileUpload(true);
     _target.appendJavascript(script.toString());
   }
 
+  /**
+   * Method is not used, but needed from the api.
+   *
+   * @param _target AjaxRequestTarget
+   */
   @Override
   protected void onError(final AjaxRequestTarget _target) {
     // not useful here
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#getPreconditionScript()
+  /**
+   * In case of a file upload a precondition is needed.
+   * @return precondition JavaScript
    */
   @Override
   protected CharSequence getPreconditionScript() {
@@ -223,18 +240,17 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
   }
 
   /**
-   * execute the events which are related to CommandAbstract calling the Form
+   * Execute the events which are related to CommandAbstract calling the Form.
    *
-   * @param _target
-   *                AjaxRequestTarget to be used in the case a ModalPage should
+   * @param _target AjaxRequestTarget to be used in the case a ModalPage should
    *                be called
-   * @param _other
-   *                Parameters to be passed on to the Event
+   * @param _other  Parameters to be passed on to the Event
    * @return true if the events where executed successfully, otherwise false
-   * @throws EFapsException
+   * @throws EFapsException on error
    */
   private boolean executeEvents(final AjaxRequestTarget _target,
-                                final Map<String,String[]> _other) throws EFapsException {
+                                final Map<String, String[]> _other)
+      throws EFapsException {
     boolean ret = true;
     final List<Return> returns =
         ((AbstractUIObject) this.form.getParent().getDefaultModelObject())
@@ -251,19 +267,18 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
   }
 
   /**
-   * executes the Validation-Events related to the CommandAbstract which called
-   * this Form
+   * Executes the Validation-Events related to the CommandAbstract which called
+   * this Form.
    *
-   * @param _target
-   *                AjaxRequestTarget to be used in the case a ModalPage should
+   * @param _target AjaxRequestTarget to be used in the case a ModalPage should
    *                be called
    * @return true if the Validation was valid, otherwise false
    */
   private boolean validateForm(final AjaxRequestTarget _target) {
     boolean ret = true;
 
-    final List<Return> validation =
-        ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).validate();
+    final List<Return> validation = ((AbstractUIObject) this.form.getParent()
+        .getDefaultModelObject()).validate();
 
     for (final Return oneReturn : validation) {
       if (oneReturn.get(ReturnValues.TRUE) == null) {
@@ -291,17 +306,17 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
       return true;
     }
 
-    final Map<?, ?> map =
-        this.getComponent().getRequestCycle().getRequest().getParameterMap();
-    for (final Entry<String, Label> entry : getFormPanel().getRequiredComponents()
-        .entrySet()) {
+    final Map<?, ?> map = getComponent().getRequestCycle().getRequest()
+        .getParameterMap();
+    for (final Entry<String, Label> entry : getFormPanel()
+        .getRequiredComponents().entrySet()) {
 
       final String[] values = (String[]) map.get(entry.getKey());
       final String value = values[0];
       if (value == null || value.length() == 0) {
         final Label label = entry.getValue();
         label.add(new SimpleAttributeModifier("class",
-            "eFapsFormLabelRequiredForce"));
+                                              "eFapsFormLabelRequiredForce"));
         _target.addComponent(label);
         ret = false;
       }
@@ -313,6 +328,10 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
   }
 
 
+  /**
+   * Method to get the FormPanel of this Page.
+   * @return FormPanel
+   */
   private FormPanel getFormPanel() {
     FormPanel ret = null;
     final Iterator<?> iterator = this.form.iterator();
@@ -334,17 +353,15 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
   }
 
   /**
-   * shows a modal DialogPage
+   * Shows a modal DialogPage.
    *
-   * @param _target
-   *                AjaxRequestTarget to be used for opening the modal
+   * @param _target AjaxRequestTarget to be used for opening the modal
    *                DialogPage
-   * @param _key
-   *                the Key to get the DBProperties from the eFapsDataBaase
+   * @param _key    the Key to get the DBProperties from the eFapsDataBaase
    */
   private void showDialog(final AjaxRequestTarget _target, final String _key) {
     final ModalWindowContainer modal =
-        ((AbstractContentPage) this.getComponent().getPage()).getModal();
+        ((AbstractContentPage) getComponent().getPage()).getModal();
 
     modal.setResizable(false);
     modal.setInitialWidth(20);
@@ -361,9 +378,6 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
         return new DialogPage(modal, _key);
       }
     });
-
     modal.show(_target);
-
   }
-
 }

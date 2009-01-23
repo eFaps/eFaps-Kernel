@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,16 +30,19 @@ import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
+
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Search;
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
 import org.efaps.ui.wicket.components.split.ListOnlyPanel;
 import org.efaps.ui.wicket.components.split.StructBrowsSplitPanel;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -118,46 +121,65 @@ public class ContentContainerPage extends AbstractMergePage {
   private boolean webForm;
 
   /**
-   * Constructor setting the PageParameters
+   * Constructor called from the client directly by using parameters. Normally
+   * it should only contain one parameter Opener.OPENER_PARAKEY to access the
+   * opener.
    *
-   * @param _parameters
+   * @param _parameters PageParameters
    */
   public ContentContainerPage(final PageParameters _parameters) {
-    super(_parameters);
-    initialise();
+    super();
+    final Opener opener = ((EFapsSession) getSession()).getOpener(_parameters
+        .getString(Opener.OPENER_PARAKEY));
+    final UUID commandUUID;
+    final String oid;
+    if (opener.getModel() != null) {
+      final AbstractUIObject uiObject = ((AbstractUIObject) opener.getModel()
+          .getObject());
+      commandUUID = uiObject.getCommandUUID();
+      oid = uiObject.getOid();
+    } else {
+      commandUUID = opener.getCommandUUID();
+      oid = opener.getOid();
+    }
+
+    initialise(commandUUID, oid);
   }
 
   /**
-   * Constructor setting the PageMap and the PageParameters
-   *
-   * @param _pagemap
-   * @param _parameters
+   * @param _uuid
+   * @param _oid
    */
-  public ContentContainerPage(final IPageMap _pagemap,
-                              final PageParameters _parameters) {
-    this(_pagemap, _parameters, false);
+  public ContentContainerPage(final UUID _uuid, final String _oid) {
+    super();
+    initialise(_uuid, _oid);
   }
 
   /**
-   * Constructor setting the PageMap and the PageParameters
-   *
-   * @param _pagemap
-   * @param _parameters
-   * @param _addStructurBrowser
-   *                does the Page contain a StructurBrowser
+   * @param pageMap
+   * @param uuid
+   * @param oid
    */
-  public ContentContainerPage(final IPageMap _pagemap,
-                              final PageParameters _parameters,
-                              final boolean _addStructurBrowser) {
-    super(_pagemap, _parameters);
+  public ContentContainerPage(final IPageMap pageMap, final UUID _uuid, final String _oid) {
+    this(pageMap, _uuid, _oid, false);
+  }
+
+  /**
+   * @param pageMap
+   * @param uuid
+   * @param oid
+   * @param b
+   */
+  public ContentContainerPage(final IPageMap pageMap, final UUID _uuid, final String _oid, final boolean _addStructurBrowser) {
+    super(pageMap);
     this.structurbrowser = _addStructurBrowser;
-    initialise();
+    initialise(_uuid, _oid);
   }
 
   /**
    * method to initialise the Page
    */
-  private void initialise() {
+  private void initialise(final UUID _uuid, final String _oid) {
     ((EFapsSession) getSession()).getUpdateBehaviors().clear();
 
     final ClientProperties properties =
@@ -169,18 +191,18 @@ public class ContentContainerPage extends AbstractMergePage {
       add(StaticHeaderContributor.forCss(CSS));
     }
 
-    this.menuTreeKey = "MenuTree_" + this.getPageMapName();
+    this.menuTreeKey = "MenuTree_" + getPageMapName();
     // add a Split
     final WebMarkupContainer split = new WebMarkupContainer("split");
     this.add(split);
     split.add(new SplitContainerBehavior());
     // add a StructurBowser?
     if (this.structurbrowser) {
-      split.add(new StructBrowsSplitPanel("left", this.menuTreeKey,
-          getPageParameters()));
+      split.add(new StructBrowsSplitPanel("left",
+                                          _uuid, _oid, this.menuTreeKey));
     } else {
-      split
-          .add(new ListOnlyPanel("left", this.menuTreeKey, getPageParameters()));
+      split.add(new ListOnlyPanel("left",
+                                  _uuid, _oid, this.menuTreeKey));
     }
     final WebMarkupContainer right = new WebMarkupContainer("right");
     split.add(right);
@@ -192,58 +214,41 @@ public class ContentContainerPage extends AbstractMergePage {
     parent.setOutputMarkupId(true);
 
     // select the defaultCommand
-    final PageParameters parametersForPage =
-        (PageParameters) getPageParameters().clone();
-    String uuid;
-    if (parametersForPage.get("command") instanceof String[]) {
-      uuid = ((String[]) parametersForPage.get("command"))[0];
-    } else {
-      uuid = (String) parametersForPage.get("command");
-    }
 
-    final AbstractCommand cmd = getCommand(UUID.fromString(uuid));
+    final AbstractCommand cmd = getCommand(_uuid);
+    UUID uuidTmp = _uuid;
     this.webForm = cmd.getTargetForm() != null;
     if (cmd instanceof Menu) {
       for (final AbstractCommand childcmd : ((Menu) cmd).getCommands()) {
         if (childcmd.isDefaultSelected()) {
-          parametersForPage.put("command", childcmd.getUUID().toString());
+          uuidTmp = childcmd.getUUID();
           this.webForm = childcmd.getTargetForm() != null;
           break;
         }
       }
     }
+    final UUID uuid4NewPage = uuidTmp;
     // add the IFrame
-    final InlineFrame inline =
-        new InlineFrame(IFRAME_WICKETID, PageMap.forName(IFRAME_PAGEMAP_NAME),
-            new IPageLink() {
+    final InlineFrame inline = new InlineFrame(IFRAME_WICKETID, PageMap
+        .forName(IFRAME_PAGEMAP_NAME), new IPageLink() {
 
-              private static final long serialVersionUID = 1L;
+      private static final long serialVersionUID = 1L;
 
-              /*
-               * (non-Javadoc)
-               *
-               * @see org.apache.wicket.markup.html.link.IPageLink#getPage()
-               */
-              public Page getPage() {
-                AbstractContentPage page;
-                if (ContentContainerPage.this.webForm) {
-                  page = new FormPage(parametersForPage);
-                } else {
-                  page = new TablePage(parametersForPage);
-                }
-                page.setMenuTreeKey(ContentContainerPage.this.menuTreeKey);
-                return page;
-              }
+      public Page getPage() {
+        AbstractContentPage page;
+        if (ContentContainerPage.this.webForm) {
+          page = new FormPage(uuid4NewPage, _oid);
+        } else {
+          page = new TablePage(uuid4NewPage, _oid);
+        }
+        page.setMenuTreeKey(ContentContainerPage.this.menuTreeKey);
+        return page;
+      }
 
-              /*
-               * (non-Javadoc)
-               *
-               * @see org.apache.wicket.markup.html.link.IPageLink#getPageIdentity()
-               */
-              public Class<AbstractContentPage> getPageIdentity() {
-                return AbstractContentPage.class;
-              }
-            });
+      public Class<AbstractContentPage> getPageIdentity() {
+        return AbstractContentPage.class;
+      }
+    });
 
     parent.add(inline);
     // set the Path to the IFrame

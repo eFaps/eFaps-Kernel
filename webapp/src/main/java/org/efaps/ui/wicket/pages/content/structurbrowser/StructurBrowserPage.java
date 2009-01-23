@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,10 @@
 
 package org.efaps.ui.wicket.pages.content.structurbrowser;
 
-import org.apache.wicket.PageParameters;
+import java.util.UUID;
+
+import org.apache.wicket.IPageMap;
+
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
@@ -41,9 +44,18 @@ public class StructurBrowserPage extends AbstractContentPage {
       new EFapsContentReference(StructurBrowserPage.class,
           "StructurBrowserPage.css");
 
-  public StructurBrowserPage(final PageParameters _parameters) {
-    super(new StructurBrowserModel(new UIStructurBrowser(_parameters)));
+  public StructurBrowserPage(final UUID _uuid, final String _oid) {
+    super(new StructurBrowserModel(new UIStructurBrowser(_uuid, _oid)));
     this.addComponents();
+  }
+
+  /**
+   * @param forName
+   * @param _commandUUID
+   * @param oid
+   */
+  public StructurBrowserPage(final IPageMap _pageMap, final UUID _commandUUID, final String _oid) {
+    super(_pageMap, new StructurBrowserModel(new UIStructurBrowser(_commandUUID, _oid)),null);
   }
 
   protected void addComponents() {

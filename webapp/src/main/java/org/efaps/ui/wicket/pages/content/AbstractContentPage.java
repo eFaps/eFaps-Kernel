@@ -21,11 +21,13 @@
 package org.efaps.ui.wicket.pages.content;
 
 import org.apache.wicket.IPageMap;
+import org.apache.wicket.Session;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.footer.FooterPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
@@ -84,10 +86,14 @@ public abstract class AbstractContentPage extends AbstractMergePage {
     this.modalWindow = _modalWindow;
   }
 
-  public AbstractContentPage(final IModel<?> _model,
-                             final ModalWindowContainer _modalWindow,
-                             final IPageMap _pagemap) {
-    super(_pagemap, _model);
+  /**
+   * @param _model
+   * @param _pagemap
+   * @param window
+   */
+  public AbstractContentPage( final IPageMap _pagemap, final IModel<?> _model,
+      final ModalWindowContainer _modalWindow) {
+    super(_pagemap, _model );
     this.modalWindow = _modalWindow;
   }
 
@@ -159,9 +165,9 @@ public abstract class AbstractContentPage extends AbstractMergePage {
   @Override
   protected void onAfterRender() {
     super.onAfterRender();
-    if (this.menuTreeKey == null) {
+    if (this.menuTreeKey == null && ((AbstractUIObject) getDefaultModelObject()).getOpenerId() != null) {
       this.menuTreeKey =
-          ((AbstractUIObject) this.getDefaultModelObject()).getParameter("eFapsMenuTreeKey");
+       ((EFapsSession) Session.get()).getOpener(((AbstractUIObject) getDefaultModelObject()).getOpenerId()).getMenuTreeKey();
 
     }
   }

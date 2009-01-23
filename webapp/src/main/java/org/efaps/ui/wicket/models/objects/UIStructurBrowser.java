@@ -174,17 +174,23 @@ public class UIStructurBrowser extends AbstractUIObject {
   private Boolean direction = null;
 
   /**
+   * TODO bloedsinn!!!!!
+   * @param _parameters
+   */
+  public UIStructurBrowser(final PageParameters _parameters) {
+    super(_parameters);
+    this.root = true;
+  }
+
+  /**
    * Standart constructor, if called this StructurBrowserModel will be defined
    * as root.
    *
    * @param _parameters
-   *                PageParameters needed to initialise this
-   *                StructurBrowserModel
+   *
    */
-  public UIStructurBrowser(final PageParameters _parameters) {
-    super(_parameters);
-    initialise();
-    this.root = true;
+  public UIStructurBrowser(final UUID _commandUUID, final String _oid) {
+    this(_commandUUID, _oid, true);
   }
 
   /**
@@ -194,11 +200,14 @@ public class UIStructurBrowser extends AbstractUIObject {
    * @param _commandUUID  UUID of the command
    * @param _oid          OID
    */
-  private UIStructurBrowser(final UUID _commandUUID, final String _oid) {
+  private UIStructurBrowser(final UUID _commandUUID, final String _oid,
+                            final boolean _root) {
     super(_commandUUID, _oid);
-    this.root = false;
+    this.root = _root;
     initialise();
   }
+
+
 
   /**
    * Method used to initialize this StructurBrowserModel.
@@ -279,7 +288,7 @@ public class UIStructurBrowser extends AbstractUIObject {
         value = valuelist.makeString(getCallInstance(), query);
         final UIStructurBrowser child =
             new UIStructurBrowser(Menu.getTypeTreeMenu(instance.getType())
-                .getUUID(), instance.getOid());
+                .getUUID(), instance.getOid(), false);
         this.childs.add(child);
         child.setDirection((Boolean) ((instMapper.get(instance).get(0))[1]));
         child.setLabel(value.toString());
@@ -313,7 +322,7 @@ public class UIStructurBrowser extends AbstractUIObject {
 
       // evaluate for all expressions in the table
       final ListQuery query = new ListQuery(instances);
-      for (final Field field : this.getTable().getFields()) {
+      for (final Field field : getTable().getFields()) {
         if (field.getExpression() != null) {
           query.addSelect(field.getExpression());
         }
@@ -343,10 +352,10 @@ public class UIStructurBrowser extends AbstractUIObject {
         String strValue = "";
 
         final UIStructurBrowser child =
-            new UIStructurBrowser(super.getCommandUUID(), instance.getOid());
+            new UIStructurBrowser(super.getCommandUUID(), instance.getOid(), false);
         this.childs.add(child);
         child.setDirection((Boolean) ((instMapper.get(instance).get(0))[1]));
-        for (final Field field : this.getTable().getFields()) {
+        for (final Field field : getTable().getFields()) {
           Object value = null;
 
           if (field.getExpression() != null) {
@@ -357,9 +366,9 @@ public class UIStructurBrowser extends AbstractUIObject {
           final FieldValue fieldvalue =
                                   new FieldValue(field, attr, value, instance);
           if (value != null) {
-            if (this.isCreateMode() && field.isEditable()) {
+            if (isCreateMode() && field.isEditable()) {
               strValue = fieldvalue.getCreateHtml(getCallInstance(), instance);
-            } else if (this.isEditMode() && field.isEditable()) {
+            } else if (isEditMode() && field.isEditable()) {
               strValue = fieldvalue.getEditHtml(getCallInstance(), instance);
             } else {
               strValue = fieldvalue.getViewHtml(getCallInstance(), instance);
@@ -512,9 +521,9 @@ public class UIStructurBrowser extends AbstractUIObject {
           (List<List<Object[]>>) ret.get(0).get(ReturnValues.VALUES);
 
       if (this.tableuuid == null) {
-        this.executeTree(lists);
+        executeTree(lists);
       } else {
-        this.executeTreeTable(lists);
+        executeTreeTable(lists);
       }
       addNode(_parent, this.childs);
     } catch (final EFapsException e) {

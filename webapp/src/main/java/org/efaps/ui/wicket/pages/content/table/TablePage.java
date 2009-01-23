@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
  */
 
 package org.efaps.ui.wicket.pages.content.table;
+
+import java.util.UUID;
 
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.PageParameters;
@@ -44,6 +46,13 @@ public class TablePage extends AbstractContentPage {
   private static final EFapsContentReference CSS =
       new EFapsContentReference(TablePage.class, "TablePage.css");
 
+  /**
+   * Constructor called from the client directly by using parameters. Normally
+   * it should only contain one parameter Opener.OPENER_PARAKEY to access the
+   * opener.
+   *
+   * @param _parameters PageParameters
+   */
   public TablePage(final PageParameters _parameters) {
     this(new TableModel(new UITable(_parameters)));
   }
@@ -53,13 +62,25 @@ public class TablePage extends AbstractContentPage {
     this.addComponents();
   }
 
-  public TablePage(final PageParameters _parameters, final IPageMap _pagemap) {
-    this(new TableModel(new UITable(_parameters)), _pagemap);
+  public TablePage(final IPageMap _pagemap, final UUID _uuid, final String _oid) {
+    this(_pagemap, _uuid, _oid, null);
   }
 
-  public TablePage(final TableModel _model, final IPageMap _pagemap) {
-    super(_model, null, _pagemap);
+  public TablePage(final IPageMap _pagemap, final UUID _uuid, final String _oid, final String _openerId) {
+    this(_pagemap, new TableModel(new UITable(_uuid, _oid, _openerId)));
+  }
+
+  public TablePage(final IPageMap _pagemap, final TableModel _model) {
+    super(_pagemap, _model, null);
     this.addComponents();
+  }
+
+  /**
+   * @param _uuid
+   * @param _oid
+   */
+  public TablePage(final UUID _uuid, final String _oid) {
+    this(new TableModel(new UITable(_uuid, _oid)));
   }
 
   protected void addComponents() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.IMultipartWebRequest;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebSession;
@@ -48,7 +47,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * A WebSession subclass that is used e.g. as a store for behaviors that last a
- * Session and provides functionalities like open/close a Contex and
+ * Session and provides functionalities like open/close a Context and
  * login/logout a User.
  *
  * @author jmox
@@ -66,12 +65,12 @@ public class EFapsSession extends WebSession {
       "org.efaps.ui.wicket.LoginAttributeName";
 
   /**
-   * Logger for this class
+   * Logger for this class.
    */
   private static final Logger LOG = LoggerFactory.getLogger(EFapsSession.class);
 
   /**
-   * This instance Map is a Cache for Components, wich must be able to be
+   * This instance Map is a Cache for Components, which must be able to be
    * accessed from various PageMaps.
    *
    * @see #getFromCache(String)
@@ -82,13 +81,10 @@ public class EFapsSession extends WebSession {
       new HashMap<String, Component>();
 
   /**
-   * This instance variable holds an IModel wich must be past from one Page in
-   * one PageMap to another Page in an other PageMap
-   *
-   * @see #getOpenerModel()
-   * @see #setOpenerModel(IModel)
+   * Map caches the opener instances which are used to pass information from
+   * on page to anotheer in the case that the browser is involved.
    */
-  private IModel<?> openerModel;
+  private final Map<String, Opener> openerCache = new HashMap<String, Opener>();
 
   /**
    * This instance variable holds the Name of the logged in user. It is also
@@ -196,7 +192,7 @@ public class EFapsSession extends WebSession {
   }
 
   /**
-   * Retriev a Component from the ComponentCache
+   * Retrieve a Component from the ComponentCache.
    *
    * @param _key
    *                Key of the Component to be retrieved
@@ -218,26 +214,15 @@ public class EFapsSession extends WebSession {
     this.componentcache.remove(_key);
   }
 
-  /**
-   * This is the getter method for the instance variable {@link #openerModel}.
-   *
-   * @return value of instance variable {@link #openerModel}
-   */
 
-  public IModel<?> getOpenerModel() {
-    return this.openerModel;
+
+  public void storeOpener(final Opener _opener) {
+    this.openerCache.put(_opener.getId(), _opener);
   }
 
-  /**
-   * This is the setter method for the instance variable {@link #openerModel}.
-   *
-   * @param openerModel
-   *                the openerModel to set
-   */
-  public void setOpenerModel(final IModel<?> openerModel) {
-    this.openerModel = openerModel;
+  public Opener getOpener(final String _id) {
+    return this.openerCache.get(_id);
   }
-
   /**
    * Method to check ia a user is checked in
    *
@@ -368,7 +353,7 @@ public class EFapsSession extends WebSession {
           if ((contentType != null)
               && contentType.startsWith("multipart/form-data")) {
             request =
-                request.newMultipartWebRequest(this.getApplication()
+                request.newMultipartWebRequest(getApplication()
                     .getApplicationSettings().getDefaultMaximumUploadSize());
           }
 

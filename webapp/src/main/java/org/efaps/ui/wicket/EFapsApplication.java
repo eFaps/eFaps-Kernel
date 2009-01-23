@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ import org.efaps.ui.wicket.pages.login.LoginPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**
- * This Class presents the WebApplication for eFaps usinf the Wicket-Framework.<br/>
+ * This Class presents the WebApplication for eFaps usinf the Wicket-Framework.
+ * <br/>
  * It is the first class wich is instanciated from the WicketServlet. Here the
  * Sessioins for each user a created and basic Settings are set.
  *
@@ -97,7 +98,7 @@ public class EFapsApplication extends WebApplication {
   }
 
   /**
-   * the Class presents the Strategy to authorize pages in this WebApplication
+   * The Class presents the Strategy to authorize pages in this WebApplication.
    */
   private class EFapsFormBasedAuthorizationStartegy implements
       IAuthorizationStrategy {
@@ -114,11 +115,11 @@ public class EFapsApplication extends WebApplication {
     }
 
     /**
-     * for all Pages it will be checked if a User is logged in or if the Page
+     * For all Pages it will be checked if a User is logged in or if the Page
      * implements the EFapsNoAuthendPageInterface, if non of both we will
-     * redirect to the LoginPage
+     * redirect to the LoginPage.
+     * @param _componentClass class to be checked
      *
-     * @see org.apache.wicket.authorization.IAuthorizationStrategy#isInstantiationAuthorized(java.lang.Class)
      */
     @SuppressWarnings("unchecked")
     public boolean isInstantiationAuthorized(final Class _componentClass) {

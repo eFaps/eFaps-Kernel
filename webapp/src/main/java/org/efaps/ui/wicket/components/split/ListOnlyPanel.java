@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,8 @@
 
 package org.efaps.ui.wicket.components.split;
 
-import org.apache.wicket.PageParameters;
+import java.util.UUID;
+
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 
@@ -35,13 +36,28 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  */
 public class ListOnlyPanel extends Panel {
 
+  /**
+   * Reference to the StyleSheet.
+   */
+  public static final EFapsContentReference CSS
+          = new EFapsContentReference(ListOnlyPanel.class, "ListOnlyPanel.css");
+
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
-  public static final EFapsContentReference CSS =
-      new EFapsContentReference(ListOnlyPanel.class, "ListOnlyPanel.css");
-
-  public ListOnlyPanel(final String _wicketId, final String _listmenukey,
-                       final PageParameters _parameters) {
+  /**
+   * Constructor.
+   *
+   * @param _wicketId     wicket id of this component
+   * @param _commandUUID  UUID of the related command
+   * @param _oid          oid
+   * @param _listMenuKey  key to the list menu
+   */
+  public ListOnlyPanel(final String _wicketId,
+                       final UUID _commandUUID, final String _oid,
+                       final String _listMenuKey) {
     super(_wicketId);
     this.add(StaticHeaderContributor.forCss(CSS));
     this.add(new ContentPaneBehavior(20, 20));
@@ -51,7 +67,7 @@ public class ListOnlyPanel extends Panel {
 
     final WebMarkupContainer overflow = new WebMarkupContainer("overflow");
     overflow.setOutputMarkupId(true);
-    overflow.add(new MenuTree("menu", _parameters, _listmenukey)
+    overflow.add(new MenuTree("menu", _commandUUID, _oid, _listMenuKey)
         .setOutputMarkupId(true));
     this.add(overflow);
 

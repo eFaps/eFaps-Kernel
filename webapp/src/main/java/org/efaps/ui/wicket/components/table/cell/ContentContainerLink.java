@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@
 
 package org.efaps.ui.wicket.components.table.cell;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
+
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Instance;
@@ -32,18 +32,33 @@ import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 
 /**
+ * Class extends a Link to work in the content container.
+ *
  * @author jmox
  * @version $Id:LinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
+ * @param <T>
  */
 public class ContentContainerLink<T> extends Link<T> {
 
+  /**
+   * Needed foper serialization.
+   */
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Constructor.
+   *
+   * @param _wicketId   wicket id of this component
+   * @param _model      model fore this component
+   */
   public ContentContainerLink(final String _wicketId,
                               final IModel<T> _model) {
     super(_wicketId, _model);
   }
 
+  /**
+   * Method is executed on click.
+   */
   @Override
   public void onClick() {
     Instance instance = null;
@@ -62,20 +77,16 @@ public class ContentContainerLink<T> extends Link<T> {
                 + instance.getType().getName());
         throw new RestartResponseException(new ErrorPage(ex));
       }
-      final PageParameters parameters = new PageParameters();
-      parameters.add("command", menu.getUUID().toString());
-      parameters.add("oid", cellmodel.getOid());
+
       ContentContainerPage page;
       if (cellmodel.getTarget() == Target.POPUP) {
-        page = new ContentContainerPage(parameters);
+        page = new ContentContainerPage(menu.getUUID(), cellmodel.getOid());
       } else {
-        page =
-            new ContentContainerPage(this.getPage().getPageMap(), parameters);
+        page = new ContentContainerPage(getPage().getPageMap(),
+                                        menu.getUUID(),
+                                        cellmodel.getOid());
       }
       this.setResponsePage(page);
-
     }
-
   }
-
 }

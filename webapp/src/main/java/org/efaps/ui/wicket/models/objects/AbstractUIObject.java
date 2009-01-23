@@ -28,6 +28,7 @@ import java.util.UUID;
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.Session;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
@@ -45,6 +46,8 @@ import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -120,15 +123,6 @@ public abstract class AbstractUIObject implements IClusterable {
   private Instance callInstance = null;
 
   /**
-   * This instance variable stores the PageParameters wich are used to create
-   * the Model.
-   *
-   * @see #getPageParameters()
-   * @see #getParameter(String)
-   */
-  private final PageParameters parameters;
-
-  /**
    * This instance variable stores, if the Model is supposed to be submited.
    *
    * @see #isSubmit()
@@ -144,14 +138,31 @@ public abstract class AbstractUIObject implements IClusterable {
   private Target target = Target.UNKNOWN;
 
   /**
-   * Constructor.
+   * In case that the model was opened as a popup this variable stores the id
+   * of the opener, so that it can be accessed in the EFapsSession.
+   */
+  private String openerId;
+
+
+  /**
+   * Constructor evaluating the UUID for the command and the oid from an
+   * Opener instance.
    *
    * @param _parameters  PageParameters for this Model
    */
   public AbstractUIObject(final PageParameters _parameters) {
-    this.parameters = _parameters;
-    initialise();
+    if (_parameters.get(Opener.OPENER_PARAKEY) instanceof String[]) {
+      this.openerId = ((String[]) _parameters.get(Opener.OPENER_PARAKEY))[0];
+    } else {
+      this.openerId = (String) _parameters.get(Opener.OPENER_PARAKEY);
+    }
+    final Opener opener
+                      = ((EFapsSession) Session.get()).getOpener(this.openerId);
+    final AbstractUIObject uiObject
+                           = ((AbstractUIObject) opener.getModel().getObject());
+    initialise(uiObject.getCommandUUID(), uiObject.getOid(), this.openerId);
   }
+
   /**
    * Constructor.
    *
@@ -159,25 +170,37 @@ public abstract class AbstractUIObject implements IClusterable {
    * @param _oid            oid for this Model
    */
   public AbstractUIObject(final UUID _commandUUID, final String _oid) {
-    this.parameters = new PageParameters();
-    this.parameters.add("oid", _oid);
-    this.parameters.add("command", _commandUUID.toString());
-    initialise();
+    this(_commandUUID, _oid, null);
   }
 
   /**
-   * This method initialises the AbstractModel by setting the instance
-   * variables.
+   * Constructor.
    *
-   * @throws EFapsException
+   * @param _commandUUID    UUID for this Model
+   * @param _oid            oid for this Model
+   * @param _openerId       id of the opener
    */
-  private void initialise() {
-    this.oid = getParameter("oid");
+  public AbstractUIObject(final UUID _commandUUID, final String _oid,
+                          final String _openerId) {
+    initialise(_commandUUID, _oid, _openerId);
+  }
+
+  /**
+   * Method initializes the model.
+   *
+   * @param _commandUUID    UUID for this Model
+   * @param _oid            oid for this Model
+   * @param _openerId       id of the opener
+   */
+  private void initialise(final UUID _commandUUID, final String _oid,
+                          final String _openerId) {
+    this.openerId = _openerId;
+
+    this.oid = _oid;
     if ((this.oid != null) && (this.oid.length() > 0))  {
       this.callInstance = new Instance(this.oid);
     }
-    final AbstractCommand command =
-        getCommand(UUID.fromString(getParameter("command")));
+    final AbstractCommand command = getCommand(_commandUUID);
     this.commandUUID = command.getUUID();
     this.mode = command.getTargetMode();
     this.target = command.getTarget();
@@ -186,7 +209,7 @@ public abstract class AbstractUIObject implements IClusterable {
       this.callingCommandUUID = this.commandUUID;
       this.commandUUID =
           command.getTargetSearch().getDefaultCommand().getUUID();
-      this.setMode(TargetMode.SEARCH);
+      setMode(TargetMode.SEARCH);
       if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
         this.submit = true;
       }
@@ -292,6 +315,24 @@ public abstract class AbstractUIObject implements IClusterable {
   }
 
   /**
+   * Getter method for instance variable {@link #openerId}.
+   *
+   * @return value of instance variable {@link #openerId}
+   */
+  public String getOpenerId() {
+    return this.openerId;
+  }
+
+  /**
+   * Setter method for instance variable {@link #openerId}.
+   *
+   * @param _openerId value for instance variable {@link #openerId}
+   */
+  public void setOpenerId(final String _openerId) {
+    this.openerId = _openerId;
+  }
+
+  /**
    * This is the getter method for the instance variable {@link #maxGroupCount}.
    *
    * @return value of instance variable {@link #maxGroupCount}
@@ -353,51 +394,6 @@ public abstract class AbstractUIObject implements IClusterable {
    */
   public Instance getCallInstance() {
     return this.callInstance;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #parameters}.
-   *
-   * @return value of instance variable {@link #parameters}
-   */
-  public PageParameters getPageParameters() {
-    return this.parameters;
-  }
-
-  /**
-   * This Method returns the Value of a Parameter for the given key. It searches
-   * for the Parameter first in the instance variable {@link #parameters} and if
-   * not found in the Context.
-   *
-   * @param _key
-   *                Key for the Parameter to retrieve
-   * @return Parameter for the key, null if not found
-   * @throws EFapsException
-   */
-  public String getParameter(final String _key) {
-    String ret = null;
-    try {
-      String[] values;
-
-      if (this.parameters.get(_key) instanceof String[]) {
-        values = (String[]) this.parameters.get(_key);
-        if (values != null) {
-          ret = values[0];
-        }
-      } else {
-        ret = (String) this.parameters.get(_key);
-      }
-      if (ret == null) {
-        values = Context.getThreadContext().getParameters().get(_key);
-        if (values != null) {
-          ret = values[0];
-        }
-      }
-    } catch (final EFapsException e) {
-      throw new RestartResponseException(new ErrorPage(e));
-    }
-
-    return ret;
   }
 
   /**
@@ -549,7 +545,7 @@ public abstract class AbstractUIObject implements IClusterable {
     if (this.callingCommandUUID == null) {
       command = this.getCommand();
     } else {
-      command = this.getCallingCommand();
+      command = getCallingCommand();
     }
 
     if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
@@ -559,7 +555,7 @@ public abstract class AbstractUIObject implements IClusterable {
                                     ParameterValues.PARAMETERS,
                                     Context.getThreadContext().getParameters());
       } else {
-        final String[] contextoid = { this.getOid() };
+        final String[] contextoid = { getOid() };
         Context.getThreadContext().getParameters().put("oid", contextoid);
         ret = command.executeEvents(EventType.UI_COMMAND_EXECUTE,
                                ParameterValues.CALL_INSTANCE, getCallInstance(),

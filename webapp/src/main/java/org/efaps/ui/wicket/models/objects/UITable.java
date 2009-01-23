@@ -221,6 +221,19 @@ public class UITable extends AbstractUIObject {
   }
 
   /**
+   * Constructor setting the uuid and OID.
+   *
+   * @param _commandUUID  UUID of the Command
+   * @param _oid          OID of the instance
+   * @param _openerId     id of the opener
+   */
+  public UITable(final UUID _commandUUID, final String _oid,
+                 final String _openerId) {
+    super(_commandUUID, _oid, _openerId);
+    initialise();
+  }
+
+  /**
    * Method to get the List of Instances for the table.
    * @return List with List of instances
    * @throws EFapsException on error
@@ -272,14 +285,14 @@ public class UITable extends AbstractUIObject {
         }
         SortDirection sortdirection = SortDirection.NONE;
         if (field.getName().equals(this.sortKey)) {
-          sortdirection = this.getSortDirection();
+          sortdirection = getSortDirection();
         }
         final UITableHeader headermodel
                                     = new UITableHeader(field, sortdirection);
         this.headers.add(headermodel);
         if (!field.isFixedWidth()) {
           if (userWidthList != null) {
-            if (this.isShowCheckBoxes()) {
+            if (isShowCheckBoxes()) {
               headermodel.setWidth(userWidthList.get(i + 1));
             } else {
               headermodel.setWidth(userWidthList.get(i));
@@ -290,10 +303,10 @@ public class UITable extends AbstractUIObject {
       }
       query.execute();
 
-      this.executeRowResult(instMapper, query, fields);
+      executeRowResult(instMapper, query, fields);
 
       if (this.sortKey != null) {
-        this.sort();
+        sort();
       }
       super.setInitialised(true);
     } catch (final Exception e) {
@@ -344,9 +357,9 @@ public class UITable extends AbstractUIObject {
 
           final FieldValue fieldvalue =
                                   new FieldValue(field, attr, value, instance);
-          if (this.isCreateMode() && field.isEditable()) {
+          if (isCreateMode() && field.isEditable()) {
             strValue = fieldvalue.getCreateHtml(getCallInstance(), instance);
-          } else if (this.isEditMode() && field.isEditable()) {
+          } else if (isEditMode() && field.isEditable()) {
             strValue = fieldvalue.getEditHtml(getCallInstance(), instance);
           } else {
             strValue = fieldvalue.getViewHtml(getCallInstance(), instance);
@@ -578,7 +591,7 @@ public class UITable extends AbstractUIObject {
    * @return  List of fields
    */
   private List<Field> getUserSortedColumns() {
-    final List<Field> fields = this.getTable().getFields();
+    final List<Field> fields = getTable().getFields();
     List<Field> ret = new ArrayList<Field>();
     try {
       if (Context.getThreadContext().containsUserAttribute(
@@ -710,21 +723,21 @@ public class UITable extends AbstractUIObject {
       }
       // set default sort
       if (command.getTargetTableSortKey() != null) {
-        this.sortKey = getCommand().getTargetTableSortKey();
+        this.sortKey = command.getTargetTableSortKey();
         this.sortDirection = command.getTargetTableSortDirection();
       }
 
       // set show check boxes
-      boolean showCheckBoxesTmp = getCommand().isTargetShowCheckBoxes();
-      if (!showCheckBoxesTmp) {
-        final UUID cldUUID = UUID.fromString(getParameter("command"));
-        if (cldUUID != null) {
-          final AbstractCommand cmd = getCommand(cldUUID);
-          showCheckBoxesTmp =
-              (cmd != null) && cmd.hasEvents(EventType.UI_COMMAND_EXECUTE);
-        }
-      }
-      this.showCheckBoxes = showCheckBoxesTmp;
+ //     final boolean showCheckBoxesTmp = command.isTargetShowCheckBoxes() && command.hasEvents(EventType.UI_COMMAND_EXECUTE);
+//      if (!showCheckBoxesTmp) {
+//        final UUID cldUUID = UUID.fromString(getParameter("command"));
+//        if (cldUUID != null) {
+//          final AbstractCommand cmd = getCommand(cldUUID);
+//          showCheckBoxesTmp =
+//              (cmd != null) && command.hasEvents(EventType.UI_COMMAND_EXECUTE);
+//        }
+//      }
+      this.showCheckBoxes = command.isTargetShowCheckBoxes();
       // get the User spesific Attributes if exist overwrite the defaults
       try {
         if (Context.getThreadContext().containsUserAttribute(

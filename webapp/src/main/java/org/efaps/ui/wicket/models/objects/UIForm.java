@@ -127,14 +127,42 @@ public class UIForm extends AbstractUIObject {
     } else if (command.getTargetForm() != null) {
       this.formUUID = command.getTargetForm().getUUID();
     }
-
   }
+
+  /**
+   * Constructor.
+   *
+   * @param _commandUUID    UUID of the command
+   * @param _oid            oid for this model
+   */
+  public UIForm(final UUID _commandUUID, final String _oid) {
+    this(_commandUUID, _oid, null);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param _commandUUID    UUID of the command
+   * @param _oid            oid for this model
+   * @param _openerId       id of the opener
+   */
+  public UIForm(final UUID _commandUUID, final String _oid,
+                final String _openerId) {
+    super(_commandUUID, _oid, _openerId);
+    final AbstractCommand command = super.getCommand();
+    if (command == null) {
+      this.formUUID = null;
+    } else if (command.getTargetForm() != null) {
+      this.formUUID = command.getTargetForm().getUUID();
+    }
+  }
+
   /**
    * Method used to reset this UIForm.
    */
   @Override
   public void resetModel() {
-    this.setInitialised(false);
+    setInitialised(false);
     this.elements.clear();
   }
 
@@ -168,8 +196,10 @@ public class UIForm extends AbstractUIObject {
                 rowgroupcount = group.getGroupCount();
               } else if (field instanceof FieldTable) {
                 if (!isEditMode()) {
-                  final UIFieldTable tablemodel = new UIFieldTable(this
-                      .getCommandUUID(), this.getOid(), ((FieldTable) field));
+                  final UIFieldTable tablemodel
+                                       = new UIFieldTable(getCommandUUID(),
+                                                          getOid(),
+                                                          ((FieldTable) field));
                   this.elements.add(new Element(ElementType.TABLE, tablemodel));
                   addNew = true;
                 }
@@ -324,7 +354,7 @@ public class UIForm extends AbstractUIObject {
                             _oid,
                             "",
                             "",
-                            this.getMode(),
+                            getMode(),
                             _label,
                             isEditMode());
 
@@ -430,7 +460,7 @@ public class UIForm extends AbstractUIObject {
                               oid,
                               strValue,
                               icon,
-                              this.getMode(),
+                              getMode(),
                               _label,
                               uiType));
     }
@@ -494,13 +524,14 @@ public class UIForm extends AbstractUIObject {
           if (field.getLabel() != null) {
             label = field.getLabel();
           } else if (attr != null) {
-            label = attr.getParent().getName() + "/" + attr.getName() + ".Label";
+            label = attr.getParent().getName()
+                              + "/" + attr.getName() + ".Label";
           } else {
             label = "Unknown";
           }
           final Instance fieldInstance = getCallInstance();
           final FieldValue fieldvalue
-                                = new FieldValue(field, attr, "", fieldInstance);
+                               = new FieldValue(field, attr, "", fieldInstance);
 
           String strValue = null;
           if (isCreateMode()) {
@@ -513,7 +544,7 @@ public class UIForm extends AbstractUIObject {
                                       : null;
           final UIFormCell cell = new UIFormCell(field,
                                                  strValue,
-                                                 this.getMode(),
+                                                 getMode(),
                                                  label,
                                                  attrTypeName);
           if (isSearchMode()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,13 @@
 package org.efaps.ui.wicket.components.table.cell;
 
 import org.apache.wicket.PageMap;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
+
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
@@ -47,31 +47,60 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
  */
 public class AjaxLinkContainer extends WebMarkupContainer {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
-  public AjaxLinkContainer(final String id, final IModel<?> model) {
-    super(id, model);
+  /**
+   * Constructor.
+   *
+   * @param _wicketId wicket id of this component
+   * @param _model    model for thid component
+   */
+  public AjaxLinkContainer(final String _wicketId, final IModel<?> _model) {
+    super(_wicketId, _model);
     this.add(new AjaxSelfCallBackBehavior());
     this.add(new AjaxParentCallBackBehavior());
   }
 
+  /**
+   * The tag must be overwritten.
+   * @param _tag tag to write.
+   */
   @Override
-  protected void onComponentTag(ComponentTag tag) {
-    super.onComponentTag(tag);
-    tag.put("href", "#");
+  protected void onComponentTag(final ComponentTag _tag) {
+    super.onComponentTag(_tag);
+    _tag.put("href", "#");
   }
 
+  /**
+   * Class is used to call an event from inside the parent.
+   *
+   */
   public class AjaxParentCallBackBehavior extends AbstractAjaxCallBackBehavior {
 
+    /**
+     * Needed for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Constructor.
+     */
     public AjaxParentCallBackBehavior() {
       super("onmouseup", Target.PARENT);
     }
 
+    /**
+     * Method is executed on mouseup.
+     *
+     * @param _target AjaxRequestTarget
+     */
     @Override
     protected void onEvent(final AjaxRequestTarget _target) {
-      final UITableCell cellmodel = (UITableCell) super.getComponent().getDefaultModelObject();
+      final UITableCell cellmodel
+                   = (UITableCell) super.getComponent().getDefaultModelObject();
       Instance instance = null;
       if (cellmodel.getOid() != null) {
         instance = new Instance(cellmodel.getOid());
@@ -89,34 +118,45 @@ public class AjaxLinkContainer extends WebMarkupContainer {
           throw new RestartResponseException(new ErrorPage(ex));
         }
 
-        final PageParameters para = new PageParameters();
-        para.add("command", menu.getUUID().toString());
-        para.add("oid", cellmodel.getOid());
-
         final String listMenuKey =
-            ((AbstractContentPage) this.getComponent().getPage())
+            ((AbstractContentPage) getComponent().getPage())
                 .getMenuTreeKey();
         final MenuTree menutree =
-            (MenuTree) ((EFapsSession) this.getComponent().getSession())
+            (MenuTree) ((EFapsSession) getComponent().getSession())
                 .getFromCache(listMenuKey);
 
-        menutree.addChildMenu(para,_target);
-
+        menutree.addChildMenu(menu.getUUID(), cellmodel.getOid(), _target);
       }
     }
   }
 
+  /**
+   * Class is used to call an event from inside istself.
+   *
+   */
   public class AjaxSelfCallBackBehavior extends AjaxEventBehavior {
 
+    /**
+     * Needed for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Constructor.
+     */
     public AjaxSelfCallBackBehavior() {
       super("onClick");
     }
 
+    /**
+     * Method is executed on click.
+     *
+     * @param _target AjaxRequestTarget
+     */
     @Override
-    protected void onEvent(AjaxRequestTarget arg0) {
-      final UITableCell cellmodel = (UITableCell) super.getComponent().getDefaultModelObject();
+    protected void onEvent(final AjaxRequestTarget _target) {
+      final UITableCell cellmodel
+                   = (UITableCell) super.getComponent().getDefaultModelObject();
       Instance instance = null;
       if (cellmodel.getOid() != null) {
         instance = new Instance(cellmodel.getOid());
@@ -140,20 +180,19 @@ public class AjaxLinkContainer extends WebMarkupContainer {
           }
         }
 
-        final PageParameters parameters = new PageParameters();
-        parameters.add("command", menu.getUUID().toString());
-        parameters.add("oid", cellmodel.getOid());
         AbstractContentPage page;
         if (menu.getTargetTable() != null) {
-          page =
-              new TablePage(parameters, PageMap
-                  .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME));
+          page = new TablePage(
+                      PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+                      menu.getUUID(),
+                      cellmodel.getOid());
         } else {
-          page =
-              new FormPage(parameters, null, PageMap
-                  .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME));
+          page = new FormPage(
+                      PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+                      menu.getUUID(),
+                      cellmodel.getOid());
         }
-        page.setMenuTreeKey(((AbstractContentPage) this.getComponent()
+        page.setMenuTreeKey(((AbstractContentPage) getComponent()
             .getPage()).getMenuTreeKey());
         super.getComponent().getRequestCycle().setResponsePage(page);
       }

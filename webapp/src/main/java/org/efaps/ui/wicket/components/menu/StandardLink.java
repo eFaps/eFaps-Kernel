@@ -24,7 +24,6 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.wicket.PageMap;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.model.IModel;
@@ -34,7 +33,9 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -73,51 +74,65 @@ public class StandardLink extends AbstractMenuItemLink {
     final UIMenuItem model = super.getModelObject();
 
     final AbstractCommand command = model.getCommand();
-
-    // in case of popup store the opener model in the session
+    String openerId = null;
+    // in case of popup is opened store the Opener in the session
     if (command.getTarget() == Target.POPUP) {
-      ((EFapsSession) getSession()).setOpenerModel(getPage().getDefaultModel());
+      final Opener opener = new Opener(getPage().getDefaultModel(),
+                                       getPage().getPageMapName());
+      ((EFapsSession) getSession()).storeOpener(opener);
+      openerId = opener.getId();
+      if (getPage() instanceof AbstractContentPage) {
+        opener.setMenuTreeKey(((AbstractContentPage) getPage())
+            .getMenuTreeKey());
+      }
     }
 
-    final PageParameters para = new PageParameters();
-    para.add("command", command.getUUID().toString());
-    para.add("oid", model.getOid());
-
     if (command.getTargetTable() != null) {
+
       if (command.getProperty("TargetStructurBrowserField") != null) {
-        final InlineFrame iframe
-            = new InlineFrame(MainPage.IFRAME_WICKETID,
-                              PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
-                              StructurBrowserPage.class,
-                              para);
+        final StructurBrowserPage page = new StructurBrowserPage(
+                                  PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
+                                  model.getCommandUUID(),
+                                  model.getOid());
+
+        final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID,
+                                                   page);
         getPage().addOrReplace(iframe);
       } else {
         if (getPage() instanceof MainPage) {
-          final InlineFrame iframe
-              = new InlineFrame(MainPage.IFRAME_WICKETID,
-                                PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
-                                TablePage.class,
-                                para);
+          final TablePage page
+                  = new TablePage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
+                                  model.getCommandUUID(),
+                                  model.getOid());
+          final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID,
+                                                     page);
 
           getPage().addOrReplace(iframe);
         } else {
-          final TablePage table = new TablePage(para,
-                                           getPopupSettings().getPageMap(null));
+          final TablePage table
+                            = new TablePage(getPopupSettings().getPageMap(null),
+                                            model.getCommandUUID(),
+                                            model.getOid(),
+                                            openerId);
           setResponsePage(table);
         }
       }
     } else if (command.getTargetForm() != null
         || command.getTargetSearch() != null) {
       if (getPage() instanceof MainPage && command.getTargetSearch() == null) {
-        final InlineFrame iframe
-              = new InlineFrame(MainPage.IFRAME_WICKETID,
-                                PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
-                                FormPage.class,
-                                para);
-        this.getPage().addOrReplace(iframe);
+        final FormPage page
+                   = new FormPage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
+                                  model.getCommandUUID(),
+                                  model.getOid());
+        final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID,
+                                                   page);
+        getPage().addOrReplace(iframe);
       } else {
         final FormPage formpage
-                = new FormPage(para, null, getPopupSettings().getPageMap(null));
+                             = new FormPage(getPopupSettings().getPageMap(null),
+                                            model.getCommandUUID(),
+                                            model.getOid(),
+                                            openerId);
         setResponsePage(formpage);
       }
     } else {

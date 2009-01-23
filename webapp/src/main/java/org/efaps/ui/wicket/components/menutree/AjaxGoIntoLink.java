@@ -24,10 +24,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.wicket.PageMap;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
+
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -60,41 +60,40 @@ public class AjaxGoIntoLink extends AjaxLink<Object> {
   public void onClick(final AjaxRequestTarget _target) {
 
     // update the Content
-    UIMenuItem model = (UIMenuItem) this.node.getUserObject();
+    final UIMenuItem model = (UIMenuItem) this.node.getUserObject();
 
-    AbstractCommand cmd = model.getCommand();
-    PageParameters para = new PageParameters();
-    para.add("oid", model.getOid());
-    para.add("command", cmd.getUUID().toString());
+    final AbstractCommand cmd = model.getCommand();
 
-    InlineFrame page;
+    InlineFrame frame;
     if (cmd.getTargetTable() != null) {
-      page =
-          new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-              .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
-              TablePage.class, para);
+      final TablePage page = new TablePage(
+                      PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+                      model.getCommandUUID(),
+                      model.getOid());
+      frame = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, page);
     } else {
-      page =
-          new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-              .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
-              FormPage.class, para);
+      final FormPage page = new FormPage(
+                      PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+                      model.getCommandUUID(),
+                      model.getOid());
+      frame = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, page);
     }
 
-    InlineFrame component =
+    final InlineFrame component =
         (InlineFrame) getPage().get(
             ((ContentContainerPage) getPage()).getInlinePath());
-    page.setOutputMarkupId(true);
+    frame.setOutputMarkupId(true);
 
-    component.replaceWith(page);
-    _target.addComponent(page.getParent());
+    component.replaceWith(frame);
+    _target.addComponent(frame.getParent());
 
     // update MenuTree
-    MenuTree menutree = (MenuTree) findParent(MenuTree.class);
+    final MenuTree menutree = findParent(MenuTree.class);
 
-    MenuTree newMenuTree =
+    final MenuTree newMenuTree =
         new MenuTree(menutree.getId(), new DefaultTreeModel(this.node),
             menutree.getMenuKey());
-    ((EFapsSession) this.getSession()).putIntoCache(menutree.getMenuKey(),
+    ((EFapsSession) getSession()).putIntoCache(menutree.getMenuKey(),
         newMenuTree);
 
     model.setStepInto(true);

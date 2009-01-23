@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,8 @@
 
 package org.efaps.ui.wicket.components.split;
 
-import org.apache.wicket.PageParameters;
+import java.util.UUID;
+
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 
@@ -38,15 +39,30 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  */
 public class StructBrowsSplitPanel extends Panel {
 
+  /**
+   * Reference to the stylesheet.
+   */
+  public static final EFapsContentReference CSS
+                        = new EFapsContentReference(StructBrowsSplitPanel.class,
+                                                   "StructBrowsSplitPanel.css");
+
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
-  public static final EFapsContentReference CSS =
-      new EFapsContentReference(StructBrowsSplitPanel.class,
-          "StructBrowsSplitPanel.css");
-
+  /**
+   * Constructor.
+   *
+   * @param _wicketId     wicket id of this component
+   * @param _commandUUID  UUID of the related command
+   * @param _oid          oid
+   * @param _listMenuKey  key to the list menu
+   */
   public StructBrowsSplitPanel(final String _wicketId,
-                               final String _listmenukey,
-                               final PageParameters _parameters) {
+                               final UUID _commandUUID,
+                               final String _oid,
+                               final String _listMenuKey) {
     super(_wicketId);
 
     this.add(StaticHeaderContributor.forCss(CSS));
@@ -62,8 +78,11 @@ public class StructBrowsSplitPanel extends Panel {
     top.add(new ContentPaneBehavior(50, 20));
     this.add(top);
 
-    final StructurBrowserTreePanel stuctbrows =
-        new StructurBrowserTreePanel("stuctbrows", _parameters, _listmenukey);
+    final StructurBrowserTreePanel stuctbrows
+                                    = new StructurBrowserTreePanel("stuctbrows",
+                                          _commandUUID,
+                                          _oid,
+                                          _listMenuKey);
     stuctbrows.setOutputMarkupId(true);
     top.add(stuctbrows);
     header.addHideComponent(stuctbrows);
@@ -76,7 +95,7 @@ public class StructBrowsSplitPanel extends Panel {
     final WebMarkupContainer menuact = new WebMarkupContainer("menuact");
     menuact.setOutputMarkupId(true);
     bottom.add(menuact);
-    menuact.add(new MenuTree("menu", _parameters, _listmenukey));
+    menuact.add(new MenuTree("menu", _commandUUID, _oid, _listMenuKey));
 
   }
 }

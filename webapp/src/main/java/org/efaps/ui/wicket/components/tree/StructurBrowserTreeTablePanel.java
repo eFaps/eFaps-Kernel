@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,11 @@
 
 package org.efaps.ui.wicket.components.tree;
 
+import java.util.UUID;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.Response;
 import org.apache.wicket.extensions.markup.html.tree.table.AbstractRenderableColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.AbstractTreeColumn;
@@ -47,8 +48,8 @@ public class StructurBrowserTreeTablePanel extends Panel {
   private static final long serialVersionUID = 1L;
 
   public StructurBrowserTreeTablePanel(final String _id,
-                                       final PageParameters _parameters) {
-    this(_id,  new StructurBrowserModel(new UIStructurBrowser(_parameters)));
+                                       final UUID _uuid, final String _oid) {
+    this(_id,  new StructurBrowserModel(new UIStructurBrowser(_uuid, _oid)));
   }
 
   public StructurBrowserTreeTablePanel(final String _id,
@@ -90,7 +91,7 @@ public class StructurBrowserTreeTablePanel extends Panel {
 
     private static final long serialVersionUID = 1L;
 
-    public TreeColumn(ColumnLocation location, String header) {
+    public TreeColumn(final ColumnLocation location, final String header) {
       super(location, header);
     }
 
@@ -109,10 +110,10 @@ public class StructurBrowserTreeTablePanel extends Panel {
     private final int index;
 
     public SimpleColumn(final ColumnLocation _location, final String _header,
-                        int _index) {
+                        final int _index) {
       super(_location, _header);
       this.index = _index;
-      this.setContentAsTooltip(true);
+      setContentAsTooltip(true);
     }
 
     @Override
@@ -130,7 +131,7 @@ public class StructurBrowserTreeTablePanel extends Panel {
 
     private static final long serialVersionUID = 1L;
 
-    public SelectColumn(ColumnLocation location, String header) {
+    public SelectColumn(final ColumnLocation location, final String header) {
       super(location, header);
     }
 

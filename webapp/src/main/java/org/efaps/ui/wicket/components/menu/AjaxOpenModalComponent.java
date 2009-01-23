@@ -52,7 +52,7 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
   public AjaxOpenModalComponent(final String _wicketId,
                                 final IModel <UIMenuItem> _model) {
     super(_wicketId, _model);
-    this.add(new AjaxOpenModalBehavior());
+    add(new AjaxOpenModalBehavior());
   }
 
   /**

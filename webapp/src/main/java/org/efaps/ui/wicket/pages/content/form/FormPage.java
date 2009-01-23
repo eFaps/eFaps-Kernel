@@ -20,6 +20,8 @@
 
 package org.efaps.ui.wicket.pages.content.form;
 
+import java.util.UUID;
+
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
@@ -56,48 +58,73 @@ public class FormPage extends AbstractContentPage {
   private static final EFapsContentReference CSS =
       new EFapsContentReference(FormPage.class, "FormPage.css");
 
+  /**
+   * Constructor called from the client directly by using parameters. Normally
+   * it should only contain one parameter Opener.OPENER_PARAKEY to access the
+   * opener.
+   *
+   * @param _parameters PageParameters
+   */
   public FormPage(final PageParameters _parameters) {
-    this(_parameters, null);
-  }
-
-  public FormPage(final PageParameters _parameters,
-                  final ModalWindowContainer _modalWindow) {
-    this(new FormModel(new UIForm(_parameters)), _modalWindow);
+    this(new FormModel(new UIForm(_parameters)));
   }
 
   public FormPage(final IModel<?> _model) {
-    this(_model, null);
-  }
-
-  public FormPage(final IModel<?> _model, final ModalWindowContainer _modalWindow) {
-    super(_model, _modalWindow);
+    super(_model, null);
     this.addComponents();
   }
 
-  public FormPage(final PageParameters _parameters,
-                  final ModalWindowContainer _modalWindow,
-                  final IPageMap _pagemap) {
-    this(new FormModel(new UIForm(_parameters)), _modalWindow, _pagemap);
+  /**
+   * @param _commandUUID
+   * @param _oid
+   */
+  public FormPage(final IPageMap _pagemap, final UUID _commandUUID, final String _oid) {
+   super(_pagemap, new FormModel(new UIForm(_commandUUID, _oid)), null);
+   this.addComponents();
   }
 
-  public FormPage(final IModel<?> _model, final ModalWindowContainer _modalWindow,
-                  final IPageMap _pagemap) {
-    super(_model, _modalWindow, _pagemap);
+  /**
+   * @param pageMap
+   * @param commandUUID
+   * @param oid
+   * @param openerId
+   */
+  public FormPage(final IPageMap pageMap, final UUID commandUUID, final String oid,
+      final String openerId) {
+    super(pageMap, new FormModel(new UIForm(commandUUID,oid,openerId)), null);
+    this.addComponents();
+  }
+
+  /**
+   * @param _commandUUID
+   * @param _oid
+   */
+  public FormPage(final UUID _commandUUID, final String _oid) {
+   this(_commandUUID, _oid, (ModalWindowContainer) null);
+  }
+
+  /**
+   * @param commandUUID
+   * @param oid
+   * @param modalWindow
+   */
+  public FormPage(final UUID commandUUID, final String oid, final ModalWindowContainer _modalWindow) {
+    super(new FormModel(new UIForm(commandUUID,oid)), _modalWindow);
     this.addComponents();
   }
 
   protected void addComponents() {
-    add(StaticHeaderContributor.forCss(CSS));
-
-    final FormContainer form = new FormContainer("form");
-    add(form);
-    super.addComponents(form);
-
     final UIForm model = (UIForm) super.getDefaultModelObject();
 
     if (!model.isInitialised()) {
       model.execute();
     }
+
+    add(StaticHeaderContributor.forCss(CSS));
+
+    final FormContainer form = new FormContainer("form");
+    add(form);
+    super.addComponents(form);
 
     final WebMarkupContainer script = new WebMarkupContainer("selectscript");
     this.add(script);
@@ -105,30 +132,6 @@ public class FormPage extends AbstractContentPage {
         || model.isEditMode()
         || model.isSearchMode());
     updateFormContainer(this, form, model);
-//    int i = 0;
-//    final RepeatingView elementRepeater = new RepeatingView("elementRepeater");
-//    form.add(elementRepeater);
-//    for (final Element element : model.getElements()) {
-//      if (element.getType().equals(ElementType.FORM)) {
-//        elementRepeater.add(new FormPanel(elementRepeater.newChildId(), this,
-//            new FormModel(model), (FormElement) element.getElement()));
-//      } else if (element.getType().equals(ElementType.HEADING)) {
-//        final UIHeading headingmodel = (UIHeading) element.getElement();
-//        elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(),
-//            headingmodel.getLabel(), headingmodel.getLevel()));
-//      } else if (element.getType().equals(ElementType.TABLE)) {
-//        i++;
-//
-//        final UIFieldTable fieldTable = (UIFieldTable) element.getElement();
-//        fieldTable.setTableId(i);
-//        final TablePanel table =
-//            new TablePanel(elementRepeater.newChildId(), new TableModel(fieldTable), this);
-//        final HeaderPanel header =
-//            new HeaderPanel(elementRepeater.newChildId(), table);
-//        elementRepeater.add(header);
-//        elementRepeater.add(table);
-//      }
-//    }
   }
 
   public static void updateFormContainer(final Page _page, final FormContainer _form, final UIForm _model) {

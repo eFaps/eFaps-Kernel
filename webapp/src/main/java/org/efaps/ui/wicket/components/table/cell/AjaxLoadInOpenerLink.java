@@ -30,7 +30,10 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
+import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
@@ -60,13 +63,16 @@ public class AjaxLoadInOpenerLink extends AjaxLink<UITableCell> {
                               final IModel<UITableCell> _model) {
     super(_wicketId, _model);
   }
+
   /**
    * Method to load something inside the opener window.
+   *
    * @param _target   AjaxRequestTarget
    */
   @Override
   public void onClick(final AjaxRequestTarget _target) {
     Instance instance = null;
+
     final UITableCell cellmodel = super.getModelObject();
     if (cellmodel.getOid() != null) {
       instance = new Instance(cellmodel.getOid());
@@ -82,9 +88,18 @@ public class AjaxLoadInOpenerLink extends AjaxLink<UITableCell> {
                 + instance.getType().getName());
         throw new RestartResponseException(new ErrorPage(ex));
       }
+      final String openerId
+                  = ((UITable) getPage().getDefaultModelObject()).getOpenerId();
+      // check if the model exist, because if it was opened from the main window
+      // there is no model an the uuid and oid are set manually
+      final Opener opener = ((EFapsSession) getSession()).getOpener(openerId);
+      if (opener.getModel() == null) {
+        opener.setOid(cellmodel.getOid());
+        opener.setCommandUUID(menu.getUUID());
+      }
       final PageParameters parameters = new PageParameters();
-      parameters.add("command", menu.getUUID().toString());
-      parameters.add("oid", cellmodel.getOid());
+      parameters.add(Opener.OPENER_PARAKEY,
+                     openerId);
 
       //the url must be in the pagemap of the frame inside the mainpage
       final IPageMap pageMap

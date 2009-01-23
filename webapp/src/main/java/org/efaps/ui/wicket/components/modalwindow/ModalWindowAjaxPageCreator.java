@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,43 +21,59 @@
 package org.efaps.ui.wicket.components.modalwindow;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 
-import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 
 /**
+ * Thic Class is used to create a page inside a modal window lazily.
  * @author jmox
  * @version $Id:ModalWindowAjaxPageCreator.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator {
 
+  /**
+   * Needed foer serialization.
+   */
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Model for the page to be created.
+   */
   private final UIMenuItem imodel;
 
+  /**
+   * The modal window the page will be created in.
+   */
   private final ModalWindowContainer modalWindow;
 
+  /**
+   * Constructor.
+   *
+   * @param _model        model for the page to create
+   * @param _modalWindow  modal window the page will be created in
+   */
   public ModalWindowAjaxPageCreator(final UIMenuItem _model,
                                     final ModalWindowContainer _modalWindow) {
     this.imodel = _model;
     this.modalWindow = _modalWindow;
   }
-
+  /**
+   * Method that creates the page.
+   * @return new Page
+   */
   public Page createPage() {
     Page ret = null;
-    UIMenuItem model = this.imodel;
-    AbstractCommand command = model.getCommand();
-    PageParameters para = new PageParameters("command=" + command.getUUID());
-    para.add("oid", model.getOid());
+    final UIMenuItem model = this.imodel;
 
-    if (command.getTargetTable() != null) {
-      ret = new TablePage(para);
+    if (model.getCommand().getTargetTable() != null) {
+      ret = new TablePage(model.getCommandUUID(), model.getOid());
     } else {
-      ret = new FormPage(para, this.modalWindow);
+      ret = new FormPage(model.getCommandUUID(),
+                         model.getOid(),
+                         this.modalWindow);
     }
     return ret;
   }

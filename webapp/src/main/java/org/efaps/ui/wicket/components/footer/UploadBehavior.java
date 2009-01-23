@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
 import org.apache.wicket.behavior.AbstractBehavior;
@@ -36,6 +37,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.components.FileUploadListener;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
@@ -49,7 +51,7 @@ import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO description
+ * Behavior enabling a form to make file uploads.
  *
  * @author jmox
  * @version $Id$
@@ -57,23 +59,33 @@ import org.efaps.util.EFapsException;
 public class UploadBehavior extends AbstractBehavior implements
     FileUploadListener {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
   /**
-   * this instance variable stores the Component this IBhevaior is bind to
+   * This instance variable stores the Component this IBhevaior is bind to.
    */
   private Component component;
 
+  /**
+   * It this UploadBehavior is used inside a modal window it is stored.
+   */
   private final ModalWindowContainer modalWindow;
 
+  /**
+   * Constructor setting the modal window.
+   *
+   * @param _modalWindow modal window to set
+   */
   public UploadBehavior(final ModalWindowContainer _modalWindow) {
     this.modalWindow = _modalWindow;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.behavior.AbstractBehavior#bind(org.apache.wicket.Component)
+  /**
+   * The component this behavior belongs to must be stored.
+   * @param _form component to bind to
    */
   @Override
   public void bind(final Component _form) {
@@ -81,8 +93,13 @@ public class UploadBehavior extends AbstractBehavior implements
     this.component = _form;
   }
 
+  /**
+   * @see org.efaps.ui.wicket.components.FileUploadListener#onSubmit()
+   */
   public void onSubmit() {
-    final UIForm uiForm = (UIForm) this.component.getPage().getDefaultModelObject();
+
+    final UIForm uiForm = (UIForm) this.component.getPage()
+        .getDefaultModelObject();
 
     try {
       executeEvents(uiForm.getNewValues());
@@ -90,54 +107,59 @@ public class UploadBehavior extends AbstractBehavior implements
       throw new RestartResponseException(new ErrorPage(e));
     }
 
-    String script;
+    final StringBuilder script = new StringBuilder();
     if (uiForm.getTarget() == Target.MODAL) {
 
-      script =
-          JavascriptUtils.SCRIPT_OPEN_TAG
-              + "  window.onload = function() {"
-              + this.modalWindow.getReloadJavaScript()
-              + ModalWindowContainer.getCloseJavacript()
-              + "}"
-              + JavascriptUtils.SCRIPT_CLOSE_TAG;
+      script.append(JavascriptUtils.SCRIPT_OPEN_TAG)
+        .append("  window.onload = function() {")
+        .append(this.modalWindow.getReloadJavaScript())
+        .append(ModalWindowContainer.getCloseJavacript())
+        .append("}")
+        .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
 
     } else {
-      final AbstractModel<?> openermodel =
-          (AbstractModel<?>) ((EFapsSession) Session.get()).getOpenerModel();
+
+      final AbstractModel<?> openermodel
+          = (AbstractModel<?>) ((EFapsSession) Session.get())
+                                  .getOpener(uiForm.getOpenerId()).getModel();
       Class<? extends Page> clazz;
       if (openermodel instanceof TableModel) {
         clazz = TablePage.class;
       } else {
         clazz = FormPage.class;
       }
-      final AbstractUIObject uiobject =
-          (AbstractUIObject) openermodel.getObject();
 
-      final CharSequence url =
-          this.component.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
-              clazz, uiobject.getPageParameters());
-      script =
-          JavascriptUtils.SCRIPT_OPEN_TAG
-              + "  window.onload = function() {"
-              + " opener.location.href = '"
-              + url
-              + "'; self.close();"
-              + "  top.window.close();}"
-              + JavascriptUtils.SCRIPT_CLOSE_TAG;
+      final PageParameters parameters = new PageParameters();
+      parameters.add(Opener.OPENER_PARAKEY, uiForm.getOpenerId());
+
+      final CharSequence url
+          = this.component.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
+                                  clazz,
+                                  parameters);
+
+      script.append(JavascriptUtils.SCRIPT_OPEN_TAG)
+        .append("  window.onload = function() {")
+        .append(" opener.location.href = '")
+        .append(url)
+        .append("'; self.close();")
+        .append("  top.window.close();}")
+        .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
 
     }
     this.component.getRequestCycle().getResponsePage().add(
-        new StringHeaderContributor(script));
+        new StringHeaderContributor(script.toString()));
   }
 
   /**
-   * method that executes the events wich are related to the Model of the
-   * ParentComponent
+   * Method that executes the events which are related to the Model of the
+   * ParentComponent.
    *
+   * @param _other others
    * @return true if the ESJP returned the ReturnValue.TRUE , else false
-   * @throws EFapsException
+   * @throws EFapsException on error
    */
-  private boolean executeEvents(final Map<String,String[]> _other) throws EFapsException {
+  private boolean executeEvents(final Map<String, String[]> _other)
+      throws EFapsException {
 
     boolean ret = true;
     final List<Return> returns =

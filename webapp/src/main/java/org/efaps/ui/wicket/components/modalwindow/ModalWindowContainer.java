@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,33 +27,47 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 
+import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
-
-import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**
+ * This is a wrapper class for a modal window.
  * @author jmox
  * @version $Id:ModalWindowContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ModalWindowContainer extends ModalWindow {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Stores if the child mut be reloaded.
+   */
   private boolean reloadChild = false;
 
+  /**
+   * Stores if the parent must be updated on close.
+   */
   private boolean updateParent = false;
 
-  public ModalWindowContainer(String id) {
-    super(id);
+  /**
+   * Constructor.
+   *
+   * @param _wicketId wicket id of this component
+   */
+  public ModalWindowContainer(final String _wicketId) {
+    super(_wicketId);
     super.setCssClassName(ModalWindow.CSS_CLASS_GRAY);
-
   }
 
   /**
@@ -72,22 +86,31 @@ public class ModalWindowContainer extends ModalWindow {
    * @param _reloadchild
    *                the reloadParent to set
    */
-  public void setReloadChild(boolean _reloadchild) {
+  public void setReloadChild(final boolean _reloadchild) {
     this.reloadChild = _reloadchild;
   }
 
+  /**
+   * Method is called when the modal window is closed.
+   *
+   * @param _target AjaxRequestTarget
+   */
   @Override
   public void close(final AjaxRequestTarget _target) {
     super.close(_target);
     if (this.reloadChild) {
       _target.prependJavascript(getReloadJavaScript());
     }
-
   }
 
+  /**
+   * Method creates a JavaScript top reload the parent page.
+   * @return JavaScript
+   */
   public String getReloadJavaScript() {
-    final AbstractUIObject model = (AbstractUIObject) this.getPage().getDefaultModelObject();
-    String javascript = "";
+    final AbstractUIObject model
+                        = (AbstractUIObject) getPage().getDefaultModelObject();
+    final StringBuilder javascript = new StringBuilder();
     if (model != null) {
       Class<? extends Page> clazz = null;
       if (model instanceof UITable) {
@@ -97,21 +120,24 @@ public class ModalWindowContainer extends ModalWindow {
       } else if (model instanceof UIStructurBrowser) {
         clazz = StructurBrowserPage.class;
       }
-      final PageParameters parameters = model.getPageParameters();
-      parameters.put("eFapsMenuTreeKey", ((AbstractContentPage) this.getPage())
-          .getMenuTreeKey());
+      final Opener opener = new Opener(getPage().getDefaultModel(),
+                                       getPage().getPageMapName());
+      final PageParameters parameters = new PageParameters();
+      parameters.add(Opener.OPENER_PARAKEY, opener.getId());
+      ((EFapsSession) getSession()).storeOpener(opener);
+
       final CharSequence url =
-          this.urlFor(PageMap.forName(this.getPage().getPageMapName()), clazz,
+          urlFor(PageMap.forName(getPage().getPageMapName()), clazz,
               parameters);
 
-      if (this.getPage().getPageMapName().equals(MainPage.IFRAME_PAGEMAP_NAME)) {
-        javascript = "top.frames[0].location.href = '";
+      if (getPage().getPageMapName().equals(MainPage.IFRAME_PAGEMAP_NAME)) {
+        javascript.append("top.frames[0].location.href = '");
       } else {
-        javascript = "top.frames[0].frames[0].location.href = '";
+        javascript.append("top.frames[0].frames[0].location.href = '");
       }
-      javascript += url + "';";
+      javascript.append(url).append("';");
     }
-    return javascript;
+    return javascript.toString();
   }
 
   /**
@@ -127,20 +153,19 @@ public class ModalWindowContainer extends ModalWindow {
   /**
    * This is the setter method for the instance variable {@link #updateParent}.
    *
-   * @param updateParent
-   *                the updateParent to set
+   * @param _updateParent the updateParent to set
    */
-  public void setUpdateParent(final boolean updateParent) {
-    this.updateParent = updateParent;
+  public void setUpdateParent(final boolean _updateParent) {
+    this.updateParent = _updateParent;
   }
 
   /**
    * This method sets this ModalWindowContainer into the state like it was just
-   * created. It uses the defaultvalues as they are defined in
-   * <code>org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow</code>
+   * created. It uses the default values as they are defined in
+   * <code>org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow
+   * </code>
    */
   public void reset() {
-
     super.setMinimalWidth(200);
     super.setMinimalHeight(200);
     super.setInitialHeight(400);
@@ -153,44 +178,49 @@ public class ModalWindowContainer extends ModalWindow {
     super.setCloseButtonCallback(null);
     super.setWindowClosedCallback(null);
     super.setPageMapName("modal-dialog-pagemap");
-
   }
 
   /**
    * This method is a exact copy of the private method getCloseJavacript() in
-   * {@link #org.efaps.ui.wicket.components.modalwindow.ModalWindow}, nut we
-   * need it public
+   * {@link #org.efaps.ui.wicket.components.modalwindow.ModalWindow}, but it has
+   * to be public.
    *
-   * @return
+   * @return JavaScript
    */
   public static String getCloseJavacript() {
-    return "var win;\n" //
-        + "try {\n"
-        + "     win = window.parent.Wicket.Window;\n"
-        + "} catch (ignore) {\n"
-        + "}\n"
-        + "if (typeof(win) == \"undefined\" || typeof(win.current) == \"undefined\") {\n"
-        + "  try {\n"
-        + "     win = window.Wicket.Window;\n"
-        + "  } catch (ignore) {\n"
-        + "  }\n"
-        + "}\n"
-        + "if (typeof(win) != \"undefined\" && typeof(win.current) != \"undefined\") {\n"
-        + "     window.parent.setTimeout(function() {\n"
-        + "             win.current.close();\n"
-        + "     }, 0);\n"
-        + "}";
+    final StringBuilder ret = new StringBuilder();
+    ret.append("var win;\n")
+       .append("try {\n")
+       .append("     win = window.parent.Wicket.Window;\n")
+       .append("} catch (ignore) {\n")
+       .append("}\n")
+       .append("if (typeof(win) == \"undefined\" ")
+         .append("|| typeof(win.current) == \"undefined\") {\n")
+       .append("  try {\n")
+       .append("     win = window.Wicket.Window;\n")
+       .append("  } catch (ignore) {\n")
+       .append("  }\n")
+       .append("}\n")
+       .append("if (typeof(win) != \"undefined\" ")
+         .append("&& typeof(win.current) != \"undefined\") {\n")
+       .append("     window.parent.setTimeout(function() {\n")
+       .append("             win.current.close();\n")
+       .append("     }, 0);\n")
+       .append("}");
+    return ret.toString();
   }
 
-  /*
-   * (non-Javadoc)
+  /**
    *
-   * @see org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow#postProcessSettings(org.apache.wicket.util.string.AppendingStringBuffer)
+   * @see org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow#
+   * postProcessSettings(org.apache.wicket.util.string.AppendingStringBuffer)
+   * @param _settings AppendingStringBuffer
+   * @return AppendingStringBuffer
    */
   @Override
   protected AppendingStringBuffer postProcessSettings(
-                                                      final AppendingStringBuffer _settings) {
-    // cut out that stupit PreconditionScript, because it will not work in case
+      final AppendingStringBuffer _settings) {
+    // cut out that stupid PreconditionScript, because it will not work in case
     // of frames
     final int start = _settings.lastIndexOf("function()");
     _settings.replace(start, _settings.capacity(), "null );};");

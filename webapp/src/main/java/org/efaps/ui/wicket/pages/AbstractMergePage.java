@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
+
 import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.admin.program.bundle.TempFileBundle;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -103,6 +104,7 @@ public abstract class AbstractMergePage extends WebPage {
   public AbstractMergePage(final PageParameters _parameters) {
     super(_parameters);
   }
+
 
   /**
    * in this method the actual merging is done depending on the value of
@@ -250,7 +252,7 @@ public abstract class AbstractMergePage extends WebPage {
    * @param mergeStatics
    *                the mergeStatics to set
    */
-  public void setMergeStatics(boolean mergeStatics) {
+  public void setMergeStatics(final boolean mergeStatics) {
     this.mergeStatics = mergeStatics;
   }
 
