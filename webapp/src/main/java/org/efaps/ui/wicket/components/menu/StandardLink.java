@@ -114,6 +114,10 @@ public class StandardLink extends AbstractMenuItemLink {
                                             model.getCommandUUID(),
                                             model.getOid(),
                                             openerId);
+          if (getPage() instanceof AbstractContentPage) {
+            table.setMenuTreeKey(((AbstractContentPage) getPage())
+                                                            .getMenuTreeKey());
+          }
           setResponsePage(table);
         }
       }
@@ -133,6 +137,10 @@ public class StandardLink extends AbstractMenuItemLink {
                                             model.getCommandUUID(),
                                             model.getOid(),
                                             openerId);
+        if (getPage() instanceof AbstractContentPage) {
+          formpage.setMenuTreeKey(((AbstractContentPage) getPage())
+                                                            .getMenuTreeKey());
+        }
         setResponsePage(formpage);
       }
     } else {

@@ -33,6 +33,7 @@ import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -122,6 +123,7 @@ public class ModalWindowContainer extends ModalWindow {
       }
       final Opener opener = new Opener(getPage().getDefaultModel(),
                                        getPage().getPageMapName());
+      opener.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
       final PageParameters parameters = new PageParameters();
       parameters.add(Opener.OPENER_PARAKEY, opener.getId());
       ((EFapsSession) getSession()).storeOpener(opener);

@@ -27,6 +27,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 
 /**
@@ -72,7 +73,7 @@ public class SearchSubmitLink extends SubmitLink {
     }
 
     final TablePage page = new TablePage(new TableModel(newTable));
-
+    page.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
     getRequestCycle().setResponsePage(page);
 
   }
