@@ -16,36 +16,32 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-command xmlns="http://www.efaps.org/xsd"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-search xmlns="http://www.efaps.org/xsd"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>37cfaf90-e767-4218-bd48-95d0f6e0b094</uuid>
+  <uuid>5b96d9df-2dbc-401f-b81f-c99c48fad4f5</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_User_RoleTree_Persons</name>
-    <!-- target definitions -->
-    <target>
-      <menu>Admin_User_RoleTree_Persons_Menu</menu>
-      <table>Admin_User_PersonTable</table>
-      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
-        <property name="Expand">Admin_User_Person2Role\UserToLink.UserFromLink</property>
-      </evaluate>
-    </target>
-    <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
-    <property name="TargetShowCheckBoxes">true</property>
+    <name>Admin_User_RoleTree_Persons_Menu_Action_AddExistingPerson_Search</name>
+    <!-- defaults -->
+    <default>
+      <command>Admin_User_PersonSearch</command>
+    </default>
+    <!-- childs -->
+    <childs>
+      <child>Admin_User_PersonSearch</child>
+    </childs>
   </definition>
 
-</ui-command>
+</ui-search>
