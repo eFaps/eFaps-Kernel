@@ -174,19 +174,22 @@ public class UIStructurBrowser extends AbstractUIObject {
   private Boolean direction = null;
 
   /**
-   * TODO bloedsinn!!!!!
-   * @param _parameters
+   *  Constructor.
+   *
+   * @param _parameters   Page parameters
    */
   public UIStructurBrowser(final PageParameters _parameters) {
     super(_parameters);
     this.root = true;
+    initialise();
   }
 
   /**
    * Standart constructor, if called this StructurBrowserModel will be defined
    * as root.
    *
-   * @param _parameters
+   * @param _commandUUID  UUID of the calling command
+   * @param _oid          oid
    *
    */
   public UIStructurBrowser(final UUID _commandUUID, final String _oid) {
@@ -199,6 +202,7 @@ public class UIStructurBrowser extends AbstractUIObject {
    *
    * @param _commandUUID  UUID of the command
    * @param _oid          OID
+   * @param _root         is this STrtucturbrowser the root
    */
   private UIStructurBrowser(final UUID _commandUUID, final String _oid,
                             final boolean _root) {
@@ -351,8 +355,9 @@ public class UIStructurBrowser extends AbstractUIObject {
 
         String strValue = "";
 
-        final UIStructurBrowser child =
-            new UIStructurBrowser(super.getCommandUUID(), instance.getOid(), false);
+        final UIStructurBrowser child = new UIStructurBrowser(getCommandUUID(),
+                                                              instance.getOid(),
+                                                              false);
         this.childs.add(child);
         child.setDirection((Boolean) ((instMapper.get(instance).get(0))[1]));
         for (final Field field : getTable().getFields()) {

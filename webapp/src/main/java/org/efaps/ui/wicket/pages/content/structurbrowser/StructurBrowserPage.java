@@ -23,6 +23,8 @@ package org.efaps.ui.wicket.pages.content.structurbrowser;
 import java.util.UUID;
 
 import org.apache.wicket.IPageMap;
+import org.apache.wicket.PageParameters;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
@@ -33,35 +35,74 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
+ * Class renders a page containing a structure browser.
+ *
  * @author jmox
  * @version $Id:StructurBrowserPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
 public class StructurBrowserPage extends AbstractContentPage {
 
+  /**
+   * Reference to the style sheet.
+   */
+  private static final EFapsContentReference CSS
+                         = new EFapsContentReference(StructurBrowserPage.class,
+                                                     "StructurBrowserPage.css");
+
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 7564911406648729094L;
 
-  private static final EFapsContentReference CSS =
-      new EFapsContentReference(StructurBrowserPage.class,
-          "StructurBrowserPage.css");
+  /**
+   * Constructor called from the client directly by using parameters. Normally
+   * it should only contain one parameter Opener.OPENER_PARAKEY to access the
+   * opener.
+   *
+   * @param _parameters PageParameters
+   */
+  public StructurBrowserPage(final PageParameters _parameters) {
+    this(new StructurBrowserModel(new UIStructurBrowser(_parameters)));
+  }
 
-  public StructurBrowserPage(final UUID _uuid, final String _oid) {
-    super(new StructurBrowserModel(new UIStructurBrowser(_uuid, _oid)));
+  /**
+   * @param _model model for this pager
+   */
+  public StructurBrowserPage(final IModel<UIStructurBrowser> _model) {
+    super(_model);
     this.addComponents();
   }
 
   /**
-   * @param forName
-   * @param _commandUUID
-   * @param oid
+   * @param _commandUUID     UUID of the calling command
+   * @param _oid             oid
    */
-  public StructurBrowserPage(final IPageMap _pageMap, final UUID _commandUUID, final String _oid) {
-    super(_pageMap, new StructurBrowserModel(new UIStructurBrowser(_commandUUID, _oid)),null);
+  public StructurBrowserPage(final UUID _commandUUID, final String _oid) {
+    super(new StructurBrowserModel(new UIStructurBrowser(_commandUUID, _oid)));
+    this.addComponents();
   }
 
+  /**
+   * @param _pageMap      pagemap
+   * @param _commandUUID  UUID of the calling command
+   * @param _oid          oid
+   */
+  public StructurBrowserPage(final IPageMap _pageMap, final UUID _commandUUID,
+                             final String _oid) {
+    super(_pageMap,
+          new StructurBrowserModel(new UIStructurBrowser(_commandUUID, _oid)),
+          null);
+    this.addComponents();
+  }
+
+  /**
+   * Method to add the components to this page.
+   */
   protected void addComponents() {
     add(StaticHeaderContributor.forCss(CSS));
 
-    final UIStructurBrowser model = (UIStructurBrowser) super.getDefaultModelObject();
+    final UIStructurBrowser model
+                            = (UIStructurBrowser) super.getDefaultModelObject();
     if (!model.isInitialised()) {
       model.execute();
     }
@@ -70,8 +111,8 @@ public class StructurBrowserPage extends AbstractContentPage {
     this.add(form);
     super.addComponents(form);
 
-    form.add(new StructurBrowserTreeTablePanel("structurBrowserTable",  new StructurBrowserModel(model)));
+    form.add(new StructurBrowserTreeTablePanel("structurBrowserTable",
+                                              new StructurBrowserModel(model)));
 
   }
-
 }
