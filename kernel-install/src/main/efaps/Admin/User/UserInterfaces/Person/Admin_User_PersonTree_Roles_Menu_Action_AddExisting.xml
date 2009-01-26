@@ -38,7 +38,9 @@
     <!-- target definitions -->
     <target>
       <search>Admin_User_PersonTree_Roles_Menu_Action_AddExisting_Search</search>
-      <execute program="org.efaps.esjp.admin.user.Person" method="connectPerson2RoleUI">
+      <execute program="org.efaps.esjp.admin.user.Person" method="connectUser2UserUI">
+        <property name="ConnectParentAttribute">UserFromLink</property>
+        <property name="ConnectChildAttribute">UserToLink</property>
         <property name="ConnectType">Admin_User_Person2Role</property>
       </execute>
     </target>

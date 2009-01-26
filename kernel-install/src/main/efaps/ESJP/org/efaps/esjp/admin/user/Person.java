@@ -49,7 +49,7 @@ public class Person {
    * @return  empty Return
    * @throws EFapsException on error
    */
-  public Return connectPerson2RoleUI(final Parameter _parameter)
+  public Return connectUser2UserUI(final Parameter _parameter)
       throws EFapsException {
 
     final Map<?, ?> properties
@@ -60,12 +60,14 @@ public class Person {
     final String[] childOids = _parameter.getParameterValues("selectedRow");
 
     final String type = (String) properties.get("ConnectType");
+    final String childAttr = (String) properties.get("ConnectChildAttribute");
+    final String parentAttr = (String) properties.get("ConnectParentAttribute");
 
     for (final String childOid : childOids) {
       final Instance child = new Instance(childOid);
       final Insert insert = new Insert(type);
-      insert.add("UserFromLink", "" + parent.getId());
-      insert.add("UserToLink", "" + child.getId());
+      insert.add(parentAttr, "" + parent.getId());
+      insert.add(childAttr, "" + child.getId());
       insert.add("UserJAASSystem", "" + getJAASSystemID());
       insert.execute();
     }
