@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.link.PopupCloseLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
@@ -42,7 +42,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
  * This class renders the Footer under a WebForm or WebTable.<br>
- * It provides also the necesarry links to initialise the necesarry actions of
+ * It provides also the necessary links to initialize the necessary actions of
  * the Footer like submit, cancel and so on.
  *
  * @author jmox
@@ -50,10 +50,16 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  */
 public class FooterPanel extends Panel {
 
-  private static final long serialVersionUID = -1722339596237748160L;
-
-  public final static EFapsContentReference CSS =
+  /**
+   * Reference to the stylesheet.
+   */
+  public static final EFapsContentReference CSS =
       new EFapsContentReference(FooterPanel.class, "FooterPanel.css");
+
+  /**
+   * Needed for serialization.
+   */
+  private static final long serialVersionUID = -1722339596237748160L;
 
   /**
    * This instance variable stores the ModalWindowContainer the Page and with it
@@ -62,27 +68,27 @@ public class FooterPanel extends Panel {
    */
   private final ModalWindowContainer modalWindow;
 
+  /**
+   * Stores if the update was successful.
+   */
   private boolean success;
 
   /**
    * Constructor for the FooterPanel.
    *
-   * @param _id
-   *                wicket:id of the Component
-   * @param _model
-   *                Model of the Component
-   * @param _modalWindow
-   *                ModalWindowContainer containing this FooterPanel
-   * @param _form
-   *                FormContainer of the Page (needed to submit the Form)
+   * @param _wicketId           wicket id of the Component
+   * @param _model        Model of the Component
+   * @param _modalWindow  ModalWindowContainer containing this FooterPanel
+   * @param _form         FormContainer of the Page (needed to submit the Form)
    */
-  public FooterPanel(final String _id, final IModel<?> _model,
+  public FooterPanel(final String _wicketId, final IModel<?> _model,
                      final ModalWindowContainer _modalWindow,
                      final FormContainer _form) {
-    super(_id, _model);
+    super(_wicketId, _model);
     this.modalWindow = _modalWindow;
 
-    final AbstractUIObject uiObject = (AbstractUIObject) super.getDefaultModelObject();
+    final AbstractUIObject uiObject
+                             = (AbstractUIObject) super.getDefaultModelObject();
 
     // if we want a SucessDialog we add it here, it will be opened after closing
     // the window
@@ -116,7 +122,6 @@ public class FooterPanel extends Panel {
               }
             }
           });
-
     }
 
     String label = null;
@@ -143,7 +148,8 @@ public class FooterPanel extends Panel {
           new Button("createeditsearch", new AjaxSubmitCloseLink(Button.LINKID,
               uiObject, _form), label, Button.ICON_ACCEPT);
       this.add(button);
-    } else if (uiObject.isSearchMode() && uiObject.getCallingCommandUUID() != null) {
+    } else if (uiObject.isSearchMode()
+                    && uiObject.getCallingCommandUUID() != null) {
       final Button button =
           new Button("createeditsearch", new SearchSubmitLink(Button.LINKID,
               _model, _form), label, Button.ICON_NEXT);
@@ -156,17 +162,21 @@ public class FooterPanel extends Panel {
     }
 
     if (_modalWindow == null) {
-      add(new Button("cancel", new PopupCloseLink(Button.LINKID), getLabel(
-          uiObject.getCommand().getName(), closelabelkey), Button.ICON_CANCEL));
+      add(new Button("cancel",
+                     new ClosePopUpLink(Button.LINKID, uiObject),
+                     getLabel(uiObject.getCommand().getName(), closelabelkey),
+                     Button.ICON_CANCEL));
     } else {
-      add(new Button("cancel", new AjaxCancelLink(Button.LINKID), getLabel(
-          uiObject.getCommand().getName(), closelabelkey), Button.ICON_CANCEL));
+      add(new Button("cancel",
+                     new AjaxCancelLink(Button.LINKID),
+                     getLabel(uiObject.getCommand().getName(), closelabelkey),
+                     Button.ICON_CANCEL));
     }
 
   }
 
   /**
-   * method that searches a DBProperty for the Label
+   * Method that searches a DBProperty for the Label.
    *
    * @param _cmdName
    *                Name of the CommandAbstract the Label should be searched for
@@ -205,11 +215,10 @@ public class FooterPanel extends Panel {
   /**
    * This is the setter method for the instance variable {@link #success}.
    *
-   * @param success
-   *                the success to set
+   * @param _success   the success to set
    */
-  public void setSuccess(boolean success) {
-    this.success = success;
+  public void setSuccess(final boolean _success) {
+    this.success = _success;
   }
 
 }

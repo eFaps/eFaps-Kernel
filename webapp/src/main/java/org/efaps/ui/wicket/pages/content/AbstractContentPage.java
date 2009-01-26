@@ -21,13 +21,13 @@
 package org.efaps.ui.wicket.pages.content;
 
 import org.apache.wicket.IPageMap;
-import org.apache.wicket.Session;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.Opener;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.footer.FooterPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
@@ -47,39 +47,54 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  */
 public abstract class AbstractContentPage extends AbstractMergePage {
 
-  private static final long serialVersionUID = -2374207555009145191L;
-
   /**
-   * static Variable used as the Pagemap for PopUps
+   * Static Variable used as the name for the page map for PopUps.
    */
   public static final String POPUP_PAGEMAP_NAME = "eFapsPopUp";
 
   /**
-   * reference to the StyleSheet of this Page stored in the eFaps-DataBase
+   * Reference to the StyleSheet of this Page stored in the eFaps-DataBase.
    */
-  public static final EFapsContentReference CSS =
-      new EFapsContentReference(AbstractContentPage.class,
-          "AbstractContentPage.css");
+  public static final EFapsContentReference CSS
+                        = new EFapsContentReference(AbstractContentPage.class,
+                                                    "AbstractContentPage.css");
+  /**
+   * Needed for serialization.
+   */
+  private static final long serialVersionUID = -2374207555009145191L;
+
+
 
   /**
-   * variable contains the key to the MenuTree
+   * Variable contains the key to the MenuTree.
    */
   private String menuTreeKey;
 
   /**
-   * this instance variable contains a ModalWindow passed on by the Constructor
+   * This instance variable contains a ModalWindow passed on by the Constructor.
    */
   private final ModalWindowContainer modalWindow;
 
   /**
-   * this instance variable contains the ModalWindow from this Page
+   * This instance variable contains the ModalWindow from this Page.
    */
   private final ModalWindowContainer modal = new ModalWindowContainer("modal");
 
+  /**
+   * Constructor.
+   *
+   * @param _model model for this page
+   */
   public AbstractContentPage(final IModel<?> _model) {
     this(_model, null);
   }
 
+  /**
+   * Constructor.
+   *
+   * @param _model        model for this page
+   * @param _modalWindow  modal window
+   */
   public AbstractContentPage(final IModel<?> _model,
                              final ModalWindowContainer _modalWindow) {
     super(_model);
@@ -87,20 +102,20 @@ public abstract class AbstractContentPage extends AbstractMergePage {
   }
 
   /**
-   * @param _model
-   * @param _pagemap
-   * @param window
+   * @param _pagemap      page map
+   * @param _model        model for this page
+   * @param _modalWindow  modal window
    */
-  public AbstractContentPage( final IPageMap _pagemap, final IModel<?> _model,
-      final ModalWindowContainer _modalWindow) {
-    super(_pagemap, _model );
+  public AbstractContentPage(final IPageMap _pagemap, final IModel<?> _model,
+                              final ModalWindowContainer _modalWindow) {
+    super(_pagemap, _model);
     this.modalWindow = _modalWindow;
   }
 
   /**
-   * method that adds the Components to the Page
+   * Method that adds the Components to the Page.
    *
-   * @param _form
+   * @param _form   FormContainer
    */
   protected void addComponents(final FormContainer _form) {
     // set the title for the Page
@@ -112,13 +127,18 @@ public abstract class AbstractContentPage extends AbstractMergePage {
     add(this.modal);
     this.modal.setPageMapName("modal");
 
-    final AbstractUIObject uiObject = (AbstractUIObject) super.getDefaultModelObject();
+    final AbstractUIObject uiObject
+                            = (AbstractUIObject) super.getDefaultModelObject();
     add(new HeadingPanel("titel", uiObject.getTitle()));
 
     add(new MenuPanel("menu", super.getDefaultModel(), _form));
     WebMarkupContainer footerpanel;
-    if (uiObject.isCreateMode() || uiObject.isEditMode() || uiObject.isSearchMode()) {
-      footerpanel = new FooterPanel("footer",  super.getDefaultModel(), this.modalWindow, _form);
+    if (uiObject.isCreateMode() || uiObject.isEditMode()
+        || uiObject.isSearchMode()) {
+      footerpanel = new FooterPanel("footer",
+                                    getDefaultModel(),
+                                    this.modalWindow,
+                                    _form);
     } else {
       footerpanel = new WebMarkupContainer("footer");
       footerpanel.setVisible(false);
@@ -144,6 +164,10 @@ public abstract class AbstractContentPage extends AbstractMergePage {
    */
 
   public String getMenuTreeKey() {
+    if (this.menuTreeKey == null) {
+      this.menuTreeKey
+           = ((AbstractUIObject) getDefaultModelObject()).getMenuTreeKey();
+    }
     return this.menuTreeKey;
   }
 
@@ -157,19 +181,21 @@ public abstract class AbstractContentPage extends AbstractMergePage {
     this.menuTreeKey = _menuTreeKey;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * After the page is rendered, it is checked if the a opener exists, If it
+   * exists and it is marked for remove it is removed from the session.
    *
-   * @see org.apache.wicket.Component#onAfterRender()
    */
   @Override
   protected void onAfterRender() {
     super.onAfterRender();
-    if (this.menuTreeKey == null && ((AbstractUIObject) getDefaultModelObject()).getOpenerId() != null) {
-      this.menuTreeKey =
-       ((EFapsSession) Session.get()).getOpener(((AbstractUIObject) getDefaultModelObject()).getOpenerId()).getMenuTreeKey();
-
+    if (((AbstractUIObject) getDefaultModelObject()).getOpenerId() != null) {
+      final String openerId = ((AbstractUIObject) getDefaultModelObject())
+          .getOpenerId();
+      final Opener opener = ((EFapsSession) getSession()).getOpener(openerId);
+      if (opener != null && opener.isMarked4Remove()) {
+        ((EFapsSession) getSession()).removeOpener(openerId);
+      }
     }
   }
-
 }

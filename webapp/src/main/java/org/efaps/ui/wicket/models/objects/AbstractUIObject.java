@@ -143,6 +143,11 @@ public abstract class AbstractUIObject implements IClusterable {
    */
   private String openerId;
 
+  /**
+   * In case of a form or table the key to the menu tree is stored.
+   */
+  private String menuTreeKey;
+
 
   /**
    * Constructor evaluating the UUID for the command and the oid from an
@@ -161,6 +166,7 @@ public abstract class AbstractUIObject implements IClusterable {
     final AbstractUIObject uiObject
                            = ((AbstractUIObject) opener.getModel().getObject());
     initialise(uiObject.getCommandUUID(), uiObject.getOid(), this.openerId);
+    this.menuTreeKey = opener.getMenuTreeKey();
   }
 
   /**
@@ -581,5 +587,14 @@ public abstract class AbstractUIObject implements IClusterable {
     } catch (final EFapsException e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
+  }
+
+  /**
+   * Getter method for instance variable {@link #menuTreeKey}.
+   *
+   * @return value of instance variable {@link #menuTreeKey}
+   */
+  public String getMenuTreeKey() {
+    return this.menuTreeKey;
   }
 }

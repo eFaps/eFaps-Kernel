@@ -127,7 +127,7 @@ public class ModalWindowContainer extends ModalWindow {
       final PageParameters parameters = new PageParameters();
       parameters.add(Opener.OPENER_PARAKEY, opener.getId());
       ((EFapsSession) getSession()).storeOpener(opener);
-
+      opener.setMarked4Remove(true);
       final CharSequence url =
           urlFor(PageMap.forName(getPage().getPageMapName()), clazz,
               parameters);

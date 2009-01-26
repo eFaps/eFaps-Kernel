@@ -55,14 +55,17 @@ import org.efaps.util.EFapsException;
  */
 public class EFapsSession extends WebSession {
 
-  private static final long serialVersionUID = 1884548064760514909L;
+  /**
+   * This variable is used as the Key to the UserName stored in the
+   * SessionAttributes.
+   */
+  public static final String LOGIN_ATTRIBUTE_NAME
+                                    = "org.efaps.ui.wicket.LoginAttributeName";
 
   /**
-   * this variable is used as the Key to the UserName stored in the
-   * SessionAttributes
+   * Needed for serialization.
    */
-  public static final String LOGIN_ATTRIBUTE_NAME =
-      "org.efaps.ui.wicket.LoginAttributeName";
+  private static final long serialVersionUID = 1884548064760514909L;
 
   /**
    * Logger for this class.
@@ -108,7 +111,7 @@ public class EFapsSession extends WebSession {
 
   /**
    * This instance map stores the Behaviors that will be called through the
-   * UpdateInterface
+   * UpdateInterface.
    *
    * @see #addUpdateBehaviors(String, UpdateInterface)
    * @see #getUpdateBehavior(String)
@@ -118,9 +121,9 @@ public class EFapsSession extends WebSession {
       new HashMap<String, List<UpdateInterface>>();
 
   /**
-   * Standart Constructor from Wicket
+   * Standard Constructor from Wicket.
    *
-   * @param _request
+   * @param _request Request
    */
   public EFapsSession(final Request _request) {
     super(_request);
@@ -128,13 +131,11 @@ public class EFapsSession extends WebSession {
 
   /**
    * method to add a Behavior to the {@link #updateBehaviors}. The behavior
-   * will only be added if no updatebehvior with the same Id is existing in the
-   * List related to the given oid
+   * will only be added if no update behavior with the same Id is existing in
+   * the List related to the given oid.
    *
-   * @param _oid
-   *                Oid (used as key in the map)
-   * @param _behavior
-   *                (behavoir to be added)
+   * @param _oid        Oid (used as key in the map)
+   * @param _behavior   (behavoir to be added)
    */
   public void addUpdateBehaviors(final String _oid,
                                  final UpdateInterface _behavior) {
@@ -157,10 +158,9 @@ public class EFapsSession extends WebSession {
   }
 
   /**
-   * method that returns the behaviors as aList that rely to a specified oid
+   * Method that returns the behaviors as aList that rely to a specified oid.
    *
-   * @param _oid
-   *                OID to get the List for
+   * @param _oid    OID to get the List for
    * @return List with Behaviors
    */
   public List<UpdateInterface> getUpdateBehavior(final String _oid) {
@@ -178,12 +178,10 @@ public class EFapsSession extends WebSession {
   }
 
   /**
-   * This Method stores a Component in the Cache
+   * This Method stores a Component in the Cache.
    *
-   * @param _key
-   *                Key the Component should be stored in
-   * @param _component
-   *                Component to be stored
+   * @param _key        Key the Component should be stored in
+   * @param _component  Component to be stored
    * @see #componentcache
    */
   public void putIntoCache(final String _key, final Component _component) {
@@ -194,8 +192,7 @@ public class EFapsSession extends WebSession {
   /**
    * Retrieve a Component from the ComponentCache.
    *
-   * @param _key
-   *                Key of the Component to be retrieved
+   * @param _key      Key of the Component to be retrieved
    * @return Component if found, else null
    * @see #componentcache
    */
@@ -204,27 +201,45 @@ public class EFapsSession extends WebSession {
   }
 
   /**
-   * Remove a Component from the ComponentCache
+   * Remove a Component from the ComponentCache.
    *
-   * @param _key
-   *                Key to the Component to be removed
+   * @param _key    Key to the Component to be removed
    * @see #componentcache
    */
   public void removeFromCache(final String _key) {
     this.componentcache.remove(_key);
   }
 
+  /**
+   * Method to remove a opener from the opener cache.
+   *
+   * @param _openerId id of the opener to be removed
+   */
+  public void removeOpener(final String _openerId) {
+    this.openerCache.remove(_openerId);
+  }
 
-
+  /**
+   * Method to store an opener in this session.
+   *
+   * @param _opener opener to be stored
+   */
   public void storeOpener(final Opener _opener) {
     this.openerCache.put(_opener.getId(), _opener);
   }
 
-  public Opener getOpener(final String _id) {
-    return this.openerCache.get(_id);
-  }
   /**
-   * Method to check ia a user is checked in
+   * Method to get an opener from the opener cache.
+   *
+   * @param _openerId if of the opener to get
+   * @return  an opener instance
+   */
+  public Opener getOpener(final String _openerId) {
+    return this.openerCache.get(_openerId);
+  }
+
+  /**
+   * Method to check if a user is checked in.
    *
    * @return true if a user is checked in, else false
    * @see #userName
@@ -239,7 +254,7 @@ public class EFapsSession extends WebSession {
   }
 
   /**
-   * method to log a user with the Parameters from the Request in
+   * Method to log a user with the Parameters from the Request in.
    *
    * @see #checkLogin(String, String)
    */
@@ -255,11 +270,10 @@ public class EFapsSession extends WebSession {
       this.userName = null;
       this.sessionAttributes.clear();
     }
-
   }
 
   /**
-   * logs a user out and stores the UserAttribues in the eFapsDataBase
+   * Logs a user out and stores the UserAttribues in the eFaps database.
    */
   public final void logout() {
     this.userName = null;
@@ -282,10 +296,8 @@ public class EFapsSession extends WebSession {
    * closed. It also puts a new Instance of UserAttributes into the instance map
    * {@link #sessionAttributes}
    *
-   * @param _name
-   *                Name of the User to be checked in
-   * @param _passwd
-   *                Password of the User to be checked in
+   * @param _name     Name of the User to be checked in
+   * @param _passwd   Password of the User to be checked in
    * @return true if LoginInformation was valid, else false
    */
   private boolean checkLogin(final String _name, final String _passwd) {
@@ -311,9 +323,7 @@ public class EFapsSession extends WebSession {
               new UserAttributesSet(_name));
         }
         ok = true;
-      }
-      finally {
-
+      } finally {
         if (ok && context.allConnectionClosed() && Context.isTMActive()) {
           Context.commit();
         } else {
@@ -330,12 +340,11 @@ public class EFapsSession extends WebSession {
     } catch (final EFapsException e) {
       LOG.error("could not check name and password", e);
     }
-
     return loginOk;
   }
 
   /**
-   * method that opens a new Context in eFaps, setting the User, the Locale, the
+   * Method that opens a new Context in eFaps, setting the User, the Locale, the
    * Attributes of this Session {@link #sessionAttributes} and the
    * RequestParameters for the Context.
    *
@@ -387,8 +396,8 @@ public class EFapsSession extends WebSession {
   }
 
   /**
-   * method that closes the opened Context {@link #openContext()}, by commiting
-   * or rollback it
+   * Method that closes the opened Context {@link #openContext()}, by committing
+   * or rollback it.
    *
    * @see #detach()
    */
@@ -420,52 +429,72 @@ public class EFapsSession extends WebSession {
   private class FileParameter implements Context.FileParameter {
 
     /**
-     * the FileItem of this FileParameter
+     * The FileItem of this FileParameter.
      */
     private final FileItem fileItem;
 
     /**
-     * the Name of the Parameter of thie FileParameter
+     * The Name of the Parameter of the FileParameter.
      */
     private final String parameterName;
 
     /**
-     * Constructo setting the Name of the Parameter and the FileItem
+     * Constructor setting the Name of the Parameter and the FileItem.
      *
-     * @param _parameterName
-     * @param _fileItem
+     * @param _parameterName  name of the parameter
+     * @param _fileItem       file item
      */
-    public FileParameter(final String _parameterName, final FileItem _fileItem) {
+    public FileParameter(final String _parameterName,
+                         final FileItem _fileItem) {
       this.parameterName = _parameterName;
       this.fileItem = _fileItem;
     }
 
-    public void close() throws IOException {
+    /**
+     * Not needed.
+     */
+    public void close() {
       // not needed yet
     }
-
+    /**
+     * Method to get the content type of the fileitem.
+     * @return content type
+     */
     public String getContentType() {
       return this.fileItem.getContentType();
     }
 
+    /**
+     * Get the input stream of the fileitem.
+     * @return Inputstream
+     * @throws IOException on error
+     */
     public InputStream getInputStream() throws IOException {
       return this.fileItem.getInputStream();
     }
 
+    /**
+     * Get the name of the file item.
+     * @return name of the file item
+     */
     public String getName() {
       return this.fileItem.getName();
     }
 
+    /**
+     * Get the name of the parameter.
+     * @return name of the parameter
+     */
     public String getParameterName() {
       return this.parameterName;
     }
 
+    /**
+     * Get the size of the file item.
+     * @return size in byte
+     */
     public long getSize() {
       return this.fileItem.getSize();
     }
-
   }
-
-
-
 }

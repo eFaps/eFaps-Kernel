@@ -144,6 +144,8 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
         } else {
           final Opener opener = ((EFapsSession) Session.get())
               .getOpener(this.uiObject.getOpenerId());
+          // mark the opener that it can be removed
+          opener.setMarked4Remove(true);
 
           Class<? extends Page> clazz;
           if (opener.getModel() instanceof TableModel) {

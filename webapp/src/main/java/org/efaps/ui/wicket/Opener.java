@@ -74,6 +74,11 @@ public class Opener {
    */
   private String oid;
 
+  /**
+   * This variable stores if this opener can be removed from the session on the
+   * next possibility.
+   */
+  private boolean marked4Remove = false;
 
   /**
    * Constructor.
@@ -166,5 +171,23 @@ public class Opener {
    */
   public void setOid(final String _oid) {
     this.oid = _oid;
+  }
+
+  /**
+   * Getter method for instance variable {@link #marked4Remove}.
+   *
+   * @return value of instance variable {@link #marked4Remove}
+   */
+  public boolean isMarked4Remove() {
+    return this.marked4Remove;
+  }
+
+  /**
+   * Setter method for instance variable {@link #marked4Remove}.
+   *
+   * @param _marked4Remove value for instance variable {@link #marked4Remove}
+   */
+  public void setMarked4Remove(final boolean _marked4Remove) {
+    this.marked4Remove = _marked4Remove;
   }
 }
