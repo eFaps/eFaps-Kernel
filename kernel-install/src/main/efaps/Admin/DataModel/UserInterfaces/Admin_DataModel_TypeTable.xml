@@ -50,6 +50,7 @@
       <property name="Expression">ParentType.Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_DataModel_Type/ParentType.Label</property>
+      <property name="ShowTypeIcon">true</property>
     </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>

@@ -68,6 +68,7 @@
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_DataModel_SQLTable/DMTableMain.Label</property>
       <property name="Width">3</property>
+      <property name="ShowTypeIcon">true</property>
     </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>
