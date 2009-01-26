@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,11 @@ import org.apache.maven.tools.plugin.Goal;
 import org.apache.maven.tools.plugin.Parameter;
 
 /**
- * A new universally unique identifier (UUID) is created and printed out.
+ * A new universally unique identifier (UUID) is created and printed out.<br>
+ * By adding <code>-DUUID.count=3</code> to the calling command line the number
+ * of UUID generated can be set.<br>
+ * e.g.<br>
+ * <code>mvn efaps:generateUUID -DUUID.count=3</code>
  *
  * @author tmo
  * @version $Id$
@@ -42,7 +46,7 @@ public final class GenerateUUIDMojo extends AbstractMojo  {
   /**
    * Number of UUID's to generate.
    */
-  @Parameter(defaultValue = "1")
+  @Parameter(expression = "${UUID.count}", defaultValue = "1")
   private int count;
 
   /////////////////////////////////////////////////////////////////////////////
@@ -51,10 +55,11 @@ public final class GenerateUUIDMojo extends AbstractMojo  {
   /**
    * The new universally unique identifier is created and printed out with a
    * normal call to the mojo log info.
+   * @throws MojoExecutionException on error
    */
-  public void execute() throws MojoExecutionException  {
+  public void execute() throws MojoExecutionException {
     for (int i = 0; i < this.count; i++)  {
-      UUID uuid = UUID.randomUUID();
+      final UUID uuid = UUID.randomUUID();
       getLog().info("UUID[" + (i + 1) + "] = " + uuid.toString());
     }
   }
