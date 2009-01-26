@@ -77,7 +77,7 @@ public class StructBrowsSplitPanel extends Panel {
     final WebMarkupContainer top = new WebMarkupContainer("top");
     top.add(new ContentPaneBehavior(50, 20));
     this.add(top);
-
+    header.addHideComponent(top);
     final StructurBrowserTreePanel stuctbrows
                                     = new StructurBrowserTreePanel("stuctbrows",
                                           _commandUUID,

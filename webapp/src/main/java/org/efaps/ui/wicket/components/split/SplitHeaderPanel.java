@@ -90,7 +90,7 @@ public class SplitHeaderPanel extends Panel {
   public SplitHeaderPanel(final String _id, final boolean _hidevertical) {
     super(_id);
     this.hidevertical = _hidevertical;
-    this.setOutputMarkupId(true);
+    setOutputMarkupId(true);
     this.add(StaticHeaderContributor.forCss(CSS));
     this.add(new StringHeaderContributor(getJavaScript()));
 
@@ -134,11 +134,11 @@ public class SplitHeaderPanel extends Panel {
                   + "\",\""
                   + splitId
                   + "\",\""
-                  + this.getParent().getMarkupId()
+                  + getParent().getMarkupId()
                   + "\")";
 
           _target.appendJavascript(ret);
-          _target.focusComponent(this.getParent());
+          _target.focusComponent(getParent());
         }
       };
       this.add(linkvertical);
@@ -165,7 +165,7 @@ public class SplitHeaderPanel extends Panel {
         ret.append("togglePaneHorizontal(\"").append(
             getPage().get(((ContentContainerPage) getPage()).getSplitPath())
                 .getMarkupId()).append("\",\"").append(panelId).append("\",\"")
-            .append(this.getParent().getMarkupId()).append("\", new Array(");
+            .append(getParent().getMarkupId()).append("\", new Array(");
         boolean addComma = false;
         for (final Component component : SplitHeaderPanel.this.hideComponents) {
           if (addComma) {
@@ -177,7 +177,7 @@ public class SplitHeaderPanel extends Panel {
         ret.append("))");
 
         _target.appendJavascript(ret.toString());
-        _target.focusComponent(this.getParent());
+        _target.focusComponent(getParent());
       }
     };
     this.add(link);
@@ -196,13 +196,14 @@ public class SplitHeaderPanel extends Panel {
       .append("  var connections = [];\n")
       .append("  var header;\n")
       .append("  var hideIds;\n")
+      .append("  var hidden = false;\n")
       .append("  function togglePaneHorizontal(_splitId, _paneId, "
           + " _headerId, _hideIds) {\n")
       .append("    header = dojo.byId(_headerId);\n")
       .append("    hideIds = _hideIds;\n")
       .append("    var split = dijit.byId(_splitId);\n")
       .append("    var pane = dijit.byId(_paneId);\n")
-      .append("    if(pane.sizeShare >= 20) {\n")
+      .append("    if(!hidden) {\n")
       .append("      dojo.forEach(hideIds, function(id){\n")
       .append("          dojo.byId(id).style.display = \"none\"\n")
       .append("      });\n")
@@ -236,6 +237,7 @@ public class SplitHeaderPanel extends Panel {
         .append(Css.TITEL_HIDE.value).append("\";\n")
       .append("      pane.sizeShare = gro;\n")
       .append("      split.layout();\n")
+      .append("      hidden = true;\n")
       .append("    } else {\n")
       .append("      toggleHeaderHorizontal();\n")
       .append("      split._restoreState();\n")
@@ -284,6 +286,7 @@ public class SplitHeaderPanel extends Panel {
       .append("    header.getElementsByTagName(\"span\")[0].className=\"")
         .append(Css.TITEL.value).append("\";\n")
       .append("    dojo.disconnect(connections[0]);\n")
+      .append("    hidden = false;\n")
       .append("  }\n");
 
     if (this.hidevertical) {
