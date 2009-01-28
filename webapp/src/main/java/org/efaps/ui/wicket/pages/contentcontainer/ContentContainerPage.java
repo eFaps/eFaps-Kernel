@@ -37,8 +37,10 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Search;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
+import org.efaps.ui.wicket.behaviors.dojo.BorderBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
-import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior;
+import org.efaps.ui.wicket.behaviors.dojo.BorderBehavior.Design;
+import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
 import org.efaps.ui.wicket.components.split.ListOnlyPanel;
 import org.efaps.ui.wicket.components.split.StructBrowsSplitPanel;
@@ -61,10 +63,8 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  */
 public class ContentContainerPage extends AbstractMergePage {
 
-  private static final long serialVersionUID = 3169723830151134904L;
-
   /**
-   * this static variable is used as an acesskey to the PageMap for the IFrame
+   * This static variable is used as an acesskey to the PageMap for the IFrame.
    */
   public static final String IFRAME_PAGEMAP_NAME =
       "eFapsContentContainerIFrame";
@@ -75,43 +75,50 @@ public class ContentContainerPage extends AbstractMergePage {
   public static final String IFRAME_WICKETID = "splitrightactiframe";
 
   /**
-   * static variable as Reference to the Stylesheet for the Page (normal)
+   * Needed for serialization.
    */
-  private static EFapsContentReference CSS =
+  private static final long serialVersionUID = 3169723830151134904L;
+
+
+  /**
+   * Static variable as Reference to the Stylesheet for the Page (normal).
+   */
+  private static final EFapsContentReference CSS =
       new EFapsContentReference(ContentContainerPage.class,
           "ContentContainerPage.css");
 
   /**
    * static variable as Reference to the Stylesheet for the Page (Internet
-   * Explorer)
+   * Explorer).
    */
-  private static EFapsContentReference CSS_IE =
+  private static final EFapsContentReference CSS_IE =
       new EFapsContentReference(ContentContainerPage.class,
           "ContentContainerPage_IE.css");
 
+
   /**
-   * variable contains the key to the MenuTree
+   * Variable contains the key to the MenuTree.
    */
   private String menuTreeKey;
 
   /**
-   * variable contains the Path to the IFrame-Component so that ist can be
-   * accessed by other classes
+   * Variable contains the Path to the IFrame-Component so that ist can be
+   * accessed by other classes.
    *
    * @see #getInlinePath()
    */
   private String inlinePath;
 
   /**
-   * variable contains the Path to the Split-Component so that ist can be
-   * accessed by other classes
+   * Variable contains the Path to the Split-Component so that ist can be
+   * accessed by other classes.
    *
    * @see #getSplitPath()
    */
   private String splitPath;
 
   /**
-   * does this Page contain a StucturBrowser
+   * Does this Page contain a StucturBrowser.
    */
   private boolean structurbrowser;
 
@@ -147,8 +154,8 @@ public class ContentContainerPage extends AbstractMergePage {
   }
 
   /**
-   * @param _uuid
-   * @param _oid
+   * @param _uuid   UUID of the command
+   * @param _oid    oid
    */
   public ContentContainerPage(final UUID _uuid, final String _oid) {
     super();
@@ -156,28 +163,33 @@ public class ContentContainerPage extends AbstractMergePage {
   }
 
   /**
-   * @param pageMap
-   * @param uuid
-   * @param oid
+   * @param _pageMap page map
+   * @param _uuid    UUID of the command
+   * @param _oid     oid
    */
-  public ContentContainerPage(final IPageMap pageMap, final UUID _uuid, final String _oid) {
-    this(pageMap, _uuid, _oid, false);
+  public ContentContainerPage(final IPageMap _pageMap,
+                              final UUID _uuid, final String _oid) {
+    this(_pageMap, _uuid, _oid, false);
   }
 
   /**
-   * @param pageMap
-   * @param uuid
-   * @param oid
-   * @param b
+   * @param _pageMap              page map
+   * @param _uuid                 UUID of the command
+   * @param _oid                  oid
+   * @param _addStructurBrowser   add a structor browser
    */
-  public ContentContainerPage(final IPageMap pageMap, final UUID _uuid, final String _oid, final boolean _addStructurBrowser) {
-    super(pageMap);
+  public ContentContainerPage(final IPageMap _pageMap, final UUID _uuid,
+                              final String _oid,
+                              final boolean _addStructurBrowser) {
+    super(_pageMap);
     this.structurbrowser = _addStructurBrowser;
     initialise(_uuid, _oid);
   }
 
   /**
-   * method to initialise the Page
+   * Method to initialize the Page.
+   * @param _uuid   uuid of the command
+   * @param _oid    oid
    */
   private void initialise(final UUID _uuid, final String _oid) {
     ((EFapsSession) getSession()).getUpdateBehaviors().clear();
@@ -195,7 +207,7 @@ public class ContentContainerPage extends AbstractMergePage {
     // add a Split
     final WebMarkupContainer split = new WebMarkupContainer("split");
     this.add(split);
-    split.add(new SplitContainerBehavior());
+    split.add(new BorderBehavior(Design.SIDEBAR));
     // add a StructurBowser?
     if (this.structurbrowser) {
       split.add(new StructBrowsSplitPanel("left",
@@ -207,7 +219,7 @@ public class ContentContainerPage extends AbstractMergePage {
     final WebMarkupContainer right = new WebMarkupContainer("right");
     split.add(right);
 
-    right.add(new ContentPaneBehavior(80, 20));
+    right.add(new ContentPaneBehavior(Region.CENTER, false));
 
     final WebMarkupContainer parent = new WebMarkupContainer("splitrightact");
     right.add(parent);
@@ -292,10 +304,9 @@ public class ContentContainerPage extends AbstractMergePage {
   }
 
   /**
-   * method to get a Command
+   * Method to get a Command.
    *
-   * @param _uuid
-   *                Uuid of the Command we watn
+   * @param _uuid   Uuid of the Command
    * @return a AbstractCommand
    */
   private AbstractCommand getCommand(final UUID _uuid) {

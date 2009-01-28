@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,79 +25,150 @@ import org.apache.wicket.markup.ComponentTag;
 
 
 /**
- * This clas turns a Component into a Dojo-ContentPane
+ * This class turns a Component into a Dojo-ContentPane.
  *
  * @author jmox
  * @version $Id$
  */
 public class ContentPaneBehavior extends AbstractDojoBehavior {
 
+
+  /**
+   * Enum is used when this ContentPaneBehavior is used as a child inside
+   * a BorderContainer. The BorderContainer is widget is partitioned into up to
+   * five regions: left (or leading), right (or trailing), top, and bottom with
+   * a mandatory center to fill in any remaining space. Each edge region may
+   * have an optional splitter user interface for manual resizing.
+   */
+  public enum Region {
+    /** center region. */
+    CENTER("center"),
+    /** top region. */
+    TOP("top"),
+    /** bottom region. */
+    BOTTOM("bottom"),
+    /** leading region. */
+    LEADING("leading"),
+    /** trailing region. */
+    TRAILING("trailing"),
+    /** left region. */
+    LEFT("left"),
+    /** right region. */
+    RIGHT("right");
+
+    /**
+     * Stores the key of the Region.
+     */
+    private final String key;
+
+    /**
+     * Private Constructor.
+     * @param _key Key
+     */
+    private Region(final String _key) {
+      this.key = _key;
+    }
+
+    /**
+     * Getter method for instance variable {@link #key}.
+     *
+     * @return value of instance variable {@link #key}
+     */
+    public String getKey() {
+      return this.key;
+    }
+  }
+
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
   /**
-   * size of this ContentPane as a weighted with
+   * Region of this ContenPane.
    */
-  private int sizeshare = 50;
+  private final Region region;
 
   /**
-   * minimum size of this ContentPane as a weighted with
+   * Width of this ContenPane.
    */
-  private int sizemin = 20;
+  private String width;
 
   /**
-   * Constructor using the default values for {@link #sizeshare} and
-   * {@link #sizemin}
+   * Height of this ContenPane.
    */
-  public ContentPaneBehavior() {
-    super();
+  private final String height;
+
+  /**
+   * Sould a splitter be added.
+   */
+  private final Boolean splitter;
+
+  /**
+   * Constructor.
+   *
+   * @param _region    region of this ContentPaneBehavior
+   * @param _splitter  should a splitter be rendered
+   *
+   */
+  public ContentPaneBehavior(final Region _region, final boolean _splitter) {
+   this(_region, _splitter, null, null);
   }
 
   /**
-   * Constructor
+   * Constructor.
    *
-   * @param _sizeshare
-   *                sets the value for {@link #sizeshare}
-   * @param _sizemin
-   *                sets the value for {@link #sizemin}
+   * @param _region    region of this ContentPaneBehavior
+   * @param _splitter  should a splitter be rendered
+   * @param _width     width of this ContentPaneBehavior
+   * @param _height    height of this ContentPaneBehavior
+   *
    */
-  public ContentPaneBehavior(final int _sizeshare, final int _sizemin) {
+  public ContentPaneBehavior(final Region _region, final boolean _splitter,
+                             final String _width, final String _height) {
     super();
-    this.sizeshare = _sizeshare;
-    this.sizemin = _sizemin;
+    this.region = _region;
+    this.width = _width;
+    this.height = _height;
+    this.splitter = _splitter;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.behavior.AbstractBehavior#onComponentTag(org.apache.wicket.Component,
-   *      org.apache.wicket.markup.ComponentTag)
+  /**
+   * The tag of the related component must be set, so that a dojo
+   * BorderContainer will be rendered.
+   * @param _component  component this Behavior belongs to
+   * @param _tag        Tag to write to
    */
   @Override
-  public void onComponentTag(final Component _component, final ComponentTag _tag) {
+  public void onComponentTag(final Component _component,
+                             final ComponentTag _tag) {
     super.onComponentTag(_component, _tag);
     _tag.put("dojoType", "dijit.layout.ContentPane");
-    _tag.put("sizeshare", this.sizeshare);
-    _tag.put("sizemin", this.sizemin);
+    _tag.put("region", this.region.getKey());
+    if (this.width != null) {
+      _tag.put("style", "width: " + this.width);
+    }
+    if (this.height != null) {
+      _tag.put("style", "height: " + this.height);
+    }
+    _tag.put("splitter", this.splitter.toString());
   }
 
   /**
-   * This is the setter method for the instance variable {@link #sizeshare}.
+   * Getter method for instance variable {@link #width}.
    *
-   * @param _sizeshare
-   *                the sizeshare to set
+   * @return value of instance variable {@link #width}
    */
-  public void setSizeshare(final int _sizeshare) {
-    this.sizeshare = _sizeshare;
+  public String getWidth() {
+    return this.width;
   }
 
   /**
-   * This is the setter method for the instance variable {@link #sizemin}.
+   * Setter method for instance variable {@link #width}.
    *
-   * @param _sizemin
-   *                the sizemin to set
+   * @param _width value for instance variable {@link #width}
    */
-  public void setSizemin(final int _sizemin) {
-    this.sizemin = _sizemin;
+  public void setWidth(final String _width) {
+    this.width = _width;
   }
-
 }

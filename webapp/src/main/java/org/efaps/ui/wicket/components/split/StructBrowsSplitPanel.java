@@ -25,13 +25,18 @@ import java.util.UUID;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 
+import org.efaps.db.Context;
+import org.efaps.ui.wicket.behaviors.dojo.BorderBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
-import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior;
-import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior.Orientation;
+import org.efaps.ui.wicket.behaviors.dojo.BorderBehavior.Design;
+import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior.Region;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
+import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel;
+import org.efaps.ui.wicket.components.split.header.SplitHeaderPanel.PositionUserAttribute;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreePanel;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.util.EFapsException;
 
 /**
  * @author jmox
@@ -66,16 +71,51 @@ public class StructBrowsSplitPanel extends Panel {
     super(_wicketId);
 
     this.add(StaticHeaderContributor.forCss(CSS));
+    String positionH = null;
+    String hiddenStrH = null;
+    String positionV = null;
+    String hiddenStrV = null;
+    try {
+      positionH = Context.getThreadContext().getUserAttribute(
+          PositionUserAttribute.HORIZONTAL.getKey());
+      hiddenStrH = Context.getThreadContext().getUserAttribute(
+          PositionUserAttribute.HORIZONTAL_COLLAPSED.getKey());
+      positionV = Context.getThreadContext().getUserAttribute(
+          PositionUserAttribute.VERTICAL.getKey());
+      hiddenStrV = Context.getThreadContext().getUserAttribute(
+          PositionUserAttribute.VERTICAL_COLLAPSED.getKey());
+    } catch (final EFapsException e) {
+      e.printStackTrace();
+    }
+    final boolean hiddenH = "true".equalsIgnoreCase(hiddenStrH);
+    if (hiddenH) {
+      positionH = "20";
+    } else if (positionH == null) {
+      positionH = "200";
+    }
 
-    final SplitContainerBehavior beh = new SplitContainerBehavior();
-    beh.setOrientation(Orientation.VERTICAL);
-    this.add(beh);
 
-    final SplitHeaderPanel header = new SplitHeaderPanel("header", true);
+    this.add(new ContentPaneBehavior(Region.LEADING,
+                                     true,
+                                     positionH + "px",
+                                     null));
+    //overwrite the contentpane
+    this.add(new BorderBehavior(Design.HEADLINE));
+    final boolean hiddenV = "true".equalsIgnoreCase(hiddenStrV);
+
+    final SplitHeaderPanel header
+                      = new SplitHeaderPanel("header", true, hiddenH, hiddenV);
     this.add(header);
 
+    if (hiddenV) {
+      positionV = "20px";
+    } else if (positionV == null) {
+      positionV = "50%";
+    } else {
+      positionV += "px";
+    }
     final WebMarkupContainer top = new WebMarkupContainer("top");
-    top.add(new ContentPaneBehavior(50, 20));
+    top.add(new ContentPaneBehavior(Region.TOP, true, null, positionV));
     this.add(top);
     header.addHideComponent(top);
     final StructurBrowserTreePanel stuctbrows
@@ -88,7 +128,7 @@ public class StructBrowsSplitPanel extends Panel {
     header.addHideComponent(stuctbrows);
 
     final WebMarkupContainer bottom = new WebMarkupContainer("bottom");
-    bottom.add(new ContentPaneBehavior(50, 20));
+    bottom.add(new ContentPaneBehavior(Region.CENTER, true));
     this.add(bottom);
     header.addHideComponent(bottom);
 
