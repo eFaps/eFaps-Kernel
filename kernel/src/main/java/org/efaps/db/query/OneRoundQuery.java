@@ -42,6 +42,7 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.util.EFapsException;
 
 /**
  * @todo description
@@ -50,42 +51,57 @@ import org.efaps.db.transaction.ConnectionResource;
  */
 public class OneRoundQuery {
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance variables
-
   /**
    * Stores all instances for which this query is executed.
    */
   private final List<Instance> instances;
 
+  /**
+   * The main sql table.
+   */
   private final SQLTable mainSQLTable;
 
+  /**
+   * The type of this query.
+   */
   private final Type type;
-
 
   /**
    * Stores all select statements for this query.
    */
   private final Set<String> selects;
 
-  private final Map<Type, TypeMapping2Instances> typeMappings =
-      new HashMap<Type, TypeMapping2Instances>();
+  /**
+   * Mapping of type to typemapping.
+   */
+  private final Map<Type, TypeMapping2Instances> typeMappings
+                                  = new HashMap<Type, TypeMapping2Instances>();
 
+  /**
+   * Mappeing of sql tables.
+   */
   private final Map<SQLTable, SQLTableMapping2Attributes> sqlTableMappings =
       new HashMap<SQLTable, SQLTableMapping2Attributes>();
 
+  /**
+   * The result of this query will be cached.
+   */
   private final CachedResult cachedResult = new CachedResult();
 
+  /**
+   * Number of the column containing the type id.
+   */
   private int colTypeId = 0;
 
+  /**
+   * Listquery this query is based on.
+   */
   private final ListQuery listquery;
-  // ///////////////////////////////////////////////////////////////////////////
-  // constructors / desctructors
 
   /**
-   * @param _instances
-   *          list of instances for which this query is executed
-   * @param map
+   * @param _instances    list of instances for which this query is executed
+   * @param _selects      aset of attributes to be selected
+   * @param _listquery    listquery
    * @todo check das alle instanzen von gleicher main table sind
    * @todo if no column for the type exists, all types must be the same!
    */
@@ -96,7 +112,7 @@ public class OneRoundQuery {
     this.instances = _instances;
     this.selects = _selects;
     this.listquery = _listquery;
-    if (this.listquery.getAttributeSet()!=null){
+    if (this.listquery.getAttributeSet() != null) {
       this.mainSQLTable = this.listquery.getAttributeSet().getMainTable();
       this.type = this.listquery.getAttributeSet();
     } else {
@@ -117,14 +133,13 @@ public class OneRoundQuery {
     }
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance methods
+  /**
+   * Method to execute the Query.
+   * @throws EFapsException on error during execution of statement
+   */
+  public void execute() throws EFapsException {
 
-
-
-  public void execute() {
-
-    if (this.listquery.getAttributeSet() == null){
+    if (this.listquery.getAttributeSet() == null) {
       // make type mapping to instances
       for (final Instance instance : this.instances) {
         TypeMapping2Instances typeMapping =
@@ -136,14 +151,15 @@ public class OneRoundQuery {
         typeMapping.addInstance(instance);
       }
 
-      for (final TypeMapping2Instances typeMapping : this.typeMappings.values()) {
+      for (final TypeMapping2Instances typeMapping
+                                                : this.typeMappings.values()) {
         typeMapping.evaluateSelects();
       }
 
       // evalute sql statements
       int curIndex = 2;
-      for (final SQLTableMapping2Attributes sqlTableMapping : this.sqlTableMappings
-          .values()) {
+      for (final SQLTableMapping2Attributes sqlTableMapping
+                                            : this.sqlTableMappings.values()) {
         curIndex = sqlTableMapping.evaluateSQLStatement(curIndex - 1);
       }
 
@@ -158,19 +174,18 @@ public class OneRoundQuery {
         }
         typeMapping.addInstance(instance);
       }
-      for (final TypeMapping2Instances typeMapping : this.typeMappings.values()) {
+      for (final TypeMapping2Instances typeMapping
+                                                : this.typeMappings.values()) {
         typeMapping.evaluateSelects();
       }
       // evalute sql statements
       int curIndex = 2;
-      for (final SQLTableMapping2Attributes sqlTableMapping : this.sqlTableMappings
-          .values()) {
+      for (final SQLTableMapping2Attributes sqlTableMapping
+                                            : this.sqlTableMappings.values()) {
         sqlTableMapping.setExpand(true);
         sqlTableMapping.setAttributeSet((this.listquery.getAttributeSet()));
         curIndex = sqlTableMapping.evaluateSQLStatement(curIndex - 1);
       }
-
-
     }
     beforeFirst();
 
@@ -180,10 +195,7 @@ public class OneRoundQuery {
           this.sqlTableMappings.get(this.mainSQLTable);
       this.colTypeId =
           sqlTableMapping.col2index.get(this.mainSQLTable.getSqlColType());
-      //this.instances.clear();
-
     }
-
   }
 
   /**
@@ -205,53 +217,69 @@ public class OneRoundQuery {
     return this.cachedResult.next();
   }
 
+  /**
+   * Move the cached result before the first.
+   */
   public void beforeFirst() {
     this.cachedResult.beforeFirst();
   }
 
-  public boolean gotoKey(final Object _id) {
-    return this.cachedResult.gotoKey(_id);
+  /**
+   * Move the cached result to a defined position.
+   * @param _key  Key to move to
+   * @return true if cache result was moves sucessfully
+   */
+  public boolean gotoKey(final Object _key) {
+    return this.cachedResult.gotoKey(_key);
   }
 
   /**
    * The instance method returns for the given key the attribute value.
    *
-   * @param _key
-   *          key for which the attribute value must returned
-   * @return atribute value for given key
+   * @param _expression   expression for which the attribute value must returned
+   * @return attribute value for given key
+   * @throws Exception on error
    */
   public Object getValue(final String _expression) throws Exception {
     Object ret = null;
 
-    Type type = getType();
-    TypeMapping2Instances typeMapping = this.typeMappings.get(type);
-    while ((type != null) && (typeMapping == null)) {
-      type = type.getParentType();
-      typeMapping = this.typeMappings.get(type);
+    Type typeTmp = getType();
+    TypeMapping2Instances typeMapping = this.typeMappings.get(typeTmp);
+    while ((typeTmp != null) && (typeMapping == null)) {
+      typeTmp = typeTmp.getParentType();
+      typeMapping = this.typeMappings.get(typeTmp);
     }
-
     ret = typeMapping.getValue(_expression);
-    /*
-     * if (hasAccess(context, _key)) { SelExpr2Attr selExpr =
-     * getAllSelExprMap().get(_key); if (selExpr != null) { ret =
-     * selExpr.getAttrValue(context); } }
-     */
     return ret;
   }
 
+  /**
+   * Get the type of this query.
+   * @return Type of this query
+   */
   public Type getType() {
     Type ret = this.type;
-
     if (this.colTypeId > 0) {
       ret = Type.get(this.cachedResult.getLong(this.colTypeId));
     }
     return ret;
   }
 
+  /**
+   * Method to get the first instance of the cached result.
+   *
+   * @return  Instance
+   * @throws Exception on error
+   */
   public Instance getInstance() throws Exception {
     return new Instance(getType(), this.cachedResult.getLong(1));
   }
 
+  /**
+   * Method to get all instances.
+   *
+   * @return List of instances
+   */
   public List<Instance> getInstances() {
     if (this.listquery.getAttributeSet() != null) {
       this.instances.clear();
@@ -261,56 +289,56 @@ public class OneRoundQuery {
           .getObject(sqlTableMapping.col2index.get(this.mainSQLTable
               .getSqlColId()));
       for (final Object id : ids) {
-        this.instances.add(new Instance(this.getType(), (Long) id));
+        this.instances.add(new Instance(getType(), (Long) id));
       }
     }
-
     return this.instances;
   }
 
   /**
    * The instance method returns for the given key the attribute.
    *
-   * @param _key
-   *          key for which the attribute value must returned
-   * @return attribute for given key
+   * @param _expression  expression for which the attribute value must returned
+   * @return attribute for given expression
+   * @throws Exception on error
    */
   public Attribute getAttribute(final String _expression) throws Exception {
     Attribute ret = null;
     ret = getType().getAttribute(_expression);
-    if (ret==null){
+    if (ret == null) {
       ret = getType().getLinks().get(_expression);
     }
-    /*
-     * SelExpr2Attr selExpr = getAllSelExprMap().get(_key); if (selExpr != null) {
-     * ret = selExpr.getAttribute(); }
-     */
     return ret;
   }
 
   /**
-   * @param key
+   * The instance method returns for the given key the attribute set.
+   *
+   * @param _expression  expression for which the attribute value must returned
+   * @return attribute for given expression
    */
   public AttributeSet getAttributeSet(final String _expression) {
-   return (AttributeSet) Type.get(AttributeSet.evaluateName(getType().getName(), _expression));
+   return (AttributeSet) Type.get(AttributeSet.evaluateName(getType().getName(),
+                                                            _expression));
   }
   /**
-   * @return
-   * @throws Exception
+   * Method to get the values of a attribute set.
+   * @return Object
+   * @throws Exception on error
    */
   public Object getMultiLineValue() throws Exception {
 
     Object ret = null;
-    final Map<Integer, String> indexes =
-              new HashMap<Integer, String>();
+    final Map<Integer, String> indexes = new HashMap<Integer, String>();
 
-    for (final SQLTableMapping2Attributes sql2attr : this.sqlTableMappings.values()){
-      for (final String select : this.selects){
+    for (final SQLTableMapping2Attributes sql2attr
+                                            : this.sqlTableMappings.values()) {
+      for (final String select : this.selects) {
         final Attribute attr = this.type.getAttribute(select);
         if (attr != null) {
           final List<Integer> idx = sql2attr.attr2index.get(attr);
           if (idx != null) {
-            indexes.put(idx.get(0),attr.getName());
+            indexes.put(idx.get(0), attr.getName());
           }
         }
       }
@@ -319,17 +347,13 @@ public class OneRoundQuery {
     final MultipleAttributeTypeInterface attrInterf
             =  this.listquery.getAttributeSet().getAttributeTypeInstance();
     ret = attrInterf.readValues(OneRoundQuery.this.cachedResult, indexes);
-
-
     return ret;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
-
-  // class used to store all types related to instances
-  class TypeMapping2Instances {
+  /**
+   * Class used to store all types related to instances.
+   */
+  private class TypeMapping2Instances {
 
     /**
      * Defines the instances for which this type mapping to instances is
@@ -337,36 +361,36 @@ public class OneRoundQuery {
      *
      * @see #addInstance
      */
-    final Set<Instance> instances = new HashSet<Instance>();
+    private final Set<Instance> instances = new HashSet<Instance>();
 
     /**
      * Stores the type for which this type mapping is defined.
      */
-    final Type type;
-
-    final Map<String, Attribute> expr2Attr = new HashMap<String, Attribute>();
-
-    final Set<String> multiExpr = new HashSet<String>();
-    final Map<SQLTable, SQLTableMapping2Attributes> sqlTable2Attrs =
-        new HashMap<SQLTable, SQLTableMapping2Attributes>();
-
-
+    private final Type type;
 
     /**
-     * @param _type
-     *          type for which this type mapping is defined
+     * Mapping between the expression and the attribute.
+     */
+    private final Map<String, Attribute> expr2Attr
+                                            = new HashMap<String, Attribute>();
+
+    /**
+     *
+     */
+    private final Set<String> multiExpr = new HashSet<String>();
+
+    /**
+     *
+     */
+    private final Map<SQLTable, SQLTableMapping2Attributes> sqlTable2Attrs
+                          = new HashMap<SQLTable, SQLTableMapping2Attributes>();
+
+    /**
+     * @param _type type for which this type mapping is defined
      * @see type
      */
     public TypeMapping2Instances(final Type _type) {
       this.type = _type;
-    }
-
-    /**
-     * @return
-     */
-    public Object getMultiLineValue() {
-      // TODO Auto-generated method stub
-      return null;
     }
 
     /**
@@ -376,24 +400,29 @@ public class OneRoundQuery {
      * instance to add @
      * @see #instances
      */
-    void addInstance(final Instance _instance) {
+    public void addInstance(final Instance _instance) {
       this.instances.add(_instance);
     }
 
-    void evaluateSelects() {
+    /**
+     * Method to evaluate the selects.
+     */
+    public void evaluateSelects() {
       for (final String select : OneRoundQuery.this.selects) {
         final Attribute attr = this.type.getAttribute(select);
         if (attr != null) {
           this.expr2Attr.put(select, attr);
         } else {
-          final AttributeSet set = AttributeSet.find(this.type.getName(), select);
+          final AttributeSet set = AttributeSet.find(this.type.getName(),
+                                                     select);
           if (set != null) {
             for (final String subSelect : set.getSetAttributes()) {
               ListQuery subQuery = OneRoundQuery.this.listquery
                     .getSubSelects().get(select);
               if (subQuery == null) {
                 subQuery = new ListQuery();
-                OneRoundQuery.this.listquery.getSubSelects().put(select, subQuery);
+                OneRoundQuery.this.listquery.getSubSelects().put(select,
+                                                                 subQuery);
               }
               subQuery.addSelect(subSelect);
               subQuery.setExpand(set);
@@ -408,50 +437,54 @@ public class OneRoundQuery {
         SQLTableMapping2Attributes sqlTable2Attr =
             this.sqlTable2Attrs.get(attribute.getTable());
         if (sqlTable2Attr == null) {
-          sqlTable2Attr = OneRoundQuery.this.sqlTableMappings.get(attribute.getTable());
+          sqlTable2Attr
+                = OneRoundQuery.this.sqlTableMappings.get(attribute.getTable());
           if (sqlTable2Attr == null) {
             sqlTable2Attr =
                 new SQLTableMapping2Attributes(attribute.getTable());
-            OneRoundQuery.this.sqlTableMappings.put(attribute.getTable(), sqlTable2Attr);
+            OneRoundQuery.this.sqlTableMappings.put(attribute.getTable(),
+                                                    sqlTable2Attr);
           }
           this.sqlTable2Attrs.put(attribute.getTable(), sqlTable2Attr);
         }
         sqlTable2Attr.addAttribute(attribute);
       }
       // add all instances to the sql table mapping
-      for (final SQLTableMapping2Attributes sqlTableMapping : this.sqlTable2Attrs
-          .values()) {
+      for (final SQLTableMapping2Attributes sqlTableMapping
+                                              : this.sqlTable2Attrs.values()) {
         sqlTableMapping.addInstances(this.instances);
       }
     }
 
-    public Object getValue(final String _expression) throws Exception {
+    /**
+     * Method to get the value for an expression.
+     * @param _expr expression the value will be returned for
+     * @return  Object
+     * @throws Exception on error
+     */
+    public Object getValue(final String _expr) throws Exception {
       // System.out.println("getValue.expression="+_expression);
       Object ret = null;
-      final Attribute attr = this.expr2Attr.get(_expression);
+      final Attribute attr = this.expr2Attr.get(_expr);
       if (attr != null) {
         final SQLTableMapping2Attributes sqlTable2attr =
             this.sqlTable2Attrs.get(attr.getTable());
         if (sqlTable2attr != null) {
           ret = sqlTable2attr.getValue(attr);
         } else {
-          System.out.println("!!! NULLLLLLLL " + _expression);
-          // System.out.println("this.expr2Attr="+this.expr2Attr);
+          System.out.println("!!! NULLLLLLLL " + _expr);
         }
       } else {
         //in case we have an expand we return the id of the object
-        if (_expression.contains("\\") || this.multiExpr.contains(_expression)){
+        if (_expr.contains("\\") || this.multiExpr.contains(_expr)) {
           final SQLTableMapping2Attributes sqlTable2attr =
-            this.sqlTable2Attrs.get(OneRoundQuery.this.getType().getMainTable());
+            this.sqlTable2Attrs.get(getType().getMainTable());
           if (sqlTable2attr != null) {
-             final Integer idx = sqlTable2attr.col2index.get(OneRoundQuery.this.getType().getMainTable().getSqlColId());
+             final Integer idx = sqlTable2attr.col2index.get(getType()
+                .getMainTable().getSqlColId());
              ret = OneRoundQuery.this.cachedResult.getLong(idx);
           }
         }
-
-//      if (this.multiExpr.contains(_expression)) {
-//        OneRoundQuery.this.listquery.getSubSelects().get(_expression)
-//      }
       }
       return ret;
     }
@@ -470,46 +503,68 @@ public class OneRoundQuery {
     }
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
-
-  class SQLTableMapping2Attributes {
+  /**
+   * Class used to store all sql tables related to attributes.
+   */
+  private class SQLTableMapping2Attributes {
 
     /**
-     *
+     * Sql table.
      */
     private final SQLTable sqlTable;
 
     /**
      * @see #addAttribute
      */
-    final private Set<Attribute> attributes = new HashSet<Attribute>();
-
-    final private List<String> cols = new ArrayList<String>();
-
-    final private Map<String, Integer> col2index =
-        new HashMap<String, Integer>();
-
-    final private Map<Attribute, List<Integer>> attr2index =
-        new HashMap<Attribute, List<Integer>>();
-
-    final Set<Instance> instances = new HashSet<Instance>();
-
-    int index = 0;
-
-    private boolean expand;
-
-    private boolean expandHasResult = true;
-
-    private AttributeSet attributeSet;
-
-
+    private final Set<Attribute> attributes = new HashSet<Attribute>();
 
     /**
-     *
+     * List of all columns.
      */
-    SQLTableMapping2Attributes(final SQLTable _sqlTable) {
+    private final List<String> cols = new ArrayList<String>();
+
+    /**
+     * Mapping of name of the column to its index.
+     */
+    private final Map<String, Integer> col2index
+                                               = new HashMap<String, Integer>();
+
+    /**
+     * Mapping of attribute to indexes.
+     */
+    private final Map<Attribute, List<Integer>> attr2index
+                                      = new HashMap<Attribute, List<Integer>>();
+
+    /**
+     * Set of Instances.
+     */
+    private final Set<Instance> instances = new HashSet<Instance>();
+
+    /**
+     * Actual index.
+     */
+    private int index = 0;
+
+    /**
+     * Is this query an expand.
+     */
+    private boolean expand;
+
+    /**
+     * Has the expand a result.
+     */
+    private boolean expandHasResult = true;
+
+    /**
+     * Contains the active attributeset.
+     */
+    private AttributeSet attributeSet;
+
+    /**
+     * Constructor.
+     * @param _sqlTable SQL table
+     */
+    public SQLTableMapping2Attributes(final SQLTable _sqlTable) {
       this.sqlTable = _sqlTable;
       this.col2index.put(this.sqlTable.getSqlColId(), this.index++);
       this.cols.add(this.sqlTable.getSqlColId());
@@ -521,25 +576,25 @@ public class OneRoundQuery {
     }
 
     /**
-     * @param attributeSet
+     * Set an attribute set.
+     *
+     * @param _attributeSet AttributeSet
      */
     public void setAttributeSet(final AttributeSet _attributeSet) {
       this.attributeSet = _attributeSet;
      final String column = this.attributeSet.getSqlColNames().get(0);
-      if(!this.col2index.containsKey(column)){
+      if (!this.col2index.containsKey(column)) {
         this.col2index.put(column, this.index++);
         this.cols.add(column);
       }
     }
 
     /**
-     * @param _expand
+     * Method to add an attribute.
+     *
+     * @param _attribute  Attribute to add
      */
-    public void setExpand(final boolean _expand) {
-      this.expand = _expand;
-    }
-
-    void addAttribute(final Attribute _attribute) {
+    public void addAttribute(final Attribute _attribute) {
       if (!this.attr2index.containsKey(_attribute)) {
         final ArrayList<Integer> idxs = new ArrayList<Integer>();
         for (final String col : _attribute.getSqlColNames()) {
@@ -556,21 +611,40 @@ public class OneRoundQuery {
       this.attributes.add(_attribute);
     }
 
-    void addInstances(final Collection<Instance> _instances) {
+    /**
+     * Method to add a collection of Instances.
+     *
+     * @param _instances  Instance to add
+     */
+    public void addInstances(final Collection<Instance> _instances) {
       this.instances.addAll(_instances);
     }
 
+    /**
+     * Method to get the value for an attribute.
+     *
+     * @param _attribute    Attribute the value is wanted for
+     * @return  value Object
+     * @throws Exception on error
+     */
     public Object getValue(final Attribute _attribute) throws Exception {
       final AttributeTypeInterface attrInterf = _attribute.newInstance();
       Object ret = null;
-      if (this.expandHasResult){
+      if (this.expandHasResult) {
           ret = attrInterf.readValue(OneRoundQuery.this.cachedResult,
                                      this.attr2index.get(_attribute));
       }
       return ret;
     }
 
-    int evaluateSQLStatement(final int _startIndex) {
+    /**
+     * Method to evaluate a sql statement.
+     *
+     * @param _startIndex index to start from
+     * @return new index
+     * @throws EFapsException on error during execution of statement
+     */
+    public int evaluateSQLStatement(final int _startIndex) throws EFapsException {
 
       final int maxExpression = Context.getDbType().getMaxExpressions();
       final List<StringBuilder> instSQLs = new ArrayList<StringBuilder>();
@@ -604,7 +678,6 @@ public class OneRoundQuery {
           newList.add(curIndex);
         }
         this.attr2index.put(entry.getKey(), newList);
-        // System.out.println(""+entry.getKey().getName()+"="+newList);
       }
 
       // update mapping from columns to index
@@ -616,16 +689,22 @@ public class OneRoundQuery {
           curIndex = 1;
         }
         this.col2index.put(entry.getKey(), curIndex);
-        // System.out.println(""+entry.getKey()+"="+curIndex);
       }
 
-      final boolean shiftIndex = evaluateSQLStatement(instSQLs);
+      final boolean shiftIndex = executeSQLStatement(instSQLs);
       // if we don't want to shift we must return the startvalue again
       return shiftIndex ? (_startIndex + this.index) : _startIndex + 1;
     }
 
-
-    boolean evaluateSQLStatement(final List<StringBuilder> _instSQLs) {
+    /**
+     * Method to execute an sql statement.
+     *
+     * @param _instSQLs builders
+     * @return false if we had an expand that did not deliver any Data
+     * @throws EFapsException on error during execution of statement
+     */
+    private boolean executeSQLStatement(final List<StringBuilder> _instSQLs)
+        throws EFapsException {
 
       final StringBuilder sql = new StringBuilder();
       boolean ret = true;
@@ -646,32 +725,28 @@ public class OneRoundQuery {
 
         sql.deleteCharAt(sql.length() - 1);
 
-        sql.append(" from ").append(this.sqlTable.getSqlTable()).append(" where ");
-        if (this.expand){
+        sql.append(" from ").append(this.sqlTable.getSqlTable())
+          .append(" where ");
+        if (this.expand) {
           sql.append(this.attributeSet.getSqlColNames().get(0));
-        }else{
+        } else {
           sql.append(" ID ");
         }
         sql.append(" in (").append(instSQL).append(")");
-        System.out.println("sql="+sql);
       }
       ConnectionResource con = null;
       try {
         con = Context.getThreadContext().getConnectionResource();
 
-        // if (LOG.isTraceEnabled()) {
-        // LOG.trace(_complStmt.getStatement().toString());
-        // }
-
         final Statement stmt = con.getConnection().createStatement();
         final ResultSet rs = stmt.executeQuery(sql.toString());
         int keyIndex = 1;
         int subKeyIndex = 0;
-        if (this.expand){
-          int idx=1;
-          for(final String col :this.cols){
-            if(col.equals(this.attributeSet.getSqlColNames().get(0))){
-              keyIndex=idx;
+        if (this.expand) {
+          int idx = 1;
+          for (final String col : this.cols) {
+            if (col.equals(this.attributeSet.getSqlColNames().get(0))) {
+              keyIndex = idx;
             }
             idx++;
           }
@@ -679,7 +754,7 @@ public class OneRoundQuery {
         }
         OneRoundQuery.this.cachedResult.populate(rs, keyIndex, subKeyIndex);
         //we had an expand that did not deliver any Data
-        if(!rs.isAfterLast() && this.expand){
+        if (!rs.isAfterLast() && this.expand) {
           ret = false;
           this.expandHasResult = false;
         }
@@ -687,17 +762,11 @@ public class OneRoundQuery {
         stmt.close();
         con.commit();
         con = null;
-        /*
-         * } catch (EFapsException e) { if (con != null) { con.abort(); } throw
-         * e;
-         */
       } catch (final Throwable e) {
-        // TODO: exception eintragen!
-        e.printStackTrace();
-        // throw new EFapsException(getClass(),
-        // "executeOneCompleteStmt.Throwable");
-      }
-      finally {
+        throw new EFapsException(getClass(),
+                                 "executeOneCompleteStmt.Throwable",
+                                 e);
+      } finally {
         if (con != null) {
           try {
             con.abort();
@@ -707,6 +776,24 @@ public class OneRoundQuery {
         }
       }
       return ret;
+    }
+
+    /**
+     * Getter method for instance variable {@link #expand}.
+     *
+     * @return value of instance variable {@link #expand}
+     */
+    public boolean isExpand() {
+      return this.expand;
+    }
+
+    /**
+     * Setter method for instance variable {@link #expand}.
+     *
+     * @param _expand value for instance variable {@link #expand}
+     */
+    public void setExpand(final boolean _expand) {
+      this.expand = _expand;
     }
 
     /**
