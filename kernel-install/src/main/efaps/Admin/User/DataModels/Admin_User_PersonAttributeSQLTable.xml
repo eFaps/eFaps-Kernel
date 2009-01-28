@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2003-2008 The eFaps Team
+ Copyright 2003 - 2009 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          jmox
- Revision:        $Rev: 1955 $
- Last Changed:    $Date: 2008-09-03 21:26:52 -0500 (Wed, 03 Sep 2008) $
- Last Changed By: $Author: jmox $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -29,7 +29,7 @@
 
   <uuid>009215a0-4002-4116-9850-4f3fae79582d</uuid>
   <file-application>eFaps-Kernel</file-application>
-  <file-revision>$Rev: 1955 $</file-revision>
+  <file-revision>$Rev$</file-revision>
   
   <!-- install the SQL Table -->
   <definition>
