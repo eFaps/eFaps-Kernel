@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2006 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.efaps.db.query.CachedResult;
  */
 public class OIDType extends StringType {
 
+  @Override
   public void update(final Object _object, final PreparedStatement _stmt,
       final List<Integer> _indexes) throws SQLException {
     throw new SQLException("Update value for OID not allowed!!!");
@@ -42,22 +43,24 @@ public class OIDType extends StringType {
    * the attribute the attribute has no defined type id SQL column name, the
    * type from the attribute is used (this means, the type itself is not derived
    * and has no childs).
-   * 
+   *
    * @param _context
    *          eFaps context for this request
    */
+  @Override
   public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
     if (getAttribute().getSqlColNames().size() > 1) {
-      long typeId = _rs.getLong(_indexes.get(0).intValue());
-      long id = _rs.getLong(_indexes.get(1).intValue());
+      final long typeId = _rs.getLong(_indexes.get(0).intValue());
+      final long id = _rs.getLong(_indexes.get(1).intValue());
       setValue(typeId + "." + id);
     } else {
-      long id = _rs.getLong(_indexes.get(0).intValue());
+      final long id = _rs.getLong(_indexes.get(0).intValue());
       setValue(getAttribute().getParent().getId() + "." + id);
     }
     return getValue();
   }
 
+  @Override
   public String toString() {
     return "" + getValue();
   }
