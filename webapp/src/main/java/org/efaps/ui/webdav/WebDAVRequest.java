@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.webdav;
@@ -101,7 +101,7 @@ public class WebDAVRequest  {
   public Document getDocument() throws IOException,
                                        ParserConfigurationException,
                                        SAXException  {
-    DocumentBuilder docBuilder = getDocumentBuilder();
+    final DocumentBuilder docBuilder = getDocumentBuilder();
     return docBuilder.parse(new InputSource(this.request.getInputStream()));
   }
 
@@ -110,7 +110,7 @@ public class WebDAVRequest  {
    */
   protected DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
 
-    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     dbf.setNamespaceAware(true);
 
     return dbf.newDocumentBuilder();
@@ -164,7 +164,7 @@ public class WebDAVRequest  {
    */
   public String getDestination() {
 
-    String path = this.request.getHeader("Destination");
+    final String path = this.request.getHeader("Destination");
 
     if (path == null)  {
       return null;
@@ -177,7 +177,7 @@ public class WebDAVRequest  {
     String normalized = null;
     try  {
       normalized = URLDecoder.decode(path, "UTF8");
-    } catch (UnsupportedEncodingException e)  {
+    } catch (final UnsupportedEncodingException e)  {
     }
 
     if (normalized == null)  {
@@ -186,13 +186,13 @@ public class WebDAVRequest  {
 
     // remove protocol, schema etc.
     try  {
-      URL url = new URL(normalized);
+      final URL url = new URL(normalized);
       normalized = url.getFile();
-    } catch (MalformedURLException e)  {
+    } catch (final MalformedURLException e)  {
     }
 
     // remove servlet context name and servlet path
-    String servlet = "/"
+    final String servlet = "/"
                       + this.request.getSession().getServletContext()
                                                  .getServletContextName()
                       + this.request.getServletPath();
@@ -222,7 +222,7 @@ public class WebDAVRequest  {
   public boolean isOverwrite()  {
     boolean overwrite = true;
 
-    String overwriteHeader = this.request.getHeader("Overwrite");
+    final String overwriteHeader = this.request.getHeader("Overwrite");
     if (overwriteHeader != null) {
       if (overwriteHeader.equalsIgnoreCase("T")) {
         overwrite = true;

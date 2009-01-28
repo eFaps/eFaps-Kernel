@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.webdav.method;
@@ -58,33 +58,34 @@ public class PropFindMethod extends AbstractMethod  {
   static enum FindProperty {FIND_BY_PROPERTY, FIND_ALL_PROP, FIND_PROPERTY_NAMES};
 
 
+  @Override
   public void run(final WebDAVRequest _request,
                   final HttpServletResponse _response) throws IOException, ServletException  {
 try  {
-Writer writer = _response.getWriter();
+final Writer writer = _response.getWriter();
 
     FindProperty type = FindProperty.FIND_ALL_PROP;
     Node propNode = null;
 
 
-    WebDAVRequest.DepthHeader depthHeader = _request.getDepthHeader();
+    final WebDAVRequest.DepthHeader depthHeader = _request.getDepthHeader();
 
 
 
 if (_request.isInputAvailable())  {
 try {
-      Document document = _request.getDocument();
+      final Document document = _request.getDocument();
 
       // Get the root element of the document
-      Element rootElement = document.getDocumentElement();
+      final Element rootElement = document.getDocumentElement();
 if (rootElement.getNamespaceURI().equals(DAV_XML_NAMESPACE)
     && rootElement.getLocalName().equals("propfind"))  {
 
 
-      NodeList childList = rootElement.getChildNodes();
+      final NodeList childList = rootElement.getChildNodes();
 
       for (int i=0; i < childList.getLength(); i++) {
-        Node currentNode = childList.item(i);
+        final Node currentNode = childList.item(i);
         switch (currentNode.getNodeType()) {
         case Node.TEXT_NODE:
           break;
@@ -106,7 +107,7 @@ if (rootElement.getNamespaceURI().equals(DAV_XML_NAMESPACE)
   _response.setStatus(Status.BAD_REQUEST.code);
   return;
 }
-    } catch(Exception e) {
+    } catch(final Exception e) {
 _response.setStatus(Status.BAD_REQUEST.code);
 return;
         // Most likely there was no content : we use the defaults.
@@ -118,16 +119,16 @@ return;
     DAVProperty[] properties = null;
 
     if (type == FindProperty.FIND_BY_PROPERTY) {
-      List<DAVProperty> propertiesList = new ArrayList<DAVProperty>();
-      NodeList childList = propNode.getChildNodes();
+      final List<DAVProperty> propertiesList = new ArrayList<DAVProperty>();
+      final NodeList childList = propNode.getChildNodes();
 
       for (int i=0; i < childList.getLength(); i++) {
-        Node curNode = childList.item(i);
+        final Node curNode = childList.item(i);
         if ((curNode.getNodeType() == Node.ELEMENT_NODE)
             && (curNode.getNamespaceURI().equals(DAV_XML_NAMESPACE)))  {
           try  {
             propertiesList.add(DAVProperty.valueOf(curNode.getLocalName()));
-          } catch (IllegalArgumentException e)  {
+          } catch (final IllegalArgumentException e)  {
 // TODO property is not found =>  404 (Not Found)
           }
         }
@@ -155,9 +156,9 @@ System.out.println("did not found " + _request.getPathInfo());
   if ((depthHeader == WebDAVRequest.DepthHeader.depth1)
       && (resource instanceof CollectionResource))  {
 
-    List < AbstractResource > subs = ((CollectionResource) resource).getSubs();
+    final List < AbstractResource > subs = ((CollectionResource) resource).getSubs();
 
-    for (AbstractResource subResource : subs)  {
+    for (final AbstractResource subResource : subs)  {
       write(writer,
             _request.getRequestURI() + "/" + subResource.getName(),
             properties,
@@ -165,7 +166,7 @@ System.out.println("did not found " + _request.getPathInfo());
     }
   }
 writeElement(writer, "multistatus", CLOSING);
-} catch (Exception e)  {
+} catch (final Exception e)  {
   e.printStackTrace();
 }
 
@@ -173,8 +174,8 @@ writeElement(writer, "multistatus", CLOSING);
 
   }
 
-  String makeResourceName(String _path, String _name)  {
-    StringBuffer ret = new StringBuffer(_path.length() + _name.length() + 1);
+  String makeResourceName(final String _path, final String _name)  {
+    final StringBuffer ret = new StringBuffer(_path.length() + _name.length() + 1);
     ret.append(_path);
     if (!_path.endsWith("/"))  {
       ret.append("/");
@@ -198,7 +199,7 @@ writeElement(writer, "multistatus", CLOSING);
 
     writeElement(_writer, "prop", OPENING);
 
-    for (DAVProperty property : _properties)  {
+    for (final DAVProperty property : _properties)  {
       writeText(_writer, property.makeXML(_resource));
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.webdav.method;
@@ -39,10 +39,11 @@ public class HeadMethod extends AbstractMethod  {
   /**
    *
    */
+  @Override
   public void run(final WebDAVRequest _request,
                   final HttpServletResponse _response) throws IOException, ServletException  {
 
-    AbstractResource resource = getResource4Path(_request.getPathInfo());
+    final AbstractResource resource = getResource4Path(_request.getPathInfo());
     if (resource == null)  {
       _response.setStatus(Status.NOT_FOUND.code);
     } else  {

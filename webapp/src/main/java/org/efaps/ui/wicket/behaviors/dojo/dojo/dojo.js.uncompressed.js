@@ -1511,7 +1511,7 @@ if(typeof window != 'undefined'){
 	})();
 
 	dojo._initFired = false;
-	//	BEGIN DOMContentLoaded, from Dean Edwards (http://dean.edwards.name/weblog/2006/06/again/)
+	//	BEGIN DOMContentLoaded, from Dean Edwards (http://dean.edwards.name/weblog/2003 - 2009/06/again/)
 	dojo._loadInit = function(e){
 		dojo._initFired = true;
 		// allow multiple calls, only first one will take effect

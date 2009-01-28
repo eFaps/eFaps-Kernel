@@ -1,5 +1,5 @@
 /*
-	JSCookMenu v2.0.3 (c) Copyright 2002-2006 by Heng Yuan
+	JSCookMenu v2.0.3 (c) Copyright 2002-2003 - 2009 by Heng Yuan
 
 	http://jscook.sourceforge.net/JSCookMenu/
 

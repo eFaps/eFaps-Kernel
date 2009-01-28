@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.webdav;
@@ -67,7 +67,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
 
   public List < AbstractResource > getSubs(final CollectionResource _collection)   {
 
-    List < AbstractResource > subs = new ArrayList < AbstractResource > ();
+    final List < AbstractResource > subs = new ArrayList < AbstractResource > ();
 
     try  {
       if (_collection.getWebDAVImpl() instanceof TeamCenterWebDAVImpl)  {
@@ -81,7 +81,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
         query.addSelect("Modified");
         query.execute();
         while (query.next())  {
-          String name = query.get("Name").toString();
+          final String name = query.get("Name").toString();
           subs.add(new CollectionResource(
               this,
               this,
@@ -105,7 +105,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
         query.addSelect("Modified");
         query.execute();
         while (query.next())  {
-          String name = (String) query.get("Name");
+          final String name = (String) query.get("Name");
           subs.add(new SourceResource(
               this,
               name,
@@ -118,7 +118,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
         }
         query.close();
       } else  {
-        SearchQuery query = new SearchQuery();
+        final SearchQuery query = new SearchQuery();
         query.setQueryTypes("TeamCenter_RootFolder");
         query.addSelect("OID");
         query.addSelect("Name");
@@ -126,7 +126,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
         query.addSelect("Created");
         query.execute();
         while (query.next())  {
-          String name = query.get("Name").toString();
+          final String name = query.get("Name").toString();
           subs.add(new CollectionResource(
               this,
               this,
@@ -139,7 +139,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
         }
         query.close();
       }
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       LOG.error("could not get subs from collection "
                 + "'" + _collection.getName() + "'", e);
     }
@@ -161,7 +161,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     CollectionResource collection = null;
 
     try  {
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       if (_collection.getWebDAVImpl() instanceof TeamCenterWebDAVImpl)  {
         query.setQueryTypes("TeamCenter_Folder");
         query.addWhereExprEqValue("Name", _name);
@@ -187,7 +187,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
         );
       }
       query.close();
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       LOG.error("could not get information about collection "
                 + "'" + _name + "'", e);
     }
@@ -199,13 +199,13 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     boolean ok = false;
 
     try  {
-      Insert insert = new Insert("TeamCenter_Folder");
+      final Insert insert = new Insert("TeamCenter_Folder");
       insert.add("ParentFolder",  "" + _collection.getInstance().getId());
       insert.add("Name",          _name);
       insert.execute();
       insert.close();
       ok = true;
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       LOG.error("could not create collection "
                 + "'" + _name + "'", e);
     }
@@ -229,7 +229,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     boolean ok = false;
 
     try  {
-      Update update = new Update(_collection.getInstance());
+      final Update update = new Update(_collection.getInstance());
 
       if (_collection.getParent().getInstance().getId()
                                       != _newParent.getInstance().getId())  {
@@ -239,7 +239,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
       update.add("Name", _newName);
       update.execute();
       ok = true;
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       LOG.error("could not move collection "
                 + "'" + _collection.getName() + "'", e);
     }
@@ -264,10 +264,10 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
 
     try  {
       if (createCollection(_newParent, _newName))  {
-        CollectionResource newCollection = getCollection(_newParent, _newName);
+        final CollectionResource newCollection = getCollection(_newParent, _newName);
 
-        List < AbstractResource > subs = getSubs(_collection);
-        for (AbstractResource rsrc : subs)  {
+        final List < AbstractResource > subs = getSubs(_collection);
+        for (final AbstractResource rsrc : subs)  {
           if (rsrc instanceof CollectionResource)  {
             copyCollection((CollectionResource) rsrc,
                            newCollection, rsrc.getName());
@@ -278,7 +278,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
 
         ok = true;
       }
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       LOG.error("could not move collection "
                 + "'" + _collection.getName() + "'", e);
     }
@@ -289,8 +289,8 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     boolean ok = false;
 
     try  {
-      List < AbstractResource > subs = getSubs(_collection);
-      for (AbstractResource rsrc : subs)  {
+      final List < AbstractResource > subs = getSubs(_collection);
+      for (final AbstractResource rsrc : subs)  {
         if (rsrc instanceof CollectionResource)  {
           deleteCollection((CollectionResource) rsrc);
         } else  {
@@ -298,10 +298,10 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
         }
       }
 
-      Delete delete = new Delete(_collection.getInstance());
+      final Delete delete = new Delete(_collection.getInstance());
       delete.execute();
       ok = true;
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       LOG.error("could not delete collection "
                 + "'" + _collection.getName() + "'", e);
     }
@@ -330,7 +330,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
         query.execute();
         Instance instance = null;
         while (query.next())  {
-          String docName = (String) query.get("Name");
+          final String docName = (String) query.get("Name");
           if ((docName != null) && _name.equals(docName))  {
             instance = new Instance((String) query.get("OID"));
             break;
@@ -357,7 +357,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
           );
           query.close();
         }
-      } catch (Exception e)  {
+      } catch (final Exception e)  {
         LOG.error("could not get information about source '" + _name + "'", e);
       }
     }
@@ -372,7 +372,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
       Insert insert = new Insert("TeamCenter_Document");
       insert.add("Name", _name);
       insert.execute();
-      Instance fileInstance = insert.getInstance();
+      final Instance fileInstance = insert.getInstance();
       insert.close();
 
       insert = new Insert("TeamCenter_Document2Folder");
@@ -382,7 +382,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
       insert.close();
 
       ok = true;
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       LOG.error("could not create source "
                 + "'" + _name + "'", e);
     }
@@ -407,24 +407,24 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     boolean ok = false;
 
     try  {
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setExpand(_source.getInstance(),
                       "TeamCenter_Document2Folder\\Document");
       query.addSelect("OID");
       query.execute();
       while (query.next())  {
-        Update update = new Update((String) query.get("OID"));
+        final Update update = new Update((String) query.get("OID"));
         update.add("Folder", "" + _newParent.getInstance().getId());
         update.execute();
       }
       query.close();
 
-      Update update = new Update(_source.getInstance());
+      final Update update = new Update(_source.getInstance());
       update.add("Name", _name);
       update.execute();
 
       ok = true;
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       LOG.error("could not move source "
                 + "'" + _source.getName() + "'", e);
     }
@@ -452,7 +452,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
       if (createSource(_newParent, _name))  {
         ok = true;
       }
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       LOG.error("could not move source "
                 + "'" + _source.getName() + "'", e);
     }
@@ -463,22 +463,22 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     boolean ok = false;
 
     try  {
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setExpand(_source.getInstance(),
                       "TeamCenter_Document2Folder\\Document");
       query.addSelect("OID");
       query.execute();
       while (query.next())  {
-        Delete delete = new Delete((String) query.get("OID"));
+        final Delete delete = new Delete((String) query.get("OID"));
         delete.execute();
       }
       query.close();
 
-      Delete delete = new Delete(_source.getInstance());
+      final Delete delete = new Delete(_source.getInstance());
       delete.execute();
 
       ok = true;
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       LOG.error("could not delete source "
                 + "'" + _source.getName() + "'", e);
     }
@@ -491,11 +491,11 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     boolean ok = false;
 
     try  {
-      Checkin checkin = new Checkin(_source.getInstance());
+      final Checkin checkin = new Checkin(_source.getInstance());
       checkin.execute(_source.getName(), _inputStream, -1);
 
       ok = true;
-    } catch (EFapsException e)  {
+    } catch (final EFapsException e)  {
       LOG.error("could not checkin source "
                 + "'" + _source.getName() + "'", e);
     }
@@ -508,12 +508,12 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     boolean ok = false;
 
     try  {
-      Checkout checkout = new Checkout(_source.getInstance());
+      final Checkout checkout = new Checkout(_source.getInstance());
       checkout.preprocess();
       checkout.execute(_outputStream);
 
       ok = true;
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       LOG.error("could not checkout source "
                 + "'" + _source.getName() + "'", e);
     }

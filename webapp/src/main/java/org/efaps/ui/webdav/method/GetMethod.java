@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.webdav.method;
@@ -56,10 +56,11 @@ public class GetMethod extends AbstractMethod  {
   /**
    *
    */
+  @Override
   public void run(final WebDAVRequest _request,
                   final HttpServletResponse _response) throws IOException, ServletException  {
 
-    AbstractResource resource = getResource4Path(_request.getPathInfo());
+    final AbstractResource resource = getResource4Path(_request.getPathInfo());
     if (resource == null)  {
  // was fuer fehler muss hier gemacht werden???
       _response.setStatus(Status.NOT_FOUND.code);
@@ -67,7 +68,7 @@ public class GetMethod extends AbstractMethod  {
       _response.setContentType(_request.getRequest().getSession().getServletContext().getMimeType(resource.getName()));
       _response.setHeader("Content-Disposition", "inline; filename=\""+resource.getName()+"\"");
       if (resource instanceof SourceResource)  {
-        SourceResource source = (SourceResource) resource;
+        final SourceResource source = (SourceResource) resource;
         _response.setHeader("content-length", "" + source.getLength());
         source.checkout(_response.getOutputStream());
       } else  {
@@ -92,14 +93,14 @@ public class GetMethod extends AbstractMethod  {
                            final CollectionResource _col,
                            final PrintWriter _out)  {
 
-    List < AbstractResource > subs = _col.getSubs();
-    Map < String, CollectionResource > sortedColSubs
+    final List < AbstractResource > subs = _col.getSubs();
+    final Map < String, CollectionResource > sortedColSubs
                               = new TreeMap < String, CollectionResource > ();
-    Map < String, SourceResource > sortedSrcSubs
+    final Map < String, SourceResource > sortedSrcSubs
                               = new TreeMap < String, SourceResource > ();
 
    // sort sub collections / sources
-   for (AbstractResource rsrc : subs)  {
+   for (final AbstractResource rsrc : subs)  {
       if (rsrc instanceof CollectionResource)  {
         sortedColSubs.put(rsrc.getName(), (CollectionResource) rsrc);
       } else  {
@@ -108,14 +109,14 @@ public class GetMethod extends AbstractMethod  {
     }
 
     try  {
-      URI uri = new URI(_uri + "/");
+      final URI uri = new URI(_uri + "/");
 
 
       // print out
-      Document doc = new Document()
+      final Document doc = new Document()
                               .appendTitle(_col.getName())
                               .setDoctype(new Doctype.Html40Strict());
-      Table table = new Table();
+      final Table table = new Table();
       doc.appendBody(table);
 
       // only go one up if a parent is defined
@@ -128,7 +129,7 @@ public class GetMethod extends AbstractMethod  {
       }
 
       // print out all collections
-      for (CollectionResource col : sortedColSubs.values())  {
+      for (final CollectionResource col : sortedColSubs.values())  {
         table.addElement(new TR().addElement(new TD().addElement(
             new A()
                 .setHref(uri.resolve(col.getName()).toString())
@@ -137,7 +138,7 @@ public class GetMethod extends AbstractMethod  {
       }
 
       // print out all files
-      for (SourceResource src : sortedSrcSubs.values())  {
+      for (final SourceResource src : sortedSrcSubs.values())  {
         table.addElement(new TR().addElement(new TD().addElement(
             new A()
                 .setHref(uri.resolve(src.getName()).toString())
@@ -147,7 +148,7 @@ public class GetMethod extends AbstractMethod  {
 
       _out.write(doc.toString());
       _out.flush();
-    } catch (URISyntaxException e)  {
+    } catch (final URISyntaxException e)  {
 e.printStackTrace();
     }
   }

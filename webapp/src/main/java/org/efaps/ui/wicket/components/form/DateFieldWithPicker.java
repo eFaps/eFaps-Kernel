@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2009 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public class DateFieldWithPicker extends DateTextField {
     String ret = null;
 
     final DateTimeFormatter fmt =
-                              DateTimeFormat.forPattern(this.getTextFormat());
+                              DateTimeFormat.forPattern(getTextFormat());
     fmt.withLocale(getLocale());
     final DateTime dt = fmt.parseDateTime(_value);
     final DateTimeFormatter isofmt = ISODateTimeFormat.dateTime();

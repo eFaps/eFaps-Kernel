@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.webdav.resource;
@@ -99,8 +99,8 @@ public class CollectionResource extends AbstractResource  {
    * @return sub collections and sources for this collection
    */
   public List < AbstractResource > getSubs()  {
-    List < AbstractResource > list = this.subWebDAVImpl.getSubs(this);
-    for (AbstractResource resource : list)  {
+    final List < AbstractResource > list = this.subWebDAVImpl.getSubs(this);
+    for (final AbstractResource resource : list)  {
       resource.setParent(this);
     }
     return list;
@@ -126,7 +126,7 @@ public class CollectionResource extends AbstractResource  {
    * As parent collection this collection is set.
    */
   public CollectionResource getCollection(final String _name)  {
-    CollectionResource ret = this.subWebDAVImpl.getCollection(this, _name);
+    final CollectionResource ret = this.subWebDAVImpl.getCollection(this, _name);
     if (ret != null)  {
       ret.setParent(this);
     }
@@ -144,7 +144,7 @@ public class CollectionResource extends AbstractResource  {
    * As parent collection this collection is set.
    */
   public SourceResource getSource(final String _name)  {
-    SourceResource ret = this.subWebDAVImpl.getSource(this, _name);
+    final SourceResource ret = this.subWebDAVImpl.getSource(this, _name);
     if (ret != null)  {
       ret.setParent(this);
     }

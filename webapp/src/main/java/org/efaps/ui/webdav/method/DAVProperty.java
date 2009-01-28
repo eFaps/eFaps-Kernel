@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.webdav.method;
@@ -45,6 +45,7 @@ public enum DAVProperty  {
       this.creationDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
+    @Override
     public String makeXML(final AbstractResource _rsrc) {
       return makeXML(this.creationDateFormat.format(_rsrc.getCreated()));
     }
@@ -55,6 +56,7 @@ public enum DAVProperty  {
    * user.
    */
   displayname {
+    @Override
     public String makeXML(final AbstractResource _rsrc) {
       return makeXML("<![CDATA[" + _rsrc.getDescription() + "]]>");
     }
@@ -72,6 +74,7 @@ public enum DAVProperty  {
    * headers.
    */
   getcontentlength {
+    @Override
     public String makeXML(final AbstractResource _rsrc) {
       String ret = "";
       if (_rsrc instanceof SourceResource)  {
@@ -107,6 +110,7 @@ public enum DAVProperty  {
       this.modifiedDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
+    @Override
     public String makeXML(final AbstractResource _rsrc) {
       return makeXML(this.modifiedDateFormat.format(_rsrc.getModified()));
     }
@@ -122,6 +126,7 @@ public enum DAVProperty  {
    * Specifies the nature of the resource.
    */
   resourcetype {
+    @Override
     public String makeXML(final AbstractResource _rsrc)  {
       String ret = null;
       if (_rsrc instanceof CollectionResource)  {
@@ -147,7 +152,7 @@ public enum DAVProperty  {
   };
 
   protected String makeXML(final String _text) {
-    StringBuffer ret = new StringBuffer();
+    final StringBuffer ret = new StringBuffer();
     ret.append('<').append(name()).append(">")
        .append(_text)
        .append("</").append(name()).append(">");

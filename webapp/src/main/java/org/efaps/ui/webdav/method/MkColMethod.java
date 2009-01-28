@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.webdav.method;
@@ -45,14 +45,15 @@ public class MkColMethod extends AbstractMethod  {
    * @todo the request body must be processed (currently the status is
    *                                           NOT_IMPLEMENTED)
    */
+  @Override
   public void run(final WebDAVRequest _request,
                   final HttpServletResponse _response) throws IOException, ServletException  {
     Status status = null;
 
-    String[] uri = _request.getPathInfo().split("/");
-    String newName = uri[uri.length - 1];
+    final String[] uri = _request.getPathInfo().split("/");
+    final String newName = uri[uri.length - 1];
 
-    CollectionResource parentCollection
+    final CollectionResource parentCollection
                           = getCollection4ParentPath(_request.getPathInfo());
 
     if (parentCollection == null)  {
@@ -60,16 +61,16 @@ public class MkColMethod extends AbstractMethod  {
     } else  {
       if (_request.isInputAvailable()) {
         try {
-          Document document = _request.getDocument();
+          final Document document = _request.getDocument();
           // TODO : Process this request body
           status = Status.NOT_IMPLEMENTED;
-        } catch(IOException e)  {
+        } catch(final IOException e)  {
           // input
           status = Status.BAD_REQUEST;
-        } catch(ParserConfigurationException e)  {
+        } catch(final ParserConfigurationException e)  {
           // Parse error - assume invalid content
           status = Status.BAD_REQUEST;
-        } catch(SAXException e) {
+        } catch(final SAXException e) {
           // Parse error - assume invalid content
           status = Status.BAD_REQUEST;
         }

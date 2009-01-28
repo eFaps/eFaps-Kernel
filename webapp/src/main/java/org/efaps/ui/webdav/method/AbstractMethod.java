@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.webdav.method;
@@ -152,11 +152,11 @@ public abstract class AbstractMethod  {
 
 
   protected AbstractResource getResource4Path(final String _uri)  {
-    String[] uri = _uri.toString().split("/");
+    final String[] uri = _uri.toString().split("/");
 
     AbstractResource resource = this.rootCollection;
     if (uri.length > 1)  {
-      CollectionResource collection = getCollection(uri.length - 2, uri);
+      final CollectionResource collection = getCollection(uri.length - 2, uri);
       if (collection != null)  {
         resource = collection.get(uri[uri.length - 1]);
       } else  {
@@ -167,7 +167,7 @@ public abstract class AbstractMethod  {
   }
 
   protected CollectionResource getCollection4ParentPath(final String _uri)  {
-    String[] uri = _uri.toString().split("/");
+    final String[] uri = _uri.toString().split("/");
 
     return getCollection(uri.length - 2, uri);
   }
@@ -209,7 +209,7 @@ public abstract class AbstractMethod  {
    *
    * @param text Text to append
    */
-  public void writeText(Writer _writer, String text) throws IOException  {
+  public void writeText(final Writer _writer, final String text) throws IOException  {
 //System.out.println(text);
     _writer.write(text);
   }
@@ -222,7 +222,7 @@ public abstract class AbstractMethod  {
    * @param name Element name
    * @param type Element type
    */
-  public void writeElement(Writer _writer, String name, int type) throws IOException  {
+  public void writeElement(final Writer _writer, final String name, final int type) throws IOException  {
     switch (type) {
     case OPENING:
       writeText(_writer, "<" + name + ">");
