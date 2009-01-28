@@ -1,6 +1,6 @@
 @REM --------------------------------------------------------------------------
 @REM
-@REM Copyright 2003-2008 The eFaps Team
+@REM Copyright 2003 - 2009 The eFaps Team
 @REM
 @REM Licensed under the Apache License, Version 2.0 (the "License");
 @REM you may not use this file except in compliance with the License.
