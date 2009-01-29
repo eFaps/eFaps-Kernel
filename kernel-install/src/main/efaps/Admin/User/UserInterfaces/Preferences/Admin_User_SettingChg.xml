@@ -34,6 +34,9 @@
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>Admin_User_SettingChg</name>
+    <access>
+      <role>Common_Main_PwdChg</role>
+    </access>
     <target>
       <form>Admin_User_SettingChgForm</form>
       <execute program="org.efaps.esjp.admin.user.ChgSetting"/>
