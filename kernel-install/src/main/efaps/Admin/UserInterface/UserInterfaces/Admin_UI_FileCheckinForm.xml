@@ -35,23 +35,7 @@
     <version-expression>(version==latest)</version-expression>
     <name>Admin_UI_FileCheckinForm</name>
     <!-- fields -->
-    <field name="type">
-      <property name="Editable">false</property>
-      <property name="Expression">Type</property>
-    </field>
-    <field name="name">
-      <property name="Editable">false</property>
-      <property name="Expression">Name</property>
-    </field>
-    <field name="uuid">
-      <property name="Editable">false</property>
-      <property name="Expression">UUID</property>
-    </field>
-    <field name="revision">
-      <property name="Editable">false</property>
-      <property name="Expression">Revision</property>
-    </field>
-     <field name="file">
+    <field name="file">
       <property name="Editable">true</property>
       <property name="Label">Admin_UI_File/File.Label</property>
       <trigger name="Admin_UI_File/file"
