@@ -206,9 +206,20 @@ public class ExportUI implements EventExecution {
     final SearchQuery query = new SearchQuery();
     query.setExpand(_instance, "Admin_UI_Access\\UILink.UserLink");
     query.addSelect("Name");
+    query.addSelect("Type");
     query.execute();
     while (query.next()) {
-      final Element propEl = _xmlDoc.createElement("role");
+      String elementType = "";
+      final Type type = (Type) query.get("Type");
+      if (type.equals(Type.get(EFapsClassNames.USER_ROLE))) {
+        elementType = "role";
+      } else if (type.equals(Type.get(EFapsClassNames.USER_PERSON))) {
+        elementType = "person";
+      } else if (type.equals(Type.get(EFapsClassNames.USER_GROUP))) {
+        elementType = "group";
+      }
+
+      final Element propEl = _xmlDoc.createElement(elementType);
       propEl.appendChild(_xmlDoc.createTextNode((String) query.get("Name")));
       element.appendChild(propEl);
       add = true;
