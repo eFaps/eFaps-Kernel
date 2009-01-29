@@ -32,56 +32,54 @@ import org.efaps.update.LinkInstance;
 import org.efaps.update.event.Event;
 
 /**
- * This Class is responsible for the Update of "Command" in the Database.<br/>It
- * reads with <code>org.apache.commons.digester</code> a XML-File to create
- * the <code>CommandDefinition</code>. It is than inserted into the Database
- * by the SuperClass <code>AbstractUpdate</code>.
+ * This Class is responsible for the Update of "Command" in the Database.
  *
  * @author tmo
  * @version $Id$
  */
-public class CommandUpdate extends AbstractUpdate
-{
-
-  /////////////////////////////////////////////////////////////////////////////
-  // static variables
-
-  /** Link from UI object to role */
-  private final static Link LINK2ACCESSROLE   = new Link("Admin_UI_Access",
-                                                         "UILink",
-                                                         "Admin_User_Role", "UserLink");
-
-  /** Link from command to icon */
-  private final static Link LINK2ICON         = new Link("Admin_UI_LinkIcon",
-                                                         "From",
-                                                         "Admin_UI_Image", "To");
-
-  /** Link from command to table as target */
-  private final static Link LINK2TARGETTABLE  = new Link("Admin_UI_LinkTargetTable",
-                                                         "From",
-                                                         "Admin_UI_Table", "To");
-
-  /** Link from command to form as target */
-  private final static Link LINK2TARGETFORM   = new Link("Admin_UI_LinkTargetForm",
-                                                         "From",
-                                                         "Admin_UI_Form", "To");
-
-  /** Link from command to menu as target */
-  private final static Link LINK2TARGETMENU   = new Link("Admin_UI_LinkTargetMenu",
-                                                         "From",
-                                                         "Admin_UI_Menu", "To");
-
-  /** Link from command to search as target */
-  private final static Link LINK2TARGETSEARCH = new Link("Admin_UI_LinkTargetSearch",
-                                                         "From",
-                                                         "Admin_UI_Search", "To");
+public class CommandUpdate extends AbstractUpdate {
 
   /**
-   * Set of all links used by commands.s
+   * Set of all links used by commands.
    */
-  protected final static Set<Link> ALLLINKS = new HashSet<Link>();
-  static  {
+  protected static final Set<Link> ALLLINKS = new HashSet<Link>();
+
+  /** Link from UI object to role. */
+  private static final Link LINK2ACCESSROLE
+         = new Link("Admin_UI_Access", "UILink", "Admin_User_Role", "UserLink");
+
+  /** Link from UI object to person. */
+  private static final Link LINK2ACCESSPERSON
+       = new Link("Admin_UI_Access", "UILink", "Admin_User_Person", "UserLink");
+
+  /** Link from UI object to group. */
+  private static final Link LINK2ACCESSGROUP
+        = new Link("Admin_UI_Access", "UILink", "Admin_User_Group", "UserLink");
+
+  /** Link from command to icon. */
+  private static final Link LINK2ICON
+                = new Link("Admin_UI_LinkIcon", "From", "Admin_UI_Image", "To");
+
+  /** Link from command to table as target. */
+  private static final Link LINK2TARGETTABLE
+         = new Link("Admin_UI_LinkTargetTable", "From", "Admin_UI_Table", "To");
+
+  /** Link from command to form as target. */
+  private static final Link LINK2TARGETFORM
+           = new Link("Admin_UI_LinkTargetForm", "From", "Admin_UI_Form", "To");
+
+  /** Link from command to menu as target. */
+  private static final Link LINK2TARGETMENU
+           = new Link("Admin_UI_LinkTargetMenu", "From", "Admin_UI_Menu", "To");
+
+  /** Link from command to search as target. */
+  private static final Link LINK2TARGETSEARCH
+       = new Link("Admin_UI_LinkTargetSearch", "From", "Admin_UI_Search", "To");
+
+  static {
     ALLLINKS.add(LINK2ACCESSROLE);
+    ALLLINKS.add(LINK2ACCESSPERSON);
+    ALLLINKS.add(LINK2ACCESSGROUP);
     ALLLINKS.add(LINK2ICON);
     ALLLINKS.add(LINK2TARGETTABLE);
     ALLLINKS.add(LINK2TARGETFORM);
@@ -89,26 +87,23 @@ public class CommandUpdate extends AbstractUpdate
     ALLLINKS.add(LINK2TARGETSEARCH);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // constructors
-
   /**
    * Default contractor used by the XML parser for initialize a command.
    *
    * @param _url        URL of the file
    */
-  public CommandUpdate(final URL _url)
-  {
+  public CommandUpdate(final URL _url) {
     super(_url, "Admin_UI_Command", ALLLINKS);
   }
 
   /**
-   *
+   * @param _url        url
+   * @param _typeName   name of the type
+   * @param _allLinks   all links
    */
   protected CommandUpdate(final URL _url,
                           final String _typeName,
-                          final Set<Link> _allLinks)
-  {
+                          final Set<Link> _allLinks) {
     super(_url, _typeName, _allLinks);
   }
 
@@ -119,37 +114,47 @@ public class CommandUpdate extends AbstractUpdate
    * @see CommandDefinition
    */
   @Override
-  protected AbstractDefinition newDefinition()
-  {
+  protected AbstractDefinition newDefinition() {
     return new CommandDefinition();
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  // class for the definitions
-
+  /**
+   * Definition for a command.
+   *
+   */
   protected class CommandDefinition extends AbstractDefinition {
 
+    /**
+     * Read the xml.
+     *
+     * @param _tags         List of tags
+     * @param _attributes   map of attributes
+     * @param _text         text
+     */
     @Override
     protected void readXML(final List<String> _tags,
-                           final Map<String,String> _attributes,
-                           final String _text)
-    {
+                           final Map<String, String> _attributes,
+                           final String _text) {
       final String value = _tags.get(0);
       if ("access".equals(value))  {
         if (_tags.size() > 1)  {
           final String subValue = _tags.get(1);
           if ("role".equals(subValue))  {
             // Assigns a role for accessing this command.
-            addLink(LINK2ACCESSROLE,new LinkInstance(_text));
+            addLink(LINK2ACCESSROLE, new LinkInstance(_text));
+          } else if ("person".equals(subValue))  {
+            // Assigns a person for accessing this command.
+            addLink(LINK2ACCESSPERSON, new LinkInstance(_text));
+          } else if ("group".equals(subValue))  {
+            // Assigns a group for accessing this command.
+            addLink(LINK2ACCESSGROUP, new LinkInstance(_text));
           } else  {
             super.readXML(_tags, _attributes, _text);
           }
         }
       } else if ("icon".equals(value))  {
         // Assigns an image
-        addLink(LINK2ICON,new LinkInstance(_text));
+        addLink(LINK2ICON, new LinkInstance(_text));
       } else if ("target".equals(value))  {
         if (_tags.size() == 2)  {
           final String subValue = _tags.get(1);
@@ -176,10 +181,10 @@ public class CommandUpdate extends AbstractUpdate
             addLink(LINK2TARGETSEARCH, new LinkInstance(_text));
           } else if ("table".equals(subValue))  {
             // assigns a table as target for this command definition.
-            addLink(LINK2TARGETTABLE,new LinkInstance(_text) );
+            addLink(LINK2TARGETTABLE, new LinkInstance(_text));
           } else if ("trigger".equals(subValue))  {
             this.events.add(new Event(_attributes.get("name"),
-                                      EventType.valueOf(_attributes.get("event")),
+                                    EventType.valueOf(_attributes.get("event")),
                                       _attributes.get("program"),
                                       _attributes.get("method"),
                                       _attributes.get("index")));
@@ -195,11 +200,12 @@ public class CommandUpdate extends AbstractUpdate
         } else if (_tags.size() == 3)  {
           final String subValue = _tags.get(1);
           if (("evaluate".equals(subValue)
-                || "execute".equals(subValue)
-                || "trigger".equals(subValue)
-                || "validate".equals(subValue)) && "property".equals(_tags.get(2))) {
-            this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"),
-                                                                _text);
+                  || "execute".equals(subValue)
+                  || "trigger".equals(subValue)
+                  || "validate".equals(subValue))
+                && "property".equals(_tags.get(2))) {
+            this.events.get(this.events.size() - 1).addProperty(
+                                              _attributes.get("name"), _text);
           } else  {
             super.readXML(_tags, _attributes, _text);
           }
@@ -212,5 +218,4 @@ public class CommandUpdate extends AbstractUpdate
       }
     }
   }
-
 }
