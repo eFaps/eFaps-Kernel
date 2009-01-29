@@ -30,7 +30,7 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
-import org.efaps.ui.wicket.util.FileFormat;
+import org.efaps.ui.wicket.util.MimeTypes;
 import org.efaps.ui.xml.XMLExport;
 import org.efaps.util.EFapsException;
 
@@ -53,7 +53,7 @@ public class CreateXML implements EventExecution
         (String) ((HashMap<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
             .get("MimeType");
 
-    export.generateDocument(FileFormat.MimeTypes.getMime(mimetype));
+    export.generateDocument(MimeTypes.getMimeTypeByEnding(mimetype));
     final File file = export.getFile();
     ret.put(ReturnValues.VALUES, file);
 

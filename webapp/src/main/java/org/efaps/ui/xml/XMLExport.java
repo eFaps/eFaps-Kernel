@@ -70,7 +70,7 @@ import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
 import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.resources.XSLResource;
-import org.efaps.ui.wicket.util.FileFormat.MimeTypes;
+import org.efaps.ui.wicket.util.MimeTypes;
 import org.efaps.util.EFapsException;
 
 /**
@@ -156,19 +156,19 @@ public class XMLExport {
       final FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
       // configure foUserAgent as desired
 
-      final File sessionFolder = getSessionFolder(Session.get().getId());;
+      final File sessionFolder = getSessionFolder(this.fileStoreFolder,"-print");
 
       this.file =
           new File(sessionFolder, "print-"
               + this.model.getOid()
               + "."
-              + this.mimeType.end);
+              + this.mimeType.getEnding());
 
       out = new FileOutputStream(this.file);
 
       // Construct fop with desired output format
       final Fop fop =
-          fopFactory.newFop(this.mimeType.application, foUserAgent, out);
+          fopFactory.newFop(this.mimeType.getContentType(), foUserAgent, out);
 
       // Setup XSLT
       final TransformerFactory factory = TransformerFactory.newInstance();
@@ -221,7 +221,7 @@ public class XMLExport {
     this.model = _model;
     // Generate the XML Document using DOM
     // Generate a XML String
-    this.xmlDocument = this.generateXMLDocument(_model);
+    this.xmlDocument = generateXMLDocument(_model);
     // Generate a XML String
     this.xmlDocument.normalizeDocument();
 
@@ -238,7 +238,7 @@ public class XMLExport {
    * @return
    * @throws EFapsException
    */
-  protected Document generateXMLDocument(AbstractUIObject _uiObject)
+  protected Document generateXMLDocument(final AbstractUIObject _uiObject)
                                                               throws EFapsException {
     Document xmlDoc = null;
     try {
@@ -423,7 +423,7 @@ public class XMLExport {
    * @return
    * @throws EFapsException
    */
-  public String generateXMLString(Document _xmlDoc) throws EFapsException {
+  public static String generateXMLString(final Document _xmlDoc) throws EFapsException {
     String ret = null;
     StringWriter strWriter = null;
     XMLSerializer probeMsgSerializer = null;
@@ -452,7 +452,7 @@ public class XMLExport {
       strWriter.close();
 
     } catch (final IOException e) {
-      throw new EFapsException(this.getClass(), "generateXMLString", e);
+      throw new EFapsException(XMLExport.class, "generateXMLString", e);
     }
     return ret;
   }
@@ -462,7 +462,7 @@ public class XMLExport {
    *
    * @return
    */
-  private static File getDefaultFileStoreFolder() {
+  public static File getDefaultFileStoreFolder() {
     final File dir =
         (File) ((EFapsApplication) Application.get()).getServletContext()
             .getAttribute("javax.servlet.context.tempdir");
@@ -478,15 +478,16 @@ public class XMLExport {
   }
 
   /**
-   * get the SessionFOlder
+   * Get the SessionFolder.
    *
    * @param sessionId
    * @return
    */
-  private File getSessionFolder(final String sessionId) {
-    final File storeFolder = new File(this.fileStoreFolder, APPNAME + "-print");
-    final File sessionFolder = new File(storeFolder, sessionId);
-    if (sessionFolder.exists() == false) {
+  public static File getSessionFolder(final File _fileStoreFolder,
+                                      final String _append) {
+    final File storeFolder = new File(_fileStoreFolder, APPNAME + _append);
+    final File sessionFolder = new File(storeFolder, Session.get().getId());
+    if (!sessionFolder.exists()) {
       sessionFolder.mkdirs();
     }
     return sessionFolder;
