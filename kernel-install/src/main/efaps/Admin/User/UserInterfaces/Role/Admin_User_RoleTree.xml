@@ -45,6 +45,7 @@
     <childs>
       <child>Admin_User_RoleTree_Persons</child>
       <child>Admin_User_AbstractTree_JAASKeys</child>
+      <child>Admin_User_AbstractTree_Access</child>
     </childs>
     <!-- properties -->
     <property name="Target">content</property>
