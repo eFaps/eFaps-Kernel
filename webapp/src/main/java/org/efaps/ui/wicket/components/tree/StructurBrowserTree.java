@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.components.tree;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -63,7 +64,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 /**
  * This class renders a Tree, which loads the children asynchron.<br>
  * The items of the tree consists of junction link, icon and label. An
- * additionalarrow showing the direction of the child can be rendered depending
+ * additional arrow showing the direction of the child can be rendered depending
  * on a Tristate.
  *
  * @author jmox
@@ -191,9 +192,10 @@ public class StructurBrowserTree extends DefaultAbstractTree {
         final UIStructurBrowser model =
             (UIStructurBrowser) ((DefaultMutableTreeNode) _node)
                 .getUserObject();
-
+        //get the standart Command
         AbstractCommand cmd = model.getCommand();
 
+        //check if one of its childs is default selected
         if (cmd instanceof Menu) {
           for (final AbstractCommand childcmd : ((Menu) cmd).getCommands()) {
             if (childcmd.isDefaultSelected()) {
@@ -202,46 +204,44 @@ public class StructurBrowserTree extends DefaultAbstractTree {
             }
           }
         }
-
+        final UUID commandUUID = cmd.getUUID();
         InlineFrame page;
         if (cmd.getTargetTable() != null) {
-          page =
-              new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-                  .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
-                  new IPageLink() {
+          page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
+              .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+              new IPageLink() {
 
-                    private static final long serialVersionUID = 1L;
+                private static final long serialVersionUID = 1L;
 
-                    public Page getPage() {
-                  final TablePage page = new TablePage(model.getCommandUUID(),
-                      model.getOid());
+                public Page getPage() {
+                  final TablePage page = new TablePage(commandUUID,
+                                                       model.getOid());
                   page.setMenuTreeKey(StructurBrowserTree.this.listMenuKey);
                   return page;
                 }
 
-                    public Class<TablePage> getPageIdentity() {
-                      return TablePage.class;
-                    }
-                  });
+                public Class<TablePage> getPageIdentity() {
+                  return TablePage.class;
+                }
+              });
         } else {
-          page =
-              new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-                  .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
-                  new IPageLink() {
+          page = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
+              .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+              new IPageLink() {
 
-                    private static final long serialVersionUID = 1L;
+                private static final long serialVersionUID = 1L;
 
-                    public Page getPage() {
-                      final FormPage page = new FormPage(model.getCommandUUID(),
-                                                         model.getOid());
-                      page.setMenuTreeKey(StructurBrowserTree.this.listMenuKey);
-                      return page;
-                    }
+                public Page getPage() {
+                  final FormPage page = new FormPage(commandUUID,
+                                                     model.getOid());
+                  page.setMenuTreeKey(StructurBrowserTree.this.listMenuKey);
+                  return page;
+                }
 
-                    public Class<FormPage> getPageIdentity() {
-                      return FormPage.class;
-                    }
-                  });
+                public Class<FormPage> getPageIdentity() {
+                  return FormPage.class;
+                }
+              });
         }
 
         final InlineFrame component =
