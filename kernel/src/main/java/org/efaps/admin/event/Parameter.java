@@ -64,6 +64,11 @@ public class Parameter  {
     CALL_INSTANCE,
 
     /**
+     * Contains the class that called the esjp.
+     */
+    CLASS,
+
+    /**
      * Holds an Instance.
      * */
     INSTANCE,
