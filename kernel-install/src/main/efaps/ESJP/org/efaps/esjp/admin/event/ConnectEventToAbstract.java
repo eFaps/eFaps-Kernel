@@ -178,11 +178,11 @@ public class ConnectEventToAbstract {
     while (query.next())  {
       final long id = (Long) query.get("ID");
       final String name = (String) query.get("Name");
-      ret.append("<option value=\"").append(id);
+      ret.append("<option value=\"").append(id).append("\"");
       if (id == selectedId)  {
         ret.append(" selected=\"selected\"");
       }
-      ret.append("\">").append(name).append("</option>");
+      ret.append(">").append(name).append("</option>");
     }
     ret.append("</select>");
 
