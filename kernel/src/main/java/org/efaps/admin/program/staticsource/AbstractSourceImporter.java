@@ -66,7 +66,7 @@ public abstract class AbstractSourceImporter extends AbstractProgramImporter {
     // regular expression for the package name
     final Pattern pckPattern
                           = Pattern.compile("@eFapsPackage[\\s]*[a-z\\.]*\\b");
-    final Matcher pckMatcher = pckPattern.matcher(this.getCode());
+    final Matcher pckMatcher = pckPattern.matcher(getCode());
     if (pckMatcher.find()) {
       final String pkg = pckMatcher.group()
                                    .replaceFirst("^@eFapsPackage", "");
@@ -86,7 +86,7 @@ public abstract class AbstractSourceImporter extends AbstractProgramImporter {
 
     final Pattern revisionPattern =
                         Pattern.compile("@eFapsRevision[\\s].*");
-    final Matcher revisionMatcher = revisionPattern.matcher(this.getCode());
+    final Matcher revisionMatcher = revisionPattern.matcher(getCode());
     if (revisionMatcher.find()) {
       ret = revisionMatcher.group().replaceFirst("^@eFapsRevision", "");
     }
@@ -104,7 +104,7 @@ public abstract class AbstractSourceImporter extends AbstractProgramImporter {
 
     final Pattern uuidPattern =
                  Pattern.compile("@eFapsUUID[\\s]*[0-9a-z\\-]*");
-    final Matcher uuidMatcher = uuidPattern.matcher(this.getCode());
+    final Matcher uuidMatcher = uuidPattern.matcher(getCode());
     if (uuidMatcher.find()) {
       final String uuidStr = uuidMatcher.group()
                                     .replaceFirst("^@eFapsUUID", "");
@@ -124,8 +124,8 @@ public abstract class AbstractSourceImporter extends AbstractProgramImporter {
     String ret = null;
     // regular expression for the package name
     final Pattern exPattern
-                       = Pattern.compile("@eFapsExtends[\\s]*[a-zA-Z\\.]*\\b");
-    final Matcher exMatcher = exPattern.matcher(this.getCode());
+                      = Pattern.compile("@eFapsExtends[\\s]*[a-zA-Z\\._-]*\\b");
+    final Matcher exMatcher = exPattern.matcher(getCode());
     if (exMatcher.find()) {
       ret = exMatcher.group().replaceFirst("^@eFapsExtends", "");
     }
