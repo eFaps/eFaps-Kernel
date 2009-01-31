@@ -19,127 +19,49 @@
  * @eFapsPackage  org.efaps.ui.wicket.components.tree
  * @eFapsUUID     9f4accae-350a-4fa1-802a-180bb67455c1
  * @eFapsRevision $Rev$
+ * @eFapsExtends  org.efaps.ui.wicket.components.tree.tree.css
+ *
+ * Extends the original from wicket to fit into eFaps.
  */
 
 
 div.wicket-tree {
   font-family: arial, verdana, helvetica, sans-serif;
   font-size: 9pt;  
-  white-space: nowrap;  
   border: 0px solid #ccc;
   margin: 0;
-  line-height: 1.5em;
 }
 
 div.wicket-tree a {
-  text-decoration: none;
   color: #00A000;
-}
-
-div.wicket-tree div.row,
-div.wicket-tree div.row-selected {
-  height: 1.5em;
-padding: 0px; 
-margin: 0px;
-}
-  
-div.wicket-tree div.a_ {
-  /* prevent hiding text */
-  margin: 0px; 
-}
-
-div.wicket-tree span.junction,
-div.wicket-tree span.junction-last,
-div.wicket-tree span.plus,
-div.wicket-tree span.minus,
-div.wicket-tree span.corner,
-div.wicket-tree span.indent-line,
-div.wicket-tree span.icon {
-  float: left;
-  width: 18px;
-  height: 1.5em;
-  min-height: 18px;
-}
-
-div.wicket-tree span.junction,
-div.wicket-tree span.junction-last {
-  _margin-left: 3px; /* ie 3px bug fix*/
-  cursor: pointer;
 }
 
 div.wicket-tree span.junction {
   background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
-  background-position: -36px 0px;
-  background-repeat: repeat-y;  
 }
 
 div.wicket-tree span.junction-last {
   background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
-  background-position: -72px 0px;
-  background-repeat: no-repeat;
-}
-
-div.wicket-tree span.plus,
-div.wicket-tree span.minus,
-div.wicket-tree span.corner {
-  background-repeat: no-repeat;
 }
 
 div.wicket-tree span.plus {
   background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
-  background-position: 0px center;
 }
 
 div.wicket-tree span.minus {
   background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
-  background-position: -18px center;
 }
 
 div.wicket-tree span.corner {
   background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
-  background-position: -54px center;
 }
-
-
-div.wicket-tree a:hover {
-  text-decoration: underline;
-}
-
 
 div.wicket-tree span.icon {
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  margin-left: 1px;
   margin-right: 1px;
-  margin-top: -1px;
-}
-
-div.wicket-tree a {
-  -moz-outline: none;
-}
-
-div.wicket-tree span.indent-blank {
-  width: 18px;
-  height: 1em;
-  float: left;
 }
 
 div.wicket-tree span.indent-line {
-  _margin-left: 3px;  /* ie 3px bug fix*/
   background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
-  background-position: -36px 0px;
-  background-repeat: repeat-y;
-}
-
-div.wicket-tree div.row,
-div.wicket-tree div.row-selected {
- 
-  clear: both;
-}
-
-div.wicket-tree div.row-selected {
-  background-color: #E0E8FF;
-  font-weight: bold;  
 }
 
 .directionDown{

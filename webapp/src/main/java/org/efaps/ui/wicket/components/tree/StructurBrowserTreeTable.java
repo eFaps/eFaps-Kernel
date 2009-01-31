@@ -88,10 +88,31 @@ public class StructurBrowserTreeTable extends TreeTable {
     setRootLess(true);
 
     final ITreeState treeState = getTreeState();
-    treeState.collapseAll();
+
     treeState.addTreeStateListener(new AsyncronTreeUpdateListener());
+
+    final DefaultMutableTreeNode root
+                                = (DefaultMutableTreeNode) _treeModel.getRoot();
+    expandChildren(root);
   }
 
+  /**
+   * Recursive method that expands all children that should be expanded.
+   *
+   * @param _parent parent
+   */
+  private void expandChildren(final DefaultMutableTreeNode _parent) {
+    for (int i = 0; i < _parent.getChildCount(); i++) {
+      final DefaultMutableTreeNode child
+                               = (DefaultMutableTreeNode) _parent.getChildAt(i);
+      final UIStructurBrowser struturBrowser
+                                    = (UIStructurBrowser) child.getUserObject();
+      if (struturBrowser.isExpanded()) {
+        getTreeState().expandNode(child);
+        expandChildren(child);
+      }
+    }
+  }
   /**
    * @return null
    */
@@ -264,5 +285,4 @@ public class StructurBrowserTreeTable extends TreeTable {
       }));
     }
   }
-
 }

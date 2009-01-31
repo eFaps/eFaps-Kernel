@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.models.objects;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +72,7 @@ import org.efaps.util.RequestHandler;
  * Nodes (and Columns) will be retrieved from the eFaps-DataBase. The next level
  * in a tree will be retrieved on the expand of a TreeNode. To achieve this and
  * to be able to render expand-links for every node it will only be checked if
- * it is a potential parent (if it has childs). In the case of expanding this
+ * it is a potential parent (if it has children). In the case of expanding this
  * Node the children will be retrieved and rendered.<br>
  * To access the eFaps-Database a esjp is used, which will be used in three
  * different cases. To distinguish the use of the esjp some extra Parameters
@@ -82,6 +83,20 @@ import org.efaps.util.RequestHandler;
  */
 public class UIStructurBrowser extends AbstractUIObject {
 
+  /**
+   * Enum is used to set for this UIStructurBrowser which status of execution
+   * it is in.
+   */
+  public enum ExecutionStatus {
+    /** Method addChildren is executed. */
+    ADDCHILDREN,
+    /** Method checkForChildren is executed. */
+    CHECKFORCHILDREN,
+    /** Method execute is executed. */
+    EXECUTE,
+    /** Method sort is executed. */
+    SORT;
+  }
   /**
    * Needed for serialization.
    */
@@ -106,7 +121,7 @@ public class UIStructurBrowser extends AbstractUIObject {
   private final List<String> columns = new ArrayList<String>();
 
   /**
-   * Holds the label of the Node wich will be presented
+   * Holds the label of the Node which will be presented
    * in the GUI.
    *
    * @see #toString()
@@ -129,10 +144,9 @@ public class UIStructurBrowser extends AbstractUIObject {
   private final List<UITableHeader> headers = new ArrayList<UITableHeader>();
 
   /**
-   * Holds the SortDirection for the Headers, (right now
-   * it is final but might be changed later).
+   * Holds the SortDirection for the Headers.
    */
-  private final SortDirection sortDirection = SortDirection.NONE;
+  private SortDirection sortDirection = SortDirection.ASCENDING;
 
   /**
    * This instance variable holds, if this StructurBrowserModel is the Root of a
@@ -174,6 +188,16 @@ public class UIStructurBrowser extends AbstractUIObject {
   private Boolean direction = null;
 
   /**
+   * Stores the actual execution status.
+   */
+  private ExecutionStatus executionStatus;
+
+  /**
+   * Is this model expanded.
+   */
+  private boolean expanded;
+
+  /**
    *  Constructor.
    *
    * @param _parameters   Page parameters
@@ -185,7 +209,7 @@ public class UIStructurBrowser extends AbstractUIObject {
   }
 
   /**
-   * Standart constructor, if called this StructurBrowserModel will be defined
+   * Standard constructor, if called this StructurBrowserModel will be defined
    * as root.
    *
    * @param _commandUUID  UUID of the calling command
@@ -193,21 +217,24 @@ public class UIStructurBrowser extends AbstractUIObject {
    *
    */
   public UIStructurBrowser(final UUID _commandUUID, final String _oid) {
-    this(_commandUUID, _oid, true);
+    this(_commandUUID, _oid, true, SortDirection.ASCENDING);
   }
 
   /**
    * Internal constructor, it is used to set that this StructurBrowserModel is
    * not a root.
    *
-   * @param _commandUUID  UUID of the command
-   * @param _oid          OID
-   * @param _root         is this STrtucturbrowser the root
+   * @param _commandUUID    UUID of the command
+   * @param _oid            OID
+   * @param _root           is this STrtucturbrowser the root
+   * @param _sortdirection  sort direction
    */
   private UIStructurBrowser(final UUID _commandUUID, final String _oid,
-                            final boolean _root) {
+                            final boolean _root,
+                            final SortDirection _sortdirection) {
     super(_commandUUID, _oid);
     this.root = _root;
+    this.sortDirection = _sortdirection;
     initialise();
   }
 
@@ -242,6 +269,7 @@ public class UIStructurBrowser extends AbstractUIObject {
    */
   @SuppressWarnings("unchecked")
   public void execute() {
+    this.executionStatus = ExecutionStatus.EXECUTE;
     List<Return> ret;
     try {
       if (this.tableuuid == null) {
@@ -251,9 +279,8 @@ public class UIStructurBrowser extends AbstractUIObject {
         list.add(instances);
         executeTree(list);
       } else {
-        ret =
-            getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-                ParameterValues.OTHERS, "execute");
+        ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+                                         ParameterValues.CLASS, this);
         final List<List<Object[]>> lists =
             (List<List<Object[]>>) ret.get(0).get(ReturnValues.VALUES);
         executeTreeTable(lists);
@@ -292,7 +319,7 @@ public class UIStructurBrowser extends AbstractUIObject {
         value = valuelist.makeString(getCallInstance(), query);
         final UIStructurBrowser child =
             new UIStructurBrowser(Menu.getTypeTreeMenu(instance.getType())
-                .getUUID(), instance.getOid(), false);
+                .getUUID(), instance.getOid(), false, this.sortDirection);
         this.childs.add(child);
         child.setDirection((Boolean) ((instMapper.get(instance).get(0))[1]));
         child.setLabel(value.toString());
@@ -302,6 +329,7 @@ public class UIStructurBrowser extends AbstractUIObject {
     } catch (final Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
+    sortModel();
     super.setInitialised(true);
 
   }
@@ -357,7 +385,8 @@ public class UIStructurBrowser extends AbstractUIObject {
 
         final UIStructurBrowser child = new UIStructurBrowser(getCommandUUID(),
                                                               instance.getOid(),
-                                                              false);
+                                                              false,
+                                                            this.sortDirection);
         this.childs.add(child);
         child.setDirection((Boolean) ((instMapper.get(instance).get(0))[1]));
         for (final Field field : getTable().getFields()) {
@@ -390,11 +419,39 @@ public class UIStructurBrowser extends AbstractUIObject {
           child.getColumns().add(strValue);
         }
       }
-
     } catch (final Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
+    sortModel();
     super.setInitialised(true);
+  }
+
+
+  /**
+   * Method to sort the data of this model. It calls an esjp for sorting.
+   */
+  private void sortModel() {
+    this.executionStatus = ExecutionStatus.SORT;
+    try {
+      getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+                                 ParameterValues.CLASS, this);
+
+      if (getSortDirection() == SortDirection.DESCENDING) {
+        Collections.reverse(this.childs);
+      }
+    } catch (final EFapsException e) {
+      throw new RestartResponseException(new ErrorPage(e));
+    }
+  }
+
+  /**
+   * Method to sort this model and all child models.
+   */
+  public void sort() {
+    sortModel();
+    for (final UIStructurBrowser child : this.childs) {
+      child.sort();
+    }
   }
 
   /**
@@ -419,19 +476,18 @@ public class UIStructurBrowser extends AbstractUIObject {
   /**
    * This method is used to check if a node has potential children.
    *
-   * @param _instance
-   *                Instance of a Node to be checked
+   * @param _instance   Instance of a Node to be checked
    * @return true if this Node has children, else false
    */
   private boolean checkForChildren(final Instance _instance) {
-
+    this.executionStatus = ExecutionStatus.CHECKFORCHILDREN;
     try {
       final List<Return> ret =
           getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
                                       ParameterValues.INSTANCE,
                                       _instance,
-                                      ParameterValues.OTHERS,
-                                      "checkForChildren");
+                                      ParameterValues.CLASS,
+                                      this);
       return (ret.isEmpty() ? false
                             : ret.get(0).get(ReturnValues.TRUE) != null);
     } catch (final EFapsException e) {
@@ -507,21 +563,19 @@ public class UIStructurBrowser extends AbstractUIObject {
    * This method should be called to add children to a Node in the Tree.<br>
    * e.g. in a standard implementation the children would be added to the Tree
    * on the expand-Event of the tree. The children a retrieved from an esjp with
-   * the EventType UI_TABLE_EVALUATE. To differ the different methods which can
-   * call the same esjp, this method adds the ParameterValues.OTHERS with
-   * "addChildren".
+   * the EventType UI_TABLE_EVALUATE.
    *
    * @param _parent  the DefaultMutableTreeNode the new children should be added
    */
   @SuppressWarnings("unchecked")
   public void addChildren(final DefaultMutableTreeNode _parent) {
+    this.executionStatus = ExecutionStatus.ADDCHILDREN;
     _parent.removeAllChildren();
     List<Return> ret;
     try {
-      ret =
-          getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-              ParameterValues.INSTANCE, getCallInstance(),
-              ParameterValues.OTHERS, "addChildren");
+      ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+                                    ParameterValues.INSTANCE, getCallInstance(),
+                                    ParameterValues.CLASS, this);
       final List<List<Object[]>> lists =
           (List<List<Object[]>>) ret.get(0).get(ReturnValues.VALUES);
 
@@ -625,14 +679,12 @@ public class UIStructurBrowser extends AbstractUIObject {
   }
 
   /**
-   * (non-Javadoc).
+   * Getter method for instance variable {@link #executionStatus}.
    *
-   * @see org.apache.wicket.model.Model#toString()
-   * @return label
+   * @return value of instance variable {@link #executionStatus}
    */
-  @Override
-  public String toString() {
-    return this.label;
+  public ExecutionStatus getExecutionStatus() {
+    return this.executionStatus;
   }
 
   /**
@@ -663,6 +715,75 @@ public class UIStructurBrowser extends AbstractUIObject {
    */
   public void addBogusNode(final DefaultMutableTreeNode _parent) {
     _parent.add(new BogusNode());
+  }
+
+  /**
+   * Getter method for instance variable {@link #childs}.
+   *
+   * @return value of instance variable {@link #childs}
+   */
+  public List<UIStructurBrowser> getChilds() {
+    return this.childs;
+  }
+
+  /**
+   * Getter method for instance variable {@link #label}.
+   *
+   * @return value of instance variable {@link #label}
+   */
+  public String getLabel() {
+    return this.label;
+  }
+
+  /**
+   * Getter method for instance variable {@link #sortDirection}.
+   *
+   * @return value of instance variable {@link #sortDirection}
+   */
+  public SortDirection getSortDirection() {
+    return this.sortDirection;
+  }
+
+  /**
+   * Setter method for instance variable {@link #sortDirection} and for all
+   * children also.
+   *
+   * @param _sortDirection value for instance variable {@link #sortDirection}
+   */
+  public void setSortDirection(final SortDirection _sortDirection) {
+    this.sortDirection = _sortDirection;
+    for (final UIStructurBrowser child : this.childs) {
+      child.setSortDirection(_sortDirection);
+    }
+  }
+
+  /**
+   * Getter method for instance variable {@link #expanded}.
+   *
+   * @return value of instance variable {@link #expanded}
+   */
+  public boolean isExpanded() {
+    return this.expanded;
+  }
+
+  /**
+   * Setter method for instance variable {@link #expanded}.
+   *
+   * @param _expanded value for instance variable {@link #expanded}
+   */
+  public void setExpanded(final boolean _expanded) {
+    this.expanded = _expanded;
+  }
+
+  /**
+   * (non-Javadoc).
+   *
+   * @see org.apache.wicket.model.Model#toString()
+   * @return label
+   */
+  @Override
+  public String toString() {
+    return this.label;
   }
 
   /**
