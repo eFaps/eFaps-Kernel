@@ -35,13 +35,6 @@
     <version-expression>(version==latest)</version-expression>
     <name>TeamWork_SourceVersionForm</name>
     <!-- fields -->
-    <field name="type">
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
-      <property name="Expression">Type</property>
-      <property name="Searchable">false</property>
-      <property name="ShowTypeIcon">true</property>
-    </field>
     <field name="name">
       <property name="Columns">40</property>
       <property name="Creatable">false</property>
