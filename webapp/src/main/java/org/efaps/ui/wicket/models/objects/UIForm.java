@@ -549,6 +549,11 @@ public class UIForm extends AbstractUIObject {
                                                  attrTypeName);
           if (isSearchMode()) {
             cell.setReference(null);
+          } else if (strValue != null && !this.fileUpload) {
+            final String tmp = strValue.replaceAll(" ", "");
+            if (tmp.toLowerCase().contains("type=\"file\"")) {
+              this.fileUpload = true;
+            }
           }
 
           row.add(cell);
