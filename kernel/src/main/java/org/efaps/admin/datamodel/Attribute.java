@@ -554,7 +554,8 @@ public class Attribute extends AbstractDataModelObject {
                 type.addAttribute(attr);
               }
               _newCache4Id.put(attr.getId(), attr);
-              _newCache4Name.put(attr.getName(), attr);
+              _newCache4Name.put(attr.getParent().getName() + "/"
+                                                        + attr.getName(), attr);
 
               attr.readFromDB4Properties();
             }
