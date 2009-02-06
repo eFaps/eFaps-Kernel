@@ -47,10 +47,10 @@ import org.efaps.util.cache.Cache;
  * @author tmo
  * @version $Id$
  */
-public class RunLevel {
+public final class RunLevel {
 
   /**
-   * Logger for this class
+   * Logger for this class.
    */
   private static final Logger LOG = LoggerFactory.getLogger(RunLevel.class);
 
@@ -60,44 +60,76 @@ public class RunLevel {
    *
    * @see #isInitialisable
    */
-  private final static String TABLE_TESTS = "T_RUNLEVEL";
+  private static final String TABLE_TESTS = "T_RUNLEVEL";
 
   /**
-   * This is the SQL select statement to select all RunLevel from the database.
+   * This is the SQL select statement to select a RunLevel from the database.
    */
-  private final static String SQL_RUNLEVEL  = "select ID,PARENT "
+  private static final String SQL_RUNLEVEL  = "select ID,PARENT "
                                               + "from T_RUNLEVEL "
                                               + "WHERE ";
 
-  private final static String SQL_DEF_PRE   = "select CLASS, METHOD, PARAMETER "
+  /**
+   * SQL select statement to select a RunLevel from the database.
+   */
+  private static final String SQL_DEF_PRE   = "select CLASS, METHOD, PARAMETER "
                                               + "from T_RUNLEVELDEF "
                                               + "where RUNLEVELID=";
 
-  private final static String SQL_DEF_POST  = " order by PRIORITY";
-
-  private static RunLevel     RUNLEVEL      = null;
-
-  private final static Map<Long, RunLevel> ALL_RUNLEVELS = new HashMap<Long, RunLevel>();
+  /**
+   * Order part of the SQL select statement.
+   */
+  private static final String SQL_DEF_POST  = " order by PRIORITY";
 
   /**
-   * All cache initialise methods for this runlevel are stored in this instance
+   * Current RunLevel.
+   */
+  private static RunLevel RUNLEVEL = null;
+
+  /**
+   * Mapping of all RunLevels to id.
+   */
+  private static final Map<Long, RunLevel> ALL_RUNLEVELS
+                                               = new HashMap<Long, RunLevel>();
+
+  /**
+   * All cache initialize methods for this RunLevel are stored in this instance
    * variable. They are ordered by the priority.
    */
-  private final List<CacheMethod>                cacheMethods  = new ArrayList<CacheMethod>();
+  private final List<CacheMethod> cacheMethods = new ArrayList<CacheMethod>();
 
   /**
    * The id in the eFaps database of this runlevel.
    */
-  private long                             id            = 0;
+  private long id = 0;
 
-  private RunLevel                         parent        = null;
+  /**
+   * The parent RunLevel.
+   */
+  private RunLevel parent = null;
+
+  /**
+   * @param _name   Name of the RunLevel
+   * @throws EFapsException on error
+   */
+  private RunLevel(final String _name) throws EFapsException {
+    initialize(SQL_RUNLEVEL + " RUNLEVEL='" + _name + "'");
+  }
+
+  /**
+   * @param _id  Id of the RunLevel
+   * @throws EFapsException on error
+   */
+  private RunLevel(final long _id) throws EFapsException {
+    initialize(SQL_RUNLEVEL + " ID=" + _id);
+  }
 
   /**
    * The static method first removes all values in the caches. Then the cache is
    * initialized automatically depending on the desired RunLevel
    *
    * @param _runLevel   name of run level to initialise
-   * @todo exception handling
+   * @throws EFapsException on error
    */
   public static void init(final String _runLevel) throws EFapsException {
     ALL_RUNLEVELS.clear();
@@ -108,42 +140,52 @@ public class RunLevel {
    * Tests, if the SQL table {@link #TABLE_TESTS} exists (= <i>true</i>). This
    * means the run level could be initialized.
    *
-   * @return <i>true</i> if a run level is initialisable (and the SQL table
+   * @return <i>true</i> if a run level is initializeable (and the SQL table
    *         exists in the database); otherwise <i>false</i>
    * @throws EFapsException if the test for the table fails
    * @see #TABLE_TESTS
    */
   public static boolean isInitialisable() throws EFapsException  {
     try {
-      return Context.getDbType().existsTable(Context.getThreadContext().getConnection(),
-                                             TABLE_TESTS);
+      return Context.getDbType().existsTable(
+          Context.getThreadContext().getConnection(), TABLE_TESTS);
     } catch (final SQLException e) {
       throw new EFapsException(RunLevel.class,
                                "isInitialisable.SQLException", e);
     }
   }
 
-  private void clearCache() {
-    Cache.clearCaches();
-  }
-
+  /**
+   * Execute the current RunLevel. (Load all defined Caches).
+   * @throws EFapsException on error
+   */
   public static void execute() throws EFapsException {
-    RUNLEVEL.clearCache();
     RUNLEVEL.executeMethods();
+    final List<String> allInitializer = RUNLEVEL.getAllInitializers();
+    for (final Cache<?> cache : Cache.getCaches()) {
+      final String initiliazer = cache.getInitializer();
+      if (!allInitializer.contains(initiliazer)) {
+        cache.clear();
+      }
+    }
   }
 
-  private RunLevel(final String _name) throws EFapsException {
-    initialise(SQL_RUNLEVEL + " RUNLEVEL='" + _name + "'");
-  }
-
-  private RunLevel(final long _id) throws EFapsException {
-    initialise(SQL_RUNLEVEL + " ID=" + _id);
+  private List<String> getAllInitializers() {
+    final List<String> ret = new ArrayList<String>();
+    for (final CacheMethod cacheMethod : this.cacheMethods) {
+      ret.add(cacheMethod.className);
+    }
+    if (this.parent != null) {
+      ret.addAll(this.parent.getAllInitializers());
+    }
+    return ret;
   }
 
   /**
-   * All cache initialise methods stored in {@link #cacheMethods} are called.
+   * All cache initialize methods stored in {@link #cacheMethods} are called.
    *
    * @see #cacheMethods
+   * @throws EFapsException on error
    */
   protected void executeMethods() throws EFapsException {
     if (this.parent != null) {
@@ -155,29 +197,26 @@ public class RunLevel {
   }
 
   /**
-   * Reads the id and the parent id of this runlevel. All defined methods for
-   * this runlevel are loaded. If a parent id is defined, the parent is
-   * initialised.
+   * Reads the id and the parent id of this RunLevel. All defined methods for
+   * this RunLevel are loaded. If a parent id is defined, the parent is
+   * initialized.
    *
-   * @param _sql
-   *          sql statement to get the id and parent id for this runlevel
+   * @param _sql  sql statement to get the id and parent id for this RunLevel
    * @see #parent
    * @see #cacheMethods
+   * @throws EFapsException on error
    */
-  protected void initialise(final String _sql) throws EFapsException {
+  protected void initialize(final String _sql) throws EFapsException {
 
     ConnectionResource con = null;
     try {
 
       con = Context.getThreadContext().getConnectionResource();
-
       Statement stmt = null;
-
       long parentId = 0;
 
       try {
         stmt = con.getConnection().createStatement();
-
         // read runlevel itself
         ResultSet rs = stmt.executeQuery(_sql);
         if (rs.next()) {
@@ -199,32 +238,25 @@ public class RunLevel {
                 .getString(2).trim()));
           }
         }
-
-      }
-      finally {
+      } finally {
         if (stmt != null) {
           stmt.close();
         }
       }
 
       con.commit();
-
       ALL_RUNLEVELS.put(this.id, this);
-
       if (parentId != 0) {
         this.parent = ALL_RUNLEVELS.get(parentId);
-
         if (this.parent == null) {
           this.parent = new RunLevel(parentId);
         }
       }
-
     } catch (final EFapsException e) {
       LOG.error("initialise()", e);
     } catch (final SQLException e) {
       LOG.error("initialise()", e);
-    }
-    finally {
+    } finally {
       if ((con != null) && con.isOpened()) {
         con.abort();
       }
@@ -232,54 +264,53 @@ public class RunLevel {
   }
 
   /**
-   * Cache for the Methods, wich are defined for the Runlevel. The stored
-   * String-Values can be used to invoke the Methods. Therefor the Cache is
-   * seperated in three Fields: <br>
+   * Cache for the Methods, which are defined for the RunLevel. The stored
+   * String-Values can be used to invoke the Methods. Therefore the Cache is
+   * Separated in three Fields: <br>
    * <li> CLASSNAME: Name of the Class as written in a java Class </li>
    * <li> METHODNAME: Name of the a static Method, it can optional used with on
    * String-Parameter</li>
-   * <li><i>optional PARAMETER: the String-Value coresponding with the Method</i></li>
+   * <li><i>optional PARAMETER: the String-Value corresponding with the
+   *  Method</i></li>
    * <br>
    */
   public class CacheMethod {
 
     /**
-     * Name of the class which must be initiliased.
+     * Name of the class which must be initialized.
      */
-    final private String className;
+    private final String className;
 
     /**
-     * Name of the static method used to initiliase the cache.
+     * Name of the static method used to initialized the cache.
      */
-    final private String methodName;
+    private final String methodName;
 
-    final private String parameter;
+    /**
+     * Parameter for the static method used to initialized the cache.
+     */
+    private final String parameter;
 
     /**
      * Constructor for the ChacheMethod in the Case that there are only
-     * ClassName an MethodName
+     * ClassName an MethodName.
      *
      * @see CacheMethod(String _ClassName, String _MethodName, String
      *      _Parameter)
-     * @param _ClassName
-     *          Name of the Clasee
-     * @param _MethodName
-     *          Name of the Method
+     * @param _className   Name of the Clasee
+     * @param _methodName  Name of the Method
      */
     public CacheMethod(final String _className, final String _methodName) {
       this(_className, _methodName, null);
     }
 
     /**
-     * Constructor for the Cache with ClassName, MethodName and Parameter
+     * Constructor for the Cache with ClassName, MethodName and Parameter.
      *
      * @see CacheMethod(String _ClassName, String _MethodName)
-     * @param _className
-     *          Name of the Class
-     * @param _methodName
-     *          Name of the Method
-     * @param _parameter
-     *          Value of the Parameter
+     * @param _className    Name of the Class
+     * @param _methodName   Name of the Method
+     * @param _parameter    Value of the Parameter
      */
     public CacheMethod(final String _className, final String _methodName,
         final String _parameter) {
@@ -290,6 +321,7 @@ public class RunLevel {
 
     /**
      * Calls the static cache initialise method defined by this instance.
+     * @throws EFapsException on error
      */
     public void callMethod() throws EFapsException {
       try {
@@ -332,5 +364,4 @@ public class RunLevel {
       }
     }
   }
-
 }

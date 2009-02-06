@@ -23,6 +23,7 @@ package org.efaps.ui.servlet;
 import static org.efaps.admin.EFapsClassNames.IMAGE;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -38,10 +39,10 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkout;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AutomaticCache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
-import org.efaps.util.cache.CacheReloadInterface;
+
 
 /**
  * The servlet checks out user interface images depending on the
@@ -66,17 +67,8 @@ public class ImageServlet extends HttpServlet {
   /**
    * The cache stores all instance of class {@link #ImageMappe}.
    */
-  private static Cache<ImageMapper> CACHE
-   = new Cache<ImageMapper>(new CacheReloadInterface() {
+  private static ImageCache CACHE = new ImageCache();
 
-        public int priority() {
-          return 20000;
-        };
-
-        public void reloadCache() throws CacheReloadException {
-          ImageServlet.loadCache();
-        };
-      });
 
   /**
    * The method checks the image from the user interface image object out and
@@ -142,32 +134,7 @@ public class ImageServlet extends HttpServlet {
    * @see #ImageMapper
    */
   private static void loadCache() throws CacheReloadException {
-    try {
-      synchronized (CACHE) {
-        final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(Type.get(IMAGE.getUuid()).getName());
-        query.addSelect("Name");
-        query.addSelect("FileName");
-        query.addSelect("OID");
-        query.addSelect("FileLength");
-        query.addSelect("Modified");
-        query.executeWithoutAccessCheck();
 
-        while (query.next()) {
-          final String name = (String) query.get("Name");
-          final String file = (String) query.get("FileName");
-          final String oid = (String) query.get("OID");
-          final Long filelength = (Long) query.get("FileLength");
-          final DateTime time = (DateTime) query.get("Modified");
-          CACHE.add(new ImageMapper(name, file, oid, filelength,
-                                    time.getMillis()));
-        }
-        query.close();
-      }
-    } catch (final EFapsException e) {
-      throw new CacheReloadException("could not initialise "
-          + "image servlet cache");
-    }
   }
 
   /**
@@ -249,5 +216,48 @@ public class ImageServlet extends HttpServlet {
     public long getId() {
       return 0;
     }
+  }
+
+  private static class ImageCache extends AutomaticCache<ImageMapper> {
+
+
+    /* (non-Javadoc)
+     * @see org.efaps.util.cache.Cache#readCache(java.util.Map, java.util.Map, java.util.Map)
+     */
+    @Override
+    protected void readCache(final Map<Long, ImageMapper> cache4Id,
+        final Map<String, ImageMapper> cache4Name, final Map<UUID, ImageMapper> cache4UUID)
+        throws CacheReloadException {
+      try {
+        synchronized (CACHE) {
+          final SearchQuery query = new SearchQuery();
+          query.setQueryTypes(Type.get(IMAGE.getUuid()).getName());
+          query.addSelect("Name");
+          query.addSelect("FileName");
+          query.addSelect("OID");
+          query.addSelect("FileLength");
+          query.addSelect("Modified");
+          query.executeWithoutAccessCheck();
+
+          while (query.next()) {
+            final String name = (String) query.get("Name");
+            final String file = (String) query.get("FileName");
+            final String oid = (String) query.get("OID");
+            final Long filelength = (Long) query.get("FileLength");
+            final DateTime time = (DateTime) query.get("Modified");
+            final ImageMapper mapper = new ImageMapper(name, file, oid, filelength,
+                                      time.getMillis());
+
+            cache4Name.put(mapper.getName(), mapper);
+          }
+          query.close();
+        }
+      } catch (final EFapsException e) {
+        throw new CacheReloadException("could not initialise "
+            + "image servlet cache");
+      }
+
+    }
+
   }
 }

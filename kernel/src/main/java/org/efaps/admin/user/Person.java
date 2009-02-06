@@ -54,7 +54,6 @@ import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
-import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * @author tmo
@@ -1124,6 +1123,13 @@ public class Person extends AbstractUserObject {
   }
 
   /**
+   * Method to initialize the Cache of this CacheObjectInterface.
+   */
+  public static void initialize() {
+    CACHE.initialize(Person.class);
+  }
+
+  /**
    * Returns a string representation of this person.
    *
    * @return string representation of this person
@@ -1218,7 +1224,7 @@ public class Person extends AbstractUserObject {
           final String name = resultset.getString(2);
           final boolean status = resultset.getBoolean(3);
           ret = new Person(id, name.trim(), status);
-          getCache().add(ret);
+          getCache().addObject(ret);
         }
         resultset.close();
       } catch (final SQLException e) {
@@ -1469,22 +1475,13 @@ public class Person extends AbstractUserObject {
    */
   private static final class PersonCache extends Cache<Person> {
 
-    PersonCache() {
-      super(new CacheReloadInterface() {
-
-        public int priority() {
-          return 0;
-        };
-
-        public void reloadCache() throws CacheReloadException {
-          // not needed here
-        };
-      });
+    public PersonCache() {
     }
+
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Map<Long, Person> getCache4Id() {
+    public Map<Long, Person> getCache4Id() {
       Map<Long, Person> map = null;
       try {
         map =
@@ -1523,6 +1520,15 @@ public class Person extends AbstractUserObject {
       return map;
     }
 
+
+    /* (non-Javadoc)
+     * @see org.efaps.util.cache.Cache#readCache(java.util.Map, java.util.Map, java.util.Map)
+     */
+    @Override
+    protected void readCache(final Map<Long, Person> cache4Id,
+        final Map<String, Person> cache4Name, final Map<UUID, Person> cache4UUID)
+        throws CacheReloadException {
+    }
   }
 
 }

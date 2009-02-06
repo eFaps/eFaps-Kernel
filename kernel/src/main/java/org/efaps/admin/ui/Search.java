@@ -25,7 +25,7 @@ import static org.efaps.admin.EFapsClassNames.SEARCH;
 import java.util.UUID;
 
 import org.efaps.admin.EFapsClassNames;
-import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
@@ -47,8 +47,7 @@ public class Search extends AbstractMenu {
    *
    * @see #getCache
    */
-  private static final UserInterfaceObjectCache<Search> searchCache =
-      new UserInterfaceObjectCache<Search>(Search.class);
+  private static SearchCache CACHE = new SearchCache();
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -89,6 +88,7 @@ public class Search extends AbstractMenu {
    *                id used to sort
    * @param _id
    *                command / menu id
+   * @throws CacheReloadException
    */
   @Override
   protected void add(final long _sortId, final long _id) {
@@ -149,6 +149,19 @@ public class Search extends AbstractMenu {
   // static methods
 
   /**
+   * Returns for given parameter <i>_id</i> the instance of class {@link Form}.
+   *
+   * @param _id
+   *                id to search in the cache
+   * @return instance of class {@link Form}
+   * @throws CacheReloadException
+   * @see #getCache
+   */
+  public static Search get(final long _id) {
+    return CACHE.get(_id);
+  }
+
+  /**
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Command}.
    *
@@ -159,33 +172,38 @@ public class Search extends AbstractMenu {
    * @return instance of class {@link Command}
    * @see #getCache
    */
-  public static Search get(final String _name) throws EFapsException {
-    Search search = getCache().get(_name);
-    if (search == null) {
-      search = getCache().read(_name);
-    }
-    return search;
+  public static Search get(final String _name) {
+    return  CACHE.get(_name);
   }
 
   /**
-   * Returns for given parameter <i>_uuid</i> the instance of class
-   * {@link Search}.
+   * Returns for given parameter <i>_name</i> the instance of class
+   * {@link Command}.
    *
-   * @param _uuid
-   *                UUID to search in the cache
-   * @return instance of class {@link Search}
+   * @param _context
+   *                context this request
+   * @param _name
+   *                name to search in the cache
+   * @return instance of class {@link Command}
    * @see #getCache
    */
   public static Search get(final UUID _uuid) {
-    return getCache().get(_uuid);
+    return  CACHE.get(_uuid);
   }
 
   /**
-   * Static getter method for the type hashtable {@link #cache}.
+   * Static getter method for the type hashtable {@link #CACHE}.
    *
-   * @return value of static variable {@link #cache}
+   * @return value of static variable {@link #CACHE}
    */
   protected static UserInterfaceObjectCache<Search> getCache() {
-    return searchCache;
+    return CACHE;
+  }
+
+  private static class SearchCache extends UserInterfaceObjectCache<Search> {
+
+    protected SearchCache() {
+      super(Search.class);
+    }
   }
 }

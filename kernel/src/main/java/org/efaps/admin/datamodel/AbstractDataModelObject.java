@@ -49,11 +49,11 @@ public abstract class AbstractDataModelObject extends AbstractAdminObject
    *
    * @throws CacheReloadException if cache could not be initialized
    */
-  public static void initialiseAll() throws CacheReloadException
+  public static void initialize() throws CacheReloadException
   {
-    AttributeType.initialise();
-    SQLTable.initialise();
-    Type.initialise();
-    Attribute.initialise();
+    AttributeType.initialize(AbstractDataModelObject.class);
+    SQLTable.initialize(AbstractDataModelObject.class);
+    Type.initialize(AbstractDataModelObject.class);
+    Attribute.initialize(AbstractDataModelObject.class);
   }
 }

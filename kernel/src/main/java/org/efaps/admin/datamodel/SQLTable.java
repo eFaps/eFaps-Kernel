@@ -35,7 +35,6 @@ import org.efaps.db.databases.information.TableInformation;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
-import org.efaps.util.cache.CacheReloadInterface;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -66,17 +65,7 @@ public class SQLTable extends AbstractDataModelObject {
    *
    * @see #getCache
    */
-  private final static Cache<SQLTable> tableCache = new Cache<SQLTable>(
-                                                      new CacheReloadInterface() {
-                                                        public int priority() {
-                                                          return CacheReloadInterface.Priority.SQLTable.number;
-                                                        };
-
-                                                        public void reloadCache()
-                                                                                 throws CacheReloadException {
-                                                          SQLTable.initialise();
-                                                        };
-                                                      });
+  private static final SQLTableCache CACHE = new SQLTableCache();
 
   /**
    * Instance variable for the name of the SQL table.
@@ -273,70 +262,15 @@ public class SQLTable extends AbstractDataModelObject {
     return this.readOnly;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  public static void initialize(final Class<?> _class) {
+    CACHE.initialize(_class);
+  }
 
   /**
-   * Initialise the cache of types.
+   * Method to initialize the Cache of this CacheObjectInterface.
    */
-  protected static void initialise() throws CacheReloadException
-  {
-    ConnectionResource con = null;
-    try {
-      con = Context.getThreadContext().getConnectionResource();
-
-      Statement stmt = null;
-      try {
-        final Map<Long, Long> mainTables = new HashMap<Long, Long>();
-
-        stmt = con.getConnection().createStatement();
-
-        ResultSet rs = stmt.executeQuery(SQL_SELECT);
-        while (rs.next()) {
-          final long id = rs.getLong(1);
-          final SQLTable table = new SQLTable(
-              con.getConnection(),
-              id,
-              rs.getString(2),
-              rs.getString(3),
-              rs.getString(4),
-              rs.getString(5),
-              rs.getString(6));
-          getCache().add(table);
-          final long tableMainId = rs.getLong(7);
-          if (tableMainId > 0) {
-            mainTables.put(id, tableMainId);
-          }
-          table.readFromDB4Properties();
-        }
-        rs.close();
-
-        // initialize main tables
-        for (final Map.Entry<Long, Long> entry : mainTables.entrySet()) {
-          final SQLTable table = SQLTable.get(entry.getKey());
-          final SQLTable mainTable = SQLTable.get(entry.getValue());
-          table.mainTable = mainTable;
-        }
-
-      } finally  {
-        if (stmt != null) {
-          stmt.close();
-        }
-      }
-      con.commit();
-    } catch (SQLException e) {
-      throw new CacheReloadException("could not read sql tables", e);
-    } catch (EFapsException e) {
-      throw new CacheReloadException("could not read sql tables", e);
-    }
-    finally {
-      if ((con != null) && con.isOpened()) {
-        try {
-          con.abort();
-        } catch (EFapsException e) {
-          throw new CacheReloadException("could not read sql tables", e);
-        }
-      }
-    }
+  public static void initialize() {
+    SQLTable.initialize(SQLTable.class);
   }
 
   /**
@@ -344,11 +278,12 @@ public class SQLTable extends AbstractDataModelObject {
    *
    * @param _id   id to search in the cache
    * @return instance of class {@link SQLTable}
+   * @throws CacheReloadException
    * @see #getCache
    */
-  static public SQLTable get(final long _id)
+  static public SQLTable get(final long _id) throws CacheReloadException
   {
-    return getCache().get(_id);
+    return CACHE.get(_id);
   }
 
   /**
@@ -357,11 +292,12 @@ public class SQLTable extends AbstractDataModelObject {
    *
    * @param _name   name to search in the cache
    * @return instance of class {@link SQLTable}
+   * @throws CacheReloadException
    * @see #getCache
    */
-  static public SQLTable get(final String _name)
+  static public SQLTable get(final String _name) throws CacheReloadException
   {
-    return getCache().get(_name);
+    return CACHE.get(_name);
   }
 
   /**
@@ -369,19 +305,82 @@ public class SQLTable extends AbstractDataModelObject {
    * {@link SQLTable}.
    *
    * @return instance of class {@link Type}
+   * @throws CacheReloadException
    */
-  static public SQLTable get(final UUID _uuid)
+  static public SQLTable get(final UUID _uuid) throws CacheReloadException
   {
-    return getCache().get(_uuid);
+    return CACHE.get(_uuid);
   }
 
-  /**
-   * Static getter method for the attribute {@link #cache}.
-   *
-   * @return value of static variable {@link #cache}
-   */
-  static Cache<SQLTable> getCache()
-  {
-    return tableCache;
+  private static class SQLTableCache extends Cache<SQLTable> {
+
+
+
+
+
+    @Override
+    protected void readCache(final Map<Long, SQLTable> _cache4Id,
+                             final Map<String, SQLTable> _cache4Name,
+                             final Map<UUID, SQLTable> _cache4UUID)
+        throws CacheReloadException {
+      ConnectionResource con = null;
+      try {
+        con = Context.getThreadContext().getConnectionResource();
+
+        Statement stmt = null;
+        try {
+          final Map<Long, Long> mainTables = new HashMap<Long, Long>();
+
+          stmt = con.getConnection().createStatement();
+
+          final ResultSet rs = stmt.executeQuery(SQL_SELECT);
+          while (rs.next()) {
+            final long id = rs.getLong(1);
+            final SQLTable table = new SQLTable(con.getConnection(),
+                                                id,
+                                                rs.getString(2),
+                                                rs.getString(3),
+                                                rs.getString(4),
+                                                rs.getString(5),
+                                                rs.getString(6));
+            _cache4Id.put(table.getId(), table);
+            _cache4Name.put(table.getName(), table);
+            _cache4UUID.put(table.getUUID(), table);
+            final long tableMainId = rs.getLong(7);
+            if (tableMainId > 0) {
+              mainTables.put(id, tableMainId);
+            }
+            table.readFromDB4Properties();
+          }
+          rs.close();
+
+          // initialize main tables
+          for (final Map.Entry<Long, Long> entry : mainTables.entrySet()) {
+            final SQLTable table = _cache4Id.get(entry.getKey());
+            final SQLTable mainTable = _cache4Id.get(entry.getValue());
+            table.mainTable = mainTable;
+          }
+
+        } finally  {
+          if (stmt != null) {
+            stmt.close();
+          }
+        }
+        con.commit();
+      } catch (final SQLException e) {
+        throw new CacheReloadException("could not read sql tables", e);
+      } catch (final EFapsException e) {
+        throw new CacheReloadException("could not read sql tables", e);
+      }
+      finally {
+        if ((con != null) && con.isOpened()) {
+          try {
+            con.abort();
+          } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read sql tables", e);
+          }
+        }
+      }
+    }
   }
 }

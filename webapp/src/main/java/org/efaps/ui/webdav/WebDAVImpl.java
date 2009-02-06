@@ -26,7 +26,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.Instance;
@@ -38,9 +42,6 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
-import org.efaps.util.cache.CacheReloadInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The class is used as gateway to all WebDAV integrations. Each implementation
@@ -50,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author tmo
  * @version $Id$
  */
-public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
+public class WebDAVImpl implements WebDAVInterface  {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
@@ -64,8 +65,8 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
   // instance variables
 
   /** All known WebDAV integrations. */
-  private final RootCollectionResourceCache cache
-                                = new RootCollectionResourceCache(this);
+  private final RootCollectionResourceCache CACHE
+                                = new RootCollectionResourceCache();
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -79,51 +80,6 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
    */
   public int priority()  {
     return Integer.MAX_VALUE;
-  }
-
-  /**
-   * Load all WebDAV integrations into the cache.
-   *
-   * @see #cache
-   * @see #getWebDAVImpl
-   */
-  public void reloadCache() throws CacheReloadException  {
-    try  {
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes("Admin_Integration_WebDAV");
-      query.addSelect("OID");
-      query.addSelect("UUID");
-      query.addSelect("Name");
-      query.addSelect("Path");
-      query.addSelect("Modified");
-      query.addSelect("Created");
-      query.executeWithoutAccessCheck();
-      while (query.next())  {
-        String path = (String) query.get("Path");
-        String name = (String) query.get("Name");
-        Instance instance = new Instance((String) query.get("OID"));
-        WebDAVInterface webDavImpl = getWebDAVImpl(instance, name);
-        if (webDavImpl == null)  {
-          LOG.error("could not initialise WebDAV implementation for "
-                    + "'" + name + "'");
-        } else  {
-          this.cache.add(new RootCollectionResource(
-              this,
-              webDavImpl,
-              name,
-              UUID.fromString((String) query.get("UUID")),
-              path,
-              instance,
-              (Date) query.get("Created"),
-              (Date) query.get("Modified")
-          ));
-        }
-      }
-      query.close();
-    } catch (EFapsException e)  {
-      throw new CacheReloadException("could not get all WebDAV integrations",
-                                     e);
-    }
   }
 
   /**
@@ -145,16 +101,16 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
     WebDAVInterface ret = null;
 
     try  {
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setExpand(_instance, "Admin_Common_Property\\Abstract");
       query.addSelect("Name");
       query.addSelect("Value");
       query.executeWithoutAccessCheck();
       while (query.next())  {
-        String name = (String) query.get("Name");
-        String value = (String) query.get("Value");
+        final String name = (String) query.get("Name");
+        final String value = (String) query.get("Value");
         if ("Class".equals(name))  {
-          Object obj = Class.forName(value,
+          final Object obj = Class.forName(value,
                                      true,
                                      new EFapsClassLoader(this.getClass().getClassLoader()))
                             .newInstance();
@@ -168,15 +124,15 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
         }
       }
       query.close();
-    } catch (EFapsException e)  {
+    } catch (final EFapsException e)  {
       LOG.error("could not get properties for " + _name, e);
-    } catch (ClassNotFoundException e)  {
+    } catch (final ClassNotFoundException e)  {
       LOG.error("could not found WebDAV implementation class for "
                 + _name, e);
-    } catch (InstantiationException e)  {
+    } catch (final InstantiationException e)  {
       LOG.error("could not instantiate implementation class for "
                 + _name, e);
-    } catch (IllegalAccessException e)  {
+    } catch (final IllegalAccessException e)  {
       LOG.error("could not access implementation class for "
                 + _name, e);
     }
@@ -201,14 +157,7 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
    * @see #RootCollectionResourceCache.getResources
    */
   public List < AbstractResource > getSubs(final CollectionResource _col)   {
-    if (!this.cache.hasEntries())  {
-      try  {
-        reloadCache();
-      } catch (CacheReloadException e)  {
-        LOG.error("could not get all WebDAV integrations", e);
-      }
-    }
-    return new ArrayList < AbstractResource > (this.cache.getResources());
+    return new ArrayList < AbstractResource > (this.CACHE.getResources());
   }
 
 
@@ -228,14 +177,7 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
    */
   public CollectionResource getCollection(final CollectionResource _col,
                                           final String _name)  {
-    if (!this.cache.hasEntries())  {
-      try  {
-        reloadCache();
-      } catch (CacheReloadException e)  {
-        LOG.error("could not get all WebDAV integrations", e);
-      }
-    }
-    return this.cache.get(_name);
+    return this.CACHE.get(_name);
   }
 
   /**
@@ -367,18 +309,65 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
    * The class is used to cache all root collection resources.
    */
   private class RootCollectionResourceCache
-                                  extends Cache < RootCollectionResource >  {
+                                  extends Cache<RootCollectionResource>  {
 
-    RootCollectionResourceCache(final WebDAVImpl _webDAVImpl)  {
-      super(_webDAVImpl);
-    }
+
 
     /**
      *
      * @return all cached root collection resources
      */
-    public Collection < RootCollectionResource > getResources()  {
+    public Collection <RootCollectionResource> getResources()  {
       return getCache4Name().values();
+    }
+
+
+
+    /* (non-Javadoc)
+     * @see org.efaps.util.cache.Cache#readCache(java.util.Map, java.util.Map, java.util.Map)
+     */
+    @Override
+    protected void readCache(final Map<Long, RootCollectionResource> cache4Id,
+        final Map<String, RootCollectionResource> cache4Name,
+        final Map<UUID, RootCollectionResource> cache4UUID)
+        throws CacheReloadException {
+      try  {
+        final SearchQuery query = new SearchQuery();
+        query.setQueryTypes("Admin_Integration_WebDAV");
+        query.addSelect("OID");
+        query.addSelect("UUID");
+        query.addSelect("Name");
+        query.addSelect("Path");
+        query.addSelect("Modified");
+        query.addSelect("Created");
+        query.executeWithoutAccessCheck();
+        while (query.next())  {
+          final String path = (String) query.get("Path");
+          final String name = (String) query.get("Name");
+          final Instance instance = new Instance((String) query.get("OID"));
+          final WebDAVInterface webDavImpl = getWebDAVImpl(instance, name);
+          if (webDavImpl == null)  {
+            LOG.error("could not initialise WebDAV implementation for "
+                      + "'" + name + "'");
+          } else  {
+            final RootCollectionResource root = new RootCollectionResource(
+                WebDAVImpl.this,
+                webDavImpl,
+                name,
+                UUID.fromString((String) query.get("UUID")),
+                path,
+                instance,
+                (Date) query.get("Created"),
+                (Date) query.get("Modified"));
+            cache4Name.put(root.getName(), root);
+          }
+        }
+        query.close();
+      } catch (final EFapsException e)  {
+        throw new CacheReloadException("could not get all WebDAV integrations",
+                                       e);
+      }
+
     }
   }
 

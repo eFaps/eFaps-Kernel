@@ -28,6 +28,7 @@ import java.util.UUID;
 
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.db.Context;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
@@ -46,8 +47,7 @@ public class Table extends AbstractCollection implements Cloneable {
    *
    * @see #getCache
    */
-  static private UserInterfaceObjectCache<Table> cache =
-      new UserInterfaceObjectCache<Table>(Table.class);
+  private static TableCache CACHE = new TableCache();
 
   /**
    * This is the constructor to set the id and the name.
@@ -71,12 +71,12 @@ public class Table extends AbstractCollection implements Cloneable {
   public String getViewableName(final Context _context)
   {
     String title = "";
-    ResourceBundle msgs =
+    final ResourceBundle msgs =
         ResourceBundle.getBundle("org.efaps.properties.AttributeRessource",
             _context.getLocale());
     try {
       title = msgs.getString("Table.Title." + getName());
-    } catch (MissingResourceException e) {
+    } catch (final MissingResourceException e) {
     }
     return title;
   }
@@ -91,7 +91,7 @@ public class Table extends AbstractCollection implements Cloneable {
     Table ret = null;
     try {
       ret = (Table) super.clone();
-    } catch (CloneNotSupportedException e) {
+    } catch (final CloneNotSupportedException e) {
       e.printStackTrace();
     }
     return ret;
@@ -102,11 +102,12 @@ public class Table extends AbstractCollection implements Cloneable {
    *
    * @param _id     id to search in the cache
    * @return instance of class {@link Table}
+   * @throws CacheReloadException
    * @see #getCache
    */
   static public Table get(final long _id)
   {
-    return getCache().get(_id);
+    return CACHE.get(_id);
   }
 
   /**
@@ -115,11 +116,12 @@ public class Table extends AbstractCollection implements Cloneable {
    *
    * @param _name   name to search in the cache
    * @return instance of class {@link Table}
+   * @throws CacheReloadException
    * @see #getCache
    */
   static public Table get(final String _name)
   {
-    return getCache().get(_name);
+    return CACHE.get(_name);
   }
 
   /**
@@ -128,20 +130,27 @@ public class Table extends AbstractCollection implements Cloneable {
    *
    * @param _uuid   UUID to search in the cache
    * @return instance of class {@link Table}
+   * @throws CacheReloadException
    * @see #getCache
    */
   public static Table get(final UUID _uuid)
   {
-    return getCache().get(_uuid);
+    return CACHE.get(_uuid);
   }
 
   /**
-   * Static getter method for the type hashtable {@link #cache}.
+   * Static getter method for the type hashtable {@link #CACHE}.
    *
-   * @return value of static variable {@link #cache}
+   * @return value of static variable {@link #CACHE}
    */
-  protected static UserInterfaceObjectCache<Table> getCache()
-  {
-    return cache;
+  protected static UserInterfaceObjectCache<Table> getCache() {
+    return CACHE;
+  }
+
+  private static class TableCache extends UserInterfaceObjectCache<Table> {
+
+    protected TableCache() {
+      super(Table.class);
+    }
   }
 }

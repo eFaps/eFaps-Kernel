@@ -23,6 +23,7 @@ package org.efaps.ui.servlet;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
 
@@ -41,10 +42,9 @@ import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.db.Checkout;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AutomaticCache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
-import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * TODO description
@@ -62,20 +62,7 @@ public class StaticContentServlet extends HttpServlet {
   private final static Logger LOG =
       LoggerFactory.getLogger(StaticContentServlet.class);
 
-  /**
-   * The cache stores all instance of class {@link #ImageMappe}.
-   */
-  private static Cache<ContentMapper> cache =
-      new Cache<ContentMapper>(new CacheReloadInterface() {
-
-        public int priority() {
-          return 20000;
-        };
-
-        public void reloadCache() throws CacheReloadException {
-          StaticContentServlet.loadCache();
-        };
-      });
+  private final static StaticContentCache CACHE = new StaticContentCache();
 
   private int cacheDuration = 3600;
 
@@ -103,15 +90,14 @@ public class StaticContentServlet extends HttpServlet {
     contentName = contentName.substring(contentName.lastIndexOf('/') + 1);
 
     try {
-      if (!cache.hasEntries()) {
+      if (!CACHE.hasEntries()) {
         this.cacheDuration =
             SystemAttribute.get(
                 UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"))
                 .getIntegerValue();
-        loadCache();
       }
 
-      final ContentMapper imageMapper = cache.get(contentName);
+      final ContentMapper imageMapper = CACHE.get(contentName);
 
       if (imageMapper != null) {
         final Checkout checkout = new Checkout(imageMapper.oid);
@@ -180,46 +166,7 @@ public class StaticContentServlet extends HttpServlet {
     return ret;
   }
 
-  /**
-   * A query is made for all user interface images and caches the name, file
-   * name and object id. The cache is needed to reference from an image name to
-   * the object id and the original file name.
-   *
-   * @throws Exception
-   *                 if searchquery fails
-   * @see #cache
-   * @see #ImageMapper
-   */
-  private static void loadCache() throws CacheReloadException {
-    try {
-      synchronized (cache) {
-        final SearchQuery query = new SearchQuery();
-        query.setQueryTypes("Admin_Program_StaticCompiled");
-        query.setExpandChildTypes(true);
-        query.addSelect("Name");
-        query.addSelect("FileName");
-        query.addSelect("OID");
-        query.addSelect("FileLength");
-        query.addSelect("Modified");
 
-        query.executeWithoutAccessCheck();
-
-        while (query.next()) {
-          final String name = (String) query.get("Name");
-          final String file = (String) query.get("FileName");
-          final String oid = (String) query.get("OID");
-          final Long filelength = (Long) query.get("FileLength");
-          final DateTime datetime = (DateTime) query.get("Modified");
-          cache.add(new ContentMapper(name, file, oid, filelength,
-                                      datetime.getMillis()));
-        }
-        query.close();
-      }
-    } catch (final EFapsException e) {
-      throw new CacheReloadException("could not initialise "
-          + "image servlet cache");
-    }
-  }
 
   /**
    * The class is used to map from the administrational image name to the image
@@ -293,5 +240,50 @@ public class StaticContentServlet extends HttpServlet {
     public long getId() {
       return 0;
     }
+  }
+  private static class StaticContentCache extends AutomaticCache<ContentMapper> {
+
+
+    /* (non-Javadoc)
+     * @see org.efaps.util.cache.Cache#readCache(java.util.Map, java.util.Map, java.util.Map)
+     */
+    @Override
+    protected void readCache(final Map<Long, ContentMapper> cache4Id,
+        final Map<String, ContentMapper> cache4Name,
+        final Map<UUID, ContentMapper> cache4UUID) throws CacheReloadException {
+      try {
+
+          final SearchQuery query = new SearchQuery();
+          query.setQueryTypes("Admin_Program_StaticCompiled");
+          query.setExpandChildTypes(true);
+          query.addSelect("Name");
+          query.addSelect("FileName");
+          query.addSelect("OID");
+          query.addSelect("FileLength");
+          query.addSelect("Modified");
+
+          query.executeWithoutAccessCheck();
+
+          while (query.next()) {
+            final String name = (String) query.get("Name");
+            final String file = (String) query.get("FileName");
+            final String oid = (String) query.get("OID");
+            final Long filelength = (Long) query.get("FileLength");
+            final DateTime datetime = (DateTime) query.get("Modified");
+
+            final ContentMapper mapper = new ContentMapper(name, file, oid, filelength,
+                datetime.getMillis());
+
+                cache4Name.put(mapper.getName(), mapper);
+          }
+          query.close();
+
+      } catch (final EFapsException e) {
+        throw new CacheReloadException("could not initialise "
+            + "image servlet cache");
+      }
+
+    }
+
   }
 }

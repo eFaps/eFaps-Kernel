@@ -25,6 +25,7 @@ import static org.efaps.admin.EFapsClassNames.FORM;
 import java.util.UUID;
 
 import org.efaps.admin.EFapsClassNames;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
@@ -37,6 +38,8 @@ public class Form extends AbstractCollection {
    * The static variable defines the class name in eFaps.
    */
   public final static EFapsClassNames EFAPS_CLASSNAME = FORM;
+
+  private static final FormCache CACHE = new FormCache();
 
   /**
    *
@@ -53,10 +56,11 @@ public class Form extends AbstractCollection {
    * @param _id
    *                id to search in the cache
    * @return instance of class {@link Form}
+   * @throws CacheReloadException
    * @see #getCache
    */
   public static Form get(final long _id) {
-    return getCache().get(_id);
+    return CACHE.get(_id);
   }
 
   /**
@@ -66,10 +70,11 @@ public class Form extends AbstractCollection {
    * @param _name
    *                name to search in the cache
    * @return instance of class {@link Form}
+   * @throws CacheReloadException
    * @see #getCache
    */
   public static Form get(final String _name) {
-    return getCache().get(_name);
+    return CACHE.get(_name);
   }
 
   /**
@@ -79,26 +84,26 @@ public class Form extends AbstractCollection {
    * @param _uuid
    *                UUID to search in the cache
    * @return instance of class {@link Form}
+   * @throws CacheReloadException
    * @see #getCache
    */
-  public static Form get(final UUID _uuid) {
-    return getCache().get(_uuid);
+  public static Form get(final UUID _uuid)  {
+    return CACHE.get(_uuid);
   }
 
   /**
-   * Static getter method for the type hashtable {@link #cache}.
+   * Static getter method for the type hashtable {@link #CACHE}.
    *
-   * @return value of static variable {@link #cache}
+   * @return value of static variable {@link #CACHE}
    */
   protected static UserInterfaceObjectCache<Form> getCache() {
-    return cache;
+    return CACHE;
   }
 
-  /**
-   * Stores all instances of class {@link Form}.
-   *
-   * @see #getCache
-   */
-  private static UserInterfaceObjectCache<Form> cache =
-      new UserInterfaceObjectCache<Form>(Form.class);
+  private static class FormCache extends UserInterfaceObjectCache<Form> {
+
+    protected FormCache() {
+      super(Form.class);
+    }
+  }
 }

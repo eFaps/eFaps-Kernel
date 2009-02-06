@@ -23,6 +23,8 @@ package org.efaps.admin.user;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +34,6 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
-import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * @author tmo
@@ -55,25 +56,7 @@ public class Group extends AbstractUserObject {
   private static final String SQL_SELECT =
       "select ID, NAME, STATUS from V_USERGROUP";
 
-  /**
-   * Stores all instances of class {@link Group}.
-   *
-   * @see #getCache
-   */
-  private static final Cache<Group> cache =
-      new Cache<Group>(new CacheReloadInterface() {
-
-        public int priority() {
-          return CacheReloadInterface.Priority.AccessSet.number;
-        };
-
-        public void reloadCache() throws CacheReloadException {
-          Group.initialise();
-        };
-      });
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // constructors / destructors
+  private static GroupCache CACHE = new GroupCache();
 
   /**
    * Create a new group instance. The method is used from the static method
@@ -116,56 +99,11 @@ public class Group extends AbstractUserObject {
     return _person.isAssigned(this);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-
   /**
-   * Initialise the cache of JAAS systems.
-   *
-   * @param _context
-   *                eFaps context for this request
+   * Method to initialize the Cache of this CacheObjectInterface.
    */
-  public static void initialise() throws CacheReloadException {
-    ConnectionResource con = null;
-    try {
-      con = Context.getThreadContext().getConnectionResource();
-
-      Statement stmt = null;
-      try {
-
-        stmt = con.getConnection().createStatement();
-
-       final ResultSet resultset = stmt.executeQuery(SQL_SELECT);
-        while (resultset.next()) {
-         final long id = resultset.getLong(1);
-         final String name = resultset.getString(2).trim();
-         final boolean status = resultset.getBoolean(3);
-          LOG.debug("read group '" + name + "' (id = " + id + ")");
-          cache.add(new Group(id, name, status));
-        }
-        resultset.close();
-
-      }
-      finally {
-        if (stmt != null) {
-          stmt.close();
-        }
-      }
-
-      con.commit();
-    } catch (SQLException e) {
-      throw new CacheReloadException("could not read groups", e);
-    } catch (EFapsException e) {
-      throw new CacheReloadException("could not read groups", e);
-    }
-    finally {
-      if ((con != null) && con.isOpened()) {
-        try {
-          con.abort();
-        } catch (EFapsException e) {
-          throw new CacheReloadException("could not read groups", e);
-        }
-      }
-    }
+  public static void initialize() {
+    CACHE.initialize(Group.class);
   }
 
   /**
@@ -174,11 +112,12 @@ public class Group extends AbstractUserObject {
    * @param _id
    *                id to search in the cache
    * @return instance of class {@link Group}
+   * @throws CacheReloadException
    * @see #getCache
    * @todo rewrite to use context instance
    */
-  public static Group get(final long _id) {
-    return cache.get(_id);
+  public static Group get(final long _id) throws CacheReloadException {
+    return CACHE.get(_id);
   }
 
   /**
@@ -188,21 +127,12 @@ public class Group extends AbstractUserObject {
    * @param _name
    *                name to search in the cache
    * @return instance of class {@link Group}
+   * @throws CacheReloadException
    * @see #getCache
    * @todo rewrite to use context instance
    */
-  public static Group get(final String _name) {
-    return cache.get(_name);
-  }
-
-  /**
-   * Static getter method for the group {@link #cache}.
-   *
-   * @return value of static variable {@link #cache}
-   * @see #cache
-   */
-  static public Cache<Group> getCache() {
-    return cache;
+  public static Group get(final String _name) throws CacheReloadException {
+    return CACHE.get(_name);
   }
 
   /**
@@ -242,7 +172,7 @@ public class Group extends AbstractUserObject {
         }
         resultset.close();
 
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOG.error("search for group for JAAS system "
             + "'"
             + _jaasSystem.getName()
@@ -257,7 +187,7 @@ public class Group extends AbstractUserObject {
       finally {
         try {
           stmt.close();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
         }
       }
       rsrc.commit();
@@ -268,5 +198,61 @@ public class Group extends AbstractUserObject {
       }
     }
     return get(groupId);
+  }
+
+  private static class GroupCache extends Cache<Group> {
+
+
+    @Override
+    protected void readCache(final Map<Long, Group> cache4Id,
+        final Map<String, Group> cache4Name, final Map<UUID, Group> cache4UUID)
+        throws CacheReloadException {
+      ConnectionResource con = null;
+      try {
+        con = Context.getThreadContext().getConnectionResource();
+
+        Statement stmt = null;
+        try {
+
+          stmt = con.getConnection().createStatement();
+
+         final ResultSet resultset = stmt.executeQuery(SQL_SELECT);
+          while (resultset.next()) {
+           final long id = resultset.getLong(1);
+           final String name = resultset.getString(2).trim();
+           final boolean status = resultset.getBoolean(3);
+            LOG.debug("read group '" + name + "' (id = " + id + ")");
+            final Group group = new Group(id, name, status);
+            cache4Id.put(group.getId(), group);
+            cache4Name.put(group.getName(), group);
+            cache4UUID.put(group.getUUID(), group);
+          }
+          resultset.close();
+
+        }
+        finally {
+          if (stmt != null) {
+            stmt.close();
+          }
+        }
+
+        con.commit();
+      } catch (final SQLException e) {
+        throw new CacheReloadException("could not read groups", e);
+      } catch (final EFapsException e) {
+        throw new CacheReloadException("could not read groups", e);
+      }
+      finally {
+        if ((con != null) && con.isOpened()) {
+          try {
+            con.abort();
+          } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read groups", e);
+          }
+        }
+      }
+
+    }
+
   }
 }

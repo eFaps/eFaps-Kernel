@@ -94,6 +94,17 @@ public class EFapsException extends Exception  {
   // instance methods
 
   /**
+   * @param _message
+   * @param _cause
+   */
+  public EFapsException(final String _message, final Throwable _cause) {
+    super(_message, _cause);
+    this.id = null;
+    this.className = null;
+    this.args = null;
+  }
+
+  /**
    * If a caused exception is a SQLException, also all next exceptions of the
    * SQLExceptions are printed into the stack trace.
    *

@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.util.RequestHandler;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
@@ -61,8 +62,7 @@ public class Image extends AbstractUserInterfaceObject {
    *
    * @see #getCache
    */
-  private static UserInterfaceObjectCache<Image> CACHE
-                             = new UserInterfaceObjectCache<Image>(Image.class);
+  private static ImageCache CACHE = new ImageCache();
 
   /**
    * Constructor to set the id and name of the command object.
@@ -95,7 +95,7 @@ public class Image extends AbstractUserInterfaceObject {
         final Type type = Type.get(_toId);
         if (type == null) {
           LOG.error("Image '"
-              + this.getName()
+              + getName()
               + "' could not defined as type icon for type '"
               + _toName
               + "'! Type does not exists!");
@@ -126,10 +126,11 @@ public class Image extends AbstractUserInterfaceObject {
    * @param _id
    *                id to search in the cache
    * @return instance of class {@link Image}
+   * @throws CacheReloadException
    * @see #getCache
    */
-  public static Image get(final long _id) {
-    return getCache().get(_id);
+  public static Image get(final long _id) throws CacheReloadException {
+    return CACHE.get(_id);
   }
 
   /**
@@ -139,10 +140,11 @@ public class Image extends AbstractUserInterfaceObject {
    * @param _name
    *                name to search in the cache
    * @return instance of class {@link Image}
+   * @throws CacheReloadException
    * @see #getCache
    */
-  public static Image get(final String _name) {
-    return getCache().get(_name);
+  public static Image get(final String _name) throws CacheReloadException {
+    return CACHE.get(_name);
   }
 
   /**
@@ -152,10 +154,11 @@ public class Image extends AbstractUserInterfaceObject {
    * @param _uuid
    *                UUID to search in the cache
    * @return instance of class {@link Image}
+   * @throws CacheReloadException
    * @see #getCache
    */
-  public static Image get(final UUID _uuid) {
-    return getCache().get(_uuid);
+  public static Image get(final UUID _uuid) throws CacheReloadException {
+    return CACHE.get(_uuid);
   }
 
   /**
@@ -175,12 +178,18 @@ public class Image extends AbstractUserInterfaceObject {
   }
 
   /**
-   * Static getter method for the type hashtable {@link #cache}.
+   * Static getter method for the type hashtable {@link #CACHE}.
    *
-   * @return value of static variable {@link #cache}
+   * @return value of static variable {@link #CACHE}
    */
-  public static UserInterfaceObjectCache<Image> getCache() {
+  protected static UserInterfaceObjectCache<Image> getCache() {
     return CACHE;
   }
 
+  private static class ImageCache extends UserInterfaceObjectCache<Image> {
+
+    protected ImageCache() {
+      super(Image.class);
+    }
+  }
 }

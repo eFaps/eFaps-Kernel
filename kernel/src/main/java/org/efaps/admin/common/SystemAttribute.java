@@ -23,6 +23,7 @@ package org.efaps.admin.common;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 import java.util.UUID;
 
 import org.efaps.db.Context;
@@ -31,7 +32,6 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
-import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * TODO description
@@ -51,17 +51,7 @@ public class SystemAttribute implements CacheObjectInterface {
   /**
    * Stores all instances of SytemAttribute.
    */
-  private static Cache<SystemAttribute> SYSATTRIBUTECACHE =
-      new Cache<SystemAttribute>(new CacheReloadInterface() {
-
-        public int priority() {
-          return CacheReloadInterface.Priority.SystemAttribute.number;
-        };
-
-        public void reloadCache() throws CacheReloadException {
-          SystemAttribute.initialise();
-        };
-      });
+  private static SystemAttributeCache CACHE = new SystemAttributeCache();
 
   /**
    * The instance variable stores the id of this SystemAttribute.
@@ -110,45 +100,14 @@ public class SystemAttribute implements CacheObjectInterface {
   }
 
   /**
-   * static method used to initialise the SystemAttributes<br>
-   * (It is called from the RunLevel-Definitions).
-   *
-   * @throws CacheReloadException on error
-   */
-  public static void initialise() throws CacheReloadException {
-
-    try {
-
-      final ConnectionResource con =
-          Context.getThreadContext().getConnectionResource();
-      final Statement stmt = con.getConnection().createStatement();
-      final ResultSet resultset = stmt.executeQuery(SQL_SELECT);
-
-      while (resultset.next()) {
-        final long id = resultset.getLong(1);
-        final String uuid = resultset.getString(2).trim();
-        final String name = resultset.getString(3).trim();
-        final Object value = resultset.getObject(4);
-        final SystemAttribute sysatt
-                      = new SystemAttribute(id, uuid, name, value);
-        getSytemAttributeCache().add(sysatt);
-      }
-    } catch (final EFapsException e) {
-      throw new CacheReloadException("could not read SystemAttribute", e);
-    } catch (final SQLException e) {
-      throw new CacheReloadException("could not read SystemAttribute", e);
-    }
-
-  }
-
-  /**
    * Returns for given parameter <i>_id</i> the instance of class
    * {@link #SytemAttribute()}.
    * @param _id  id of the Systemattribute
    * @return instance of class {@link #SytemAttribute()}
+   * @throws CacheReloadException
    */
   public static SystemAttribute get(final long _id) {
-    return getSytemAttributeCache().get(_id);
+    return CACHE.get(_id);
   }
 
   /**
@@ -156,9 +115,10 @@ public class SystemAttribute implements CacheObjectInterface {
    * {@link #SytemAttribute()}.
    * @param _name  name of the Systemattribute
    * @return instance of class {@link #SytemAttribute()}
+   * @throws CacheReloadException
    */
   public static SystemAttribute get(final String _name) {
-    return getSytemAttributeCache().get(_name);
+    return CACHE.get(_name);
   }
 
   /**
@@ -167,19 +127,10 @@ public class SystemAttribute implements CacheObjectInterface {
    *
    * @param _uuid  uuid of the Systemattribute
    * @return instance of class {@link #SytemAttribute()}
+   * @throws CacheReloadException
    */
   public static SystemAttribute get(final UUID _uuid) {
-    return getSytemAttributeCache().get(_uuid);
-  }
-
-  /**
-   * This is the getter method for the instance variable
-   * {@link #sYSATTRIBUTECACHE}.
-   *
-   * @return value of instance variable {@link #sYSATTRIBUTECACHE}
-   */
-  static Cache<SystemAttribute> getSytemAttributeCache() {
-    return SYSATTRIBUTECACHE;
+    return CACHE.get(_uuid);
   }
 
   /**
@@ -249,4 +200,44 @@ public class SystemAttribute implements CacheObjectInterface {
     return Boolean.parseBoolean(this.value.toString());
   }
 
+  /**
+   * Method to initialize the Cache of this CacheObjectInterface.
+   */
+  public static void initialize() {
+    CACHE.initialize(SystemAttribute.class);
+  }
+
+  private static class SystemAttributeCache extends Cache<SystemAttribute> {
+
+    @Override
+    protected void readCache(final Map<Long, SystemAttribute> _newCache4Id,
+                             final Map<String, SystemAttribute> _newCache4Name,
+                             final Map<UUID, SystemAttribute> _newCache4UUID)
+        throws CacheReloadException {
+      try {
+
+        final ConnectionResource con =
+            Context.getThreadContext().getConnectionResource();
+        final Statement stmt = con.getConnection().createStatement();
+        final ResultSet resultset = stmt.executeQuery(SQL_SELECT);
+
+        while (resultset.next()) {
+          final long id = resultset.getLong(1);
+          final String uuid = resultset.getString(2).trim();
+          final String name = resultset.getString(3).trim();
+          final Object value = resultset.getObject(4);
+          final SystemAttribute sysatt
+                        = new SystemAttribute(id, uuid, name, value);
+          _newCache4Id.put(sysatt.getId(), sysatt);
+          _newCache4Name.put(sysatt.getName(), sysatt);
+          _newCache4UUID.put(sysatt.getUUID(), sysatt);
+        }
+      } catch (final EFapsException e) {
+        throw new CacheReloadException("could not read SystemAttribute", e);
+      } catch (final SQLException e) {
+        throw new CacheReloadException("could not read SystemAttribute", e);
+      }
+
+    }
+  }
 }

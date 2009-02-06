@@ -23,6 +23,7 @@ package org.efaps.admin.access;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -33,7 +34,6 @@ import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
-import org.efaps.util.cache.CacheReloadInterface;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -68,17 +68,7 @@ public class AccessType extends AbstractAdminObject  {
    * @see #getAccessType(String)
    * @see #getAccessType(UUID)
    */
-  private static final Cache < AccessType > cache 
-                                                = new Cache < AccessType > (
-    new CacheReloadInterface()  {
-        public int priority()  {
-          return CacheReloadInterface.Priority.AccessType.number;
-        };
-        public void reloadCache() throws CacheReloadException  {
-          AccessType.initialise();
-        };
-    }
-  );
+  private static final AccessTypeCache CACHE = new AccessTypeCache();
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors
@@ -96,9 +86,6 @@ public class AccessType extends AbstractAdminObject  {
     super(_id, _uuid, _name);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // instance methods
-
   /**
    * The method checks, if the given object represents the same access type as
    * this instance. Equals means, that the object to compare is not null,
@@ -107,96 +94,108 @@ public class AccessType extends AbstractAdminObject  {
    * @param _toCompare  object used to compare
    * @return <i>true</i> if equals, otherwise <i>false</i>
    */
+  @Override
   public boolean equals(final Object _toCompare)  {
     return (_toCompare != null)
             && (_toCompare instanceof AccessType)
             && (((AccessType) _toCompare).getId() == getId());
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // static methods
-
   /**
-   * Initialise the cache of JAAS systems. All access types are read from the
-   * database.
-   *
-   * @param _context  eFaps context for this request
-   * @see #getMethod
+   * Method to initialize the Cache of this CacheObjectInterface.
    */
-  public static void initialise() throws CacheReloadException  {
-    ConnectionResource con = null;
-    try  {
-      con = Context.getThreadContext().getConnectionResource();
-
-      Statement stmt = null;
-      try  {
-
-        stmt = con.getConnection().createStatement();
-
-        ResultSet rs = stmt.executeQuery(SQL_SELECT);
-        while (rs.next())  {
-          long id                       = rs.getLong(1);
-          String uuid                   = rs.getString(2);
-          String name                   = rs.getString(3);
-
-          LOG.debug("read access type '" + name + "' "
-                    + "(id = " + id + ", uuid = " + uuid + ")");
-
-          cache.add(new AccessType(id, uuid, name));
-        }
-        rs.close();
-
-      } finally  {
-        if (stmt != null)  {
-          stmt.close();
-        }
-      }
-
-      con.commit();
-
-    } catch (SQLException e)  {
-      throw new CacheReloadException("could not read access types", e);
-    } catch (EFapsException e)  {
-      throw new CacheReloadException("could not read access types", e);
-    } finally  {
-      if ((con != null) && con.isOpened())  {
-        try  {
-          con.abort();
-        } catch (EFapsException e)  {
-          throw new CacheReloadException("could not abort transaction "
-                                         + "while reading access types", e);
-        }
-      }
-    }
+  public static void initialize() {
+    CACHE.initialize(AccessType.class);
   }
 
   /**
-   * Returns for given identifier in  <i>_id</i> the cached instance of class 
+   * Returns for given identifier in  <i>_id</i> the cached instance of class
    * AccessType.
    *
    * @return instance of class AccessType
+   * @throws CacheReloadException
    */
-  static public AccessType getAccessType(final long _id)  {
-    return cache.get(_id);
+  static public AccessType getAccessType(final long _id) {
+    return CACHE.get(_id);
   }
 
   /**
-   * Returns for given name in <i>_name</i> the cached instance of class 
+   * Returns for given name in <i>_name</i> the cached instance of class
    * AccessType.
    *
    * @return instance of class AccessType
+   * @throws CacheReloadException
    */
   static public AccessType getAccessType(final String _name)  {
-    return cache.get(_name);
+    return CACHE.get(_name);
   }
 
   /**
-   * Returns for given universal unique identifier in <i>_uuid</i> the cached 
+   * Returns for given universal unique identifier in <i>_uuid</i> the cached
    * instance of class AccessType.
    *
    * @return instance of class AccessType
+   * @throws CacheReloadException
    */
   static public AccessType getAccessType(final UUID _uuid)  {
-    return cache.get(_uuid);
+    return CACHE.get(_uuid);
+  }
+
+  private static class AccessTypeCache extends Cache<AccessType> {
+
+
+    @Override
+    protected void readCache(final Map<Long, AccessType> _newCache4Id,
+                             final Map<String, AccessType> _newCache4Name,
+                             final Map<UUID, AccessType> _newCache4UUID)
+        throws CacheReloadException {
+      ConnectionResource con = null;
+      try  {
+        con = Context.getThreadContext().getConnectionResource();
+
+        Statement stmt = null;
+        try  {
+
+          stmt = con.getConnection().createStatement();
+
+          final ResultSet rs = stmt.executeQuery(SQL_SELECT);
+          while (rs.next())  {
+            final long id                       = rs.getLong(1);
+            final String uuid                   = rs.getString(2);
+            final String name                   = rs.getString(3);
+
+            LOG.debug("read access type '" + name + "' "
+                      + "(id = " + id + ", uuid = " + uuid + ")");
+
+            final AccessType accessType = new AccessType(id, uuid, name);
+            _newCache4Id.put(accessType.getId(), accessType);
+            _newCache4Name.put(accessType.getName(), accessType);
+            _newCache4UUID.put(accessType.getUUID(), accessType);
+          }
+          rs.close();
+
+        } finally  {
+          if (stmt != null)  {
+            stmt.close();
+          }
+        }
+
+        con.commit();
+
+      } catch (final SQLException e)  {
+        throw new CacheReloadException("could not read access types", e);
+      } catch (final EFapsException e)  {
+        throw new CacheReloadException("could not read access types", e);
+      } finally  {
+        if ((con != null) && con.isOpened())  {
+          try  {
+            con.abort();
+          } catch (final EFapsException e)  {
+            throw new CacheReloadException("could not abort transaction "
+                                           + "while reading access types", e);
+          }
+        }
+      }
+    }
   }
 }

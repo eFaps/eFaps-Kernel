@@ -30,9 +30,9 @@ import java.util.UUID;
  */
 public interface CacheObjectInterface  {
 
-  public String getName();
+  String getName();
 
-  public UUID getUUID();
+  UUID getUUID();
 
-  public long getId();
+  long getId();
 }

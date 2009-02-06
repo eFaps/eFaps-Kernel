@@ -67,7 +67,7 @@ public class DBProperties {
   /**
    * are the Properties initialised?
    */
-  private static boolean INITIALISED = false;
+  private static boolean INITIALIZED = false;
 
   /**
    * Method to find out if a specified key is existing.<br>
@@ -79,8 +79,8 @@ public class DBProperties {
    */
   public static boolean hasProperty(final String _key) {
 
-    if (!isInitialised()) {
-      initialise();
+    if (!isInitialized()) {
+      initialize();
     }
 
     return PROPERTIESCACHE.get(DEFAULT).get(_key) != null;
@@ -97,15 +97,15 @@ public class DBProperties {
    * @return if key exists, the value for the key, otherwise the key
    */
   public static String getProperty(final String _key) {
-    if (!isInitialised()) {
-      initialise();
+    if (!isInitialized()) {
+      initialize();
     }
 
     String language = null;
 
     try {
       language = Context.getThreadContext().getLocale().getLanguage();
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("not able to read the language from the context", e);
     }
     return getProperty(_key, language);
@@ -125,8 +125,8 @@ public class DBProperties {
    * @return if key exists, the value for the key, otherwise the key
    */
   public static String getProperty(final String _key, final String _language) {
-    if (!isInitialised()) {
-      initialise();
+    if (!isInitialized()) {
+      initialize();
     }
 
     String value = null;
@@ -159,7 +159,7 @@ public class DBProperties {
   /**
    * Method to initialise the Properties
    */
-  public static void initialise() {
+  public static void initialize() {
 
     synchronized (PROPERTIESCACHE) {
       PROPERTIESCACHE.clear();
@@ -173,7 +173,7 @@ public class DBProperties {
             + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID  "
             + " order by SEQUENCE";
 
-    initialiseCache(sqlStmt);
+    initializeCache(sqlStmt);
 
     final String sqlStmt2 =
         "select distinct PROPKEY, VALUE, LANG, SEQUENCE from T_ADPROP "
@@ -182,7 +182,7 @@ public class DBProperties {
             + " inner join T_ADLANG on T_ADLANG.ID = T_ADPROPLOC.LANGID "
             + " order by LANG, SEQUENCE";
 
-    initialiseCache(sqlStmt2);
+    initializeCache(sqlStmt2);
 
   }
 
@@ -191,8 +191,8 @@ public class DBProperties {
    *
    * @return true if initilised, otherwise false
    */
-  public static boolean isInitialised() {
-    return INITIALISED;
+  public static boolean isInitialized() {
+    return INITIALIZED;
   }
 
   /**
@@ -201,7 +201,7 @@ public class DBProperties {
    * @param _SQLStmt
    *                SQl-Statment to access the database
    */
-  private static void initialiseCache(final String _sqlstmt) {
+  private static void initializeCache(final String _sqlstmt) {
 
     String value;
     String language = "";
@@ -226,12 +226,12 @@ public class DBProperties {
 
         map.put(resultset.getString("PROPKEY").trim(), value.trim());
       }
-      INITIALISED = true;
+      INITIALIZED = true;
       resultset.close();
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
 
       LOG.error("initialiseCache()", e);
-    } catch (SQLException e) {
+    } catch (final SQLException e) {
 
       LOG.error("initialiseCache()", e);
     }

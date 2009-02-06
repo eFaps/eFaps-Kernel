@@ -60,7 +60,7 @@ public class AttributeSet extends Type{
 
     this.attributeName = (_name == null) ? null : _name.trim();
 
-    getTypeCache().add(this);
+    getTypeCache().addObject(this);
     readFromDB4Properties();
 
     this.attributeType = _attributeType;
@@ -75,7 +75,7 @@ public class AttributeSet extends Type{
 
     if (_typeLinkId > 0){
       final Type parent = Type.get(_typeLinkId);
-      this.setParentType(parent);
+      setParentType(parent);
       parent.addChildType(this);
       getAttributes().putAll(parent.getAttributes());
     }
@@ -99,7 +99,7 @@ public class AttributeSet extends Type{
    * @see #sqlColNames
    */
   public List<String> getSqlColNames() {
-    return this.getAttribute(this.attributeName).getSqlColNames();
+    return getAttribute(this.attributeName).getSqlColNames();
   }
 
   @Override
@@ -122,7 +122,7 @@ public class AttributeSet extends Type{
     return ret.toString();
   }
 
-  public static AttributeSet get(final String _typeName, final String _name){
+  public static AttributeSet get(final String _typeName, final String _name) {
    return (AttributeSet) Type.get(evaluateName(_typeName, _name));
   }
 
@@ -130,8 +130,9 @@ public class AttributeSet extends Type{
    * @param name
    * @param expression
    * @return
+   * @throws CacheReloadException
    */
-  public static AttributeSet find(final String _typeName, final String _name) {
+  public static AttributeSet find(final String _typeName, final String _name)  {
     AttributeSet ret = (AttributeSet) Type.get(evaluateName(_typeName, _name));
     if (ret==null){
       if (Type.get(_typeName).getParentType()!=null) {

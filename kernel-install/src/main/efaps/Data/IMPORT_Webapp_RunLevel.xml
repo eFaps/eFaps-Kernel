@@ -37,25 +37,25 @@
       <parentattribute name="RunLevelID" />
       <attribute name="Priority">1</attribute>
       <attribute name="Class">org.efaps.admin.access.AccessType</attribute>
-      <attribute name="Method">initialise</attribute>
+      <attribute name="Method">initialize</attribute>
     </object>
     <object type="Admin_RunLevel_Definition">
       <parentattribute name="RunLevelID" />
       <attribute name="Priority">2</attribute>
       <attribute name="Class">org.efaps.admin.access.AccessSet</attribute>
-      <attribute name="Method">initialise</attribute>
+      <attribute name="Method">initialize</attribute>
     </object>
     <object type="Admin_RunLevel_Definition">
       <parentattribute name="RunLevelID" />
       <attribute name="Priority">3</attribute>
       <attribute name="Class">org.efaps.admin.ui.AbstractUserInterfaceObject</attribute>
-      <attribute name="Method">initialise</attribute>
+      <attribute name="Method">initialize</attribute>
     </object>
     <object type="Admin_RunLevel_Definition">
       <parentattribute name="RunLevelID" />
       <attribute name="Priority">4</attribute>
       <attribute name="Class">org.efaps.admin.event.EventDefinition</attribute>
-      <attribute name="Method">initialise</attribute>
+      <attribute name="Method">initialize</attribute>
     </object>
   </object>
 </import>

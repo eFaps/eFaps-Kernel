@@ -23,17 +23,19 @@ package org.efaps.admin.datamodel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
-import org.efaps.util.cache.CacheReloadInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -66,15 +68,7 @@ public class AttributeType extends AbstractDataModelObject  {
    *
    * @see #getCache
    */
-  static private Cache<AttributeType> cache = new Cache<AttributeType>(
-    new CacheReloadInterface()  {
-        public int priority()  {
-          return CacheReloadInterface.Priority.AttributeType.number;
-        };
-        public void reloadCache() throws CacheReloadException  {
-        };
-    }
-  );
+  static private AttributeTypeCache CACHE = new AttributeTypeCache();
 
   /**
    * This is the constructor for class {@link Attribute}. Every instance of
@@ -92,36 +86,18 @@ public class AttributeType extends AbstractDataModelObject  {
   }
 
   /**
-   * Returns the name of the attribute type.
-   *
-   * @param _context
-   * @see #getName
-   */
-  public String getViewableName(Context _context)  {
-/*    String name = getName();
-    ResourceBundle msgs = ResourceBundle.getBundle("org.efaps.properties.AttributeRessource", _context.getRequest().getLocale());
-    try  {
-      name = msgs.getString(getParent().getName()+"/"+name);
-    } catch (MissingResourceException e)  {
-    }
-    return name;
-*/
-return getName();
-  }
-
-  /**
    *
    *
    * @return new instance of the class representation
    * @see #classRepr
    */
-  AttributeTypeInterface newInstance() throws EFapsException  {
+  public AttributeTypeInterface newInstance() throws EFapsException  {
     AttributeTypeInterface ret = null;
     try  {
       ret = (AttributeTypeInterface)getClassRepr().newInstance();
-    } catch (InstantiationException e)  {
+    } catch (final InstantiationException e)  {
       throw new EFapsException(getClass(), "newInstance.InstantiationException", e);
-    } catch (IllegalAccessException e)  {
+    } catch (final IllegalAccessException e)  {
       throw new EFapsException(getClass(), "newInstance.IllegalAccessException", e);
     }
     return ret;
@@ -136,23 +112,23 @@ return getName();
    * @see #classRepr
    * @see #setClassRepr(Class)
    */
-  private void setClassRepr(String _classRepr) throws ClassNotFoundException  {
+  private void setClassRepr(final String _classRepr) throws ClassNotFoundException  {
     setClassRepr(Class.forName(_classRepr));
   }
 
   /**
    *
    */
-  private void setUI(String _className) throws EFapsException  {
+  private void setUI(final String _className) throws EFapsException  {
     try  {
       setUI((UIInterface)Class.forName(_className).newInstance());
-    } catch (ClassNotFoundException e)  {
+    } catch (final ClassNotFoundException e)  {
       throw new EFapsException(getClass(), "setUIClass.ClassNotFoundException", e, _className);
-    } catch (InstantiationException e)  {
+    } catch (final InstantiationException e)  {
       throw new EFapsException(getClass(), "setUIClass.InstantiationException", e, _className);
-    } catch (IllegalAccessException e)  {
+    } catch (final IllegalAccessException e)  {
       throw new EFapsException(getClass(), "setUIClass.IllegalAccessException", e, _className);
-    } catch (ClassCastException e)  {
+    } catch (final ClassCastException e)  {
       throw new EFapsException(getClass(), "setUIClass.ClassCastException", e, _className);
     }
   }
@@ -226,7 +202,7 @@ return getName();
    * @see #classRepr
    * @see #getClassRepr
    */
-  private void setClassRepr(Class<?> _classRepr)  {
+  private void setClassRepr(final Class<?> _classRepr)  {
     this.classRepr = _classRepr;
   }
 
@@ -248,7 +224,7 @@ return getName();
    * @see #ui
    * @see #getUI
    */
-  private void setUI(UIInterface _ui)  {
+  private void setUI(final UIInterface _ui)  {
     this.ui = _ui;
   }
 
@@ -270,7 +246,7 @@ return getName();
    * @see #alwaysUpdate
    * @see #getAlwaysUpdate
    */
-  void setAlwaysUpdate(boolean _alwaysUpdate)  {
+  void setAlwaysUpdate(final boolean _alwaysUpdate)  {
     this.alwaysUpdate = _alwaysUpdate;
   }
 
@@ -292,69 +268,19 @@ return getName();
    * @see #createUpdate
    * @see #getCreateUpdate
    */
-  void setCreateUpdate(boolean _createUpdate)  {
+  void setCreateUpdate(final boolean _createUpdate)  {
     this.createUpdate = _createUpdate;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  public static void initialize(final Class<?> _class) {
+    CACHE.initialize(_class);
+  }
 
   /**
-   * Initialise the cache of attribute types.
+   * Method to initialize the Cache of this CacheObjectInterface.
    */
-  protected static void initialise() throws CacheReloadException
-  {
-    ConnectionResource con = null;
-    try  {
-      con = Context.getThreadContext().getConnectionResource();
-
-      Statement stmt = null;
-      try  {
-        stmt = con.getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery(SQL_SELECT);
-        while (rs.next())  {
-          long id = rs.getLong(1);
-          String name = rs.getString(2).trim();
-          String uuid = rs.getString(3);
-          uuid = (uuid == null) ? null : uuid.trim();
-
-          if (LOG.isDebugEnabled())  {
-            LOG.debug("read attribute type '" + name + "' "
-                      + "(id = " + id + ", uuid = '" + uuid + "')");
-          }
-
-          AttributeType attrType = new AttributeType(id, uuid, name);
-          attrType.setClassRepr(rs.getString(4).trim());
-          attrType.setUI(rs.getString(5).trim());
-          if (rs.getInt(6) != 0)  {
-            attrType.setAlwaysUpdate(true);
-          }
-          if (rs.getInt(7) != 0)  {
-            attrType.setCreateUpdate(true);
-          }
-          getCache().add(attrType);
-        }
-        rs.close();
-      } finally  {
-        if (stmt != null)  {
-          stmt.close();
-        }
-      }
-      con.commit();
-    } catch (ClassNotFoundException e)  {
-      throw new CacheReloadException("could not read attribute types", e);
-    } catch (SQLException e)  {
-      throw new CacheReloadException("could not read attribute types", e);
-    } catch (EFapsException e)  {
-      throw new CacheReloadException("could not read attribute types", e);
-    } finally  {
-      if ((con != null) && con.isOpened())  {
-        try  {
-          con.abort();
-        } catch (EFapsException e)  {
-          throw new CacheReloadException("could not read attribute types", e);
-        }
-      }
-    }
+  public static void initialize() {
+    AttributeType.initialize(AttributeType.class);
   }
 
   /**
@@ -364,11 +290,12 @@ return getName();
    * @param _context  eFaps context for this request
    * @param _id       id to search in the cache
    * @return instance of class {@link AttributeType}
+   * @throws CacheReloadException
    * @see #getCache
    * @see #read
    */
-  static public AttributeType get(final long _id)  {
-    return getCache().get(_id);
+  static public AttributeType get(final long _id) throws CacheReloadException  {
+    return CACHE.get(_id);
   }
 
   /**
@@ -378,19 +305,78 @@ return getName();
    * @param _context  eFaps context for this request
    * @param _name     name to search in the cache
    * @return instance of class {@link AttributeType}
+   * @throws CacheReloadException
    * @see #getCache
    * @see #read
    */
-  static public AttributeType get(final String _name)  {
-    return getCache().get(_name);
+  static public AttributeType get(final String _name) throws CacheReloadException  {
+    return CACHE.get(_name);
   }
 
-  /**
-   * Static getter method for the type hashtable {@link #cache}.
-   *
-   * @return value of static variable {@link #cache}
-   */
-  static Cache<AttributeType> getCache()  {
-    return cache;
+  private static class AttributeTypeCache extends Cache<AttributeType> {
+
+
+    @Override
+    protected void readCache(final Map<Long, AttributeType> _cache4Id,
+                             final Map<String, AttributeType> _cache4Name,
+                             final Map<UUID, AttributeType> _cache4UUID)
+        throws CacheReloadException {
+      ConnectionResource con = null;
+      try  {
+        con = Context.getThreadContext().getConnectionResource();
+
+        Statement stmt = null;
+        try  {
+          stmt = con.getConnection().createStatement();
+          final ResultSet rs = stmt.executeQuery(SQL_SELECT);
+          while (rs.next())  {
+            final long id = rs.getLong(1);
+            final String name = rs.getString(2).trim();
+            String uuid = rs.getString(3);
+            uuid = (uuid == null) ? null : uuid.trim();
+
+            if (LOG.isDebugEnabled())  {
+              LOG.debug("read attribute type '" + name + "' "
+                        + "(id = " + id + ", uuid = '" + uuid + "')");
+            }
+
+            final AttributeType attrType = new AttributeType(id, uuid, name);
+            attrType.setClassRepr(rs.getString(4).trim());
+            attrType.setUI(rs.getString(5).trim());
+            if (rs.getInt(6) != 0)  {
+              attrType.setAlwaysUpdate(true);
+            }
+            if (rs.getInt(7) != 0)  {
+              attrType.setCreateUpdate(true);
+            }
+            _cache4Id.put(attrType.getId(), attrType);
+            _cache4Name.put(attrType.getName(), attrType);
+            _cache4UUID.put(attrType.getUUID(), attrType);
+          }
+          rs.close();
+        } finally  {
+          if (stmt != null)  {
+            stmt.close();
+          }
+        }
+        con.commit();
+      } catch (final ClassNotFoundException e)  {
+        throw new CacheReloadException("could not read attribute types", e);
+      } catch (final SQLException e)  {
+        throw new CacheReloadException("could not read attribute types", e);
+      } catch (final EFapsException e)  {
+        throw new CacheReloadException("could not read attribute types", e);
+      } finally  {
+        if ((con != null) && con.isOpened())  {
+          try  {
+            con.abort();
+          } catch (final EFapsException e)  {
+            throw new CacheReloadException("could not read attribute types", e);
+          }
+        }
+      }
+
+    }
+
   }
 }

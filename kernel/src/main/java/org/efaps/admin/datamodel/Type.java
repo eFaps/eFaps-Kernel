@@ -20,9 +20,6 @@
 
 package org.efaps.admin.datamodel;
 
-import static org.efaps.admin.EFapsClassNames.USER_PERSON;
-import static org.efaps.admin.EFapsClassNames.USER_ROLE;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -48,16 +45,12 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.Form;
-import org.efaps.admin.user.Person;
-import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
-import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
-import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * This is the class for the type description. The type description holds
@@ -96,17 +89,7 @@ public class Type extends AbstractDataModelObject {
    *
    * @see #get
    */
-  private static Cache<Type> TYPECACHE =
-      new Cache<Type>(new CacheReloadInterface() {
-
-        public int priority() {
-          return CacheReloadInterface.Priority.Type.number;
-        };
-
-        public void reloadCache() throws CacheReloadException {
-          Type.initialise();
-        };
-      });
+  private static TypeCache CACHE = new TypeCache();
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -151,7 +134,7 @@ public class Type extends AbstractDataModelObject {
    * @see #getCache
    * @see #setCache
    */
-  private Cache<?> cache = null;
+  private final Cache<?> cache = null;
 
   /**
    * Instance of a HashSet to store all needed tables for this type. The tables
@@ -236,8 +219,10 @@ public class Type extends AbstractDataModelObject {
    * @param _id     id of th type
    * @param _uuid   universal unique identifier
    * @param _name   name of the type name of the instance
+   * @throws CacheReloadException
    */
-  protected Type(final long _id, final String _uuid, final String _name) {
+  protected Type(final long _id, final String _uuid, final String _name)
+      throws CacheReloadException {
     super(_id, _uuid, _name);
     addAttribute(new Attribute(0,
                                "Type",
@@ -268,7 +253,7 @@ public class Type extends AbstractDataModelObject {
       }
     }
     for (final Type child : getChildTypes()) {
-      if (child.getParentType().getId() == this.getId()) {
+      if (child.getParentType().getId() == getId()) {
         child.addAttribute(_attribute.copy());
       }
     }
@@ -287,7 +272,7 @@ public class Type extends AbstractDataModelObject {
       getLinks().put(type.getName() + "\\" + _attr.getName(), _attr);
     }
     for (final Type child : getChildTypes()) {
-      if (child.getParentType().getId() == this.getId()) {
+      if (child.getParentType().getId() == getId()) {
         child.addLink(_attr);
       }
     }
@@ -320,32 +305,6 @@ public class Type extends AbstractDataModelObject {
       }
     }
     return ret;
-  }
-
-  /**
-   * If a hashtable instance for the cache is given, a <i>true</i> is returned,
-   * that this type is cacheable, otherwise a <i>false</i> is returned.
-   *
-   * @return <i>true</i> if type is cacheable, otherwise <i>false</i>
-   */
-  public final boolean isCacheable() {
-    boolean ret = false;
-
-    if (getCache() != null) {
-      ret = true;
-    }
-    return ret;
-  }
-
-  /**
-   * Search in the cache for the object with the given <i>_id</i> and returns
-   * this Object.
-   *
-   * @param _id id of the cached type
-   * @return cache object for given parameter <i>_id</i>
-   */
-  public CacheObjectInterface getCacheObject(final long _id) {
-    return getCache().get(_id);
   }
 
   /**
@@ -577,29 +536,6 @@ public class Type extends AbstractDataModelObject {
   }
 
   /**
-   * This is the getter method for instance variable {@link #cache}.
-   *
-   * @return value of instance variable {@link #cache}
-   * @see #setCache
-   * @see #cache
-   */
-  public Cache<?> getCache() {
-    return this.cache;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #cache}.
-   *
-   * @param _cache
-   *                new value for instance variable {@link #cache}
-   * @see #getCache
-   * @see #cache
-   */
-  private void setCache(final Cache<?> _cache) {
-    this.cache = _cache;
-  }
-
-  /**
    * This is the getter method for instance variable {@link #tables}.
    *
    * @return value of instance variable {@link #tables}
@@ -709,92 +645,24 @@ public class Type extends AbstractDataModelObject {
   }
 
   /**
-   * Initialize the cache of types.
-   * @throws CacheReloadException on error
+   * @param class1
+   * @throws CacheReloadException
    */
-  protected static void initialise() throws CacheReloadException {
-    ConnectionResource con = null;
-    try {
-      // to store parent informations
-      final Map<Long, Long> parents = new HashMap<Long, Long>();
-      // to store all read types
-      final Set<Type> allTypes = new HashSet<Type>();
-
-      con = Context.getThreadContext().getConnectionResource();
-
-      Statement stmt = null;
-      try {
-
-        stmt = con.getConnection().createStatement();
-
-        final ResultSet rs = stmt.executeQuery(SQL_SELECT);
-        while (rs.next()) {
-          final long id = rs.getLong(1);
-          final String uuid = rs.getString(2).trim();
-          final String name = rs.getString(3).trim();
-          final boolean abstractType = rs.getBoolean(4);
-          final long parentTypeId = rs.getLong(5);
-          String sqlCacheExpr = rs.getString(6);
-          sqlCacheExpr = sqlCacheExpr != null ? sqlCacheExpr.trim() : null;
-          if (LOG.isDebugEnabled()) {
-            LOG.debug("read type '" + name + "' (id = " + id + ")");
-          }
-          final Type type = new Type(id, uuid, name);
-          type.setAbstractType(abstractType);
-          if (type.getUUID().equals(USER_PERSON.getUuid())) {
-            type.setCache(Person.getCache());
-          } else if (type.getUUID().equals(USER_ROLE.getUuid())) {
-            type.setCache(Role.getCache());
-          }
-
-          getTypeCache().add(type);
-          allTypes.add(type);
-
-          if (parentTypeId != 0) {
-            parents.put(id, parentTypeId);
-          }
-        }
-        rs.close();
-      } finally {
-        if (stmt != null) {
-          stmt.close();
-        }
-      }
-
-      // initialize parents
-      for (final Map.Entry<Long, Long> entry : parents.entrySet()) {
-        final Type child = Type.get(entry.getKey());
-        final Type parent = Type.get(entry.getValue());
-// TODO: test if loop
-        if (child.getId() == parent.getId()) {
-          throw new CacheReloadException(
-              "child and parent type is equal!child is " + child);
-        }
-        child.parentType = parent;
-        parent.addChildType(child);
-      }
-
-      // initialize properties and links
-      for (final Type type : allTypes)  {
-        type.readFromDB4Properties();
-        type.readFromDB4Links();
-      }
-
-      con.commit();
-
-    } catch (final SQLException e) {
-      throw new CacheReloadException("could not read roles", e);
-    } catch (final EFapsException e) {
-      throw new CacheReloadException("could not read roles", e);
-    } finally {
-      if ((con != null) && con.isOpened()) {
-        try {
-          con.abort();
-        } catch (final EFapsException e) {
-          throw new CacheReloadException("could not read roles", e);
-        }
-      }
+  public static void initialize(final Class<?> _class) throws CacheReloadException {
+    CACHE.initialize(_class);
+    // initialize properties and links
+    for (final Type type : CACHE.getCache4Id().values())  {
+      type.readFromDB4Properties();
+      type.readFromDB4Links();
     }
+  }
+
+  /**
+   * Method to initialize the Cache of this CacheObjectInterface.
+   * @throws CacheReloadException
+   */
+  public static void initialize() throws CacheReloadException {
+    Type.initialize(Type.class);
   }
 
   /**
@@ -802,9 +670,10 @@ public class Type extends AbstractDataModelObject {
    *
    * @param _id id of the type to get
    * @return instance of class {@link Type}
+   * @throws CacheReloadException
    */
   public static Type get(final long _id) {
-    return getTypeCache().get(_id);
+    return CACHE.get(_id);
   }
 
   /**
@@ -812,9 +681,10 @@ public class Type extends AbstractDataModelObject {
    * {@link Type}.
    * @param _name name of the type to get
    * @return instance of class {@link Type}
+   * @throws CacheReloadException
    */
   public static Type get(final String _name) {
-    return getTypeCache().get(_name);
+    return CACHE.get(_name);
   }
 
   /**
@@ -822,9 +692,10 @@ public class Type extends AbstractDataModelObject {
    * {@link Type}.
    * @param _uuid uuid of the type to get
    * @return instance of class {@link Type}
+   * @throws CacheReloadException
    */
   public static Type get(final UUID _uuid) {
-    return getTypeCache().get(_uuid);
+    return CACHE.get(_uuid);
   }
 
   /**
@@ -832,17 +703,102 @@ public class Type extends AbstractDataModelObject {
    * {@link Type}.
    * @param _className classname of the type to get
    * @return instance of class {@link Type}
+   * @throws CacheReloadException
    */
   public static Type get(final EFapsClassNames _className) {
-    return getTypeCache().get(_className.getUuid());
+    return CACHE.get(_className.getUuid());
   }
 
   /**
-   * Static getter method for the type hashtable {@link #TYPECACHE}.
+   * Static getter method for the type hashtable {@link #CACHE}.
    *
-   * @return value of static variable {@link #TYPECACHE}
+   * @return value of static variable {@link #CACHE}
    */
   static Cache<Type> getTypeCache() {
-    return TYPECACHE;
+    return CACHE;
+  }
+
+  private static class TypeCache extends Cache<Type> {
+
+
+    @Override
+    protected void readCache(final Map<Long, Type> _cache4Id,
+                             final Map<String, Type> _cache4Name,
+                             final Map<UUID, Type> _cache4UUID)
+        throws CacheReloadException {
+      ConnectionResource con = null;
+      try {
+        // to store parent informations
+        final Map<Long, Long> parents = new HashMap<Long, Long>();
+        // to store all read types
+        final Set<Type> allTypes = new HashSet<Type>();
+
+        con = Context.getThreadContext().getConnectionResource();
+
+        Statement stmt = null;
+        try {
+
+          stmt = con.getConnection().createStatement();
+
+          final ResultSet rs = stmt.executeQuery(SQL_SELECT);
+          while (rs.next()) {
+            final long id = rs.getLong(1);
+            final String uuid = rs.getString(2).trim();
+            final String name = rs.getString(3).trim();
+            final boolean abstractType = rs.getBoolean(4);
+            final long parentTypeId = rs.getLong(5);
+            String sqlCacheExpr = rs.getString(6);
+            sqlCacheExpr = sqlCacheExpr != null ? sqlCacheExpr.trim() : null;
+            if (LOG.isDebugEnabled()) {
+              LOG.debug("read type '" + name + "' (id = " + id + ")");
+            }
+            final Type type = new Type(id, uuid, name);
+            type.setAbstractType(abstractType);
+            _cache4Id.put(type.getId(), type);
+            _cache4Name.put(type.getName(), type);
+            _cache4UUID.put(type.getUUID(), type);
+
+            allTypes.add(type);
+
+            if (parentTypeId != 0) {
+              parents.put(id, parentTypeId);
+            }
+          }
+          rs.close();
+        } finally {
+          if (stmt != null) {
+            stmt.close();
+          }
+        }
+
+        // initialize parents
+        for (final Map.Entry<Long, Long> entry : parents.entrySet()) {
+          final Type child = _cache4Id.get(entry.getKey());
+          final Type parent = _cache4Id.get(entry.getValue());
+  // TODO: test if loop
+          if (child.getId() == parent.getId()) {
+            throw new CacheReloadException(
+                "child and parent type is equal!child is " + child);
+          }
+          child.parentType = parent;
+          parent.addChildType(child);
+        }
+
+        con.commit();
+
+      } catch (final SQLException e) {
+        throw new CacheReloadException("could not read types", e);
+      } catch (final EFapsException e) {
+        throw new CacheReloadException("could not read types", e);
+      } finally {
+        if ((con != null) && con.isOpened()) {
+          try {
+            con.abort();
+          } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read types", e);
+          }
+        }
+      }
+    }
   }
 }

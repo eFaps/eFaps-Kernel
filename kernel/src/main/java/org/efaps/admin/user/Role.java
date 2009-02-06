@@ -23,6 +23,7 @@ package org.efaps.admin.user;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -33,7 +34,6 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
-import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * @author tmo
@@ -62,18 +62,7 @@ public class Role extends AbstractUserObject {
    *
    * @see #getCache
    */
-  private static final Cache<Role> ROLECACHE =
-      new Cache<Role>(new CacheReloadInterface() {
-
-        public int priority() {
-          return CacheReloadInterface.Priority.Role.number;
-        };
-
-        public void reloadCache() throws CacheReloadException {
-          Role.initialise();
-        };
-      });
-
+  private static final RoleCache CACHE = new RoleCache();
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
@@ -119,59 +108,11 @@ public class Role extends AbstractUserObject {
     return _person.isAssigned(this);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-
   /**
-   * Initialise the cache of JAAS systems.
-   *
-   * @param _context
-   *                eFaps context for this request
+   * Method to initialize the Cache of this CacheObjectInterface.
    */
-  public static void initialise() throws CacheReloadException {
-    ConnectionResource con = null;
-    try {
-      con = Context.getThreadContext().getConnectionResource();
-
-      Statement stmt = null;
-      try {
-
-        stmt = con.getConnection().createStatement();
-
-        final ResultSet resulset = stmt.executeQuery(SQL_SELECT);
-        while (resulset.next()) {
-          final long id = resulset.getLong(1);
-          final String uuid = resulset.getString(2);
-          final String name = resulset.getString(3).trim();
-          final boolean status = resulset.getBoolean(4);
-
-          LOG.debug("read role '" + name + "' (id = " + id + ")");
-          ROLECACHE.add(new Role(id, uuid, name, status));
-        }
-        resulset.close();
-
-      }
-      finally {
-        if (stmt != null) {
-          stmt.close();
-        }
-      }
-
-      con.commit();
-
-    } catch (SQLException e) {
-      throw new CacheReloadException("could not read roles", e);
-    } catch (EFapsException e) {
-      throw new CacheReloadException("could not read roles", e);
-    }
-    finally {
-      if ((con != null) && con.isOpened()) {
-        try {
-          con.abort();
-        } catch (EFapsException e) {
-          throw new CacheReloadException("could not read roles", e);
-        }
-      }
-    }
+  public static void initialize() {
+    CACHE.initialize(Role.class);
   }
 
   /**
@@ -180,11 +121,12 @@ public class Role extends AbstractUserObject {
    * @param _id
    *                id to search in the cache
    * @return instance of class {@link Role}
+   * @throws CacheReloadException
    * @see #getCache
    * @todo rewrite to use context instance
    */
-  public static Role get(final long _id) {
-    return getCache().get(_id);
+  public static Role get(final long _id) throws CacheReloadException {
+    return CACHE.get(_id);
   }
 
   /**
@@ -194,11 +136,12 @@ public class Role extends AbstractUserObject {
    * @param _name
    *                name to search in the cache
    * @return instance of class {@link Role}
+   * @throws CacheReloadException
    * @see #getCache
    * @todo rewrite to use context instance
    */
-  public static Role get(final String _name) {
-    return getCache().get(_name);
+  public static Role get(final String _name) throws CacheReloadException {
+    return CACHE.get(_name);
   }
 
   /**
@@ -206,19 +149,10 @@ public class Role extends AbstractUserObject {
    * {@link Role}.
    *
    * @return instance of class {@link Role}
+   * @throws CacheReloadException
    */
-  public static Role get(final UUID _uuid) {
-    return getCache().get(_uuid);
-  }
-
-  /**
-   * Static getter method for the role {@link #ROLECACHE}.
-   *
-   * @return value of static variable {@link #ROLECACHE}
-   * @see #ROLECACHE
-   */
-  static public Cache<Role> getCache() {
-    return ROLECACHE;
+  public static Role get(final UUID _uuid) throws CacheReloadException {
+    return CACHE.get(_uuid);
   }
 
   /**
@@ -258,7 +192,7 @@ public class Role extends AbstractUserObject {
         }
         resultset.close();
 
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOG.warn("search for role for JAAS system '"
             + _jaasSystem.getName()
             + "' with key '"
@@ -271,7 +205,7 @@ public class Role extends AbstractUserObject {
       finally {
         try {
           stmt.close();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
         }
       }
       rsrc.commit();
@@ -282,5 +216,72 @@ public class Role extends AbstractUserObject {
       }
     }
     return get(roleId);
+  }
+
+  /**
+   * @return
+   */
+  public static Cache<Role> getCache() {
+    return CACHE;
+  }
+
+  private final static class RoleCache extends Cache<Role> {
+
+
+    @Override
+    protected void readCache(final Map<Long, Role> cache4Id,
+        final Map<String, Role> cache4Name, final Map<UUID, Role> cache4UUID)
+        throws CacheReloadException {
+      ConnectionResource con = null;
+      try {
+        con = Context.getThreadContext().getConnectionResource();
+
+        Statement stmt = null;
+        try {
+
+          stmt = con.getConnection().createStatement();
+
+          final ResultSet resulset = stmt.executeQuery(SQL_SELECT);
+          while (resulset.next()) {
+            final long id = resulset.getLong(1);
+            final String uuid = resulset.getString(2);
+            final String name = resulset.getString(3).trim();
+            final boolean status = resulset.getBoolean(4);
+
+            LOG.debug("read role '" + name + "' (id = " + id + ")");
+            final Role role = new Role(id, uuid, name, status);
+            cache4Id.put(role.getId(), role);
+            cache4Name.put(role.getName(), role);
+            cache4UUID.put(role.getUUID(), role);
+
+          }
+          resulset.close();
+
+        }
+        finally {
+          if (stmt != null) {
+            stmt.close();
+          }
+        }
+
+        con.commit();
+
+      } catch (final SQLException e) {
+        throw new CacheReloadException("could not read roles", e);
+      } catch (final EFapsException e) {
+        throw new CacheReloadException("could not read roles", e);
+      }
+      finally {
+        if ((con != null) && con.isOpened()) {
+          try {
+            con.abort();
+          } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read roles", e);
+          }
+        }
+      }
+
+    }
+
   }
 }

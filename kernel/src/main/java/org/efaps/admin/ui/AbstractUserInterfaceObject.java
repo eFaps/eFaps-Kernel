@@ -27,7 +27,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.EFapsClassNames;
@@ -45,7 +47,6 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
-import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * This Class is the Abstract Class for all UserInterfaces in eFaps.<br/> In
@@ -220,20 +221,17 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
     return this.access;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-
   /**
-   * Initialise the cache of Userinterfaces.
-   *
-   * @throws CacheReloadException on error during reload
+   * Method to initialize the Cache of this CacheObjectInterface.
+   * @throws CacheReloadException
    */
-  public static void initialise() throws CacheReloadException {
-    Image.getCache().initialise();
-    Command.getCache().initialise();
-    Menu.getCache().initialise();
-    Search.getCache().initialise();
-    Form.getCache().initialise();
-    Table.getCache().initialise();
+  public static void initialize() throws CacheReloadException {
+    Image.getCache().initialize(AbstractUserInterfaceObject.class);
+    Command.getCache().initialize(AbstractUserInterfaceObject.class);
+    Menu.getCache().initialize(AbstractUserInterfaceObject.class);
+    Search.getCache().initialize(AbstractUserInterfaceObject.class);
+    Form.getCache().initialize(AbstractUserInterfaceObject.class);
+    Table.getCache().initialize(AbstractUserInterfaceObject.class);
     Image.getCache().readFromDB();
     Command.getCache().readFromDB();
     Menu.getCache().readFromDB();
@@ -242,6 +240,8 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
     Table.getCache().readFromDB();
   }
 
+
+
   /**
    * Inner Class to store the UserInterfaces in a Cache.
    *
@@ -249,9 +249,6 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
    */
   protected static class UserInterfaceObjectCache<UIObj extends AbstractUserInterfaceObject>
       extends Cache<UIObj> {
-
-    // /////////////////////////////////////////////////////////////////////////
-    // instance variables
 
     /**
      * Stores the caller class.
@@ -263,81 +260,17 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
      * @param _callerClass callerClass
      */
     protected UserInterfaceObjectCache(final Class<UIObj> _callerClass) {
-      super(new CacheReloadInterface() {
-
-        public int priority() {
-          return 1200;
-        };
-
-        public void reloadCache() throws CacheReloadException {
-          UIObj.initialise();
-        };
-      });
       this.callerClass = _callerClass;
     }
-
     /**
      * All cached user interface objects are read into the cache.
+     * @throws CacheReloadException
      *
      * @throws CacheReloadException on error during reload
      */
     protected void readFromDB() throws CacheReloadException {
       for (final UIObj uiObj : getCache4Id().values()) {
         uiObj.readFromDB();
-      }
-    }
-
-    /**
-     * Initialize the cache of a specific user interface object type. Initialize
-     * means, that all all objects of this user interface type are read from the
-     * database and stored in the cache. If the eFaps admin type itself is not
-     * defined, that initialize does nothing (this could happen in the create
-     * phase).<br/> After initialize, the user interface object itself is read
-     * with method {@link #readFromDB}.
-     *
-     * @see #readFromDB
-     * @throws CacheReloadException on error during reload
-     */
-    protected void initialise() throws CacheReloadException {
-      final Class<UIObj> uiObjClass = getCallerClass();
-      try {
-        if (Type.get(getEFapsClassName()) != null) {
-          final SearchQuery query = new SearchQuery();
-          query.setQueryTypes(Type.get(getEFapsClassName()).getName());
-          query.addSelect("ID");
-          query.addSelect("Name");
-          query.addSelect("UUID");
-          query.executeWithoutAccessCheck();
-          while (query.next()) {
-            final long id = (Long) query.get("ID");
-            final String name = (String) query.get("Name");
-            final String uuid = (String) query.get("UUID");
-            final Constructor<UIObj> uiObj =
-                uiObjClass.getConstructor(Long.class, String.class,
-                    String.class);
-            final UIObj uiObj2 = uiObj.newInstance(id, uuid, name);
-            add(uiObj2);
-          }
-        }
-      } catch (final NoSuchMethodException e) {
-        throw new CacheReloadException("class '"
-            + uiObjClass.getName()
-            + "' does not implement contructor (Long, String, String)", e);
-      } catch (final InstantiationException e) {
-        throw new CacheReloadException("could not instantiate class '"
-            + uiObjClass.getName()
-            + "'", e);
-      } catch (final IllegalAccessException e) {
-        throw new CacheReloadException("could not access class '"
-            + uiObjClass.getName()
-            + "'", e);
-      } catch (final InvocationTargetException e) {
-        throw new CacheReloadException(
-            "could not invoce constructor of class '"
-                + uiObjClass.getName()
-                + "'", e);
-      } catch (final EFapsException e) {
-        throw new CacheReloadException("could not initialise cache", e);
       }
     }
 
@@ -350,42 +283,42 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
      * @return <code>UserInterfaceObject</code>
      * @throws EFapsException on error
      */
-    protected UIObj read(final long _id) throws EFapsException {
-      try {
-        final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(Type.get(getEFapsClassName()).getName());
-        query.addWhereExprEqValue("ID", _id);
-        query.addSelect("ID");
-        query.addSelect("Name");
-        return read(query);
-      } catch (final Throwable e) {
-        throw new EFapsException(UserInterfaceObjectCache.class,
-            "read.Throwable4Id", e, _id);
-      }
-    }
+//    protected UIObj read(final long _id) throws EFapsException {
+//      try {
+//        final SearchQuery query = new SearchQuery();
+//        query.setQueryTypes(Type.get(getEFapsClassName()).getName());
+//        query.addWhereExprEqValue("ID", _id);
+//        query.addSelect("ID");
+//        query.addSelect("Name");
+//        return read(query);
+//      } catch (final Throwable e) {
+//        throw new EFapsException(UserInterfaceObjectCache.class,
+//            "read.Throwable4Id", e, _id);
+//      }
+//    }
 
-    /**
-     * Read an <code>UserInterfaceObject</code> from the Database.
-     *
-     * @see #read(SearchQuery)
-     * @param _name   Name of the <code>UserInterfaceObject</code> to search
-     *                for
-     * @return UserInterfaceObject
-     * @throws EFapsException on error
-     */
-    protected UIObj read(final String _name) throws EFapsException {
-      try {
-        final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(Type.get(getEFapsClassName()).getName());
-        query.addWhereExprEqValue("Name", _name);
-        query.addSelect("ID");
-        query.addSelect("Name");
-        return read(query);
-      } catch (final Throwable e) {
-        throw new EFapsException(UserInterfaceObjectCache.class,
-            "read.Throwable4Name", e, _name);
-      }
-    }
+//    /**
+//     * Read an <code>UserInterfaceObject</code> from the Database.
+//     *
+//     * @see #read(SearchQuery)
+//     * @param _name   Name of the <code>UserInterfaceObject</code> to search
+//     *                for
+//     * @return UserInterfaceObject
+//     * @throws EFapsException on error
+//     */
+//    protected UIObj read(final String _name) throws EFapsException {
+//      try {
+//        final SearchQuery query = new SearchQuery();
+//        query.setQueryTypes(Type.get(getEFapsClassName()).getName());
+//        query.addWhereExprEqValue("Name", _name);
+//        query.addSelect("ID");
+//        query.addSelect("Name");
+//        return read(query);
+//      } catch (final Throwable e) {
+//        throw new EFapsException(UserInterfaceObjectCache.class,
+//            "read.Throwable4Name", e, _name);
+//      }
+//    }
 
     /**
      * Get the <code>EFapsClassName</code> of this
@@ -395,7 +328,7 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
      * @throws EFapsException on error
      */
     private EFapsClassNames getEFapsClassName() throws EFapsException {
-      final Class<UIObj> uiObjClass = getCallerClass();
+      final Class<UIObj> uiObjClass = this.callerClass;
       try {
         return ((EFapsClassNames) uiObjClass.getField("EFAPS_CLASSNAME")
                                                                   .get(null));
@@ -419,68 +352,113 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
      * @return <code>UserInterfaceObject</code>
      * @throws EFapsException on error
      */
-    private UIObj read(final SearchQuery _query) throws EFapsException {
-      UIObj uiObj = null;
-      final Class<UIObj> uiObjClass = getCallerClass();
+//    private UIObj read(final SearchQuery _query) throws EFapsException {
+//      UIObj uiObj = null;
+//      final Class<UIObj> uiObjClass = this.callerClass;
+//      try {
+//        _query.executeWithoutAccessCheck();
+//        if (_query.next()) {
+//          final long id = (Long) _query.get("ID");
+//          final String name = (String) _query.get("Name");
+//          uiObj =
+//              uiObjClass.getConstructor(Long.class, String.class).newInstance(
+//                  id, name);
+//          add(uiObj);
+//          uiObj.readFromDB();
+//        }
+//      } catch (final NoSuchMethodException e) {
+//        throw new EFapsException(UserInterfaceObjectCache.class,
+//            "read.ConstructorNotFound", e, uiObjClass.getName());
+//      } catch (final SecurityException e) {
+//        throw new EFapsException(UserInterfaceObjectCache.class,
+//            "read.ConstructorNotAccessable", e, uiObjClass.getName());
+//      } catch (final IllegalArgumentException e) {
+//        throw new EFapsException(UserInterfaceObjectCache.class,
+//            "read.ConstructorWithCorrectArgumentsNotExists", e, uiObjClass
+//                .getName());
+//      } catch (final InstantiationException e) {
+//        throw new EFapsException(UserInterfaceObjectCache.class,
+//            "read.ClassIsNotClass", e, uiObjClass.getName());
+//      } catch (final IllegalAccessException e) {
+//        throw new EFapsException(UserInterfaceObjectCache.class,
+//            "read.ConstructorNotPublic", e, uiObjClass.getName());
+//      } catch (final InvocationTargetException e) {
+//        final Throwable t = e.getCause();
+//        if (t instanceof EFapsException) {
+//          throw (EFapsException) t;
+//        } else {
+//          throw new EFapsException(UserInterfaceObjectCache.class,
+//              "read.UIObjectNotInstanceable", t, uiObjClass.getName());
+//        }
+//      } catch (final Throwable e) {
+//        throw new EFapsException(UserInterfaceObjectCache.class,
+//            "read.Throwable", e);
+//      } finally {
+//        try {
+//          _query.close();
+//        } catch (final Exception e) {
+//        }
+//      }
+//      return uiObj;
+//    }
+
+
+
+
+    /**Initialize the cache of a specific user interface object type. Initialize
+    * means, that all all objects of this user interface type are read from the
+    * database and stored in the cache. If the eFaps admin type itself is not
+    * defined, that initialize does nothing (this could happen in the create
+    * phase).<br/> After initialize, the user interface object itself is read
+    * with method {@link #readFromDB}.
+    */
+    @Override
+    protected void readCache(final Map<Long, UIObj> _cache4Id,
+        final Map<String, UIObj> _cache4Name, final Map<UUID, UIObj> _cache4UUID)
+        throws CacheReloadException {
+
+      final Class<UIObj> uiObjClass = this.callerClass;
       try {
-        _query.executeWithoutAccessCheck();
-        if (_query.next()) {
-          final long id = (Long) _query.get("ID");
-          final String name = (String) _query.get("Name");
-          uiObj =
-              uiObjClass.getConstructor(Long.class, String.class).newInstance(
-                  id, name);
-          add(uiObj);
-          uiObj.readFromDB();
+        if (Type.get(getEFapsClassName()) != null) {
+          final SearchQuery query = new SearchQuery();
+          query.setQueryTypes(Type.get(getEFapsClassName()).getName());
+          query.addSelect("ID");
+          query.addSelect("Name");
+          query.addSelect("UUID");
+          query.executeWithoutAccessCheck();
+          while (query.next()) {
+            final long id = (Long) query.get("ID");
+            final String name = (String) query.get("Name");
+            final String uuid = (String) query.get("UUID");
+            final Constructor<UIObj> uiObj =
+                uiObjClass.getConstructor(Long.class, String.class,
+                    String.class);
+            final UIObj uiObj2 = uiObj.newInstance(id, uuid, name);
+            _cache4Id.put(uiObj2.getId(), uiObj2);
+            _cache4Name.put(uiObj2.getName(), uiObj2);
+            _cache4UUID.put(uiObj2.getUUID(), uiObj2);
+          }
         }
       } catch (final NoSuchMethodException e) {
-        throw new EFapsException(UserInterfaceObjectCache.class,
-            "read.ConstructorNotFound", e, uiObjClass.getName());
-      } catch (final SecurityException e) {
-        throw new EFapsException(UserInterfaceObjectCache.class,
-            "read.ConstructorNotAccessable", e, uiObjClass.getName());
-      } catch (final IllegalArgumentException e) {
-        throw new EFapsException(UserInterfaceObjectCache.class,
-            "read.ConstructorWithCorrectArgumentsNotExists", e, uiObjClass
-                .getName());
+        throw new CacheReloadException("class '"
+            + uiObjClass.getName()
+            + "' does not implement contructor (Long, String, String)", e);
       } catch (final InstantiationException e) {
-        throw new EFapsException(UserInterfaceObjectCache.class,
-            "read.ClassIsNotClass", e, uiObjClass.getName());
+        throw new CacheReloadException("could not instantiate class '"
+            + uiObjClass.getName()
+            + "'", e);
       } catch (final IllegalAccessException e) {
-        throw new EFapsException(UserInterfaceObjectCache.class,
-            "read.ConstructorNotPublic", e, uiObjClass.getName());
+        throw new CacheReloadException("could not access class '"
+            + uiObjClass.getName()
+            + "'", e);
       } catch (final InvocationTargetException e) {
-        final Throwable t = e.getCause();
-        if (t instanceof EFapsException) {
-          throw (EFapsException) t;
-        } else {
-          throw new EFapsException(UserInterfaceObjectCache.class,
-              "read.UIObjectNotInstanceable", t, uiObjClass.getName());
-        }
-      } catch (final Throwable e) {
-        throw new EFapsException(UserInterfaceObjectCache.class,
-            "read.Throwable", e);
-      } finally {
-        try {
-          _query.close();
-        } catch (final Exception e) {
-        }
+        throw new CacheReloadException(
+            "could not invoce constructor of class '"
+                + uiObjClass.getName()
+                + "'", e);
+      } catch (final EFapsException e) {
+        throw new CacheReloadException("could not initialise cache", e);
       }
-      return uiObj;
     }
-
-    // /////////////////////////////////////////////////////////////////////////
-    // getter and setter methods
-
-    /**
-     * Get the CallerClass.
-     *
-     * @see #callerClasscallerClass
-     * @return UIObject
-     */
-    private Class<UIObj> getCallerClass() {
-      return this.callerClass;
-    }
-
   }
 }

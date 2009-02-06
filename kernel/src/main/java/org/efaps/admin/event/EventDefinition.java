@@ -49,7 +49,6 @@ import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 
 /**
  * In this Class a Event can be defined. <br/> On loading the Cache all
@@ -133,10 +132,7 @@ public class EventDefinition extends AbstractAdminObject implements
       }
     } catch (final EFapsException e) {
       LOG.error("setProperties(String)", e);
-    } catch (final CacheReloadException e) {
-      LOG.error("setProperties(String)", e);
     }
-
   }
 
   public String getViewableName(final Context _context) {
@@ -221,7 +217,7 @@ public class EventDefinition extends AbstractAdminObject implements
    * @param _context
    *                eFaps context for this request
    */
-  public static void initialise() throws Exception {
+  public static void initialize() throws Exception {
     final SearchQuery query = new SearchQuery();
     query.setQueryTypes(Type.get(EVENT_DEFINITION).getName());
     query.setExpandChildTypes(true);

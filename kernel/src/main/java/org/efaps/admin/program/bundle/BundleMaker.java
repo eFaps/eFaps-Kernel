@@ -33,10 +33,10 @@ import java.util.UUID;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AutomaticCache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
-import org.efaps.util.cache.CacheReloadInterface;
+
 
 /**
  * TODO description.
@@ -68,17 +68,7 @@ public final class BundleMaker {
    * representing a Source from the eFaps-DataBase. It is used used to provide
    * the most rapid access to a Name-OID relation.
    */
-  private static final Cache<StaticCompiledSource> CACHE =
-      new Cache<StaticCompiledSource>(new CacheReloadInterface() {
-
-        public int priority() {
-          return 20000;
-        };
-
-        public void reloadCache() throws CacheReloadException {
-          BundleMaker.loadCache();
-        };
-      });
+  private static final StaticCompiledSourceCache CACHE = new StaticCompiledSourceCache();
 
   /**
    * a private Constructor is used to make a singelton.
@@ -145,13 +135,11 @@ public final class BundleMaker {
   private static String createNewKey(final List<String> _names,
                                      final Class<?> _bundleclass)
       throws EFapsException {
+
     final StringBuilder builder = new StringBuilder();
     final List<String> oids = new ArrayList<String>();
     String ret = null;
     try {
-      if (!CACHE.hasEntries()) {
-        loadCache();
-      }
       for (final String name : _names) {
         if (builder.length() > 0) {
           builder.append("-");
@@ -174,9 +162,6 @@ public final class BundleMaker {
     } catch (final IllegalAccessException e) {
       throw new EFapsException(BundleMaker.class,
           "createNewKey.IllegalAccessException", e, _bundleclass);
-    } catch (final CacheReloadException e) {
-      throw new EFapsException(BundleMaker.class,
-          "createNewKey.CacheReloadException", e);
     }
     return ret;
   }
@@ -199,32 +184,6 @@ public final class BundleMaker {
    */
   public static BundleInterface getBundle(final String _key) {
     return BUNDLES.get(_key);
-  }
-
-  /**
-   * Method to load the StaticCompiledSources into the Cache.
-   *
-   * @throws CacheReloadException on erro
-   */
-  private static void loadCache() throws CacheReloadException {
-    try {
-      synchronized (CACHE) {
-        final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(Type.get(ADMIN_PROGRAM_STATICCOMPILED).getName());
-        query.setExpandChildTypes(true);
-        query.addSelect("OID");
-        query.addSelect("Name");
-        query.execute();
-        while (query.next()) {
-          final String name = (String) query.get("Name");
-          final String oid = (String) query.get("OID");
-          CACHE.add(new StaticCompiledSource(oid, name));
-        }
-      }
-    } catch (final EFapsException e) {
-      throw new CacheReloadException(
-          "could not initialise the Cache for the BundleMaker");
-    }
   }
 
   /**
@@ -291,5 +250,45 @@ public final class BundleMaker {
     public String getOid() {
       return this.oid;
     }
+
+    /**
+     * Method to initialize the Cache of this CacheObjectInterface.
+     */
+    public static void initialize() {
+      CACHE.initialize(BundleMaker.class);
+    }
+  }
+
+  private static final class StaticCompiledSourceCache extends AutomaticCache<StaticCompiledSource>{
+
+
+    /* (non-Javadoc)
+     * @see org.efaps.util.cache.Cache#readCache(java.util.Map, java.util.Map, java.util.Map)
+     */
+    @Override
+    protected void readCache(final Map<Long, StaticCompiledSource> cache4Id,
+        final Map<String, StaticCompiledSource> cache4Name, final Map<UUID, StaticCompiledSource> cache4UUID)
+        throws CacheReloadException {
+      try {
+
+          final SearchQuery query = new SearchQuery();
+          query.setQueryTypes(Type.get(ADMIN_PROGRAM_STATICCOMPILED).getName());
+          query.setExpandChildTypes(true);
+          query.addSelect("OID");
+          query.addSelect("Name");
+          query.execute();
+          while (query.next()) {
+            final String name = (String) query.get("Name");
+            final String oid = (String) query.get("OID");
+            final StaticCompiledSource source = new StaticCompiledSource(oid, name);
+            cache4Name.put(source.getName(), source);
+          }
+      } catch (final EFapsException e) {
+        throw new CacheReloadException(
+            "could not initialise the Cache for the BundleMaker");
+      }
+
+    }
+
   }
 }

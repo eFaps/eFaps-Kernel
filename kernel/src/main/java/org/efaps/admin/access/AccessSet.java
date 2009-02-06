@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,7 +37,6 @@ import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
-import org.efaps.util.cache.CacheReloadInterface;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -89,44 +89,22 @@ public class AccessSet extends AbstractAdminObject  {
                                                 + "from T_ACCESSSET2DMTYPE";
 
   /**
-   * Stores all instances of class {@link AccessSet}.
-   *
-   * @see #getAccessSet(long)
-   * @see #getAccessSet(String)
-   * @see #getAccessSet(UUID)
-   */
-  private static final Cache < AccessSet > cache = new Cache < AccessSet > (
-    new CacheReloadInterface()  {
-        public int priority()  {
-          return CacheReloadInterface.Priority.AccessSet.number;
-        };
-        public void reloadCache() throws CacheReloadException  {
-          AccessSet.initialise();
-        };
-    }
-  );
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance variables
-
-  /**
-   * All related access types of this access set are referenced in this 
+   * All related access types of this access set are referenced in this
    * instance variable.
    *
    * @see #getAccessTypes
    */
-  private final Set < AccessType > accessTypes = new HashSet < AccessType > ();
+  private final Set<AccessType> accessTypes = new HashSet <AccessType>();
 
   /**
-   * All related data models types of this access set are referenced in this 
+   * All related data models types of this access set are referenced in this
    * instance variable.
    *
    * @see #getDataModelTypes
    */
   private final Set < Type > dataModelTypes = new HashSet < Type > ();
 
-  /////////////////////////////////////////////////////////////////////////////
-  // constructors
+  private static final AccessSetCache CACHE = new AccessSetCache();
 
   /**
    * This is the constructor.
@@ -150,7 +128,7 @@ public class AccessSet extends AbstractAdminObject  {
    * @return the value of the instance variable {@link #accessTypes}.
    * @see #accessTypes
    */
-  public Set < AccessType > getAccessTypes()  {
+  public Set<AccessType> getAccessTypes()  {
     return this.accessTypes;
   }
 
@@ -164,209 +142,226 @@ public class AccessSet extends AbstractAdminObject  {
     return this.dataModelTypes;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // static methods
-
   /**
-   * Initialise the cache of JAAS systems. 
-   *
-   * @param _context  eFaps context for this request
-   * @see #init4ReadAllAccessSets
-   * @see #init4ReadLinks2AccessTypes
-   * @see #
+   * Method to initialize the Cache of this CacheObjectInterface.
    */
-  public static void initialise() throws CacheReloadException  {
-    ConnectionResource con = null;
-    try  {
-      con = Context.getThreadContext().getConnectionResource();
-
-      init4ReadAllAccessSets(con);
-      init4ReadLinks2AccessTypes(con);
-      init4ReadLinks2DMTypes(con);
- 
-      con.commit();
-
-    } catch (EFapsException e)  {
-      throw new CacheReloadException("could not create connection resource", 
-                                     e);
-    } finally  {
-      if ((con != null) && con.isOpened())  {
-        try  {
-          con.abort();
-        } catch (EFapsException e)  {
-          throw new CacheReloadException("could not abort transaction", e);
-        }
-      }
-    }
+  public static void initialize() {
+    CACHE.initialize(AccessSet.class);
   }
 
   /**
-   * All access sets are read from the database.
-   *
-   * @param _con  connection resource
-   * @see #SQL_SELECT
-   */
-  private static void init4ReadAllAccessSets(final ConnectionResource _con) 
-                                                 throws CacheReloadException  {
-    Statement stmt = null;
-    try  {
-
-      stmt = _con.getConnection().createStatement();
-
-      ResultSet rs = stmt.executeQuery(SQL_SELECT);
-      while (rs.next())  {
-        long id                       = rs.getLong(1);
-        String uuid                   = rs.getString(2);
-        String name                   = rs.getString(3);
-
-        LOG.debug("read access set '" + name + "' "
-                  + "(id = " + id + ", uuid = " + uuid + ")");
-
-        cache.add(new AccessSet(id, uuid, name));
-      }
-      rs.close();
-    } catch (SQLException e)  {
-      throw new CacheReloadException("could not read access set", e);
-    } finally  {
-      if (stmt != null)  {
-        try  {
-          stmt.close();
-        } catch (SQLException e)  {
-        }
-      }
-    }
-  }
-
-  /**
-   * All access set links to the access types are read from the database.
-   *
-   * @param _con  connection resource
-   * @see #SQL_SET2TYPE
-   */
-  private static void init4ReadLinks2AccessTypes(final ConnectionResource _con) 
-                                                 throws CacheReloadException  {
-    Statement stmt = null;
-    try  {
-
-      stmt = _con.getConnection().createStatement();
-
-      ResultSet rs = stmt.executeQuery(SQL_SET2TYPE);
-      while (rs.next())  {
-        long accessSetId              = rs.getLong(1);
-        long accessTypeId             = rs.getLong(2);
-
-        AccessSet accessSet   = AccessSet.getAccessSet(accessSetId);
-        AccessType accessType = AccessType.getAccessType(accessTypeId);
-        if (accessSet == null)  {
-          LOG.error("could not found access set with id "
-                                                + "'" + accessSetId + "'");
-        } else if (accessType == null)  {
-          LOG.error("could not found access type with id "
-                                                + "'" + accessTypeId + "'");
-        } else  {
-          LOG.debug("read link from "
-                    + "access set '" + accessSet.getName() + "' "
-                    + "(id = " + accessSet.getId() + ", "
-                        + "uuid = " + accessSet.getUUID() + ") to "
-                    + "access type '" + accessType.getName() + "' "
-                    + "(id = " + accessType.getId() + ", "
-                        + "uuid = " + accessType.getUUID() + ")");
-          accessSet.getAccessTypes().add(accessType);
-        }
-       }
-      rs.close();
-
-    } catch (SQLException e)  {
-      throw new CacheReloadException("could not read access links", e);
-    } finally  {
-      if (stmt != null)  {
-        try  {
-          stmt.close();
-        } catch (SQLException e)  {
-        }
-      }
-    }
-  }
-
-  /**
-   * All access set links to the data model types are read from the database.
-   *
-   * @param _con  connection resource
-   * @see #SQL_SET2DMTYPE
-   */
-  private static void init4ReadLinks2DMTypes(final ConnectionResource _con) 
-                                                 throws CacheReloadException  {
-    Statement stmt = null;
-    try  {
-
-      stmt = _con.getConnection().createStatement();
-
-      ResultSet rs = stmt.executeQuery(SQL_SET2DMTYPE);
-      while (rs.next())  {
-        long accessSetId              = rs.getLong(1);
-        long dataModelTypeId          = rs.getLong(2);
-
-        AccessSet accessSet   = AccessSet.getAccessSet(accessSetId);
-        Type dataModelType    = Type.get(dataModelTypeId);
-        if (accessSet == null)  {
-          LOG.error("could not found access set with id "
-                                                + "'" + accessSetId + "'");
-        } else if (dataModelType == null)  {
-          LOG.error("could not found data model type with id "
-                                                + "'" + dataModelTypeId + "'");
-        } else  {
-          LOG.debug("read link from "
-                    + "access set '" + accessSet.getName() + "' "
-                    + "(id = " + accessSet.getId() + ", "
-                        + "uuid = " + accessSet.getUUID() + ") to "
-                    + "data model type '" + dataModelType.getName() + "' "
-                    + "(id = " + dataModelType.getId() + ", "
-                        + "uuid = " + dataModelType.getUUID() + ")");
-          accessSet.getDataModelTypes().add(dataModelType);
-          dataModelType.addAccessSet(accessSet);
-        }
-       }
-      rs.close();
-
-    } catch (SQLException e)  {
-      throw new CacheReloadException("could not read links to types", e);
-    } finally  {
-      if (stmt != null)  {
-        try  {
-          stmt.close();
-        } catch (SQLException e)  {
-        }
-      }
-    }
-  }
-
-  /**
-   * Returns for given identifier in  <i>_id</i> the cached instance of class 
+   * Returns for given identifier in  <i>_id</i> the cached instance of class
    * AccessSet.
    *
    * @return instance of class AccessSet
+   * @throws CacheReloadException
    */
-  static public AccessSet getAccessSet(final long _id)  {
-    return cache.get(_id);
+  public static AccessSet getAccessSet(final long _id)
+     {
+    return CACHE.get(_id);
   }
 
   /**
-   * Returns for given name in <i>_name</i> the cached instance of class 
+   * Returns for given name in <i>_name</i> the cached instance of class
    * AccessSet.
    *
    * @return instance of class AccessSet
+   * @throws CacheReloadException
    */
-  static public AccessSet getAccessSet(final String _name)  {
-    return cache.get(_name);
+  public static AccessSet getAccessSet(final String _name) {
+    return CACHE.get(_name);
   }
 
   /**
-   * Returns for given universal unique identifier in <i>_uuid</i> the cached 
+   * Returns for given universal unique identifier in <i>_uuid</i> the cached
    * instance of class AccessSet.
    *
    * @return instance of class AccessSet
+   * @throws CacheReloadException
    */
-  static public AccessSet getAccessSet(final UUID _uuid)  {
-    return cache.get(_uuid);
+  public static AccessSet getAccessSet(final UUID _uuid) {
+    return CACHE.get(_uuid);
   }
+
+  private static class AccessSetCache extends Cache<AccessSet> {
+
+    @Override
+    protected void readCache(final Map<Long, AccessSet> _newCache4Id,
+                             final Map<String, AccessSet> _newCache4Name,
+                             final Map<UUID, AccessSet> _newCache4UUID)
+        throws CacheReloadException {
+
+      ConnectionResource con = null;
+      try  {
+        con = Context.getThreadContext().getConnectionResource();
+
+        init4ReadAllAccessSets(con, _newCache4Id, _newCache4Name,
+            _newCache4UUID);
+        init4ReadLinks2AccessTypes(con, _newCache4Id);
+        init4ReadLinks2DMTypes(con, _newCache4Id);
+
+        con.commit();
+
+      } catch (final EFapsException e)  {
+        throw new CacheReloadException("could not create connection resource",
+                                       e);
+      } finally  {
+        if ((con != null) && con.isOpened())  {
+          try  {
+            con.abort();
+          } catch (final EFapsException e)  {
+            throw new CacheReloadException("could not abort transaction", e);
+          }
+        }
+      }
+    }
+    /**
+     * All access sets are read from the database.
+     *
+     * @param _con  connection resource
+     * @param cache4UUID
+     * @param cache4Name
+     * @param cache4Id
+     * @see #SQL_SELECT
+     */
+    private static void init4ReadAllAccessSets(final ConnectionResource _con,
+                                       final Map<Long, AccessSet> _cache4Id,
+                                       final Map<String, AccessSet> _cache4Name,
+                                       final Map<UUID, AccessSet> _cache4UUID)
+        throws CacheReloadException  {
+      Statement stmt = null;
+      try  {
+
+        stmt = _con.getConnection().createStatement();
+
+        final ResultSet rs = stmt.executeQuery(SQL_SELECT);
+        while (rs.next())  {
+          final long id                       = rs.getLong(1);
+          final String uuid                   = rs.getString(2);
+          final String name                   = rs.getString(3);
+
+          LOG.debug("read access set '" + name + "' "
+                    + "(id = " + id + ", uuid = " + uuid + ")");
+          final AccessSet accessSet = new AccessSet(id, uuid, name);
+          _cache4Id.put(accessSet.getId(), accessSet);
+          _cache4Name.put(accessSet.getName(), accessSet);
+          _cache4UUID.put(accessSet.getUUID(), accessSet);
+        }
+      } catch (final SQLException e)  {
+        throw new CacheReloadException("could not read access set", e);
+      } finally  {
+        if (stmt != null)  {
+          try  {
+            stmt.close();
+          } catch (final SQLException e)  {
+          }
+        }
+      }
+    }
+
+    /**
+     * All access set links to the access types are read from the database.
+     *
+     * @param _con  connection resource
+     * @see #SQL_SET2TYPE
+     */
+    private static void init4ReadLinks2AccessTypes(final ConnectionResource _con,
+                                          final Map<Long, AccessSet> _cache4Id)
+        throws CacheReloadException  {
+      Statement stmt = null;
+      try  {
+
+        stmt = _con.getConnection().createStatement();
+
+        final ResultSet rs = stmt.executeQuery(SQL_SET2TYPE);
+        while (rs.next())  {
+          final long accessSetId              = rs.getLong(1);
+          final long accessTypeId             = rs.getLong(2);
+
+          final AccessSet accessSet   = _cache4Id.get(accessSetId);
+          final AccessType accessType = AccessType.getAccessType(accessTypeId);
+          if (accessSet == null)  {
+            LOG.error("could not found access set with id "
+                                                  + "'" + accessSetId + "'");
+          } else if (accessType == null)  {
+            LOG.error("could not found access type with id "
+                                                  + "'" + accessTypeId + "'");
+          } else  {
+            LOG.debug("read link from "
+                      + "access set '" + accessSet.getName() + "' "
+                      + "(id = " + accessSet.getId() + ", "
+                          + "uuid = " + accessSet.getUUID() + ") to "
+                      + "access type '" + accessType.getName() + "' "
+                      + "(id = " + accessType.getId() + ", "
+                          + "uuid = " + accessType.getUUID() + ")");
+            accessSet.getAccessTypes().add(accessType);
+          }
+         }
+        rs.close();
+
+      } catch (final SQLException e)  {
+        throw new CacheReloadException("could not read access links", e);
+      } finally  {
+        if (stmt != null)  {
+          try  {
+            stmt.close();
+          } catch (final SQLException e)  {
+          }
+        }
+      }
+    }
+
+    /**
+     * All access set links to the data model types are read from the database.
+     *
+     * @param _con  connection resource
+     * @see #SQL_SET2DMTYPE
+     */
+    private static void init4ReadLinks2DMTypes(final ConnectionResource _con,
+                                          final Map<Long, AccessSet> _cache4Id)
+        throws CacheReloadException  {
+      Statement stmt = null;
+      try  {
+
+        stmt = _con.getConnection().createStatement();
+
+        final ResultSet rs = stmt.executeQuery(SQL_SET2DMTYPE);
+        while (rs.next())  {
+          final long accessSetId              = rs.getLong(1);
+          final long dataModelTypeId          = rs.getLong(2);
+
+          final AccessSet accessSet   = _cache4Id.get(accessSetId);
+          final Type dataModelType    = Type.get(dataModelTypeId);
+          if (accessSet == null)  {
+            LOG.error("could not found access set with id "
+                                                  + "'" + accessSetId + "'");
+          } else if (dataModelType == null)  {
+            LOG.error("could not found data model type with id "
+                                                 + "'" + dataModelTypeId + "'");
+          } else  {
+            LOG.debug("read link from "
+                      + "access set '" + accessSet.getName() + "' "
+                      + "(id = " + accessSet.getId() + ", "
+                          + "uuid = " + accessSet.getUUID() + ") to "
+                      + "data model type '" + dataModelType.getName() + "' "
+                      + "(id = " + dataModelType.getId() + ", "
+                          + "uuid = " + dataModelType.getUUID() + ")");
+            accessSet.getDataModelTypes().add(dataModelType);
+            dataModelType.addAccessSet(accessSet);
+          }
+         }
+        rs.close();
+
+      } catch (final SQLException e)  {
+        throw new CacheReloadException("could not read links to types", e);
+      } finally  {
+        if (stmt != null)  {
+          try  {
+            stmt.close();
+          } catch (final SQLException e)  {
+          }
+        }
+      }
+    }
+    }
 }

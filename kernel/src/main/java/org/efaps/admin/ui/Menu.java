@@ -26,10 +26,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.efaps.admin.EFapsClassNames;
-import org.efaps.admin.datamodel.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.efaps.admin.EFapsClassNames;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
@@ -58,8 +60,7 @@ public class Menu extends AbstractMenu {
    *
    * @see #getCache
    */
-  static final private UserInterfaceObjectCache<Menu> cache =
-      new UserInterfaceObjectCache<Menu>(Menu.class);
+  private static MenuCache CACHE = new MenuCache();
 
   /**
    * Constructor to set the id and name of the menu object.
@@ -82,9 +83,10 @@ public class Menu extends AbstractMenu {
    *                id used to sort
    * @param _id
    *                command / menu id
+   * @throws CacheReloadException
    */
   @Override
-  protected void add(final long _sortId, final long _id) {
+  protected void add(final long _sortId, final long _id)  {
     final Command command = Command.get(_id);
     if (command == null) {
       final Menu subMenu = Menu.get(_id);
@@ -118,7 +120,7 @@ public class Menu extends AbstractMenu {
         final Type type = Type.get(_toId);
         if (type == null) {
           LOG.error("Menu '"
-              + this.getName()
+              + getName()
               + "' could not defined as type "
               + "tree menu for type '"
               + _toName
@@ -141,10 +143,11 @@ public class Menu extends AbstractMenu {
    * @param _id
    *                id to search in the cache
    * @return instance of class {@link Menu}
+   * @throws CacheReloadException
    * @see #getCache
    */
-  static public Menu get(final long _id) {
-    return getCache().get(_id);
+  static public Menu get(final long _id)  {
+    return CACHE.get(_id);
   }
 
   /**
@@ -154,10 +157,11 @@ public class Menu extends AbstractMenu {
    * @param _name
    *                name to search in the cache
    * @return instance of class {@link Menu}
+   * @throws CacheReloadException
    * @see #getCache
    */
-  static public Menu get(final String _name) {
-    return getCache().get(_name);
+  static public Menu get(final String _name)  {
+    return CACHE.get(_name);
   }
 
   /**
@@ -166,10 +170,11 @@ public class Menu extends AbstractMenu {
    * @param _uuid
    *                UUID to search in the cache
    * @return instance of class {@link Menu}
+   * @throws CacheReloadException
    * @see #getCache
    */
-  static public Menu get(final UUID _uuid) {
-    return getCache().get(_uuid);
+  static public Menu get(final UUID _uuid)  {
+    return CACHE.get(_uuid);
   }
 
   /**
@@ -189,12 +194,18 @@ public class Menu extends AbstractMenu {
   }
 
   /**
-   * Static getter method for the type hashtable {@link #cache}.
+   * Static getter method for the type hashtable {@link #CACHE}.
    *
-   * @return value of static variable {@link #cache}
+   * @return value of static variable {@link #CACHE}
    */
   protected static UserInterfaceObjectCache<Menu> getCache() {
-    return cache;
+    return CACHE;
   }
 
+  private static class MenuCache extends UserInterfaceObjectCache<Menu> {
+
+    protected MenuCache() {
+      super(Menu.class);
+    }
+  }
 }

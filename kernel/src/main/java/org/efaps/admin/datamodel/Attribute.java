@@ -49,7 +49,6 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
-import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * This is the class for the type description. The type description holds
@@ -70,23 +69,7 @@ public class Attribute extends AbstractDataModelObject {
    *
    * @see #get
    */
-  private static AttributeCache ATTRIBUTECACHE = new AttributeCache();
-
-  /**
-   * This is the sql select statement to select all types from the database.
-   */
-  private static final String SQL_SELECT
-      = "select ID,"
-             + "NAME,"
-             + "TYPEID,"
-             + "DMTABLE,"
-             + "DMTYPE,"
-             + "DMATTRIBUTETYPE,"
-             + "DMTYPELINK,"
-             + "PARENTSET,"
-             + "SQLCOLUMN,"
-             + "DEFAULTVAL "
-       + "from V_ADMINATTRIBUTE";
+  private static AttributeCache CACHE = new AttributeCache();
 
   /**
    * This is the instance variable for the table, where attribute is stored.
@@ -422,110 +405,15 @@ public class Attribute extends AbstractDataModelObject {
     return this.required;
   }
 
+  public static void initialize(final Class<?> _class) {
+    CACHE.initialize(_class);
+  }
 
   /**
-   * Initialize the cache of types.
-   *
-   * @throws CacheReloadException on error
+   * Method to initialize the Cache of this CacheObjectInterface.
    */
-  protected static void initialise() throws CacheReloadException {
-    ConnectionResource con = null;
-    try {
-      con = Context.getThreadContext().getConnectionResource();
-
-      Statement stmt = null;
-      try {
-        stmt = con.getConnection().createStatement();
-        final Map<Long, AttributeSet> id2Set
-                                            = new HashMap<Long, AttributeSet>();
-        final Map<Attribute, Long> attribute2setId
-                                               = new HashMap<Attribute, Long>();
-
-        final ResultSet rs = stmt.executeQuery(SQL_SELECT);
-        while (rs.next()) {
-          final long id = rs.getLong(1);
-          final String name = rs.getString(2);
-          final long typeAttrId = rs.getLong(3);
-          final long tableId = rs.getLong(4);
-          final long typeId = rs.getLong(5);
-          final long attrTypeId = rs.getLong(6);
-          final long typeLinkId = rs.getLong(7);
-          final long parentSetId = rs.getLong(8);
-          final String sqlCol = rs.getString(9);
-          final String defaultval = rs.getString(10);
-          final Type type = Type.get(typeId);
-
-          LOG.debug("read attribute '" + type.getName() + "/" + name + "' "
-              + "(id = " + id + ")");
-
-          final Type typeAttr = Type.get(typeAttrId);
-
-          if (typeAttr.getUUID().equals(DATAMODEL_ATTRIBUTESET.getUuid())) {
-            final AttributeSet set = new AttributeSet(id,
-                                                  type,
-                                                  name,
-                                                  AttributeType.get(attrTypeId),
-                                                  sqlCol,
-                                                  tableId,
-                                                  typeLinkId);
-            id2Set.put(id, set);
-          } else {
-            final Attribute attr = new Attribute(id, name, sqlCol, SQLTable
-                .get(tableId), AttributeType.get(attrTypeId), defaultval);
-            attr.setParent(type);
-            final UUID uuid = attr.getAttributeType().getUUID();
-            if (uuid.equals(ATTRTYPE_LINK.getUuid())
-                || uuid.equals(ATTRTYPE_LINK_WITH_RANGES.getUuid())) {
-              final Type linkType = Type.get(typeLinkId);
-              attr.setLink(linkType);
-              linkType.addLink(attr);
-            } else if (uuid.equals(ATTRTYPE_CREATOR_LINK.getUuid())
-                || uuid.equals(ATTRTYPE_MODIFIER_LINK.getUuid())) {
-              final Type linkType = Type.get(USER_PERSON);
-              attr.setLink(linkType);
-              linkType.addLink(attr);
-            }
-
-            if (typeAttr.getUUID().equals(
-                                  DATAMODEL_ATTRIBUTESETATTRIBUTE.getUuid())) {
-              final AttributeSet parentset
-                                        = (AttributeSet) Type.get(parentSetId);
-              parentset.addAttribute(attr);
-              attr.setParentSet(parentset);
-            } else {
-              type.addAttribute(attr);
-            }
-
-            getCache().add(attr);
-            attr.readFromDB4Properties();
-          }
-        }
-        rs.close();
-
-        for (final Entry<Attribute, Long> entry : attribute2setId.entrySet()) {
-          final AttributeSet parentset = id2Set.get(entry.getValue());
-          final Attribute childAttr = entry.getKey();
-          parentset.addAttribute(childAttr);
-        }
-      } finally {
-        if (stmt != null) {
-          stmt.close();
-        }
-      }
-      con.commit();
-    } catch (final SQLException e) {
-      throw new CacheReloadException("could not read attributes", e);
-    } catch (final EFapsException e) {
-      throw new CacheReloadException("could not read attributes", e);
-    } finally {
-      if ((con != null) && con.isOpened()) {
-        try {
-          con.abort();
-        } catch (final EFapsException e) {
-          throw new CacheReloadException("could not read attributes", e);
-        }
-      }
-    }
+  public static void initialize() {
+    Attribute.initialize(Attribute.class);
   }
 
   /**
@@ -534,10 +422,11 @@ public class Attribute extends AbstractDataModelObject {
    *
    * @param _id  id to search in the cache
    * @return instance of class {@link Attribute}
+   * @throws CacheReloadException
    * @see #getCache
    */
-  public static Attribute get(final long _id) {
-    return getCache().get(_id);
+  public static Attribute get(final long _id) throws CacheReloadException {
+    return CACHE.get(_id);
   }
 
   /**
@@ -546,19 +435,11 @@ public class Attribute extends AbstractDataModelObject {
    *
    * @param _name  name to search in the cache
    * @return instance of class {@link Attribute}
+   * @throws CacheReloadException
    * @see #getCache
    */
-  public static Attribute get(final String _name) {
-    return getCache().get(_name);
-  }
-
-  /**
-   * Static getter method for the attribute hashtable {@link #cache}.
-   *
-   * @return value of static variable {@link #cache}
-   */
-  public static AttributeCache getCache() {
-    return ATTRIBUTECACHE;
+  public static Attribute get(final String _name) throws CacheReloadException {
+    return CACHE.get(_name);
   }
 
   /**
@@ -584,37 +465,126 @@ public class Attribute extends AbstractDataModelObject {
    */
   protected static final class AttributeCache extends Cache<Attribute> {
 
-    /**
-     * Constructor.
-     */
-    private AttributeCache() {
-      super(new CacheReloadInterface() {
-        public int priority() {
-          return CacheReloadInterface.Priority.Attribute.number;
-        };
-
-        public void reloadCache() throws CacheReloadException {
-          Attribute.initialise();
-        };
-      });
-    }
-
 
     /**
-     * Add a new object implements the {@link CacheInterface} to the hashtable.
-     * This is used from method {@link #get(long)} and {@link #get(String) to
-     * return the cache object for an id or a string out of the cache.
-     *
-     * @param _attr  attribute to add
-     * @see #get
+     * This is the sql select statement to select all types from the database.
      */
-    // protected void add(CacheInterface _cacheObj) {
+    private static final String SQL_SELECT
+        = "select ID,"
+               + "NAME,"
+               + "TYPEID,"
+               + "DMTABLE,"
+               + "DMTYPE,"
+               + "DMATTRIBUTETYPE,"
+               + "DMTYPELINK,"
+               + "PARENTSET,"
+               + "SQLCOLUMN,"
+               + "DEFAULTVAL "
+         + "from V_ADMINATTRIBUTE";
+
+
     @Override
-    public void add(final Attribute _attr) {
-      getCache4Id().put(new Long(_attr.getId()), _attr);
-      getCache4Name().put(_attr.getParent().getName() + "/" + _attr.getName(),
-          _attr);
+    protected void readCache(final Map<Long, Attribute> _newCache4Id,
+                             final Map<String, Attribute> _newCache4Name,
+                             final Map<UUID, Attribute> _newCache4UUID)
+        throws CacheReloadException {
+      ConnectionResource con = null;
+      try {
+        con = Context.getThreadContext().getConnectionResource();
+
+        Statement stmt = null;
+        try {
+          stmt = con.getConnection().createStatement();
+          final Map<Long, AttributeSet> id2Set
+                                            = new HashMap<Long, AttributeSet>();
+          final Map<Attribute, Long> attribute2setId
+                                               = new HashMap<Attribute, Long>();
+          final ResultSet rs = stmt.executeQuery(SQL_SELECT);
+          while (rs.next()) {
+            final long id = rs.getLong(1);
+            final String name = rs.getString(2);
+            final long typeAttrId = rs.getLong(3);
+            final long tableId = rs.getLong(4);
+            final long typeId = rs.getLong(5);
+            final long attrTypeId = rs.getLong(6);
+            final long typeLinkId = rs.getLong(7);
+            final long parentSetId = rs.getLong(8);
+            final String sqlCol = rs.getString(9);
+            final String defaultval = rs.getString(10);
+            final Type type = Type.get(typeId);
+
+            LOG.debug("read attribute '" + type.getName() + "/" + name + "' "
+                + "(id = " + id + ")");
+
+            final Type typeAttr = Type.get(typeAttrId);
+
+            if (typeAttr.getUUID().equals(DATAMODEL_ATTRIBUTESET.getUuid())) {
+              final AttributeSet set = new AttributeSet(id,
+                                                  type,
+                                                  name,
+                                                  AttributeType.get(attrTypeId),
+                                                  sqlCol,
+                                                  tableId,
+                                                  typeLinkId);
+              id2Set.put(id, set);
+            } else {
+              final Attribute attr = new Attribute(id, name, sqlCol, SQLTable
+                  .get(tableId), AttributeType.get(attrTypeId), defaultval);
+              attr.setParent(type);
+              final UUID uuid = attr.getAttributeType().getUUID();
+              if (uuid.equals(ATTRTYPE_LINK.getUuid())
+                  || uuid.equals(ATTRTYPE_LINK_WITH_RANGES.getUuid())) {
+                final Type linkType = Type.get(typeLinkId);
+                attr.setLink(linkType);
+                linkType.addLink(attr);
+              } else if (uuid.equals(ATTRTYPE_CREATOR_LINK.getUuid())
+                  || uuid.equals(ATTRTYPE_MODIFIER_LINK.getUuid())) {
+                final Type linkType = Type.get(USER_PERSON);
+                attr.setLink(linkType);
+                linkType.addLink(attr);
+              }
+
+              if (typeAttr.getUUID().equals(
+                                   DATAMODEL_ATTRIBUTESETATTRIBUTE.getUuid())) {
+                final AttributeSet parentset
+                                         = (AttributeSet) Type.get(parentSetId);
+                parentset.addAttribute(attr);
+                attr.setParentSet(parentset);
+              } else {
+                type.addAttribute(attr);
+              }
+              _newCache4Id.put(attr.getId(), attr);
+              _newCache4Name.put(attr.getName(), attr);
+
+              attr.readFromDB4Properties();
+            }
+          }
+          rs.close();
+
+          for (final Entry<Attribute, Long> entry : attribute2setId.entrySet()) {
+            final AttributeSet parentset = id2Set.get(entry.getValue());
+            final Attribute childAttr = entry.getKey();
+            parentset.addAttribute(childAttr);
+          }
+        } finally {
+          if (stmt != null) {
+            stmt.close();
+          }
+        }
+        con.commit();
+      } catch (final SQLException e) {
+        throw new CacheReloadException("could not read attributes", e);
+      } catch (final EFapsException e) {
+        throw new CacheReloadException("could not read attributes", e);
+      } finally {
+        if ((con != null) && con.isOpened()) {
+          try {
+            con.abort();
+          } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read attributes", e);
+          }
+        }
+      }
     }
   }
-
 }
