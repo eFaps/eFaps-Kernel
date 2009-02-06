@@ -733,6 +733,12 @@ public class OneRoundQuery {
           sql.append(" ID ");
         }
         sql.append(" in (").append(instSQL).append(")");
+        // in case of a attributeset we must also give the type as a additional
+        // filter
+        if (this.expand && this.sqlTable.getSqlColType() != null) {
+          sql.append(" and ").append(this.sqlTable.getSqlColType())
+            .append(" = ").append(this.attributeSet.getId());
+        }
       }
       ConnectionResource con = null;
       try {
