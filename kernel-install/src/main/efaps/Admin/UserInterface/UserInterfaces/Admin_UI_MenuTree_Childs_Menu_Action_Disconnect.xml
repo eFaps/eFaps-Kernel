@@ -37,7 +37,7 @@
     <!-- target definitions -->
     <target>
       <execute program="org.efaps.esjp.common.uitable.CommonDelete">
-        <property name="DeleteIndex">1</property>
+        <property name="DeleteIndex">0</property>
       </execute>
     </target>
     <!-- properties -->
