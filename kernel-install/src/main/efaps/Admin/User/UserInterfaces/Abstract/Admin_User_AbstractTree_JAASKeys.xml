@@ -34,8 +34,10 @@
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>Admin_User_AbstractTree_JAASKeys</name>
-<!--   addRole("Administration");
- -->
+    <access>
+      <role>Administration</role>
+    </access>
+
     <!-- target definitions -->
     <target>
       <table>Admin_User_JAASKeyTable</table>

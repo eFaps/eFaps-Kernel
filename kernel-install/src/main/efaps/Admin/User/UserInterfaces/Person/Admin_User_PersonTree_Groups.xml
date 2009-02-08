@@ -35,6 +35,9 @@
     <version-expression>(version==latest)</version-expression>
     <name>Admin_User_PersonTree_Groups</name>
     <!-- target definitions -->
+    <access>
+      <role>Administration</role>
+    </access>
     <target>
       <menu>Admin_User_PersonTree_Groups_Menu</menu>
       <table>Admin_User_AbstractTable</table>

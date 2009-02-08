@@ -34,7 +34,9 @@
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>Admin_User_AbstractTree_Access</name>
-
+    <access>
+      <role>Administration</role>
+    </access>
     <!-- target definitions -->
     <target>
       <menu>Admin_User_AbstractTree_Access_Menu</menu>
