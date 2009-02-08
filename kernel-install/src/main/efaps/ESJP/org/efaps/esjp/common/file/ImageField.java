@@ -20,6 +20,8 @@
 
 package org.efaps.esjp.common.file;
 
+import java.util.Map;
+
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -39,12 +41,21 @@ import org.efaps.db.Instance;
 public class ImageField {
 
 
-  public Return getViewFieldValueUI(final Parameter _parameter)
-  {
-    final Instance instance = (Instance) _parameter.get(ParameterValues.CALL_INSTANCE);
-
+public Return getViewFieldValueUI(final Parameter _parameter) {
+    final Instance instance = _parameter.getCallInstance();
+    final Map<?, ?> properties =
+                        (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+    String height = "auto";
+    String width = "auto";
+    if (properties.get("Height") != null) {
+      height = (String) properties.get("Height");
+    }
+    if (properties.get("Width") != null) {
+      width = (String) properties.get("Width");
+    }
     final StringBuilder ret = new StringBuilder();
-    ret.append("<img style=\"height:auto; width:auto;\" ")
+    ret.append("<img style=\"height:").append(height).append("; width:")
+       .append(width).append(";\" ")
        .append("src=\"/eFaps/servlet/checkout?oid=")
        .append(instance.getOid()).append("\" ")
        .append("/>");
