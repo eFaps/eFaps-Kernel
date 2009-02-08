@@ -1475,10 +1475,6 @@ public class Person extends AbstractUserObject {
    */
   private static final class PersonCache extends Cache<Person> {
 
-    public PersonCache() {
-    }
-
-
     @SuppressWarnings("unchecked")
     @Override
     public Map<Long, Person> getCache4Id() {
@@ -1521,13 +1517,39 @@ public class Person extends AbstractUserObject {
     }
 
 
-    /* (non-Javadoc)
-     * @see org.efaps.util.cache.Cache#readCache(java.util.Map, java.util.Map, java.util.Map)
+    /**
+     * Method must not be overwritten (used), because the person cache is stored
+     * inside the session and is growing dynamically during the session.
+     *
+     * @param _cache4Id     not used
+     * @param _cache4Name   not used
+     * @param _cache4UUID   not used
+     * @throws CacheReloadException never
+     *
      */
     @Override
-    protected void readCache(final Map<Long, Person> cache4Id,
-        final Map<String, Person> cache4Name, final Map<UUID, Person> cache4UUID)
+    protected void readCache(final Map<Long, Person> _cache4Id,
+                              final Map<String, Person> _cache4Name,
+                              final Map<UUID, Person> _cache4UUID)
         throws CacheReloadException {
+    }
+
+    /**
+     * Clear the person cache in the session if exist.
+     */
+    @Override
+    public void clear() {
+      Map<String, Person> map = null;
+        try {
+          map = (Map<String, Person>) Context.getThreadContext()
+                  .getSessionAttribute("PersonCacheString");
+          if (map != null) {
+            map.clear();
+          }
+        } catch (final EFapsException e) {
+          LOG.error(
+             "could not read or set a SessionAttribute for the PersonCache", e);
+        }
     }
   }
 

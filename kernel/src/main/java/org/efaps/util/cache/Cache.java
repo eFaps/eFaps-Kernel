@@ -100,39 +100,42 @@ public abstract class Cache<K extends CacheObjectInterface> {
   }
 
   /**
-   * Returns for given key id the cached object from the cache4Id cache. If the
-   * cache is NOT initialized, null
-   * @see #cache4Id
+   * Returns for given key id the cached object from the cache4Id cache.  If the
+   * cache was not initialized yet, <code>null</code> is returned.
+   *
+   * @see #getCache4Id()
    * @param _id Id the CacheObject is wanted for
    * @return CacheObject
    *
    */
   public K get(final long _id)  {
-    return this.cache4Id == null ? null : this.cache4Id.get(new Long(_id));
+    return getCache4Id() == null ? null : getCache4Id().get(new Long(_id));
   }
 
   /**
-   * Returns for given key id the cached object from the cache4Id cache. If the
-   * cache is NOT initialized, the cache is initialize
-   * @see #cache4Id
+   * Returns for given key id the cached object from the cache4Id cache.  If the
+   * cache was not initialized yet, <code>null</code> is returned.
+   *
+   * @see #getCache4Name()
    * @param _name Name the CacheObject is wanted for
    * @return CacheObject
    *
    */
   public K get(final String _name)  {
-    return this.cache4Name == null ? null : this.cache4Name.get(_name);
+    return getCache4Name() == null ? null : getCache4Name().get(_name);
   }
 
  /**
    * Returns for given key id the cached object from the cache4Id cache. If the
-   * cache is NOT initialized, the cache is initialize
+   * cache was not initialized yet, <code>null</code> is returned.
    *
+   * @see #getCache4UUID()
    * @param _uuid UUID the CacheObject is wanted for
    * @return CacheObject
    *
    */
   public K get(final UUID _uuid) {
-    return this.cache4UUID == null ? null : this.cache4UUID.get(_uuid);
+    return getCache4UUID() == null ? null : getCache4UUID().get(_uuid);
   }
 
   /**
