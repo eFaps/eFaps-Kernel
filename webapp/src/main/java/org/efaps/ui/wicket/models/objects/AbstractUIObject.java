@@ -580,10 +580,13 @@ public abstract class AbstractUIObject implements IClusterable {
    *
    * @return List with Return from the esjp
    */
-  public List<Return> validate() {
+  public List<Return> validate(final Object _others) {
     final AbstractCommand command = this.getCommand();
     try {
-      return command.executeEvents(EventType.UI_VALIDATE, (Object) null);
+      return command.executeEvents(EventType.UI_VALIDATE,
+                                   ParameterValues.OTHERS, _others,
+                                   ParameterValues.PARAMETERS,
+                                   Context.getThreadContext().getParameters());
     } catch (final EFapsException e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
