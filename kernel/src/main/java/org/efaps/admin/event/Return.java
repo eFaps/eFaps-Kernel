@@ -35,6 +35,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class Return {
 
   public enum ReturnValues {
+    /** used to return code sniplett that will be represented as is */
+    SNIPLETT,
     /** used to return a Map of Values */
     VALUES,
     /** used to return true */
