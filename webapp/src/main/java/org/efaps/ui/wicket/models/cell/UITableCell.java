@@ -24,7 +24,10 @@ import org.apache.wicket.IClusterable;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.UIInterface;
+import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
@@ -93,24 +96,37 @@ public class UITableCell implements IClusterable {
   /**
    * Constructor.
    *
-   * @param _fieldValue FieldValue
-   * @param _oid        oid of the cell
-   * @param _cellvalue  Value for the cell
-   * @param _icon       icon of the cell
+   * @param _fieldValue   FieldValue
+   * @param _oid          oid of the cell
+   * @param _cellvalue    Value for the cell
+   * @param _icon         icon of the cell
+   * @param _targetMode   targetmode for the cell
    * @throws EFapsException on error
    */
   public UITableCell(final FieldValue _fieldValue, final String _oid,
-                     final String _cellvalue, final String _icon)
+                     final String _cellvalue, final String _icon,
+                     final TargetMode _targetMode)
       throws EFapsException  {
     this.uiClass =  _fieldValue.getClassUI();
     this.compareValue =  _fieldValue.getObject4Compare();
-    this.reference = _fieldValue.getField().getReference();
     this.target = _fieldValue.getField().getTarget();
     this.name = _fieldValue.getField().getName();
     this.fixedWidth = _fieldValue.getField().isFixedWidth();
     this.oid = _oid;
     this.cellValue = _cellvalue;
     this.icon = _icon;
+
+    // check if the user has access to the typemenu, if not set the reference
+    // to null
+    if (_fieldValue.getField().getReference() != null) {
+      if (this.oid != null) {
+        final Instance instance = new Instance(this.oid);
+        final Menu menu = Menu.getTypeTreeMenu(instance.getType());
+        if (menu.hasAccess(_targetMode)) {
+          this.reference = _fieldValue.getField().getReference();
+        }
+      }
+    }
   }
 
   /**
@@ -149,7 +165,7 @@ public class UITableCell implements IClusterable {
    * @return value of instance variable {@link #compareValue}
    */
   public  Object getCompareValue() {
-    return (this.compareValue == null) ? this.cellValue : this.compareValue;
+    return this.compareValue;
   }
 
   /**

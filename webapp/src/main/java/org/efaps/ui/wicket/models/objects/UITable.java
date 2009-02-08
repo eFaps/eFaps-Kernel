@@ -387,7 +387,7 @@ public class UITable extends AbstractUIObject {
               }
             }
           }
-          row.add(new UITableCell(fieldvalue, oid, strValue, icon));
+          row.add(new UITableCell(fieldvalue, oid, strValue, icon, getMode()));
         }
         this.values.add(row);
       }

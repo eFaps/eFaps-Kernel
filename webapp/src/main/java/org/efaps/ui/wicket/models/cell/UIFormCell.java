@@ -109,7 +109,7 @@ public class UIFormCell extends UITableCell {
                     final TargetMode _targetmode, final String _label,
                     final String _attrTypeName)
       throws EFapsException {
-    super(_fieldValue, _oid, _cellValue, _icon);
+    super(_fieldValue, _oid, _cellValue, _icon, _targetmode);
     this.required = _fieldValue.getField().isRequired()
                       && ((_fieldValue.getField().isEditable()
                             && _targetmode.equals(TargetMode.EDIT))
