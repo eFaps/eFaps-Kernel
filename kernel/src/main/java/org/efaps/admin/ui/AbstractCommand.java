@@ -601,6 +601,8 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
           this.targetMenu.addAll(Menu.get(menuname));
           ret = this.targetMenu;
         }
+      } else {
+        ret = this.targetMenu;
       }
     }
     return ret;
@@ -1070,7 +1072,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
       setTargetCreateType(Type.get(_value));
     } else if ("TargetDefaultMenu".equals(_name)) {
       if ("none".equals(_value)) {
-        this.setTargetDefaultMenu(false);
+        setTargetDefaultMenu(false);
       }
     } else if ("TargetMode".equals(_name)) {
       if ("create".equals(_value)) {
