@@ -29,6 +29,7 @@ import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.models.objects.UITableHeader;
+import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 
@@ -42,6 +43,7 @@ public class SortLink extends Link<UITableHeader> {
 
   private static final long serialVersionUID = 1L;
 
+
   public SortLink(final String _id, final IModel<UITableHeader> _model) {
     super(_id, _model);
   }
@@ -49,7 +51,8 @@ public class SortLink extends Link<UITableHeader> {
   @Override
   public void onClick() {
 
-    final UITable uiTable = (UITable) ((HeaderPanel)this.findParent(HeaderPanel.class)).getDefaultModelObject();
+    final UITable uiTable = (UITable) (this
+        .findParent(HeaderPanel.class)).getDefaultModelObject();
     final UITableHeader uiTableHeader = super.getModelObject();
     uiTable.setSortKey(uiTableHeader.getName());
 
@@ -67,14 +70,18 @@ public class SortLink extends Link<UITableHeader> {
     }
 
     uiTable.setSortDirection(uiTableHeader.getSortDirection());
-
     uiTable.sort();
-    if (this.getPage() instanceof TablePage) {
-      this.getRequestCycle().setResponsePage(new TablePage(new TableModel(uiTable)));
-    } else {
-      this.getRequestCycle().setResponsePage(
-          new FormPage(new FormModel((UIForm) this.getPage().getDefaultModelObject())));
-    }
 
+    final String menuTreeKey
+                           = ((AbstractContentPage) getPage()).getMenuTreeKey();
+    AbstractContentPage page;
+    if (getPage() instanceof TablePage) {
+      page = new TablePage(new TableModel(uiTable));
+    } else {
+      page = new FormPage(new FormModel((UIForm) getPage()
+          .getDefaultModelObject()));
+    }
+    page.setMenuTreeKey(menuTreeKey);
+    getRequestCycle().setResponsePage(page);
   }
 }
