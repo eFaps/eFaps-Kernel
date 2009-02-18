@@ -546,10 +546,7 @@ public class Attribute extends AbstractDataModelObject {
 
               if (typeAttr.getUUID().equals(
                                    DATAMODEL_ATTRIBUTESETATTRIBUTE.getUuid())) {
-                final AttributeSet parentset
-                                         = (AttributeSet) Type.get(parentSetId);
-                parentset.addAttribute(attr);
-                attr.setParentSet(parentset);
+                attribute2setId.put(attr, parentSetId);
               } else {
                 type.addAttribute(attr);
               }
@@ -561,11 +558,13 @@ public class Attribute extends AbstractDataModelObject {
             }
           }
           rs.close();
-
-          for (final Entry<Attribute, Long> entry : attribute2setId.entrySet()) {
+          //make connection between set and attributes
+          for (final Entry<Attribute, Long> entry
+                                                : attribute2setId.entrySet()) {
             final AttributeSet parentset = id2Set.get(entry.getValue());
             final Attribute childAttr = entry.getKey();
             parentset.addAttribute(childAttr);
+            childAttr.setParentSet(parentset);
           }
         } finally {
           if (stmt != null) {
