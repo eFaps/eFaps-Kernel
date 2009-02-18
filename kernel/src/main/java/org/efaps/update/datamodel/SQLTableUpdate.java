@@ -30,6 +30,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -42,8 +45,6 @@ import org.efaps.db.databases.information.UniqueKeyInformation;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class is responsible for generating and updating of SQLTables in eFpas.<br>
@@ -386,20 +387,20 @@ public class SQLTableUpdate extends AbstractUpdate
       try {
         con = context.getConnectionResource();
         final Statement stmt = con.getConnection().createStatement();
-        for (String sql : this.sqls) {
+        for (final String sql : this.sqls) {
           if (LOG.isDebugEnabled()) {
             LOG.debug("    ..SQL> " + sql);
           }
           stmt.execute(sql);
         }
         con.commit();
-      } catch (EFapsException e) {
+      } catch (final EFapsException e) {
         LOG.error("SQLTableUpdate.executeSQL.EFapsException", e);
         if (con != null) {
           con.abort();
         }
         throw e;
-      } catch (Throwable e) {
+      } catch (final Throwable e) {
         LOG.error("SQLTableUpdate.executeSQL.Throwable", e);
         if (con != null) {
           con.abort();
@@ -421,7 +422,8 @@ public class SQLTableUpdate extends AbstractUpdate
       try {
         con = context.getConnectionResource();
 
-        if (!getDbType().existsTable(con.getConnection(), tableName))  {
+        if (!getDbType().existsTable(con.getConnection(), tableName)
+            && !getDbType().existsView(con.getConnection(), tableName))  {
           if (LOG.isInfoEnabled()) {
             LOG.info("    Create DB SQL Table '" + tableName + "'");
           }
@@ -432,13 +434,13 @@ public class SQLTableUpdate extends AbstractUpdate
         }
         con.commit();
 
-      } catch (EFapsException e) {
+      } catch (final EFapsException e) {
         LOG.error("SQLTableUpdate.createSQLTable.EFapsException", e);
         if (con != null) {
           con.abort();
         }
         throw e;
-      } catch (Throwable e) {
+      } catch (final Throwable e) {
         LOG.error("SQLTableUpdate.createSQLTable.Throwable", e);
         if (con != null) {
           con.abort();
@@ -524,13 +526,13 @@ public class SQLTableUpdate extends AbstractUpdate
 
         con.commit();
 
-      } catch (EFapsException e) {
+      } catch (final EFapsException e) {
         LOG.error("SQLTableUpdate.updateSQLTable.EFapsException", e);
         if (con != null) {
           con.abort();
         }
         throw e;
-      } catch (Throwable e) {
+      } catch (final Throwable e) {
         LOG.error("SQLTableUpdate.updateSQLTable.Throwable", e);
         if (con != null) {
           con.abort();
