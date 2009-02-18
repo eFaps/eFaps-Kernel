@@ -79,6 +79,8 @@ public enum EFapsClassNames {
   COLLECTION("0ad74515-5d2f-4579-bf67-4ed55c02ae9e"),
   /** Admin_UI_Field. */
   FIELD("1b3e1892-74bb-4df8-8e56-1de9c47cb3b8"),
+  /** Admin_UI_FieldAction. */
+  FIELDCOMMAND("6e8fa8bf-5368-485d-a5ba-12dc600c54a5"),
   /**  Admin_UI_FieldGroup. */
   FIELDGROUP("629cd86d-5103-4ee5-9eef-aef9de7862c3"),
   /**  Admin_UI_FieldHeading. */
@@ -116,6 +118,8 @@ public enum EFapsClassNames {
   /** */
   LINK_TARGET_TABLE("27eae97f-c6f4-4c4e-9947-c1c9bc4ea297"),
   /** */
+  LINK_FIELD2COMMAND("83550c54-f341-4e4b-b088-ea3f86183e24"),
+  /** */
   LINK_DEFAULT_SEARCHCOMMAND("3f827900-eda2-409f-be92-497dcacb0eef"),
 
   /** Admin_Program_Java. */
@@ -138,6 +142,9 @@ public enum EFapsClassNames {
   ADMIN_PROGRAM_JAVASCRIPT2JAVASCRIPT("2d24e861-580c-43ad-a59c-3266021ea190"),
   /** Admin_Program_JavaScriptCompiled.*/
   ADMIN_PROGRAM_JAVASCRIPTCOMPILED("0607ea90-b48f-4b76-96f5-67cab19bd7b1"),
+
+  /** Admin_Program_XSL.*/
+  ADMIN_PROGRAM_XSL("2e40c566-a55c-4b3b-a79b-b786e20f8d1c"),
 
   /** Admin_CommonVersion. */
   ADMIN_COMMON_VERSION("1bb051f3-b664-43db-b409-c0c4009f5972");
@@ -173,7 +180,7 @@ public enum EFapsClassNames {
    */
   private EFapsClassNames(final String _uuid) {
     this.uuid = UUID.fromString(_uuid);
-    Mapper.MAPPER.put(this.getUuid(), this);
+    Mapper.MAPPER.put(getUuid(), this);
   }
 
   /**

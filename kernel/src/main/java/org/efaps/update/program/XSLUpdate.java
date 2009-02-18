@@ -20,7 +20,13 @@
 
 package org.efaps.update.program;
 
+import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_XSL;
+
 import java.net.URL;
+
+import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.program.staticsource.XSLImporter;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO description
@@ -30,24 +36,69 @@ import java.net.URL;
  */
 public class XSLUpdate extends AbstractSourceUpdate {
 
-  public static String TYPENAME = "Admin_Program_XSL";
-
+  /**
+   * Constructor.
+   *
+   * @param _url URL of the file
+   */
   protected XSLUpdate(final URL _url) {
-    super(_url, TYPENAME);
+    super(_url, Type.get(ADMIN_PROGRAM_XSL).getName());
   }
 
+  /**
+   * Read the file.
+   *
+   * @param _url URL to the file
+   * @return  XSLUpdate
+   */
   public static XSLUpdate readFile(final URL _url) {
     final XSLUpdate ret = new XSLUpdate(_url);
-    final XSLDefinition definition = ret.new XSLDefinition( _url);
+    final XSLDefinition definition = ret.new XSLDefinition(_url);
     ret.addDefinition(definition);
     return ret;
   }
 
   public class XSLDefinition extends SourceDefinition {
 
-    public XSLDefinition(final URL _url) {
-      super( _url);
-    }
+    /**
+     * Importer for the css.
+     */
+    private XSLImporter sourceCode = null;
 
+
+    /**
+     * Constructor.
+     *
+     * @param _url URL of the file
+     */
+    public XSLDefinition(final URL _url) {
+      super(_url);
+    }
+    /**
+     * Search the instance.
+     *
+     * @throws EFapsException if the Java source code could not be read or the
+     *                        file could not be accessed because of the wrong
+     *                        URL
+     */
+    @Override
+    protected void searchInstance() throws EFapsException {
+      if (this.sourceCode == null) {
+        this.sourceCode = new XSLImporter(getUrl());
+      }
+      setName(this.sourceCode.getProgramName());
+
+      if (this.sourceCode.getEFapsUUID() != null) {
+        addValue("UUID", this.sourceCode.getEFapsUUID().toString());
+      }
+
+      if (this.sourceCode.getRevision() != null) {
+        addValue("Revision", this.sourceCode.getRevision());
+      }
+
+      if (this.instance == null) {
+        this.instance = this.sourceCode.searchInstance();
+      }
+    }
   }
 }
