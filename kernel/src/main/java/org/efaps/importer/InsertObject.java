@@ -23,11 +23,7 @@ package org.efaps.importer;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.sql.Timestamp;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +33,9 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -256,7 +255,7 @@ public class InsertObject extends AbstractObject {
           LOG.info("adding Child:" + object.getType());
         }
         if (LOG.isDebugEnabled()) {
-          LOG.debug("this: " + this.toString());
+          LOG.debug("this: " + toString());
           LOG.debug("Cild: " + object.toString());
         }
         try {
@@ -319,10 +318,10 @@ public class InsertObject extends AbstractObject {
 
         catch (final EFapsException e) {
 
-          LOG.error("dbAddChilds() " + this.toString(), e);
+          LOG.error("dbAddChilds() " + toString(), e);
         } catch (final Exception e) {
 
-          LOG.error("dbAddChilds() " + this.toString(), e);
+          LOG.error("dbAddChilds() " + toString(), e);
         }
       }
     }
@@ -362,7 +361,7 @@ public class InsertObject extends AbstractObject {
 
       }
 
-      for (final Entry<String, Object> element : this.getAttributes().entrySet()) {
+      for (final Entry<String, Object> element : getAttributes().entrySet()) {
         if (element.getValue() instanceof DateTime) {
 
           UpIn.add(element.getKey().toString(), (DateTime) element.getValue());
@@ -371,17 +370,17 @@ public class InsertObject extends AbstractObject {
           UpIn.add(element.getKey().toString(), element.getValue().toString());
         }
       }
-      if (this.getParrentAttribute() != null) {
-        UpIn.add(this.getParrentAttribute(), _parent.getID());
+      if (getParrentAttribute() != null) {
+        UpIn.add(getParrentAttribute(), _parent.getID());
       }
-      for (final ForeignObject link : this.getLinks()) {
+      for (final ForeignObject link : getLinks()) {
 
         final String foreignID = link.dbGetID();
         if (foreignID != null) {
           UpIn.add(link.getLinkAttribute(), foreignID);
         } else {
           noInsert = true;
-          LOG.error("skipt: " + this.toString());
+          LOG.error("skipt: " + toString());
         }
 
       }
@@ -393,9 +392,9 @@ public class InsertObject extends AbstractObject {
       }
       return ID;
     } catch (final EFapsException e) {
-      LOG.error("dbUpdateOrInsert() " + this.toString(), e);
+      LOG.error("dbUpdateOrInsert() " + toString(), e);
     } catch (final Exception e) {
-      LOG.error("dbUpdateOrInsert() " + this.toString(), e);
+      LOG.error("dbUpdateOrInsert() " + toString(), e);
     }
 
     return null;
@@ -424,13 +423,15 @@ public class InsertObject extends AbstractObject {
           "org.efaps.admin.datamodel.attributetype.DateTimeType")
           || attribute.getAttributeType().getClassRepr().getName().equals(
               "org.efaps.admin.datamodel.attributetype.CreatedType")) {
+        final DateTimeFormatter fmt;
+        if (RootObject.DATEFORMAT == null) {
+          fmt = ISODateTimeFormat.dateTime();
+        } else {
+          fmt = DateTimeFormat.forPattern(RootObject.DATEFORMAT);
+        }
+        final DateTime date = fmt.parseDateTime(element.getValue().toString());
 
-        final Date date =
-            new SimpleDateFormat(RootObject.DATEFORMAT).parse(element
-                .getValue().toString(), new ParsePosition(0));
-
-        this.attributes.put(element.getKey(), new Timestamp(date
-            .getTime()));
+        this.attributes.put(element.getKey(), date);
       }
     }
     return this.attributes;
@@ -490,7 +491,7 @@ public class InsertObject extends AbstractObject {
           this.ceckInObject.getInputStream(), -1);
     } catch (final EFapsException e) {
 
-      LOG.error("checkObjectin() " + this.toString(), e);
+      LOG.error("checkObjectin() " + toString(), e);
     }
   }
 

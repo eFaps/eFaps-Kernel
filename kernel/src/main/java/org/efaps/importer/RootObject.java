@@ -51,8 +51,8 @@ public class RootObject extends AbstractObject {
   private static final Logger LOG = LoggerFactory.getLogger(RootObject.class);
 
   final List<AbstractObject> CHILDS = new ArrayList<AbstractObject>();
-
-  static String DATEFORMAT = null;
+  //default is yyyy-MM-dd'T'HH:mm:ss.SSSZZ
+  static String DATEFORMAT;
 
   final static Map<String, OrderObject> ORDER =
       new HashMap<String, OrderObject>();
