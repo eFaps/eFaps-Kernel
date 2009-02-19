@@ -47,11 +47,11 @@ public Return getViewFieldValueUI(final Parameter _parameter) {
                         (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
     String height = "auto";
     String width = "auto";
-    if (properties.get("Height") != null) {
-      height = (String) properties.get("Height");
+    if (properties.get("height") != null) {
+      height = (String) properties.get("height");
     }
-    if (properties.get("Width") != null) {
-      width = (String) properties.get("Width");
+    if (properties.get("width") != null) {
+      width = (String) properties.get("width");
     }
     final StringBuilder ret = new StringBuilder();
     ret.append("<img style=\"height:").append(height).append("; width:")
