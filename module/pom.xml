@@ -52,7 +52,6 @@
     * All Modules
     ************************************************************************* -->
   <modules>
-    <module>clubwork</module>
     <module>contactwork</module>
     <module>teamwork</module>
   </modules>
