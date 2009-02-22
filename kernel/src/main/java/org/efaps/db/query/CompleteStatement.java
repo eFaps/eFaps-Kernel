@@ -31,7 +31,7 @@ public class CompleteStatement  {
 
   public void appendUnion()  {
     append(" union ");
-expr = false;
+this.expr = false;
     setWhere(false);
     setFrom(false);
   }
@@ -40,9 +40,9 @@ expr = false;
 boolean expr = false;
 
   public void appendWhereAnd()  {
-    if (hasWhere() && expr)  {
+    if (hasWhere() && this.expr)  {
       append(" and ");
-expr = false;
+this.expr = false;
     }
   }
 
@@ -50,46 +50,46 @@ expr = false;
   /**
    *
    */
-  public CompleteStatement appendWhere(String _where)  {
+  public CompleteStatement appendWhere(final String _where)  {
     if (!hasWhere())  {
       append(" where ");
       setWhere(true);
     }
     append(_where);
-expr = true;
+this.expr = true;
     return this;
   }
 
   /**
    *
    */
-  public CompleteStatement appendWhere(int _where)  {
+  public CompleteStatement appendWhere(final int _where)  {
     if (!hasWhere())  {
       append(" where ");
       setWhere(true);
     }
     append(_where);
-expr = true;
+this.expr = true;
     return this;
   }
 
   /**
    *
    */
-  public CompleteStatement appendWhere(long _where)  {
+  public CompleteStatement appendWhere(final long _where)  {
     if (!hasWhere())  {
       append(" where ");
       setWhere(true);
     }
     append(_where);
-expr = true;
+this.expr = true;
     return this;
   }
 
   /**
    *
    */
-  public CompleteStatement appendFrom(String _from)  {
+  public CompleteStatement appendFrom(final String _from)  {
     if (!hasFrom())  {
       append(" from ");
       setFrom(true);
@@ -103,7 +103,7 @@ expr = true;
   /**
    *
    */
-  public CompleteStatement append(long _text)  {
+  public CompleteStatement append(final long _text)  {
     getStatement().append(_text);
     return this;
   }
@@ -111,7 +111,7 @@ expr = true;
   /**
    *
    */
-  public CompleteStatement append(int _text)  {
+  public CompleteStatement append(final int _text)  {
     getStatement().append(_text);
     return this;
   }
@@ -119,14 +119,14 @@ expr = true;
   /**
    *
    */
-  public CompleteStatement append(String _text)  {
+  public CompleteStatement append(final String _text)  {
     getStatement().append(_text);
     return this;
   }
 
   ///////////////////////////////////////////////////////////////////////////
 
-  private StringBuilder statement = new StringBuilder();
+  private final StringBuilder statement = new StringBuilder();
 
   /**
    * The instance variable stores if a where clause must be appended.
@@ -171,7 +171,7 @@ expr = true;
    * @see #where
    * @see #getWhere
    */
-  private void setWhere(boolean _where)  {
+  private void setWhere(final boolean _where)  {
     this.where = _where;
   }
 
@@ -192,7 +192,12 @@ expr = true;
    * @see #from
    * @see #getFrom
    */
-  private void setFrom(boolean _from)  {
+  private void setFrom(final boolean _from)  {
     this.from = _from;
+  }
+
+  @Override
+  public String toString() {
+    return this.statement.toString();
   }
 }

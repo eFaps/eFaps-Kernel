@@ -21,6 +21,7 @@
 package org.efaps.db.query;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.attributetype.DateTimeType;
 import org.efaps.db.AbstractQuery;
 
 /**
@@ -55,7 +56,7 @@ abstract class WhereClauseAttributeCompareValueAbstract extends WhereClause  {
 
     if (_orderIndex<0 || getSelType().getOrderIndex()<_orderIndex)  {
 
-      String sqlColName = getAttr().getSqlColNames().get(0);
+      final String sqlColName = getAttr().getSqlColNames().get(0);
 
       _completeStatement.appendWhereAnd();
       _completeStatement
@@ -69,6 +70,11 @@ abstract class WhereClauseAttributeCompareValueAbstract extends WhereClause  {
 if (getAttr().getLink()!=null || getAttr().getName().equals("ID"))  {
      _completeStatement.appendWhere(getValue()).appendWhere("");
 } else  {
+  // in case of DateTimeType the value must be cast to a timestamp
+  if (this.attr.getAttributeType().getClassRepr().equals(DateTimeType.class)) {
+    _completeStatement.appendWhere(" timestamp ");
+  }
+
      _completeStatement.appendWhere("'").appendWhere(getValue()).appendWhere("'");
 }
     }

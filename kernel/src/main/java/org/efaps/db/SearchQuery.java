@@ -22,6 +22,8 @@ package org.efaps.db;
 
 import java.util.StringTokenizer;
 
+import org.joda.time.ReadableDateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +75,7 @@ public class SearchQuery extends AbstractQuery {
    *
    */
   public void setObject(final Instance _instance) throws EFapsException {
-    Type type = _instance.getType();
+    final Type type = _instance.getType();
     addSelect(true, type, type, "OID");
     this.types.add(this.type);
     this.type = type;
@@ -105,14 +107,14 @@ public class SearchQuery extends AbstractQuery {
   /**
    * @todo Exception
    */
-  public void setExpand(Instance _instance, String _expand)
+  public void setExpand(final Instance _instance, final String _expand)
                                                            throws EFapsException {
-    StringTokenizer tokens = new StringTokenizer(_expand, ".");
+    final StringTokenizer tokens = new StringTokenizer(_expand, ".");
     boolean first = true;
     Type type = _instance.getType();
 
     while (tokens.hasMoreTokens()) {
-      String one = tokens.nextToken();
+      final String one = tokens.nextToken();
       Attribute attr = type.getLinks().get(one);
       if (attr == null) {
         attr = type.getAttribute(one);
@@ -152,7 +154,7 @@ public class SearchQuery extends AbstractQuery {
   /**
    *
    */
-  public void setExpand(Context _context, Instance _instance, String _expand)
+  public void setExpand(final Context _context, final Instance _instance, final String _expand)
                                                                              throws EFapsException {
     setExpand(_instance, _expand);
   }
@@ -171,7 +173,7 @@ public class SearchQuery extends AbstractQuery {
    */
   public void addWhereExprEqValue(final String _expr, final String _value)
                                                                           throws EFapsException {
-    Attribute attr = this.type.getAttribute(_expr);
+    final Attribute attr = this.type.getAttribute(_expr);
     if (attr == null) {
       LOG.debug("unknown expression '"
           + _expr
@@ -187,6 +189,29 @@ public class SearchQuery extends AbstractQuery {
   }
 
   /**
+   * @param _expr
+   * @param _value
+   */
+  public void addWhereExprEqValue(final String _expr, final long _value)
+                                                                        throws EFapsException {
+    addWhereExprEqValue(_expr, "" + _value);
+  }
+
+  public void addWhereExprEqValue(final String _expr,
+      final ReadableDateTime _dateTime) throws EFapsException {
+    final Attribute attr = this.type.getAttribute(_expr);
+    if (attr == null) {
+      LOG.debug("unknown expression '" + _expr + "' for type " + "'"
+          + this.type.getName() + "'");
+      throw new EFapsException(getClass(), "addWhereExprEqValue",
+          "UnknownExpression", _expr, this.type.getName());
+    }
+    getMainWhereClauses().add(
+        new WhereClauseAttributeEqualValue(this, attr,
+            _dateTime.toDateTime().toString(ISODateTimeFormat.dateTime())));
+  }
+
+  /**
    * @param _context
    *                eFaps context for this request
    * @param _expr
@@ -196,7 +221,7 @@ public class SearchQuery extends AbstractQuery {
    */
   public void addWhereExprMatchValue(final String _expr, final String _value)
                                                                              throws EFapsException {
-    Attribute attr = this.type.getAttribute(_expr);
+    final Attribute attr = this.type.getAttribute(_expr);
     if (attr == null) {
       LOG.debug("unknown expression '"
           + _expr
@@ -212,14 +237,12 @@ public class SearchQuery extends AbstractQuery {
   }
 
   /**
-   * @param _expr
-   *                expression to compare for greater
-   * @param _value
-   *                value to compare for equal
+   * @param _expr  expression to compare for greater
+   * @param _value value to compare for equal
    */
   public void addWhereExprGreaterValue(final String _expr, final String _value)
-                                                                               throws EFapsException {
-    Attribute attr = this.type.getAttribute(_expr);
+    throws EFapsException {
+    final Attribute attr = this.type.getAttribute(_expr);
     if (attr == null) {
       LOG.debug("unknown expression '"
           + _expr
@@ -234,6 +257,23 @@ public class SearchQuery extends AbstractQuery {
         new WhereClauseAttributeGreaterValue(this, attr, _value));
   }
 
+  public void addWhereExprGreaterValue(final String _expr,
+                                       final ReadableDateTime _dateTime)
+      throws EFapsException {
+    final Attribute attr = this.type.getAttribute(_expr);
+    // TODO check if Attribute is DateTimeType
+    if (attr == null) {
+      LOG.debug("unknown expression '" + _expr + "' for type " + "'"
+          + this.type.getName() + "'");
+      throw new EFapsException(getClass(), "addWhereExprGreaterValue",
+          "UnknownExpression", _expr, this.type.getName());
+    }
+    getMainWhereClauses().add(
+        new WhereClauseAttributeGreaterValue(this, attr,
+            _dateTime.toDateTime().toString(ISODateTimeFormat.dateTime())));
+  }
+
+
   /**
    * @param _expr
    *                expression to compare for less
@@ -242,7 +282,7 @@ public class SearchQuery extends AbstractQuery {
    */
   public void addWhereExprLessValue(final String _expr, final String _value)
                                                                             throws EFapsException {
-    Attribute attr = this.type.getAttribute(_expr);
+    final Attribute attr = this.type.getAttribute(_expr);
     if (attr == null) {
       LOG.debug("unknown expression '"
           + _expr
@@ -258,13 +298,28 @@ public class SearchQuery extends AbstractQuery {
   }
 
   /**
-   * @param _expr
-   * @param _value
+   * @param _expr   expression to compare for less
+   * @param _value  value to compare for equal
    */
-  public void addWhereExprEqValue(final String _expr, final long _value)
-                                                                        throws EFapsException {
-    addWhereExprEqValue(_expr, "" + _value);
+  public void addWhereExprLessValue(final String _expr,
+                                    final ReadableDateTime _dateTime)
+      throws EFapsException {
+    final Attribute attr = this.type.getAttribute(_expr);
+    if (attr == null) {
+      LOG.debug("unknown expression '"
+          + _expr
+          + "' for type "
+          + "'"
+          + this.type.getName()
+          + "'");
+      throw new EFapsException(getClass(), "addWhereExprLessValue",
+          "UnknownExpression", _expr, this.type.getName());
+    }
+    getMainWhereClauses().add(
+        new WhereClauseAttributeLessValue(this, attr,
+            _dateTime.toDateTime().toString(ISODateTimeFormat.dateTime())));
   }
+
 
   /**
    * @param _attr
@@ -294,5 +349,4 @@ public class SearchQuery extends AbstractQuery {
                                                                                 throws EFapsException {
     getMainWhereClauses().add(new WhereClauseAttrEqAttr(this, _attr1, _attr2));
   }
-
 }
