@@ -97,6 +97,7 @@ public class UIStructurBrowser extends AbstractUIObject {
     /** Method sort is executed. */
     SORT;
   }
+
   /**
    * Needed for serialization.
    */

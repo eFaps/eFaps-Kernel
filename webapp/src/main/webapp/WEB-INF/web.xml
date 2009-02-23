@@ -69,7 +69,7 @@
     </init-param>
   </filter>
 
-  <!-- filter used for form based authentication -->
+  <!-- filter used for form based authentication
   <filter>
     <filter-name>eFapsFormBasedAuthenticationFilter</filter-name>
     <filter-class>
@@ -141,7 +141,7 @@
       </description>
     </init-param>
   </filter>
-
+ -->
   <!-- filter used to make a whole transaction for one request -->
   <filter>
     <filter-name>eFapsTransactionFilter</filter-name>
@@ -173,12 +173,12 @@
     <filter-name>eFapsBasicAuthenticationFilter</filter-name>
     <url-pattern>/webdav/*</url-pattern>
   </filter-mapping>
-
+<!--  
   <filter-mapping>
     <filter-name>eFapsFormBasedAuthenticationFilter</filter-name>
     <url-pattern>/deaktiviert/*</url-pattern>
   </filter-mapping>
-
+-->
   <filter-mapping>
     <filter-name>eFapsTransactionFilter</filter-name>
     <url-pattern>/*</url-pattern>

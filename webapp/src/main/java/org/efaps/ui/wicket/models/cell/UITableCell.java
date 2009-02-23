@@ -122,7 +122,7 @@ public class UITableCell implements IClusterable {
       if (this.oid != null) {
         final Instance instance = new Instance(this.oid);
         final Menu menu = Menu.getTypeTreeMenu(instance.getType());
-        if (menu.hasAccess(_targetMode)) {
+        if (menu != null && menu.hasAccess(_targetMode)) {
           this.reference = _fieldValue.getField().getReference();
         }
       }

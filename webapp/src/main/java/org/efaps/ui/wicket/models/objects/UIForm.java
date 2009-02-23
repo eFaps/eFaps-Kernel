@@ -41,6 +41,7 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.FieldCommand;
 import org.efaps.admin.ui.field.FieldGroup;
 import org.efaps.admin.ui.field.FieldHeading;
 import org.efaps.admin.ui.field.FieldSet;
@@ -48,6 +49,7 @@ import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
+import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -67,6 +69,7 @@ public class UIForm extends AbstractUIObject {
    *
    */
   public enum ElementType {
+
     /**
      * Element is a Form.
      */
@@ -316,9 +319,22 @@ public class UIForm extends AbstractUIObject {
     //fieldset
     if (_field instanceof FieldSet) {
       evaluateFieldSet(_row, _query, _field, oid, label);
+    } else if (_field instanceof FieldCommand) {
+      evaluateFieldCmd(_row, _field, oid, label);
     } else {
       evaluateField(_row, _query, _field, fieldInstance, label, attr);
     }
+  }
+
+  private void evaluateFieldCmd(final FormRow _row, final Field _field,
+                                final String _oid, final String _label)
+      throws EFapsException {
+    final UIFormCellCmd fieldCmd = new UIFormCellCmd((FieldCommand) _field,
+                                                     _oid,
+                                                     getMode(),
+                                                     _label);
+
+    _row.add(fieldCmd);
   }
 
   /**
@@ -542,17 +558,26 @@ public class UIForm extends AbstractUIObject {
           final String attrTypeName = attr != null
                                       ? attr.getAttributeType().getName()
                                       : null;
-          final UIFormCell cell = new UIFormCell(field,
-                                                 strValue,
-                                                 getMode(),
-                                                 label,
-                                                 attrTypeName);
-          if (isSearchMode()) {
-            cell.setReference(null);
-          } else if (strValue != null && !this.fileUpload) {
-            final String tmp = strValue.replaceAll(" ", "");
-            if (tmp.toLowerCase().contains("type=\"file\"")) {
-              this.fileUpload = true;
+
+          final UIFormCell cell;
+          if (field instanceof FieldCommand) {
+            cell = new UIFormCellCmd((FieldCommand) field,
+                                     null,
+                                     getMode(),
+                                     label);
+          } else {
+            cell = new UIFormCell(field,
+                                  strValue,
+                                  getMode(),
+                                  label,
+                                  attrTypeName);
+            if (isSearchMode()) {
+              cell.setReference(null);
+            } else if (strValue != null && !this.fileUpload) {
+              final String tmp = strValue.replaceAll(" ", "");
+              if (tmp.toLowerCase().contains("type=\"file\"")) {
+                this.fileUpload = true;
+              }
             }
           }
 

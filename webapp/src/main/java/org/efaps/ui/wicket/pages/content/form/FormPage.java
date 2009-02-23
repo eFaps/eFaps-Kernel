@@ -134,33 +134,43 @@ public class FormPage extends AbstractContentPage {
     updateFormContainer(this, form, model);
   }
 
-  public static void updateFormContainer(final Page _page, final FormContainer _form, final UIForm _model) {
+  /**
+   * @param _page
+   * @param _form
+   * @param _model
+   */
+  public static void updateFormContainer(final Page _page,
+                                         final FormContainer _form,
+                                         final UIForm _model) {
 
     if (!_model.isInitialised()) {
       _model.execute();
     }
-
 
     int i = 0;
     final RepeatingView elementRepeater = new RepeatingView("elementRepeater");
     _form.add(elementRepeater);
     for (final Element element : _model.getElements()) {
       if (element.getType().equals(ElementType.FORM)) {
-        elementRepeater.add(new FormPanel(elementRepeater.newChildId(), _page,
-            new FormModel(_model), (FormElement) element.getElement()));
+        elementRepeater.add(new FormPanel(elementRepeater.newChildId(),
+                                         _page,
+                                         new FormModel(_model),
+                                         (FormElement) element.getElement(),
+                                         _form));
       } else if (element.getType().equals(ElementType.HEADING)) {
         final UIHeading headingmodel = (UIHeading) element.getElement();
         elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(),
-            headingmodel.getLabel(), headingmodel.getLevel()));
+                                             headingmodel.getLabel(),
+                                             headingmodel.getLevel()));
       } else if (element.getType().equals(ElementType.TABLE)) {
         i++;
-
         final UIFieldTable fieldTable = (UIFieldTable) element.getElement();
         fieldTable.setTableId(i);
-        final TablePanel table =
-            new TablePanel(elementRepeater.newChildId(), new TableModel(fieldTable), _page);
-        final HeaderPanel header =
-            new HeaderPanel(elementRepeater.newChildId(), table);
+        final TablePanel table = new TablePanel(elementRepeater.newChildId(),
+                                                new TableModel(fieldTable),
+                                                _page);
+        final HeaderPanel header = new HeaderPanel(elementRepeater.newChildId(),
+                                                   table);
         elementRepeater.add(header);
         elementRepeater.add(table);
       }

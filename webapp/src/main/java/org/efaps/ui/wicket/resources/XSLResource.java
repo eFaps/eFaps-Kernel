@@ -23,7 +23,8 @@ package org.efaps.ui.wicket.resources;
 import org.apache.wicket.Application;
 import org.apache.wicket.SharedResources;
 
-import org.efaps.update.program.XSLUpdate;
+import org.efaps.admin.EFapsClassNames;
+import org.efaps.admin.datamodel.Type;
 
 /**
  * The Resource for a XSL.
@@ -42,7 +43,7 @@ public class XSLResource extends AbstractEFapsResource {
    *                Name of the Resource
    */
   public XSLResource(final String _name) {
-    super(_name, XSLUpdate.TYPENAME);
+    super(_name, Type.get(EFapsClassNames.ADMIN_PROGRAM_XSL).getName());
   }
 
   /**

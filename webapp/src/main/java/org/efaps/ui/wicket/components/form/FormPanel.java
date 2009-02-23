@@ -31,6 +31,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.row.RowPanel;
 import org.efaps.ui.wicket.models.FormRowModel;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -65,7 +66,8 @@ public class FormPanel extends Panel {
 
   public FormPanel(final String _wicketId, final Page _page,
                    final IModel<UIForm> _model,
-                   final FormElement _formelementmodel) {
+                   final FormElement _formelementmodel,
+                   final FormContainer _form) {
     super(_wicketId, _model);
     final UIForm uiForm = _model.getObject();
     if (!uiForm.isInitialised()) {
@@ -81,8 +83,12 @@ public class FormPanel extends Panel {
 
     for (final FormRow rowmodel : _formelementmodel.getRowModels()) {
 
-      final RowPanel row =
-          new RowPanel(rowRepeater.newChildId(), new FormRowModel(rowmodel), uiForm, _page, this);
+      final RowPanel row = new RowPanel(rowRepeater.newChildId(),
+                                        new FormRowModel(rowmodel),
+                                        uiForm,
+                                        _page,
+                                        this,
+                                        _form);
       rowRepeater.add(row);
 
     }

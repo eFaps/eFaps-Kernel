@@ -108,7 +108,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
     others.put("selectedRow", other);
 
     convertDateFieldValues();
-    if (checkForRequired(_target) && (validateForm(_target))) {
+    if (checkForRequired(_target) && (validateForm(_target, others))) {
 
       if (this.uiObject instanceof UIForm
           && ((UIForm) this.uiObject).isFileUpload()) {
@@ -259,8 +259,14 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
             .executeEvents(_other);
     for (final Return oneReturn : returns) {
       if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()) {
-        final String key = (String) oneReturn.get(ReturnValues.VALUES);
-        showDialog(_target, key);
+        boolean sniplett = false;
+        String key = (String) oneReturn.get(ReturnValues.VALUES);
+        if (key == null) {
+          key = (String) oneReturn.get(ReturnValues.SNIPLETT);
+          sniplett = true;
+        }
+        showDialog(_target, key, sniplett);
+
         ret = false;
         break;
       }
@@ -276,16 +282,22 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
    *                be called
    * @return true if the Validation was valid, otherwise false
    */
-  private boolean validateForm(final AjaxRequestTarget _target) {
+  private boolean validateForm(final AjaxRequestTarget _target,
+                               final Map<String, String[]> _other) {
     boolean ret = true;
 
     final List<Return> validation = ((AbstractUIObject) this.form.getParent()
-        .getDefaultModelObject()).validate();
+        .getDefaultModelObject()).validate(_other);
 
     for (final Return oneReturn : validation) {
       if (oneReturn.get(ReturnValues.TRUE) == null) {
-        final String key = (String) oneReturn.get(ReturnValues.VALUES);
-        showDialog(_target, key);
+        boolean sniplett = false;
+        String key = (String) oneReturn.get(ReturnValues.VALUES);
+        if (key == null) {
+          key = (String) oneReturn.get(ReturnValues.SNIPLETT);
+          sniplett = true;
+        }
+        showDialog(_target, key, sniplett);
 
         ret = false;
         break;
@@ -324,7 +336,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
       }
     }
     if (!ret) {
-      showDialog(_target, "MandatoryDialog");
+      showDialog(_target, "MandatoryDialog", false);
     }
     return ret;
   }
@@ -359,9 +371,12 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
    *
    * @param _target AjaxRequestTarget to be used for opening the modal
    *                DialogPage
-   * @param _key    the Key to get the DBProperties from the eFapsDataBaase
+   * @param _key    the Key to get the DBProperties from the eFapsDataBaase or
+   *                a code sniplett
+   * @param _isSniplett is the parameter _key a key to a property or a sniplett
    */
-  private void showDialog(final AjaxRequestTarget _target, final String _key) {
+  private void showDialog(final AjaxRequestTarget _target, final String _key,
+                          final boolean _isSniplett) {
     final ModalWindowContainer modal =
         ((AbstractContentPage) getComponent().getPage()).getModal();
 
@@ -377,7 +392,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
       private static final long serialVersionUID = 1L;
 
       public Page createPage() {
-        return new DialogPage(modal, _key);
+        return new DialogPage(modal, _key, _isSniplett);
       }
     });
     modal.show(_target);

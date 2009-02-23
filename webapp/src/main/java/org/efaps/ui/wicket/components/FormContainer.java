@@ -48,7 +48,7 @@ public class FormContainer extends Form<Object> {
 
   private String actionUrl;
 
-  public FormContainer(String id) {
+  public FormContainer(final String id) {
     super(id);
     // super.setMultiPart(true);
   }
@@ -78,17 +78,18 @@ public class FormContainer extends Form<Object> {
   @Override
   protected void onComponentTag(final ComponentTag _tag) {
     super.onComponentTag(_tag);
-    if (((AbstractUIObject) this.getPage().getDefaultModelObject()).isCreateMode()
-        || ((AbstractUIObject) this.getPage().getDefaultModelObject()).isEditMode()) {
-      _tag.put("enctype", "multipart/form-data");
-    }
-
     this.actionUrl = urlFor(IFormSubmitListener.INTERFACE).toString();
-    // only on SearchMode we want normal submit, in any other case we use
-    // AjaxSubmit
-    if (!((AbstractUIObject) this.getPage().getDefaultModelObject()).isSearchMode()) {
-      _tag.put("onSubmit", "return false;");
-      _tag.put("action", "");
+    if (getPage().getDefaultModelObject() != null) {
+      if ((((AbstractUIObject) getPage().getDefaultModelObject()).isCreateMode()
+          || ((AbstractUIObject) getPage().getDefaultModelObject()).isEditMode())) {
+        _tag.put("enctype", "multipart/form-data");
+      }
+      // only on SearchMode we want normal submit, in any other case we use
+      // AjaxSubmit
+      if (!((AbstractUIObject) getPage().getDefaultModelObject()).isSearchMode()) {
+        _tag.put("onSubmit", "return false;");
+        _tag.put("action", "");
+      }
     }
   }
 
@@ -154,7 +155,7 @@ public class FormContainer extends Form<Object> {
    * @param _fileUpload
    *                the fileUpload to set
    */
-  public void setFileUpload(boolean _fileUpload) {
+  public void setFileUpload(final boolean _fileUpload) {
     this.fileUpload = _fileUpload;
   }
 

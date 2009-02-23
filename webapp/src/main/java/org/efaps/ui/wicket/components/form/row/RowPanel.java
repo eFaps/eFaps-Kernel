@@ -27,12 +27,16 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
+import org.efaps.ui.wicket.components.form.command.CommandCellPanel;
 import org.efaps.ui.wicket.components.form.set.YPanel;
+import org.efaps.ui.wicket.models.cell.FormCellCmdModel;
 import org.efaps.ui.wicket.models.cell.FormCellModel;
 import org.efaps.ui.wicket.models.cell.FormCellSetModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
+import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
@@ -51,9 +55,16 @@ public class RowPanel extends Panel {
    */
   private static final long serialVersionUID = 1L;
 
+  /**
+   * @param _wicketId   wicket id for this component
+   * @param _model      model for this component
+   * @param _formmodel  parent model of tis row
+   * @param _page       page the rowpanel is in
+   * @param _formPanel  form panel this rowpanel is in
+   */
   public RowPanel(final String _wicketId, final IModel<FormRow> _model,
                   final UIForm _formmodel, final Page _page,
-                  final FormPanel _formPanel) {
+                  final FormPanel _formPanel, final FormContainer _form) {
     super(_wicketId, _model);
 
     final FormRow row = (FormRow) super.getDefaultModelObject();
@@ -83,6 +94,10 @@ public class RowPanel extends Panel {
       if (cell instanceof UIFormCellSet) {
         valueCell = new YPanel(cellRepeater.newChildId(),
                                new FormCellSetModel((UIFormCellSet) cell));
+      } else if (cell instanceof UIFormCellCmd) {
+        valueCell = new CommandCellPanel(cellRepeater.newChildId(),
+                                    new FormCellCmdModel((UIFormCellCmd) cell),
+                                    _form);
       } else {
          valueCell =
           new ValueCellPanel(cellRepeater.newChildId(),
@@ -106,7 +121,6 @@ public class RowPanel extends Panel {
 
       if (row.isRowSpan()) {
         colspan = colspan - 2;
-
       }
       valueCell.add(new SimpleAttributeModifier("colspan", colspan.toString()));
       cellRepeater.add(valueCell);
