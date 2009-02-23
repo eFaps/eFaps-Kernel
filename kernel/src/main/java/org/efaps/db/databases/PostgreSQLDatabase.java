@@ -52,7 +52,10 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
    * @todo specificy real column type
    */
   public PostgreSQLDatabase()  {
-    addMapping(ColumnType.INTEGER,      "bigint",     "null", "int8", "bigserial");
+    addMapping(ColumnType.INTEGER,      "bigint",     "null", "int8",
+        "bigserial");
+    addMapping(ColumnType.DECIMAL,      "numeric",    "null", "decimal",
+        "numeric");
     addMapping(ColumnType.REAL,         "real",       "null", "float4");
     addMapping(ColumnType.STRING_SHORT, "char",       "null", "bpchar");
     addMapping(ColumnType.STRING_LONG,  "varchar",    "null", "varchar");
@@ -142,12 +145,12 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
   public void createTable(final Connection _con, final String _table,
           final String _parentTable) throws SQLException  {
 
-    Statement stmt = _con.createStatement();
+    final Statement stmt = _con.createStatement();
 
     try  {
 
       // create table itself
-      StringBuilder cmd = new StringBuilder();
+      final StringBuilder cmd = new StringBuilder();
       cmd.append("create table ").append(_table).append(" (");
 
       // autoincrement
@@ -192,15 +195,15 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
           final String _column)  throws SQLException  {
 
     long ret = 0;
-    Statement stmt = _con.createStatement();
+    final Statement stmt = _con.createStatement();
 
     try  {
 
-      StringBuilder cmd = new StringBuilder();
+      final StringBuilder cmd = new StringBuilder();
       cmd.append("select nextval('").append(_table).append("_").append(_column)
           .append("_SEQ')");
 
-      ResultSet rs = stmt.executeQuery(cmd.toString());
+      final ResultSet rs = stmt.executeQuery(cmd.toString());
       if (rs.next())  {
         ret = rs.getLong(1);
       }

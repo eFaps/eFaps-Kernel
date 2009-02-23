@@ -103,17 +103,22 @@ public class SQLTableUpdate extends AbstractUpdate
     /** Type of the column. */
     private final AbstractDatabase.ColumnType type;
 
-    /** Length of the Column. */
+    /** Length of the Column / Precision of a decimal. */
     private final int length;
 
     /** Is null allowed in the column? */
     private final boolean isNotNull;
 
+    /** Scale of a decimal. */
+    private final int scale;
+
     private Column(final String _name, final AbstractDatabase.ColumnType _type,
-                   final int _length, final boolean _notNull) {
+                   final int _length, final int _scale,
+                   final boolean _notNull) {
       this.name = _name;
       this.type = _type;
       this.length = _length;
+      this.scale = _scale;
       this.isNotNull = _notNull;
     }
 
@@ -285,19 +290,24 @@ public class SQLTableUpdate extends AbstractUpdate
                                             _attributes.get("condition")));
           } else if ("column".equals(subValue))  {
             final String lengthStr = _attributes.get("length");
+            final String scaleStr = _attributes.get("scale");
             final int length = (lengthStr != null)
                                ? Integer.parseInt(lengthStr)
                                : 0;
+            final int scale = (scaleStr != null)
+                              ? Integer.parseInt(scaleStr)
+                              : 0;
             this.columns.add(new Column(_attributes.get("name"),
-                                        Enum.valueOf(AbstractDatabase.ColumnType.class,
-                                                     _attributes.get("type")),
-                                        length,
-                                        "true".equals(_attributes.get("not-null"))));
+                                Enum.valueOf(AbstractDatabase.ColumnType.class,
+                                             _attributes.get("type")),
+                                length,
+                                scale,
+                                "true".equals(_attributes.get("not-null"))));
           } else if ("foreign".equals(subValue))  {
             this.foreignKeys.add(new ForeignKey(_attributes.get("name"),
-                                                _attributes.get("key"),
-                                                _attributes.get("reference"),
-                                                "true".equals(_attributes.get("cascade"))));
+                                    _attributes.get("key"),
+                                    _attributes.get("reference"),
+                                    "true".equals(_attributes.get("cascade"))));
           } else if ("parent-table".equals(subValue))  {
             this.parentSQLTableName = _text;
           } else if ("sql".equals(subValue))  {
@@ -477,7 +487,8 @@ public class SQLTableUpdate extends AbstractUpdate
 // TODO: check for column types, column length and isNotNull
           } else  {
             getDbType().addTableColumn(con.getConnection(), tableName,
-                column.name, column.type, null, column.length, column.isNotNull);
+                column.name, column.type, null, column.length, column.scale,
+                column.isNotNull);
           }
         }
 

@@ -456,6 +456,8 @@ function _eFapsCreateDataModelTablesStep1()  {
   _eFapsCreateAttrType(stmt, null, 'a5367e5a-78b7-47b4-be7f-abf5423171f0', 'OwnerLink',      'org.efaps.admin.datamodel.attributetype.OwnerLinkType',      'org.efaps.admin.datamodel.ui.UserUI',    null, 1   );
   _eFapsCreateAttrType(stmt, null, 'c9c98b47-d5da-4665-939c-9686c82914ac', 'PolicyLink',     'org.efaps.admin.datamodel.attributetype.StringType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null);
   _eFapsCreateAttrType(stmt, null, 'adb13c3d-9506-4da2-8d75-b54c76779c6c', 'MultiLineArray', 'org.efaps.admin.datamodel.attributetype.MultiLineArrayType', 'org.efaps.admin.datamodel.ui.StringUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, '358d1f0e-43ae-425d-a4a0-8d5bad6f40d7', 'Decimal',        'org.efaps.admin.datamodel.attributetype.DecimalType',        'org.efaps.admin.datamodel.ui.StringUI',    null, null);
+  
   
   _eFapsCreateInsertAttr(stmt, ATTRTYPESQLTABLEID, ATTRTYPETYPEID, 'Classname',     'CLASSNAME',    'String', null);
   _eFapsCreateInsertAttr(stmt, ATTRTYPESQLTABLEID, ATTRTYPETYPEID, 'ClassnameUI',   'CLASSNAMEUI',  'String', null);

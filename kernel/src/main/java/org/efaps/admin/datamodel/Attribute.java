@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Context;
+import org.efaps.db.databases.information.ColumnInformation;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
@@ -139,6 +140,17 @@ public class Attribute extends AbstractDataModelObject {
   private AttributeSet parentSet;
 
   /**
+   * Size of the attribute (for string). Precision of the attribute
+   * (for decimal).
+   */
+  private final int size;
+
+  /**
+   * Scale of the attribute (for decimal).
+   */
+  private final int scale;
+
+  /**
    * This is the constructor for class {@link Attribute}. Every instance of
    * class {@link Attribute} must have a name (parameter <i>_name</i>) and an
    * identifier (parameter <i>_id</i>).
@@ -164,14 +176,20 @@ public class Attribute extends AbstractDataModelObject {
                         : null;
     // add SQL columns and evaluate if attribute is required
     boolean req = false;
-    final StringTokenizer tokens
-                                = new StringTokenizer(_sqlColNames.trim(), ",");
-    while (tokens.hasMoreTokens()) {
-      final String colName = tokens.nextToken().trim();
+    int sizeTemp = 0;
+    int scaleTemp = 0;
+    final StringTokenizer tok = new StringTokenizer(_sqlColNames.trim(), ",");
+    while (tok.hasMoreTokens()) {
+      final String colName = tok.nextToken().trim();
       getSqlColNames().add(colName);
-      req |= !this.sqlTable.getTableInformation().getColInfo(colName)
-                                                                .isNullable();
+      final ColumnInformation columInfo
+                      = this.sqlTable.getTableInformation().getColInfo(colName);
+      req |= !columInfo.isNullable();
+      sizeTemp = columInfo.getSize();
+      scaleTemp = columInfo.getScale();
     }
+    this.size = sizeTemp;
+    this.scale = scaleTemp;
     this.required = req;
   }
 
@@ -188,13 +206,17 @@ public class Attribute extends AbstractDataModelObject {
    * @param _attributeType  typer of this attribute
    * @param _defaultValue   default value for this attribute
    * @param _required       is it required
+   * @param j
+   * @param i
    */
   private Attribute(final long _id,
                     final String _name,
                     final SQLTable _sqlTable,
                     final AttributeType _attributeType,
                     final String _defaultValue,
-                    final boolean _required) {
+                    final boolean _required,
+                    final int _size,
+                    final int _scale) {
     super(_id, null, _name);
     this.sqlTable = _sqlTable;
     this.attributeType = _attributeType;
@@ -202,6 +224,8 @@ public class Attribute extends AbstractDataModelObject {
                         ? _defaultValue.trim()
                         : null;
     this.required = _required;
+    this.size = _size;
+    this.scale = _scale;
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -259,7 +283,9 @@ public class Attribute extends AbstractDataModelObject {
                                   this.sqlTable,
                                   this.attributeType,
                                   this.defaultValue,
-                                  this.required);
+                                  this.required,
+                                  this.size,
+                                  this.scale);
     ret.getSqlColNames().addAll(getSqlColNames());
     ret.setLink(getLink());
     ret.setUniqueKeys(getUniqueKeys());
@@ -308,7 +334,7 @@ public class Attribute extends AbstractDataModelObject {
    * @see #parent
    * @see #getParent
    */
-  void setParent(final Type _parent) {
+  public void setParent(final Type _parent) {
     this.parent = _parent;
   }
 
@@ -403,6 +429,24 @@ public class Attribute extends AbstractDataModelObject {
    */
   public boolean isRequired() {
     return this.required;
+  }
+
+  /**
+   * Getter method for instance variable {@link #size}.
+   *
+   * @return value of instance variable {@link #size}
+   */
+  public int getSize() {
+    return this.size;
+  }
+
+  /**
+   * Getter method for instance variable {@link #scale}.
+   *
+   * @return value of instance variable {@link #scale}
+   */
+  public int getScale() {
+    return this.scale;
   }
 
   public static void initialize(final Class<?> _class) {

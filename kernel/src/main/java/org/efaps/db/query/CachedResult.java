@@ -20,6 +20,7 @@
 
 package org.efaps.db.query;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -158,7 +159,7 @@ public class CachedResult {
     final ResultSetMetaData metaData = _rs.getMetaData();
     final int columnCount = metaData.getColumnCount();
 
-    if (_subKeyIndex>0){
+    if (_subKeyIndex > 0){
       this.multiple = true;
     }
 
@@ -176,7 +177,7 @@ public class CachedResult {
         }
         if (this.multiple){
           List<Object> mulitple = this.cache.get(_rs.getObject(_keyIndex));
-          if (mulitple==null){
+          if (mulitple == null){
             mulitple = new ArrayList<Object>();
             this.cache.put(_rs.getObject(_keyIndex), mulitple);
             this.rows.add(mulitple);
@@ -216,9 +217,9 @@ public class CachedResult {
    */
   public Object getObject(final int _index) {
     Object ret;
-    if (this.multiple){
+    if (this.multiple) {
       final List<Object> tmp = new ArrayList<Object>();
-      for (final Object obj : this.currentRow){
+      for (final Object obj : this.currentRow) {
         tmp.add(((List<?>) obj).get(_index - 1));
       }
       ret = tmp;
@@ -231,9 +232,9 @@ public class CachedResult {
   public List<List<Object>> getObjectList(final List<Integer> _indexes){
     final List<List<Object>> ret = new ArrayList<List<Object>>();
     if (this.multiple) {
-      for (final Object obj :  this.currentRow){
+      for (final Object obj :  this.currentRow) {
         final List<Object> tmp = new ArrayList<Object>();
-        for (final Integer idx : _indexes){
+        for (final Integer idx : _indexes) {
           tmp.add(((List<?>) obj).get(idx - 1));
         }
         ret.add(tmp);
@@ -271,7 +272,7 @@ public class CachedResult {
     Long ret = null;
     Object obj = getObject(_index);
     if (obj instanceof List){
-      obj = ((List<?>)obj).get(0);
+      obj = ((List<?>) obj).get(0);
     }
     if (obj instanceof Number) {
       ret = ((Number) obj).longValue();
@@ -366,5 +367,20 @@ public class CachedResult {
 
   public boolean isMultiple() {
     return this.multiple;
+  }
+
+  /**
+   * @param intValue
+   * @return
+   */
+  public BigDecimal getDecimal(final int _index) {
+    BigDecimal ret = null;
+    final Object obj = getObject(_index);
+    if (obj instanceof BigDecimal) {
+      ret = (BigDecimal) obj;
+    } else {
+      ret = new BigDecimal(obj.toString());
+    }
+    return ret;
   }
 }

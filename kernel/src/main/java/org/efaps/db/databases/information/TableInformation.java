@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
 
@@ -127,21 +128,24 @@ public class TableInformation
    */
   protected void evaluateColInfo(final DatabaseMetaData _metaData,
                                  final String _tableName)
-      throws SQLException
-  {
+      throws SQLException {
     final ResultSet result = _metaData.getColumns(null, null, _tableName, "%");
     while (result.next())  {
       final String colName = result.getString("COLUMN_NAME").toUpperCase();
       final String typeName = result.getString("TYPE_NAME").toLowerCase();
-      final Set<AbstractDatabase.ColumnType> colTypes = Context.getDbType().getReadColumnTypes(typeName);
+
+      final Set<AbstractDatabase.ColumnType> colTypes
+                            = Context.getDbType().getReadColumnTypes(typeName);
       if (colTypes == null)  {
         throw new SQLException("read unknown column type '" + typeName + "'");
       }
       final int size = result.getInt("COLUMN_SIZE");
-      final boolean isNullable = !"NO".equalsIgnoreCase(result.getString("IS_NULLABLE"));
+      final int scale = result.getInt("DECIMAL_DIGITS");
+      final boolean isNullable
+                     = !"NO".equalsIgnoreCase(result.getString("IS_NULLABLE"));
 
-      this.colMap.put(colName,
-                      new ColumnInformation(colName, colTypes, size, isNullable));
+      this.colMap.put(colName, new ColumnInformation(colName, colTypes, size,
+                                                     scale, isNullable));
     }
     result.close();
   }

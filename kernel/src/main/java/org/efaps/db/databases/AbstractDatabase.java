@@ -30,9 +30,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.efaps.db.databases.information.TableInformation;
 
 /**
  * @author tmo
@@ -53,30 +54,24 @@ public abstract class AbstractDatabase {
    * The enumeration defines the known column types in the database.
    */
   public enum ColumnType {
-
-    /** integer number */
+    /** integer number. */
     INTEGER,
-
-    /** real number */
+    /** numeric/decimal numbers. */
+    DECIMAL,
+    /** real number. */
     REAL,
-
-    /** short string */
+    /** short string. */
     STRING_SHORT,
-
-    /** long string */
+    /** long string. */
     STRING_LONG,
-
-    /** date and time */
+    /** date and time. */
     DATETIME,
-
-    /** binary large object */
+    /** binary large object. */
     BLOB,
-
-    /** character large object */
+    /** character large object. */
     CLOB,
-
-    /** boolean */
-    BOOLEAN
+    /** boolean. */
+    BOOLEAN,
   }
 
   /**
@@ -323,6 +318,7 @@ public abstract class AbstractDatabase {
                              final ColumnType _columnType,
                              final String _defaultValue,
                              final int _length,
+                             final int _scale,
                              final boolean _isNotNull)
       throws SQLException
   {
@@ -331,7 +327,11 @@ public abstract class AbstractDatabase {
        .append("add ").append(_columnName).append(" ")
        .append(getWriteSQLTypeName(_columnType));
     if (_length > 0)  {
-      cmd.append("(").append(_length).append(")");
+      cmd.append("(").append(_length);
+      if (_scale > 0) {
+        cmd.append(",").append(_scale);
+      }
+      cmd.append(")");
     }
     if (_defaultValue != null)  {
       cmd.append(" default ").append(_defaultValue);

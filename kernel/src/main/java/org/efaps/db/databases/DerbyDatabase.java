@@ -26,9 +26,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.efaps.db.databases.information.TableInformation;
 
 /**
  * The class implements Apache Derby specific methods for data base access.
@@ -126,8 +127,8 @@ public class DerbyDatabase extends AbstractDatabase  {
   @Override
   public void deleteAll(final Connection _con) throws SQLException  {
 
-    Statement stmtSel = _con.createStatement();
-    Statement stmtExec = _con.createStatement();
+    final Statement stmtSel = _con.createStatement();
+    final Statement stmtExec = _con.createStatement();
 
     try  {
     // remove all foreign keys
@@ -136,8 +137,8 @@ public class DerbyDatabase extends AbstractDatabase  {
       }
       ResultSet rs = stmtSel.executeQuery(SELECT_ALL_KEYS);
       while (rs.next())  {
-        String tableName = rs.getString(1);
-        String constrName = rs.getString(2);
+        final String tableName = rs.getString(1);
+        final String constrName = rs.getString(2);
         if (LOG.isDebugEnabled())  {
           LOG.debug("  - Table '" + tableName + "' Constraint '" + constrName + "'");
         }
@@ -151,7 +152,7 @@ public class DerbyDatabase extends AbstractDatabase  {
       }
       rs = stmtSel.executeQuery(SELECT_ALL_VIEWS);
       while (rs.next())  {
-        String viewName = rs.getString(1);
+        final String viewName = rs.getString(1);
         if (LOG.isDebugEnabled())  {
           LOG.debug("  - View '" + viewName + "'");
         }
@@ -165,7 +166,7 @@ public class DerbyDatabase extends AbstractDatabase  {
       }
       rs = stmtSel.executeQuery(SELECT_ALL_TABLES);
       while (rs.next())  {
-        String tableName = rs.getString(1);
+        final String tableName = rs.getString(1);
         if (LOG.isDebugEnabled())  {
           LOG.debug("  - Table '" + tableName + "'");
         }
@@ -196,12 +197,12 @@ public class DerbyDatabase extends AbstractDatabase  {
   public void createTable(final Connection _con, final String _table,
           final String _parentTable) throws SQLException  {
 
-    Statement stmt = _con.createStatement();
+    final Statement stmt = _con.createStatement();
 
     try  {
 
       // create table itself
-      StringBuilder cmd = new StringBuilder();
+      final StringBuilder cmd = new StringBuilder();
       cmd.append("create table ").append(_table).append(" (")
          .append("  ID bigint not null");
 
@@ -243,6 +244,7 @@ public class DerbyDatabase extends AbstractDatabase  {
    * @param _defaultValue   default value of the column (or null if not
    *                        specified)
    * @param _length         length of column to add (or 0 if not specified)
+   * @param _scale          scale of the column to add (or 0 if not specified)
    * @param _isNotNull      <i>true</i> means that the column has no
    *                        <code>null</code> values
    * @throws SQLException if the column could not be added to the tables
@@ -254,6 +256,7 @@ public class DerbyDatabase extends AbstractDatabase  {
                              final ColumnType _columnType,
                              final String _defaultValue,
                              final int _length,
+                             final int _scale,
                              final boolean _isNotNull)
       throws SQLException  {
 
@@ -274,7 +277,7 @@ public class DerbyDatabase extends AbstractDatabase  {
     }
 
     super.addTableColumn(_con, _tableName, _columnName, _columnType,
-        defaultValue, _length, _isNotNull);
+        defaultValue, _length, _scale, _isNotNull);
   }
 
   /**
