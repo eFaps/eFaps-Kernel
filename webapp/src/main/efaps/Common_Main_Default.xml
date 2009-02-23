@@ -31,7 +31,7 @@
   <file-application>eFaps-webapp</file-application>
   <file-revision>$Rev$</file-revision>
 
-  <definition type="replace">
+  <definition>
     <version-expression>(version==latest)</version-expression>
     <name>Common_Main_Default</name>
     <childs>

@@ -22,6 +22,12 @@
   
 -->
 
+<!-- 
+ @eFapsPackage  xsl
+ @eFapsUUID     2b800665-5e64-4d8e-a050-aa46d030ae1a
+ @eFapsRevision $Rev$
+-->
+
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format">
 
   <xsl:output indent="yes" encoding="UTF-8" />
