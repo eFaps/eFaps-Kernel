@@ -236,10 +236,10 @@
   <!-- Abstract Types -->
   <xsd:complexType name="AbstractBase">
     <xsd:sequence>
-      <xsd:element name="uuid" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
-      <xsd:element name="file-application" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-      <xsd:element name="file-revision" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-      <xsd:element name="description" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+      <xsd:element name="uuid" type="xsd:string" maxOccurs="1" minOccurs="1" nillable="false"/>
+      <xsd:element name="file-application" type="xsd:string" maxOccurs="1" minOccurs="0"/>
+      <xsd:element name="file-revision" type="xsd:string" maxOccurs="1" minOccurs="0"/>
+      <xsd:element name="description" type="xsd:string" maxOccurs="1" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -280,21 +280,22 @@
             <xsd:enumeration value="Boolean" />
             <xsd:enumeration value="Created" />
             <xsd:enumeration value="CreatorLink" />
-            <xsd:enumeration value="Date"></xsd:enumeration>
-            <xsd:enumeration value="DateTime"></xsd:enumeration>
+            <xsd:enumeration value="Date"/>
+            <xsd:enumeration value="DateTime"/>
+            <xsd:enumeration value="Decimal"/>
             <xsd:enumeration value="Integer" />
             <xsd:enumeration value="Link" />
-            <xsd:enumeration value="LinkWithRanges"></xsd:enumeration>
+            <xsd:enumeration value="LinkWithRanges"/>
             <xsd:enumeration value="Long" />
             <xsd:enumeration value="Modified" />
             <xsd:enumeration value="ModifierLink" />
             <xsd:enumeration value="OID" />
-            <xsd:enumeration value="Password"></xsd:enumeration>
-            <xsd:enumeration value="PersonLink"></xsd:enumeration>
-            <xsd:enumeration value="PolicyLink"></xsd:enumeration>
+            <xsd:enumeration value="Password"/>
+            <xsd:enumeration value="PersonLink"/>
+            <xsd:enumeration value="PolicyLink"/>
             <xsd:enumeration value="Real"></xsd:enumeration>
-            <xsd:enumeration value="String" />
-            <xsd:enumeration value="Time"></xsd:enumeration>
+            <xsd:enumeration value="String"/>
+            <xsd:enumeration value="Time"/>
             <xsd:enumeration value="Type" />
           </xsd:restriction>
         </xsd:simpleType>
@@ -338,21 +339,25 @@
   </xsd:complexType>
 
   <xsd:complexType name="column">
-    <xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="type" use="required">
       <xsd:simpleType>
         <xsd:restriction base="xsd:string">
-          <xsd:enumeration value="BOOLEAN"></xsd:enumeration>
-          <xsd:enumeration value="BLOB"></xsd:enumeration>
-          <xsd:enumeration value="DATETIME"></xsd:enumeration>
-          <xsd:enumeration value="INTEGER"></xsd:enumeration>
-          <xsd:enumeration value="STRING_LONG"></xsd:enumeration>
-          <xsd:enumeration value="STRING_SHORT"></xsd:enumeration>
+          <xsd:enumeration value="BOOLEAN"/>
+          <xsd:enumeration value="BLOB"/>
+          <xsd:enumeration value="CLOB"/>
+          <xsd:enumeration value="DATETIME"/>
+          <xsd:enumeration value="DECIMAL"/>
+          <xsd:enumeration value="INTEGER"/>
+          <xsd:enumeration value="REAL"/>
+          <xsd:enumeration value="STRING_LONG"/>
+          <xsd:enumeration value="STRING_SHORT"/>
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
-    <xsd:attribute name="length" type="xsd:integer" use="optional"></xsd:attribute>
-    <xsd:attribute name="not-null" type="xsd:boolean" use="optional"></xsd:attribute>
+    <xsd:attribute name="length" type="xsd:integer" use="optional"/>
+    <xsd:attribute name="not-null" type="xsd:boolean" use="optional"/>
+    <xsd:attribute name="scale" type="xsd:integer" use="optional"/>
   </xsd:complexType>
 
 
@@ -572,20 +577,21 @@
 
   <xsd:complexType name="field">
     <xsd:sequence>
-      <xsd:element name="icon" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-      <xsd:element name="property" type="eFaps:property_field" maxOccurs="unbounded" minOccurs="0"></xsd:element>
-      <xsd:element name="trigger" type="eFaps:trigger" maxOccurs="unbounded" minOccurs="0"></xsd:element>
-      <xsd:element name="table" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-      <xsd:element name="evaluate" type="eFaps:evaluate" maxOccurs="1" minOccurs="0"></xsd:element>
+      <xsd:element name="icon" type="xsd:string" maxOccurs="1" minOccurs="0"/>
+      <xsd:element name="property" type="eFaps:property_field" maxOccurs="unbounded" minOccurs="0"/>
+      <xsd:element name="trigger" type="eFaps:trigger" maxOccurs="unbounded" minOccurs="0"/>
+      <xsd:element name="table" type="xsd:string" maxOccurs="1" minOccurs="0"/>
+      <xsd:element name="evaluate" type="eFaps:evaluate" maxOccurs="1" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
     <xsd:attribute name="character" use="optional" default="Expression">
       <xsd:simpleType>
         <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Command"/>
           <xsd:enumeration value="Expression" />
           <xsd:enumeration value="Group" />
           <xsd:enumeration value="Heading" />
-          <xsd:enumeration value="Set"></xsd:enumeration>
+          <xsd:enumeration value="Set"/>
           <xsd:enumeration value="Target" />
         </xsd:restriction>
       </xsd:simpleType>
@@ -594,9 +600,9 @@
 
 
   <xsd:complexType name="foreign">
-    <xsd:attribute name="name" type="xsd:string"></xsd:attribute>
-    <xsd:attribute name="key" type="xsd:string"></xsd:attribute>
-    <xsd:attribute name="reference" type="xsd:string"></xsd:attribute>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="key" type="xsd:string"/>
+    <xsd:attribute name="reference" type="xsd:string"/>
   </xsd:complexType>
 
   <xsd:complexType name="import_attribute">
@@ -733,6 +739,7 @@
           <xsd:simpleType>
             <xsd:restriction base="xsd:string">
               <xsd:enumeration value="AlternateOID" />
+              <xsd:enumeration value="CmdRenderButton"/>
               <xsd:enumeration value="ClassNameUI" />
               <xsd:enumeration value="Columns" />
               <xsd:enumeration value="Creatable" />
@@ -743,15 +750,15 @@
               <xsd:enumeration value="HideLabel" />
               <xsd:enumeration value="HRef" />
               <xsd:enumeration value="Label" />
-              <xsd:enumeration value="Level"></xsd:enumeration>
-              <xsd:enumeration value="Order"></xsd:enumeration>
+              <xsd:enumeration value="Level"/>
+              <xsd:enumeration value="Order"/>
               <xsd:enumeration value="Required" />
-              <xsd:enumeration value="RowSpan"></xsd:enumeration>
+              <xsd:enumeration value="RowSpan"/>
               <xsd:enumeration value="Searchable" />
               <xsd:enumeration value="ShowTypeIcon" />
               <xsd:enumeration value="SortAble" />
               <xsd:enumeration value="Target" />
-              <xsd:enumeration value="Viewable"></xsd:enumeration>
+              <xsd:enumeration value="Viewable"/>
               <xsd:enumeration value="Width" />
             </xsd:restriction>
           </xsd:simpleType>
@@ -830,18 +837,19 @@
     <xsd:attribute name="event" use="required">
       <xsd:simpleType>
         <xsd:restriction base="xsd:string">
-          <xsd:enumeration value="ACCESSCHECK"></xsd:enumeration>
-          <xsd:enumeration value="CHECKIN_POST"></xsd:enumeration>
-          <xsd:enumeration value="CHECKOUT_POST"></xsd:enumeration>
-          <xsd:enumeration value="DELETE_OVERRIDE"></xsd:enumeration>
-          <xsd:enumeration value="DELETE_POST"></xsd:enumeration>
-          <xsd:enumeration value="DELETE_PRE"></xsd:enumeration>
-          <xsd:enumeration value="INSERT_OVERRIDE"></xsd:enumeration>
-          <xsd:enumeration value="INSERT_POST"></xsd:enumeration>
-          <xsd:enumeration value="RANGE_VALUE"></xsd:enumeration>
-          <xsd:enumeration value="UI_ACCESSCHECK"></xsd:enumeration>
-          <xsd:enumeration value="UI_FIELD_VALUE"></xsd:enumeration>
-          <xsd:enumeration value="UPDATE_POST"></xsd:enumeration>
+          <xsd:enumeration value="ACCESSCHECK"/>
+          <xsd:enumeration value="CHECKIN_POST"/>
+          <xsd:enumeration value="CHECKOUT_POST"/>
+          <xsd:enumeration value="DELETE_OVERRIDE"/>
+          <xsd:enumeration value="DELETE_POST"/>
+          <xsd:enumeration value="DELETE_PRE"/>
+          <xsd:enumeration value="INSERT_OVERRIDE"/>
+          <xsd:enumeration value="INSERT_POST"/>
+          <xsd:enumeration value="RANGE_VALUE"/>
+          <xsd:enumeration value="UI_ACCESSCHECK"/>
+          <xsd:enumeration value="UI_FIELD_VALUE"/>
+          <xsd:enumeration value="UI_FIELD_CMD"/>
+          <xsd:enumeration value="UPDATE_POST"/>
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
