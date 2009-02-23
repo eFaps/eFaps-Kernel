@@ -36,4 +36,9 @@
     <language>de</language> 
     <file>WebApp_de.properties</file>
   </resource>
+  <resource>
+    <type>Properties</type>
+    <language>es</language> 
+    <file>WebApp_es.properties</file>
+  </resource>
 </dbproperties>
