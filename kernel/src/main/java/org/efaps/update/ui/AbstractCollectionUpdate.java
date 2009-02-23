@@ -21,6 +21,7 @@
 package org.efaps.update.ui;
 
 import static org.efaps.admin.EFapsClassNames.FIELD;
+import static org.efaps.admin.EFapsClassNames.FIELDCOMMAND;
 import static org.efaps.admin.EFapsClassNames.FIELDGROUP;
 import static org.efaps.admin.EFapsClassNames.FIELDHEADING;
 import static org.efaps.admin.EFapsClassNames.FIELDSET;
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Delete;
@@ -55,33 +57,27 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-abstract class AbstractCollectionUpdate extends AbstractUpdate
-{
-  /** Link from field to icon */
-  private final static Link LINKFIELD2ICON =    new Link("Admin_UI_LinkIcon",
-                                                         "From",
-                                                         "Admin_UI_Image", "To");
+public abstract class AbstractCollectionUpdate extends AbstractUpdate {
 
-  /** Link from field to table as target */
-  private final static Link LINK2TARGETTABLE =  new Link("Admin_UI_LinkTargetTable",
-                                                         "From",
-                                                         "Admin_UI_Table", "To");
+  /** Link from field to icon. */
+  private static final Link LINKFIELD2ICON = new Link("Admin_UI_LinkIcon",
+                                                      "From",
+                                                      "Admin_UI_Image", "To");
 
-  /////////////////////////////////////////////////////////////////////////////
-  // constructors
+  /** Link from field to table as target. */
+  private static final Link LINK2TARGETTABLE
+                                          = new Link("Admin_UI_LinkTargetTable",
+                                                     "From",
+                                                     "Admin_UI_Table", "To");
 
   /**
    * @param _url        URL of the file
    * @param _typeName   name of the type
    */
   protected AbstractCollectionUpdate(final URL _url,
-                                     final String _typeName)
-  {
+                                     final String _typeName) {
     super(_url, _typeName);
   }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance methods
 
   /**
    * Creates new instance of class {@link Definition}.
@@ -90,23 +86,19 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate
    * @see Definition
    */
   @Override
-  protected AbstractDefinition newDefinition()
-  {
+  protected AbstractDefinition newDefinition() {
     return new Definition();
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // class for a field
+  private class FieldDefinition extends AbstractDefinition {
 
-  private class FieldDefinition extends AbstractDefinition
-  {
     /** Name of the field. */
     private final String name;
 
     /** Icon of the field. */
     private String icon = null;
 
-    /** set the character of the field */
+    /** set the character of the field. */
     private final String character;
 
     /**
@@ -115,17 +107,15 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate
      * @param _character
      */
     private FieldDefinition(final String _name,
-                            final String _character)
-    {
+                            final String _character) {
       this.name = _name;
       this.character = _character;
     }
 
     @Override
     protected void readXML(final List<String> _tags,
-                           final Map<String,String> _attributes,
-                           final String _text)
-    {
+                           final Map<String, String> _attributes,
+                           final String _text) {
       final String value = _tags.get(0);
       if ("evaluate".equals(value))  {
         if (_tags.size() == 1)  {
@@ -172,17 +162,15 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate
     @Override
     public String toString() {
       return new ToStringBuilder(this).append("name", this.name).append(
-          "properties", this.getProperties()).toString();
+          "properties", getProperties()).toString();
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // class for the definitions
+  private class Definition extends AbstractDefinition {
 
-  private class Definition extends AbstractDefinition
-  {
     /** All fields for the collection are stored in this variable */
-    private final List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
+    private final List<FieldDefinition> fields
+                                            = new ArrayList<FieldDefinition>();
 
     /**
      * Current read field definition.
@@ -191,14 +179,10 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate
      */
     private FieldDefinition curField = null;
 
-    ///////////////////////////////////////////////////////////////////////////
-    // instance methods
-
     @Override
     protected void readXML(final List<String> _tags,
-                           final Map<String,String> _attributes,
-                           final String _text)
-    {
+                           final Map<String, String> _attributes,
+                           final String _text) {
       final String value = _tags.get(0);
       if ("field".equals(value))  {
         if (_tags.size() == 1)  {
@@ -225,8 +209,7 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate
      */
     @Override
     public void updateInDB(final Set<Link> _allLinkTypes)
-        throws EFapsException
-    {
+        throws EFapsException {
       super.updateInDB(_allLinkTypes);
       setFieldsInDB();
     }
@@ -238,8 +221,7 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate
      * @todo rework that a complete cleanup and create is not needed
      */
     protected void setFieldsInDB()
-        throws EFapsException
-    {
+        throws EFapsException {
       // cleanup fields (remove all fields from table)
       final SearchQuery query = new SearchQuery();
       query.setExpand(this.instance, "Admin_UI_Field\\Collection");
@@ -257,13 +239,15 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate
       // append new fields
       for (final FieldDefinition field : this.fields) {
         Insert insert;
-        if ("Target".equals(field.character)) {
+        if ("Command".equals(field.character)) {
+          insert = new Insert(Type.get(FIELDCOMMAND));
+        } else if ("Target".equals(field.character)) {
           insert = new Insert(Type.get(FIELDTABLE));
         } else if ("Heading".equals(field.character)) {
           insert = new Insert(Type.get(FIELDHEADING));
         } else if ("Group".equals(field.character)) {
           insert = new Insert(Type.get(FIELDGROUP));
-        } else if ("Set".equals(field.character)){
+        } else if ("Set".equals(field.character)) {
           insert = new Insert(Type.get(FIELDSET));
         } else {
           insert = new Insert(Type.get(FIELD));
@@ -287,7 +271,8 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate
 
         // append events
         for (final Event event : field.getEvents()) {
-          final Instance newInstance = event.updateInDB(insert.getInstance(), field.name);
+          final Instance newInstance = event.updateInDB(insert.getInstance(),
+                                                        field.name);
           setPropertiesInDb(newInstance, event.getProperties());
         }
 
@@ -301,8 +286,7 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate
      * @see #fields
      * @see #Field
      */
-    public void addField(final FieldDefinition _field)
-    {
+    public void addField(final FieldDefinition _field) {
       this.fields.add(_field);
     }
 
@@ -313,8 +297,7 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate
      * @return string representation of this definition of a column
      */
     @Override
-    public String toString()
-    {
+    public String toString() {
       return new ToStringBuilder(this).appendSuper(super.toString()).append(
           "fields", this.fields).toString();
     }

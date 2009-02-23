@@ -62,6 +62,9 @@ public class Return {
     return this.map.isEmpty();
   }
 
+  public boolean contains(final ReturnValues _key) {
+    return this.map.containsKey(_key);
+  }
   /**
    * Returns a string representation of this parameter instance.
    *

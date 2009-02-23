@@ -118,8 +118,6 @@ public enum EFapsClassNames {
   /** */
   LINK_TARGET_TABLE("27eae97f-c6f4-4c4e-9947-c1c9bc4ea297"),
   /** */
-  LINK_FIELD2COMMAND("83550c54-f341-4e4b-b088-ea3f86183e24"),
-  /** */
   LINK_DEFAULT_SEARCHCOMMAND("3f827900-eda2-409f-be92-497dcacb0eef"),
 
   /** Admin_Program_Java. */

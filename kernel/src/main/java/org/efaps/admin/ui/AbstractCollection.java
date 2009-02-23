@@ -22,6 +22,7 @@ package org.efaps.admin.ui;
 
 import static org.efaps.admin.EFapsClassNames.COLLECTION;
 import static org.efaps.admin.EFapsClassNames.FIELD;
+import static org.efaps.admin.EFapsClassNames.FIELDCOMMAND;
 import static org.efaps.admin.EFapsClassNames.FIELDGROUP;
 import static org.efaps.admin.EFapsClassNames.FIELDHEADING;
 import static org.efaps.admin.EFapsClassNames.FIELDSET;
@@ -35,6 +36,7 @@ import java.util.TreeMap;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.FieldCommand;
 import org.efaps.admin.ui.field.FieldGroup;
 import org.efaps.admin.ui.field.FieldHeading;
 import org.efaps.admin.ui.field.FieldSet;
@@ -199,9 +201,11 @@ public abstract class AbstractCollection
       while (query.next()) {
         final long id = (Long) query.get("ID");
         final String name = (String) query.get("Name");
-        Field field;
+        final Field field;
         final Type type = (Type) query.get("Type");
-        if (FIELDHEADING.getUuid().equals(type.getUUID())) {
+        if (FIELDCOMMAND.getUuid().equals(type.getUUID())) {
+          field = new FieldCommand(id, null, name);
+        } else if (FIELDHEADING.getUuid().equals(type.getUUID())) {
           field = new FieldHeading(id, null, name);
         } else if (FIELDTABLE.getUuid().equals(type.getUUID())) {
           field = new FieldTable(id, null, name);
@@ -275,7 +279,7 @@ public abstract class AbstractCollection
   }
 
   /**
-   * Method to get the whole mapo of fields.
+   * Method to get the whole map of fields.
    *
    * @return  Map
    */

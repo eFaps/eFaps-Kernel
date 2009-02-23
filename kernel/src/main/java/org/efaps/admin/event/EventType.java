@@ -52,6 +52,7 @@ public enum EventType  {
   RANGE_VALUE        ("Admin_DataModel_AttributeRangeEvent"),
   UI_TABLE_EVALUATE  ("Admin_UI_TableEvaluateEvent"),
   UI_FIELD_VALUE     ("Admin_UI_FieldValueEvent"),
+  UI_FIELD_CMD       ("Admin_UI_FieldCommandEvent"),
   UI_ACCESSCHECK     ("Admin_UI_AbstractAccessCheckEvent"),
   UI_COMMAND_EXECUTE ("Admin_UI_CommandExecuteEvent"),
   UI_VALIDATE        ("Admin_UI_ValidateEvent"),
