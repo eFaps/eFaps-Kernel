@@ -27,6 +27,9 @@ import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.markup.html.IHeaderContributor;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
@@ -34,6 +37,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
+import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
@@ -71,6 +75,8 @@ public class DialogPage extends AbstractMergePage {
    * that it can be accessed
    */
   private Component parent;
+
+
 
   /**
    * Constructor used for a DialogPage that renders a Question like: "Are you
@@ -113,9 +119,10 @@ public class DialogPage extends AbstractMergePage {
    * @param _modal
    * @param _key
    */
-  public DialogPage(final ModalWindowContainer _modal, final String _key) {
-    this(_modal, DBProperties.getProperty(_key + ".Message"), getLabel(_key,
-        "Close"));
+  public DialogPage(final ModalWindowContainer _modal, final String _key,
+      final boolean _isSniplett) {
+    this(_modal, _isSniplett ? _key : DBProperties.getProperty(_key
+        + ".Message"), getLabel(_key, "Close"), _isSniplett);
   }
 
   /**
@@ -124,19 +131,26 @@ public class DialogPage extends AbstractMergePage {
    * @param _button
    */
   public DialogPage(final ModalWindowContainer _modal, final String _message,
-                    final String _button) {
+                    final String _button, final boolean _isSniplett) {
     super();
     this.modal = _modal;
     this.add(StaticHeaderContributor.forCss(CSS));
 
-    this.add(new Label("textLabel", _message));
+
+    if (_isSniplett) {
+      this.add(new LabelComponent("textLabel", _message));
+    } else {
+      this.add(new Label("textLabel", _message));
+    }
 
     this.add(new WebMarkupContainer("submitButton").setVisible(false));
+    final AjaxCloseLink ajaxCloseLink = new AjaxCloseLink(Button.LINKID);
+    this.add(new Button("closeButton", ajaxCloseLink,_button, Button.ICON_CANCEL));
 
-    this.add(new Button("closeButton", new AjaxCloseLink(Button.LINKID),
-        _button, Button.ICON_CANCEL));
-
+    this.add(new HeaderContributor(new KeyListenerContributor(ajaxCloseLink)));
   }
+
+
 
   /**
    * method that gets the Value for the Buttons from the DBProperties
@@ -158,6 +172,8 @@ public class DialogPage extends AbstractMergePage {
     return ret;
   }
 
+
+
   /**
    * AjaxLink that closes the ModalWindow this Page was opened in
    */
@@ -172,6 +188,15 @@ public class DialogPage extends AbstractMergePage {
     @Override
     public void onClick(final AjaxRequestTarget _target) {
       DialogPage.this.modal.close(_target);
+
+    final StringBuilder bldr = new StringBuilder();
+    bldr.append("var inp = top.frames[0].document.getElementById('eFapsContentDiv').getElementsByTagName('input');")
+    .append("if(inp!=null){")
+    .append("  inp[0].focus();")
+    .append("}");
+
+    _target.appendJavascript(bldr.toString());
+
     }
 
   }
@@ -220,6 +245,31 @@ public class DialogPage extends AbstractMergePage {
           DialogPage.this.parent, DialogPage.this.modal));
       DialogPage.this.modal.setUpdateParent(true);
       DialogPage.this.modal.close(_target);
+    }
+
+  }
+  private static final class KeyListenerContributor implements IHeaderContributor {
+
+    private final Component component;
+
+    /**
+     * @param ajaxCloseLink
+     */
+    public KeyListenerContributor(final Component _component) {
+     this.component = _component;
+    }
+
+    public void renderHead(final IHeaderResponse iheaderresponse) {
+
+      final StringBuilder bldr = new StringBuilder();
+      bldr.append("<script type=\"text/javascript\">")
+      .append("function TasteGedrueckt (Ereignis) {")
+        .append("var b=Wicket.$('").append(this.component.getMarkupId()).append("'); if (typeof(b.onclick) != 'undefined') { b.onclick();  }")
+              .append("}")
+        .append("window.onkeydown = TasteGedrueckt;").append("</script>");
+      iheaderresponse.renderString(bldr);
+
+
     }
 
   }
