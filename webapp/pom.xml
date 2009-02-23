@@ -190,6 +190,7 @@
     <dependency>
       <groupId>org.apache.wicket</groupId>
       <artifactId>wicket</artifactId>
+      <!-- rc2 kann nicht benutzt werden da fheler by onsubmit und forms -->
       <version>1.4-rc1</version>
       <scope>compile</scope>
     </dependency>
@@ -217,7 +218,7 @@
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>fop</artifactId>
-      <version>0.93</version>
+      <version>0.95</version>
       <exclusions>
         <exclusion>
           <groupId>batik</groupId>
@@ -257,7 +258,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-
   </dependencies>
 
 </project>
