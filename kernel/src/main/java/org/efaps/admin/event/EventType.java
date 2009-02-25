@@ -32,7 +32,7 @@ package org.efaps.admin.event;
  *
  */
 public enum EventType  {
-
+  /** EventType for checking the access to a type. */
   ACCESSCHECK        ("Admin_DataModel_TypeAccessCheckEvent"),
   CHECKIN_OVERRIDE   ("Admin_DataModel_Type_Trigger_CheckinOverride"),
   CHECKIN_POST       ("Admin_DataModel_Type_Trigger_CheckinPost"),
@@ -50,13 +50,23 @@ public enum EventType  {
   UPDATE_POST        ("Admin_DataModel_Type_Trigger_UpdatePost"),
   UPDATE_PRE         ("Admin_DataModel_Type_Trigger_UpdatePre"),
   RANGE_VALUE        ("Admin_DataModel_AttributeRangeEvent"),
-  UI_TABLE_EVALUATE  ("Admin_UI_TableEvaluateEvent"),
-  UI_FIELD_VALUE     ("Admin_UI_FieldValueEvent"),
-  UI_FIELD_CMD       ("Admin_UI_FieldCommandEvent"),
-  UI_ACCESSCHECK     ("Admin_UI_AbstractAccessCheckEvent"),
-  UI_COMMAND_EXECUTE ("Admin_UI_CommandExecuteEvent"),
-  UI_VALIDATE        ("Admin_UI_ValidateEvent"),
-  VALIDATE           ("Admin_DataModel_AttributeValidateEvent");
+  /** EventType for evaluating the values for a table. */
+  UI_TABLE_EVALUATE ("Admin_UI_TableEvaluateEvent"),
+  /** EventType for generating the value for a field instead of retrieving it
+   * directly from the database.
+   */
+  UI_FIELD_VALUE ("Admin_UI_FieldValueEvent"),
+  /** EventType for a FieldCommand. */
+  UI_FIELD_CMD ("Admin_UI_FieldCommandEvent"),
+  /** EventType for the search esjp of a auto complete field. */
+  UI_FIELD_AUTOCOMPLETE ("Admin_UI_FieldAutoCompleteEvent"),
+  /** EventType for checking the access to a field (depending on mode: create
+   *  edit etc.
+   */
+  UI_ACCESSCHECK        ("Admin_UI_AbstractAccessCheckEvent"),
+  UI_COMMAND_EXECUTE    ("Admin_UI_CommandExecuteEvent"),
+  UI_VALIDATE           ("Admin_UI_ValidateEvent"),
+  VALIDATE              ("Admin_DataModel_AttributeValidateEvent");
 
 
   public final String name;

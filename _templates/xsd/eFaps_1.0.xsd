@@ -847,8 +847,9 @@
           <xsd:enumeration value="INSERT_POST"/>
           <xsd:enumeration value="RANGE_VALUE"/>
           <xsd:enumeration value="UI_ACCESSCHECK"/>
-          <xsd:enumeration value="UI_FIELD_VALUE"/>
+          <xsd:enumeration value="UI_FIELD_AUTOCOMPLETE"/>
           <xsd:enumeration value="UI_FIELD_CMD"/>
+          <xsd:enumeration value="UI_FIELD_VALUE"/>
           <xsd:enumeration value="UPDATE_POST"/>
         </xsd:restriction>
       </xsd:simpleType>
