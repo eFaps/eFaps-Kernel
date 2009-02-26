@@ -82,7 +82,7 @@ public class ChgSetting implements EventExecution {
     strBld.append("</select>");
 
     final Return retVal = new Return();
-    retVal.put(ReturnValues.VALUES, strBld);
+    retVal.put(ReturnValues.SNIPLETT, strBld);
 
   return retVal;
   }

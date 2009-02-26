@@ -70,7 +70,7 @@ public class FileField {
        .append("/>");
 
     final Return retVal = new Return();
-    retVal.put(ReturnValues.VALUES, ret);
+    retVal.put(ReturnValues.SNIPLETT, ret);
     return retVal;
   }
 }

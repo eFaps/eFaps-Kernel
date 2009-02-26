@@ -91,7 +91,7 @@ public class FormatOutput implements EventExecution {
       }
     }
 
-    ret.put(ReturnValues.VALUES, strb.toString());
+    ret.put(ReturnValues.SNIPLETT, strb.toString());
 
     return ret;
   }
@@ -132,7 +132,7 @@ public class FormatOutput implements EventExecution {
       }
     }
 
-    ret.put(ReturnValues.VALUES, strb.toString());
+    ret.put(ReturnValues.SNIPLETT, strb.toString());
 
     return ret;
   }
@@ -174,7 +174,7 @@ public class FormatOutput implements EventExecution {
       }
     }
 
-    ret.put(ReturnValues.VALUES, strb.toString());
+    ret.put(ReturnValues.SNIPLETT, strb.toString());
 
     return ret;
   }

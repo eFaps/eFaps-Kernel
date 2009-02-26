@@ -75,7 +75,7 @@ public class TimeZoneUI implements EventExecution {
         actualTz = (String) query.get("TimeZone");
       }
     }
-    retVal.put(ReturnValues.VALUES, getField(actualTz));
+    retVal.put(ReturnValues.SNIPLETT, getField(actualTz));
 
     return retVal;
   }
@@ -92,7 +92,7 @@ public class TimeZoneUI implements EventExecution {
       throws EFapsException {
 
     final Return retVal = new Return();
-    retVal.put(ReturnValues.VALUES,
+    retVal.put(ReturnValues.SNIPLETT,
                getField(Context.getThreadContext().getTimezone().getID()));
 
     return retVal;

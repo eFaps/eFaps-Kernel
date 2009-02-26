@@ -566,7 +566,7 @@ public class UIForm extends AbstractUIObject {
                                      getMode(),
                                      label);
           } else {
-            cell = new UIFormCell(field,
+            cell = new UIFormCell(fieldvalue,
                                   strValue,
                                   getMode(),
                                   label,

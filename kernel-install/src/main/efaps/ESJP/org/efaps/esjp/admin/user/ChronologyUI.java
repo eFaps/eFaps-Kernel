@@ -70,7 +70,7 @@ public class ChronologyUI implements EventExecution {
         actualChrono = (String) query.get("Chronology");
       }
     }
-    retVal.put(ReturnValues.VALUES,
+    retVal.put(ReturnValues.SNIPLETT,
                ChronologyType.getByKey(actualChrono).getLabel());
 
     return retVal;
@@ -101,7 +101,7 @@ public class ChronologyUI implements EventExecution {
         actualChrono = (String) query.get("Chronology");
       }
     }
-    retVal.put(ReturnValues.VALUES, getField(actualChrono));
+    retVal.put(ReturnValues.SNIPLETT, getField(actualChrono));
     return retVal;
 
   }
@@ -120,7 +120,7 @@ public class ChronologyUI implements EventExecution {
     final Return retVal = new Return();
     final String actualChrono = Context.getThreadContext()
                                     .getPerson().getChronologyType().getKey();
-    retVal.put(ReturnValues.VALUES,
+    retVal.put(ReturnValues.SNIPLETT,
                getField(actualChrono));
 
     return retVal;

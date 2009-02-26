@@ -110,17 +110,16 @@ public class FieldValue implements Comparable<Object> {
   private final Field field;
 
   /**
-   * The instance variable stores the value for this form value.
-   *
-   * @see #getValue
-   */
-  private final Object value;
-
-  /**
    * Stores the UIInterface belonging to this fieldvalue.
    */
   private final UIInterface ui;
 
+  /**
+   * The instance variable stores the value for this form value.
+   *
+   * @see #getValue
+   */
+  private Object value;
 
   /**
    * Construtor used to evaluate the value from the database by using one of the
@@ -194,17 +193,17 @@ public class FieldValue implements Comparable<Object> {
         parameter.put(ParameterValues.INSTANCE, _instance);
         for (final EventDefinition evenDef : events) {
           final Return retu = evenDef.execute(parameter);
-          if (retu.get(ReturnValues.VALUES) != null) {
-            html.append(retu.get(ReturnValues.VALUES));
+          if (retu.get(ReturnValues.SNIPLETT) != null) {
+            html.append(retu.get(ReturnValues.SNIPLETT));
+          } else if (retu.get(ReturnValues.VALUES) != null) {
+            this.value = retu.get(ReturnValues.VALUES);
           }
         }
       }
-
       if (html.length() > 0)  {
         ret = html.toString();
       }
     }
-
     return ret;
   }
 
@@ -347,8 +346,8 @@ public class FieldValue implements Comparable<Object> {
         ret = 1;
       }
     } else {
-      if (this.getClassUI().equals(target.getClassUI())) {
-        ret = this.getClassUI().compare(this, target);
+      if (getClassUI().equals(target.getClassUI())) {
+        ret = getClassUI().compare(this, target);
       } else {
         LOG.error("can't compare this Objects because "
             + "they don't have the same ClassUI");

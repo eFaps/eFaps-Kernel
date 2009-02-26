@@ -146,7 +146,7 @@ public class Password {
               "&nbsp;<br/><br/>");
     }
     if (ret != null) {
-      retVal.put(ReturnValues.VALUES, ret);
+      retVal.put(ReturnValues.SNIPLETT, ret);
     }
     return retVal;
   }

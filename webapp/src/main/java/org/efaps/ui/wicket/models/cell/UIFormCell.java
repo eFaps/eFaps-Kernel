@@ -27,7 +27,6 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
-import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
 
 /**
@@ -80,18 +79,18 @@ public class UIFormCell extends UITableCell {
   /**
    * Constructor used on search and create.
    *
-   * @param _field        Field for the Cell
-   * @param _cellValue    Value of the Cell
-   * * @param _targetmode     targetmode for the cell
-   * @param _label        Label for the Cell
-   * @param _attrTypeName Name of the Type of Attribute
+   * @param _fieldvalue     FieldValue of the Cell
+   * @param _cellValue      Value of the Cell
+   * @param _targetmode     targetmode for the cell
+   * @param _label          Label for the Cell
+   * @param _attrTypeName   Name of the Type of Attribute
    * @throws EFapsException on error
    */
-  public UIFormCell(final Field _field, final String _cellValue ,
+  public UIFormCell(final FieldValue _fieldvalue, final String _cellValue ,
                     final TargetMode _targetmode, final String _label,
                     final String _attrTypeName)
       throws EFapsException {
-    this (new FieldValue(_field, null, null, null),
+    this (_fieldvalue,
           null,
           _cellValue,
           null,

@@ -109,7 +109,7 @@ public class ConnectEventToAbstract {
 
     final Return retVal = new Return();
     if (ret != null) {
-      retVal.put(ReturnValues.VALUES, ret);
+      retVal.put(ReturnValues.SNIPLETT, ret);
     }
     return retVal;
   }
@@ -188,7 +188,7 @@ public class ConnectEventToAbstract {
 
     // and return the string
     final Return retVal = new Return();
-    retVal.put(ReturnValues.VALUES, ret);
+    retVal.put(ReturnValues.SNIPLETT, ret);
     return retVal;
   }
 

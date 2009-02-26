@@ -86,10 +86,10 @@ public class ValueCellPanel extends Panel {
       if ((_formmodel.isCreateMode() || _formmodel.isEditMode())
           && "Date".equals(uiFormCell.getTypeName())) {
 
-        final Date date = (_formmodel.isCreateMode()
-                            || uiFormCell.getCompareValue() == null)
-                    ? new Date()
-                    : ((DateTime) uiFormCell.getCompareValue()).toDate();
+        final Date date = (uiFormCell.getCompareValue() == null
+                        || !(uiFormCell.getCompareValue() instanceof DateTime))
+                           ? new Date()
+                           : ((DateTime) uiFormCell.getCompareValue()).toDate();
 
         this.dateTextField = new DateFieldWithPicker("label",
                                                   new Model<Date>(date),
