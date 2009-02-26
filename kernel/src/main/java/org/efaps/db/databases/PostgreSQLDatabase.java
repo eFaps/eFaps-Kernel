@@ -52,7 +52,7 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
    * @todo specificy real column type
    */
   public PostgreSQLDatabase()  {
-    addMapping(ColumnType.INTEGER,      "bigint",     "null", "int8",
+    addMapping(ColumnType.INTEGER,      "bigint",     "null", "int8", "int4",
         "bigserial");
     addMapping(ColumnType.DECIMAL,      "numeric",    "null", "decimal",
         "numeric");
