@@ -34,25 +34,31 @@ package org.efaps.admin.event;
 public enum EventType  {
   /** EventType for checking the access to a type. */
   ACCESSCHECK        ("Admin_DataModel_TypeAccessCheckEvent"),
+  /** EventType executed instead the checkin of a type. */
   CHECKIN_OVERRIDE   ("Admin_DataModel_Type_Trigger_CheckinOverride"),
   CHECKIN_POST       ("Admin_DataModel_Type_Trigger_CheckinPost"),
   CHECKIN_PRE        ("Admin_DataModel_Type_Trigger_CheckinPre"),
+  /** EventType executed instead the checkout of a type. */
   CHECKOUT_OVERRIDE  ("Admin_DataModel_Type_Trigger_CheckoutOverride"),
   CHECKOUT_POST      ("Admin_DataModel_Type_Trigger_CheckoutPost"),
   CHECKOUT_PRE       ("Admin_DataModel_Type_Trigger_CheckoutPre"),
+  /** EventType executed instead the deletion of a type. */
   DELETE_OVERRIDE    ("Admin_DataModel_Type_Trigger_DeleteOverride"),
   DELETE_POST        ("Admin_DataModel_Type_Trigger_DeletePost"),
   DELETE_PRE         ("Admin_DataModel_Type_Trigger_DeletePre"),
+  /** EventType executed instead the insert of a type. */
   INSERT_OVERRIDE    ("Admin_DataModel_Type_Trigger_InsertOverride"),
   INSERT_POST        ("Admin_DataModel_Type_Trigger_InsertPost"),
   INSERT_PRE         ("Admin_DataModel_Type_Trigger_InsertPre"),
+  /** EventType executed instead the update of a type. */
   UPDATE_OVERRIDE    ("Admin_DataModel_Type_Trigger_UpdateOverride"),
   UPDATE_POST        ("Admin_DataModel_Type_Trigger_UpdatePost"),
   UPDATE_PRE         ("Admin_DataModel_Type_Trigger_UpdatePre"),
   RANGE_VALUE        ("Admin_DataModel_AttributeRangeEvent"),
   /** EventType for evaluating the values for a table. */
   UI_TABLE_EVALUATE ("Admin_UI_TableEvaluateEvent"),
-  /** EventType for generating the value for a field instead of retrieving it
+  /**
+   * EventType for generating the value for a field instead of retrieving it
    * directly from the database.
    */
   UI_FIELD_VALUE ("Admin_UI_FieldValueEvent"),
@@ -60,8 +66,9 @@ public enum EventType  {
   UI_FIELD_CMD ("Admin_UI_FieldCommandEvent"),
   /** EventType for the search esjp of a auto complete field. */
   UI_FIELD_AUTOCOMPLETE ("Admin_UI_FieldAutoCompleteEvent"),
-  /** EventType for checking the access to a field (depending on mode: create
-   *  edit etc.
+  /**
+   * EventType for checking the access to a field (depending on mode: create
+   * edit etc.
    */
   UI_ACCESSCHECK        ("Admin_UI_AbstractAccessCheckEvent"),
   UI_COMMAND_EXECUTE    ("Admin_UI_CommandExecuteEvent"),
