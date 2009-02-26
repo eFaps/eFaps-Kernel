@@ -20,6 +20,7 @@
 
 package org.efaps.esjp.common.uiform;
 import java.io.IOException;
+import java.util.Map;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.AbstractFileType;
@@ -46,16 +47,15 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("d74132b7-caf1-4f83-866d-8bc83bb26cdf")
 @EFapsRevision("$Rev$")
-public class Create implements EventExecution
-{
+public class Create implements EventExecution {
 
-  public Return execute(final Parameter _parameter) throws EFapsException
-  {
+  public Return execute(final Parameter _parameter) throws EFapsException {
     final Return ret = new Return();
-    final Instance parent = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final Instance parent = _parameter.getInstance();
     final AbstractCommand command =
-        (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
-
+                     (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
+    final Map<?, ?> properties
+                       = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
     final Context context = Context.getThreadContext();
 
     final Insert insert = new Insert(command.getTargetCreateType());
@@ -80,22 +80,18 @@ public class Create implements EventExecution
     insert.execute();
 
     final Instance instance = insert.getInstance();
-    // TODO connection via middle object is missing
+    //connect new instance to parent via midle object
+    if (properties.containsKey("ConnectType")) {
+      final String type = (String) properties.get("ConnectType");
+      final String childAttr = (String) properties.get("ConnectChildAttribute");
+      final String parentAttr
+                            = (String) properties.get("ConnectParentAttribute");
 
-    // "TargetConnectChildAttribute"
-    // // "TargetConnectParentAttribute"
-    // // "TargetConnectType"
-    // if (getCommand().getProperty("TargetConnectType") != null) {
-    // Instance parent = new Instance(getParameter("oid"));
-    //
-    // Insert connect = new
-    // Insert(getCommand().getProperty("TargetConnectType"));
-    // connect.add(getCommand().getProperty("TargetConnectParentAttribute"), ""
-    // + parent.getId());
-    // connect.add(getCommand().getProperty("TargetConnectChildAttribute"), ""
-    // + insert.getId());
-    // connect.execute();
-    // }
+      final Insert insert2 = new Insert(type);
+      insert2.add(parentAttr, ((Long) parent.getId()).toString());
+      insert2.add(childAttr, ((Long)  instance.getId()).toString());
+      insert2.execute();
+    }
 
     // check if we have a fileupload field
     for (final Field field : command.getTargetForm().getFields()) {
