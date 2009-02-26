@@ -305,7 +305,7 @@
       <xsd:element name="sqlcolumn" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
       <xsd:element name="defaultvalue" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
       <xsd:element name="validate" type="eFaps:validate" maxOccurs="unbounded" minOccurs="0"></xsd:element>
-      <xsd:element name="trigger" type="eFaps:trigger" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+      <xsd:element name="trigger" type="eFaps:trigger4Attribute" maxOccurs="unbounded" minOccurs="0"></xsd:element>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -428,7 +428,7 @@
         <xsd:sequence>
           <xsd:element name="abstract" type="xsd:boolean" minOccurs="0" maxOccurs="1"></xsd:element>
           <xsd:group ref="eFaps:attributeGroup" maxOccurs="unbounded" minOccurs="0"></xsd:group>
-          <xsd:element name="trigger" type="eFaps:trigger" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+          <xsd:element name="trigger" type="eFaps:trigger4Type" maxOccurs="unbounded" minOccurs="0"></xsd:element>
           <xsd:element name="property" type="eFaps:property_datamodel-type" maxOccurs="unbounded" minOccurs="0"></xsd:element>
           <xsd:element name="event-for" type="eFaps:event-for" minOccurs="0" maxOccurs="unbounded"></xsd:element>
         </xsd:sequence>
@@ -456,7 +456,7 @@
           <xsd:element name="icon" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
           <xsd:element name="access" type="eFaps:access" maxOccurs="1" minOccurs="0"></xsd:element>
           <xsd:element name="target" type="eFaps:target" maxOccurs="1" minOccurs="0"></xsd:element>
-          <xsd:element name="trigger" type="eFaps:trigger" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+          <xsd:element name="trigger" type="eFaps:trigger4UI" maxOccurs="unbounded" minOccurs="0"></xsd:element>
           <xsd:element name="property" type="eFaps:property_ui-command" maxOccurs="unbounded" minOccurs="0"></xsd:element>
         </xsd:sequence>
       </xsd:extension>
@@ -496,7 +496,7 @@
           <xsd:element name="target" type="eFaps:target" maxOccurs="1" minOccurs="0"></xsd:element>
           <xsd:element name="type" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
           <xsd:element name="childs" type="eFaps:childs" maxOccurs="1" minOccurs="0"></xsd:element>
-          <xsd:element name="trigger" type="eFaps:trigger" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+          <xsd:element name="trigger" type="eFaps:trigger4UI" maxOccurs="unbounded" minOccurs="0"></xsd:element>
           <xsd:element name="property" type="eFaps:property_ui-command" maxOccurs="unbounded" minOccurs="0"></xsd:element>
         </xsd:sequence>
       </xsd:extension>
@@ -579,7 +579,7 @@
     <xsd:sequence>
       <xsd:element name="icon" type="xsd:string" maxOccurs="1" minOccurs="0"/>
       <xsd:element name="property" type="eFaps:property_field" maxOccurs="unbounded" minOccurs="0"/>
-      <xsd:element name="trigger" type="eFaps:trigger" maxOccurs="unbounded" minOccurs="0"/>
+      <xsd:element name="trigger" type="eFaps:trigger4UI" maxOccurs="unbounded" minOccurs="0"/>
       <xsd:element name="table" type="xsd:string" maxOccurs="1" minOccurs="0"/>
       <xsd:element name="evaluate" type="eFaps:evaluate" maxOccurs="1" minOccurs="0"/>
     </xsd:sequence>
@@ -828,8 +828,26 @@
       <xsd:element name="validate" type="eFaps:execute" maxOccurs="1" minOccurs="0"></xsd:element>
     </xsd:sequence>
   </xsd:complexType>
-
-  <xsd:complexType name="trigger">
+  
+  <xsd:complexType name="trigger4Attribute">
+    <xsd:sequence>
+      <xsd:element name="property" type="eFaps:property" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+    <xsd:attribute name="event" use="required">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="RANGE_VALUE"/>
+          <xsd:enumeration value="VALIDATE"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+    <xsd:attribute name="program" type="xsd:string" use="required"></xsd:attribute>
+    <xsd:attribute name="method" type="xsd:string" use="optional" default="execute"></xsd:attribute>
+    <xsd:attribute name="index" type="xsd:integer" use="optional" default="1"></xsd:attribute>
+  </xsd:complexType>
+  
+  <xsd:complexType name="trigger4Type">
     <xsd:sequence>
       <xsd:element name="property" type="eFaps:property" maxOccurs="unbounded" minOccurs="0"></xsd:element>
     </xsd:sequence>
@@ -838,19 +856,45 @@
       <xsd:simpleType>
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="ACCESSCHECK"/>
+          <xsd:enumeration value="CHECKIN_OVERRIDE"/>
           <xsd:enumeration value="CHECKIN_POST"/>
+          <xsd:enumeration value="CHECKIN_PRE"/>
+          <xsd:enumeration value="CHECKOUT_OVERRIDE"/>
           <xsd:enumeration value="CHECKOUT_POST"/>
+          <xsd:enumeration value="CHECKOUT_PRE"/>
           <xsd:enumeration value="DELETE_OVERRIDE"/>
           <xsd:enumeration value="DELETE_POST"/>
           <xsd:enumeration value="DELETE_PRE"/>
           <xsd:enumeration value="INSERT_OVERRIDE"/>
           <xsd:enumeration value="INSERT_POST"/>
-          <xsd:enumeration value="RANGE_VALUE"/>
+          <xsd:enumeration value="INSERT_PRE"/>
+          <xsd:enumeration value="UPDATE_OVERRIDE"/>
+          <xsd:enumeration value="UPDATE_POST"/>
+          <xsd:enumeration value="UPDATE_PRE"/>
+         </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+    <xsd:attribute name="program" type="xsd:string" use="required"></xsd:attribute>
+    <xsd:attribute name="method" type="xsd:string" use="optional" default="execute"></xsd:attribute>
+    <xsd:attribute name="index" type="xsd:integer" use="optional" default="1"></xsd:attribute>
+  </xsd:complexType>
+  
+  
+  <xsd:complexType name="trigger4UI">
+    <xsd:sequence>
+      <xsd:element name="property" type="eFaps:property" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+    <xsd:attribute name="event" use="required">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
           <xsd:enumeration value="UI_ACCESSCHECK"/>
+          <xsd:enumeration value="UI_COMMAND_EXECUTE"/>
           <xsd:enumeration value="UI_FIELD_AUTOCOMPLETE"/>
           <xsd:enumeration value="UI_FIELD_CMD"/>
           <xsd:enumeration value="UI_FIELD_VALUE"/>
-          <xsd:enumeration value="UPDATE_POST"/>
+          <xsd:enumeration value="UI_TABLE_EVALUATE"/>
+          <xsd:enumeration value="UI_VALIDATE"/>
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
@@ -858,7 +902,7 @@
     <xsd:attribute name="method" type="xsd:string" use="optional" default="execute"></xsd:attribute>
     <xsd:attribute name="index" type="xsd:integer" use="optional" default="1"></xsd:attribute>
   </xsd:complexType>
-
+  
   <xsd:complexType name="unique">
     <xsd:attribute name="name" type="xsd:string"></xsd:attribute>
     <xsd:attribute name="columns" type="xsd:string"></xsd:attribute>
