@@ -22,6 +22,8 @@ package org.efaps.ui.wicket.components.form.command;
 
 import java.util.List;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.ComponentTag;
@@ -45,12 +47,17 @@ public class AjaxCmdBehavior extends AjaxFormSubmitBehavior {
    *
    */
   private static final long serialVersionUID = 1L;
+  private Component targetComponent;
+  private String others;
 
   /**
+   * @param _targetComponent
    * @param event
    */
-  public AjaxCmdBehavior(final FormContainer _form) {
+  public AjaxCmdBehavior(final FormContainer _form,
+                         final Component _targetComponent) {
     super(_form, "onclick");
+    this.targetComponent = _targetComponent;
   }
 
   /**
@@ -65,20 +72,20 @@ public class AjaxCmdBehavior extends AjaxFormSubmitBehavior {
   }
 
   @Override
-  protected void onError(final AjaxRequestTarget ajaxrequesttarget) {
-    // TODO Auto-generated method stub
-
+  protected void onError(final AjaxRequestTarget _target) {
+   // nothing to do
   }
 
   @Override
-  protected void onSubmit(final AjaxRequestTarget _target) {
+  public void onSubmit(final AjaxRequestTarget _target) {
 
     final UIFormCellCmd uiObject = (UIFormCellCmd) getComponent()
         .getDefaultModelObject();
-
+    //TODO auslesen
+    final boolean replace = false;
     final StringBuilder snip = new StringBuilder();
     try {
-      final List<Return> returns = uiObject.executeEvents(null);
+      final List<Return> returns = uiObject.executeEvents(this.others);
       for (final Return oneReturn : returns) {
         if (oneReturn.contains(ReturnValues.SNIPLETT)) {
           snip.append(oneReturn.get(ReturnValues.SNIPLETT));
@@ -88,19 +95,41 @@ public class AjaxCmdBehavior extends AjaxFormSubmitBehavior {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    final CommandCellPanel cmdCell = getComponent().findParent(
-        CommandCellPanel.class);
-    cmdCell.addOrReplace(new LabelComponent("targetBottom", snip.toString()));
-    _target.addComponent(cmdCell);
-
+    if (replace || !this.targetComponent.isVisible()) {
+      final MarkupContainer parent = this.targetComponent.getParent();
+      final LabelComponent newComp = new LabelComponent(this.targetComponent.getId(), snip.toString());
+      parent.addOrReplace(newComp);
+      newComp.setOutputMarkupId(true);
+      this.targetComponent = newComp;
+      _target.addComponent(parent);
+    } else {
+      final StringBuilder jScript = new StringBuilder();
+      jScript.append("var ele = document.getElementById('")
+        .append(this.targetComponent.getMarkupId()).append("');")
+        .append("var nS = document.createElement('span');")
+        .append("ele.appendChild(nS);")
+        .append("nS.innerHTML='").append(snip).append("'");
+      _target.prependJavascript(jScript.toString());
+    }
   }
 
 
   /**
-   * Dont do anythging.
+   * Don't do anything on the tag. Must be overwritten so that the event is not
+   * added to the tag.
+   * @param _tag tag to modify
    */
   @Override
   protected void onComponentTag(final ComponentTag _tag) {
   }
 
+  /**
+   * @param _target
+   * @param string
+   */
+  public void onSubmit4AutoComplete(final AjaxRequestTarget _target,
+                                    final String _value) {
+   this.others = _value;
+   onSubmit(_target);
+  }
 }

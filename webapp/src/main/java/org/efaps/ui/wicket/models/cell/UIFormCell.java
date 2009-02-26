@@ -20,8 +20,12 @@
 
 package org.efaps.ui.wicket.models.cell;
 
+import java.util.List;
+
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
@@ -67,6 +71,11 @@ public class UIFormCell extends UITableCell {
    * Stores the name of the type.
    */
   private final String attrTypeName;
+
+  /**
+   * Stores if the field has an esjp used for auto completion.
+   */
+  private final boolean autoComplete;
 
   /**
    * Constructor used on search and create.
@@ -119,6 +128,8 @@ public class UIFormCell extends UITableCell {
     this.hideLabel = _fieldValue.getField().isHideLabel();
     this.rowSpan = _fieldValue.getField().getRowSpan();
     this.attrTypeName = _attrTypeName;
+    this.autoComplete
+           = _fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
   }
 
   /**
@@ -166,4 +177,18 @@ public class UIFormCell extends UITableCell {
     return this.rowSpan;
   }
 
+
+  /**
+   * Getter method for instance variable {@link #autoComplete}.
+   *
+   * @return value of instance variable {@link #autoComplete}
+   */
+  public boolean isAutoComplete() {
+    return this.autoComplete;
+  }
+
+  public List<Return> getAutoCompletion (final Object _others)
+      throws EFapsException {
+    return executeEvents(_others, EventType.UI_FIELD_AUTOCOMPLETE);
+  }
 }

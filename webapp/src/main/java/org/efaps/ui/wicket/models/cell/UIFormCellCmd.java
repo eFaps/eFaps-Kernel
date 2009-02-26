@@ -20,18 +20,14 @@
 
 package org.efaps.ui.wicket.models.cell;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
-import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.FieldCommand;
-import org.efaps.db.Context;
-import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
@@ -57,7 +53,7 @@ public class UIFormCellCmd extends UIFormCell {
    *
    */
   private static final long serialVersionUID = 1L;
-  private final long fieldCmdId;
+
   private final boolean renderButton;
   /**
    * Stores the actual execution status.
@@ -81,27 +77,18 @@ public class UIFormCellCmd extends UIFormCell {
           _targetmode,
           _label,
           null);
-    this.fieldCmdId = _field.getId();
     this.renderButton = _field.isRenderButton();
   }
 
 
-  public List<Return> executeEvents(final Object _others) throws EFapsException {
+
+  public List<Return> executeEvents(final Object _others)
+      throws EFapsException {
     if (this.executionStatus == null) {
       this.executionStatus = ExecutionStatus.EXECUTE;
     }
-    List<Return> ret = new ArrayList<Return>();
-    final FieldCommand fieldCmd = getFieldCommand();
-    if (fieldCmd.hasEvents(EventType.UI_FIELD_CMD)) {
-        final Context context = Context.getThreadContext();
-        final String[] contextoid = { getOid() };
-        context.getParameters().put("oid", contextoid);
-        ret = fieldCmd.executeEvents(EventType.UI_FIELD_CMD,
-                            ParameterValues.INSTANCE, new Instance(getOid()),
-                            ParameterValues.OTHERS, _others,
-                            ParameterValues.PARAMETERS, context.getParameters(),
-                            ParameterValues.CLASS, this);
-    }
+    final List<Return> ret = executeEvents(_others, EventType.UI_FIELD_CMD);
+
     if (this.executionStatus == ExecutionStatus.EXECUTE) {
       this.executionStatus = null;
     }
@@ -147,8 +134,7 @@ public class UIFormCellCmd extends UIFormCell {
     return this.executionStatus;
   }
 
-
   public FieldCommand getFieldCommand() {
-    return FieldCommand.get(this.fieldCmdId);
+    return (FieldCommand) getField();
   }
 }

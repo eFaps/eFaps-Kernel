@@ -97,7 +97,7 @@ public class RowPanel extends Panel {
       } else if (cell instanceof UIFormCellCmd) {
         valueCell = new CommandCellPanel(cellRepeater.newChildId(),
                                     new FormCellCmdModel((UIFormCellCmd) cell),
-                                    _form);
+                                    _formmodel, _form);
       } else {
          valueCell =
           new ValueCellPanel(cellRepeater.newChildId(),

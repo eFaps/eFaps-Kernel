@@ -20,13 +20,21 @@
 
 package org.efaps.ui.wicket.models.cell;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.wicket.IClusterable;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.UIInterface;
+import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.admin.ui.field.Field;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
@@ -93,6 +101,8 @@ public class UITableCell implements IClusterable {
    */
   private final UIInterface uiClass;
 
+  private final long fieldId;
+
   /**
    * Constructor.
    *
@@ -115,7 +125,7 @@ public class UITableCell implements IClusterable {
     this.oid = _oid;
     this.cellValue = _cellvalue;
     this.icon = _icon;
-
+    this.fieldId = _fieldValue.getField().getId();
     // check if the user has access to the typemenu, if not set the reference
     // to null
     if (_fieldValue.getField().getReference() != null) {
@@ -232,4 +242,36 @@ public class UITableCell implements IClusterable {
   public UIInterface getUiClass() {
     return this.uiClass;
   }
+
+  /**
+   * Getter method for instance variable {@link #fieldId}.
+   *
+   * @return value of instance variable {@link #fieldId}
+   */
+  public long getFieldId() {
+    return this.fieldId;
+  }
+
+
+  public Field getField() {
+    return Field.get(this.fieldId);
+  }
+
+  public List<Return> executeEvents(final Object _others,
+                                    final EventType _eventType)
+      throws EFapsException {
+    List<Return> ret = new ArrayList<Return>();
+    final Field field = getField();
+    if (field.hasEvents(_eventType)) {
+        final Context context = Context.getThreadContext();
+        final String[] contextoid = { getOid() };
+        context.getParameters().put("oid", contextoid);
+        ret = field.executeEvents(_eventType,
+                            ParameterValues.INSTANCE, new Instance(getOid()),
+                            ParameterValues.OTHERS, _others,
+                            ParameterValues.PARAMETERS, context.getParameters(),
+                            ParameterValues.CLASS, this);
+    }
+  return ret;
+}
 }
