@@ -60,6 +60,10 @@ public class UIFormCellCmd extends UIFormCell {
    */
   private ExecutionStatus executionStatus;
 
+  private final boolean append;
+
+  private final String targetField;
+
   /**
    * @param targetMode
    * @param field
@@ -78,6 +82,8 @@ public class UIFormCellCmd extends UIFormCell {
           _label,
           null);
     this.renderButton = _field.isRenderButton();
+    this.append = _field.isAppend();
+    this.targetField = _field.getTargetField();
   }
 
 
@@ -104,6 +110,16 @@ public class UIFormCellCmd extends UIFormCell {
   public boolean isRenderButton() {
     return this.renderButton;
   }
+
+  /**
+   * Getter method for instance variable {@link #append}.
+   *
+   * @return value of instance variable {@link #append}
+   */
+  public boolean isAppend() {
+    return this.append;
+  }
+
 
 
   /**
@@ -136,5 +152,19 @@ public class UIFormCellCmd extends UIFormCell {
 
   public FieldCommand getFieldCommand() {
     return (FieldCommand) getField();
+  }
+
+
+  public boolean isTargetField() {
+    return this.targetField != null;
+  }
+
+  /**
+   * Getter method for instance variable {@link #targetField}.
+   *
+   * @return value of instance variable {@link #targetField}
+   */
+  public String getTargetField() {
+    return this.targetField;
   }
 }

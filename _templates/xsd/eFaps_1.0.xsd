@@ -739,6 +739,8 @@
           <xsd:simpleType>
             <xsd:restriction base="xsd:string">
               <xsd:enumeration value="AlternateOID" />
+              <xsd:enumeration value="CmdAppend"/>
+              <xsd:enumeration value="CmdTargetField"/>
               <xsd:enumeration value="CmdRenderButton"/>
               <xsd:enumeration value="ClassNameUI" />
               <xsd:enumeration value="Columns" />

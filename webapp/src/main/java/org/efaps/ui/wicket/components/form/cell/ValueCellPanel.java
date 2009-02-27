@@ -72,7 +72,7 @@ public class ValueCellPanel extends Panel {
   public ValueCellPanel(final String _wicketId, final IModel<UIFormCell> _model,
                         final UIForm _formmodel, final boolean _ajaxLink) {
     super(_wicketId, _model);
-
+    setOutputMarkupId(true);
     final UIFormCell uiFormCell = (UIFormCell) super.getDefaultModelObject();
     // if we don't have a reference or we are inside a modal window
     if (uiFormCell.getReference() == null
@@ -100,7 +100,8 @@ public class ValueCellPanel extends Panel {
 
       } else {
         this.add(new LabelComponent("label",
-                                 new Model<String>(uiFormCell.getCellValue())));
+                                 new Model<String>(uiFormCell.getCellValue()))
+                                .setOutputMarkupId(true));
       }
       this.add(new WebMarkupContainer("link").setVisible(false));
 

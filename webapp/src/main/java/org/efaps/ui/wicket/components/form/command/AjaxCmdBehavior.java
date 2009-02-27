@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.form.command;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Component;
@@ -27,11 +28,15 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.LabelComponent;
+import org.efaps.ui.wicket.components.form.FormPanel;
+import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
+import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellCmd;
 import org.efaps.util.EFapsException;
 
@@ -81,8 +86,7 @@ public class AjaxCmdBehavior extends AjaxFormSubmitBehavior {
 
     final UIFormCellCmd uiObject = (UIFormCellCmd) getComponent()
         .getDefaultModelObject();
-    //TODO auslesen
-    final boolean replace = false;
+
     final StringBuilder snip = new StringBuilder();
     try {
       final List<Return> returns = uiObject.executeEvents(this.others);
@@ -95,9 +99,16 @@ public class AjaxCmdBehavior extends AjaxFormSubmitBehavior {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    if (replace || !this.targetComponent.isVisible()) {
+    if (uiObject.isTargetField()) {
+      final FormPanel formPanel = getComponent().findParent(FormPanel.class);
+      this.targetComponent = getModelFromChild(formPanel,
+                                               uiObject.getTargetField());
+    }
+    if (!uiObject.isAppend() || !this.targetComponent.isVisible()) {
       final MarkupContainer parent = this.targetComponent.getParent();
-      final LabelComponent newComp = new LabelComponent(this.targetComponent.getId(), snip.toString());
+      final LabelComponent newComp
+                              = new LabelComponent(this.targetComponent.getId(),
+                                                   snip.toString());
       parent.addOrReplace(newComp);
       newComp.setOutputMarkupId(true);
       this.targetComponent = newComp;
@@ -112,7 +123,35 @@ public class AjaxCmdBehavior extends AjaxFormSubmitBehavior {
       _target.prependJavascript(jScript.toString());
     }
   }
-
+  private Component getModelFromChild(final WebMarkupContainer _container,
+      final String _name) {
+    Component ret = null;
+    final Iterator<? extends Component> iter = _container.iterator();
+    while (iter.hasNext() && ret == null) {
+      final Component comp = iter.next();
+      if (comp.getDefaultModelObject() instanceof UIFormCell) {
+        final UIFormCell cell = (UIFormCell) comp.getDefaultModelObject();
+        if (_name.equals(cell.getName())) {
+          if (comp instanceof ValueCellPanel) {
+            final Iterator<? extends Component> celliter
+                                      = ((WebMarkupContainer) comp).iterator();
+            while (celliter.hasNext()) {
+              final Component label = celliter.next();
+              if (label instanceof LabelComponent) {
+                ret = label;
+              }
+            }
+          } else {
+            ret = comp;
+          }
+        }
+      }
+      if (ret == null && comp instanceof WebMarkupContainer) {
+        ret = getModelFromChild((WebMarkupContainer) comp, _name);
+      }
+    }
+    return ret;
+  }
 
   /**
    * Don't do anything on the tag. Must be overwritten so that the event is not

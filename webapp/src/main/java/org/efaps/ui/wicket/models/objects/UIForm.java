@@ -174,8 +174,8 @@ public class UIForm extends AbstractUIObject {
    */
   public void execute() {
     try {
-      if (isCreateMode() || isSearchMode()) {
-        execute4CreateSearch();
+      if (isCreateMode() || isSearchMode() || getCallInstance() == null) {
+        execute4NoInstance();
       } else {
         int rowgroupcount = 1;
         int rowspan = 1;
@@ -487,7 +487,7 @@ public class UIForm extends AbstractUIObject {
    *
    * @throws EFapsException on error
    */
-  private void execute4CreateSearch() throws EFapsException {
+  private void execute4NoInstance() throws EFapsException {
     int rowgroupcount = 1;
     FormRow row = new FormRow();
     final Form form = Form.get(this.formUUID);
@@ -530,7 +530,7 @@ public class UIForm extends AbstractUIObject {
           formelement = new FormElement();
           this.elements.add(new Element(ElementType.FORM, formelement));
         } else if (field.isCreatable() && isCreateMode() || field.isSearchable()
-            && isSearchMode()) {
+            && isSearchMode() || field.isViewable() && isViewMode()) {
 
           final Attribute attr = type != null
                                  ? type.getAttribute(field.getExpression())
@@ -554,6 +554,8 @@ public class UIForm extends AbstractUIObject {
             strValue = fieldvalue.getCreateHtml(getCallInstance(), null);
           } else if (isSearchMode()) {
             strValue = fieldvalue.getSearchHtml(getCallInstance(), null);
+          } else if (isViewMode()) {
+            strValue = fieldvalue.getViewHtml(getCallInstance(), null);
           }
           final String attrTypeName = attr != null
                                       ? attr.getAttributeType().getName()

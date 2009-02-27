@@ -30,6 +30,8 @@ import org.efaps.util.cache.CacheReloadException;
 public class FieldCommand extends Field {
 
   private boolean renderButton;
+  private boolean append;
+  private String targetField;
 
   public FieldCommand(final long _id, final String _uuid, final String _name) {
     super(_id, _uuid, _name);
@@ -51,6 +53,10 @@ public class FieldCommand extends Field {
       throws CacheReloadException {
     if ("CmdRenderButton".equals(_name)) {
       this.renderButton = !("false".equalsIgnoreCase(_value));
+    } else if ("CmdAppend".equals(_name)) {
+      this.append = "true".equalsIgnoreCase(_value);
+    } else if ("CmdTargetField".equals(_name)) {
+      this.targetField = _value;
     } else {
       super.setProperty(_name, _value);
     }
@@ -65,6 +71,21 @@ public class FieldCommand extends Field {
     return this.renderButton;
   }
 
+  /**
+   * Getter method for instance variable {@link #append}.
+   *
+   * @return value of instance variable {@link #append}
+   */
+  public boolean isAppend() {
+    return this.append;
+  }
 
-
+  /**
+   * Getter method for instance variable {@link #targetField}.
+   *
+   * @return value of instance variable {@link #targetField}
+   */
+  public String getTargetField() {
+    return this.targetField;
+  }
 }
