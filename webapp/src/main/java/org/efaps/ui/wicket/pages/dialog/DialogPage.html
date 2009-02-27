@@ -33,6 +33,11 @@
       <div class="eFapsWarnDialogButton1" wicket:id="submitButton"></div>
       <div class="eFapsWarnDialogButton2" wicket:id="closeButton"></div>
     </div>
-
+    <form name="focusForm" action="">
+        <input type="hidden" id="hiddenInput"/>
+    </form>
+    <script type="text/javascript">
+      document.getElementById('hiddenInput').focus();
+    </script>
   </body>
 </html>

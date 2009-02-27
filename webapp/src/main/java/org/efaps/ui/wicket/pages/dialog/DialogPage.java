@@ -190,15 +190,14 @@ public class DialogPage extends AbstractMergePage {
       DialogPage.this.modal.close(_target);
 
     final StringBuilder bldr = new StringBuilder();
-    bldr.append("var inp = top.frames[0].document.getElementById('eFapsContentDiv').getElementsByTagName('input');")
-    .append("if(inp!=null){")
-    .append("  inp[0].focus();")
-    .append("}");
-
+    bldr.append("var inp = top.frames[0].document")
+      .append(".getElementById('eFapsContentDiv')")
+      .append(".getElementsByTagName('input');")
+      .append("if(inp!=null){")
+      .append("  inp[0].focus();")
+      .append("}");
     _target.appendJavascript(bldr.toString());
-
     }
-
   }
 
   /**
@@ -250,6 +249,11 @@ public class DialogPage extends AbstractMergePage {
   }
   private static final class KeyListenerContributor implements IHeaderContributor {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     private final Component component;
 
     /**
@@ -259,18 +263,16 @@ public class DialogPage extends AbstractMergePage {
      this.component = _component;
     }
 
-    public void renderHead(final IHeaderResponse iheaderresponse) {
+    public void renderHead(final IHeaderResponse _iheaderresponse) {
 
       final StringBuilder bldr = new StringBuilder();
       bldr.append("<script type=\"text/javascript\">")
-      .append("function TasteGedrueckt (Ereignis) {")
-        .append("var b=Wicket.$('").append(this.component.getMarkupId()).append("'); if (typeof(b.onclick) != 'undefined') { b.onclick();  }")
-              .append("}")
-        .append("window.onkeydown = TasteGedrueckt;").append("</script>");
-      iheaderresponse.renderString(bldr);
-
-
+      .append("function pressed (_event) {")
+        .append("var b=Wicket.$('").append(this.component.getMarkupId())
+        .append("'); if (typeof(b.onclick) != 'undefined') { b.onclick();  }")
+        .append("}")
+        .append("window.onkeydown = pressed;").append("</script>");
+      _iheaderresponse.renderString(bldr);
     }
-
   }
 }
