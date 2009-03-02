@@ -52,12 +52,12 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="common-systemattribute">
+  <xsd:element name="common-systemconfiguration">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="eFaps:AbstractBase">
           <xsd:sequence>
-            <xsd:element name="definition" type="eFaps:definition_common-systemattribute" maxOccurs="unbounded" minOccurs="1"></xsd:element>
+            <xsd:element name="definition" type="eFaps:definition_common-systemconfig" maxOccurs="unbounded" minOccurs="1"></xsd:element>
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
@@ -360,6 +360,14 @@
     <xsd:attribute name="scale" type="xsd:integer" use="optional"/>
   </xsd:complexType>
 
+  <xsd:complexType name="configAttribute">
+    <xsd:sequence>
+      <xsd:element name="key" type="xsd:string" maxOccurs="1"/>
+      <xsd:element name="value" type="xsd:string" maxOccurs="1"/>
+      <xsd:element name="description" type="xsd:string" maxOccurs="1" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
 
   <xsd:complexType name="database">
     <xsd:sequence>
@@ -399,11 +407,11 @@
   </xsd:complexType>
 
 
-  <xsd:complexType name="definition_common-systemattribute">
+  <xsd:complexType name="definition_common-systemconfig">
     <xsd:complexContent>
       <xsd:extension base="eFaps:AbstractDefinition">
         <xsd:sequence>
-          <xsd:element name="value" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+          <xsd:element name="attribute" type="eFaps:configAttribute" maxOccurs="unbounded" minOccurs="0"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -755,6 +763,7 @@
               <xsd:enumeration value="Level"/>
               <xsd:enumeration value="Order"/>
               <xsd:enumeration value="Required" />
+              <xsd:enumeration value="Rows"/>
               <xsd:enumeration value="RowSpan"/>
               <xsd:enumeration value="Searchable" />
               <xsd:enumeration value="ShowTypeIcon" />
