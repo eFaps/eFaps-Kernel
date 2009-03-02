@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmox
+ Author:          tmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -27,23 +27,20 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>04a2ae80-ab07-418e-895e-41f6d1bbb95c</uuid>
+  <uuid>b6e39cb5-e481-410a-b57e-81a6985545b4</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_Common_SystemConfigurationTree_Links</name>
+    <name>Admin_Common_SystemConfigurationTree_Links_Menu_Action_Delete</name>
     <!-- target definitions -->
     <target>
-      <table>Admin_Common_SystemConfigurationLinkTable</table>
-      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
-        <property name="Expand">Admin_Common_SystemConfigurationLink\AbstractLink</property>
-      </evaluate>
+      <execute program="org.efaps.esjp.common.uitable.CommonDelete"/>
     </target>
     <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
+    <property name="AskUser">true</property>
+    <property name="Submit">true</property>
   </definition>
 
 </ui-command>
