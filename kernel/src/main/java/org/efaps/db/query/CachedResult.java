@@ -37,7 +37,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
 
-import org.efaps.admin.common.SystemAttribute;
+import org.efaps.admin.common.SystemConfiguration;
 
 /**
  * The class is used to cache all results from a eFaps search query. Multiple
@@ -348,10 +348,10 @@ public class CachedResult {
     final Object obj = getObject(_index);
     if (obj instanceof Timestamp || obj instanceof Date) {
    // reads the Value from "Admin_Common_DataBaseTimeZone"
-      final SystemAttribute attributeTZ = SystemAttribute.get(
-                  UUID.fromString("4ac2983c-eeda-4420-aba9-f06f76a74a88"));
-      final String timezoneID = attributeTZ == null ? null
-                                                 : attributeTZ.getStringValue();
+      final SystemConfiguration kernelConfig = SystemConfiguration.get(
+          UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+      final String timezoneID
+                          = kernelConfig.getAttributeValue("DataBaseTimeZone");
       final ISOChronology chron;
       if (timezoneID != null) {
         final DateTimeZone timezone = DateTimeZone.forID(timezoneID);

@@ -28,9 +28,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
+
 import org.efaps.update.access.AccessSetUpdate;
 import org.efaps.update.access.AccessTypeUpdate;
-import org.efaps.update.common.SystemAttributeUpdate;
+import org.efaps.update.common.SystemConfigurationUpdate;
 import org.efaps.update.datamodel.SQLTableUpdate;
 import org.efaps.update.datamodel.TypeUpdate;
 import org.efaps.update.integration.WebDAVUpdate;
@@ -42,12 +49,6 @@ import org.efaps.update.ui.SearchUpdate;
 import org.efaps.update.ui.TableUpdate;
 import org.efaps.update.user.JAASSystemUpdate;
 import org.efaps.update.user.RoleUpdate;
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 
 /**
@@ -80,7 +81,7 @@ public class SaxHandler extends DefaultHandler
     this.url = _url;
 
     // einen XML Reader erzeugen
-    XMLReader reader = XMLReaderFactory.createXMLReader();
+    final XMLReader reader = XMLReaderFactory.createXMLReader();
     // den eigenen Sax Content Handler registrieren
     reader.setContentHandler(this);
     // unsere Beispiel XML Datei parsen
@@ -158,8 +159,8 @@ public class SaxHandler extends DefaultHandler
       this.elem = new AccessSetUpdate(this.url);
     } else if ("access-type".equals(_qName))  {
       this.elem = new AccessTypeUpdate(this.url);
-    } else if ("common-systemattribute".equals(_qName))  {
-      this.elem = new SystemAttributeUpdate(this.url);
+    } else if ("common-systemconfiguration".equals(_qName))  {
+      this.elem = new SystemConfigurationUpdate(this.url);
     } else if ("datamodel-sqltable".equals(_qName))  {
       this.elem = new SQLTableUpdate(this.url);
     } else if ("datamodel-type".equals(_qName))  {

@@ -32,11 +32,11 @@ import org.mozilla.javascript.EvaluatorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
-
-import org.efaps.admin.common.SystemAttribute;
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.db.Checkout;
 import org.efaps.util.EFapsException;
+
+import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
 /**
  * TODO description
@@ -90,23 +90,23 @@ public class JavaScriptCompiler extends AbstractSourceCompiler {
       final JavaScriptCompressor compressor =
           new JavaScriptCompressor(in, new ErrorReporter() {
 
-            public void error(String arg0, String arg1, int arg2, String arg3,
-                              int arg4) {
+            public void error(final String arg0, final String arg1, final int arg2, final String arg3,
+                              final int arg4) {
               LOG.error(arg0);
             }
 
-            public EvaluatorException runtimeError(String arg0, String arg1,
-                                                   int arg2, String arg3,
-                                                   int arg4) {
+            public EvaluatorException runtimeError(final String arg0, final String arg1,
+                                                   final int arg2, final String arg3,
+                                                   final int arg4) {
               return null;
             }
 
-            public void warning(String arg0, String arg1, int arg2,
-                                String arg3, int arg4) {
+            public void warning(final String arg0, final String arg1, final int arg2,
+                                final String arg3, final int arg4) {
               // Admin_Program_JavaScriptCompiled_Warn: do we want warnings?
-              if (SystemAttribute.get(
-                  UUID.fromString("3f12d8ba-f825-4dc9-912b-1dc0d19c1520"))
-                  .getBooleanValue()) {
+              final SystemConfiguration kernelConfig = SystemConfiguration.get(
+                  UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+              if (kernelConfig.getAttributeValueAsBoolean("JavaScriptCompiled_Warn")) {
                 LOG.warn(arg0);
               }
             }
@@ -135,7 +135,7 @@ public class JavaScriptCompiler extends AbstractSourceCompiler {
   }
 
   @Override
-  public AbstractSource getNewSource(String _name, String _oid, long _id) {
+  public AbstractSource getNewSource(final String _name, final String _oid, final long _id) {
     return new OneJavaScript(_name, _oid, _id);
   }
 

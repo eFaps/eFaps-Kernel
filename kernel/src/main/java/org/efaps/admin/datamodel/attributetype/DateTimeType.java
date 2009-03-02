@@ -33,7 +33,7 @@ import org.joda.time.chrono.ISOChronology;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import org.efaps.admin.common.SystemAttribute;
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.db.query.CachedResult;
 
 /**
@@ -73,10 +73,10 @@ public class DateTimeType extends AbstractType {
   public void set(final Object _value) {
     if (_value != null) {
       // reads the Value from "Admin_Common_DataBaseTimeZone"
-      final SystemAttribute attributeTZ = SystemAttribute.get(
-                  UUID.fromString("4ac2983c-eeda-4420-aba9-f06f76a74a88"));
-      final String timezoneID = attributeTZ == null ? null
-                                                 : attributeTZ.getStringValue();
+      final SystemConfiguration kernelConfig = SystemConfiguration.get(
+                  UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+      final String timezoneID
+                           = kernelConfig.getAttributeValue("DataBaseTimeZone");
       final ISOChronology chron;
       if (timezoneID != null) {
         final DateTimeZone timezone = DateTimeZone.forID(timezoneID);

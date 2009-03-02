@@ -27,7 +27,7 @@ import java.util.UUID;
 import java.util.Vector;
 
 import org.efaps.admin.EFapsClassNames;
-import org.efaps.admin.common.SystemAttribute;
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
@@ -590,10 +590,10 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
     Menu ret = null;
     if (this.targetDefaultMenu) {
       // reads the Value from "Common_Main_DefaultMenu"
-      final String menuname =
-          SystemAttribute.get(
-              UUID.fromString("32e06630-03af-42a8-97c9-e798d39a7f54"))
-              .getStringValue();
+      final SystemConfiguration kernelConfig = SystemConfiguration.get(
+                    UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+      final String menuname = kernelConfig.getAttributeValue("DefaultMenu");
+
       if (!"none".equals(menuname)) {
         if (this.targetMenu == null) {
           ret = Menu.get(menuname);

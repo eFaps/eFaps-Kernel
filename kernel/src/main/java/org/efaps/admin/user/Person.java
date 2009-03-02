@@ -42,7 +42,7 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.efaps.admin.common.SystemAttribute;
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.PasswordType;
@@ -560,19 +560,20 @@ public class Person extends AbstractUserObject {
    * @throws EFapsException
    */
   private void setFalseLogin(final Timestamp _logintry, final int _count)
-                                                                         throws EFapsException {
+      throws EFapsException {
     if (_count > 0) {
       final Timestamp now = DateTimeUtil.getCurrentTimeFromDB();
+      final SystemConfiguration kernelConfig = SystemConfiguration.get(
+              UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+
       // Admin_User_LoginTimeBeforeRetry
-      final int dif =
-          SystemAttribute.get(
-              UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"))
-              .getIntegerValue();
+      final int dif
+              = kernelConfig.getAttributeValueAsInteger("LoginTimeBeforeRetry");
+
       // Admin_User_LoginTries
-      final int maxtries =
-          SystemAttribute.get(
-              UUID.fromString("85d94368-bc1e-49bf-88d7-a3912b50e938"))
-              .getIntegerValue();
+      final int maxtries
+                        = kernelConfig.getAttributeValueAsInteger("LoginTries");
+
       final int count = _count + 1;
       if (dif > 0 && (now.getTime() - _logintry.getTime()) > dif * 60 * 1000) {
         updateFalseLoginDB(1);
