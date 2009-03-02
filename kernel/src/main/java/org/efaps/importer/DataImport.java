@@ -26,10 +26,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.digester.Digester;
-import org.efaps.update.Install.ImportInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import org.efaps.update.Install.ImportInterface;
 
 /**
  * Class which contains the method to launch the import of Data into a efaps
@@ -126,9 +127,10 @@ public class DataImport implements ImportInterface {
       digester.addCallParam(def + "/default", 2);
 
       digester.addObjectCreate(def + "/default/linkattribute", ForeignObject.class);
-      digester.addCallMethod(def + "/default/linkattribute", "setLinkAttribute", 2);
+      digester.addCallMethod(def + "/default/linkattribute", "setLinkAttribute", 3);
       digester.addCallParam(def + "/default/linkattribute", 0, "name");
-      digester.addCallParam(def + "/default/linkattribute", 1,"type");
+      digester.addCallParam(def + "/default/linkattribute", 1, "type");
+      digester.addCallParam(def + "/default/linkattribute", 2, "select");
 
       digester.addCallMethod(def + "/default/linkattribute/queryattribute", "addAttribute", 2);
       digester.addCallParam(def + "/default/linkattribute/queryattribute", 0, "name");
@@ -159,9 +161,10 @@ public class DataImport implements ImportInterface {
       digester.addSetNext("*/object", "addChild", "org.efaps.importer.InsertObject");
 
       digester.addObjectCreate("*/object/linkattribute", ForeignObject.class);
-      digester.addCallMethod("*/object/linkattribute", "setLinkAttribute", 2);
+      digester.addCallMethod("*/object/linkattribute", "setLinkAttribute", 3);
       digester.addCallParam("*/object/linkattribute", 0, "name");
       digester.addCallParam("*/object/linkattribute", 1, "type");
+      digester.addCallParam("*/object/linkattribute", 2, "select");
 
       digester.addCallMethod("*/object/linkattribute/queryattribute", "addAttribute", 2);
       digester.addCallParam("*/object/linkattribute/queryattribute", 0, "name");

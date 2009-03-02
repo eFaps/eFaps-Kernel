@@ -279,9 +279,9 @@ public class InsertObject extends AbstractObject {
               }
               for (final ForeignObject link : object.getLinks()) {
                 if (link.getLinkAttribute().equals(element)) {
-                  final String foreignID = link.dbGetID();
-                  if (foreignID != null) {
-                    query.addWhereExprEqValue(element, foreignID);
+                  final String foreignValue = link.dbGetValue();
+                  if (foreignValue != null) {
+                    query.addWhereExprEqValue(element, foreignValue);
 
                   } else {
                     noInsert = true;
@@ -375,9 +375,9 @@ public class InsertObject extends AbstractObject {
       }
       for (final ForeignObject link : getLinks()) {
 
-        final String foreignID = link.dbGetID();
-        if (foreignID != null) {
-          UpIn.add(link.getLinkAttribute(), foreignID);
+        final String foreignValue = link.dbGetValue();
+        if (foreignValue != null) {
+          UpIn.add(link.getLinkAttribute(), foreignValue);
         } else {
           noInsert = true;
           LOG.error("skipt: " + toString());

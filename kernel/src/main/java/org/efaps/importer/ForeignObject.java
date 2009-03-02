@@ -39,54 +39,59 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class ForeignObject {
-  /**
-   * Logger for this class
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(ForeignObject.class);
 
   /**
-   * contains the name of the attribute wich links to an InsertObject
+   * Logger for this class.
    */
-  private String              linkattribute = null;
+  private static final Logger LOG
+                                = LoggerFactory.getLogger(ForeignObject.class);
 
   /**
-   * contains the type of this ForeignObject
+   * Contains the name of the attribute which links to an InsertObject.
    */
-  private String              type          = null;
+  private String linkattribute = null;
 
   /**
-   * contains the attributes and the values used for the Query
+   * Contains the type of this ForeignObject.
    */
-  private final Map<String, String> attributes    = new HashMap<String, String>();
+  private String type = null;
 
   /**
-   * adds an Attribute, which will be used to construct the Query
+   * Contains the attributes and the values used for the Query.
+   */
+  private final Map<String, String> attributes = new HashMap<String, String>();
+
+  /**
+   * The attribute to be selected. Default "ID".
+   */
+  private String select;
+
+  /**
+   * Adds an Attribute, which will be used to construct the Query.
    *
-   * @param _name
-   *          Name of the attribute
-   * @param _value
-   *          Value of the attribute
+   * @param _name   Name of the attribute
+   * @param _value  Value of the attribute
    */
   public void addAttribute(final String _name, final String _value) {
     this.attributes.put(_name, _value.trim());
   }
 
   /**
-   * sets the LinkAttribute and the Type of the ForeignObject
+   * Sets the LinkAttribute and the Type of the ForeignObject.
    *
-   * @param _name
-   *          Name of the LinkAttribute
-   * @param _type
-   *          Type of the ForeignObject
+   * @param _name   Name of the LinkAttribute
+   * @param _type   Type of the ForeignObject
+   * @param _select name of the field to be selected, default "ID"
    */
-  public void setLinkAttribute(String _name, String _type) {
+  public void setLinkAttribute(final String _name, final String _type,
+                               final String _select) {
     this.linkattribute = _name;
     this.type = _type;
-
+    this.select = _select != null ? _select : "ID";
   }
 
   /**
-   * returns the LinkAttribute of this ForeignObject
+   * Returns the LinkAttribute of this ForeignObject.
    *
    * @return String containing the Name of the LinkAttribute
    */
@@ -105,14 +110,13 @@ public class ForeignObject {
    * @return String with the ID of the ForeignObject. Null if not found and no
    *         default is defined.
    */
-  public String dbGetID() {
+  public String dbGetValue() {
     final SearchQuery query = new SearchQuery();
-    String ID = null;
+    String value = null;
     try {
 
       query.setQueryTypes(this.type);
-      query.addSelect("ID");
-
+      query.addSelect(this.select);
       query.setExpandChildTypes(true);
 
       for (final Entry<String, String> element : this.attributes.entrySet()) {
@@ -121,36 +125,32 @@ public class ForeignObject {
       }
       query.executeWithoutAccessCheck();
       if (query.next()) {
-        ID = query.get("ID").toString();
+        value = query.get(this.select).toString();
       } else {
-        ID = DefaultObject.getDefault(this.type, this.linkattribute);
+        value = DefaultObject.getDefault(this.type, this.linkattribute);
 
-        if (ID != null) {
+        if (value != null) {
           LOG.debug("Query did not return a Value; set Value to Defaultvalue: "
-              + ID);
+              + value);
         } else {
           LOG.error("the Search for a ForeignObject did return no Result!: - "
-              + this.toString());
+              + toString());
         }
       }
 
       query.close();
-
-      return ID;
-
-    }
-    catch (final EFapsException e) {
-
+      return value;
+    } catch (final EFapsException e) {
       LOG.error("getID()", e);
     }
-
     return null;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * (non-Javadoc).
    *
    * @see java.lang.Object#toString()
+   * @return String representation of this class
    */
   @Override
   public String toString() {

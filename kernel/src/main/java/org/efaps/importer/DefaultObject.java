@@ -85,7 +85,7 @@ public class DefaultObject {
     }
     String ret = def.value;
     if (ret.equals("")) {
-      ret = def.link.dbGetID();
+      ret = def.link.dbGetValue();
       def.value = ret;
     }
 

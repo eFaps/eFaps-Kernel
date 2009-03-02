@@ -114,7 +114,7 @@ public class RootObject extends AbstractObject {
           }
         }
         for (final ForeignObject link : object.getLinks()) {
-          insert.add(link.getLinkAttribute(), link.dbGetID());
+          insert.add(link.getLinkAttribute(), link.dbGetValue());
         }
         insert.executeWithoutAccessCheck();
         final String ID = insert.getId();
