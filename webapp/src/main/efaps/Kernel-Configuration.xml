@@ -23,20 +23,18 @@
   
 -->
 
-<common-systemattribute xmlns="http://www.efaps.org/xsd"
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                        xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<common-systemconfiguration xmlns="http://www.efaps.org/xsd"
+                            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>50a65460-2d08-4ea8-b801-37594e93dad5</uuid>
-  <file-application>eFaps-webapp</file-application>
+  <uuid>acf2b19b-f7c4-4e4a-a724-fb2d9ed30079</uuid>
+  <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
-  <description>
-    This Attribute defines the Duration (in seconds) of a ePapsStaticContent in the Cache of the Browser, before it will be retrieved again
-    from the eFaps-DataBase.
-  </description>
   <definition>
-    <version-expression>(version==latest)</version-expression>
-    <name>WebApp_CacheDuration</name>
-    <value>3600</value>
+    <version-expression>(version==1)</version-expression>
+    <attribute>
+      <key>DefaultMenu</key>
+      <value>Common_Main_Default</value>
+    </attribute>
   </definition>
-</common-systemattribute>
+</common-systemconfiguration>

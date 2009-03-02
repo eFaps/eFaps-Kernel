@@ -36,7 +36,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.efaps.admin.common.SystemAttribute;
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.program.bundle.BundleInterface;
 import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.db.Checkout;
@@ -91,10 +91,9 @@ public class StaticContentServlet extends HttpServlet {
 
     try {
       if (!CACHE.hasEntries()) {
-        this.cacheDuration =
-            SystemAttribute.get(
-                UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"))
-                .getIntegerValue();
+        this.cacheDuration = SystemConfiguration.get(
+              UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"))
+              .getAttributeValueAsInteger("CacheDuration");
       }
 
       final ContentMapper imageMapper = CACHE.get(contentName);
