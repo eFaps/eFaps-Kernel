@@ -23,22 +23,27 @@
 
 -->
 
-<common-systemattribute xmlns="http://www.efaps.org/xsd"
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                        xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-menu xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>85d94368-bc1e-49bf-88d7-a3912b50e938</uuid>
+  <uuid>3265c680-84c8-4f2f-a7e0-ac2629db6bd6</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
-  <description>
-    This attribute defines the maximum number of tries to login with the wrong
-    Password into eFaps, before the User is going to be deactivated. To
-    deactivate this mechanism set the value to 0.
-  </description>
+
   <definition>
-    <version-expression>(version==7)</version-expression>
-    <name>Admin_User_LoginTries</name>
-    <value>3</value>
+    <version-expression>(version==latest)</version-expression>
+    <name>Admin_Common_SystemConfigurationAttributeTree</name>
+    <!-- targets -->
+    <target>
+      <menu>Admin_Common_SystemConfigurationAttributeTree_Menu</menu>
+      <form>Admin_Common_SystemConfigurationAttributeForm</form>
+    </target>
+    <!-- type tree for -->
+    <type>Admin_Common_SystemConfigurationAttribute</type>
+    <!-- properties -->
+    <property name="Target">content</property>
+    <property name="TargetMode">view</property>
   </definition>
 
-</common-systemattribute>
+</ui-menu>

@@ -23,25 +23,21 @@
 
 -->
 
-<datamodel-type xmlns="http://www.efaps.org/xsd"
-                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-menu xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>24653ad8-4568-41e1-bfd8-1331d2a74beb</uuid>
+  <uuid>30cdc3a7-bc3b-4284-86be-c794dcef98a3</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version-expression>(version==6) || (version==latest)</version-expression>
-    <name>Admin_Common_SystemAttribute</name>
-    <parent>Admin_Abstract</parent>
-    <attribute>
-      <name>Value</name>
-      <type>String</type>
-      <sqltable>Admin_Common_SystemAttributeSQLTable</sqltable>
-      <sqlcolumn>VALUE</sqlcolumn>
-    </attribute>
-
+    <version-expression>(version==latest)</version-expression>
+    <name>Admin_Common_SystemConfigurationAttributeTree_Menu</name>
+    <!-- childs -->
+    <childs>
+      <child>Admin_Common_SystemConfigurationAttributeTree_Menu_Action</child>
+    </childs>
   </definition>
 
-</datamodel-type>
+</ui-menu>

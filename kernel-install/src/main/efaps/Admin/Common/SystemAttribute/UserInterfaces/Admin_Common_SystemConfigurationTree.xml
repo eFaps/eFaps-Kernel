@@ -16,7 +16,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          tmo
+  Author:          jmox
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -27,20 +27,24 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>3265c680-84c8-4f2f-a7e0-ac2629db6bd6</uuid>
+  <uuid>54b3c1dc-2ad7-4d8e-8866-0fd08cd5a0ab</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_Common_SystemAttributeTree</name>
+    <name>Admin_Common_SystemConfigurationTree</name>
     <!-- targets -->
     <target>
-      <menu>Admin_Common_SystemAttributeTree_Menu</menu>
-      <form>Admin_Common_SystemAttributeForm</form>
+      <menu>Admin_Common_SystemConfigurationTree_Menu</menu>
+      <form>Admin_Common_SystemConfigurationForm</form>
     </target>
     <!-- type tree for -->
-    <type>Admin_Common_SystemAttribute</type>
+    <type>Admin_Common_SystemConfiguration</type>
+    <childs>
+      <child>Admin_Common_SystemConfigurationTree_Attributes</child>
+      <child>Admin_Common_SystemConfigurationTree_Links</child>
+    </childs>
     <!-- properties -->
     <property name="Target">content</property>
     <property name="TargetMode">view</property>

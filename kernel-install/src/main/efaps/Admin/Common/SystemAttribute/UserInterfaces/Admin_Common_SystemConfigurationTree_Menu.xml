@@ -23,15 +23,21 @@
 
 -->
 
-<dbproperties xmlns="http://www.efaps.org/xsd"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-menu xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>a4abb4ac-2719-4d19-8edd-d8d583915dfb</uuid>
-  <bundle name="efaps_Admin_Common_SystemAttribute" sequence="1"/>
-  <resource>
-    <type>Properties</type>
-    <language></language>
-    <file>Admin_Common_SystemAttribute.properties</file>
-  </resource>
-</dbproperties>
+  <uuid>14b2ebbd-59aa-4d67-a113-6aa699d7bfc6</uuid>
+  <file-application>eFaps-Kernel</file-application>
+  <file-revision>$Rev$</file-revision>
+
+  <definition>
+    <version-expression>(version==latest)</version-expression>
+    <name>Admin_Common_SystemConfigurationTree_Menu</name>
+    <!-- childs -->
+    <childs>
+      <child>Admin_Common_SystemConfigurationTree_Menu_Action</child>
+    </childs>
+  </definition>
+
+</ui-menu>

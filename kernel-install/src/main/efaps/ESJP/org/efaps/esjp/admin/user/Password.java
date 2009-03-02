@@ -24,7 +24,7 @@ import java.util.UUID;
 
 import javax.security.auth.login.LoginException;
 
-import org.efaps.admin.common.SystemAttribute;
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.FieldValue.HtmlType;
 import org.efaps.admin.event.Parameter;
@@ -163,9 +163,9 @@ public class Password {
     final Return ret = new Return();
     final String newPwd = (String) _parameter.get(ParameterValues.NEW_VALUES);
     //Admin_User_PwdLengthMin
-    if (newPwd.length() > SystemAttribute.get(
-        UUID.fromString("bb26c4a4-65a8-41e9-bc64-5fe0148cf805"))
-        .getIntegerValue()) {
+    if (newPwd.length() > SystemConfiguration.get(
+        UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"))
+        .getAttributeValueAsInteger("PwdLengthMin")) {
       ret.put(ReturnValues.TRUE, "true");
     } else {
       ret.put(ReturnValues.VALUES,

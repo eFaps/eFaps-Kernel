@@ -16,30 +16,33 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmox
+ Author:          tmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
+ Original Author: Mark James (mjames at gmail.com)
+ Original Name:   box.png
+ Original Web:    Silk icon set 1.3
+                  [ http://www.famfamfam.com/lab/icons/silk/ ]
+ Original License:Creative Commons Attribution 2.5 License
+                  [ http://creativecommons.org/licenses/by/2.5/ ]
 
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-image xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>4177cc04-cc21-4894-8b51-a6f085adc462</uuid>
+  <uuid>4d838606-30f6-4de0-9f16-c424506d7057</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_Common_AbstractMyDesk</name>
-    <childs>
-      <child>Admin_Common_DBPropertiesMyDesk</child>
-      <child>Admin_Common_DBPropertiesBundleMyDesk</child>
-      <child>Admin_Common_SystemConfigurationMyDesk</child>
-      <child>Admin_Common_VersionMyDesk</child>
-    </childs>
+    <name>Admin_Common_SystemConfigurationImage</name>
+    <file>Admin_Common_SystemConfigurationImage.gif</file>
+    <!-- is type icon for -->
+    <type>Admin_Common_SystemConfiguration</type>
   </definition>
 
-</ui-menu>
+</ui-image>

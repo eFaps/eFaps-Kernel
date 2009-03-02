@@ -593,7 +593,7 @@ function _eFapsInitRunLevel()  {
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",1, 'org.efaps.admin.common.SystemAttribute', 'initialize'");
+          "" + id + ",1, 'org.efaps.admin.common.SystemConfiguration', 'initialize'");
   
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",

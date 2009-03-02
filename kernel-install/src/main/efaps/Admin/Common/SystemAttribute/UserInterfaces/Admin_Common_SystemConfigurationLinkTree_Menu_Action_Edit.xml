@@ -16,27 +16,32 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>c7e2e562-6462-4dbd-b7af-5987b0301ffe</uuid>
+  <uuid>d66f1577-cdb5-4ff4-a7a4-d48e0cd4d1e5</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_Common_SystemAttributeTree_Menu_Action</name>
-    <childs>
-      <child>Admin_Common_SystemAttributeTree_Menu_Action_Edit</child>
-    </childs>
+    <name>Admin_Common_SystemConfigurationLinkTree_Menu_Action_Edit</name>
+    <!-- target definitions -->
+    <target>
+      <form>Admin_Common_SystemConfigurationLinkForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Edit"/>
+    </target>
+    <!-- properties -->
+    <property name="Target">modal</property>
+    <property name="TargetMode">edit</property>
   </definition>
 
-</ui-menu>
+</ui-command>

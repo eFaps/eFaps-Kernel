@@ -23,23 +23,25 @@
 
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>4177cc04-cc21-4894-8b51-a6f085adc462</uuid>
+  <uuid>86fe3b04-8482-463c-883f-cdf62e8bb3b3</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_Common_AbstractMyDesk</name>
-    <childs>
-      <child>Admin_Common_DBPropertiesMyDesk</child>
-      <child>Admin_Common_DBPropertiesBundleMyDesk</child>
-      <child>Admin_Common_SystemConfigurationMyDesk</child>
-      <child>Admin_Common_VersionMyDesk</child>
-    </childs>
+    <name>Admin_Common_SystemConfigurationAttributeTree_Menu_Action_Edit</name>
+    <!-- target definitions -->
+    <target>
+      <form>Admin_Common_SystemConfigurationAttributeForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Edit"/>
+    </target>
+    <!-- properties -->
+    <property name="Target">modal</property>
+    <property name="TargetMode">edit</property>
   </definition>
 
-</ui-menu>
+</ui-command>

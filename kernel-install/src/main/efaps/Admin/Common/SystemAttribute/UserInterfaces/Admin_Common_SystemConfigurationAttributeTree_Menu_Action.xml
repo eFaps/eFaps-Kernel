@@ -27,18 +27,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>4177cc04-cc21-4894-8b51-a6f085adc462</uuid>
+  <uuid>c7e2e562-6462-4dbd-b7af-5987b0301ffe</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_Common_AbstractMyDesk</name>
+    <name>Admin_Common_SystemConfigurationAttributeTree_Menu_Action</name>
     <childs>
-      <child>Admin_Common_DBPropertiesMyDesk</child>
-      <child>Admin_Common_DBPropertiesBundleMyDesk</child>
-      <child>Admin_Common_SystemConfigurationMyDesk</child>
-      <child>Admin_Common_VersionMyDesk</child>
+      <child>Admin_Common_SystemConfigurationAttributeTree_Menu_Action_Edit</child>
     </childs>
   </definition>
 

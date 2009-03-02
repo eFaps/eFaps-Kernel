@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -33,21 +33,13 @@
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_Common_SystemAttributeForm</name>
+    <name>Admin_Common_SystemConfigurationAttributeForm</name>
     <!-- fields -->
-    <field name="name">
+    <field name="key">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>
       <property name="Editable">true</property>
-      <property name="Expression">Name</property>
-      <property name="Required">true</property>
-      <property name="Searchable">true</property>
-    </field>
-    <field name="uuid">
-      <property name="Columns">80</property>
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
-      <property name="Expression">UUID</property>
+      <property name="Expression">Key</property>
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
@@ -57,6 +49,15 @@
       <property name="Editable">true</property>
       <property name="Expression">Value</property>
       <property name="Required">true</property>
+      <property name="Searchable">true</property>
+    </field>
+    <field name="description">
+      <property name="Columns">80</property>
+      <property name="Rows">5</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Description</property>
+      <property name="Required">false</property>
       <property name="Searchable">true</property>
     </field>
   </definition>

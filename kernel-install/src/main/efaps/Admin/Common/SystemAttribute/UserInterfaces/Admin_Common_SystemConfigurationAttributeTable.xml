@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -33,21 +33,21 @@
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_Common_SystemAttributeTable</name>
+    <name>Admin_Common_SystemConfigurationAttributeTable</name>
     <!-- fields -->
     <field name="name">
-      <property name="Expression">Name</property>
-      <property name="Label">Admin_Common_SystemAttribute/Name.Label</property>
+      <property name="Expression">Key</property>
+      <property name="Label">Admin_Common_SystemConfigurationAttribute/Key.Label</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="ShowTypeIcon">true</property>
     </field>
-    <field name="uuid">
-      <property name="Expression">UUID</property>
-      <property name="Label">Admin_Common_SystemAttribute/UUID.Label</property>
-    </field>
     <field name="value">
       <property name="Expression">Value</property>
-      <property name="Label">Admin_Common_SystemAttribute/Value.Label</property>
+      <property name="Label">Admin_Common_SystemConfigurationAttribute/Value.Label</property>
+    </field>
+    <field name="description">
+      <property name="Expression">Description</property>
+      <property name="Label">Admin_Common_SystemConfigurationAttribute/Description.Label</property>
     </field>
   </definition>
 

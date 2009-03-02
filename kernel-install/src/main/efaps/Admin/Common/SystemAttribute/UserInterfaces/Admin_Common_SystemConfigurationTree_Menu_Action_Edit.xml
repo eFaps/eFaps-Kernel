@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -27,28 +27,21 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>25250c4a-249a-4cfc-90fe-fa331a234e1c</uuid>
+  <uuid>33042bc7-565d-4fe0-b6d4-4d8fc356e8ab</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_Common_SystemAttributeMyDesk</name>
-    <icon>Admin_Common_SystemAttributeImage</icon>
-    <!-- access -->
-    <access>
-      <role>Administration</role>
-    </access>
+    <name>Admin_Common_SystemConfigurationTree_Menu_Action_Edit</name>
     <!-- target definitions -->
     <target>
-      <table>Admin_Common_SystemAttributeTable</table>
-      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
-        <property name="Types">Admin_Common_SystemAttribute</property>
-      </evaluate>
+      <form>Admin_Common_SystemConfigurationForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Edit"/>
     </target>
     <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetTableSortKey">name</property>
+    <property name="Target">modal</property>
+    <property name="TargetMode">edit</property>
   </definition>
 
 </ui-command>
