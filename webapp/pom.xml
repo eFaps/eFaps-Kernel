@@ -92,7 +92,7 @@
         <version>${project.version}</version>
         <configuration>
           <jaasConfigFile>${basedir}/src/main/jetty/jaas.config</jaasConfigFile>
-          <configFile>file:${basedir}/src/main/jetty/jetty.xml</configFile>
+          <configFile>file:${basedir}/src/main/jetty/eFaps-jetty.xml</configFile>
           <userName>Administrator</userName>
           <passWord>Administrator</passWord>
         </configuration>

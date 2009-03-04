@@ -20,9 +20,9 @@
  Last Changed By: $Author$
 
 -->
-
 <server>
 
+  
   <filter path="/*"
           name="eFaps"
           classname="org.apache.wicket.protocol.http.WicketFilter">
@@ -41,12 +41,13 @@
     <parameter key="login.name">wicket:eFaps:org.efaps.ui.wicket.LoginAttributeName</parameter>
   </filter>
 
+<!-- 
   <filter path="/test/*"
           name="testFilter"
           classname="org.efaps.ui.filter.TestFilter">
           
   </filter>
-
+ -->
 
   <servlet path="/*"
           name="eFapsRequestHandlerInitServlet"
@@ -69,7 +70,6 @@
           displayname="eFapsCheckOutServlet"
           classname="org.efaps.ui.servlet.CheckoutServlet"/>
                   
-          
 
 </server>
 
