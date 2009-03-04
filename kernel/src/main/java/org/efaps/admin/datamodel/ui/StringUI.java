@@ -131,10 +131,10 @@ public class StringUI extends AbstractUI {
       }
       ret.append("</textarea>");
     } else {
-      ret.append("<input type=\"text\" " + "size=\"").append(field.getCols())
-          .append("\" " + "name=\"").append(field.getName()).append(
-              "\" " + "value=\"").append((value != null ? value : "")).append(
-              "\" ");
+      ret.append("<input type=\"text\" size=\"").append(field.getCols())
+          .append("\" name=\"").append(field.getName())
+          .append("\" value=\"").append((value != null ? value : ""))
+          .append("\" ");
 
       ret.append(">");
     }
@@ -150,10 +150,17 @@ public class StringUI extends AbstractUI {
    */
   @Override
   public String getSearchHtml(final FieldValue _fieldValue) {
+    final StringBuilder ret = new StringBuilder();
     final Field field = _fieldValue.getField();
-    return "<input type=\"text\" " + "size=\"" + field.getCols() + "\" "
-        + "name=\"" + field.getName() + "\" " + "value=\"*\"" + "/>";
+    final Object value = _fieldValue.getValue();
+    ret.append("<input type=\"text\"")
+      .append(" size=\"").append(field.getCols())
+      .append("\" name=\"").append(field.getName())
+      .append("\" value=\"").append((value != null ? value : "*"))
+      .append("\" />");
+    return ret.toString();
   }
+
   /**
    * Method to compare the values.
    *
@@ -168,5 +175,4 @@ public class StringUI extends AbstractUI {
     final String value2 = _fieldValue2.getValue().toString();
     return value.compareTo(value2);
   }
-
 }

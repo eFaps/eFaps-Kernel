@@ -123,13 +123,25 @@ public class BooleanUI extends AbstractUI {
     final StringBuilder ret = new StringBuilder();
     final Field field = _fieldValue.getField();
     final Attribute attribute = _fieldValue.getAttribute();
+    final Object value = _fieldValue.getValue();
 
+    Boolean bool = null;
+    if (value != null && value instanceof String
+        && ((String) value).length() > 0) {
+      if (((String) value).equalsIgnoreCase("TRUE")) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+    }
     ret.append("<input type=\"radio\" ")
+       .append((bool != null && bool) ? "checked=\"checked\" " : "")
        .append("name=\"").append(field.getName()).append("\" ")
        .append("value=\"").append("TRUE").append("\"/>")
        .append(getTrue(attribute)).append("<br/>");
 
     ret.append("<input type=\"radio\" ")
+       .append((bool != null && !bool) ? "checked=\"checked\" " : "")
        .append("name=\"").append(field.getName()).append("\" ")
        .append("value=\"").append("FALSE").append("\"/>")
        .append(getFalse(attribute));
@@ -151,9 +163,9 @@ public class BooleanUI extends AbstractUI {
     if (_fieldValue.getValue() instanceof Boolean) {
       final boolean bool = (Boolean) _fieldValue.getValue();
       if (bool) {
-        ret = this.getTrue(attribute);
+        ret = getTrue(attribute);
       } else {
-        ret = this.getFalse(attribute);
+        ret = getFalse(attribute);
       }
     }
     return ret;
@@ -171,9 +183,9 @@ public class BooleanUI extends AbstractUI {
     if (_fieldValue.getValue() instanceof Boolean) {
       final boolean bool = (Boolean) _fieldValue.getValue();
       if (bool) {
-        ret = this.getTrue(_fieldValue.getAttribute());
+        ret = getTrue(_fieldValue.getAttribute());
       } else {
-        ret = this.getFalse(_fieldValue.getAttribute());
+        ret = getFalse(_fieldValue.getAttribute());
       }
     }
     return ret;
