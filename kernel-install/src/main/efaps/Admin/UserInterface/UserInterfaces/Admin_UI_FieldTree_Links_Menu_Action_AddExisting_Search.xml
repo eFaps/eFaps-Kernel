@@ -34,10 +34,12 @@
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>Admin_UI_FieldTree_Links_Menu_Action_AddExisting_Search</name>
+    <default>
+      <command>Admin_UI_SearchSearch</command>
+    </default>
     <!-- childs -->
     <childs>
-      <child>Admin_UI_FieldTree_Links_Menu_Action_AddExisting_Search_Action</child>
+      <child>Admin_UI_SearchSearch</child>
     </childs>
   </definition>
-
 </ui-search>
