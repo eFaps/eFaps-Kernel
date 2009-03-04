@@ -81,6 +81,7 @@ public class StandardLink extends AbstractMenuItemLink {
                                        getPage().getPageMapName());
       ((EFapsSession) getSession()).storeOpener(opener);
       openerId = opener.getId();
+      opener.setCommandUUID(command.getUUID());
       if (getPage() instanceof AbstractContentPage) {
         opener.setMenuTreeKey(((AbstractContentPage) getPage())
             .getMenuTreeKey());

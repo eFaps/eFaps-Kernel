@@ -24,11 +24,14 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.UIWizardObject;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.util.EFapsException;
 
 /**
  * Link used to submit a Search.
@@ -62,17 +65,29 @@ public class SearchSubmitLink extends SubmitLink {
   @Override
   public void onSubmit() {
     super.onSubmit();
-    final AbstractUIObject uiObject = (AbstractUIObject) super
-        .getDefaultModelObject();
+    final AbstractUIObject uiObject
+                                  = (AbstractUIObject) getDefaultModelObject();
 
     final UITable newTable = new UITable(uiObject.getCommandUUID(), uiObject
         .getOid(), uiObject.getOpenerId());
+    final UIWizardObject wizard = new UIWizardObject(newTable);
+    uiObject.setWizard(wizard);
+    try {
+      wizard.addParameters(uiObject,
+                           Context.getThreadContext().getParameters());
+    } catch (final EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    wizard.insertBefore(uiObject);
+    newTable.setWizard(wizard);
     if (uiObject.isSubmit()) {
       newTable.setSubmit(true);
       newTable.setCallingCommandUUID(uiObject.getCallingCommandUUID());
     }
-
     final TablePage page = new TablePage(new TableModel(newTable));
+
     page.setMenuTreeKey(((AbstractContentPage) getPage()).getMenuTreeKey());
     getRequestCycle().setResponsePage(page);
 

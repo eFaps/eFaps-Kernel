@@ -53,10 +53,8 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  */
 public class FormPage extends AbstractContentPage {
 
-  private static final long serialVersionUID = -3554311414948286302L;
-
-  private static final EFapsContentReference CSS =
-      new EFapsContentReference(FormPage.class, "FormPage.css");
+  private static final EFapsContentReference CSS
+                    = new EFapsContentReference(FormPage.class, "FormPage.css");
 
   /**
    * Constructor called from the client directly by using parameters. Normally
@@ -78,20 +76,22 @@ public class FormPage extends AbstractContentPage {
    * @param _commandUUID
    * @param _oid
    */
-  public FormPage(final IPageMap _pagemap, final UUID _commandUUID, final String _oid) {
+  public FormPage(final IPageMap _pagemap, final UUID _commandUUID,
+                  final String _oid) {
    super(_pagemap, new FormModel(new UIForm(_commandUUID, _oid)), null);
    this.addComponents();
   }
 
   /**
-   * @param pageMap
-   * @param commandUUID
-   * @param oid
-   * @param openerId
+   * @param _pageMap
+   * @param _commandUUID
+   * @param _oid
+   * @param _openerId
    */
-  public FormPage(final IPageMap pageMap, final UUID commandUUID, final String oid,
-      final String openerId) {
-    super(pageMap, new FormModel(new UIForm(commandUUID,oid,openerId)), null);
+  public FormPage(final IPageMap _pageMap, final UUID _commandUUID,
+                  final String _oid, final String _openerId) {
+    super(_pageMap, new FormModel(new UIForm(_commandUUID, _oid, _openerId)),
+                                  null);
     this.addComponents();
   }
 
@@ -108,7 +108,8 @@ public class FormPage extends AbstractContentPage {
    * @param oid
    * @param modalWindow
    */
-  public FormPage(final UUID commandUUID, final String oid, final ModalWindowContainer _modalWindow) {
+  public FormPage(final UUID commandUUID, final String oid,
+                  final ModalWindowContainer _modalWindow) {
     super(new FormModel(new UIForm(commandUUID,oid)), _modalWindow);
     this.addComponents();
   }

@@ -20,12 +20,10 @@
 
 package org.efaps.ui.wicket.components.footer;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
@@ -149,17 +147,18 @@ public class FooterPanel extends Panel {
           new Button("createeditsearch", new AjaxSubmitCloseLink(Button.LINKID,
               uiObject, _form), label, Button.ICON_ACCEPT);
       this.add(button);
-    } else if (uiObject.isSearchMode()
-                    && uiObject.getCallingCommandUUID() != null) {
+    } else if (uiObject.isSearchMode() && uiObject instanceof UIForm) {
       final Button button =
           new Button("createeditsearch", new SearchSubmitLink(Button.LINKID,
               _model, _form), label, Button.ICON_NEXT);
       this.add(button);
     } else {
       closelabelkey = "Close";
-      final Component invisible =
-          new WebMarkupContainer("createeditsearch").setVisible(false);
-      add(invisible);
+      label = getLabel(uiObject.getCommand().getName(), "Revise");
+      final Button button =
+        new Button("createeditsearch", new AjaxReviseLink(Button.LINKID,
+            uiObject), label, Button.ICON_PREVIOUS);
+      add(button);
     }
 
     if (_modalWindow == null) {

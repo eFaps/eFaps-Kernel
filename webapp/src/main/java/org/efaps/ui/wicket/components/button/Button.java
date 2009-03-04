@@ -47,6 +47,11 @@ public class Button extends Panel {
   public static final EFapsContentReference ICON_NEXT =
       new EFapsContentReference(Button.class, "next.png");
 
+  public static final EFapsContentReference ICON_PREVIOUS
+                     = new EFapsContentReference(Button.class, "previous.png");
+
+
+
   private final ButtonImage imagediv = new ButtonImage("icon");
 
   public Button(final String _wicketId, final WebMarkupContainer _link,

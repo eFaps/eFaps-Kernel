@@ -320,21 +320,14 @@ public class UIForm extends AbstractUIObject {
     if (_field instanceof FieldSet) {
       evaluateFieldSet(_row, _query, _field, oid, label);
     } else if (_field instanceof FieldCommand) {
-      evaluateFieldCmd(_row, _field, oid, label);
+      final UIFormCellCmd fieldCmd = new UIFormCellCmd((FieldCommand) _field,
+                                                        oid,
+                                                        getMode(),
+                                                        label);
+      _row.add(fieldCmd);
     } else {
       evaluateField(_row, _query, _field, fieldInstance, label, attr);
     }
-  }
-
-  private void evaluateFieldCmd(final FormRow _row, final Field _field,
-                                final String _oid, final String _label)
-      throws EFapsException {
-    final UIFormCellCmd fieldCmd = new UIFormCellCmd((FieldCommand) _field,
-                                                     _oid,
-                                                     getMode(),
-                                                     _label);
-
-    _row.add(fieldCmd);
   }
 
   /**
@@ -546,8 +539,11 @@ public class UIForm extends AbstractUIObject {
             label = "Unknown";
           }
           final Instance fieldInstance = getCallInstance();
-          final FieldValue fieldvalue
-                               = new FieldValue(field, attr, "", fieldInstance);
+          final FieldValue fieldvalue = new FieldValue(field,
+                  attr,
+                  super.isWizardCall() ? getValue4Wizard(field.getName())
+                                       : null,
+                  fieldInstance);
 
           String strValue = null;
           if (isCreateMode()) {
