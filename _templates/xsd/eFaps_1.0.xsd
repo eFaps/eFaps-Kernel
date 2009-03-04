@@ -717,7 +717,7 @@
         <xsd:attribute name="name" use="required">
           <xsd:simpleType>
             <xsd:restriction base="xsd:string">
-              <xsd:enumeration value="AllowedEvents"></xsd:enumeration>
+              <xsd:enumeration value="AllowedEvents"/>
               <xsd:enumeration value="Icon" />
               <xsd:enumeration value="StoreAttributeFileLength" />
               <xsd:enumeration value="StoreAttributeFileName" />
@@ -726,7 +726,9 @@
               <xsd:enumeration value="StoreJDBCKey" />
               <xsd:enumeration value="StoreJDBCTable" />
               <xsd:enumeration value="StoreResource" />
-              <xsd:enumeration value="StoreVFSName"></xsd:enumeration>
+              <xsd:enumeration value="StoreVFSName"/>
+              <xsd:enumeration value="StoreUseTypeIdInPath"/>
+              <xsd:enumeration value="StoreNumberSubDirectories"/>
             </xsd:restriction>
           </xsd:simpleType>
         </xsd:attribute>
