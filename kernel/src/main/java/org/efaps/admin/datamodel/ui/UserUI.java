@@ -52,10 +52,10 @@ public class UserUI extends AbstractUI {
     final Object value = _fieldValue.getValue();
     if (value instanceof Person) {
       final Person person = (Person) value;
-      ret = person.getViewableName(null);
+      ret = person.getName();
     } else if (value instanceof Role) {
       final Role role = (Role) value;
-      ret = role.getViewableName(null);
+      ret = role.getName();
     } else {
       throw new EFapsException(this.getClass(),
                                "getViewHtml.noPersonOrRole",
@@ -77,20 +77,19 @@ public class UserUI extends AbstractUI {
     String value = null;
     if (_fieldValue.getValue() instanceof Person) {
       final Person person = (Person) _fieldValue.getValue();
-      value = person.getViewableName(null);
+      value = person.getName();
     } else if (_fieldValue.getValue() instanceof Role) {
       final Role role = (Role) _fieldValue.getValue();
-      value = role.getViewableName(null);
+      value = role.getName();
     }
     final String value2 = null;
     if (_fieldValue2.getValue() instanceof Person) {
       final Person person = (Person) _fieldValue2.getValue();
-      value = person.getViewableName(null);
+      value = person.getName();
     } else if (_fieldValue2.getValue() instanceof Role) {
       final Role role = (Role) _fieldValue2.getValue();
-      value = role.getViewableName(null);
+      value = role.getName();
     }
-
     return value.compareTo(value2);
   }
 }

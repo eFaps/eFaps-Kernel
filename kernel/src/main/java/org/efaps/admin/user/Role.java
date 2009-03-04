@@ -36,12 +36,14 @@ import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
+ * Class represents the instance of a role in eFaps.
+ *
  * @author tmo
  * @author jmox
  * @version $Id$
  * @todo description
  */
-public class Role extends AbstractUserObject {
+public final class Role extends AbstractUserObject {
 
   // ///////////////////////////////////////////////////////////////////////////
   // static variables
@@ -63,33 +65,19 @@ public class Role extends AbstractUserObject {
    * @see #getCache
    */
   private static final RoleCache CACHE = new RoleCache();
-  // ///////////////////////////////////////////////////////////////////////////
-  // constructors / destructors
 
   /**
    * Create a new role instance. The method is used from the static method
    * {@link #initialise} to read all roles from the database.
    *
-   * @param _id
+   * @param _id       id of the role
+   * @param _uuid     uuid of the role
+   * @param _name     name of the role
+   * @param _status   status of the role
    */
   private Role(final long _id, final String _uuid, final String _name,
                final boolean _status) {
     super(_id, _uuid, _name, _status);
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance methods
-
-  /**
-   * Returns the viewable name of the role. The method {@link #getName} is used
-   * for the viewing name.
-   *
-   * @param _context
-   *                context for this request
-   * @see #getName
-   */
-  public String getViewableName(final Context _context) {
-    return getName();
   }
 
   /**
@@ -118,10 +106,9 @@ public class Role extends AbstractUserObject {
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Role}.
    *
-   * @param _id
-   *                id to search in the cache
+   * @param _id  id to search in the cache
    * @return instance of class {@link Role}
-   * @throws CacheReloadException
+   * @throws CacheReloadException on error
    * @see #getCache
    * @todo rewrite to use context instance
    */
@@ -133,10 +120,9 @@ public class Role extends AbstractUserObject {
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Role}.
    *
-   * @param _name
-   *                name to search in the cache
+   * @param _name name to search in the cache
    * @return instance of class {@link Role}
-   * @throws CacheReloadException
+   * @throws CacheReloadException on error
    * @see #getCache
    * @todo rewrite to use context instance
    */
@@ -147,9 +133,9 @@ public class Role extends AbstractUserObject {
   /**
    * Returns for given parameter <i>_uuid</i> the instance of class
    * {@link Role}.
-   *
+   * @param _uuid UUI to search for
    * @return instance of class {@link Role}
-   * @throws CacheReloadException
+   * @throws CacheReloadException on error
    */
   public static Role get(final UUID _uuid) throws CacheReloadException {
     return CACHE.get(_uuid);
@@ -160,18 +146,17 @@ public class Role extends AbstractUserObject {
    * {@link Role}. The parameter <i>_jaasKey</i> is the name of the role used
    * in the given JAAS system for the role.
    *
-   * @param _jaasSystem
-   *                JAAS system for which the JAAS key is named
-   * @param _jaasKey
-   *                key in the foreign JAAS system for which the role is
-   *                searched
+   * @param _jaasSystem   JAAS system for which the JAAS key is named
+   * @param _jaasKey      key in the foreign JAAS system for which the role is
+   *                      searched
+   * @throws EFapsException on error
    * @return instance of class {@link Role}, or <code>null</code> if role is
    *         not found
    * @see #get(long)
    */
-  static public Role getWithJAASKey(final JAASSystem _jaasSystem,
+  public static Role getWithJAASKey(final JAASSystem _jaasSystem,
                                     final String _jaasKey)
-                                                          throws EFapsException {
+      throws EFapsException {
     long roleId = 0;
     ConnectionResource rsrc = null;
     try {
@@ -193,24 +178,19 @@ public class Role extends AbstractUserObject {
         resultset.close();
 
       } catch (final SQLException e) {
-        LOG.warn("search for role for JAAS system '"
-            + _jaasSystem.getName()
-            + "' with key '"
-            + _jaasKey
-            + "' is not possible", e);
-
+        LOG.warn("search for role for JAAS system '" + _jaasSystem.getName()
+            + "' with key '" + _jaasKey + "' is not possible", e);
         throw new EFapsException(Role.class, "getWithJAASKey.SQLException", e,
             _jaasSystem.getName(), _jaasKey);
-      }
-      finally {
+      } finally {
         try {
           stmt.close();
         } catch (final SQLException e) {
+          LOG.warn("Catched SQLException in class " + Role.class);
         }
       }
       rsrc.commit();
-    }
-    finally {
+    } finally {
       if ((rsrc != null) && rsrc.isOpened()) {
         rsrc.abort();
       }
@@ -219,18 +199,29 @@ public class Role extends AbstractUserObject {
   }
 
   /**
-   * @return
+   * Method to get the Cache for Roles.
+   * @return Cache
    */
   public static Cache<Role> getCache() {
     return CACHE;
   }
 
-  private final static class RoleCache extends Cache<Role> {
+  /**
+   * Class used as the Cahce for Roles.
+   */
+  private static final class RoleCache extends Cache<Role> {
 
-
+    /**
+     * Method to read the data into the cache.
+     * @param _cache4Id   cache with id as key
+     * @param _cache4Name cache with name as key
+     * @param _cache4UUID cache with uuid as key
+     * @throws CacheReloadException on erro during reading the date
+     */
     @Override
-    protected void readCache(final Map<Long, Role> cache4Id,
-        final Map<String, Role> cache4Name, final Map<UUID, Role> cache4UUID)
+    protected void readCache(final Map<Long, Role> _cache4Id,
+                             final Map<String, Role> _cache4Name,
+                             final Map<UUID, Role> _cache4UUID)
         throws CacheReloadException {
       ConnectionResource con = null;
       try {
@@ -250,28 +241,22 @@ public class Role extends AbstractUserObject {
 
             LOG.debug("read role '" + name + "' (id = " + id + ")");
             final Role role = new Role(id, uuid, name, status);
-            cache4Id.put(role.getId(), role);
-            cache4Name.put(role.getName(), role);
-            cache4UUID.put(role.getUUID(), role);
-
+            _cache4Id.put(role.getId(), role);
+            _cache4Name.put(role.getName(), role);
+            _cache4UUID.put(role.getUUID(), role);
           }
           resulset.close();
-
-        }
-        finally {
+        } finally {
           if (stmt != null) {
             stmt.close();
           }
         }
-
         con.commit();
-
       } catch (final SQLException e) {
         throw new CacheReloadException("could not read roles", e);
       } catch (final EFapsException e) {
         throw new CacheReloadException("could not read roles", e);
-      }
-      finally {
+      } finally {
         if ((con != null) && con.isOpened()) {
           try {
             con.abort();
@@ -280,8 +265,6 @@ public class Role extends AbstractUserObject {
           }
         }
       }
-
     }
-
   }
 }
