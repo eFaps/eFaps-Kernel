@@ -33,7 +33,7 @@
       <xsd:complexContent>
         <xsd:extension base="eFaps:AbstractBase">
           <xsd:sequence>
-            <xsd:element name="definition" type="eFaps:definition_access-set" maxOccurs="unbounded" minOccurs="1"></xsd:element>
+            <xsd:element name="definition" type="eFaps:definition_access-set" maxOccurs="unbounded" minOccurs="1"/>
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
@@ -45,7 +45,7 @@
       <xsd:complexContent>
         <xsd:extension base="eFaps:AbstractBase">
           <xsd:sequence>
-            <xsd:element name="definition" type="eFaps:definition_access-type" maxOccurs="unbounded" minOccurs="1"></xsd:element>
+            <xsd:element name="definition" type="eFaps:definition_access-type" maxOccurs="unbounded" minOccurs="1"/>
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
@@ -57,7 +57,7 @@
       <xsd:complexContent>
         <xsd:extension base="eFaps:AbstractBase">
           <xsd:sequence>
-            <xsd:element name="definition" type="eFaps:definition_common-systemconfig" maxOccurs="unbounded" minOccurs="1"></xsd:element>
+            <xsd:element name="definition" type="eFaps:definition_common-systemconfig" maxOccurs="unbounded" minOccurs="1"/>
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
@@ -69,7 +69,7 @@
       <xsd:complexContent>
         <xsd:extension base="eFaps:AbstractBase">
           <xsd:sequence>
-            <xsd:element name="definition" type="eFaps:definition_datamodel-sqltable" maxOccurs="unbounded" minOccurs="1"></xsd:element>
+            <xsd:element name="definition" type="eFaps:definition_datamodel-sqltable" maxOccurs="unbounded" minOccurs="1"/>
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
@@ -81,7 +81,19 @@
       <xsd:complexContent>
         <xsd:extension base="eFaps:AbstractBase">
           <xsd:sequence>
-            <xsd:element name="definition" type="eFaps:definition_datamodel-type" maxOccurs="unbounded" minOccurs="1"></xsd:element>
+            <xsd:element name="definition" type="eFaps:definition_datamodel-type" maxOccurs="unbounded" minOccurs="1"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="db-store">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="eFaps:AbstractBase">
+          <xsd:sequence>
+            <xsd:element name="definition" type="eFaps:definition_db-store" maxOccurs="unbounded" minOccurs="1"/>
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
@@ -94,7 +106,7 @@
         <xsd:extension base="eFaps:AbstractBase">
           <xsd:sequence>
             <xsd:element name="bundle" type="eFaps:bundle" maxOccurs="1" minOccurs="1"></xsd:element>
-            <xsd:element name="resource" type="eFaps:resource" maxOccurs="unbounded" minOccurs="1"></xsd:element>
+            <xsd:element name="resource" type="eFaps:propertyResource" maxOccurs="unbounded" minOccurs="1"></xsd:element>
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
@@ -434,12 +446,25 @@
     <xsd:complexContent>
       <xsd:extension base="eFaps:AbstractDefinition">
         <xsd:sequence>
-          <xsd:element name="abstract" type="xsd:boolean" minOccurs="0" maxOccurs="1"></xsd:element>
-          <xsd:group ref="eFaps:attributeGroup" maxOccurs="unbounded" minOccurs="0"></xsd:group>
-          <xsd:element name="trigger" type="eFaps:trigger4Type" maxOccurs="unbounded" minOccurs="0"></xsd:element>
-          <xsd:element name="property" type="eFaps:property_datamodel-type" maxOccurs="unbounded" minOccurs="0"></xsd:element>
-          <xsd:element name="event-for" type="eFaps:event-for" minOccurs="0" maxOccurs="unbounded"></xsd:element>
-        </xsd:sequence>
+          <xsd:element name="abstract" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+          <xsd:group ref="eFaps:attributeGroup" maxOccurs="unbounded" minOccurs="0"/>
+          <xsd:element name="trigger" type="eFaps:trigger4Type" maxOccurs="unbounded" minOccurs="0"/>
+          <xsd:element name="property" type="eFaps:property_datamodel-type" maxOccurs="unbounded" minOccurs="0"/>
+          <xsd:element name="event-for" type="eFaps:event-for" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="store" type="eFaps:typeStore" minOccurs="0" maxOccurs="1"/>
+       </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+
+  <xsd:complexType name="definition_db-store">
+    <xsd:complexContent>
+      <xsd:extension base="eFaps:AbstractDefinition">
+        <xsd:sequence>
+          <xsd:element name="jndi-name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+          <xsd:element name="resource" type="eFaps:storeResource" minOccurs="1" maxOccurs="1"/>
+       </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
@@ -719,16 +744,6 @@
             <xsd:restriction base="xsd:string">
               <xsd:enumeration value="AllowedEvents"/>
               <xsd:enumeration value="Icon" />
-              <xsd:enumeration value="StoreAttributeFileLength" />
-              <xsd:enumeration value="StoreAttributeFileName" />
-              <xsd:enumeration value="StoreCompress" />
-              <xsd:enumeration value="StoreJDBCBlob" />
-              <xsd:enumeration value="StoreJDBCKey" />
-              <xsd:enumeration value="StoreJDBCTable" />
-              <xsd:enumeration value="StoreResource" />
-              <xsd:enumeration value="StoreVFSName"/>
-              <xsd:enumeration value="StoreUseTypeIdInPath"/>
-              <xsd:enumeration value="StoreNumberSubDirectories"/>
             </xsd:restriction>
           </xsd:simpleType>
         </xsd:attribute>
@@ -780,7 +795,27 @@
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
-
+  
+  <xsd:complexType name="property_storeResource">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="name" use="required">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="JDBCBlob"/>
+              <xsd:enumeration value="JDBCKey" />
+              <xsd:enumeration value="JDBCTable" />
+              <xsd:enumeration value="VFSUseTypeIdInPath" />
+              <xsd:enumeration value="VFSNumberSubDirectories" />
+              <xsd:enumeration value="VFSNumberBackups" />
+              <xsd:enumeration value="VFSBaseName" />
+              <xsd:enumeration value="VFSProvider" />
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
 
   <xsd:complexType name="property_ui-command">
     <xsd:simpleContent>
@@ -814,12 +849,20 @@
   </xsd:complexType>
 
 
-  <xsd:complexType name="resource">
+  <xsd:complexType name="propertyResource">
     <xsd:sequence>
       <xsd:element name="type" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
       <xsd:element name="language" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
       <xsd:element name="file" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
     </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="storeResource">
+    <xsd:sequence>
+      <xsd:element name="property" type="eFaps:property_storeResource" maxOccurs="unbounded" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="class" use="required"/>
+    <xsd:attribute name="compress" use="required"/>
   </xsd:complexType>
 
 
@@ -841,6 +884,12 @@
       <xsd:element name="execute" type="eFaps:execute" maxOccurs="1" minOccurs="0"></xsd:element>
       <xsd:element name="validate" type="eFaps:execute" maxOccurs="1" minOccurs="0"></xsd:element>
     </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="typeStore">
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="attributeFileLength" type="xsd:string" use="required"/>
+    <xsd:attribute name="attributeFileName" type="xsd:string" use="required"/>
   </xsd:complexType>
   
   <xsd:complexType name="trigger4Attribute">
