@@ -26,20 +26,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.tools.plugin.Parameter;
+
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
-import org.efaps.db.transaction.VFSStoreFactoryBean;
 import org.efaps.init.StartupDatabaseConnection;
 import org.efaps.init.StartupException;
 import org.efaps.maven.logger.SLF4JOverMavenLog;
 import org.efaps.util.EFapsException;
-import org.mortbay.naming.NamingUtil;
 
 /**
  *
@@ -184,7 +180,7 @@ public abstract class EFapsAbstractMojo implements Mojo {
     try  {
       Class.forName("org.efaps.maven.logger.SLF4JOverMavenLog");
       SLF4JOverMavenLog.LOGGER = getLog();
-    } catch (ClassNotFoundException e)  {
+    } catch (final ClassNotFoundException e)  {
     }
 
     try {
@@ -192,67 +188,9 @@ public abstract class EFapsAbstractMojo implements Mojo {
                            this.factory,
                            convertToMap(this.connection),
                            "org.objectweb.jotm.Current");
-    } catch (StartupException e) {
+    } catch (final StartupException e) {
       getLog().error("Initialize Database Connection failed: " + e.toString());
     }
-
-    initStores();
-  }
-
-  /**
-   * Initialize all stores.
-   *
-   * @see #stores
-   */
-  private boolean initStores()  {
-    boolean initialized = true;
-
-    final javax.naming.Context compCtx;
-    try {
-      final InitialContext context = new InitialContext();
-      compCtx = (javax.naming.Context)context.lookup ("java:comp/env");
-    } catch (NamingException e) {
-      throw new Error("Could not initialize JNDI", e);
-    }
-    final Map<String, String> conf = convertToMap(this.stores);
-    final String[] storeNames = conf.get(KEY_STORENAMES).split(REGEXP_SPLIT_STORENAMES);
-
-    for (final String storeName : storeNames)  {
-
-      if (!"".equals(storeName))  {
-        final String naming = conf.get(storeName + KEY_STORE_NAMING);
-        final String basename = conf.get(storeName + KEY_STORE_BASENAME);
-        final String provider = conf.get(storeName + KEY_STORE_PROVIDER);
-
-        getLog().info("Intialize store '" + naming + "'");
-
-        if ((naming == null) || ("".equals(naming)))  {
-          getLog().error("javax naming name for store '" + storeName
-                         + "' is not defined!");
-          initialized = false;
-        } else if ((basename == null) || ("".equals(basename)))  {
-          getLog().error("base name (path) for store '" + storeName
-              + "' is not defined!");
-          initialized = false;
-        } else if ((provider == null) || ("".equals(provider)))  {
-          getLog().error("provider class name for store '" + storeName
-              + "' is not defined!");
-          initialized = false;
-        } else  {
-          final VFSStoreFactoryBean factory = new VFSStoreFactoryBean();
-          factory.setBaseName(basename);
-          factory.setProvider(provider);
-          try  {
-            NamingUtil.bind(compCtx, naming, factory);
-          } catch (NamingException e)  {
-            getLog().error(
-                "could not bind VFS store factory bean to '" + naming + "'",
-                e);
-          }
-        }
-      }
-    }
-    return initialized;
   }
 
   /**

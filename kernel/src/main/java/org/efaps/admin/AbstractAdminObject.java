@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.mortbay.log.Log;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -46,11 +48,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @author tmo
  * @version $Id$
  */
-public abstract class AbstractAdminObject implements CacheObjectInterface
-{
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance variables
+public abstract class AbstractAdminObject implements CacheObjectInterface {
 
   /**
    * The instance variable stores the id of the collections object.
@@ -89,7 +87,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
       new HashMap<EventType, List<EventDefinition>>();
 
   /**
-   * this instance variable is used to determine if a Type is abstract or not
+   * this instance variable is used to determine if a Type is abstract or not.
    */
   private boolean abstractType = false;
 
@@ -109,8 +107,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    */
   protected AbstractAdminObject(final long _id,
                                 final String _uuid,
-                                final String _name)
-  {
+                                final String _name) {
     this.id = _id;
     this.uuid = (_uuid == null)
                 ? null
@@ -120,9 +117,6 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
                 : _name.trim();
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // instance methods
-
   /**
    * Sets the link properties for this object.
    *
@@ -130,13 +124,13 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    * @param _toId       to id
    * @param _toType     to type
    * @param _toName     to name
+   * @throws Exception on error
    */
   protected void setLinkProperty(final EFapsClassNames _linkType,
                                  final long _toId,
                                  final EFapsClassNames _toType,
                                  final String _toName)
-      throws Exception
-  {
+      throws Exception {
   }
 
   /**
@@ -146,11 +140,11 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    * @param _name   name of the property (key)
    * @param _value  value of the property
    * @see #properties
+   * @throws CacheReloadException on error
    */
   protected void setProperty(final String _name,
                              final String _value)
-      throws CacheReloadException
-  {
+      throws CacheReloadException {
     getProperties().put(_name, _value);
   }
 
@@ -161,8 +155,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    * @return value of the property with the given name / key.
    * @see #properties
    */
-  public String getProperty(final String _name)
-  {
+  public String getProperty(final String _name) {
     return getProperties().get(_name);
   }
 
@@ -174,21 +167,20 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    * @see #events
    */
   public void addEvent(final EventType _eventtype,
-                       final EventDefinition _eventdef)
-  {
-    List<EventDefinition> events = this.events.get(_eventtype);
-    if (events == null) {
-      events = new ArrayList<EventDefinition>();
-      this.events.put(_eventtype, events);
+                       final EventDefinition _eventdef) {
+    List<EventDefinition> evenList = this.events.get(_eventtype);
+    if (evenList == null) {
+      evenList = new ArrayList<EventDefinition>();
+      this.events.put(_eventtype, evenList);
     }
     int pos = 0;
-    for (EventDefinition cur : events) {
+    for (final EventDefinition cur : evenList) {
       if (_eventdef.getIndexPos() > cur.getIndexPos()) {
         break;
       }
       pos++;
     }
-    events.add(pos, _eventdef);
+    evenList.add(pos, _eventdef);
 
   }
 
@@ -198,19 +190,17 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    * @param _eventType    event type
    * @return list of events for the given event type
    */
-  public List<EventDefinition> getEvents(final EventType _eventType)
-  {
+  public List<EventDefinition> getEvents(final EventType _eventType) {
     return this.events.get(_eventType);
   }
 
   /**
    * Does this instance have Event, for the specified EventType ?
-   *
+   * @param _eventtype type of event to check for
    * @return <i>true</i>, if this instance has a trigger, otherwise
    *         <i>false</i>.
    */
-  public boolean hasEvents(final EventType _eventtype)
-  {
+  public boolean hasEvents(final EventType _eventtype) {
     return (this.events.get(_eventtype) != null);
   }
 
@@ -223,20 +213,20 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    *                    parameters defining the key, second parameter the value
    *                    itself)
    * @return List with Returns
-   * @throws EFapsException
+   * @throws EFapsException on error
    */
   public List<Return> executeEvents(final EventType _eventtype,
                                     final Object... _args)
-      throws EFapsException
-  {
-    List<Return> ret = new ArrayList<Return>();
+      throws EFapsException {
+    final List<Return> ret = new ArrayList<Return>();
     if (hasEvents(_eventtype)) {
-      Parameter param = new Parameter();
+      final Parameter param = new Parameter();
 
       if (_args != null) {
         // add all parameters
         for (int i = 0; i < _args.length; i += 2) {
-          if (((i + 1) < _args.length) && (_args[i] instanceof ParameterValues)) {
+          if (((i + 1) < _args.length)
+              && (_args[i] instanceof ParameterValues)) {
             param.put((ParameterValues) _args[i], _args[i + 1]);
           }
         }
@@ -246,7 +236,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
         param.put(ParameterValues.UIOBJECT, this);
       }
       // execute all triggers
-      for (EventDefinition evenDef : this.events.get(_eventtype)) {
+      for (final EventDefinition evenDef : this.events.get(_eventtype)) {
         ret.add(evenDef.execute(param));
       }
     }
@@ -258,37 +248,37 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    * Each found property is set with instance method {@link #setProperty}.
    *
    * @see #setProperty
+   * @throws CacheReloadException on error
    */
-  protected void readFromDB4Properties()
-      throws CacheReloadException
-  {
+  protected void readFromDB4Properties() throws CacheReloadException {
     Statement stmt = null;
     try  {
       stmt = Context.getThreadContext().getConnection().createStatement();
       final ResultSet rs = stmt.executeQuery(
-          "select "+
-            "T_CMPROPERTY.NAME,"+
-            "T_CMPROPERTY.VALUE "+
-          "from T_CMPROPERTY "+
-          "where T_CMPROPERTY.ABSTRACT=" + getId() + ""
+          "select "
+          + "T_CMPROPERTY.NAME,"
+          + "T_CMPROPERTY.VALUE "
+        + "from T_CMPROPERTY "
+        + "where T_CMPROPERTY.ABSTRACT=" + getId() + ""
       );
       while (rs.next())  {
-        final String name =   rs.getString(1).trim();
-        final String value =  rs.getString(2).trim();
-        setProperty(name, value);
+        final String nameStr = rs.getString(1).trim();
+        final String value = rs.getString(2).trim();
+        setProperty(nameStr, value);
       }
       rs.close();
-    } catch (EFapsException e)  {
+    } catch (final EFapsException e)  {
       throw new CacheReloadException("could not read properties for "
           + "'" + getName() + "'", e);
-    } catch (SQLException e)  {
+    } catch (final SQLException e)  {
       throw new CacheReloadException("could not read properties for "
           + "'" + getName() + "'", e);
     } finally  {
       if (stmt != null)  {
         try  {
           stmt.close();
-        } catch (SQLException e)  {
+        } catch (final SQLException e) {
+          Log.warn("Catched SQLExeption in class" + this.getClass());
         }
       }
     }
@@ -299,10 +289,10 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    * is set with instance method {@link setLinkProperty}.
    *
    * @see #setLinkProperty
+   * @throws CacheReloadException on error
+   *
    */
-  protected void readFromDB4Links()
-      throws CacheReloadException
-  {
+  protected void readFromDB4Links() throws CacheReloadException {
     Statement stmt = null;
     try {
       stmt = Context.getThreadContext().getConnection().createStatement();
@@ -330,22 +320,19 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
         }
       }
       resultset.close();
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new CacheReloadException("could not read db links for "
           + "'" + getName() + "'", e);
-    }
-    finally {
+    } finally {
       if (stmt != null) {
         try {
           stmt.close();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
+          Log.warn("Catched SQLExeption in class" + this.getClass());
         }
       }
     }
   }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // getter and setter instance methods
 
   /**
    * This is the getter method for instance variable {@link #id}.
@@ -353,8 +340,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    * @return value of instance variable {@id}
    * @see #id
    */
-  public long getId()
-  {
+  public long getId() {
     return this.id;
   }
 
@@ -364,8 +350,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    * @return value of instance variable {@uuid}
    * @see #uuid
    */
-  public UUID getUUID()
-  {
+  public UUID getUUID() {
     return this.uuid;
   }
 
@@ -376,8 +361,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    * @see #name
    * @see #setName
    */
-  public String getName()
-  {
+  public String getName() {
     return this.name;
   }
 
@@ -386,20 +370,17 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    *
    * @return value of instance variable {@link #abstractType}
    */
-  public boolean isAbstractType()
-  {
+  public boolean isAbstractType() {
     return this.abstractType;
   }
 
   /**
    * This is the setter method for the instance variable {@link #abstractType}.
    *
-   * @param abstractType
-   *                the abstractType to set
+   * @param _abstractType the abstractType to set
    */
-  protected void setAbstractType(final boolean abstractType)
-  {
-    this.abstractType = abstractType;
+  protected void setAbstractType(final boolean _abstractType) {
+    this.abstractType = _abstractType;
   }
 
   /**
@@ -408,8 +389,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    * @return value of instance variable {@link #properties}
    * @see #properties
    */
-  protected Map<String, String> getProperties()
-  {
+  protected Map<String, String> getProperties() {
     return this.properties;
   }
 
@@ -419,8 +399,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    * @return value of instance variable {@link #events}
    * @see #events
    */
-  protected Map<EventType, List<EventDefinition>> getEvents()
-  {
+  protected Map<EventType, List<EventDefinition>> getEvents() {
     return this.events;
   }
 
@@ -431,8 +410,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
    * @return name of the user interface object
    */
   @Override
-  public String toString()
-  {
+  public String toString() {
     return new ToStringBuilder(this)
                 .append("name", getName())
                 .append("uuid", getUUID())

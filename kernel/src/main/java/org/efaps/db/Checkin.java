@@ -20,6 +20,8 @@
  */
 
 package org.efaps.db;
+import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_LENGTH;
+import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_NAME;
 
 import java.io.File;
 import java.io.InputStream;
@@ -30,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
-import org.efaps.db.transaction.StoreResource;
+import org.efaps.db.store.Resource;
 import org.efaps.util.EFapsException;
 
 /**
@@ -41,19 +43,10 @@ import org.efaps.util.EFapsException;
  */
 public class Checkin extends AbstractAction {
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // static variables
-
   /**
    * Logging instance used in this class.
    */
   private static final Logger LOG = LoggerFactory.getLogger(Checkin.class);
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance variables
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // constructors
 
   /**
    * Constructor with a string as object id.
@@ -84,7 +77,7 @@ public class Checkin extends AbstractAction {
    *                size of file in stream to check in (negative size means that
    *                all from the stream must be written)
    * @see #executeWithoutAccessCheck
-   * @todo description
+   *@throws EFapsException on error
    */
   public void execute(final String _fileName, final InputStream _in,
                       final int _size) throws EFapsException {
@@ -99,7 +92,7 @@ public class Checkin extends AbstractAction {
 
   /**
    * Executes the checkin without checking the access rights (but with
-   * triggers):
+   * triggers).
    * <ol>
    * <li>executes the pre checkin trigger (if exists)</li>
    * <li>executes the checkin trigger (if exists)</li>
@@ -121,7 +114,7 @@ public class Checkin extends AbstractAction {
    */
   public void executeWithoutAccessCheck(final String _fileName,
                                         final InputStream _in, final int _size)
-                                                                               throws EFapsException {
+      throws EFapsException {
     executeEvents(EventType.CHECKIN_PRE);
     if (!executeEvents(EventType.CHECKIN_OVERRIDE)) {
       executeWithoutTrigger(_fileName, _in, _size);
@@ -138,33 +131,26 @@ public class Checkin extends AbstractAction {
    * {@link org.efaps.db.Update} (complete filename without path)</li>
    * </ul>
    *
-   * @param _fileName
-   *                file name to checkin (could include also the path)
-   * @param _in
-   *                input stream with the binary data
-   * @param _size
-   *                size of file in stream to check in (negative size means that
+   * @param _fileName file name to checkin (could include also the path)
+   * @param _in     input stream with the binary data
+   * @param _size   size of file in stream to check in (negative size means that
    *                all from the stream must be written)
-   * @throws EFapsException
-   *                 if checkout action fails
+   * @throws EFapsException if checkout action fails
    */
 
   public void executeWithoutTrigger(final String _fileName,
                                     final InputStream _in, final int _size)
-                                                                           throws EFapsException {
+    throws EFapsException {
     final Context context = Context.getThreadContext();
-    StoreResource storeRsrc = null;
+    Resource storeRsrc = null;
     boolean ok = false;
     try {
 
-      final Type type = super.getInstance().getType();
+      final Type type = getInstance().getType();
 
-      final String attrFileName =
-          type.getProperty(PROPERTY_STORE_ATTR_FILE_NAME);
-      final String attrFileLength =
-          type.getProperty(PROPERTY_STORE_ATTR_FILE_LENGTH);
-
-      storeRsrc = context.getStoreResource(type, super.getInstance().getId());
+      final String attrFileName = type.getProperty(PROPERTY_ATTR_FILE_NAME);
+      final String attrFileLength = type.getProperty(PROPERTY_ATTR_FILE_LENGTH);
+      storeRsrc = context.getStoreResource(getInstance());
       final int size = storeRsrc.write(_in, _size);
       storeRsrc.commit();
       storeRsrc = null;
@@ -196,15 +182,14 @@ public class Checkin extends AbstractAction {
       update.executeWithoutAccessCheck();
       ok = true;
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("could not checkin " + super.getInstance(), e);
       throw e;
-    } catch (Throwable e) {
+    } catch (final Throwable e) {
       LOG.error("could not checkin " + super.getInstance(), e);
       throw new EFapsException(Checkin.class,
           "executeWithoutAccessCheck.Throwable", e);
-    }
-    finally {
+    } finally {
       if (!ok) {
         context.abort();
       }

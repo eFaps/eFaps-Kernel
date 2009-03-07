@@ -53,10 +53,10 @@ import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.admin.user.UserAttributesSet.UserAttributesDefinition;
 import org.efaps.db.databases.AbstractDatabase;
+import org.efaps.db.store.AbstractStoreResource;
+import org.efaps.db.store.Resource;
+import org.efaps.db.store.Store;
 import org.efaps.db.transaction.ConnectionResource;
-import org.efaps.db.transaction.JDBCStoreResource;
-import org.efaps.db.transaction.StoreResource;
-import org.efaps.db.transaction.VFSStoreResource;
 import org.efaps.init.INamingBinds;
 import org.efaps.util.EFapsException;
 
@@ -113,16 +113,14 @@ public final class Context implements INamingBinds {
   private static ThreadLocal<Context> THREADCONTEXT
                                               = new ThreadLocal<Context>();
 
-  /////////////////////////////////////////////////////////////////////////////
-  // instance variables
-
   /**
-   * The instance variable stores all open instances of {@link StoreResource}.
+   * The instance variable stores all open instances of
+   * {@link AbstractStoreResource}.
    *
    * @see #getStoreResource(Instance)
    * @see #getStoreResource(Type,long)
    */
-  private final Set<StoreResource> storeStore = new HashSet<StoreResource>();
+  private final Set<Resource> storeStore = new HashSet<Resource>();
 
   /**
    * Stores all created connection resources.
@@ -292,7 +290,7 @@ public final class Context implements INamingBinds {
     }
 
     if (closed)  {
-      for (final StoreResource store : this.storeStore)  {
+      for (final Resource store : this.storeStore)  {
         if (store.isOpened())  {
           closed = false;
           break;
@@ -367,7 +365,7 @@ public final class Context implements INamingBinds {
 
     if (this.connectionStack.isEmpty())  {
       try  {
-        con = new ConnectionResource(this, DATASOURCE.getConnection());
+        con = new ConnectionResource(DATASOURCE.getConnection());
       } catch (final SQLException e)  {
         throw new EFapsException(getClass(),
                                  "getConnectionResource.SQLException", e);
@@ -381,7 +379,7 @@ public final class Context implements INamingBinds {
   }
 
   /**
-   *
+   * @param _con
    */
   public void returnConnectionResource(final ConnectionResource _con)  {
 //System.out.println("returnConnectionResource.con="+_con);
@@ -391,43 +389,25 @@ public final class Context implements INamingBinds {
     this.connectionStack.push(_con);
   }
 
-  /**
-   * Method to get the sore resource.
-   *
-   * @param _instance Instance to get the StoreResource for
-   * @throws EFapsException on error
-   * @return StoreResource
-   * @see #getStoreResource(Type,long)
-   */
-  public StoreResource getStoreResource(final Instance _instance)
-      throws EFapsException {
-    return getStoreResource(_instance.getType(), _instance.getId());
-  }
+ /**
+  * Method to get the sore resource.
+  *
+  * @param _instance Instance to get the StoreResource for
+  * @throws EFapsException on error
+  * @return StoreResource
+  * @see #getStoreResource(Type,long)
+  */
+ public Resource getStoreResource(final Instance _instance)
+     throws EFapsException {
+   Resource storeRsrc = null;
+   final Store store = Store.get(_instance.getType().getStoreId());
+   storeRsrc = store.getResource(_instance);
+   storeRsrc.open();
+   this.storeStore.add(storeRsrc);
+   return storeRsrc;
+ }
 
-  /**
-   * Method to get the sore resource.
-   *
-   * @param _type     Type to get the StoreResource for
-   * @param _fileId   Id to get the StoreResource for
-   * @throws EFapsException on error
-   * @return StoreResource
-   * @see #getStoreResource(Type,long)
-   */
-  public StoreResource getStoreResource(final Type _type, final long _fileId)
-      throws EFapsException {
-    StoreResource storeRsrc = null;
 
-    // TODO: dynamic class loading instead of hard coded store resource name
-    final String provider  = _type.getProperty("StoreResource");
-    if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
-      storeRsrc = new JDBCStoreResource(this, _type, _fileId);
-    } else  {
-      storeRsrc = new VFSStoreResource(this, _type, _fileId);
-    }
-    storeRsrc.open();
-    this.storeStore.add(storeRsrc);
-    return storeRsrc;
-  }
 
   /**
    * If a person is assigned to this context, the id of this person is

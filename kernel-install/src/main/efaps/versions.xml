@@ -50,7 +50,7 @@
   </version>
 
   <version number="7" reloadCache="true">
-    <description>Install Access Types, Access Sets and Users</description>
+    <description>Install Access Types, Access Sets and Users. Install all Stores. Update types containing stores. </description>
   </version>
 
   <version number="8" reloadCache="false" login="false">
@@ -79,7 +79,6 @@
       Context.commit();
     </script>
   </version>
-
   <version number="9" reloadCache="true" compile="true" />
 
 

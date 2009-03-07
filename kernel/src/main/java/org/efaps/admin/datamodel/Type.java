@@ -129,14 +129,6 @@ public class Type extends AbstractDataModelObject {
       new HashMap<String, Attribute>();
 
   /**
-   * Cache of the business objects of this type.
-   *
-   * @see #getCache
-   * @see #setCache
-   */
-  private final Cache<?> cache = null;
-
-  /**
    * Instance of a HashSet to store all needed tables for this type. The tables
    * are automatically added via the method {@link #add(Attribute)}.
    *
@@ -213,13 +205,18 @@ public class Type extends AbstractDataModelObject {
   private final Set<Type> allowedEventTypes = new HashSet<Type>();
 
   /**
+   * Id of the store for this type.
+   */
+  private long storeId;
+
+  /**
    * This is the constructor for class Type. Every instance of class Type must
    * have a name (parameter <i>_name</i>).
    *
    * @param _id     id of th type
    * @param _uuid   universal unique identifier
    * @param _name   name of the type name of the instance
-   * @throws CacheReloadException
+   * @throws CacheReloadException on error
    */
   protected Type(final long _id, final String _uuid, final String _name)
       throws CacheReloadException {
@@ -428,6 +425,9 @@ public class Type extends AbstractDataModelObject {
         final Type eventType = get(_toId);
         this.allowedEventTypes.add(eventType);
         break;
+      case DATAMODEL_TYPE2STORE:
+        this.storeId = _toId;
+        break;
       default:
         super.setLinkProperty(_linkType, _toId, _toType, _toName);
     }
@@ -491,8 +491,8 @@ public class Type extends AbstractDataModelObject {
    * @return <i>true</i> if a store resource is defined for the type, otherwise
    *         <i>false</i> is returned
    */
-  public boolean hasStoreResource() {
-    return getProperty("StoreResource") != null ? true : false;
+  public boolean hasStore() {
+    return getStoreId() > 0 ? true : false;
   }
 
   /**
@@ -645,10 +645,27 @@ public class Type extends AbstractDataModelObject {
   }
 
   /**
-   * @param class1
-   * @throws CacheReloadException
+   * Getter method for instance variable {@link #storeId}.
+   *
+   * @return value of instance variable {@link #storeId}
    */
-  public static void initialize(final Class<?> _class) throws CacheReloadException {
+  public long getStoreId() {
+    final long ret;
+    if (this.storeId == 0 && this.parentType != null) {
+      ret = this.parentType.getStoreId();
+    } else {
+      ret = this.storeId;
+    }
+    return ret;
+  }
+
+  /**
+   *  Method to initialize the Cache of this CacheObjectInterface.
+   * @param _class class that called the method
+   * @throws CacheReloadException on error
+   */
+  public static void initialize(final Class<?> _class)
+      throws CacheReloadException {
     CACHE.initialize(_class);
     // initialize properties and links
     for (final Type type : CACHE.getCache4Id().values())  {
@@ -659,7 +676,8 @@ public class Type extends AbstractDataModelObject {
 
   /**
    * Method to initialize the Cache of this CacheObjectInterface.
-   * @throws CacheReloadException
+   *
+   * @throws CacheReloadException on error
    */
   public static void initialize() throws CacheReloadException {
     Type.initialize(Type.class);
@@ -718,9 +736,19 @@ public class Type extends AbstractDataModelObject {
     return CACHE;
   }
 
+  /**
+   * Cahcwe for Types.
+   */
   private static class TypeCache extends Cache<Type> {
 
-
+    /**
+     * @see org.efaps.util.cache.Cache#readCache(java.util.Map,
+     *  java.util.Map, java.util.Map)
+     * @param _cache4Id   Cache for id
+     * @param _cache4Name Cache for name
+     * @param _cache4UUID Cache for UUID
+     * @throws CacheReloadException  on error during reading
+     */
     @Override
     protected void readCache(final Map<Long, Type> _cache4Id,
                              final Map<String, Type> _cache4Name,
@@ -770,7 +798,6 @@ public class Type extends AbstractDataModelObject {
             stmt.close();
           }
         }
-
         // initialize parents
         for (final Map.Entry<Long, Long> entry : parents.entrySet()) {
           final Type child = _cache4Id.get(entry.getKey());
@@ -783,9 +810,7 @@ public class Type extends AbstractDataModelObject {
           child.parentType = parent;
           parent.addChildType(child);
         }
-
         con.commit();
-
       } catch (final SQLException e) {
         throw new CacheReloadException("could not read types", e);
       } catch (final EFapsException e) {

@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Context;
+import org.efaps.util.EFapsException;
 
 /**
  * The class implements the {@link javax.transaction.XAResource} interface for
@@ -59,9 +60,7 @@ public class ConnectionResource extends AbstractResource {
   /**
    *
    */
-  public ConnectionResource(final Context _context,
-                            final Connection _connection) throws SQLException  {
-    super(_context);
+  public ConnectionResource(final Connection _connection) throws SQLException  {
     this.connection = _connection;
     this.connection.setAutoCommit(false);
   }
@@ -84,8 +83,14 @@ public class ConnectionResource extends AbstractResource {
    * Frees the resource and gives this connection resource back to the context
    * object.
    */
+  @Override
   protected void freeResource()  {
-    getContext().returnConnectionResource(this);
+    try {
+      Context.getThreadContext().returnConnectionResource(this);
+    } catch (final EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -114,8 +119,8 @@ public class ConnectionResource extends AbstractResource {
 if (this.connection != null)  {
       this.connection.commit();
 }
-    } catch (SQLException e)  {
-      XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
+    } catch (final SQLException e)  {
+      final XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
       xa.initCause(e);
       throw xa;
     } finally  {
@@ -124,7 +129,7 @@ if (this.connection != null)  {
         this.connection.close();
         this.connection = null;
 }
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
 //        getLogger().log(e, LOG_CHANNEL, Logger.WARNING);
       }
     }
@@ -133,7 +138,7 @@ if (this.connection != null)  {
   /**
           Informs the resource manager to roll back work done on behalf of a transaction branch.
    */
-  public void rollback(Xid _xid) throws XAException  {
+  public void rollback(final Xid _xid) throws XAException  {
     if (LOG.isDebugEnabled())  {
       LOG.debug("rollback (xid = " + _xid + ")");
     }
@@ -141,8 +146,8 @@ if (this.connection != null)  {
 if (this.connection != null)  {
       this.connection.rollback();
 }
-    } catch (SQLException e)  {
-      XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
+    } catch (final SQLException e)  {
+      final XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
       xa.initCause(e);
       throw xa;
     } finally  {
@@ -151,7 +156,7 @@ if (this.connection != null)  {
         this.connection.close();
         this.connection = null;
 }
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
 //        getLogger().log(e, LOG_CHANNEL, Logger.WARNING);
       }
     }

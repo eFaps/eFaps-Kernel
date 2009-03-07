@@ -16,25 +16,30 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<datamodel-type xmlns="http://www.efaps.org/xsd"
-                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<db-store xmlns="http://www.efaps.org/xsd"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>1c9ce325-7e4f-401f-aeb8-74e2e0c9e224</uuid>
+  <uuid>170cee3b-7449-4db2-8a2f-3727309c29af</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version-expression>(version==6) || (version==latest)</version-expression>
-    <name>Admin_Program_JavaScript</name>
-    <parent>Admin_Program_Abstract</parent>
+    <version-expression>(version==7) || (version==latest)</version-expression>
+    <name>Admin_Program_JDBCStore</name>
+    
+    <resource class="org.efaps.db.store.JDBCStoreResource" compress="NONE">
+      <property name="JDBCBlob">CODE</property>
+      <property name="JDBCKey">ID</property>
+      <property name="JDBCTable">T_PRGABSTRACT</property>
+    </resource>
   </definition>
 
-</datamodel-type>
+</db-store>

@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -27,14 +27,14 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>1c9ce325-7e4f-401f-aeb8-74e2e0c9e224</uuid>
+  <uuid>0ca5fb5f-74b3-416e-b80d-80d4baf9abfd</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==6) || (version==latest)</version-expression>
-    <name>Admin_Program_JavaScript</name>
-    <parent>Admin_Program_Abstract</parent>
+    <name>DB_Store</name>
+    <parent>Admin_Abstract</parent>
   </definition>
 
 </datamodel-type>

@@ -32,7 +32,7 @@
   <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version-expression>(version==6) || (version==latest)</version-expression>
+    <version-expression>(version==7) || (version==latest)</version-expression>
     <name>Admin_Program_Abstract</name>
     <parent>Admin_Abstract</parent>
     <!-- attributes -->
@@ -48,14 +48,25 @@
       <sqltable>Admin_Program_AbstractSQLTable</sqltable>
       <sqlcolumn>FILELENGTH</sqlcolumn>
     </attribute>
-    <!-- properties -->
-    <property name="StoreAttributeFileLength">FileLength</property>
-    <property name="StoreAttributeFileName">FileName</property>
-    <property name="StoreCompress">NONE</property>
-    <property name="StoreJDBCBlob">CODE</property>
-    <property name="StoreJDBCKey">ID</property>
-    <property name="StoreJDBCTable">T_PRGABSTRACT</property>
-    <property name="StoreResource">org.efaps.db.transaction.JDBCStoreResource</property>
+    <store name="Admin_Program_JDBCStore" attributeFileLength="FileLength" attributeFileName="FileName"/>
   </definition>
-
+  <definition>
+    <version-expression>(version==6)</version-expression>
+    <name>Admin_Program_Abstract</name>
+    <parent>Admin_Abstract</parent>
+    <!-- attributes -->
+    <attribute>
+      <name>FileName</name>
+      <type>String</type>
+      <sqltable>Admin_Program_AbstractSQLTable</sqltable>
+      <sqlcolumn>FILENAME</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>FileLength</name>
+      <type>Long</type>
+      <sqltable>Admin_Program_AbstractSQLTable</sqltable>
+      <sqlcolumn>FILELENGTH</sqlcolumn>
+    </attribute>
+    
+  </definition>
 </datamodel-type>

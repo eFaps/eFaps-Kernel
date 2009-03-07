@@ -20,6 +20,9 @@
 
 package org.efaps.update.datamodel;
 
+import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_LENGTH;
+import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_NAME;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,7 +44,6 @@ import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.event.Event;
 import org.efaps.util.EFapsException;
-
 /**
  * This Class is responsible for the Update of Type in the Database.<br>
  * It reads with <code>org.apache.commons.digester</code> a XML-File to create
@@ -51,8 +53,7 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class TypeUpdate extends AbstractUpdate
-{
+public class TypeUpdate extends AbstractUpdate {
 
   // ///////////////////////////////////////////////////////////////////////////
   // static variables
@@ -60,22 +61,31 @@ public class TypeUpdate extends AbstractUpdate
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Logger LOG = LoggerFactory.getLogger(TypeUpdate.class);
+  private static final Logger LOG = LoggerFactory.getLogger(TypeUpdate.class);
 
   /**
-   * Link the data model type to allowed event types
+   * Link the data model type to allowed event types.
    */
-  private final static Link LINK2ALLOWEDEVENT
+  private static final Link LINK2ALLOWEDEVENT
       = new Link("Admin_DataModel_TypeEventIsAllowedFor",
                  "To",
                  "Admin_DataModel_Type", "From");
 
   /**
+   * Link the data model type to a store.
+   */
+  private static final Link LINK2STORE = new Link("Admin_DataModel_Type2Store",
+                                                  "From",
+                                                  "DB_Store", "To");
+
+
+  /**
    * List of all links for the type.
    */
-  private final static Set<Link> ALLLINKS = new HashSet<Link>();
+  private static final Set<Link> ALLLINKS = new HashSet<Link>();
   static  {
     ALLLINKS.add(LINK2ALLOWEDEVENT);
+    ALLLINKS.add(LINK2STORE);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -85,8 +95,7 @@ public class TypeUpdate extends AbstractUpdate
    *
    * @param _url        URL of the file
    */
-  public TypeUpdate(final URL _url)
-  {
+  public TypeUpdate(final URL _url) {
     super(_url, "Admin_DataModel_Type", ALLLINKS);
   }
 
@@ -100,8 +109,7 @@ public class TypeUpdate extends AbstractUpdate
    * @see TypeDefinition
    */
   @Override
-  protected AbstractDefinition newDefinition()
-  {
+  protected AbstractDefinition newDefinition() {
     return new TypeDefinition();
   }
 
@@ -112,8 +120,7 @@ public class TypeUpdate extends AbstractUpdate
   /**
    * The class defines an attribute of a type.
    */
-  public class AttributeDefinition extends AbstractDefinition
-  {
+  public class AttributeDefinition extends AbstractDefinition {
     /** Name of the attribute. */
     protected String name = null;
 
@@ -266,8 +273,7 @@ public class TypeUpdate extends AbstractUpdate
      * @see #type
      */
     protected long getAttrTypeId(final String _typeName)
-        throws EFapsException
-    {
+        throws EFapsException {
       final SearchQuery query = new SearchQuery();
       query.setQueryTypes("Admin_DataModel_AttributeType");
       query.addWhereExprEqValue("Name", this.type);
@@ -563,11 +569,18 @@ public class TypeUpdate extends AbstractUpdate
         } else {
           this.curAttrSet.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
         }
-      }else if ("event-for".equals(value))  {
+      } else if ("event-for".equals(value))  {
         // Adds the name of a allowed event type
         addLink(LINK2ALLOWEDEVENT, new LinkInstance(_attributes.get("type")));
       } else if ("parent".equals(value))  {
         this.parentType = _text;
+      } else if ("store".equals(value))  {
+        addLink(LINK2STORE, new LinkInstance(_attributes.get("name")));
+        getProperties().put(PROPERTY_ATTR_FILE_LENGTH,
+                            _attributes.get("attributeFileLength"));
+        getProperties().put(PROPERTY_ATTR_FILE_NAME,
+                            _attributes.get("attributeFileName"));
+
       } else if ("trigger".equals(value))  {
         if (_tags.size() == 1)  {
           this.events.add(new Event(_attributes.get("name"),
@@ -628,6 +641,16 @@ public class TypeUpdate extends AbstractUpdate
         attrSet.updateInDB(this.instance, getValue("Name"));
       }
 
+    }
+
+    /* (non-Javadoc)
+     * @see org.efaps.update.AbstractUpdate.AbstractDefinition#setLinksInDB(org.efaps.db.Instance, org.efaps.update.AbstractUpdate.Link, java.util.Set)
+     */
+    @Override
+    protected void setLinksInDB(final Instance _instance, final Link _linktype,
+        final Set<LinkInstance> _links) throws EFapsException {
+      // TODO Auto-generated method stub
+      super.setLinksInDB(_instance, _linktype, _links);
     }
   }
 

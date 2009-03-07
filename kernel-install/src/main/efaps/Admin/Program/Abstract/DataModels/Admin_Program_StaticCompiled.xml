@@ -35,14 +35,6 @@
     <version-expression>(version==6) || (version==latest)</version-expression>
     <name>Admin_Program_StaticCompiled</name>
     <parent>Admin_Program_Compiled</parent>
-    <!-- properties -->
-    <property name="StoreAttributeFileLength">FileLength</property>
-    <property name="StoreAttributeFileName">FileName</property>
-    <property name="StoreCompress">NONE</property>
-    <property name="StoreJDBCBlob">CPLPRG</property>
-    <property name="StoreJDBCKey">ID</property>
-    <property name="StoreJDBCTable">T_PRGCOMPILED</property>
-    <property name="StoreResource">org.efaps.db.transaction.JDBCStoreResource</property>
   </definition>
 
 </datamodel-type>

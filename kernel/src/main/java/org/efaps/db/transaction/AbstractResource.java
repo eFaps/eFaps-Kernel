@@ -43,7 +43,7 @@ import org.efaps.util.EFapsException;
  * @author tmo
  * @version $Id$
  */
-abstract class AbstractResource implements XAResource {
+public abstract class AbstractResource implements XAResource {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
@@ -53,32 +53,12 @@ abstract class AbstractResource implements XAResource {
    */
   private static Logger LOG = LoggerFactory.getLogger(AbstractResource.class);
 
-  /////////////////////////////////////////////////////////////////////////////
-  // static variables
-
-  /**
-   * Stores the eFaps context which uses this connection resource.
-   */
-  private Context context = null;
 
   /**
    * Is set to <i>true</i> if the connection resource is already enlisted in
    * the transaction. Otherwise the value is <i>false</i>.
    */
   private boolean opened = false;
-
-  /////////////////////////////////////////////////////////////////////////////
-  // constructors / destructors
-
-  /**
-   * Constructor used to set the instance variable {@link #context}.
-   *
-   * @param _context  eFaps context
-   * @see #context
-   */
-  protected AbstractResource(final Context _context)  {
-    this.context = _context;
-  }
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -99,13 +79,14 @@ abstract class AbstractResource implements XAResource {
       throw new EFapsException(AbstractResource.class, "open.AlreadyOpened");
     }
     try  {
-      getContext().getTransaction().enlistResource(this);
-    } catch (RollbackException e)  {
+      final Context context = Context.getThreadContext();
+      context.getTransaction().enlistResource(this);
+    } catch (final RollbackException e)  {
       LOG.error("exception occurs while delisting in transaction, "
                                                 + "commit not possible", e);
       throw new EFapsException(AbstractResource.class,
                                                 "open.RollbackException", e);
-    } catch (SystemException e)  {
+    } catch (final SystemException e)  {
       LOG.error("exception occurs while delisting in transaction, "
                                                 + "commit not possible", e);
       throw new EFapsException(AbstractResource.class,
@@ -131,8 +112,9 @@ abstract class AbstractResource implements XAResource {
       throw new EFapsException(AbstractResource.class, "commit.NotOpened");
     }
     try  {
-      getContext().getTransaction().delistResource(this, TMSUCCESS);
-    } catch (SystemException e)  {
+      final Context context = Context.getThreadContext();
+      context.getTransaction().delistResource(this, TMSUCCESS);
+    } catch (final SystemException e)  {
       LOG.error("exception occurs while delisting in transaction, "
                                                 + "commit not possible", e);
       throw new EFapsException(AbstractResource.class,
@@ -159,9 +141,10 @@ abstract class AbstractResource implements XAResource {
       throw new EFapsException(AbstractResource.class, "abort.NotOpened");
     }
     try  {
-      getContext().getTransaction().delistResource(this, TMFAIL);
-      getContext().abort();
-    } catch (SystemException e)  {
+      final Context context = Context.getThreadContext();
+      context.getTransaction().delistResource(this, TMFAIL);
+      context.abort();
+    } catch (final SystemException e)  {
       throw new EFapsException(AbstractResource.class,
                                                   "abort.SystemException", e);
     }
@@ -174,16 +157,6 @@ abstract class AbstractResource implements XAResource {
    * resource instance could be reused).
    */
   protected abstract void freeResource();
-
-  /**
-   * This is the getter method for instance variable {@link #context}.
-   *
-   * @return value of instance variable {@link #context}
-   * @see #context
-   */
-  public final Context getContext()  {
-    return this.context;
-  }
 
   /**
    * This is the getter method for instance variable {@link #opened}.
@@ -241,8 +214,8 @@ abstract class AbstractResource implements XAResource {
    */
   public boolean isSameRM(final XAResource _xares)  {
     if (LOG.isDebugEnabled())  {
-      LOG.debug("is Same RM " + _xares.toString().equals(this.toString()));
+      LOG.debug("is Same RM " + _xares.toString().equals(toString()));
     }
-    return _xares.toString().equals(this.toString());
+    return _xares.toString().equals(toString());
   }
 }

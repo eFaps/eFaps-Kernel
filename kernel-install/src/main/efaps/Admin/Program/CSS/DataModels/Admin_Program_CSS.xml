@@ -35,14 +35,6 @@
     <version-expression>(version==6) || (version==latest)</version-expression>
     <name>Admin_Program_CSS</name>
     <parent>Admin_Program_Abstract</parent>
-    <!-- properties -->
-    <property name="StoreAttributeFileLength">FileLength</property>
-    <property name="StoreAttributeFileName">FileName</property>
-    <property name="StoreCompress">NONE</property>
-    <property name="StoreJDBCBlob">CODE</property>
-    <property name="StoreJDBCKey">ID</property>
-    <property name="StoreJDBCTable">T_PRGABSTRACT</property>
-    <property name="StoreResource">org.efaps.db.transaction.JDBCStoreResource</property>
   </definition>
 
 </datamodel-type>

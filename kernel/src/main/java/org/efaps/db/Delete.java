@@ -34,8 +34,8 @@ import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.db.store.Resource;
 import org.efaps.db.transaction.ConnectionResource;
-import org.efaps.db.transaction.StoreResource;
 import org.efaps.util.EFapsException;
 
 /**
@@ -46,18 +46,12 @@ import org.efaps.util.EFapsException;
  */
 public class Delete {
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // static variables
-
   /**
    * Logging instance used in this class.
    */
   private static final Logger LOG = LoggerFactory.getLogger(Delete.class);
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance variables
-
-  /**
+   /**
    * The instance variable stores the instance for which this update is made.
    *
    * @see #getInstance
@@ -65,45 +59,36 @@ public class Delete {
    */
   private final Instance instance;
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // constructors
-
   /**
-   * @param _instance
-   * @todo description
+   * @param _instance Instance to be deleted
    */
   public Delete(final Instance _instance) {
     this.instance = _instance;
   }
 
   /**
-   * @param _type
-   * @param _id
-   * @todo description
+   * @param _type  type of the Instance to be deleted
+   * @param _id    id of the Instance to be deleted
    */
   public Delete(final Type _type, final String _id) {
     this.instance = new Instance(_type, _id);
   }
 
   /**
-   * @param _type
-   * @param _id
-   * @todo description
+   * @param _type  type of the Instance to be deleted
+   * @param _id    id of the Instance to be deleted
    */
   public Delete(final Type _type, final long _id) {
     this.instance = new Instance(_type, _id);
   }
 
   /**
-   * @param _oid
-   * @todo description
+   * @param _oid  oid of the Instance to be deleted
    */
   public Delete(final String _oid) {
     this.instance = new Instance(_oid);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance methods
 
   /**
    * First it is checked if the user has access to delete the eFaps object
@@ -127,7 +112,7 @@ public class Delete {
   }
 
   /**
-   * Executes the delete without checking the access rights (but with triggers):
+   * Executes the delete without checking the access rights (but with triggers).
    * <ol>
    * <li>executes the pre delete trigger (if exists)</li>
    * <li>executes the delete trigger (if exists)</li>
@@ -161,6 +146,7 @@ public class Delete {
    * defined in {@link #instance}.
    *
    * @see SQLTable#readOnly
+   * @throws EFapsException on error
    */
   public void executeWithoutTrigger() throws EFapsException {
     final   Context context = Context.getThreadContext();
@@ -175,7 +161,7 @@ public class Delete {
         stmt = con.getConnection().createStatement();
 
         final   SQLTable mainTable = getInstance().getType().getMainTable();
-        for (SQLTable curTable : getInstance().getType().getTables()) {
+        for (final SQLTable curTable : getInstance().getType().getTables()) {
           if ((curTable != mainTable) && !curTable.isReadOnly()) {
             final     StringBuilder buf = new StringBuilder();
             buf.append("delete from ").append(curTable.getSqlTable()).append(
@@ -198,44 +184,38 @@ public class Delete {
         stmt.addBatch(buf.toString());
 
         stmt.executeBatch();
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         throw new EFapsException(getClass(),
             "executeWithoutAccessCheck.SQLException", e, this.instance);
-      }
-      finally {
+      } finally {
         try {
           if (stmt != null) {
             stmt.close();
           }
-        } catch (java.sql.SQLException e) {
+        } catch (final java.sql.SQLException e) {
+          LOG.warn("Catched SQLException in class:" + Delete.class);
         }
       }
-
       con.commit();
-    }
-    finally {
+    } finally {
       if ((con != null) && con.isOpened()) {
         con.abort();
       }
     }
 
-    StoreResource store = null;
+    Resource storeRsrc = null;
     try {
-      if (getInstance().getType().hasStoreResource()) {
-        store = context.getStoreResource(getInstance());
-        store.delete();
-        store.commit();
+      if (getInstance().getType().hasStore()) {
+        storeRsrc = context.getStoreResource(getInstance());
+        storeRsrc.delete();
+        storeRsrc.commit();
       }
-    }
-    finally {
-      if ((store != null) && store.isOpened()) {
-        store.abort();
+    } finally {
+      if ((storeRsrc != null) && storeRsrc.isOpened()) {
+        storeRsrc.abort();
       }
     }
   }
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance getter and setter methods
 
   /**
    * This is the getter method for instance variable {@link #instance}.
@@ -253,22 +233,20 @@ public class Delete {
    * given order. If no events are defined, nothing is done. The method return
    * TRUE if a event was found, otherwise FALSE.
    *
-   * @param _context
-   *                eFaps context for this request
    * @param _eventtype
    *                EventType to execute
    * @return true if a trigger was found and executed, otherwise false
-   * @throws EFapsException
+   * @throws EFapsException on error
    */
   private boolean executeEvents(final EventType _eventtype)
-                                                           throws EFapsException {
+      throws EFapsException {
     final  List<EventDefinition> triggers =
         getInstance().getType().getEvents(_eventtype);
     if (triggers != null) {
       final   Parameter parameter = new Parameter();
 
       parameter.put(ParameterValues.INSTANCE, getInstance());
-      for (EventDefinition evenDef : triggers) {
+      for (final EventDefinition evenDef : triggers) {
         evenDef.execute(parameter);
       }
       return true;

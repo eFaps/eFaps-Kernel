@@ -59,6 +59,15 @@ public enum EFapsClassNames {
   /** Admin_DataModel_AttributeSetAttribute. */
   DATAMODEL_ATTRIBUTESETATTRIBUTE("f601ffc5-819c-41a0-8663-3e1b0fb35a9b"),
 
+  /** Admin_DataModel_Type2Store. */
+  DATAMODEL_TYPE2STORE("433f8358-dd69-4d53-9161-5ae9b0b51c57"),
+  /** DB_Resource.*/
+  DB_RESOURCE("231082cc-1d04-4ea3-a618-da5e997c3a9c"),
+  /** DB_Store.*/
+  DB_STORE("0ca5fb5f-74b3-416e-b80d-80d4baf9abfd"),
+  /**DB_Store2Resource.*/
+  DB_STORE2RESOURCE("34be8b90-a753-45d5-98a7-78c1bcc34b72"),
+
   /** Admin_User_Abstract. */
   USER_ABSTRACT("4c3e33a2-a024-4bb7-b857-69886bce7132"),
   /** Admin_User_Person. */
@@ -152,7 +161,9 @@ public enum EFapsClassNames {
   ADMIN_PROGRAM_XSL("2e40c566-a55c-4b3b-a79b-b786e20f8d1c"),
 
   /** Admin_CommonVersion. */
-  ADMIN_COMMON_VERSION("1bb051f3-b664-43db-b409-c0c4009f5972");
+  ADMIN_COMMON_VERSION("1bb051f3-b664-43db-b409-c0c4009f5972"),
+  /** Admin_Common_Property. */
+  ADMIN_COMMON_PROPERTY("f3d54a86-c323-43d8-9c78-284d61d955b3");
 
   /**
    * The class is only used to define a mapping between UUID's and an instance

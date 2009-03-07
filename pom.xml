@@ -379,7 +379,13 @@
       <artifactId>yuicompressor</artifactId>
       <version>2.2.5</version>
     </dependency>
-   
+    <!-- JDBC driver -->
+    
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>8.3-603.jdbc3</version>
+    </dependency>
   </dependencies>
   
   <reporting>

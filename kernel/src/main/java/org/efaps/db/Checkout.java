@@ -19,6 +19,8 @@
  */
 
 package org.efaps.db;
+import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_LENGTH;
+import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_NAME;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
-import org.efaps.db.transaction.StoreResource;
+import org.efaps.db.store.Resource;
 import org.efaps.util.EFapsException;
 
 /**
@@ -48,9 +50,6 @@ public class Checkout extends AbstractAction {
    */
   private static final Logger LOG = LoggerFactory.getLogger(Checkout.class);
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance variables
-
   /**
    * Stores the file name after pre processing.
    *
@@ -59,22 +58,15 @@ public class Checkout extends AbstractAction {
    */
   private String fileName = null;
 
+  /**
+   * length of the file in byte.
+   */
   private long fileLength;
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // constructors
-
-
 
   /**
    * Constructor with object id as string.
    *
-   * @param _context
-   *                eFaps context for this request
-   * @param _oid
-   *                oid of object on which the checkout is made
-   * @param _attrName
-   *                name of the attribute where the blob is in
+   * @param _oid        oid of object on which the checkout is made
    * @todo rewrite to thrown EFapsException
    */
   public Checkout(final String _oid) {
@@ -84,19 +76,11 @@ public class Checkout extends AbstractAction {
   /**
    * Constructor with instance object.
    *
-   * @param _context
-   *                eFaps context for this request
-   * @param _instance
-   *                instance on which the checkout is made
-   * @param _attrName
-   *                name of the attribute where the blob is in
+   * @param _instance  instance on which the checkout is made
    */
   public Checkout(final Instance _instance) {
     super.setInstance(_instance);
   }
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance methods
 
   /**
    * The method is only a dummy method and closes the checkout action. The
@@ -107,22 +91,22 @@ public class Checkout extends AbstractAction {
   }
 
   /**
-   *
+   * @throws Exception on error
    */
   public void preprocess() throws Exception {
 
     final Type type = getInstance().getType();
-    final String fileName = type.getProperty(PROPERTY_STORE_ATTR_FILE_NAME);
-    final String size = type.getProperty(PROPERTY_STORE_ATTR_FILE_LENGTH);
+    final String fileNameTmp = type.getProperty(PROPERTY_ATTR_FILE_NAME);
+    final String size = type.getProperty(PROPERTY_ATTR_FILE_LENGTH);
 
     final SearchQuery query = new SearchQuery();
     query.setObject(getInstance());
-    query.addSelect(fileName);
+    query.addSelect(fileNameTmp);
     query.addSelect(size);
     // try {
     query.executeWithoutAccessCheck();
     if (query.next()) {
-      final Object value = query.get(fileName);
+      final Object value = query.get(fileNameTmp);
       if (value != null) {
         this.fileName = value.toString();
         final Long filelength = (Long) query.get(size);
@@ -133,9 +117,6 @@ public class Checkout extends AbstractAction {
     query.close();
     // }
   }
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // output stream methods
 
   /**
    * Executes the checkout with an output stream.
@@ -158,7 +139,7 @@ public class Checkout extends AbstractAction {
 
   /**
    * Executes the checkout for output streams without checking the access rights
-   * (but with triggers):
+   * (but with triggers).
    * <ol>
    * <li>executes the pre checkout trigger (if exists)</li>
    * <li>executes the checkout trigger (if exists)</li>
@@ -167,13 +148,11 @@ public class Checkout extends AbstractAction {
    * <li>executes the post checkout trigger (if exists)</li>
    * </ol>
    *
-   * @param _out
-   *                output stream where to write the file
-   * @throws EFapsException
-   *                 if checkout action fails
+   * @param _out output stream where to write the file
+   * @throws EFapsException if checkout action fails
    */
   public void executeWithoutAccessCheck(final OutputStream _out)
-                                                                throws EFapsException {
+      throws EFapsException {
     executeEvents(EventType.CHECKOUT_PRE);
     if (!executeEvents(EventType.CHECKOUT_OVERRIDE)) {
       executeWithoutTrigger(_out);
@@ -183,22 +162,18 @@ public class Checkout extends AbstractAction {
 
   /**
    * Executes the checkout for output streams without checking the access rights
-   * and without triggers
+   * and without triggers.
    *
-   * @param _out
-   * @throws EFapsException
+   * @param _out  output stream where to write the file
+   * @throws EFapsException if checkout action fails
    */
   public void executeWithoutTrigger(final OutputStream _out)
-                                                            throws EFapsException {
-    final Context context = Context.getThreadContext();
-    StoreResource store = null;
+      throws EFapsException {
+    Resource storeRsrc = null;
     try {
-
-      store =
-          context.getStoreResource(getInstance().getType(), getInstance()
-              .getId());
-      store.read(_out);
-      store.commit();
+      storeRsrc = Context.getThreadContext().getStoreResource(getInstance());
+      storeRsrc.read(_out);
+      storeRsrc.commit();
 
     } catch (final EFapsException e) {
       LOG.error("could not checkout " + super.getInstance(), e);
@@ -207,16 +182,12 @@ public class Checkout extends AbstractAction {
       LOG.error("could not checkout " + super.getInstance(), e);
       throw new EFapsException(getClass(),
           "executeWithoutAccessCheck.Throwable", e);
-    }
-    finally {
-      if ((store != null) && store.isOpened()) {
-        store.abort();
+    } finally {
+      if ((storeRsrc != null) && storeRsrc.isOpened()) {
+        storeRsrc.abort();
       }
     }
   }
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // input stream methods
 
   /**
    * Executes the checkout and returns an input stream by calling method
@@ -251,10 +222,8 @@ public class Checkout extends AbstractAction {
    * <li>executes the post checkout trigger (if exists)</li>
    * </ol>
    *
-   * @param _out
-   *                output stream where to write the file
-   * @throws EFapsException
-   *                 if checkout action fails
+   * @throws EFapsException if checkout action fails
+   * @return inputstream containing the file
    */
   public InputStream executeWithoutAccessCheck() throws EFapsException {
     InputStream ret = null;
@@ -271,16 +240,16 @@ public class Checkout extends AbstractAction {
    * returns an input streams of the checked in file. The returned input stream
    * must be closed, because the returned inputs stream also commit the store
    * resource. Otherwise the transaction is rolled back!
+   *
+   * @throws EFapsException if checkout action fails
+   * @return inputstream containing the file
    */
   public InputStream executeWithoutTrigger() throws EFapsException {
-    final Context context = Context.getThreadContext();
-    StoreResource store = null;
+    Resource storeRsrc = null;
     InputStream in = null;
     try {
-      store =
-          context.getStoreResource(getInstance().getType(), getInstance()
-              .getId());
-      in = store.read();
+      storeRsrc = Context.getThreadContext().getStoreResource(getInstance());
+      in = storeRsrc.read();
 
     } catch (final EFapsException e) {
       LOG.error("could not checkout " + super.getInstance(), e);
@@ -289,17 +258,13 @@ public class Checkout extends AbstractAction {
       LOG.error("could not checkout " + super.getInstance(), e);
       throw new EFapsException(getClass(),
           "executeWithoutAccessCheck.Throwable", e);
-    }
-    finally {
-      if ((in == null) && (store != null) && store.isOpened()) {
-        store.abort();
+    } finally {
+      if ((in == null) && (storeRsrc != null) && storeRsrc.isOpened()) {
+        storeRsrc.abort();
       }
     }
     return in;
   }
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance getter and setter methods
 
   /**
    * This is the getter method for instance variable {@link #fileName}.
@@ -321,5 +286,4 @@ public class Checkout extends AbstractAction {
   public long getFileLength() {
     return this.fileLength;
   }
-
 }

@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -27,14 +27,29 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>1c9ce325-7e4f-401f-aeb8-74e2e0c9e224</uuid>
+  <uuid>433f8358-dd69-4d53-9161-5ae9b0b51c57</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==6) || (version==latest)</version-expression>
-    <name>Admin_Program_JavaScript</name>
-    <parent>Admin_Program_Abstract</parent>
+    <name>Admin_DataModel_Type2Store</name>
+    <parent>Admin_UI_Abstract2Abstract</parent>
+    <!-- attributes -->
+    <attribute>
+      <name>From</name>
+      <type>Link</type>
+      <typelink>Admin_DataModel_Type</typelink>
+      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
+      <sqlcolumn>FROMID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>To</name>
+      <type>Link</type>
+      <typelink>DB_Store</typelink>
+      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
+      <sqlcolumn>TOID</sqlcolumn>
+    </attribute>
   </definition>
 
 </datamodel-type>

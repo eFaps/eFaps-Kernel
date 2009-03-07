@@ -40,6 +40,7 @@ import org.efaps.update.access.AccessTypeUpdate;
 import org.efaps.update.common.SystemConfigurationUpdate;
 import org.efaps.update.datamodel.SQLTableUpdate;
 import org.efaps.update.datamodel.TypeUpdate;
+import org.efaps.update.db.StoreUpdate;
 import org.efaps.update.integration.WebDAVUpdate;
 import org.efaps.update.ui.CommandUpdate;
 import org.efaps.update.ui.FormUpdate;
@@ -55,8 +56,7 @@ import org.efaps.update.user.RoleUpdate;
  * @author tmo
  * @version $Id$
  */
-public class SaxHandler extends DefaultHandler
-{
+public class SaxHandler extends DefaultHandler {
 
   private final Stack<String> tag = new Stack<String>();
 
@@ -70,14 +70,8 @@ public class SaxHandler extends DefaultHandler
 
   private URL url = null;
 
-  public SaxHandler()
-  {
-
-  }
-
   public AbstractUpdate parse(final URL _url)
-      throws SAXException, IOException
-  {
+      throws SAXException, IOException {
     this.url = _url;
 
     // einen XML Reader erzeugen
@@ -117,13 +111,13 @@ public class SaxHandler extends DefaultHandler
   public void endElement (final String _uri,
                           final String _localName,
                           final String _qName)
-      throws SAXException
-  {
-    if (!this.called)
-    {
+      throws SAXException {
+    if (!this.called) {
       this.elem.readXML(this.tag,
                        this.attributes,
-                       (this.content != null) ? this.content.toString().trim() : null);
+                       (this.content != null)
+                       ? this.content.toString().trim()
+                       : null);
       this.called = true;
       this.content = null;
     }
@@ -138,11 +132,11 @@ public class SaxHandler extends DefaultHandler
                            final String _localName,
                            final String _qName,
                            final Attributes _attributes)
-      throws SAXException
-  {
+      throws SAXException {
     if (this.elem != null)  {
-      if (!this.called && !this.tag.isEmpty())  {
-        this.elem.readXML(this.tag, this.attributes, (this.content != null) ? this.content.toString().trim() : null);
+      if (!this.called && !this.tag.isEmpty()) {
+        this.elem.readXML(this.tag, this.attributes,
+            (this.content != null) ? this.content.toString().trim() : null);
 
       }
       this.called = false;
@@ -151,7 +145,7 @@ public class SaxHandler extends DefaultHandler
       this.tag.push(_qName);
 
       this.attributes.clear();
-      for (int i = 0; i < _attributes.getLength() ; i++)  {
+      for (int i = 0; i < _attributes.getLength(); i++) {
         this.attributes.put(_attributes.getQName(i),
                             _attributes.getValue(i));
       }
@@ -165,6 +159,8 @@ public class SaxHandler extends DefaultHandler
       this.elem = new SQLTableUpdate(this.url);
     } else if ("datamodel-type".equals(_qName))  {
       this.elem = new TypeUpdate(this.url);
+    } else if ("db-store".equals(_qName))  {
+      this.elem = new StoreUpdate(this.url);
     } else if ("integration-webdav".equals(_qName))  {
       this.elem = new WebDAVUpdate(this.url);
     } else if ("ui-command".equals(_qName))  {
@@ -183,10 +179,10 @@ public class SaxHandler extends DefaultHandler
       this.elem = new JAASSystemUpdate(this.url);
     } else if ("user-role".equals(_qName))  {
       this.elem = new RoleUpdate(this.url);
-} else if ("import".equals(_qName))  {
-  this.elem = new TypeUpdate(this.url);
-} else if ("dbproperties".equals(_qName))  {
-this.elem = new TypeUpdate(this.url);
+    } else if ("import".equals(_qName))  {
+      this.elem = new TypeUpdate(this.url);
+    } else if ("dbproperties".equals(_qName))  {
+      this.elem = new TypeUpdate(this.url);
     } else  {
       throw new SAXException("Unknown XML Tag " + _qName);
     }

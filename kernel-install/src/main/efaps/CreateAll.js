@@ -615,6 +615,10 @@ function _eFapsInitRunLevel()  {
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
           "" + id + ",6, 'org.efaps.admin.datamodel.AbstractDataModelObject', 'initialize'");
+  _insert(stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",7, 'org.efaps.db.store.Store', 'initialize'");
 
   conRsrc.commit();
 }
