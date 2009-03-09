@@ -179,13 +179,16 @@ public class JDBCStoreResource extends AbstractStoreResource {
           .append(" ").append("where ").append(this.keyColumn).append("=")
           .append(getFileId());
       final ResultSet resultSet = stmt.executeQuery(cmd.toString());
-
-      if (Context.getDbType().supportsBinaryInputStream())  {
-        in = new JDBCStoreResourceInputStream(this,
-                                              res,
-                                              resultSet.getBinaryStream(1));
-      } else  {
-        in = new JDBCStoreResourceInputStream(this, res, resultSet.getBlob(1));
+      if (resultSet.next()) {
+        if (Context.getDbType().supportsBinaryInputStream())  {
+          in = new JDBCStoreResourceInputStream(this,
+                                                res,
+                                                resultSet.getBinaryStream(1));
+        } else  {
+          in = new JDBCStoreResourceInputStream(this,
+                                                res,
+                                                resultSet.getBlob(1));
+        }
       }
     } catch (final IOException e) {
       LOG.error("read of content failed", e);
