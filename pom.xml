@@ -393,9 +393,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <aggregate>true</aggregate>
-        </configuration>
+        <configuration/>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -403,7 +401,6 @@
         <configuration>
           <linkJavadoc>true</linkJavadoc>
           <javadocDir>apidocs</javadocDir>
-          <aggregate>true</aggregate>
         </configuration>
       </plugin>
       <plugin>
