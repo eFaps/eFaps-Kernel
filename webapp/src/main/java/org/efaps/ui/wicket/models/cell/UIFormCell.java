@@ -121,7 +121,7 @@ public class UIFormCell extends UITableCell {
     this.required = _fieldValue.getField().isRequired()
                       && ((_fieldValue.getField().isEditable()
                             && _targetmode.equals(TargetMode.EDIT))
-                        || (_fieldValue.getField().isEditable()
+                        || (_fieldValue.getField().isCreatable()
                               && _targetmode.equals(TargetMode.CREATE)));
     this.cellLabel = DBProperties.getProperty(_label);
     this.hideLabel = _fieldValue.getField().isHideLabel();
