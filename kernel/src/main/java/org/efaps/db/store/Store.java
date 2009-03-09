@@ -161,9 +161,14 @@ public final class Store extends AbstractAdminObject {
     Resource ret = null;
     try {
       ret = (Resource) (Class.forName(this.resource).newInstance());
-      ret.initialize(_instance, this.resourceProperties,
-          Compress.valueOf(this.resourceProperties.get(PROPERTY_COMPRESS)
-              .toUpperCase()));
+      Compress compress;
+      if (this.resourceProperties.containsKey(PROPERTY_COMPRESS)) {
+        compress = Compress.valueOf(this.resourceProperties.get(
+            PROPERTY_COMPRESS).toUpperCase());
+      } else {
+        compress = Compress.NONE;
+      }
+      ret.initialize(_instance, this.resourceProperties, compress);
 
       if (ret.isVFS()) {
         DefaultFileSystemManager tmpManager = null;
