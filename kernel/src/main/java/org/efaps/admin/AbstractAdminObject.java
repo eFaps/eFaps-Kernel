@@ -30,7 +30,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.mortbay.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
@@ -49,6 +50,12 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  */
 public abstract class AbstractAdminObject implements CacheObjectInterface {
+
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Logger LOG
+                          = LoggerFactory.getLogger(AbstractAdminObject.class);
 
   /**
    * The instance variable stores the id of the collections object.
@@ -278,7 +285,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
         try  {
           stmt.close();
         } catch (final SQLException e) {
-          Log.warn("Catched SQLExeption in class" + this.getClass());
+          LOG.warn("Catched SQLExeption in class" + this.getClass());
         }
       }
     }
@@ -328,7 +335,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
         try {
           stmt.close();
         } catch (final SQLException e) {
-          Log.warn("Catched SQLExeption in class" + this.getClass());
+          LOG.warn("Catched SQLExeption in class" + this.getClass());
         }
       }
     }

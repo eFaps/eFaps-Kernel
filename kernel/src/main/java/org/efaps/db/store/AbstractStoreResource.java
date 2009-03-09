@@ -28,7 +28,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
-import org.mortbay.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
@@ -50,6 +51,12 @@ import org.efaps.util.EFapsException;
  */
 public abstract class AbstractStoreResource extends AbstractResource
     implements Resource {
+
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Logger LOG
+                         = LoggerFactory.getLogger(AbstractStoreResource.class);
 
   /**
    * The variable stores if the files inside the store itself are compressed.
@@ -143,7 +150,7 @@ e.printStackTrace();
         try  {
           in.closeWithoutCommit();
         } catch (final IOException e) {
-          Log.warn("Catched IOException in class: " + this.getClass());
+          LOG.warn("Catched IOException in class: " + this.getClass());
         }
       }
     }
