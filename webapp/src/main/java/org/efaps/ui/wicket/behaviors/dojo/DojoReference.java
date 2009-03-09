@@ -30,41 +30,57 @@ import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
 
 /**
  * This class provides static access to the ResourceReferences needed to use the
- * DojoToolKit
+ * DojoToolKit.
  *
  * @author jmox
  * @version $Id$
  */
-public class DojoReference {
+public final class DojoReference {
 
-  public static final ResourceReference CSS_TUNDRA =
-      new CompressedResourceReference(DojoReference.class,
+  /**
+   * Reference to the stylesheet.
+   */
+  public static final ResourceReference CSS_TUNDRA
+    = new CompressedResourceReference(DojoReference.class,
           "dijit/themes/tundra/tundra.css");
 
+  /**
+   * Reference to the JavaScript.
+   */
   public static final JavascriptResourceReference JS_DOJO =
       new JavascriptResourceReference(DojoReference.class, "dojo/dojo.js");
 
+  /**
+   * Reference to the JavaScript.
+   */
   public static final JavascriptResourceReference JS_EFAPSDOJO =
       new JavascriptResourceReference(DojoReference.class, "dojo/eFapsDojo.js");
 
+  /**
+   *
+   */
+  private DojoReference() {
+  }
 
-
-  public static final HeaderContributor getHeaderContributerforDojo() {
+  /**
+   * Method to get a HeaderContibuter for addinf djo to a webpage.
+   * @return HeaderContributor
+   */
+  public static HeaderContributor getHeaderContributerforDojo() {
     return new HeaderContributor(new IHeaderContributor() {
 
       private static final long serialVersionUID = 1L;
 
-      public void renderHead(IHeaderResponse response) {
-        response.renderString(getConfigJavaScript(JS_DOJO));
+      public void renderHead(final IHeaderResponse _response) {
+        _response.renderString(getConfigJavaScript(JS_DOJO));
       }
     });
   }
 
   /**
-   * method to create the tag for linking JavaScript
+   * method to create the tag for linking JavaScript.
    *
-   * @param _reference
-   *                ResourceReference to be linked
+   * @param _reference ResourceReference to be linked
    * @return scriptLink width extension djConfig="parseOnLoad:true"
    */
   public static String getConfigJavaScript(final ResourceReference _reference) {

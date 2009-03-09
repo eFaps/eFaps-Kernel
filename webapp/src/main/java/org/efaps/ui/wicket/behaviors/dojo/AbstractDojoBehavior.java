@@ -34,12 +34,17 @@ import org.apache.wicket.markup.html.IHeaderResponse;
  */
 public abstract class AbstractDojoBehavior extends AbstractBehavior {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.behavior.AbstractBehavior#renderHead(org.apache.wicket.markup.html.IHeaderResponse)
+
+  /**
+   * Render the links for the head.
+   * @see org.apache.wicket.behavior.AbstractBehavior#renderHead(
+   *  org.apache.wicket.markup.html.IHeaderResponse)
+   * @param _response resonse to add
    */
   @Override
   public void renderHead(final IHeaderResponse _response) {
@@ -51,10 +56,11 @@ public abstract class AbstractDojoBehavior extends AbstractBehavior {
     _response.renderCSSReference(DojoReference.CSS_TUNDRA);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.behavior.AbstractBehavior#beforeRender(org.apache.wicket.Component)
+  /**
+   * All components using dojo must render the id of the component.
+   * @see org.apache.wicket.behavior.AbstractBehavior#beforeRender(
+   * org.apache.wicket.Component)
+   * @param _component component
    */
   @Override
   public void beforeRender(final Component _component) {

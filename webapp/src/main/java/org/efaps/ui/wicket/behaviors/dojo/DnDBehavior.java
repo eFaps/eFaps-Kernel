@@ -36,19 +36,25 @@ import org.apache.wicket.markup.html.IHeaderResponse;
  */
 public class DnDBehavior extends AbstractDojoBehavior {
 
+  /**
+   * Needed for serialization.
+   */
   private static final long serialVersionUID = 1L;
 
   /**
-   * enum used to set the Type of Drag and Drop this Behavior should render
+   * Enum used to set the Type of Drag and Drop this Behavior should render.
    */
   public enum BehaviorType {
+    /** Render a handel.*/
     HANDLE,
+    /** Render a item.*/
     ITEM,
+    /** Render a source.*/
     SOURCE;
   }
 
   /**
-   * this instance variable stores what kind should be rendered
+   * This instance variable stores what kind should be rendered.
    */
   private final BehaviorType type;
 
@@ -71,40 +77,50 @@ public class DnDBehavior extends AbstractDojoBehavior {
   private boolean allowCopy = false;
 
   /**
-   * this instance variable stores a javascript wich will be executed after the
+   * this instance variable stores a javascript which will be executed after the
    * drag and drop. It is only used in case of BehaviorType.SOURCE
    */
   private String appendJavaScript;
 
+  /**
+   * Type.
+   */
   private CharSequence dndType = "eFapsdnd";
 
   /**
-   * Constuctor setting the Type of the DnDBehavior. Instead of using this
+   * Constructor setting the Type of the DnDBehavior. Instead of using this
    * constructor it can be used on e of the static methods.
    * <li>{@link #getHandleBehavior()} </li>
    * <li>{@link #getItemBehavior()} </li>
    * <li>{@link #getSourceBehavior()} </li>
    *
-   * @param _type
-   *                BehaviorType of this DnDBehavior
+   * @param _type  BehaviorType of this DnDBehavior
    */
-  public DnDBehavior(BehaviorType _type) {
+  public DnDBehavior(final BehaviorType _type) {
     this.type = _type;
   }
 
-  public DnDBehavior(BehaviorType _type, final String _dndType) {
+  /**
+   * Constructor setting the type and dendtype.
+   * @param _type       BehaviorType of this DnDBehavior
+   * @param _dndType    dndType
+   */
+  public DnDBehavior(final BehaviorType _type, final String _dndType) {
     this.type = _type;
     this.dndType = _dndType;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.behavior.AbstractBehavior#onComponentTag(org.apache.wicket.Component,
-   *      org.apache.wicket.markup.ComponentTag)
+  /**
+   * The tag of the component must be altered, so that the dojo dnd will
+   * be rendered.
+   * @see org.apache.wicket.behavior.AbstractBehavior#onComponentTag(
+   *  org.apache.wicket.Component, org.apache.wicket.markup.ComponentTag)
+   * @param _component  Component
+   * @param _tag        tag to edit
    */
   @Override
-  public void onComponentTag(final Component _component, final ComponentTag _tag) {
+  public void onComponentTag(final Component _component,
+                             final ComponentTag _tag) {
     super.onComponentTag(_component, _tag);
 
     if (this.type == BehaviorType.ITEM) {
@@ -190,10 +206,11 @@ public class DnDBehavior extends AbstractDojoBehavior {
     this.allowCopy = _allowCopy;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.efaps.ui.wicket.components.dojo.AbstractDojoBehavior#renderHead(org.apache.wicket.markup.html.IHeaderResponse)
+  /**
+   * Add the javascriupt to the head of the webpage.
+   * @see org.efaps.ui.wicket.behaviors.dojo.AbstractDojoBehavior#renderHead(
+   *    org.apache.wicket.markup.html.IHeaderResponse)
+   * @param _response rseponse
    */
   @Override
   public void renderHead(final IHeaderResponse _response) {
@@ -204,34 +221,34 @@ public class DnDBehavior extends AbstractDojoBehavior {
           "subcription" + ((Long) System.currentTimeMillis()).toString();
       final StringBuilder builder = new StringBuilder();
       if (this.allowCopy
-          || (this.appendJavaScript != null && this.appendJavaScript.length() > 0)) {
-
-        builder
-            .append("  var ")
-            .append(varName)
-            .append(";\n")
-            .append(
-                "  dojo.subscribe(\"/dnd/start\", function(source,nodes,iscopy){\n");
+          || (this.appendJavaScript != null
+              && this.appendJavaScript.length() > 0)) {
+        builder.append("  var ").append(varName).append(";\n")
+          .append("  dojo.subscribe(\"/dnd/start\", ")
+            .append(" function(source,nodes,iscopy){\n");
 
         if (!this.allowCopy) {
-          builder
-              .append("    source.copyState = function(keyPressed){ return false};\n");
+          builder.append("    source.copyState = function(keyPressed){")
+              .append(" return false};\n");
         }
 
-        builder.append("    ").append(varName).append(
-            " = dojo.subscribe(\"/dnd/drop\", function(source,nodes,iscopy){\n"
-                + "    var jsnode = source.getItem(nodes[0].id);\n"
-                + "    var dndType  = jsnode.type;\n"
-                + "    if(dndType ==\"").append(this.dndType).append(
-            "\" ){\n" + "").append(this.appendJavaScript).append(
-            "      dojo.unsubscribe(").append(varName).append(");\n").append(
-            "   }\n });\n").append("  });\n").append(
-            "  dojo.subscribe(\"/dnd/cancel\", function(){\n").append(
-            "    dojo.unsubscribe(").append(varName).append(");\n  });\n");
+        builder.append("    ").append(varName)
+          .append(" = dojo.subscribe(\"/dnd/drop\",")
+          .append(" function(source, nodes, iscopy){\n")
+          .append("  var jsnode = source.getItem(nodes[0].id);\n")
+          .append("    var dndType  = jsnode.type;\n")
+          .append("    if(dndType ==\"").append(this.dndType)
+          .append("\" ){\n")
+          .append(this.appendJavaScript)
+          .append("      dojo.unsubscribe(").append(varName).append(");\n")
+          .append("   }\n });\n")
+          .append("  });\n")
+          .append("  dojo.subscribe(\"/dnd/cancel\", function(){\n")
+          .append("    dojo.unsubscribe(").append(varName)
+          .append(");\n  });\n");
 
         _response.renderJavascript(builder.toString(), DnDBehavior.class
             .toString());
-
       }
     }
   }
@@ -257,26 +274,6 @@ public class DnDBehavior extends AbstractDojoBehavior {
     this.appendJavaScript = _appendJavaScript;
   }
 
-  public static DnDBehavior getSourceBehavior() {
-    return new DnDBehavior(BehaviorType.SOURCE);
-  }
-
-  public static DnDBehavior getSourceBehavior(final String _dndType) {
-    return new DnDBehavior(BehaviorType.SOURCE, _dndType);
-  }
-
-  public static DnDBehavior getItemBehavior(final String _dndType) {
-    return new DnDBehavior(BehaviorType.ITEM, _dndType);
-  }
-
-  public static DnDBehavior getItemBehavior() {
-    return new DnDBehavior(BehaviorType.ITEM);
-  }
-
-  public static DnDBehavior getHandleBehavior() {
-    return new DnDBehavior(BehaviorType.HANDLE);
-  }
-
   /**
    * This is the getter method for the instance variable {@link #dndType}.
    *
@@ -289,11 +286,49 @@ public class DnDBehavior extends AbstractDojoBehavior {
   /**
    * This is the setter method for the instance variable {@link #dndType}.
    *
-   * @param dndType
-   *                the dndType to set
+   * @param _dndType the dndType to set
    */
-  public void setDndType(CharSequence dndType) {
-    this.dndType = dndType;
+  public void setDndType(final CharSequence _dndType) {
+    this.dndType = _dndType;
+  }
+
+  /**
+   * Static Method to get DnDBehavior with Source behavior.
+   * @return DnDBehavior with Source behavior.
+   */
+  public static DnDBehavior getSourceBehavior() {
+    return new DnDBehavior(BehaviorType.SOURCE);
+  }
+  /**
+   * Static Method to get DnDBehavior with Source behavior.
+   * @param _dndType dndtype to set
+   * @return DnDBehavior with Source behavior.
+   */
+  public static DnDBehavior getSourceBehavior(final String _dndType) {
+    return new DnDBehavior(BehaviorType.SOURCE, _dndType);
+  }
+  /**
+   * Static Method to get DnDBehavior with item behavior.
+   * @param _dndType dndtype to set
+   * @return DnDBehavior with item behavior.
+   */
+  public static DnDBehavior getItemBehavior(final String _dndType) {
+    return new DnDBehavior(BehaviorType.ITEM, _dndType);
+  }
+  /**
+   * Static Method to get DnDBehavior with item behavior.
+   * @return DnDBehavior with item behavior.
+   */
+  public static DnDBehavior getItemBehavior() {
+    return new DnDBehavior(BehaviorType.ITEM);
+  }
+
+  /**
+   * Static Method to get DnDBehavior with handle behavior.
+   * @return DnDBehavior with handle behavior.
+   */
+  public static DnDBehavior getHandleBehavior() {
+    return new DnDBehavior(BehaviorType.HANDLE);
   }
 
 }
