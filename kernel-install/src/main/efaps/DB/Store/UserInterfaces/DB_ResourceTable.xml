@@ -23,24 +23,28 @@
 
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-table xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>4177cc04-cc21-4894-8b51-a6f085adc462</uuid>
+  <uuid>591dcf94-5963-4f52-a69e-d4411fadd097</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_Common_AbstractMyDesk</name>
-    <childs>
-      <child>Admin_Common_DBPropertiesMyDesk</child>
-      <child>Admin_Common_DBPropertiesBundleMyDesk</child>
-      <child>Admin_Common_SystemConfigurationMyDesk</child>
-      <child>Admin_Common_VersionMyDesk</child>
-      <child>DB_StoreMyDesk</child>
-    </childs>
-  </definition>
+    <name>DB_ResourceTable</name>
+    <!-- fields -->
+    <field name="type">
+      <property name="Expression">Type</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Label">DB_Resource/Type.Label</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    <field name="name">
+      <property name="Expression">Name</property>
+      <property name="Label">DB_Resource/Name.Label</property>
+    </field>
+   </definition>
 
-</ui-menu>
+</ui-table>

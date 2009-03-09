@@ -23,24 +23,27 @@
 
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>4177cc04-cc21-4894-8b51-a6f085adc462</uuid>
+  <uuid>565b2123-6f58-481c-ac25-306da5a1057b</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_Common_AbstractMyDesk</name>
-    <childs>
-      <child>Admin_Common_DBPropertiesMyDesk</child>
-      <child>Admin_Common_DBPropertiesBundleMyDesk</child>
-      <child>Admin_Common_SystemConfigurationMyDesk</child>
-      <child>Admin_Common_VersionMyDesk</child>
-      <child>DB_StoreMyDesk</child>
-    </childs>
+    <name>DB_StoreMyDesk_Menu_Action_Create</name>
+    <icon>DB_Store+Create+Image</icon>
+    <!-- target definitions -->
+    <target>
+      <form>DB_StoreForm</form>
+      <execute program="org.efaps.esjp.db.Store"/>
+    </target>
+    <!-- properties -->
+    <property name="Target">modal</property>
+    <property name="TargetCreateType">DB_Store</property>
+    <property name="TargetMode">create</property>
   </definition>
 
-</ui-menu>
+</ui-command>

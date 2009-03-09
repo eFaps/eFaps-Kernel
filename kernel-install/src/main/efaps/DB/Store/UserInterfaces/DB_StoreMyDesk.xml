@@ -23,24 +23,34 @@
 
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>4177cc04-cc21-4894-8b51-a6f085adc462</uuid>
+  <uuid>df537e02-49b7-46b3-9891-8f4fc0ea589e</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_Common_AbstractMyDesk</name>
-    <childs>
-      <child>Admin_Common_DBPropertiesMyDesk</child>
-      <child>Admin_Common_DBPropertiesBundleMyDesk</child>
-      <child>Admin_Common_SystemConfigurationMyDesk</child>
-      <child>Admin_Common_VersionMyDesk</child>
-      <child>DB_StoreMyDesk</child>
-    </childs>
+    <name>DB_StoreMyDesk</name>
+    <icon>DB_StoreImage</icon>
+    <!-- access -->
+    <access>
+      <role>Administration</role>
+    </access>
+    <!-- target definitions -->
+    <target>
+      <menu>DB_StoreMyDesk_Menu</menu>
+      <table>DB_StoreTable</table>
+      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
+        <property name="Types">DB_Store</property>
+      </evaluate>
+    </target>
+    <!-- properties -->
+    <property name="Target">content</property>
+    <property name="TargetTableSortKey">name</property>
+    <property name="TargetShowCheckBoxes">true</property>
   </definition>
 
-</ui-menu>
+</ui-command>
