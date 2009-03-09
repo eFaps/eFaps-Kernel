@@ -33,7 +33,7 @@ public abstract class AbstractAjaxUpdateBehavior extends
     AbstractDefaultAjaxBehavior implements UpdateInterface {
 
   /**
-   *
+   * Needed for serialization.
    */
   private static final long serialVersionUID = 1L;
 
@@ -43,28 +43,42 @@ public abstract class AbstractAjaxUpdateBehavior extends
   private TargetMode mode;
 
   /**
-   * this instance variable stores the oid of this behavior
+   * This instance variable stores the oid of this behavior.
    */
   private String oid;
 
+  /**
+   * @return String
+   */
   public String getAjaxCallback() {
     return getCallbackScript().toString();
   }
 
+  /**
+   * Get the if of this class.
+   * @see org.efaps.ui.wicket.behaviors.update.UpdateInterface#getId()
+   * @return classname as id
+   */
   public String getId() {
     return getClass().toString();
   }
 
+  /**
+   * Does this callback use ajax.
+   * @see org.efaps.ui.wicket.behaviors.update.UpdateInterface#isAjaxCallback()
+   * @return true
+   */
   public boolean isAjaxCallback() {
     return true;
   }
 
+  /**
+   * Setter method for instance variable {@link #mode}.
+   *
+   * @param _mode value for instance variable {@link #mode}
+   */
   public void setMode(final TargetMode _mode) {
     this.mode = _mode;
-  }
-
-  public void setOid(final String _oid) {
-    this.oid = _oid;
   }
 
   /**
@@ -77,6 +91,15 @@ public abstract class AbstractAjaxUpdateBehavior extends
   }
 
   /**
+   * Setter method for instance variable {@link #oid}.
+   *
+   * @param _oid value for instance variable {@link #oid}
+   */
+  public void setOid(final String _oid) {
+    this.oid = _oid;
+  }
+
+  /**
    * This is the getter method for the instance variable {@link #oid}.
    *
    * @return value of instance variable {@link #oid}
@@ -85,16 +108,21 @@ public abstract class AbstractAjaxUpdateBehavior extends
     return this.oid;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getPreconditionScript()
+
+  /**
+   * The precondition script must be overwritten to prevent JavaScript error.
+   * @return null
    */
   @Override
   protected CharSequence getPreconditionScript() {
     return null;
   }
 
+  /**
+   * Get the call back script.
+   * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getCallbackScript()
+   * @return JavaScript
+   */
   @Override
   protected CharSequence getCallbackScript() {
     return "function findFrame(_current, _target)  {"
@@ -115,8 +143,8 @@ public abstract class AbstractAjaxUpdateBehavior extends
             + getCallbackUrl(false)
             + "'")
         + "\");},0);";
-    // the timeout is needed due to a bug in firefox, that does not close the
-    // nsIXMLHttpRequest and therfore throws an error that disables any
-    // further javascript. The timeout is a workaround for this bug.
+    // the timeout is needed due to a bug in Firefox, that does not close the
+    // nsIXMLHttpRequest and therefore throws an error that disables any
+    // further JavaScript. The timeout is a workaround for this bug.
   }
 }

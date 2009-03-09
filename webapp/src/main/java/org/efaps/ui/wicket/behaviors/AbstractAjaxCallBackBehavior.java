@@ -28,28 +28,56 @@ import org.apache.wicket.ajax.AjaxEventBehavior;
  */
 public abstract class AbstractAjaxCallBackBehavior extends AjaxEventBehavior {
 
-  private static final long serialVersionUID = 1L;
-
-  private final Target target;
-
+  /**
+   * Enum used to define the targets.
+   */
   public enum Target {
+    /** The target is the parent window. */
     PARENT("parent"),
+    /** The target is the top window. */
     TOP("top"),
+    /** The target is the self window. */
     SELF("");
 
+    /**
+     * stores the target.
+     */
     public final String jstarget;
 
+    /**
+     * @param _target target to set
+     */
     private Target(final String _target) {
       this.jstarget = _target;
     }
 
   }
 
-  public AbstractAjaxCallBackBehavior(final String _event, final Target _target) {
+  /**
+   * Neeed for serialization.
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * Target for this callback.
+   */
+  private final Target target;
+
+  /**
+   * @param _event    event the behavior should be executed on
+   * @param _target   target of the javascript
+   */
+  public AbstractAjaxCallBackBehavior(final String _event,
+                                      final Target _target) {
     super(_event);
     this.target = _target;
   }
 
+  /**
+  * Get the call back script.
+  * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getCallbackScript()
+  * @return JavaScript
+  */
   @Override
   protected CharSequence getCallbackScript() {
     final String str =
@@ -63,14 +91,12 @@ public abstract class AbstractAjaxCallBackBehavior extends AjaxEventBehavior {
     return ret;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getPreconditionScript()
+  /**
+   * The precondition script must be overwritten to prevent JavaScript error.
+   * @return null
    */
   @Override
   protected CharSequence getPreconditionScript() {
     return null;
   }
-
 }

@@ -23,7 +23,7 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 
 
 /**
- * This Interface is used for Behaviors wich are stored in
+ * This Interface is used for Behaviors which are stored in
  * {@link #org.efaps.ui.wicket.EFapsSession()}. For an example of implementing
  * this Interface
  * {@link #rg.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior()}
