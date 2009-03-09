@@ -134,18 +134,29 @@ public class BooleanUI extends AbstractUI {
         bool = false;
       }
     }
-    ret.append("<input type=\"radio\" ")
-       .append((bool != null && bool) ? "checked=\"checked\" " : "")
-       .append("name=\"").append(field.getName()).append("\" ")
-       .append("value=\"").append("TRUE").append("\"/>")
-       .append(getTrue(attribute)).append("<br/>");
 
-    ret.append("<input type=\"radio\" ")
-       .append((bool != null && !bool) ? "checked=\"checked\" " : "")
-       .append("name=\"").append(field.getName()).append("\" ")
-       .append("value=\"").append("FALSE").append("\"/>")
-       .append(getFalse(attribute));
-
+    ret.append("<script language=\"javascript\" type=\"text/javascript\">")
+      .append("var checked").append(field.getName()).append(";")
+      .append("function Clear").append(field.getName()).append("(_btn) {")
+      .append("if (checked").append(field.getName()).append(" == _btn){")
+      .append("_btn.checked = false;")
+      .append("checked").append(field.getName()).append(" = null;")
+      .append("} else { ")
+      .append("checked").append(field.getName()).append(" = _btn; }")
+      .append("}")
+      .append("</script>")
+      .append("<input type=\"radio\" ")
+      .append((bool != null && bool) ? "checked=\"checked\" " : "")
+      .append("name=\"").append(field.getName()).append("\" ")
+      .append("value=\"").append("TRUE")
+      .append("\" onclick=\"Clear").append(field.getName()).append("(this)\"/>")
+      .append(getTrue(attribute)).append("<br/>")
+      .append("<input type=\"radio\" ")
+      .append((bool != null && !bool) ? "checked=\"checked\" " : "")
+      .append("name=\"").append(field.getName()).append("\" ")
+      .append("value=\"").append("FALSE")
+      .append("\" onclick=\"Clear").append(field.getName()).append("(this)\"/>")
+      .append(getFalse(attribute));
     return ret.toString();
   }
 
