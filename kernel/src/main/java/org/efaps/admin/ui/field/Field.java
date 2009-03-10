@@ -35,7 +35,6 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.AbstractCommand.Target;
-import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RequestHandler;
@@ -309,19 +308,6 @@ public class Field extends AbstractUserInterfaceObject {
   }
 
   /**
-   * The instance method returns the label for this field. If no special label
-   * is defined, the viewable name of the attribute is returned (method
-   * {@link Attribute.getViewableName} is used).
-   *
-   * @param _context
-   *                context for this request
-   * @return label of the field
-   */
-  public String getViewableName(final Context _context) {
-    return getLabel();
-  }
-
-  /**
    * Test, if the value of instance variable {@link AbstractCommand.target} is
    * equal to {@link AbstractCommand.TARGET_CONTENT}.
    *
@@ -443,7 +429,7 @@ public class Field extends AbstractUserInterfaceObject {
     } else if ("Expression".equals(_name)) {
       setExpression(_value);
     } else if ("Width".equals(_name)) {
-      this.setWidth(_value);
+      setWidth(_value);
     } else if ("SortAble".equals(_name)) {
       setSortAble(!"false".equals(_value));
     } else if ("Filterable".equals(_name)) {
