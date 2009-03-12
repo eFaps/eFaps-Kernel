@@ -46,6 +46,7 @@ import org.efaps.update.ui.CommandUpdate;
 import org.efaps.update.ui.FormUpdate;
 import org.efaps.update.ui.ImageUpdate;
 import org.efaps.update.ui.MenuUpdate;
+import org.efaps.update.ui.PickerUpdate;
 import org.efaps.update.ui.SearchUpdate;
 import org.efaps.update.ui.TableUpdate;
 import org.efaps.update.user.JAASSystemUpdate;
@@ -171,6 +172,8 @@ public class SaxHandler extends DefaultHandler {
       this.elem = new ImageUpdate(this.url);
     } else if ("ui-menu".equals(_qName))  {
       this.elem = new MenuUpdate(this.url);
+    } else if ("ui-picker".equals(_qName))  {
+      this.elem = new PickerUpdate(this.url);
     } else if ("ui-search".equals(_qName))  {
       this.elem = new SearchUpdate(this.url);
     } else if ("ui-table".equals(_qName))  {

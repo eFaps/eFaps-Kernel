@@ -106,18 +106,20 @@ public enum EFapsClassNames {
   /**  Admin_UI_FieldSet. */
   FIELDSET("415c196f-c1aa-4aa0-b96e-f8541332a921"),
 
-  /** Admin_UI_Form. */
-  FORM("e6ddf834-e4f4-481e-8afb-95bf3760b6ba"),
-  /** Admin_UI_Table. */
-  TABLE("6f3695cb-fab5-45e5-8d8e-eb1e6870dcd3"),
   /** Admin_UI_Command. */
   COMMAND("65e8da96-7bd3-4a9f-867d-b2188dc2d882"),
-  /** Admin_UI_Menu. */
-  MENU("209d2e8b-608b-4b09-bdbb-ef5b98d0e2ab"),
-  /** Admin_UI_Search. */
-  SEARCH("2cb35fbd-d495-4680-b7ad-e236507a5e94"),
+  /** Admin_UI_Form. */
+  FORM("e6ddf834-e4f4-481e-8afb-95bf3760b6ba"),
   /** Admin_UI_Image. */
   IMAGE("6e70fbed-fdfc-4ed3-a0f8-d0bc1858419d"),
+  /** Admin_UI_Menu. */
+  MENU("209d2e8b-608b-4b09-bdbb-ef5b98d0e2ab"),
+  /** Admin_UI_Picker. */
+  PICKER("259e8dda-dc0e-492c-96dc-850a2fa13d98"),
+  /** Admin_UI_Search. */
+  SEARCH("2cb35fbd-d495-4680-b7ad-e236507a5e94"),
+  /** Admin_UI_Table. */
+  TABLE("6f3695cb-fab5-45e5-8d8e-eb1e6870dcd3"),
 
   /** */
   LINK_ICON("c21150d9-f160-4eaf-b93f-66042697867e"),

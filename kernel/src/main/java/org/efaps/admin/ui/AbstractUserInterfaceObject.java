@@ -232,12 +232,14 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
     Search.getCache().initialize(AbstractUserInterfaceObject.class);
     Form.getCache().initialize(AbstractUserInterfaceObject.class);
     Table.getCache().initialize(AbstractUserInterfaceObject.class);
+    Picker.getCache().initialize(AbstractUserInterfaceObject.class);
     Image.getCache().readFromDB();
     Command.getCache().readFromDB();
     Menu.getCache().readFromDB();
     Search.getCache().readFromDB();
     Form.getCache().readFromDB();
     Table.getCache().readFromDB();
+    Picker.getCache().readFromDB();
   }
 
 
@@ -247,8 +249,8 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
    *
    * @param <UIObj>
    */
-  protected static class UserInterfaceObjectCache<UIObj extends AbstractUserInterfaceObject>
-      extends Cache<UIObj> {
+  protected static class UserInterfaceObjectCache<UIObj extends
+      AbstractUserInterfaceObject> extends Cache<UIObj> {
 
     /**
      * Stores the caller class.
@@ -275,52 +277,6 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
     }
 
     /**
-     * Read an <code>UserInterfaceObject</code> from the Database.
-     *
-     * @see #read(SearchQuery)
-     * @param _id
-     *                ID of the <code>UserInterfaceObject</code> to search for
-     * @return <code>UserInterfaceObject</code>
-     * @throws EFapsException on error
-     */
-//    protected UIObj read(final long _id) throws EFapsException {
-//      try {
-//        final SearchQuery query = new SearchQuery();
-//        query.setQueryTypes(Type.get(getEFapsClassName()).getName());
-//        query.addWhereExprEqValue("ID", _id);
-//        query.addSelect("ID");
-//        query.addSelect("Name");
-//        return read(query);
-//      } catch (final Throwable e) {
-//        throw new EFapsException(UserInterfaceObjectCache.class,
-//            "read.Throwable4Id", e, _id);
-//      }
-//    }
-
-//    /**
-//     * Read an <code>UserInterfaceObject</code> from the Database.
-//     *
-//     * @see #read(SearchQuery)
-//     * @param _name   Name of the <code>UserInterfaceObject</code> to search
-//     *                for
-//     * @return UserInterfaceObject
-//     * @throws EFapsException on error
-//     */
-//    protected UIObj read(final String _name) throws EFapsException {
-//      try {
-//        final SearchQuery query = new SearchQuery();
-//        query.setQueryTypes(Type.get(getEFapsClassName()).getName());
-//        query.addWhereExprEqValue("Name", _name);
-//        query.addSelect("ID");
-//        query.addSelect("Name");
-//        return read(query);
-//      } catch (final Throwable e) {
-//        throw new EFapsException(UserInterfaceObjectCache.class,
-//            "read.Throwable4Name", e, _name);
-//      }
-//    }
-
-    /**
      * Get the <code>EFapsClassName</code> of this
      * <code>UserInterfaceObject</code>.
      *
@@ -341,68 +297,6 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
                 .getName());
       }
     }
-
-    /**
-     * This Method is called to return a <code>UserInterfaceObject</code>.
-     *
-     * @see #read(long)
-     * @see #read(String)
-     * @param _query
-     *                <code>SearchQuery</code> to be called
-     * @return <code>UserInterfaceObject</code>
-     * @throws EFapsException on error
-     */
-//    private UIObj read(final SearchQuery _query) throws EFapsException {
-//      UIObj uiObj = null;
-//      final Class<UIObj> uiObjClass = this.callerClass;
-//      try {
-//        _query.executeWithoutAccessCheck();
-//        if (_query.next()) {
-//          final long id = (Long) _query.get("ID");
-//          final String name = (String) _query.get("Name");
-//          uiObj =
-//              uiObjClass.getConstructor(Long.class, String.class).newInstance(
-//                  id, name);
-//          add(uiObj);
-//          uiObj.readFromDB();
-//        }
-//      } catch (final NoSuchMethodException e) {
-//        throw new EFapsException(UserInterfaceObjectCache.class,
-//            "read.ConstructorNotFound", e, uiObjClass.getName());
-//      } catch (final SecurityException e) {
-//        throw new EFapsException(UserInterfaceObjectCache.class,
-//            "read.ConstructorNotAccessable", e, uiObjClass.getName());
-//      } catch (final IllegalArgumentException e) {
-//        throw new EFapsException(UserInterfaceObjectCache.class,
-//            "read.ConstructorWithCorrectArgumentsNotExists", e, uiObjClass
-//                .getName());
-//      } catch (final InstantiationException e) {
-//        throw new EFapsException(UserInterfaceObjectCache.class,
-//            "read.ClassIsNotClass", e, uiObjClass.getName());
-//      } catch (final IllegalAccessException e) {
-//        throw new EFapsException(UserInterfaceObjectCache.class,
-//            "read.ConstructorNotPublic", e, uiObjClass.getName());
-//      } catch (final InvocationTargetException e) {
-//        final Throwable t = e.getCause();
-//        if (t instanceof EFapsException) {
-//          throw (EFapsException) t;
-//        } else {
-//          throw new EFapsException(UserInterfaceObjectCache.class,
-//              "read.UIObjectNotInstanceable", t, uiObjClass.getName());
-//        }
-//      } catch (final Throwable e) {
-//        throw new EFapsException(UserInterfaceObjectCache.class,
-//            "read.Throwable", e);
-//      } finally {
-//        try {
-//          _query.close();
-//        } catch (final Exception e) {
-//        }
-//      }
-//      return uiObj;
-//    }
-
-
 
 
     /**Initialize the cache of a specific user interface object type. Initialize

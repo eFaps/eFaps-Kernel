@@ -29,6 +29,7 @@ import static org.efaps.admin.EFapsClassNames.FIELD;
 import static org.efaps.admin.EFapsClassNames.FIELDCOMMAND;
 import static org.efaps.admin.EFapsClassNames.FIELDTABLE;
 import static org.efaps.admin.EFapsClassNames.MENU;
+import static org.efaps.admin.EFapsClassNames.PICKER;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -45,6 +46,7 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
+import org.efaps.admin.ui.Picker;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.SearchQuery;
@@ -337,6 +339,17 @@ public final class EventDefinition extends AbstractAdminObject implements
         }
 
         fieldtable.addEvent(triggerEvent, new EventDefinition(eventId,
+            eventName, eventPos, resName, method, eventOID));
+
+      } else if (eFapsClass == PICKER) {
+
+        final Picker picker = Picker.get(abstractID);
+
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("       Picker=" + picker.getName());
+        }
+
+        picker.addEvent(triggerEvent, new EventDefinition(eventId,
             eventName, eventPos, resName, method, eventOID));
 
       } else if (LOG.isDebugEnabled()) {

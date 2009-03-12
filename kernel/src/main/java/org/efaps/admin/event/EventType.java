@@ -66,6 +66,8 @@ public enum EventType  {
   UI_FIELD_CMD ("Admin_UI_FieldCommandEvent"),
   /** EventType for the search esjp of a auto complete field. */
   UI_FIELD_AUTOCOMPLETE ("Admin_UI_FieldAutoCompleteEvent"),
+  /** EventType for the search esjp of a auto complete field. */
+  UI_PICKER("Admin_UI_PickerEvent"),
   /**
    * EventType for checking the access to a field (depending on mode: create
    * edit etc.

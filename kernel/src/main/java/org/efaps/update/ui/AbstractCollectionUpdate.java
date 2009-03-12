@@ -166,7 +166,7 @@ public abstract class AbstractCollectionUpdate extends AbstractUpdate {
     }
   }
 
-  private class Definition extends AbstractDefinition {
+  protected class Definition extends AbstractDefinition {
 
     /** All fields for the collection are stored in this variable */
     private final List<FieldDefinition> fields
