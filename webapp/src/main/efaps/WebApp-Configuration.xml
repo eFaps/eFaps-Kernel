@@ -41,7 +41,13 @@
        from the eFaps-DataBase.
       </description>
     </attribute>
-   
+    <attribute>
+      <key>Picker4Person</key>
+      <value>Admin_User_PersonPicker</value>
+      <description>
+        Defines the Picker for all Person Links like Creator, Modfier etc.
+       </description>
+    </attribute>
   </definition>
 </common-systemconfiguration>
 

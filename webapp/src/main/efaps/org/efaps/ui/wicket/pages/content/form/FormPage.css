@@ -25,7 +25,7 @@
  * @eFapsRevision $Rev$
  */
 
-#eFapsContentDiv {
+.eFapsContentDiv {
   position: absolute;
   width: 100%;
   top: 50px;
@@ -34,7 +34,7 @@
   padding-bottom: 20px;
 }
 
-#eFapsContentDiv img {
+.eFapsContentDiv img {
   width: 16px;
   height: 16px;
   border: 0;

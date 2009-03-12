@@ -21,11 +21,14 @@
 package org.efaps.ui.wicket.models.cell;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
+import org.efaps.admin.ui.Picker;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.util.EFapsException;
 
@@ -75,6 +78,12 @@ public class UIFormCell extends UITableCell {
    * Stores if the field has an esjp used for auto completion.
    */
   private final boolean autoComplete;
+
+  /**
+   * Picker for this UIFormCell.
+   */
+  private final UIPicker picker;
+
 
   /**
    * Constructor used on search and create.
@@ -129,6 +138,24 @@ public class UIFormCell extends UITableCell {
     this.attrTypeName = _attrTypeName;
     this.autoComplete
            = _fieldValue.getField().hasEvents(EventType.UI_FIELD_AUTOCOMPLETE);
+
+    this.picker = evaluatePicker();
+
+  }
+
+  private UIPicker evaluatePicker() {
+    UIPicker ret = null;
+    final String prop = getField().getProperty("Picker");
+    if (prop == null && ("CreatorLink".equals(this.attrTypeName)
+        || "ModifierLink".equals(this.attrTypeName))) {
+      final String pickerName = SystemConfiguration.get(
+          UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"))
+          .getAttributeValue("Picker4Person");
+      ret = new UIPicker(this, pickerName);
+    } else if (prop != null && Picker.get(prop) != null) {
+      ret = new UIPicker(this, prop);
+    }
+    return ret;
   }
 
   /**
@@ -189,5 +216,25 @@ public class UIFormCell extends UITableCell {
   public List<Return> getAutoCompletion (final Object _others)
       throws EFapsException {
     return executeEvents(_others, EventType.UI_FIELD_AUTOCOMPLETE);
+  }
+
+
+  /**
+   * Getter method for instance variable {@link #valuePicker}.
+   *
+   * @return value of instance variable {@link #valuePicker}
+   */
+  public boolean isValuePicker() {
+    return this.picker != null;
+  }
+
+
+  /**
+   * Getter method for instance variable {@link #picker}.
+   *
+   * @return value of instance variable {@link #picker}
+   */
+  public UIPicker getPicker() {
+    return this.picker;
   }
 }

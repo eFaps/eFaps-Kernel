@@ -103,6 +103,16 @@ public class UITableCell implements IClusterable {
 
   private final long fieldId;
 
+  private final boolean creatable;
+
+  private final boolean editable;
+
+  private final boolean searchable;
+
+  private final boolean viewable;
+
+  private final TargetMode targetMode;
+
   /**
    * Constructor.
    *
@@ -126,6 +136,11 @@ public class UITableCell implements IClusterable {
     this.cellValue = _cellvalue;
     this.icon = _icon;
     this.fieldId = _fieldValue.getField().getId();
+    this.creatable = _fieldValue.getField().isCreatable();
+    this.editable = _fieldValue.getField().isEditable();
+    this.searchable = _fieldValue.getField().isSearchable();
+    this.viewable = _fieldValue.getField().isViewable();
+    this.targetMode = _targetMode;
     // check if the user has access to the typemenu, if not set the reference
     // to null
     if (_fieldValue.getField().getReference() != null) {
@@ -274,4 +289,49 @@ public class UITableCell implements IClusterable {
     }
   return ret;
 }
+
+  /**
+   * Getter method for instance variable {@link #creatable}.
+   *
+   * @return value of instance variable {@link #creatable}
+   */
+  public boolean isCreatable() {
+    return this.creatable;
+  }
+
+  /**
+   * Getter method for instance variable {@link #editable}.
+   *
+   * @return value of instance variable {@link #editable}
+   */
+  public boolean isEditable() {
+    return this.editable;
+  }
+
+  /**
+   * Getter method for instance variable {@link #searchable}.
+   *
+   * @return value of instance variable {@link #searchable}
+   */
+  public boolean isSearchable() {
+    return this.searchable;
+  }
+
+  /**
+   * Getter method for instance variable {@link #viewable}.
+   *
+   * @return value of instance variable {@link #viewable}
+   */
+  public boolean isViewable() {
+    return this.viewable;
+  }
+
+  public boolean render() {
+    return ((this.targetMode == TargetMode.CREATE && this.creatable)
+          || (this.targetMode == TargetMode.EDIT && this.editable)
+          || (this.targetMode == TargetMode.SEARCH && this.searchable)
+          || (this.targetMode == TargetMode.VIEW && this.viewable)
+          || this.targetMode == TargetMode.UNKNOWN
+          || this.targetMode == TargetMode.CONNECT);
+  }
 }

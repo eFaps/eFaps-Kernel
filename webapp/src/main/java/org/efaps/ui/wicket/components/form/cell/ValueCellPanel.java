@@ -35,8 +35,11 @@ import org.joda.time.DateTime;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
+import org.efaps.ui.wicket.components.form.AutoCompleteField;
 import org.efaps.ui.wicket.components.form.DateFieldWithPicker;
 import org.efaps.ui.wicket.components.form.FormPanel;
+import org.efaps.ui.wicket.components.form.valuepicker.Value4Picker;
+import org.efaps.ui.wicket.components.form.valuepicker.ValuePicker;
 import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
@@ -99,15 +102,32 @@ public class ValueCellPanel extends Panel {
         this.add(this.dateTextField);
 
       } else {
-        this.add(new LabelComponent("label",
-                                 new Model<String>(uiFormCell.getCellValue()))
-                                .setOutputMarkupId(true));
+        if (uiFormCell.isAutoComplete()
+            && (_formmodel.isCreateMode() || _formmodel.isSearchMode())) {
+          this.add(new AutoCompleteField("label", _model));
+        } else {
+          if (uiFormCell.isValuePicker() && uiFormCell.render()) {
+           final Value4Picker value = new Value4Picker("label", _model);
+           value.setValue(_formmodel.isSearchMode() ? "*" : "0",
+                          _formmodel.isSearchMode() ? "*" : "0");
+           this.add(value);
+           this.add(new ValuePicker("valuePicker", _model, value));
+
+          } else {
+            this.add(new LabelComponent("label",
+                new Model<String>(uiFormCell.getCellValue()))
+                                                     .setOutputMarkupId(true));
+
+            this.add(new WebComponent("valuePicker").setVisible(false));
+          }
+        }
       }
       this.add(new WebMarkupContainer("link").setVisible(false));
 
     } else {
       this.add(new WebComponent("icon").setVisible(false));
       this.add(new WebComponent("label").setVisible(false));
+      this.add(new WebComponent("valuePicker").setVisible(false));
 
       WebMarkupContainer link;
       if (_ajaxLink && uiFormCell.getTarget() != Target.POPUP) {

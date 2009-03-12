@@ -89,14 +89,51 @@ public class AutoCompleteField extends AutoCompleteTextField<String> {
     this.model = _model;
     this.fieldName = ((UITableCell) _model.getObject()).getName();
     add(StaticHeaderContributor.forCss(CSS));
+
+    add(new AjaxFormSubmitBehavior("onKeyDown") {
+
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      protected void onSubmit(final AjaxRequestTarget _target) {
+        try {
+          String fieldvalue = Context.getThreadContext().getParameter(
+              AutoCompleteField.this.fieldName);
+          if (AutoCompleteField.this.valuesMap != null) {
+            for (final Entry<String, String> entry
+                              : AutoCompleteField.this.valuesMap.entrySet()) {
+              if (entry.getValue().equals(fieldvalue)) {
+                fieldvalue = entry.getKey();
+                break;
+              }
+            }
+            AutoCompleteField.this.setModel(new Model<String>(fieldvalue));
+            _target.addComponent(AutoCompleteField.this);
+          }
+          if (AutoCompleteField.this.cmdBehavior != null) {
+            AutoCompleteField.this.cmdBehavior.onSubmit4AutoComplete(_target,
+                                                                    fieldvalue);
+          }
+        } catch (final EFapsException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+
+      @Override
+      protected void onError(final AjaxRequestTarget _target) {
+      }
+    });
   }
 
   /**
    * The Name must be set too use the name from eFaps.
+   *
    * @param _tag tag to modify
    */
   @Override
   protected void onComponentTag(final ComponentTag _tag) {
+    _tag.setName("input");
     super.onComponentTag(_tag);
     _tag.put("name", this.fieldName);
   }
@@ -134,37 +171,5 @@ public class AutoCompleteField extends AutoCompleteTextField<String> {
    */
   public void addCmdBehavior(final AjaxCmdBehavior _cmdBehavior) {
     this.cmdBehavior = _cmdBehavior;
-    add(new AjaxFormSubmitBehavior("onKeyDown") {
-
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      protected void onSubmit(final AjaxRequestTarget _target) {
-        try {
-          String fieldvalue = Context.getThreadContext().getParameter(
-              AutoCompleteField.this.fieldName);
-          if (AutoCompleteField.this.valuesMap != null) {
-            for (final Entry<String, String> entry
-                              : AutoCompleteField.this.valuesMap.entrySet()) {
-              if (entry.getValue().equals(fieldvalue)) {
-                fieldvalue = entry.getKey();
-                break;
-              }
-            }
-            AutoCompleteField.this.setModel(new Model<String>(fieldvalue));
-            _target.addComponent(AutoCompleteField.this);
-          }
-          AutoCompleteField.this.cmdBehavior.onSubmit4AutoComplete(_target,
-              fieldvalue);
-        } catch (final EFapsException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-      }
-
-      @Override
-      protected void onError(final AjaxRequestTarget _target) {
-      }
-    });
   }
 }

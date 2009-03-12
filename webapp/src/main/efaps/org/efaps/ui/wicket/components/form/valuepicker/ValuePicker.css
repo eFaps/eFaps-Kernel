@@ -1,0 +1,74 @@
+/*
+ * Copyright 2003 - 2009 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Author:          jmox
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
+ */
+
+/* 
+ * @eFapsPackage  org.efaps.ui.wicket.components.form.valuepicker
+ * @eFapsUUID     3371fa4a-a9f3-40b7-afdb-0367da3dfe5a
+ * @eFapsRevision $Rev$
+ */
+
+.eFapsPickerLink:hover {
+  cursor: pointer;
+}
+.eFapsPickerLink img {
+  vertical-align: text-bottom;
+}
+
+.eFapsPickerTitle {
+  color:#008800;
+  display:block;
+  font-size:11pt;
+  font-weight:bold;
+  height:24px;
+  margin-bottom:10px;
+  margin-top:10px;
+  padding-top:10px;
+  text-align:center;
+  white-space:nowrap;
+}
+
+.eFapsPickerForm {
+  text-align: center;
+}
+.eFapsPickerLabel {
+  margin-right:10px;
+}
+
+.eFapsPickerInput {
+
+}
+.eFapsPickerTable {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 6px;
+}
+
+.eFapsPickerTable tr {
+  background-image:url(../../servlet/image/org.efaps.ui.wicket.components.form.dotted-line.png);
+  background-position:center bottom;
+  background-repeat:repeat-x;
+}
+
+.eFapsPickerTable td {
+  border-right:1px solid #DDDDDD;
+  padding-left:5px;
+  padding-right:5px;
+}
