@@ -194,7 +194,19 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-
+  
+  <xsd:element name="ui-picker">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="eFaps:AbstractBase">
+          <xsd:sequence>
+            <xsd:element name="definition" type="eFaps:definition_ui-picker" maxOccurs="unbounded" minOccurs="1"></xsd:element>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  
   <xsd:element name="ui-search">
     <xsd:complexType>
       <xsd:complexContent>
@@ -537,6 +549,17 @@
   </xsd:complexType>
 
 
+  <xsd:complexType name="definition_ui-picker">
+    <xsd:complexContent>
+      <xsd:extension base="eFaps:AbstractDefinition">
+        <xsd:sequence>
+          <xsd:element name="field" type="eFaps:field_ui-picker" maxOccurs="unbounded" minOccurs="0"/>
+          <xsd:element name="execute" type="eFaps:execute" maxOccurs="1" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
   <xsd:complexType name="definition_ui-search">
     <xsd:complexContent>
       <xsd:extension base="eFaps:AbstractDefinition">
@@ -629,6 +652,13 @@
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
+  </xsd:complexType>
+
+  <xsd:complexType name="field_ui-picker">
+    <xsd:sequence>
+      <xsd:element name="property" type="eFaps:property_ui-picker" maxOccurs="unbounded" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
   </xsd:complexType>
 
 
@@ -780,6 +810,7 @@
               <xsd:enumeration value="Label" />
               <xsd:enumeration value="Level"/>
               <xsd:enumeration value="Order"/>
+              <xsd:enumeration value="Picker"/>
               <xsd:enumeration value="Required" />
               <xsd:enumeration value="Rows"/>
               <xsd:enumeration value="RowSpan"/>
@@ -848,7 +879,22 @@
     </xsd:simpleContent>
   </xsd:complexType>
 
-
+  <xsd:complexType name="property_ui-picker">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="name" use="required">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="Expression"/>
+              <xsd:enumeration value="Label"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  
+  
   <xsd:complexType name="propertyResource">
     <xsd:sequence>
       <xsd:element name="type" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
