@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003 - 2009 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          jmox
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>d8386c73-6f92-43e6-a20a-ed1b10de8552</uuid>
+  <file-application>eArchive</file-application>
+  <file-revision>$Rev$</file-revision>
+
+  <!-- connection between objects -->
+  <definition>
+    <version-expression>(version==3) || (version==latest)</version-expression>
+    <name>eArchive_Node2NodeHighestRevSQLView</name>
+    <database>
+      <table-name>V_EANODE2NODEHIGHREV</table-name>
+     </database>
+  </definition>
+
+  <!-- define data model -->
+  <definition>
+    <version-expression>(version==2)</version-expression>
+    <database>
+      <table-name>T_EANODE2NODE</table-name>
+      <sql>
+        create view V_EANODE2NODEHIGHREV as
+          select t1.ID, 
+                 t1.TYPEID, 
+                 PARENTID, 
+                 t1.CHILDID, 
+                 NAME
+            from T_EANODE2NODE t1 
+            join
+              (select max(PARENTID) as maxparent, 
+                      CHILDID
+                 FROM T_EANODE2NODE
+                group by CHILDID) t2 
+            on t1.PARENTID = t2.maxparent and t1.CHILDID = t2.CHILDID
+      </sql>
+    </database>
+  </definition>
+
+</datamodel-sqltable>

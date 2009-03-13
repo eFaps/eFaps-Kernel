@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003 - 2009 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          jmox
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<ui-table xmlns="http://www.efaps.org/xsd" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+  <uuid>d9183711-96bd-42b1-8c34-3da0b2e750f5</uuid>
+  <file-application>eArchive</file-application>
+  <file-revision>$Rev$</file-revision>
+  <definition>
+    <version-expression>(version==latest)</version-expression>
+    <name>eArchive_RepositoryTable</name>
+    <!-- fields -->
+    <field name="name">
+      <property name="Expression">Name</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Label">eArchive_Repository/Name.Label</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+     <field name="created">
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Created</property>
+      <property name="Searchable">true</property>
+      <property name="Label">eArchive_Repository/Created.Label</property>
+    </field>
+     <field name="modified">
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Modified</property>
+      <property name="Searchable">true</property>
+      <property name="Label">eArchive_Repository/Modified.Label</property>
+    </field>
+  </definition>
+</ui-table>
