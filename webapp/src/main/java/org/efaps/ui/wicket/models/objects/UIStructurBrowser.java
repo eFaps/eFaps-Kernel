@@ -325,7 +325,9 @@ public class UIStructurBrowser extends AbstractUIObject {
         child.setDirection((Boolean) ((instMapper.get(instance).get(0))[1]));
         child.setLabel(value.toString());
         child.setParent(checkForChildren(instance));
-        child.setImage(Image.getTypeIcon(instance.getType()).getUrl());
+        child.setImage(Image.getTypeIcon(instance.getType()) != null
+                        ? Image.getTypeIcon(instance.getType()).getUrl()
+                        : null);
       }
     } catch (final Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
@@ -415,7 +417,9 @@ public class UIStructurBrowser extends AbstractUIObject {
           if (field.getName().equals(this.browserFieldName)) {
             child.setLabel(strValue);
             child.setParent(checkForChildren(instance));
-            child.setImage(Image.getTypeIcon(instance.getType()).getUrl());
+            child.setImage(Image.getTypeIcon(instance.getType()) != null
+                            ? Image.getTypeIcon(instance.getType()).getUrl()
+                            : null);
           }
           child.getColumns().add(strValue);
         }
