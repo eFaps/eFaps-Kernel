@@ -26,13 +26,13 @@
 <ui-command xmlns="http://www.efaps.org/xsd" 
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>63640113-c622-49c6-b92b-e30a761e863b</uuid>
+  <uuid>0075dd50-6497-4193-b7c1-736d0bf1dfcc</uuid>
   <file-application>eArchive</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>eArchive_RepositoryTree_Node</name>
+    <name>eArchive_NodeTree_Node</name>
     <!-- target definitions -->
     <target>
       <menu>eArchive_RepositoryTree_Node_Menu</menu>

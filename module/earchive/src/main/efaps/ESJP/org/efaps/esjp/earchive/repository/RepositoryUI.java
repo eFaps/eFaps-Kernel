@@ -20,10 +20,13 @@
 
 package org.efaps.esjp.earchive.repository;
 
-import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.program.esjp.EFapsRevision;
-import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.admin.event.Parameter;
+import org.efaps.admin.event.Return;
+import org.efaps.db.Insert;
 import org.efaps.db.Instance;
+import org.efaps.esjp.earchive.node.Node;
+import org.efaps.esjp.earchive.revision.Revision;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -31,39 +34,20 @@ import org.efaps.db.Instance;
  * @author jmox
  * @version $Id$
  */
-@EFapsUUID("de8eaa7f-154a-40c3-ae6a-6ad061f3cffa")
-@EFapsRevision("$Rev$")
-public class Repository {
+public class RepositoryUI {
 
-  private Long id;
-  private Type type;
+  public Return create(final Parameter _parameter) throws EFapsException {
+    //create new repository
+    final String name = _parameter.getParameterValue("name");
+    final Insert insert = new Insert("eArchive_Repository");
+    insert.add("Name", name);
+    insert.add("LastRevision", "0");
+    insert.execute();
+    final Instance instance = insert.getInstance();
 
-  /**
-   * Getter method for instance variable {@link #id}.
-   *
-   * @return value of instance variable {@link #id}
-   */
-  public Long getId() {
-    return this.id;
-  }
+    final Node node = Node.createNewNode(name);
+    Revision.getNewRevision(new Repository(instance), node);
 
-  public Repository(){
-
-  }
-
-  /**
-   * @param id
-   */
-  public Repository(final long _id) {
-    this.id = _id;
-  }
-
-  /**
-   * @param instance
-   */
-  public Repository(final Instance _instance) {
-    this.type = _instance.getType();
-    this.id = _instance.getId();
+    return new Return();
   }
 }
-

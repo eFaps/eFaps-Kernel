@@ -45,7 +45,7 @@
       <name>OID</name>
       <type>OID</type>
       <sqltable>eArchive_NodeSQLTable</sqltable>
-      <sqlcolumn>ID</sqlcolumn>
+      <sqlcolumn>TYPEID,ID</sqlcolumn>
     </attribute>
 
     <attribute>
@@ -56,39 +56,33 @@
     </attribute>
     
     <attribute>
-      <name>Creator</name>
-      <type>CreatorLink</type>
-      <sqltable>eArchive_NodeSQLTable</sqltable>
-      <sqlcolumn>CREATOR</sqlcolumn>
-    </attribute>
-
-    <attribute>
-      <name>Created</name>
-      <type>Created</type>
-      <sqltable>eArchive_NodeSQLTable</sqltable>
-      <sqlcolumn>CREATED</sqlcolumn>
-    </attribute>
-
-    <attribute>
-      <name>Modifier</name>
-      <type>ModifierLink</type>
-      <sqltable>eArchive_NodeSQLTable</sqltable>
-      <sqlcolumn>MODIFIER</sqlcolumn>
-    </attribute>
-
-    <attribute>
-      <name>Modified</name>
-      <type>Modified</type>
-      <sqltable>eArchive_NodeSQLTable</sqltable>
-      <sqlcolumn>MODIFIED</sqlcolumn>
-    </attribute>
-    
-    <attribute>
       <name>HistoryId</name>
       <type>Integer</type>
       <sqltable>eArchive_NodeSQLTable</sqltable>
       <sqlcolumn>HISTORYID</sqlcolumn>
     </attribute>
-  
+    
+    <attribute>
+      <name>CopyId</name>
+      <type>Integer</type>
+      <sqltable>eArchive_NodeSQLTable</sqltable>
+      <sqlcolumn>COPYID</sqlcolumn>
+    </attribute>
+    
+    <attribute>
+      <name>Revision</name>
+      <type>Integer</type>
+      <sqltable>eArchive_NodeSQLTable</sqltable>
+      <sqlcolumn>REVISION</sqlcolumn>
+    </attribute>
+    
+    <attribute>
+      <name>Name</name>
+      <type>String</type>
+      <sqltable>eArchive_NodeSQLTable</sqltable>
+      <sqlcolumn>NAME</sqlcolumn>
+    </attribute>
   </definition>
+  
 </datamodel-type>
+

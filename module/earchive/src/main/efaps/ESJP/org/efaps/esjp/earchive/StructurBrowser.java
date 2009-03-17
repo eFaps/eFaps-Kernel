@@ -36,6 +36,8 @@ import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.esjp.earchive.node.Node;
+import org.efaps.esjp.earchive.repository.Repository;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.models.objects.UIStructurBrowser.ExecutionStatus;
 import org.efaps.util.EFapsException;
@@ -115,9 +117,11 @@ public class StructurBrowser implements EventExecution {
   private Return checkForChildren(final Instance _instance)
       throws EFapsException {
     final Return ret = new Return();
-    String nodeid = null;
+    Long nodeid = null;
      if ("eArchive_Repository".equals(_instance.getType().getName())) {
-      nodeid = Revision.getLastRevisionNode(_instance.getId());
+      nodeid = Node.getRootNodeFromDB(new Repository(_instance)).getId();
+    } else {
+      nodeid =  _instance.getId();
     }
     final SearchQuery query = new SearchQuery();
     query.setQueryTypes("eArchive_Node2Node");
@@ -143,9 +147,11 @@ public class StructurBrowser implements EventExecution {
   private Return addChildren(final Instance _instance) throws EFapsException {
     final Return ret = new Return();
 
-    String nodeid = null;
-    if ("eArchive_Repository".equals(_instance.getType().getName())) {
-     nodeid = Revision.getLastRevisionNode(_instance.getId());
+   Long nodeid = null;
+   if ("eArchive_Repository".equals(_instance.getType().getName())) {
+     nodeid = Node.getRootNodeFromDB(new Repository(_instance)).getId();
+   }  else {
+     nodeid =  _instance.getId();
    }
    final SearchQuery query = new SearchQuery();
    query.setQueryTypes("eArchive_NodeDirectory2Directory");

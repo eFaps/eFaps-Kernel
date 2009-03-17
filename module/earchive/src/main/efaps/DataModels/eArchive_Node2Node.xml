@@ -45,7 +45,7 @@
       <name>OID</name>
       <type>OID</type>
       <sqltable>eArchive_Node2NodeSQLTable</sqltable>
-      <sqlcolumn>ID</sqlcolumn>
+      <sqlcolumn>TYPEID, ID</sqlcolumn>
     </attribute>
 
     <attribute>
@@ -70,12 +70,6 @@
       <sqltable>eArchive_Node2NodeSQLTable</sqltable>
       <sqlcolumn>CHILDID</sqlcolumn>
     </attribute>
-    
-    <attribute>
-      <name>Name</name>
-      <type>String</type>
-      <sqltable>eArchive_Node2NodeSQLTable</sqltable>
-      <sqlcolumn>NAME</sqlcolumn>
-    </attribute>
+  
   </definition>
 </datamodel-type>
