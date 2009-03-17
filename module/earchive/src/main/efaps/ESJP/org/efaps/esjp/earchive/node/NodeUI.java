@@ -88,5 +88,16 @@ public class NodeUI {
     final Node newDir = Node.createNewNode(name);
     newDir.connectRevise(node);
     return new Return();
+  }
+
+  public Return rename(final Parameter _parameter)
+    throws EFapsException {
+  final String name = _parameter.getParameterValue("name");
+  final Instance instance = _parameter.getInstance();
+
+  final Node node = Node.getNodeFromDB(instance.getId());
+  node.rename(name);
+
+  return new Return();
 }
 }

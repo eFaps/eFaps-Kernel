@@ -424,6 +424,22 @@ public class Node {
 
 
   public boolean isRoot() {
-    return this.repositoryId !=null && this.repositoryId > 0;
+    return this.repositoryId != null && this.repositoryId > 0;
+  }
+
+
+  /**
+   * @param _name
+   * @throws EFapsException
+   */
+  public void rename(final String _name) throws EFapsException {
+    this.name = _name;
+    //make a clone
+    final Node clone = getNodeClone();
+    //connect existing children to clone
+    final List<Node> children = getChildNodes(null);
+    Node2Node.connect(clone, children);
+    final Node parent = getParentNode();
+    clone.connectRevise(parent);
   }
 }
