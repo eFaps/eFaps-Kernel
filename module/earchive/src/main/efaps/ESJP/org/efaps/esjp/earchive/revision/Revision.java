@@ -129,33 +129,18 @@ public class Revision {
         this.revision = rec.getLong(1) + 1;
         final StringBuilder upd = new StringBuilder();
         upd.append("Update ").append(TABLE_REPOSITORY)
-          .append(" set lastrevision = ").append(this.revision)
+          .append(" set lastrevision = ").append(this.revision).append(",")
+          .append(" modified=")
+            .append(Context.getDbType().getCurrentTimeStamp())
           .append(" where id=").append(_repository.getId());
         final Statement stmt2 = _con.getConnection().createStatement();
         stmt2.executeUpdate(upd.toString());
       } else {
         this.revision = new Long(1);
       }
-
     }  catch (final SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
   }
-//
-//  public static Long getLastRevisionNode(final long _repositoryId)
-//      throws EFapsException {
-//    final SearchQuery query = new SearchQuery();
-//    query.setQueryTypes("eArchive_RevisionIdMax");
-//    query.addWhereExprEqValue("RepositoryId", _repositoryId);
-//    query.addSelect("NodeId");
-//    query.execute();
-//    Long value = null;
-//    if (query.next()) {
-//      value = (Long) query.get("NodeId");
-//    }
-//    return value;
-//  }
-
 }
