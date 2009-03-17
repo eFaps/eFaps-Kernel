@@ -32,6 +32,7 @@
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>eArchive_RepositoryTree_Node_Menu_Action_CreateNodeDirectory</name>
+    <icon>eArchive_NodeDirectory+Create+Image</icon>
     <!-- target definitions -->
     <target>
       <form>eArchive_NodeAbstractForm</form>

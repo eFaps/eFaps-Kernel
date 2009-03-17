@@ -20,31 +20,28 @@
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
+ Original Author: Mark James (mjames@gmail.com)
+ Original Name:   page.png
+ Original Web:    Silk icon set 1.3
+                  [ http://www.famfamfam.com/lab/icons/silk/ ] 
+ Original License:Creative Commons Attribution 2.5 License 
+                  [ http://creativecommons.org/licenses/by/2.5/ ]
 
 -->
 
-<ui-command xmlns="http://www.efaps.org/xsd" 
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
-            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>336c4fbd-d54b-4a9b-a022-8840e6eaff8c</uuid>
+<ui-image xmlns="http://www.efaps.org/xsd" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+  <uuid>14fcc3bd-823e-476e-bf71-f90b5a54abd5</uuid>
   <file-application>eArchive</file-application>
   <file-revision>$Rev$</file-revision>
+  
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>eArchive_RepositoryMyDesk_Menu_Action_Create</name>
-    <icon>eArchive_Repository+Create+Image</icon>
-    <!-- target definitions -->
-    <target>
-      <form>eArchive_RepositoryForm</form>
-      <execute program="org.efaps.esjp.earchive.repository.RepositoryUI"
-               method="create"/>
-    </target>
-    <!-- property definitions -->
-    <property name="Target">modal</property>
-    <property name="TargetMode">create</property>
-    <property name="TargetCreateType">eArchive_Repository</property>
-    <property name="WindowHeight">150</property>
-    <property name="WindowWidth">500</property>
+    <name>eArchive_NodeFileImage</name>
+    <file>eArchive_NodeFileImage.png</file>
+    <!-- is type icon for -->
+    <type>eArchive_NodeFile</type>
   </definition>
 
-</ui-command>
+</ui-image>

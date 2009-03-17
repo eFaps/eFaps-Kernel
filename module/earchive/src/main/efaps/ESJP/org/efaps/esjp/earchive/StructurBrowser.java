@@ -154,8 +154,10 @@ public class StructurBrowser implements EventExecution {
      nodeid =  _instance.getId();
    }
    final SearchQuery query = new SearchQuery();
-   query.setQueryTypes("eArchive_NodeDirectory2Directory");
+   query.setQueryTypes("eArchive_Node2NodeView");
    query.addWhereExprEqValue("Parent", nodeid);
+   query.addSelect("NodeType");
+   query.addSelect("Child");
    query.addSelect("OID");
    query.execute();
 
@@ -163,7 +165,8 @@ public class StructurBrowser implements EventExecution {
 
     while (query.next()) {
       final List<Object[]> instances = new ArrayList<Object[]>(1);
-      instances.add(new Object[] { new Instance((String) query.get("OID")),
+      instances.add(new Object[] { new Instance(Type.get((Long) query.get("NodeType")) ,
+          ((Long) query.get("Child")).toString()),
           true });
       lists.add(instances);
     }

@@ -33,6 +33,7 @@
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>eArchive_RepositoryMyDesk</name>
+    <icon>eArchive_RepositoryImage</icon>
     <!-- target definitions -->
     <target>
       <menu>eArchive_RepositoryMyDesk_Menu</menu>
