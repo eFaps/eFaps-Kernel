@@ -922,13 +922,14 @@
 
   <xsd:complexType name="target">
     <xsd:sequence>
-      <xsd:element name="menu" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-      <xsd:element name="form" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-      <xsd:element name="search" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-      <xsd:element name="table" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-      <xsd:element name="evaluate" type="eFaps:execute" maxOccurs="1" minOccurs="0"></xsd:element>
-      <xsd:element name="execute" type="eFaps:execute" maxOccurs="1" minOccurs="0"></xsd:element>
-      <xsd:element name="validate" type="eFaps:execute" maxOccurs="1" minOccurs="0"></xsd:element>
+      <xsd:element name="menu" type="xsd:string" maxOccurs="1" minOccurs="0"/>
+      <xsd:element name="form" type="xsd:string" maxOccurs="1" minOccurs="0"/>
+      <xsd:element name="search" type="xsd:string" maxOccurs="1" minOccurs="0"/>
+      <xsd:element name="table" type="xsd:string" maxOccurs="1" minOccurs="0"/>
+      <xsd:element name="evaluate" type="eFaps:execute" maxOccurs="1" minOccurs="0"/>
+      <xsd:element name="execute" type="eFaps:execute" maxOccurs="1" minOccurs="0"/>
+      <xsd:element name="instance" type="eFaps:execute" maxOccurs="1" minOccurs="0"/>
+      <xsd:element name="validate" type="eFaps:execute" maxOccurs="1" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
   
