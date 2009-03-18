@@ -55,8 +55,6 @@ public enum EventType  {
   UPDATE_POST        ("Admin_DataModel_Type_Trigger_UpdatePost"),
   UPDATE_PRE         ("Admin_DataModel_Type_Trigger_UpdatePre"),
   RANGE_VALUE        ("Admin_DataModel_AttributeRangeEvent"),
-  /** EventType for evaluating the values for a table. */
-  UI_TABLE_EVALUATE ("Admin_UI_TableEvaluateEvent"),
   /**
    * EventType for generating the value for a field instead of retrieving it
    * directly from the database.
@@ -75,6 +73,9 @@ public enum EventType  {
   UI_ACCESSCHECK        ("Admin_UI_AbstractAccessCheckEvent"),
   UI_COMMAND_EXECUTE    ("Admin_UI_CommandExecuteEvent"),
   UI_VALIDATE           ("Admin_UI_ValidateEvent"),
+  UI_INSTANCEMANAGER    ("Admin_UI_InstanceManagerEvent"),
+  /** EventType for evaluating the values for a table. */
+  UI_TABLE_EVALUATE ("Admin_UI_TableEvaluateEvent"),
   VALIDATE              ("Admin_DataModel_AttributeValidateEvent");
 
 

@@ -170,6 +170,12 @@ public class CommandUpdate extends AbstractUpdate {
                                       _attributes.get("program"),
                                       _attributes.get("method"),
                                       _attributes.get("index")));
+          } else if ("instance".equals(subValue))  {
+            this.events.add(new Event(_attributes.get("name"),
+                                      EventType.UI_INSTANCEMANAGER,
+                                      _attributes.get("program"),
+                                      _attributes.get("method"),
+                                      _attributes.get("index")));
           } else if ("form".equals(subValue))  {
             // assigns a form as target for this command definition.
             addLink(LINK2TARGETFORM, new LinkInstance(_text));
