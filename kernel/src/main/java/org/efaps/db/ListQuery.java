@@ -170,7 +170,7 @@ public class ListQuery extends AbstractQuery {
   }
 
   private void addInstance(final Type _type, final long _id) {
-    this.instances.add(new Instance(_type, _id));
+    this.instances.add(Instance.get(_type, _id));
   }
 
   /**

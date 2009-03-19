@@ -164,7 +164,7 @@ public class StoreUpdate extends AbstractUpdate {
       query.addSelect("OID");
       query.executeWithoutAccessCheck();
       if (query.next()) {
-        final Instance resourceInst = new Instance((String) query.get("OID"));
+        final Instance resourceInst = Instance.get((String) query.get("OID"));
         update = new Update(resourceInst);
         old = true;
       } else {

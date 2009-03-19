@@ -37,14 +37,15 @@ import org.apache.commons.jci.compilers.JavaCompiler;
 import org.apache.commons.jci.compilers.JavaCompilerFactory;
 import org.apache.commons.jci.readers.ResourceReader;
 import org.apache.commons.jci.stores.ResourceStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkout;
 import org.efaps.db.Delete;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The class is used to compile all checked in Java programs. Because the
@@ -362,8 +363,9 @@ public class Compiler {
         }
       } else {
         try {
-          final Checkout checkout = new Checkout(new Instance(Compiler.this.esjpType,
-                                                        Compiler.this.file2id.get(resourceName)));
+          final Checkout checkout
+                      = new Checkout(Instance.get(Compiler.this.esjpType,
+                                      Compiler.this.file2id.get(resourceName)));
           final InputStream is = checkout.executeWithoutAccessCheck();
           ret = new byte[is.available()];
           is.read(ret);

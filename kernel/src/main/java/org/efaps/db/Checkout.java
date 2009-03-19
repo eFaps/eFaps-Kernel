@@ -70,7 +70,7 @@ public class Checkout extends AbstractAction {
    * @todo rewrite to thrown EFapsException
    */
   public Checkout(final String _oid) {
-    this(new Instance(_oid));
+    this(Instance.get(_oid));
   }
 
   /**

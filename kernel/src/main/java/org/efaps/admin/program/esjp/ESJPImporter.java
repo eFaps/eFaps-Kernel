@@ -109,6 +109,7 @@ public class ESJPImporter extends AbstractProgramImporter {
    * @throws EFapsException if search query could not be executed
    * @see #programName
    */
+  @Override
   public Instance searchInstance() throws EFapsException  {
     Instance instance = null;
 
@@ -119,7 +120,7 @@ public class ESJPImporter extends AbstractProgramImporter {
     query.addSelect("OID");
     query.executeWithoutAccessCheck();
     if (query.next()) {
-      instance = new Instance((String) query.get("OID"));
+      instance = Instance.get((String) query.get("OID"));
     }
     query.close();
 
@@ -153,8 +154,8 @@ public class ESJPImporter extends AbstractProgramImporter {
     final Type esjpType = Type.get(ADMIN_PROGRAM_JAVA);
     final Insert insert = new Insert(esjpType);
     insert.add("Name", getProgramName());
-    if (this.getEFapsUUID() != null)  {
-      insert.add("UUID", this.getEFapsUUID().toString());
+    if (getEFapsUUID() != null)  {
+      insert.add("UUID", getEFapsUUID().toString());
     }
     insert.execute();
 
@@ -176,7 +177,7 @@ public class ESJPImporter extends AbstractProgramImporter {
 
     // regular expression for the package name
     final Pattern pckPattern = Pattern.compile("package +[^;]+;");
-    final Matcher pckMatcher = pckPattern.matcher(this.getCode());
+    final Matcher pckMatcher = pckPattern.matcher(getCode());
     if (pckMatcher.find()) {
       final String pkg = pckMatcher.group()
                                    .replaceFirst("^(package) +", "")
@@ -197,7 +198,7 @@ public class ESJPImporter extends AbstractProgramImporter {
 
     final Pattern uuidPattern =
                  Pattern.compile("@EFapsUUID ?\\( ?\\\"[0-9a-z\\-]*\\\" ?\\)");
-    final Matcher uuidMatcher = uuidPattern.matcher(this.getCode());
+    final Matcher uuidMatcher = uuidPattern.matcher(getCode());
     if (uuidMatcher.find()) {
       final String uuidStr = uuidMatcher.group()
                                     .replaceFirst("^@EFapsUUID ?\\( ?\\\"", "")
@@ -218,7 +219,7 @@ public class ESJPImporter extends AbstractProgramImporter {
     String ret = null;
     final Pattern revisionPattern =
                         Pattern.compile("@EFapsRevision ?\\( ?\\\".*\\\" ?\\)");
-    final Matcher revisionMatcher = revisionPattern.matcher(this.getCode());
+    final Matcher revisionMatcher = revisionPattern.matcher(getCode());
     if (revisionMatcher.find()) {
       ret = revisionMatcher.group()
                                  .replaceFirst("^@EFapsRevision ?\\( ?\\\"", "")

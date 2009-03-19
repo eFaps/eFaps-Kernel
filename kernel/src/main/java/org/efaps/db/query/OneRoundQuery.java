@@ -272,7 +272,7 @@ public class OneRoundQuery {
    * @throws Exception on error
    */
   public Instance getInstance() throws Exception {
-    return new Instance(getType(), this.cachedResult.getLong(1));
+    return Instance.get(getType(), this.cachedResult.getLong(1));
   }
 
   /**
@@ -289,7 +289,7 @@ public class OneRoundQuery {
           .getObject(sqlTableMapping.col2index.get(this.mainSQLTable
               .getSqlColId()));
       for (final Object id : ids) {
-        this.instances.add(new Instance(getType(), (Long) id));
+        this.instances.add(Instance.get(getType(), (Long) id));
       }
     }
     return this.instances;

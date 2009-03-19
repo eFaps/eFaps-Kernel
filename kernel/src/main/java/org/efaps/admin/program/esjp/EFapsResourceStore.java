@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.jci.stores.ResourceStore;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +64,7 @@ public class EFapsResourceStore implements ResourceStore {
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / desctructors
 
-  public EFapsResourceStore(Compiler _compiler) {
+  public EFapsResourceStore(final Compiler _compiler) {
     this.compiler = _compiler;
   }
 
@@ -108,7 +107,7 @@ public class EFapsResourceStore implements ResourceStore {
         instance = insert.getInstance();
         insert.close();
       } else {
-        instance = new Instance(this.compiler.getClassType(), id);
+        instance = Instance.get(this.compiler.getClassType(), id);
         this.compiler.getclass2id().remove(javaClassName);
       }
 
@@ -161,7 +160,7 @@ public class EFapsResourceStore implements ResourceStore {
       query.executeWithoutAccessCheck();
       if (query.next()) {
         final Long id = (Long) query.get("ID");
-        final Checkout checkout = new Checkout(new Instance(
+        final Checkout checkout = new Checkout(Instance.get(
                                         this.compiler.getClassType(), id));
         final InputStream is = checkout.executeWithoutAccessCheck();
 
@@ -182,7 +181,7 @@ public class EFapsResourceStore implements ResourceStore {
   /**
    * no need here
    */
-  public void remove(String arg0) {
+  public void remove(final String arg0) {
 
   }
 

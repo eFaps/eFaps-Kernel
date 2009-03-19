@@ -86,14 +86,14 @@ public class SearchQuery extends AbstractQuery {
    * @see #setObject(Instance)
    */
   public void setObject(final String _oid) throws EFapsException {
-    setObject(new Instance(_oid));
+    setObject(Instance.get(_oid));
   }
 
   /**
    * @see #setObject(Instance)
    */
   public void setObject(final Type _type, final long _id) throws EFapsException {
-    setObject(new Instance(_type, _id));
+    setObject(Instance.get(_type, _id));
   }
 
   /**
@@ -101,7 +101,7 @@ public class SearchQuery extends AbstractQuery {
    */
   public void setExpand(final String _oid, final String _expand)
                                                                 throws EFapsException {
-    setExpand(new Instance(_oid), _expand);
+    setExpand(Instance.get(_oid), _expand);
   }
 
   /**

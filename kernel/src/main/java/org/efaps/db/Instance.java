@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+
 import org.efaps.admin.datamodel.Type;
 
 /**
@@ -36,19 +37,12 @@ import org.efaps.admin.datamodel.Type;
  * @author tmo
  * @version $Id$
  */
-public class Instance implements Serializable
-{
-
-  /////////////////////////////////////////////////////////////////////////////
-  // static variables
+public final class Instance implements Serializable {
 
   /**
    * Serial Version unique identifier.
    */
   private static final long serialVersionUID = -5587167060980613742L;
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance variables
 
   /**
    * The instance variable stores the type definition for which this class is
@@ -56,7 +50,7 @@ public class Instance implements Serializable
    *
    * @see #getType
    */
-  transient private Type type;
+  private transient Type type;
 
   /**
    * The instance variable stores the database id of the instance in the
@@ -66,107 +60,32 @@ public class Instance implements Serializable
    */
   private final long id;
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // constructors
-
   /**
-   * Constructor used if no object exists but the type is know (e.g. if a new
-   * object will be created...). The database id is set to 0.
-   *
-   * @param _type   type of the instance
+   * Key for this instance.
    */
-  public Instance(final Type _type)
-  {
-    this(_type, 0);
-  }
+  private final String key;
 
   /**
    * Constructor used if the type and the database id is known.
    *
-   * @param _type   type of the instance
-   * @param _id     id in the database of the instance
+   * @param _type         type of the instance
+   * @param _id           id in the database of the instance
+   * @param _instanceKey  key to this instance
    */
-  public Instance(final Type _type,
-                  final long _id)
-  {
+  private Instance(final Type _type,
+                  final long _id,
+                  final String _instanceKey) {
     this.type = _type;
     this.id = _id;
+    this.key = _instanceKey;
   }
-
-  /**
-   * Constructor used if the type and the database id is known. The database id
-   * is defined in a string and converted to a long.
-   *
-   * @param _type   type of the instance
-   * @param _id     id in the database of the instance as string
-   */
-  public Instance(final Type _type,
-                  final String _id)
-  {
-    this.type = _type;
-    if ((_id != null) && (_id.length() > 0)) {
-      this.id = Long.parseLong(_id);
-    } else {
-      this.id = 0;
-    }
-  }
-
-  /**
-   * Constructor used if the type and the database id is known. The type is only
-   * known as string and searched in the cache. The database id is defined in a
-   * string and converted to a long.
-   *
-   * @param _type   type of the instance as string
-   * @param _id     id in the database of the instance as string
-   */
-  public Instance(final String _type,
-                  final String _id)
-  {
-    if ((_type != null) && (_type.length() > 0)) {
-      this.type = Type.get(_type);
-    } else {
-      this.type = null;
-    }
-    if ((_id != null) && (_id.length() > 0)) {
-      this.id = Long.parseLong(_id);
-    } else {
-      this.id = 0;
-    }
-  }
-
-  /**
-   * Constructor used if the string representation of the object id is known.
-   *
-   * @param _oid
-   *                objecd id in string representation
-   */
-  public Instance(final String _oid)
-  {
-    if (_oid != null) {
-      final int index = _oid.indexOf(".");
-      if (index >= 0) {
-        this.type = Type.get(Long.parseLong(_oid.substring(0, index)));
-        this.id = Long.parseLong(_oid.substring(index + 1));
-      } else {
-        this.type = null;
-        this.id = 0;
-      }
-    } else {
-      this.type = null;
-      this.id = 0;
-    }
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance methods
 
   /**
    * The string representation which is defined by this instance is returned.
    *
    * @return string representation of the object id
    */
-  public String getOid()
-  {
+  public String getOid() {
     String ret = null;
     if ((getType() != null) && (getId() != 0)) {
       ret = getType().getId() + "." + getId();
@@ -179,20 +98,19 @@ public class Instance implements Serializable
    * @see #id
    */
   @Override
-  public int hashCode()
-  {
+  public int hashCode() {
     return (int) this.id;
   }
 
   /**
+   * @param _obj Object to compare
    * @return <i>true</i> if the given object in _obj is an instance and holds
    *         the same type and id
    * @see #id
    * @see #type
    */
   @Override
-  public boolean equals(final Object _obj)
-  {
+  public boolean equals(final Object _obj) {
     boolean ret = false;
     if (_obj instanceof Instance) {
       final Instance other = (Instance) _obj;
@@ -211,8 +129,7 @@ public class Instance implements Serializable
    * @throws IOException            from inside called methods
    */
   private void writeObject(final ObjectOutputStream _out)
-      throws IOException
-  {
+      throws IOException {
     _out.defaultWriteObject();
     _out.writeObject(this.type.getUUID());
   }
@@ -227,14 +144,10 @@ public class Instance implements Serializable
    * @todo update type instance if it is final....
    */
   private void readObject(final ObjectInputStream _in)
-      throws IOException, ClassNotFoundException
-  {
+      throws IOException, ClassNotFoundException {
     _in.defaultReadObject();
     this.type = Type.get((UUID) _in.readObject());
   }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // getter and setter methods
 
   /**
    * This is the getter method for the instance variable {@link #type}.
@@ -243,8 +156,7 @@ public class Instance implements Serializable
    * @see #type
    * @see #setType
    */
-  public Type getType()
-  {
+  public Type getType() {
     return this.type;
   }
 
@@ -254,9 +166,17 @@ public class Instance implements Serializable
    * @return value of instance variable {@link #id}
    * @see #id
    */
-  public long getId()
-  {
+  public long getId() {
     return this.id;
+  }
+
+  /**
+   * Getter method for instance variable {@link #key}.
+   *
+   * @return value of instance variable {@link #key}
+   */
+  public String getKey() {
+    return this.key;
   }
 
   /**
@@ -266,13 +186,72 @@ public class Instance implements Serializable
    * @return string representation of this instance object
    */
   @Override
-  public String toString()
-  {
+  public String toString() {
     return new ToStringBuilder(this)
                   .appendSuper(super.toString())
                   .append("oid", getOid())
                   .append("type", getType())
                   .append("id", getId())
                   .toString();
+  }
+
+  public static Instance get(final Type _type, final long _id) {
+    String keyTmp = null;
+    if ((_type != null) && (_id != 0)) {
+      keyTmp = _type.getId() + "." + _id;
+    }
+    return get(_type, _id, keyTmp);
+  }
+
+  public static Instance get(final Type _type, final long _id,
+      final String _key) {
+    return new Instance(_type, _id, _key);
+  }
+
+  public static Instance get(final Type _type, final String _id) {
+    return get(_type, _id, null);
+  }
+
+  public static Instance get(final Type _type, final String _id,
+                             final String _key) {
+    final long idTmp;
+    if (_id != null && _id.length() > 0) {
+      idTmp = Long.parseLong(_id);
+    } else {
+      idTmp = 0;
+    }
+    return get(_type, idTmp, _key);
+  }
+
+  public static Instance get(final String _type, final String _id) {
+    return get(_type, _id, null);
+  }
+
+  public static Instance get(final String _type, final String _id,
+                             final String _key) {
+    Type typeTmp = null;
+    if ((_type != null) && (_type.length() > 0)) {
+      typeTmp = Type.get(_type);
+    }
+    return get(typeTmp, _id, _key);
+  }
+
+  public static Instance get(final String _oid) {
+    final Type typeTmp;
+    final long idTmp;
+    if (_oid != null) {
+      final int index = _oid.indexOf(".");
+      if (index >= 0) {
+        typeTmp = Type.get(Long.parseLong(_oid.substring(0, index)));
+        idTmp = Long.parseLong(_oid.substring(index + 1));
+      } else {
+        typeTmp = null;
+        idTmp = 0;
+      }
+    } else {
+      typeTmp = null;
+      idTmp = 0;
+    }
+    return get(typeTmp, idTmp);
   }
 }

@@ -71,7 +71,7 @@ public class Delete {
    * @param _id    id of the Instance to be deleted
    */
   public Delete(final Type _type, final String _id) {
-    this.instance = new Instance(_type, _id);
+    this.instance = Instance.get(_type, _id);
   }
 
   /**
@@ -79,14 +79,14 @@ public class Delete {
    * @param _id    id of the Instance to be deleted
    */
   public Delete(final Type _type, final long _id) {
-    this.instance = new Instance(_type, _id);
+    this.instance = Instance.get(_type, _id);
   }
 
   /**
    * @param _oid  oid of the Instance to be deleted
    */
   public Delete(final String _oid) {
-    this.instance = new Instance(_oid);
+    this.instance = Instance.get(_oid);
   }
 
 

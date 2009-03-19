@@ -484,7 +484,7 @@ public class InsertObject extends AbstractObject {
   @Override
   public void dbCheckObjectIn() {
 
-    final Checkin checkin = new Checkin(new Instance(this.type, this.id));
+    final Checkin checkin = new Checkin(Instance.get(this.type, this.id));
 
     try {
       checkin.executeWithoutAccessCheck(this.ceckInObject.getName(),

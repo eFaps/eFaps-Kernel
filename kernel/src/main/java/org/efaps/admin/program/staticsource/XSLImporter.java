@@ -65,7 +65,7 @@ public class XSLImporter extends AbstractSourceImporter {
     query.addSelect("OID");
     query.executeWithoutAccessCheck();
     if (query.next()) {
-      instance = new Instance((String) query.get("OID"));
+      instance = Instance.get((String) query.get("OID"));
     }
     query.close();
 

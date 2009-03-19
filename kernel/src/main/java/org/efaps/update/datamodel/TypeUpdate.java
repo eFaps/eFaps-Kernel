@@ -290,7 +290,7 @@ public class TypeUpdate extends AbstractUpdate {
             + this.type
             + "' not found");
       }
-      final long attrTypeId = (new Instance((String) query.get("OID"))).getId();
+      final long attrTypeId = (Instance.get((String) query.get("OID"))).getId();
       query.close();
       return attrTypeId;
     }
@@ -321,7 +321,7 @@ public class TypeUpdate extends AbstractUpdate {
             + this.sqlTable
             + "' not found");
       }
-      final long sqlTableId = (new Instance((String) query.get("OID"))).getId();
+      final long sqlTableId = (Instance.get((String) query.get("OID"))).getId();
       query.close();
       return sqlTableId;
     }
@@ -445,7 +445,7 @@ public class TypeUpdate extends AbstractUpdate {
             + this.parentType
             + "' not found");
       }
-      final long typeId = (new Instance((String) query.get("OID"))).getId();
+      final long typeId = (Instance.get((String) query.get("OID"))).getId();
       query.close();
       return typeId;
     }
@@ -621,7 +621,7 @@ public class TypeUpdate extends AbstractUpdate {
         query.addSelect("OID");
         query.executeWithoutAccessCheck();
         if (query.next()) {
-          final Instance instance = new Instance((String) query.get("OID"));
+          final Instance instance = Instance.get((String) query.get("OID"));
           addValue("ParentType", "" + instance.getId());
         } else {
           addValue("ParentType", null);

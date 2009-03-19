@@ -375,7 +375,7 @@ public class SQLTableUpdate extends AbstractUpdate
           query.addSelect("OID");
           query.executeWithoutAccessCheck();
           if (query.next()) {
-            final Instance instance = new Instance((String) query.get("OID"));
+            final Instance instance = Instance.get((String) query.get("OID"));
             addValue("DMTableMain", "" + instance.getId());
           }
           query.close();

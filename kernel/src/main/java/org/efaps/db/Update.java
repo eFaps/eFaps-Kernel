@@ -97,7 +97,7 @@ public class Update {
   /**
    */
   public Update(final Type _type, final String _id) throws EFapsException {
-    this(new Instance(_type, _id));
+    this(Instance.get(_type, _id));
 
   }
 
@@ -107,7 +107,7 @@ public class Update {
   /**
    */
   public Update(final String _oid) throws EFapsException {
-    this(new Instance(_oid));
+    this(Instance.get(_oid));
   }
 
   /**

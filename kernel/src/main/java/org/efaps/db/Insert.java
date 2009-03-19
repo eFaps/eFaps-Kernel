@@ -123,7 +123,7 @@ public class Insert extends Update {
   @Override
   public void execute() throws EFapsException {
     final boolean hasAccess =
-        getType().hasAccess(new Instance(getType()),
+        getType().hasAccess(Instance.get(getType(), 0),
             AccessTypeEnums.CREATE.getAccessType());
 
     if (!hasAccess) {
@@ -182,7 +182,7 @@ public class Insert extends Update {
           executeOneStatement(context, con, mainTable, getExpr4Tables().get(
               mainTable), 0);
 
-      setInstance(new Instance(getInstance().getType(), id));
+      setInstance(Instance.get(getInstance().getType(), id));
 
       for (final Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
           .entrySet()) {

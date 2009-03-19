@@ -181,7 +181,7 @@ public class SystemConfiguration implements CacheObjectInterface {
    * @return value of instance variable {@link #value}
    */
   public final Instance getLink(final String _key) {
-    return new Instance(this.links.get(_key));
+    return Instance.get(this.links.get(_key));
   }
 
   public final String getAttributeValue(final String _key) {

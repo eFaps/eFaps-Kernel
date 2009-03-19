@@ -228,7 +228,7 @@ public abstract class AbstractCollectionUpdate extends AbstractUpdate {
       query.addSelect("OID");
       query.executeWithoutAccessCheck();
       while (query.next()) {
-        final Instance field = new Instance((String) query.get("OID"));
+        final Instance field = Instance.get((String) query.get("OID"));
         setPropertiesInDb(field, null);
         removeLinksInDB(field, LINKFIELD2ICON);
         removeLinksInDB(field, LINK2TARGETTABLE);

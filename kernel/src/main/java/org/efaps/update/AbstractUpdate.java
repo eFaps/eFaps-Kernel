@@ -632,7 +632,7 @@ throw new Error("Unknown Tag '" + _tags + "' (file " + AbstractUpdate.this.url +
          query.addSelect("OID");
          query.executeWithoutAccessCheck();
          if (query.next()) {
-           this.instance = new Instance((String) query.get("OID"));
+           this.instance = Instance.get((String) query.get("OID"));
          }
          query.close();
        }

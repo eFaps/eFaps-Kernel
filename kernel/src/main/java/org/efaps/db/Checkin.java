@@ -55,7 +55,7 @@ public class Checkin extends AbstractAction {
    *                oid of object on which the checkin is made
    */
   public Checkin(final String _oid) {
-    this(new Instance(_oid));
+    this(Instance.get(_oid));
   }
 
   /**

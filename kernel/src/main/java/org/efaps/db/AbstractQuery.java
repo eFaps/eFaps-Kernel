@@ -323,7 +323,7 @@ public abstract class AbstractQuery {
         oid = (String) selExpr.getAttrValue();
       }
       if ((oid != null) && !oid.equals("0.0")) {
-        instance = new Instance(oid);
+        instance = Instance.get(oid);
       } else {
         instance = getInstance(this.type);
       }
@@ -364,7 +364,7 @@ public abstract class AbstractQuery {
   {
     final List<Instance> ret = new ArrayList<Instance>();
     for (final Type type : this.types) {
-      ret.add(new Instance(getOID(type)));
+      ret.add(Instance.get(getOID(type)));
     }
     return ret;
   }
@@ -414,7 +414,7 @@ public abstract class AbstractQuery {
       type = Type.get(typeId);
     }
 
-    return new Instance(type, id);
+    return Instance.get(type, id);
   }
 
   // ///////////////////////////////////////////////////////////////////////////

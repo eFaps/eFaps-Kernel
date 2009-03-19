@@ -494,7 +494,7 @@ public class DBPropertiesUpdate implements ImportInterface
    * @return ID
    */
   private String getId(final String OID) {
-    final Long id = new Instance(OID).getId();
+    final Long id = Instance.get(OID).getId();
     return id.toString();
   }
 
