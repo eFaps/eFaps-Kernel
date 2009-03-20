@@ -98,7 +98,7 @@ public class StructurBrowser implements EventExecution {
     final List<List<Object[]>> list = new ArrayList<List<Object[]>>();
     while (query.next()) {
       final List<Object[]> instances = new ArrayList<Object[]>(1);
-      instances.add(new Object[] { new Instance((String) query.get("OID")),
+      instances.add(new Object[] { Instance.get((String) query.get("OID")),
           null });
       list.add(instances);
     }
@@ -127,7 +127,6 @@ public class StructurBrowser implements EventExecution {
     query.setQueryTypes("eArchive_Node2Node");
     query.setExpandChildTypes(true);
     query.addWhereExprEqValue("Parent", nodeid);
-    query.addSelect("OID");
     query.execute();
 
     if (query.next()) {
@@ -146,27 +145,41 @@ public class StructurBrowser implements EventExecution {
    */
   private Return addChildren(final Instance _instance) throws EFapsException {
     final Return ret = new Return();
-
-   Long nodeid = null;
-   if ("eArchive_Repository".equals(_instance.getType().getName())) {
-     nodeid = Node.getRootNodeFromDB(new Repository(_instance)).getId();
-   }  else {
-     nodeid =  _instance.getId();
-   }
-   final SearchQuery query = new SearchQuery();
-   query.setQueryTypes("eArchive_Node2NodeView");
-   query.addWhereExprEqValue("Parent", nodeid);
-   query.addSelect("NodeType");
-   query.addSelect("Child");
-   query.addSelect("OID");
-   query.execute();
+    Node node = null;
+    if ("eArchive_Repository".equals(_instance.getType().getName())) {
+      node = Node.getRootNodeFromDB(new Repository(_instance));
+    }
+    final String parentInstanceKey;
+    final long parentId;
+    if (node == null) {
+      parentId = _instance.getId();
+      parentInstanceKey = _instance.getKey();
+    } else {
+      parentId = node.getId();
+      parentInstanceKey = node.getHistoryId() + "." + node.getCopyId();
+    }
+    final SearchQuery query = new SearchQuery();
+    query.setQueryTypes("eArchive_Node2NodeView");
+    query.setExpandChildTypes(true);
+    query.addWhereExprEqValue("Parent", parentId);
+    query.addSelect("NodeType");
+    query.addSelect("Child");
+    query.addSelect("HistoryId");
+    query.addSelect("CopyId");
+    query.execute();
 
     final List<List<Object[]>> lists = new ArrayList<List<Object[]>>();
 
     while (query.next()) {
       final List<Object[]> instances = new ArrayList<Object[]>(1);
-      instances.add(new Object[] { new Instance(Type.get((Long) query.get("NodeType")) ,
-          ((Long) query.get("Child")).toString()),
+      final StringBuilder instanceKey = new StringBuilder()
+        .append(parentInstanceKey).append("|")
+        .append(query.get("HistoryId")).append(".").append(query.get("CopyId"));
+
+      instances.add(new Object[] {
+          Instance.get(Type.get((Long) query.get("NodeType")),
+          ((Long) query.get("Child")).toString(),
+          instanceKey.toString()),
           true });
       lists.add(instances);
     }
@@ -195,16 +208,16 @@ public class StructurBrowser implements EventExecution {
 
       private String getSortString(final UIStructurBrowser _structurBrowser) {
         final StringBuilder ret = new StringBuilder();
-        if (_structurBrowser.getCallInstance() != null) {
-          final Type type = _structurBrowser.getCallInstance().getType();
-          if (type.equals(Type.get("TeamWork_RootCollection"))) {
-            ret.append(0);
-          } else if (type.equals(Type.get("TeamWork_Collection"))) {
-            ret.append(1);
-          } else if (type.equals(Type.get("TeamWork_Source"))) {
-            ret.append(2);
-          }
-        }
+//        if (_structurBrowser.getInstance() != null) {
+//          final Type type = _structurBrowser.getInstance().getType();
+//          if (type.equals(Type.get("TeamWork_RootCollection"))) {
+//            ret.append(0);
+//          } else if (type.equals(Type.get("TeamWork_Collection"))) {
+//            ret.append(1);
+//          } else if (type.equals(Type.get("TeamWork_Source"))) {
+//            ret.append(2);
+//          }
+//        }
         ret.append(_structurBrowser.getLabel());
         return ret.toString();
       }

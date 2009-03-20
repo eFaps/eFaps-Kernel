@@ -97,7 +97,7 @@ public class StructurBrowser implements EventExecution {
     final List<List<Object[]>> list = new ArrayList<List<Object[]>>();
     while (query.next()) {
       final List<Object[]> instances = new ArrayList<Object[]>(1);
-      instances.add(new Object[] { new Instance((String) query.get("OID")),
+      instances.add(new Object[] { Instance.get((String) query.get("OID")),
           null });
       list.add(instances);
     }
@@ -154,7 +154,7 @@ public class StructurBrowser implements EventExecution {
 
     while (query.next()) {
       final List<Object[]> instances = new ArrayList<Object[]>(1);
-      instances.add(new Object[] { new Instance((String) query.get("OID")),
+      instances.add(new Object[] { Instance.get((String) query.get("OID")),
           true });
       lists.add(instances);
     }
@@ -183,15 +183,20 @@ public class StructurBrowser implements EventExecution {
 
       private String getSortString(final UIStructurBrowser _structurBrowser) {
         final StringBuilder ret = new StringBuilder();
-        if (_structurBrowser.getCallInstance() != null) {
-          final Type type = _structurBrowser.getCallInstance().getType();
-          if (type.equals(Type.get("TeamWork_RootCollection"))) {
-            ret.append(0);
-          } else if (type.equals(Type.get("TeamWork_Collection"))) {
-            ret.append(1);
-          } else if (type.equals(Type.get("TeamWork_Source"))) {
-            ret.append(2);
+        try {
+          if (_structurBrowser.getInstance() != null) {
+            final Type type = _structurBrowser.getInstance().getType();
+            if (type.equals(Type.get("TeamWork_RootCollection"))) {
+              ret.append(0);
+            } else if (type.equals(Type.get("TeamWork_Collection"))) {
+              ret.append(1);
+            } else if (type.equals(Type.get("TeamWork_Source"))) {
+              ret.append(2);
+            }
           }
+        } catch (final EFapsException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
         }
         ret.append(_structurBrowser.getLabel());
         return ret.toString();

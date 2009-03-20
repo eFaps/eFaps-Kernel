@@ -37,6 +37,8 @@
       <form>eArchive_NodeAbstractForm</form>
       <execute program="org.efaps.esjp.earchive.node.NodeUI"
                method="rename" />
+      <instance program="org.efaps.esjp.earchive.node.NodeUI"
+                method="getInstance"/>
     </target>
     <!-- property definitions -->
     <property name="Target">modal</property>

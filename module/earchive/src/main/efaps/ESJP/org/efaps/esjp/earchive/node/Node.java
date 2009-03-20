@@ -70,6 +70,15 @@ public class Node {
 
   private Type type;
 
+  /**
+   * Getter method for instance variable {@link #type}.
+   *
+   * @return value of instance variable {@link #type}
+   */
+  public Type getType() {
+    return this.type;
+  }
+
   private String name;
 
   private Long repositoryId;
@@ -111,7 +120,7 @@ public class Node {
    * @param k
    * @param _name
    */
-  public Node(final Long _id, final Type _type, final Long _historyId,
+  private Node(final Long _id, final Type _type, final Long _historyId,
               final Long _copyId, final Long _revision, final String _name,
               final Long _repositoryId) {
     this.id = _id;
@@ -121,6 +130,26 @@ public class Node {
     this.revision = _revision != null ? _revision : new Long(0);
     this.name = _name;
     this.repositoryId = _repositoryId;
+  }
+
+
+  /**
+   * Getter method for instance variable {@link #historyId}.
+   *
+   * @return value of instance variable {@link #historyId}
+   */
+  public Long getHistoryId() {
+    return this.historyId;
+  }
+
+
+  /**
+   * Getter method for instance variable {@link #copyId}.
+   *
+   * @return value of instance variable {@link #copyId}
+   */
+  public Long getCopyId() {
+    return this.copyId;
   }
 
 
@@ -173,6 +202,130 @@ public class Node {
   }
     return new Node(id, Type.get(typeId), histId, null, null, _name, null);
   }
+
+  public static List<Node> getNodeHirachy(final String _instanceKey)
+      throws EFapsException {
+    final List<Node> ret = new ArrayList<Node>();
+    final String[] pairs = _instanceKey.split("\\|");
+
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append("select")
+      .append(" t_eanode.id").append(",")
+      .append(" t_eanode.typeid").append(",")
+      .append(" t_eanode.historyid").append(",")
+      .append(" t_eanode.copyid").append(",")
+      .append(" t_earevision.revision").append(",")
+      .append(" t_eanode.name").append(",")
+      .append(" t_earevision.repositoryid")
+      .append(" from").append(" t_earepository")
+      .append(" join").append(" t_earevision").append(" on")
+        .append(" t_earevision.repositoryid")
+        .append("=").append(" t_earepository.id")
+      .append(" and").append(" t_earevision.revision").append("=")
+      .append(" t_earepository.lastrevision")
+      .append(" join ").append(TABLE_NODE).append(" on").append(" t_eanode.id")
+      .append("=").append(" t_earevision.nodeid")
+      .append(" where ").append(" t_eanode.historyid").append("=?")
+      .append(" and").append(" t_eanode.copyid").append("=? ");
+
+    final ConnectionResource con
+                          = Context.getThreadContext().getConnectionResource();
+    try {
+
+      PreparedStatement stmt = null;
+      try {
+        stmt = con.getConnection().prepareStatement(cmd.toString());
+        final String[] pair = pairs[0].split("\\.");
+        stmt.setLong(1, Long.parseLong(pair[0]));
+        stmt.setLong(2, Long.parseLong(pair[1]));
+        final ResultSet resultset = stmt.executeQuery();
+        Node current = null;
+        if (resultset.next()) {
+          final Node root = new Node(resultset.getLong(1),
+                               Type.get(resultset.getLong(2)),
+                               resultset.getLong(3),
+                               resultset.getLong(4), resultset.getLong(5),
+                               resultset.getString(6), resultset.getLong(7));
+          ret.add(root);
+          current = root;
+        }
+        resultset.close();
+
+        for (int i = 1; i < pairs.length; i++) {
+          final String[] childPair = pairs[i].split("\\.");
+          final Node child = getChildNode(current, Long.parseLong(childPair[0]),
+                                          Long.parseLong(childPair[1]));
+          ret.add(child);
+          current=child;
+        }
+
+      } finally {
+        stmt.close();
+      }
+      con.commit();
+     } catch (final SQLException e) {
+       // TODO Auto-generated catch block
+       e.printStackTrace();
+     } finally {
+       if ((con != null) && con.isOpened()) {
+         con.abort();
+       }
+     }
+    return ret;
+  }
+
+  private static Node getChildNode(final Node _parent, final long _historyId,
+                            final long _copyId) throws EFapsException {
+    Node ret = null;
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append("select")
+      .append(" t_eanode2node.childid").append(",")
+      .append(" t_eanode.typeid").append(",")
+      .append(" t_eanode.historyid").append(",")
+      .append(" t_eanode.copyid").append(",")
+      .append(" t_eanode.revision").append(",")
+      .append(" t_eanode.name")
+      .append(" from").append(" t_eanode2node")
+      .append(" join ").append(TABLE_NODE).append(" on").append(" t_eanode.id")
+      .append("=").append(" t_eanode2node.childid")
+      .append(" where ").append(" t_eanode.historyid").append("=?")
+      .append(" and").append(" t_eanode.copyid").append("=? ")
+      .append(" and").append(" t_eanode2node.parentid").append("=? ");
+
+    final ConnectionResource con
+                          = Context.getThreadContext().getConnectionResource();
+    try {
+
+      PreparedStatement stmt = null;
+      try {
+        stmt = con.getConnection().prepareStatement(cmd.toString());
+
+        stmt.setLong(1, _historyId);
+        stmt.setLong(2, _copyId);
+        stmt.setLong(3, _parent.getId());
+        final ResultSet resultset = stmt.executeQuery();
+
+        if (resultset.next()) {
+          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
+              resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
+              resultset.getString(6), null);
+        }
+        resultset.close();
+      } finally {
+        stmt.close();
+      }
+      con.commit();
+     } catch (final SQLException e) {
+       // TODO Auto-generated catch block
+       e.printStackTrace();
+     } finally {
+       if ((con != null) && con.isOpened()) {
+         con.abort();
+       }
+     }
+    return ret;
+  }
+
 
   public static Node getNodeFromDB(final Long _nodeId) throws EFapsException {
     final StringBuilder cmd = new StringBuilder();
@@ -256,10 +409,14 @@ public class Node {
 
   /**
    * @param nodeid
+   * @return
    * @throws EFapsException
    */
-  public void connectRevise(final Node _parentNode) throws EFapsException {
+  public List<Node> connectRevise(final Node _parentNode)
+      throws EFapsException {
+    final List<Node> ret = new ArrayList<Node>();
     final Node reviseNode = _parentNode.getNodeClone();
+    ret.add(reviseNode);
     final List<Node> children = _parentNode.getChildNodes(getAncestor());
     children.add(this);
     Node2Node.connect(reviseNode, children);
@@ -268,8 +425,9 @@ public class Node {
                                              reviseNode);
     } else {
       final Node parent = _parentNode.getParentNode();
-      reviseNode.connectRevise(parent);
+      ret.addAll(reviseNode.connectRevise(parent));
     }
+    return ret;
   }
 
   public Node getParentNode() throws EFapsException{
@@ -409,7 +567,8 @@ public class Node {
     }
   }
 
-  final Node ret = new Node(idTmp, this.type, this.historyId, this.copyId, null, this.name, this.repositoryId);
+  final Node ret = new Node(idTmp, this.type, this.historyId, this.copyId, null,
+                            this.name, this.repositoryId);
   ret.setAncestor(this);
   return ret;
   }
@@ -430,16 +589,20 @@ public class Node {
 
   /**
    * @param _name
+   * @return
    * @throws EFapsException
    */
-  public void rename(final String _name) throws EFapsException {
+  public List<Node> rename(final String _name) throws EFapsException {
+    final List<Node> ret = new ArrayList<Node>();
     this.name = _name;
     //make a clone
     final Node clone = getNodeClone();
+    ret.add(clone);
     //connect existing children to clone
     final List<Node> children = getChildNodes(null);
     Node2Node.connect(clone, children);
     final Node parent = getParentNode();
-    clone.connectRevise(parent);
+    ret.addAll(clone.connectRevise(parent));
+    return ret;
   }
 }

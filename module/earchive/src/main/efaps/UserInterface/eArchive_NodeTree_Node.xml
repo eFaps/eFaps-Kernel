@@ -39,6 +39,8 @@
       <table>eArchive_NodeAbstractTable</table>
       <evaluate program="org.efaps.esjp.earchive.node.NodeUI" 
                 method="getTableUI"/>
+      <instance program="org.efaps.esjp.earchive.node.NodeUI"
+                method="getInstance"/>
     </target>
     <!-- property definitions -->
     <property name="Target">content</property>

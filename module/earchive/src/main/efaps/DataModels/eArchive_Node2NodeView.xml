@@ -79,6 +79,20 @@
     </attribute>
     
     <attribute>
+      <name>HistoryId</name>
+      <type>Integer</type>
+      <sqltable>eArchive_Node2NodeSQLView</sqltable>
+      <sqlcolumn>HISTORYID</sqlcolumn>
+    </attribute>
+    
+    <attribute>
+      <name>CopyId</name>
+      <type>Integer</type>
+      <sqltable>eArchive_Node2NodeSQLView</sqltable>
+      <sqlcolumn>COPYID</sqlcolumn>
+    </attribute>
+    
+    <attribute>
       <name>Revision</name>
       <type>Integer</type>
       <sqltable>eArchive_Node2NodeSQLView</sqltable>

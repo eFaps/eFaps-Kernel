@@ -81,7 +81,7 @@ public class AccessCheckOnSourceVersion implements EventExecution {
           }
         }
         // if create, get the parent
-        final Instance instance = new Instance(context.getParameter("oid"));
+        final Instance instance = Instance.get(context.getParameter("oid"));
         String OID = null;
         if ("TeamWork_SourceVersion".equals(instance.getType().getName())) {
           OID = getParentOID(context.getParameter("oid"));

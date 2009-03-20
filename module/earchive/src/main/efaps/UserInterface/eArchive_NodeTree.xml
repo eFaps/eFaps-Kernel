@@ -40,6 +40,8 @@
         <property name="Types">eArchive_Node2Node</property>
         <property name="ExpandChildTypes">false</property>
       </evaluate>
+      <instance program="org.efaps.esjp.earchive.node.NodeUI"
+                method="getInstance"/>
     </target>
     <!-- type tree for -->
     <type>eArchive_NodeAbstract</type>

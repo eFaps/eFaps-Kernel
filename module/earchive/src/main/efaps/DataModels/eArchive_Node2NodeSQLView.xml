@@ -51,6 +51,8 @@
                 T_EANODE2NODE.TYPEID, 
                 T_EANODE2NODE.PARENTID, 
                 T_EANODE2NODE.CHILDID, 
+                T_EANODE.HISTORYID, 
+                T_EANODE.COPYID,
                 T_EANODE.NAME,
                 T_EANODE.REVISION,
                 T_EANODE.TYPEID as NODETYPE

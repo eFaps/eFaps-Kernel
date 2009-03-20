@@ -87,7 +87,7 @@ public class AccessCheckOnTypeInstance implements EventExecution {
         // if create, get the parent
         Instance instance;
         if (_accessType == AccessType.getAccessType("create")) {
-          instance = new Instance(context.getParameter("oid"));
+          instance = Instance.get(context.getParameter("oid"));
         } else {
           instance = _instance;
         }

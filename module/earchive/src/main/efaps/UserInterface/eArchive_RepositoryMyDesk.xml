@@ -42,6 +42,8 @@
         <property name="Types">eArchive_Repository</property>
         <property name="ExpandChildTypes">false</property>
       </evaluate>
+       <instance program="org.efaps.esjp.earchive.node.NodeUI"
+                 method="getInstance"/>
     </target>
     <!-- property definitions -->
     <property name="Target">content</property>

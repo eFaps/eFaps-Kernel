@@ -26,6 +26,7 @@ import java.util.List;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
@@ -46,27 +47,40 @@ public class NodeUI {
 
   public Return getTableUI(final Parameter _parameter) throws EFapsException {
     final Return ret = new Return();
-     final Instance instance = _parameter.getInstance();
-    Long nodeid = null;
+    final Instance instance = _parameter.getInstance();
+    Node node = null;
     if ("eArchive_Repository".equals(instance.getType().getName())) {
-      nodeid = Node.getRootNodeFromDB(new Repository(instance)).getId();
+      node = Node.getRootNodeFromDB(new Repository(instance));
+    }
+    final String parentInstanceKey;
+    final long parentId;
+    if (node == null) {
+      parentId = instance.getId();
+      parentInstanceKey = instance.getKey();
     } else {
-      nodeid = instance.getId();
+      parentId = node.getId();
+      parentInstanceKey = node.getHistoryId() + "." + node.getCopyId();
     }
     final SearchQuery query = new SearchQuery();
     query.setQueryTypes("eArchive_Node2NodeView");
     query.setExpandChildTypes(true);
-    query.addWhereExprEqValue("Parent", nodeid);
+    query.addWhereExprEqValue("Parent", parentId);
     query.addSelect("NodeType");
     query.addSelect("Child");
-    query.addSelect("OID");
+    query.addSelect("HistoryId");
+    query.addSelect("CopyId");
     query.execute();
 
     final List<List<Instance>> list = new ArrayList<List<Instance>>();
     while (query.next()) {
       final List<Instance> instances = new ArrayList<Instance>(1);
-      instances.add(new Instance(Type.get((Long) query.get("NodeType")) ,
-                                ((Long) query.get("Child")).toString()));
+      final StringBuilder instanceKey = new StringBuilder()
+        .append(parentInstanceKey).append("|")
+        .append(query.get("HistoryId")).append(".").append(query.get("CopyId"));
+
+      instances.add(Instance.get(Type.get((Long) query.get("NodeType")) ,
+                                ((Long) query.get("Child")).toString(),
+                                instanceKey.toString()));
       list.add(instances);
     }
 
@@ -86,18 +100,37 @@ public class NodeUI {
       node = Node.getNodeFromDB(instance.getId());
     }
     final Node newDir = Node.createNewNode(name);
-    newDir.connectRevise(node);
+
+    final List<Node> updated = newDir.connectRevise(node);
     return new Return();
   }
 
   public Return rename(final Parameter _parameter)
     throws EFapsException {
-  final String name = _parameter.getParameterValue("name");
-  final Instance instance = _parameter.getInstance();
+    final String name = _parameter.getParameterValue("name");
+    final Instance instance = _parameter.getInstance();
 
-  final Node node = Node.getNodeFromDB(instance.getId());
-  node.rename(name);
+    final Node node = Node.getNodeFromDB(instance.getId());
+    final List<Node> updated = node.rename(name);
+    return new Return();
+  }
 
-  return new Return();
-}
+
+  public Return getInstance(final Parameter _parameter) throws EFapsException {
+    final String instanceKey = (String) _parameter.get(ParameterValues.OTHERS);
+    Instance instance = null;
+    if (instanceKey != null) {
+      if (instanceKey.indexOf("|") < 0) {
+        instance = Instance.get(instanceKey);
+      } else {
+        final List<Node> nodes = Node.getNodeHirachy(instanceKey);
+        final Node node = nodes.get(nodes.size() - 1);
+        instance = Instance.get(node.getType(), node.getId(), instanceKey);
+      }
+    }
+    final Return ret = new Return();
+    ret.put(ReturnValues.VALUES, instance);
+    return ret;
+  }
+
 }
