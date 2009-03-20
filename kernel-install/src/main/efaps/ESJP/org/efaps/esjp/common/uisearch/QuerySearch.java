@@ -90,7 +90,7 @@ public class QuerySearch implements EventExecution
     final List<List<Instance>> list = new ArrayList<List<Instance>>();
     while (query.next()) {
       final List<Instance> instances = new ArrayList<Instance>(1);
-      instances.add(new Instance((String) query.get("OID")));
+      instances.add(Instance.get((String) query.get("OID")));
       list.add(instances);
     }
 

@@ -82,7 +82,7 @@ public class ConnectEventToAbstract {
       query.addSelect("Abstract.OID");
       query.execute();
       query.next();
-      parentInstance = new Instance((String) query.get("Abstract.OID"));
+      parentInstance = Instance.get((String) query.get("Abstract.OID"));
       query.close();
       selectedId = callInstance.getType().getId();
     }

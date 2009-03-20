@@ -61,7 +61,7 @@ public class Connect implements EventExecution
     final String parentAttr = (String) properties.get("ConnectParentAttribute");
 
     for (final String childOid : childOids) {
-      final Instance child = new Instance(childOid);
+      final Instance child = Instance.get(childOid);
       final Insert insert = new Insert(type);
       insert.add(parentAttr, "" + parent.getId());
       insert.add(childAttr, "" + child.getId());

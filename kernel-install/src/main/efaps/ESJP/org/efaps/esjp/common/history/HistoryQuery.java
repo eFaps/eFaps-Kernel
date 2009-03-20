@@ -65,7 +65,7 @@ public class HistoryQuery implements EventExecution
     while (query.next()) {
       System.out.println((String) query.get("OID"));
       final List<Instance> instances = new ArrayList<Instance>(1);
-      instances.add(new Instance((String) query.get("OID")));
+      instances.add(Instance.get((String) query.get("OID")));
       list.add(instances);
     }
 
@@ -80,7 +80,7 @@ public class HistoryQuery implements EventExecution
     while (query.next()) {
       System.out.println((String) query.get("OID"));
       final List<Instance> instances = new ArrayList<Instance>(1);
-      instances.add(new Instance((String) query.get("OID")));
+      instances.add(Instance.get((String) query.get("OID")));
       list.add(instances);
     }
     query.close();
