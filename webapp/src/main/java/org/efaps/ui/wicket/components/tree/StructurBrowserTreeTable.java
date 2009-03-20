@@ -197,10 +197,10 @@ public class StructurBrowserTreeTable extends TreeTable {
             (UIStructurBrowser) ((DefaultMutableTreeNode) _node)
                 .getUserObject();
 
-        if (model.getOid() != null) {
-          instance = new Instance(model.getOid());
+        if (model.getInstanceKey() != null) {
           Menu menu = null;
           try {
+            instance = model.getInstance();
             menu = Menu.getTypeTreeMenu(instance.getType());
           } catch (final Exception e) {
             throw new RestartResponseException(new ErrorPage(e));
@@ -213,11 +213,12 @@ public class StructurBrowserTreeTable extends TreeTable {
           }
           ContentContainerPage page;
           if (model.getTarget() == Target.POPUP) {
-            page = new ContentContainerPage(menu.getUUID(), model.getOid());
+            page = new ContentContainerPage(menu.getUUID(),
+                                            model.getInstanceKey());
           } else {
             page = new ContentContainerPage(getPage().getPageMap(),
                                             menu.getUUID(),
-                                            model.getOid(),
+                                            model.getInstanceKey(),
                                             true);
           }
           setResponsePage(page);

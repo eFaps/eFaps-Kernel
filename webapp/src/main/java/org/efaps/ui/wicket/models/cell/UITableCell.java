@@ -23,19 +23,21 @@ package org.efaps.ui.wicket.models.cell;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.wicket.IClusterable;
-
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.ui.wicket.models.AbstractInstanceObject;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
 
 /**
@@ -46,19 +48,9 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id:CellModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class UITableCell implements IClusterable {
+public class UITableCell extends AbstractInstanceObject {
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
-
-  /**
-   * instance variable storing the oid for the model.
-   */
-  private final String oid;
-
-  /**
+    /**
    * instance variable storing the reference of the field.
    */
   private String reference;
@@ -111,28 +103,28 @@ public class UITableCell implements IClusterable {
 
   private final boolean viewable;
 
-  private final TargetMode targetMode;
+  private final AbstractUIObject parent;
 
   /**
    * Constructor.
    *
    * @param _fieldValue   FieldValue
-   * @param _oid          oid of the cell
+   * @param _instanceId   oid of the cell
    * @param _cellvalue    Value for the cell
    * @param _icon         icon of the cell
-   * @param _targetMode   targetmode for the cell
    * @throws EFapsException on error
    */
-  public UITableCell(final FieldValue _fieldValue, final String _oid,
-                     final String _cellvalue, final String _icon,
-                     final TargetMode _targetMode)
+  public UITableCell(final AbstractUIObject _parent,
+                     final FieldValue _fieldValue, final String _instanceId,
+                     final String _cellvalue, final String _icon)
       throws EFapsException  {
+    super(_instanceId);
+    this.parent = _parent;
     this.uiClass =  _fieldValue.getClassUI();
     this.compareValue =  _fieldValue.getObject4Compare();
     this.target = _fieldValue.getField().getTarget();
     this.name = _fieldValue.getField().getName();
     this.fixedWidth = _fieldValue.getField().isFixedWidth();
-    this.oid = _oid;
     this.cellValue = _cellvalue;
     this.icon = _icon;
     this.fieldId = _fieldValue.getField().getId();
@@ -140,29 +132,18 @@ public class UITableCell implements IClusterable {
     this.editable = _fieldValue.getField().isEditable();
     this.searchable = _fieldValue.getField().isSearchable();
     this.viewable = _fieldValue.getField().isViewable();
-    this.targetMode = _targetMode;
     // check if the user has access to the typemenu, if not set the reference
     // to null
     if (_fieldValue.getField().getReference() != null) {
-      if (this.oid != null) {
-        final Instance instance = new Instance(this.oid);
-        final Menu menu = Menu.getTypeTreeMenu(instance.getType());
-        if (menu != null && menu.hasAccess(_targetMode)) {
+      if (getInstanceKey() != null) {
+        final Menu menu = Menu.getTypeTreeMenu(getInstance().getType());
+        if (menu != null && menu.hasAccess(this.parent.getMode())) {
           this.reference = _fieldValue.getField().getReference();
         }
       }
     }
   }
 
-  /**
-   * This is the getter method for the instance variable {@link #oid}.
-   *
-   * @return value of instance variable {@link #oid}
-   */
-
-  public String getOid() {
-    return this.oid;
-  }
 
   /**
    * This is the getter method for the instance variable {@link #reference}.
@@ -267,7 +248,6 @@ public class UITableCell implements IClusterable {
     return this.fieldId;
   }
 
-
   public Field getField() {
     return Field.get(this.fieldId);
   }
@@ -279,10 +259,10 @@ public class UITableCell implements IClusterable {
     final Field field = getField();
     if (field.hasEvents(_eventType)) {
         final Context context = Context.getThreadContext();
-        final String[] contextoid = { getOid() };
+        final String[] contextoid = { getInstanceKey() };
         context.getParameters().put("oid", contextoid);
         ret = field.executeEvents(_eventType,
-                            ParameterValues.INSTANCE, new Instance(getOid()),
+                            ParameterValues.INSTANCE, getInstance(),
                             ParameterValues.OTHERS, _others,
                             ParameterValues.PARAMETERS, context.getParameters(),
                             ParameterValues.CLASS, this);
@@ -327,11 +307,40 @@ public class UITableCell implements IClusterable {
   }
 
   public boolean render() {
-    return ((this.targetMode == TargetMode.CREATE && this.creatable)
-          || (this.targetMode == TargetMode.EDIT && this.editable)
-          || (this.targetMode == TargetMode.SEARCH && this.searchable)
-          || (this.targetMode == TargetMode.VIEW && this.viewable)
-          || this.targetMode == TargetMode.UNKNOWN
-          || this.targetMode == TargetMode.CONNECT);
+    return ((this.parent.getMode() == TargetMode.CREATE && this.creatable)
+          || (this.parent.getMode() == TargetMode.EDIT && this.editable)
+          || (this.parent.getMode() == TargetMode.SEARCH && this.searchable)
+          || (this.parent.getMode() == TargetMode.VIEW && this.viewable)
+          || this.parent.getMode() == TargetMode.UNKNOWN
+          || this.parent.getMode() == TargetMode.CONNECT);
+  }
+
+  /**
+   * @see org.efaps.ui.wicket.models.AbstractInstanceObject#getInstanceFromManager()
+   * @return
+   * @throws EFapsException
+   */
+  @Override
+  public Instance getInstanceFromManager() throws EFapsException {
+    Instance ret = null;
+    if (this.parent != null) {
+      final AbstractCommand cmd = this.parent.getCommand();
+      final List<Return> rets = cmd.executeEvents(EventType.UI_INSTANCEMANAGER,
+                                  ParameterValues.OTHERS, getInstanceKey(),
+                                  ParameterValues.PARAMETERS,
+                                   Context.getThreadContext().getParameters());
+      ret = (Instance) rets.get(0).get(ReturnValues.VALUES);
+    }
+    return ret;
+  }
+
+
+  /**
+   * @see org.efaps.ui.wicket.models.AbstractInstanceObject#hasInstanceManager()
+   * @return false
+   */
+  @Override
+  public boolean hasInstanceManager() {
+    return this.parent != null ? this.parent.hasInstanceManager() : false;
   }
 }

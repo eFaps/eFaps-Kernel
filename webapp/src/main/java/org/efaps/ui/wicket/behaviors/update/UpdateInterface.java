@@ -51,9 +51,9 @@ public interface UpdateInterface {
   /**
    * Method used to set the Oid.
    *
-   * @param _oid oid to set
+   * @param _instanceKey oid to set
    */
-  void setOid(final String _oid);
+  void setInstanceKey(final String _instanceKey);
 
   /**
    * Method used to set the TargetMode.

@@ -115,7 +115,7 @@ public class MenuTree extends AbstractTree {
   /**
    * Map stores the oid to node.
    */
-  private final Map<String, DefaultMutableTreeNode> oidToNode
+  private final Map<String, DefaultMutableTreeNode> instanceKey2Node
                                 = new HashMap<String, DefaultMutableTreeNode>();
 
   /**
@@ -207,7 +207,7 @@ public class MenuTree extends AbstractTree {
    * @param _target       ajax target
    */
   public void addChildMenu(final UUID _commandUUID,
-                           final String _oid,
+                           final String _instanceKey,
                            final AjaxRequestTarget _target) {
 
     final DefaultMutableTreeNode node =
@@ -221,14 +221,14 @@ public class MenuTree extends AbstractTree {
           (DefaultMutableTreeNode) childs.nextElement();
 
       final UIMenuItem childmodel = (UIMenuItem) child.getUserObject();
-      if (childmodel.getOid().equals(_oid)
+      if (childmodel.getInstanceKey().equals(_instanceKey)
           && childmodel.getCommandUUID().equals(_commandUUID)) {
         getTreeState().selectNode(child, true);
         old = true;
       }
     }
     if (!old) {
-      final UIMenuItem model = new UIMenuItem(_commandUUID, _oid);
+      final UIMenuItem model = new UIMenuItem(_commandUUID, _instanceKey);
       final DefaultMutableTreeNode rootNode = model.getNode();
       node.add(rootNode);
       boolean noChildSelected = true;
@@ -286,9 +286,9 @@ public class MenuTree extends AbstractTree {
 
     // if we have a header store it to be accessible through the oid
     if (model.isHeader()) {
-      ((EFapsSession) getSession()).addUpdateBehaviors(model.getOid(),
+      ((EFapsSession) getSession()).addUpdateBehaviors(model.getInstanceKey(),
           (AjaxUpdateBehavior) getBehaviors(AjaxUpdateBehavior.class).get(0));
-      this.oidToNode.put(model.getOid(), node);
+      this.instanceKey2Node.put(model.getInstanceKey(), node);
     }
 
     _item.add(new Indentation("intend", _level));
@@ -381,7 +381,7 @@ public class MenuTree extends AbstractTree {
 
                 public Page getPage() {
                   final TablePage page = new TablePage(_model.getCommandUUID(),
-                                                       _model.getOid());
+                                                       _model.getInstanceKey());
                   page.setMenuTreeKey(getMenuKey());
                   return page;
                 }
@@ -400,7 +400,7 @@ public class MenuTree extends AbstractTree {
 
                 public Page getPage() {
                   final FormPage page = new FormPage(_model.getCommandUUID(),
-                                                     _model.getOid());
+                                                     _model.getInstanceKey());
                   page.setMenuTreeKey(getMenuKey());
                   return page;
                 }
@@ -480,7 +480,7 @@ public class MenuTree extends AbstractTree {
      */
     @Override
     protected void respond(final AjaxRequestTarget _target) {
-      final DefaultMutableTreeNode node = MenuTree.this.oidToNode.get(getOid());
+      final DefaultMutableTreeNode node = MenuTree.this.instanceKey2Node.get(getOid());
       final DefaultTreeModel treemodel =
           (DefaultTreeModel) getComponent().getDefaultModel().getObject();
       final UIMenuItem model = (UIMenuItem) node.getUserObject();

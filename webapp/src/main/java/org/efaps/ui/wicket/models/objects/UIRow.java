@@ -37,7 +37,7 @@ public class UIRow implements IClusterable {
    *
    * @see #getOids
    */
-  private final String oids;
+  private final String instanceKeys;
 
   /**
    * The instance variable stores the values for the table.
@@ -49,12 +49,12 @@ public class UIRow implements IClusterable {
   /**
    * The constructor creates a new instance of class Row.
    *
-   * @param _oids
+   * @param _instanceKeys
    *                string with all oids for this row
    */
-  public UIRow(final String _oids) {
+  public UIRow(final String _instanceKeys) {
     super();
-    this.oids = _oids;
+    this.instanceKeys = _instanceKeys;
   }
 
   // /////////////////////////////////////////////////////////////////////////
@@ -72,13 +72,13 @@ public class UIRow implements IClusterable {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #oids}.
+   * This is the getter method for the instance variable {@link #instanceKeys}.
    *
-   * @return value of instance variable {@link #oids}
-   * @see #oids
+   * @return value of instance variable {@link #instanceKeys}
+   * @see #instanceKeys
    */
-  public String getOids() {
-    return this.oids;
+  public String getInstanceKeys() {
+    return this.instanceKeys;
   }
 
   // /////////////////////////////////////////////////////////////////////////

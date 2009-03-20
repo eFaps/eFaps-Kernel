@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
@@ -35,6 +34,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
@@ -49,6 +49,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.Opener;
+import org.efaps.ui.wicket.models.AbstractInstanceObject;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -56,7 +57,7 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public abstract class AbstractUIObject implements IClusterable {
+public abstract class AbstractUIObject extends AbstractInstanceObject {
 
   /**
    *
@@ -72,7 +73,7 @@ public abstract class AbstractUIObject implements IClusterable {
    * @see #getCallingCommand()
    * @see #setCallingCommandUUID(UUID)
    */
-  private UUID callingCommandUUID;
+  private UUID callingCmdUUID;
 
   /**
    * The instance variable stores the UUID of the Command for this Model.
@@ -80,7 +81,7 @@ public abstract class AbstractUIObject implements IClusterable {
    * @see #getCommandUUID()
    * @see #getCommand
    */
-  private UUID commandUUID;
+  private UUID cmdUUID;
 
   /**
    * The instance variable is the flag if this class instance is already
@@ -106,22 +107,6 @@ public abstract class AbstractUIObject implements IClusterable {
    * @see #setMode
    */
   private TargetMode mode = TargetMode.UNKNOWN;
-
-  /**
-   * This instance variable stores the OID of the Instance.
-   *
-   * @see #initialise
-   * @see #getOid()
-   */
-  private String oid;
-
-  /**
-   * Store the instance which calls this form, table, menu etc.
-   *
-   * @see #initialise
-   * @see #getCallInstance
-   */
-  private Instance callInstance = null;
 
   /**
    * This instance variable stores, if the Model is supposed to be submited.
@@ -175,62 +160,89 @@ public abstract class AbstractUIObject implements IClusterable {
                       = ((EFapsSession) Session.get()).getOpener(this.openerId);
     final AbstractUIObject uiObject
                            = ((AbstractUIObject) opener.getModel().getObject());
-    initialise(uiObject.getCommandUUID(), uiObject.getOid(), this.openerId);
+    initialise(uiObject.getCommandUUID(),
+               this.openerId);
     this.menuTreeKey = opener.getMenuTreeKey();
+    setInstanceKey(uiObject.getInstanceKey());
   }
+
+
+
 
   /**
    * Constructor.
    *
    * @param _commandUUID    UUID for this Model
-   * @param _oid            oid for this Model
+   * @param _instanceKey     instance id for this Model
    */
-  public AbstractUIObject(final UUID _commandUUID, final String _oid) {
-    this(_commandUUID, _oid, null);
+  public AbstractUIObject(final UUID _commandUUID, final String _instanceKey) {
+    this(_commandUUID, _instanceKey, null);
   }
 
   /**
    * Constructor.
    *
    * @param _commandUUID    UUID for this Model
-   * @param _oid            oid for this Model
+   * @param _instanceKey     instance id for this Model
    * @param _openerId       id of the opener
    */
-  public AbstractUIObject(final UUID _commandUUID, final String _oid,
+  public AbstractUIObject(final UUID _commandUUID, final String _instanceKey,
                           final String _openerId) {
-    initialise(_commandUUID, _oid, _openerId);
+    super(_instanceKey);
+    initialise(_commandUUID, _openerId);
   }
 
   /**
    * Method initializes the model.
    *
    * @param _commandUUID    UUID for this Model
-   * @param _oid            oid for this Model
    * @param _openerId       id of the opener
    */
-  private void initialise(final UUID _commandUUID, final String _oid,
-                          final String _openerId) {
+  private void initialise(final UUID _commandUUID, final String _openerId) {
     this.openerId = _openerId;
-
-    this.oid = _oid;
-    if ((this.oid != null) && (this.oid.length() > 0))  {
-      this.callInstance = new Instance(this.oid);
-    }
     final AbstractCommand command = getCommand(_commandUUID);
-    this.commandUUID = command.getUUID();
+    this.cmdUUID = command.getUUID();
     this.mode = command.getTargetMode();
     this.target = command.getTarget();
     this.submit = command.isSubmit();
     if (command.getTargetSearch() != null && !(this instanceof UIMenuItem)) {
-      this.callingCommandUUID = this.commandUUID;
-      this.commandUUID =
-          command.getTargetSearch().getDefaultCommand().getUUID();
+      this.callingCmdUUID = this.cmdUUID;
+      this.cmdUUID = command.getTargetSearch().getDefaultCommand().getUUID();
       setMode(TargetMode.SEARCH);
       if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
         this.submit = true;
       }
     }
+  }
 
+  /**
+   * @see org.efaps.ui.wicket.models.
+   * AbstractInstanceObject#getInstanceFromManager()
+   * @return instance from a esjp
+   * @throws EFapsException
+   */
+  @Override
+  public Instance getInstanceFromManager() throws EFapsException {
+    final AbstractCommand cmd = getCommand();
+     final List<Return> rets = cmd.executeEvents(EventType.UI_INSTANCEMANAGER,
+                                   ParameterValues.OTHERS, getInstanceKey(),
+                                   ParameterValues.PARAMETERS,
+                                    Context.getThreadContext().getParameters());
+
+     return (Instance) rets.get(0).get(ReturnValues.VALUES);
+  }
+
+
+
+
+  /**
+   * @see org.efaps.ui.wicket.models.AbstractInstanceObject#hasInstanceManager()
+   * @return true if related command has got a event of type
+   * <code>UI_INSTANCEMANAGER</code> else false
+   */
+  @Override
+  public boolean hasInstanceManager() {
+    return getCommand().hasEvents(EventType.UI_INSTANCEMANAGER);
   }
 
   /**
@@ -244,51 +256,51 @@ public abstract class AbstractUIObject implements IClusterable {
    * Get the CommandAbstract which was originally called from the Frontend and
    * let to the construction of this model.
    *
-   * @see #callingCommandUUID
+   * @see #callingCmdUUID
    * @return the calling CommandAbstract
    */
   public AbstractCommand getCallingCommand() {
-    AbstractCommand cmd = Command.get(this.callingCommandUUID);
+    AbstractCommand cmd = Command.get(this.callingCmdUUID);
     if (cmd == null) {
-      cmd = Menu.get(this.callingCommandUUID);
+      cmd = Menu.get(this.callingCmdUUID);
     }
     return cmd;
   }
 
   /**
    * This is the getter method for the instance variable
-   * {@link #callingCommandUUID}.
+   * {@link #callingCmdUUID}.
    *
-   * @return value of instance variable {@link #commandUUID}
+   * @return value of instance variable {@link #cmdUUID}
    */
   public UUID getCallingCommandUUID() {
-    return this.callingCommandUUID;
+    return this.callingCmdUUID;
   }
 
   /**
    * This is the setter method for the instance variable
-   * {@link #callingCommandUUID}.
+   * {@link #callingCmdUUID}.
    *
    * @param _uuid
    *                UUID of the CommandAbstract
    */
   public void setCallingCommandUUID(final UUID _uuid) {
-    this.callingCommandUUID = _uuid;
+    this.callingCmdUUID = _uuid;
   }
 
   /**
-   * get the CommandAbstract for the instance variable {@link #commandUUID}.
+   * get the CommandAbstract for the instance variable {@link #cmdUUID}.
    *
-   * @return CommandAbstract for the instance variable {@link #commandUUID}
+   * @return CommandAbstract for the instance variable {@link #cmdUUID}
    * @see #command
    */
   public AbstractCommand getCommand() {
-    AbstractCommand cmd = Command.get(this.commandUUID);
+    AbstractCommand cmd = Command.get(this.cmdUUID);
     if (cmd == null) {
-      cmd = Menu.get(this.commandUUID);
+      cmd = Menu.get(this.cmdUUID);
     }
     if (cmd == null) {
-      cmd = Search.get(this.commandUUID);
+      cmd = Search.get(this.cmdUUID);
     }
     return cmd;
   }
@@ -312,22 +324,22 @@ public abstract class AbstractUIObject implements IClusterable {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #commandUUID}.
+   * This is the getter method for the instance variable {@link #cmdUUID}.
    *
-   * @return value of instance variable {@link #commandUUID}
+   * @return value of instance variable {@link #cmdUUID}
    */
   public UUID getCommandUUID() {
-    return this.commandUUID;
+    return this.cmdUUID;
   }
 
   /**
-   * This is the setter method for the instance variable {@link #commandUUID}.
+   * This is the setter method for the instance variable {@link #cmdUUID}.
    *
    * @param _uuid
-   *                UUID to set for teh instance varaiable {@link #commandUUID}.
+   *                UUID to set for teh instance varaiable {@link #cmdUUID}.
    */
   public void setCommandUUID(final UUID _uuid) {
-    this.commandUUID = _uuid;
+    this.cmdUUID = _uuid;
   }
 
   /**
@@ -395,24 +407,6 @@ public abstract class AbstractUIObject implements IClusterable {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #oid}.
-   *
-   * @return value of instance variable {@link #oid}
-   */
-  public String getOid() {
-    return this.oid;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #callInstance}.
-   *
-   * @return value of instance variable {@link #callInstance}
-   */
-  public Instance getCallInstance() {
-    return this.callInstance;
-  }
-
-  /**
    * This is the getter method for the instance variable {@link #target}.
    *
    * @return value of instance variable {@link #target}
@@ -432,9 +426,9 @@ public abstract class AbstractUIObject implements IClusterable {
                                                                 + ".Title");
     try {
 
-      if ((title != null) && (getCallInstance() != null)) {
+      if ((title != null) && (getInstance() != null)) {
         final SearchQuery query = new SearchQuery();
-        query.setObject(getCallInstance());
+        query.setObject(getInstance());
         final ValueParser parser = new ValueParser(new StringReader(title));
         ValueList list;
         list = parser.ExpressionString();
@@ -442,7 +436,7 @@ public abstract class AbstractUIObject implements IClusterable {
         if (query.selectSize() > 0) {
           query.execute();
           if (query.next()) {
-            title = list.makeString(getCallInstance(), query);
+            title = list.makeString(getInstance(), query);
           }
           query.close();
         }
@@ -542,10 +536,10 @@ public abstract class AbstractUIObject implements IClusterable {
 
   /**
    * This method executes the Events which are related to this Model. It will
-   * take the Events of the CallingCommand {@link #callingCommandUUID}, if it
+   * take the Events of the CallingCommand {@link #callingCmdUUID}, if it
    * is declared, otherwise it will take the Events of the Command
-   * {@link #commandUUID}. The Method also adds the oid {@link #oid} to the
-   * Context, so that it is accessible for the esjp.<br>
+   * {@link #cmdUUID}. The Method also adds the oid {@link #instanceKey} to
+   * the Context, so that it is accessible for the esjp.<br>
    * This method throws an eFpasError to provide the possibility for different
    * responses in the components.
    *
@@ -558,24 +552,24 @@ public abstract class AbstractUIObject implements IClusterable {
       throws EFapsException {
     List<Return> ret = new ArrayList<Return>();
     AbstractCommand command;
-    if (this.callingCommandUUID == null) {
+    if (this.callingCmdUUID == null) {
       command = this.getCommand();
     } else {
       command = getCallingCommand();
     }
 
     if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-      if (getCallInstance() == null) {
+      if (getInstance() == null) {
         ret = command.executeEvents(EventType.UI_COMMAND_EXECUTE,
                                     ParameterValues.OTHERS, _others,
                                     ParameterValues.PARAMETERS,
                                     Context.getThreadContext().getParameters());
       } else {
-        final String[] contextoid = { getOid() };
+        final String[] contextoid = { getInstanceKey() };
         Context.getThreadContext().getParameters().put("oid", contextoid);
         ret = command.executeEvents(EventType.UI_COMMAND_EXECUTE,
-                               ParameterValues.CALL_INSTANCE, getCallInstance(),
-                               ParameterValues.INSTANCE, getCallInstance(),
+                               ParameterValues.CALL_INSTANCE, getInstance(),
+                               ParameterValues.INSTANCE, getInstance(),
                                ParameterValues.OTHERS, _others,
                                ParameterValues.PARAMETERS,
                                     Context.getThreadContext().getParameters());
@@ -586,7 +580,7 @@ public abstract class AbstractUIObject implements IClusterable {
 
   /**
    * This method executes the Validate-Events which are related to this Model.
-   * It will take the Events of the Command {@link #commandUUID}.
+   * It will take the Events of the Command {@link #cmdUUID}.
    *
    * @param _others Object to add to the event
    * @return List with Return from the esjp

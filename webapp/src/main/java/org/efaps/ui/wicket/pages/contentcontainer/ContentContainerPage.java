@@ -139,59 +139,59 @@ public class ContentContainerPage extends AbstractMergePage {
     final Opener opener = ((EFapsSession) getSession()).getOpener(_parameters
         .getString(Opener.OPENER_PARAKEY));
     final UUID commandUUID;
-    final String oid;
+    final String instanceKey;
     if (opener.getModel() != null) {
       final AbstractUIObject uiObject = ((AbstractUIObject) opener.getModel()
           .getObject());
       commandUUID = uiObject.getCommandUUID();
-      oid = uiObject.getOid();
+      instanceKey = uiObject.getInstanceKey();
     } else {
       commandUUID = opener.getCommandUUID();
-      oid = opener.getOid();
+      instanceKey = opener.getInstanceKey();
     }
 
-    initialise(commandUUID, oid);
+    initialise(commandUUID, instanceKey);
   }
 
   /**
    * @param _uuid   UUID of the command
-   * @param _oid    oid
+   * @param _instanceKey    oid
    */
-  public ContentContainerPage(final UUID _uuid, final String _oid) {
+  public ContentContainerPage(final UUID _uuid, final String _instanceKey) {
     super();
-    initialise(_uuid, _oid);
+    initialise(_uuid, _instanceKey);
   }
 
   /**
    * @param _pageMap page map
    * @param _uuid    UUID of the command
-   * @param _oid     oid
+   * @param _instanceKey     oid
    */
   public ContentContainerPage(final IPageMap _pageMap,
-                              final UUID _uuid, final String _oid) {
-    this(_pageMap, _uuid, _oid, false);
+                              final UUID _uuid, final String _instanceKey) {
+    this(_pageMap, _uuid, _instanceKey, false);
   }
 
   /**
    * @param _pageMap              page map
    * @param _uuid                 UUID of the command
-   * @param _oid                  oid
+   * @param _instanceKey                  oid
    * @param _addStructurBrowser   add a structor browser
    */
   public ContentContainerPage(final IPageMap _pageMap, final UUID _uuid,
-                              final String _oid,
+                              final String _instanceKey,
                               final boolean _addStructurBrowser) {
     super(_pageMap);
     this.structurbrowser = _addStructurBrowser;
-    initialise(_uuid, _oid);
+    initialise(_uuid, _instanceKey);
   }
 
   /**
    * Method to initialize the Page.
    * @param _uuid   uuid of the command
-   * @param _oid    oid
+   * @param _instanceId    oid
    */
-  private void initialise(final UUID _uuid, final String _oid) {
+  private void initialise(final UUID _uuid, final String _instanceKey) {
     ((EFapsSession) getSession()).getUpdateBehaviors().clear();
 
     final ClientProperties properties =
@@ -210,11 +210,11 @@ public class ContentContainerPage extends AbstractMergePage {
     split.add(new BorderBehavior(Design.SIDEBAR));
     // add a StructurBowser?
     if (this.structurbrowser) {
-      split.add(new StructBrowsSplitPanel("left",
-                                          _uuid, _oid, this.menuTreeKey));
+      split.add(new StructBrowsSplitPanel("left", _uuid, _instanceKey,
+                                          this.menuTreeKey));
     } else {
       split.add(new ListOnlyPanel("left",
-                                  _uuid, _oid, this.menuTreeKey));
+                                  _uuid, _instanceKey, this.menuTreeKey));
     }
     final WebMarkupContainer right = new WebMarkupContainer("right");
     split.add(right);
@@ -249,9 +249,9 @@ public class ContentContainerPage extends AbstractMergePage {
       public Page getPage() {
         AbstractContentPage page;
         if (ContentContainerPage.this.webForm) {
-          page = new FormPage(uuid4NewPage, _oid);
+          page = new FormPage(uuid4NewPage, _instanceKey);
         } else {
-          page = new TablePage(uuid4NewPage, _oid);
+          page = new TablePage(uuid4NewPage, _instanceKey);
         }
         page.setMenuTreeKey(ContentContainerPage.this.menuTreeKey);
         return page;

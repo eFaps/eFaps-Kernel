@@ -94,7 +94,7 @@ public class StandardLink extends AbstractMenuItemLink {
         final StructurBrowserPage page = new StructurBrowserPage(
                                   PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
                                   model.getCommandUUID(),
-                                  model.getOid());
+                                  model.getInstanceKey());
 
         final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID,
                                                    page);
@@ -104,7 +104,7 @@ public class StandardLink extends AbstractMenuItemLink {
           final TablePage page
                   = new TablePage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
                                   model.getCommandUUID(),
-                                  model.getOid());
+                                  model.getInstanceKey());
           final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID,
                                                      page);
 
@@ -113,7 +113,7 @@ public class StandardLink extends AbstractMenuItemLink {
           final TablePage table
                             = new TablePage(getPopupSettings().getPageMap(null),
                                             model.getCommandUUID(),
-                                            model.getOid(),
+                                            model.getInstanceKey(),
                                             openerId);
           if (getPage() instanceof AbstractContentPage) {
             table.setMenuTreeKey(((AbstractContentPage) getPage())
@@ -128,7 +128,7 @@ public class StandardLink extends AbstractMenuItemLink {
         final FormPage page
                    = new FormPage(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
                                   model.getCommandUUID(),
-                                  model.getOid());
+                                  model.getInstanceKey());
         final InlineFrame iframe = new InlineFrame(MainPage.IFRAME_WICKETID,
                                                    page);
         getPage().addOrReplace(iframe);
@@ -136,7 +136,7 @@ public class StandardLink extends AbstractMenuItemLink {
         final FormPage formpage
                              = new FormPage(getPopupSettings().getPageMap(null),
                                             model.getCommandUUID(),
-                                            model.getOid(),
+                                            model.getInstanceKey(),
                                             openerId);
         if (getPage() instanceof AbstractContentPage) {
           formpage.setMenuTreeKey(((AbstractContentPage) getPage())

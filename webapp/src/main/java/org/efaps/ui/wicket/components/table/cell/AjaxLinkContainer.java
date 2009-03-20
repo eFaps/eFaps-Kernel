@@ -102,11 +102,11 @@ public class AjaxLinkContainer extends WebMarkupContainer {
       final UITableCell cellmodel
                    = (UITableCell) super.getComponent().getDefaultModelObject();
       Instance instance = null;
-      if (cellmodel.getOid() != null) {
-        instance = new Instance(cellmodel.getOid());
+      if (cellmodel.getInstanceKey() != null) {
 
         Menu menu = null;
         try {
+          instance = cellmodel.getInstance();
           menu = Menu.getTypeTreeMenu(instance.getType());
         } catch (final Exception e) {
           throw new RestartResponseException(new ErrorPage(e));
@@ -125,7 +125,7 @@ public class AjaxLinkContainer extends WebMarkupContainer {
             (MenuTree) ((EFapsSession) getComponent().getSession())
                 .getFromCache(listMenuKey);
 
-        menutree.addChildMenu(menu.getUUID(), cellmodel.getOid(), _target);
+        menutree.addChildMenu(menu.getUUID(), cellmodel.getInstanceKey(), _target);
       }
     }
   }
@@ -158,10 +158,10 @@ public class AjaxLinkContainer extends WebMarkupContainer {
       final UITableCell cellmodel
                    = (UITableCell) super.getComponent().getDefaultModelObject();
       Instance instance = null;
-      if (cellmodel.getOid() != null) {
-        instance = new Instance(cellmodel.getOid());
+      if (cellmodel.getInstanceKey() != null) {
         AbstractCommand menu = null;
         try {
+          instance = cellmodel.getInstance();
           menu = Menu.getTypeTreeMenu(instance.getType());
         } catch (final Exception e) {
           throw new RestartResponseException(new ErrorPage(e));
@@ -185,12 +185,12 @@ public class AjaxLinkContainer extends WebMarkupContainer {
           page = new TablePage(
                       PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
                       menu.getUUID(),
-                      cellmodel.getOid());
+                      cellmodel.getInstanceKey());
         } else {
           page = new FormPage(
                       PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
                       menu.getUUID(),
-                      cellmodel.getOid());
+                      cellmodel.getInstanceKey());
         }
         page.setMenuTreeKey(((AbstractContentPage) getComponent()
             .getPage()).getMenuTreeKey());

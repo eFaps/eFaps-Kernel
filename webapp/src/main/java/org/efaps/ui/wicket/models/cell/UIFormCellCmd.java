@@ -26,8 +26,8 @@ import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.FieldCommand;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
 
 /**
@@ -69,18 +69,13 @@ public class UIFormCellCmd extends UIFormCell {
    * @param field
    * @throws EFapsException
    */
-  public UIFormCellCmd(final FieldCommand _field,
+  public UIFormCellCmd(final AbstractUIObject _parent,
+                       final FieldCommand _field,
                        final String _oid,
-                       final TargetMode _targetmode,
                        final String _label)
       throws EFapsException {
-    super(new FieldValue(_field, null, null, null),
-          _oid,
-          null,
-          null,
-          _targetmode,
-          _label,
-          null);
+    super(_parent, new FieldValue(_field, null, null, null), _oid, null, null,
+          _label, null);
     this.renderButton = _field.isRenderButton();
     this.append = _field.isAppend();
     this.targetField = _field.getTargetField();

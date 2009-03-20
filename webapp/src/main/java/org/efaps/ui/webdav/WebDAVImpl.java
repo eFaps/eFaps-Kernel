@@ -344,7 +344,7 @@ public class WebDAVImpl implements WebDAVInterface  {
         while (query.next())  {
           final String path = (String) query.get("Path");
           final String name = (String) query.get("Name");
-          final Instance instance = new Instance((String) query.get("OID"));
+          final Instance instance = Instance.get((String) query.get("OID"));
           final WebDAVInterface webDavImpl = getWebDAVImpl(instance, name);
           if (webDavImpl == null)  {
             LOG.error("could not initialise WebDAV implementation for "

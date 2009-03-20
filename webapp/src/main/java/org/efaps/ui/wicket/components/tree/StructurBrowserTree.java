@@ -93,7 +93,7 @@ public class StructurBrowserTree extends DefaultAbstractTree {
    * used to update a treenode via the AjaxUpdateBehavior.
    *
    */
-  private final Map<String, DefaultMutableTreeNode> oid2Node
+  private final Map<String, DefaultMutableTreeNode> instanceKey2Node
                                 = new HashMap<String, DefaultMutableTreeNode>();
 
   /**
@@ -179,10 +179,11 @@ public class StructurBrowserTree extends DefaultAbstractTree {
     final UIStructurBrowser model =
         (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
     // add UpdateBehavior for thi oid to the Session
-    ((EFapsSession) getSession()).addUpdateBehaviors(model.getOid(),
+    ((EFapsSession) getSession()).addUpdateBehaviors(model.getInstanceKey(),
         (AjaxUpdateBehavior) getBehaviors(AjaxUpdateBehavior.class).get(0));
     // store the oid to Node Relation
-    this.oid2Node.put(model.getOid(), (DefaultMutableTreeNode) _node);
+    this.instanceKey2Node.put(model.getInstanceKey(),
+                              (DefaultMutableTreeNode) _node);
 
     return newLink(_parent, _wicketId, new ILinkCallback() {
 
@@ -215,7 +216,7 @@ public class StructurBrowserTree extends DefaultAbstractTree {
 
                 public Page getPage() {
                   final TablePage page = new TablePage(commandUUID,
-                                                       model.getOid());
+                                                       model.getInstanceKey());
                   page.setMenuTreeKey(StructurBrowserTree.this.listMenuKey);
                   return page;
                 }
@@ -233,7 +234,7 @@ public class StructurBrowserTree extends DefaultAbstractTree {
 
                 public Page getPage() {
                   final FormPage page = new FormPage(commandUUID,
-                                                     model.getOid());
+                                                     model.getInstanceKey());
                   page.setMenuTreeKey(StructurBrowserTree.this.listMenuKey);
                   return page;
                 }
@@ -258,7 +259,7 @@ public class StructurBrowserTree extends DefaultAbstractTree {
 
         final MenuTree newmenutree = new MenuTree(menutree.getId(),
                                                   model.getCommandUUID(),
-                                                  model.getOid(),
+                                                  model.getInstanceKey(),
                                                   menutree.getMenuKey());
 
         menutree.replaceWith(newmenutree);
@@ -363,7 +364,7 @@ public class StructurBrowserTree extends DefaultAbstractTree {
     protected void respond(final AjaxRequestTarget _target) {
 
       final DefaultMutableTreeNode node =
-          StructurBrowserTree.this.oid2Node.get(getOid());
+          StructurBrowserTree.this.instanceKey2Node.get(getOid());
       final DefaultTreeModel treemodel =
           (DefaultTreeModel) getComponent().getDefaultModel().getObject();
       final UIStructurBrowser model =

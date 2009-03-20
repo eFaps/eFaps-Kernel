@@ -69,13 +69,13 @@ public class AjaxGoIntoLink extends AjaxLink<Object> {
       final TablePage page = new TablePage(
                       PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
                       model.getCommandUUID(),
-                      model.getOid());
+                      model.getInstanceKey());
       frame = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, page);
     } else {
       final FormPage page = new FormPage(
                       PageMap.forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
                       model.getCommandUUID(),
-                      model.getOid());
+                      model.getInstanceKey());
       frame = new InlineFrame(ContentContainerPage.IFRAME_WICKETID, page);
     }
 

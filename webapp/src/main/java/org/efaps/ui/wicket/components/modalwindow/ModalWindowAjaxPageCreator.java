@@ -69,10 +69,10 @@ public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator {
     final UIMenuItem model = this.imodel;
 
     if (model.getCommand().getTargetTable() != null) {
-      ret = new TablePage(model.getCommandUUID(), model.getOid());
+      ret = new TablePage(model.getCommandUUID(), model.getInstanceKey());
     } else {
       ret = new FormPage(model.getCommandUUID(),
-                         model.getOid(),
+                         model.getInstanceKey(),
                          this.modalWindow);
     }
     return ret;

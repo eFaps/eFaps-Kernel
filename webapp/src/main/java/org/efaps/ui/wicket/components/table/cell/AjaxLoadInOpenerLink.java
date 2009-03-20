@@ -74,10 +74,10 @@ public class AjaxLoadInOpenerLink extends AjaxLink<UITableCell> {
     Instance instance = null;
 
     final UITableCell cellmodel = super.getModelObject();
-    if (cellmodel.getOid() != null) {
-      instance = new Instance(cellmodel.getOid());
+    if (cellmodel.getInstanceKey() != null) {
       Menu menu = null;
       try {
+        instance = cellmodel.getInstance();
         menu = Menu.getTypeTreeMenu(instance.getType());
       } catch (final Exception e) {
         throw new RestartResponseException(new ErrorPage(e));
@@ -94,7 +94,7 @@ public class AjaxLoadInOpenerLink extends AjaxLink<UITableCell> {
       // there is no model an the uuid and oid are set manually
       final Opener opener = ((EFapsSession) getSession()).getOpener(openerId);
       if (opener.getModel() == null) {
-        opener.setOid(cellmodel.getOid());
+        opener.setInstanceKey(cellmodel.getInstanceKey());
         opener.setCommandUUID(menu.getUUID());
       }
       final PageParameters parameters = new PageParameters();

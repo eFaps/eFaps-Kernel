@@ -20,6 +20,9 @@
 
 package org.efaps.ui.wicket;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.wicket.Application;
 import org.apache.wicket.Page;
 import org.apache.wicket.Response;
@@ -47,20 +50,19 @@ import org.efaps.ui.wicket.pages.login.LoginPage;
 public class EFapsWebRequestCycle extends WebRequestCycle {
 
   /**
-   * Logger for this class
+   * Logger for this class.
    */
   private static final Logger LOG =
       LoggerFactory.getLogger(EFapsWebRequestCycle.class);
 
+  private final Map<String, Object> cache = new HashMap<String, Object>();
+
   /**
-   * Constructor for a WebRequest
+   * Constructor for a WebRequest.
    *
-   * @param _application
-   *                the Webapplication wich recieved the WebRequest
-   * @param _request
-   *                the WebRequest to be used for this RequestCycle
-   * @param _response
-   *                the Respone to be used for this RequestCycle
+   * @param _application    the Webapplication which received the WebRequest
+   * @param _request        the WebRequest to be used for this RequestCycle
+   * @param _response       the Response to be used for this RequestCycle
    */
   public EFapsWebRequestCycle(final WebApplication _application,
                               final WebRequest _request,
@@ -89,7 +91,7 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
    * @return EFapsSession
    */
   private EFapsSession getEFapsSession() {
-    final ISessionStore sessionStore = this.getApplication().getSessionStore();
+    final ISessionStore sessionStore = getApplication().getSessionStore();
     final EFapsSession session =
         (EFapsSession) sessionStore.lookup(this.request);
     return session;
@@ -144,4 +146,25 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
     }
   }
 
+  /**
+   * This Method stores a Component in the Cache.
+   *
+   * @param _key        Key the Component should be stored in
+   * @param _component  Component to be stored
+   * @see #componentcache
+   */
+  public void putIntoCache(final String _key, final Object _object) {
+    this.cache.put(_key, _object);
+  }
+
+  /**
+   * Retrieve a Component from the ComponentCache.
+   *
+   * @param _key      Key of the Component to be retrieved
+   * @return Component if found, else null
+   * @see #componentcache
+   */
+  public Object getFromCache(final String _key) {
+    return this.cache.get(_key);
+  }
 }

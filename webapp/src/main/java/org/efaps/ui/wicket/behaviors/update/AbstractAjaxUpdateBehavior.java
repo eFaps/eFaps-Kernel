@@ -95,7 +95,7 @@ public abstract class AbstractAjaxUpdateBehavior extends
    *
    * @param _oid value for instance variable {@link #oid}
    */
-  public void setOid(final String _oid) {
+  public void setInstanceKey(final String _oid) {
     this.oid = _oid;
   }
 

@@ -136,22 +136,22 @@ public class UIForm extends AbstractUIObject {
    * Constructor.
    *
    * @param _commandUUID    UUID of the command
-   * @param _oid            oid for this model
+   * @param _instanceKey            oid for this model
    */
-  public UIForm(final UUID _commandUUID, final String _oid) {
-    this(_commandUUID, _oid, null);
+  public UIForm(final UUID _commandUUID, final String _instanceKey) {
+    this(_commandUUID, _instanceKey, null);
   }
 
   /**
    * Constructor.
    *
    * @param _commandUUID    UUID of the command
-   * @param _oid            oid for this model
+   * @param _instanceKey            oid for this model
    * @param _openerId       id of the opener
    */
-  public UIForm(final UUID _commandUUID, final String _oid,
+  public UIForm(final UUID _commandUUID, final String _instanceKey,
                 final String _openerId) {
-    super(_commandUUID, _oid, _openerId);
+    super(_commandUUID, _instanceKey, _openerId);
     final AbstractCommand command = super.getCommand();
     if (command == null) {
       this.formUUID = null;
@@ -174,7 +174,7 @@ public class UIForm extends AbstractUIObject {
    */
   public void execute() {
     try {
-      if (isCreateMode() || isSearchMode() || getCallInstance() == null) {
+      if (isCreateMode() || isSearchMode() || getInstance() == null) {
         execute4NoInstance();
       } else {
         int rowgroupcount = 1;
@@ -201,7 +201,7 @@ public class UIForm extends AbstractUIObject {
                 if (!isEditMode()) {
                   final UIFieldTable tablemodel
                                        = new UIFieldTable(getCommandUUID(),
-                                                          getOid(),
+                                                          getInstanceKey(),
                                                           ((FieldTable) field));
                   this.elements.add(new Element(ElementType.TABLE, tablemodel));
                   addNew = true;
@@ -256,7 +256,7 @@ public class UIForm extends AbstractUIObject {
    */
   private ListQuery evaluateListQuery(final Form _form) throws EFapsException {
     final List<Instance> instances = new ArrayList<Instance>();
-    instances.add(getCallInstance());
+    instances.add(getInstance());
     final ListQuery ret = new ListQuery(instances);
 
     for (final Field field : _form.getFields()) {
@@ -308,9 +308,9 @@ public class UIForm extends AbstractUIObject {
     Instance fieldInstance;
     if (_field.getAlternateOID() != null) {
       fieldInstance
-                  = new Instance((String) _query.get(_field.getAlternateOID()));
+                  = Instance.get((String) _query.get(_field.getAlternateOID()));
     } else {
-      fieldInstance = getCallInstance();
+      fieldInstance = getInstance();
     }
 
     if (fieldInstance != null) {
@@ -320,10 +320,9 @@ public class UIForm extends AbstractUIObject {
     if (_field instanceof FieldSet) {
       evaluateFieldSet(_row, _query, _field, oid, label);
     } else if (_field instanceof FieldCommand) {
-      final UIFormCellCmd fieldCmd = new UIFormCellCmd((FieldCommand) _field,
-                                                        oid,
-                                                        getMode(),
-                                                        label);
+      final UIFormCellCmd fieldCmd = new UIFormCellCmd(this,
+                                                       (FieldCommand) _field,
+                                                       oid, label);
       _row.add(fieldCmd);
     } else {
       evaluateField(_row, _query, _field, fieldInstance, label, attr);
@@ -346,7 +345,7 @@ public class UIForm extends AbstractUIObject {
       throws EFapsException {
 
     final AttributeSet set
-                  = AttributeSet.find(getCallInstance().getType().getName(),
+                  = AttributeSet.find(getInstance().getType().getName(),
                                       _field.getExpression());
 
     final Map<?, ?> tmp = (Map<?, ?>) _query.get(_field.getExpression());
@@ -359,13 +358,9 @@ public class UIForm extends AbstractUIObject {
     int idy = 0;
     boolean add = true;
     final UIFormCellSet cellset
-        = new UIFormCellSet(new FieldValue(_field, null, "", getCallInstance()),
-                            _oid,
-                            "",
-                            "",
-                            getMode(),
-                            _label,
-                            isEditMode());
+        = new UIFormCellSet(this,
+                            new FieldValue(_field, null, "", getInstance()),
+                            _oid, "", "", _label, isEditMode());
 
     final Iterator<Instance> iter = fieldins.iterator();
 
@@ -378,10 +373,10 @@ public class UIForm extends AbstractUIObject {
         final Attribute child = set.getAttribute(attrName);
         if (isEditMode()) {
           final FieldValue fValue
-                         = new FieldValue(_field, child, "", getCallInstance());
+                         = new FieldValue(_field, child, "", getInstance());
 
           cellset.addDefiniton(idx,
-                               fValue.getCreateHtml(getCallInstance(), null));
+                               fValue.getCreateHtml(getInstance(), null));
         }
         if (tmp == null) {
           add = false;
@@ -391,13 +386,13 @@ public class UIForm extends AbstractUIObject {
             final Object value = tmplist.get(idy);
 
             final FieldValue fieldvalue
-                      = new FieldValue(_field, child, value, getCallInstance());
+                      = new FieldValue(_field, child, value, getInstance());
 
             String tmpStr = null;
             if (isEditMode() && _field.isEditable()) {
-              tmpStr = fieldvalue.getEditHtml(getCallInstance(), null);
+              tmpStr = fieldvalue.getEditHtml(getInstance(), null);
             } else if (_field.isViewable()) {
-              tmpStr = fieldvalue.getViewHtml(getCallInstance(), null);
+              tmpStr = fieldvalue.getViewHtml(getInstance(), null);
             }
             cellset.add(idx, idy, tmpStr);
           } else {
@@ -440,9 +435,9 @@ public class UIForm extends AbstractUIObject {
 
     String strValue = null;
     if (isEditMode() && _field.isEditable()) {
-      strValue = fieldvalue.getEditHtml(getCallInstance(), null);
+      strValue = fieldvalue.getEditHtml(getInstance(), null);
     } else if (_field.isViewable()) {
-      strValue = fieldvalue.getViewHtml(getCallInstance(), null);
+      strValue = fieldvalue.getViewHtml(getInstance(), null);
     }
     if (strValue != null && !this.fileUpload) {
       final String tmp = strValue.replaceAll(" ", "");
@@ -465,12 +460,7 @@ public class UIForm extends AbstractUIObject {
                             ? _attr.getAttributeType().getName()
                             : "";
 
-      _row.add(new UIFormCell(fieldvalue,
-                              oid,
-                              strValue,
-                              icon,
-                              getMode(),
-                              _label,
+      _row.add(new UIFormCell(this, fieldvalue, oid, strValue, icon, _label,
                               uiType));
     }
   }
@@ -538,7 +528,7 @@ public class UIForm extends AbstractUIObject {
           } else {
             label = "Unknown";
           }
-          final Instance fieldInstance = getCallInstance();
+          final Instance fieldInstance = getInstance();
           final FieldValue fieldvalue = new FieldValue(field,
                   attr,
                   super.isWizardCall() ? getValue4Wizard(field.getName())
@@ -547,11 +537,11 @@ public class UIForm extends AbstractUIObject {
 
           String strValue = null;
           if (isCreateMode()) {
-            strValue = fieldvalue.getCreateHtml(getCallInstance(), null);
+            strValue = fieldvalue.getCreateHtml(getInstance(), null);
           } else if (isSearchMode()) {
-            strValue = fieldvalue.getSearchHtml(getCallInstance(), null);
+            strValue = fieldvalue.getSearchHtml(getInstance(), null);
           } else if (isViewMode()) {
-            strValue = fieldvalue.getViewHtml(getCallInstance(), null);
+            strValue = fieldvalue.getViewHtml(getInstance(), null);
           }
           final String attrTypeName = attr != null
                                       ? attr.getAttributeType().getName()
@@ -559,15 +549,10 @@ public class UIForm extends AbstractUIObject {
 
           final UIFormCell cell;
           if (field instanceof FieldCommand) {
-            cell = new UIFormCellCmd((FieldCommand) field,
-                                     null,
-                                     getMode(),
-                                     label);
+            cell = new UIFormCellCmd(this, (FieldCommand) field,
+                                     null, label);
           } else {
-            cell = new UIFormCell(fieldvalue,
-                                  strValue,
-                                  getMode(),
-                                  label,
+            cell = new UIFormCell(this, fieldvalue, strValue, label,
                                   attrTypeName);
             if (isSearchMode()) {
               cell.setReference(null);

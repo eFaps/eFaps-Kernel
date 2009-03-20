@@ -36,7 +36,6 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.Picker;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
-import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
@@ -97,10 +96,10 @@ public class UIPicker implements IClusterable {
    */
   public void execute(final Object _others) throws EFapsException {
     final Context context = Context.getThreadContext();
-    final String[] contextoid = { this.cell.getOid() };
+    final String[] contextoid = { this.cell.getInstanceKey() };
     context.getParameters().put("oid", contextoid);
     final List<Return> returns = getPicker().executeEvents(EventType.UI_PICKER,
-                     ParameterValues.INSTANCE, new Instance(this.cell.getOid()),
+                     ParameterValues.INSTANCE, this.cell.getInstance(),
                      ParameterValues.OTHERS, _others,
                      ParameterValues.PARAMETERS, context.getParameters(),
                      ParameterValues.CLASS, this);

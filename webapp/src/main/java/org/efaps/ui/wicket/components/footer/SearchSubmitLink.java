@@ -68,8 +68,9 @@ public class SearchSubmitLink extends SubmitLink {
     final AbstractUIObject uiObject
                                   = (AbstractUIObject) getDefaultModelObject();
 
-    final UITable newTable = new UITable(uiObject.getCommandUUID(), uiObject
-        .getOid(), uiObject.getOpenerId());
+    final UITable newTable = new UITable(uiObject.getCommandUUID(),
+                                         uiObject.getInstanceKey(),
+                                         uiObject.getOpenerId());
     final UIWizardObject wizard = new UIWizardObject(newTable);
     uiObject.setWizard(wizard);
     try {

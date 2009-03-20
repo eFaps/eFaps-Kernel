@@ -72,7 +72,7 @@ public class Opener {
    * This String can be used to store a oid in the opener. This is needed
    * if e.g. the model is not existing because it was opened by the main window.
    */
-  private String oid;
+  private String instanceKey;
 
   /**
    * This variable stores if this opener can be removed from the session on the
@@ -156,21 +156,21 @@ public class Opener {
   }
 
   /**
-   * Getter method for instance variable {@link #oid}.
+   * Getter method for instance variable {@link #instanceKey}.
    *
-   * @return value of instance variable {@link #oid}
+   * @return value of instance variable {@link #instanceKey}
    */
-  public String getOid() {
-    return this.oid;
+  public String getInstanceKey() {
+    return this.instanceKey;
   }
 
   /**
-   * Setter method for instance variable {@link #oid}.
+   * Setter method for instance variable {@link #instanceKey}.
    *
-   * @param _oid value for instance variable {@link #oid}
+   * @param _instanceId value for instance variable {@link #instanceKey}
    */
-  public void setOid(final String _oid) {
-    this.oid = _oid;
+  public void setInstanceKey(final String _instanceId) {
+    this.instanceKey = _instanceId;
   }
 
   /**

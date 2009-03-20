@@ -160,7 +160,7 @@ public class XMLExport {
 
       this.file =
           new File(sessionFolder, "print-"
-              + this.model.getOid()
+              + this.model.getInstanceKey()
               + "."
               + this.mimeType.getEnding());
 

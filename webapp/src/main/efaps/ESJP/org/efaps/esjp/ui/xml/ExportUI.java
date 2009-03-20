@@ -298,7 +298,7 @@ public class ExportUI implements EventExecution {
       propEl.setAttribute("program", (String) query.get("JavaProg.Name"));
       propEl.setAttribute("method", (String) query.get("Method"));
 
-      final Instance inst = new Instance((String) query.get("OID"));
+      final Instance inst = Instance.get((String) query.get("OID"));
       addPropertyElements(inst, _xmlDoc, propEl);
       ret.add(propEl);
     }

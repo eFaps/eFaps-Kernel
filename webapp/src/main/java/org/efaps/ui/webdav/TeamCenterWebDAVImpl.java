@@ -86,7 +86,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
               this,
               this,
               name,
-              new Instance(query.get("OID").toString()),
+              Instance.get(query.get("OID").toString()),
               (Date) query.get("Created"),
               (Date) query.get("Modified"),
               name
@@ -109,7 +109,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
           subs.add(new SourceResource(
               this,
               name,
-              new Instance((String) query.get("OID")),
+              Instance.get((String) query.get("OID")),
               (Date) query.get("Created"),
               (Date) query.get("Modified"),
               name,
@@ -131,7 +131,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
               this,
               this,
               name,
-              new Instance(query.get("OID").toString()),
+              Instance.get(query.get("OID").toString()),
               (Date) query.get("Created"),
               (Date) query.get("Modified"),
               name
@@ -180,7 +180,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
             this,
             this,
             _name,
-            new Instance(query.get("OID").toString()),
+            Instance.get(query.get("OID").toString()),
             (Date) query.get("Created"),
             (Date) query.get("Modified"),
             _name
@@ -332,7 +332,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
         while (query.next())  {
           final String docName = (String) query.get("Name");
           if ((docName != null) && _name.equals(docName))  {
-            instance = new Instance((String) query.get("OID"));
+            instance = Instance.get((String) query.get("OID"));
             break;
           }
         }

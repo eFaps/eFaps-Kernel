@@ -63,10 +63,10 @@ public class ContentContainerLink<T> extends Link<T> {
   public void onClick() {
     Instance instance = null;
     final UITableCell cellmodel = (UITableCell) super.getModelObject();
-    if (cellmodel.getOid() != null) {
-      instance = new Instance(cellmodel.getOid());
+    if (cellmodel.getInstanceKey() != null) {
       Menu menu = null;
       try {
+        instance =  cellmodel.getInstance();
         menu = Menu.getTypeTreeMenu(instance.getType());
       } catch (final Exception e) {
         throw new RestartResponseException(new ErrorPage(e));
@@ -80,11 +80,12 @@ public class ContentContainerLink<T> extends Link<T> {
 
       ContentContainerPage page;
       if (cellmodel.getTarget() == Target.POPUP) {
-        page = new ContentContainerPage(menu.getUUID(), cellmodel.getOid());
+        page = new ContentContainerPage(menu.getUUID(),
+                                        cellmodel.getInstanceKey());
       } else {
         page = new ContentContainerPage(getPage().getPageMap(),
                                         menu.getUUID(),
-                                        cellmodel.getOid());
+                                        cellmodel.getInstanceKey());
       }
       this.setResponsePage(page);
     }

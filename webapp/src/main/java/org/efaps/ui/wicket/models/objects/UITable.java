@@ -210,26 +210,26 @@ public class UITable extends AbstractUIObject {
   }
 
   /**
-   * Constructor setting the uuid and OID.
+   * Constructor setting the uuid and Key of the instance.
    *
    * @param _commandUUID  UUID of the Command
-   * @param _oid          OID of the instance
+   * @param _instanceKey  Key of the instance
    */
-  public UITable(final UUID _commandUUID, final String _oid) {
-    super(_commandUUID, _oid);
+  public UITable(final UUID _commandUUID, final String _instanceKey) {
+    super(_commandUUID, _instanceKey);
     initialise();
   }
 
   /**
-   * Constructor setting the uuid and OID.
+   * Constructor setting the uuid and Key of the instance.
    *
    * @param _commandUUID  UUID of the Command
-   * @param _oid          OID of the instance
+   * @param _instanceKey  Key of the instance
    * @param _openerId     id of the opener
    */
-  public UITable(final UUID _commandUUID, final String _oid,
+  public UITable(final UUID _commandUUID, final String _instanceKey,
                  final String _openerId) {
-    super(_commandUUID, _oid, _openerId);
+    super(_commandUUID, _instanceKey, _openerId);
     initialise();
   }
 
@@ -243,7 +243,7 @@ public class UITable extends AbstractUIObject {
     final List<Return> ret =
         getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
                                    ParameterValues.INSTANCE,
-                                   new Instance(super.getOid()));
+                                   getInstance());
     final List<List<Instance>> lists =
         (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
     return lists;
@@ -329,24 +329,29 @@ public class UITable extends AbstractUIObject {
       while (_query.next()) {
 
         // get all found oids (typically more than one if it is an expand)
-        final Instance instance = _query.getInstance();
-        final StringBuilder oids = new StringBuilder();
+        Instance instance = _query.getInstance();
+        final StringBuilder instanceKeys = new StringBuilder();
         boolean first = true;
         if (_instMapper.get(instance) != null) {
-          for (final Instance oneInstance : _instMapper.get(instance)) {
+          final List<Instance> list = _instMapper.get(instance);
+          final Instance inst = list.get(list.size() - 1);
+          if (!instance.getKey().equals(inst.getKey())) {
+            instance = inst;
+          }
+          for (final Instance oneInstance : list) {
             if (first) {
               first = false;
             } else {
-              oids.append("|");
+              instanceKeys.append("|");
             }
-            oids.append(oneInstance.getOid());
+            instanceKeys.append(oneInstance.getKey());
           }
         }
-        final UIRow row = new UIRow(oids.toString());
+        final UIRow row = new UIRow(instanceKeys.toString());
         Attribute attr = null;
 
         String strValue = "";
-        String oid = "";
+        String instanceKey = "";
         for (final Field field : _fields) {
           Object value = null;
 
@@ -358,18 +363,18 @@ public class UITable extends AbstractUIObject {
           final FieldValue fieldvalue =
                                   new FieldValue(field, attr, value, instance);
           if (isCreateMode() && field.isEditable()) {
-            strValue = fieldvalue.getCreateHtml(getCallInstance(), instance);
+            strValue = fieldvalue.getCreateHtml(getInstance(), instance);
           } else if (isEditMode() && field.isEditable()) {
-            strValue = fieldvalue.getEditHtml(getCallInstance(), instance);
+            strValue = fieldvalue.getEditHtml(getInstance(), instance);
           } else {
-            strValue = fieldvalue.getViewHtml(getCallInstance(), instance);
+            strValue = fieldvalue.getViewHtml(getInstance(), instance);
           }
           if (strValue == null) {
             strValue = "";
           }
           String icon = field.getIcon();
           if (field.getAlternateOID() == null) {
-            oid = instance.getOid();
+            instanceKey = instance.getKey();
             if (field.isShowTypeIcon()) {
               final Image image = Image.getTypeIcon(instance.getType());
               if (image != null) {
@@ -378,8 +383,8 @@ public class UITable extends AbstractUIObject {
             }
           } else {
             final Instance inst =
-                new Instance((String) _query.get(field.getAlternateOID()));
-            oid = inst.getOid();
+                Instance.get((String) _query.get(field.getAlternateOID()));
+            instanceKey = instance.getKey();
             if (field.isShowTypeIcon()) {
               final Image image = Image.getTypeIcon(inst.getType());
               if (image != null) {
@@ -387,7 +392,8 @@ public class UITable extends AbstractUIObject {
               }
             }
           }
-          row.add(new UITableCell(fieldvalue, oid, strValue, icon, getMode()));
+          row.add(new UITableCell(this, fieldvalue, instanceKey, strValue,
+                                  icon));
         }
         this.values.add(row);
       }

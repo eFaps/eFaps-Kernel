@@ -53,7 +53,7 @@ public class RowPanel extends Panel {
 
     if (uiTable.isShowCheckBoxes()) {
       final CellPanel cellpanel =
-          new CellPanel(cellRepeater.newChildId(), uirow.getOids());
+          new CellPanel(cellRepeater.newChildId(), uirow.getInstanceKeys());
       cellpanel.setOutputMarkupId(true);
       cellpanel.add(new SimpleAttributeModifier("class",
           "eFapsTableCheckBoxCell"));

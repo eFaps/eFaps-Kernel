@@ -30,6 +30,7 @@ import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.Picker;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
 
 /**
@@ -95,15 +96,14 @@ public class UIFormCell extends UITableCell {
    * @param _attrTypeName   Name of the Type of Attribute
    * @throws EFapsException on error
    */
-  public UIFormCell(final FieldValue _fieldvalue, final String _cellValue ,
-                    final TargetMode _targetmode, final String _label,
-                    final String _attrTypeName)
+  public UIFormCell(final AbstractUIObject _parent,
+                    final FieldValue _fieldvalue, final String _cellValue ,
+                    final String _label, final String _attrTypeName)
       throws EFapsException {
-    this (_fieldvalue,
+    this (_parent, _fieldvalue,
           null,
           _cellValue,
           null,
-          _targetmode,
           _label,
           _attrTypeName);
   }
@@ -116,22 +116,22 @@ public class UIFormCell extends UITableCell {
    * @param _oid            OID of the Cell
    * @param _cellValue      Value for the Cell
    * @param _icon           icon of the cell
-   * @param _targetmode     targetmode for the cell
    * @param _label          Label of the Cell
    * @param _attrTypeName   Name of the Type of Attribute
    * @throws EFapsException on error
    */
-  public UIFormCell(final FieldValue _fieldValue, final String _oid,
+  public UIFormCell(final AbstractUIObject _parent,
+                    final FieldValue _fieldValue, final String _oid,
                     final String _cellValue, final String _icon,
-                    final TargetMode _targetmode, final String _label,
+                    final String _label,
                     final String _attrTypeName)
       throws EFapsException {
-    super(_fieldValue, _oid, _cellValue, _icon, _targetmode);
+    super(_parent, _fieldValue, _oid, _cellValue, _icon);
     this.required = _fieldValue.getField().isRequired()
                       && ((_fieldValue.getField().isEditable()
-                            && _targetmode.equals(TargetMode.EDIT))
+                            && _parent.getMode().equals(TargetMode.EDIT))
                         || (_fieldValue.getField().isCreatable()
-                              && _targetmode.equals(TargetMode.CREATE)));
+                              && _parent.getMode().equals(TargetMode.CREATE)));
     this.cellLabel = DBProperties.getProperty(_label);
     this.hideLabel = _fieldValue.getField().isHideLabel();
     this.rowSpan = _fieldValue.getField().getRowSpan();

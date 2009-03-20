@@ -214,11 +214,11 @@ public class UIStructurBrowser extends AbstractUIObject {
    * as root.
    *
    * @param _commandUUID  UUID of the calling command
-   * @param _oid          oid
+   * @param _instanceKey          oid
    *
    */
-  public UIStructurBrowser(final UUID _commandUUID, final String _oid) {
-    this(_commandUUID, _oid, true, SortDirection.ASCENDING);
+  public UIStructurBrowser(final UUID _commandUUID, final String _instanceKey) {
+    this(_commandUUID, _instanceKey, true, SortDirection.ASCENDING);
   }
 
   /**
@@ -226,20 +226,18 @@ public class UIStructurBrowser extends AbstractUIObject {
    * not a root.
    *
    * @param _commandUUID    UUID of the command
-   * @param _oid            OID
+   * @param _instanceKey            OID
    * @param _root           is this STrtucturbrowser the root
    * @param _sortdirection  sort direction
    */
-  private UIStructurBrowser(final UUID _commandUUID, final String _oid,
+  private UIStructurBrowser(final UUID _commandUUID, final String _instanceKey,
                             final boolean _root,
                             final SortDirection _sortdirection) {
-    super(_commandUUID, _oid);
+    super(_commandUUID, _instanceKey);
     this.root = _root;
     this.sortDirection = _sortdirection;
     initialise();
   }
-
-
 
   /**
    * Method used to initialize this StructurBrowserModel.
@@ -251,8 +249,13 @@ public class UIStructurBrowser extends AbstractUIObject {
       this.browserFieldName = command.getProperty("TargetStructurBrowserField");
     } else {
       if ("true".equals(command.getProperty("TargetStructurBrowser"))) {
-        final String tmplabel
-                = Menu.getTypeTreeMenu(getCallInstance().getType()).getLabel();
+        String tmplabel = null;
+        try {
+          tmplabel = Menu.getTypeTreeMenu(getInstance().getType()).getLabel();
+        } catch (final EFapsException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
         this.valueLabel = DBProperties.getProperty(tmplabel);
       }
     }
@@ -276,7 +279,7 @@ public class UIStructurBrowser extends AbstractUIObject {
       if (this.tableuuid == null) {
         final List<List<Object[]>> list = new ArrayList<List<Object[]>>();
         final List<Object[]> instances = new ArrayList<Object[]>(1);
-        instances.add(new Object[] { getCallInstance(), null });
+        instances.add(new Object[] { getInstance(), null });
         list.add(instances);
         executeTree(list);
       } else {
@@ -316,11 +319,15 @@ public class UIStructurBrowser extends AbstractUIObject {
       query.execute();
       while (query.next()) {
         Object value = null;
-        final Instance instance = query.getInstance();
-        value = valuelist.makeString(getCallInstance(), query);
+        Instance instance = query.getInstance();
+        final Instance inst = (Instance) ((instMapper.get(instance).get(0))[0]);
+        if (!instance.getKey().equals(inst.getKey())) {
+          instance = inst;
+        }
+        value = valuelist.makeString(getInstance(), query);
         final UIStructurBrowser child =
             new UIStructurBrowser(Menu.getTypeTreeMenu(instance.getType())
-                .getUUID(), instance.getOid(), false, this.sortDirection);
+                .getUUID(), instance.getKey(), false, this.sortDirection);
         this.childs.add(child);
         child.setDirection((Boolean) ((instMapper.get(instance).get(0))[1]));
         child.setLabel(value.toString());
@@ -372,22 +379,26 @@ public class UIStructurBrowser extends AbstractUIObject {
       query.execute();
       Attribute attr = null;
       while (query.next()) {
-        final Instance instance = query.getInstance();
-        final StringBuilder oids = new StringBuilder();
+        Instance instance = query.getInstance();
+        final Instance inst = (Instance) ((instMapper.get(instance).get(0))[0]);
+        if (!instance.getKey().equals(inst.getKey())) {
+          instance = inst;
+        }
+        final StringBuilder instanceKeys = new StringBuilder();
         boolean first = true;
         for (final Object[] oneInstance : instMapper.get(instance)) {
           if (first) {
             first = false;
           } else {
-            oids.append("|");
+            instanceKeys.append("|");
           }
-          oids.append(((Instance) oneInstance[0]).getOid());
+          instanceKeys.append(((Instance) oneInstance[0]).getKey());
         }
 
         String strValue = "";
 
         final UIStructurBrowser child = new UIStructurBrowser(getCommandUUID(),
-                                                              instance.getOid(),
+                                                              instance.getKey(),
                                                               false,
                                                             this.sortDirection);
         this.childs.add(child);
@@ -404,11 +415,11 @@ public class UIStructurBrowser extends AbstractUIObject {
                                   new FieldValue(field, attr, value, instance);
           if (value != null) {
             if (isCreateMode() && field.isEditable()) {
-              strValue = fieldvalue.getCreateHtml(getCallInstance(), instance);
+              strValue = fieldvalue.getCreateHtml(getInstance(), instance);
             } else if (isEditMode() && field.isEditable()) {
-              strValue = fieldvalue.getEditHtml(getCallInstance(), instance);
+              strValue = fieldvalue.getEditHtml(getInstance(), instance);
             } else {
-              strValue = fieldvalue.getViewHtml(getCallInstance(), instance);
+              strValue = fieldvalue.getViewHtml(getInstance(), instance);
             }
           } else {
             strValue = "";
@@ -579,7 +590,7 @@ public class UIStructurBrowser extends AbstractUIObject {
     List<Return> ret;
     try {
       ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-                                    ParameterValues.INSTANCE, getCallInstance(),
+                                    ParameterValues.INSTANCE, getInstance(),
                                     ParameterValues.CLASS, this);
       final List<List<Object[]>> lists =
           (List<List<Object[]>>) ret.get(0).get(ReturnValues.VALUES);
@@ -702,11 +713,11 @@ public class UIStructurBrowser extends AbstractUIObject {
       final ValueList valList = parser.ExpressionString();
 
       final SearchQuery query = new SearchQuery();
-      query.setObject(getCallInstance());
+      query.setObject(getInstance());
       valList.makeSelect(query);
       query.execute();
       if (query.next()) {
-        setLabel(valList.makeString(new Instance(getOid()), query).toString());
+        setLabel(valList.makeString(getInstance(), query).toString());
       }
     } catch (final Exception e) {
       throw new RestartResponseException(new ErrorPage(e));

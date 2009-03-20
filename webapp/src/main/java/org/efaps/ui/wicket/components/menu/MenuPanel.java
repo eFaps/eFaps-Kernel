@@ -74,7 +74,7 @@ public class MenuPanel extends Panel {
     } else if (model.getCommand().getTargetMenu() != null) {
       final MenuContainer menu = new MenuContainer("eFapsMenu",
           new MenuItemModel(new UIMenuItem(model.getCommand().getTargetMenu()
-              .getUUID(), model.getOid())), _form);
+              .getUUID(), model.getInstanceKey())), _form);
       add(menu);
     } else {
       add(new WebMarkupContainer("eFapsMenu"));

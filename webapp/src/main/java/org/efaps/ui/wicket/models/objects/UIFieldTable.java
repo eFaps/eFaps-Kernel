@@ -53,9 +53,9 @@ public class UIFieldTable extends UITable implements IFormElement{
 
   private final String name;
 
-  public UIFieldTable(final UUID _commanduuid, final String _oid,
+  public UIFieldTable(final UUID _commanduuid, final String _instanceKey,
       final FieldTable _fieldTable) {
-    super(_commanduuid, _oid);
+    super(_commanduuid, _instanceKey);
     setTableUUID(_fieldTable.getTargetTable().getUUID());
     this.id = _fieldTable.getId();
     this.name = _fieldTable.getName();
@@ -83,7 +83,7 @@ public class UIFieldTable extends UITable implements IFormElement{
   protected List<List<Instance>> getInstanceLists() throws EFapsException {
     final List<Return> ret =
         FieldTable.get(this.id).executeEvents(EventType.UI_TABLE_EVALUATE,
-            ParameterValues.INSTANCE, new Instance(super.getOid()));
+            ParameterValues.INSTANCE, getInstance());
     final List<List<Instance>> lists =
         (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
     return lists;

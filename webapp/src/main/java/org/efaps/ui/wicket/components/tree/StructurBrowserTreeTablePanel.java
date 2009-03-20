@@ -229,16 +229,16 @@ public class StructurBrowserTreeTablePanel extends Panel {
         private static final long serialVersionUID = 1L;
 
         public void render(final TreeNode _node, final Response _response) {
-          final String oid =
+          final String instanceKey =
               ((UIStructurBrowser) ((DefaultMutableTreeNode) _node)
-                  .getUserObject()).getOid();
+                  .getUserObject()).getInstanceKey();
           final String checkbox =
               "<input "
                   + "type=\"checkbox\""
                   + "name=\"selectedRow\""
                   + "class=\"eFapsCheckboxCell\""
                   + "value=\""
-                  + oid
+                  + instanceKey
                   + "\"/>";
 
           _response.write(checkbox);

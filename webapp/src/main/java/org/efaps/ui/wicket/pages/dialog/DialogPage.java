@@ -230,11 +230,11 @@ public class DialogPage extends AbstractMergePage {
       }
 
       final List<UpdateInterface> updates =
-          ((EFapsSession) getSession()).getUpdateBehavior(model.getOid());
+         ((EFapsSession) getSession()).getUpdateBehavior(model.getInstanceKey());
       if (updates != null) {
         for (final UpdateInterface update : updates) {
           if (update.isAjaxCallback()) {
-            update.setOid(model.getOid());
+            update.setInstanceKey(model.getInstanceKey());
             update.setMode(model.getMode());
             _target.prependJavascript(update.getAjaxCallback());
           }

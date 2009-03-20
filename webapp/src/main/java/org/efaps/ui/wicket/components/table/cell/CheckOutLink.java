@@ -23,8 +23,10 @@ package org.efaps.ui.wicket.components.table.cell;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
+
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.util.EFapsException;
 
 /**
  * @author jmox
@@ -49,7 +51,12 @@ public class CheckOutLink extends WebMarkupContainer {
     final UITableCell model =  (UITableCell) super.getDefaultModelObject();
     final StringBuilder href = new StringBuilder();
 
-    href.append(model.getReference()).append("oid=").append(model.getOid());;
+    try {
+      href.append(model.getReference()).append("oid=").append(model.getInstance().getOid());
+    } catch (final EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     _tag.put("href", href);
 
     if (model.getTarget() == Target.POPUP) {

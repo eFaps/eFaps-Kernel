@@ -44,7 +44,7 @@ import org.efaps.util.EFapsException;
 /**
  * This class provides the Model for rendering MenuComponents in
  * {@link #org.efaps.ui.wicket.components.menu.MenuPanel} and in
- * {@link #org.efaps.ui.wicket.components.menutree.MenuTree}
+ * {@link #org.efaps.ui.wicket.components.menutree.MenuTree}.
  *
  * @author tmo
  * @author jmox
@@ -52,15 +52,15 @@ import org.efaps.util.EFapsException;
  */
 public class UIMenuItem extends AbstractUIObject  {
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance variables
-
+  /**
+   * Needed foer serialization.
+   */
   private static final long serialVersionUID = 505704924081527139L;
 
   /**
    * this instance variable stores in the case that this MenuItem is part of a
    * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it was steped
-   * into the ancestor of this menuitem
+   * into the ancestor of this menuitem.
    *
    * @see #ancestor
    */
@@ -68,7 +68,7 @@ public class UIMenuItem extends AbstractUIObject  {
 
   /**
    * in the case that the MenuItem is used for a submit, setteing this to true
-   * opens a Dialog to ask the user "do you really want to..?"
+   * opens a Dialog to ask the user "do you really want to..?".
    */
   private boolean askUser = false;
 
@@ -117,29 +117,29 @@ public class UIMenuItem extends AbstractUIObject  {
   /** Url of this menu item. */
   private String url;
 
-  /** height of the window which will be opened */
+  /** height of the window which will be opened. */
   private int windowHeight;
 
-  /** width of the window which will be opened */
+  /** width of the window which will be opened. */
   private int windowWidth;
 
   /**
-   * Contructor setting the UUID of this MenuItem
+   * Constructor setting the UUID of this MenuItem.
    *
-   * @param _uuid
+   * @param _uuid UUID
    */
   public UIMenuItem(final UUID _uuid) {
     this(_uuid, null);
   }
 
   /**
-   * Contructor setting the UUID and the OID of this MenuItem
+   * Constructor setting the UUID and the key for the instance of this MenuItem.
    *
-   * @param _uuid
-   * @param _oid
+   * @param _uuid         UUID
+   * @param _instanceKey  instance Key
    */
-  public UIMenuItem(final UUID _uuid, final String _oid) {
-    super(_uuid, _oid);
+  public UIMenuItem(final UUID _uuid, final String _instanceKey) {
+    super(_uuid, _instanceKey);
     initialise();
   }
 
@@ -200,18 +200,22 @@ public class UIMenuItem extends AbstractUIObject  {
   }
 
   /**
-   * this method returns the URL to the Image of this MenuItem
+   * This method returns the URL to the Image of this MenuItem.
    *
    * @return URL of the Image
+   * @throws EFapsException
    */
-  public String getTypeImage()
-  {
+  public String getTypeImage() {
     String ret = null;
-    if (getCallInstance() != null) {
-      final Image image = Image.getTypeIcon(getCallInstance().getType());
-      if (image != null) {
-        ret = image.getUrl();
+    try {
+      if (getInstance() != null) {
+        final Image imageTmp = Image.getTypeIcon(getInstance().getType());
+        if (imageTmp != null) {
+          ret = imageTmp.getUrl();
+        }
       }
+    } catch (final Exception e) {
+      //TODO
     }
     return ret;
   }
@@ -275,7 +279,7 @@ public class UIMenuItem extends AbstractUIObject  {
         for (final AbstractCommand subCmd : ((AbstractMenu) command).getCommands()) {
           if (subCmd != null && subCmd.hasAccess(getMode())) {
             this.childs
-                .add(new UIMenuItem(subCmd.getUUID(), getOid()));
+                .add(new UIMenuItem(subCmd.getUUID(), getInstanceKey()));
           }
         }
       }
@@ -288,16 +292,16 @@ public class UIMenuItem extends AbstractUIObject  {
   {
     try {
       this.label = DBProperties.getProperty(getCommand().getLabel());
-      if (getCallInstance() != null) {
+      if (getInstance() != null) {
         final SearchQuery query = new SearchQuery();
-        query.setObject(getCallInstance());
+        query.setObject(getInstance());
         final ValueParser parser = new ValueParser(new StringReader(this.label));
         final ValueList list = parser.ExpressionString();
         list.makeSelect(query);
         if (query.selectSize() > 0) {
           query.execute();
           if (query.next()) {
-            this.label = list.makeString(getCallInstance(), query);
+            this.label = list.makeString(getInstance(), query);
           }
           query.close();
         }
@@ -390,7 +394,7 @@ public class UIMenuItem extends AbstractUIObject  {
    */
   public DefaultMutableTreeNode getNode() {
     final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
-    this.setHeader(true);
+    setHeader(true);
     addNode(rootNode, this.childs);
     return rootNode;
   }

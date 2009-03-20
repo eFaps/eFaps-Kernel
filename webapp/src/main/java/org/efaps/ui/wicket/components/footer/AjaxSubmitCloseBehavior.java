@@ -168,11 +168,11 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
         // execute the CallBacks
         final List<UpdateInterface> updates =
             ((EFapsSession) getComponent().getSession())
-                .getUpdateBehavior(this.uiObject.getOid());
+                .getUpdateBehavior(this.uiObject.getInstanceKey());
         if (updates != null) {
           for (final UpdateInterface update : updates) {
             if (update.isAjaxCallback()) {
-              update.setOid(this.uiObject.getOid());
+              update.setInstanceKey(this.uiObject.getInstanceKey());
               update.setMode(this.uiObject.getMode());
               _target.prependJavascript(update.getAjaxCallback());
             }
