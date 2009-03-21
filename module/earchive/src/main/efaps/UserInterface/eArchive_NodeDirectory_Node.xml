@@ -32,7 +32,7 @@
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>eArchive_NodeTree_Node</name>
+    <name>eArchive_NodeDirectory_Node</name>
     <!-- target definitions -->
     <target>
       <menu>eArchive_RepositoryTree_Node_Menu</menu>

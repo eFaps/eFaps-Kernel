@@ -23,36 +23,29 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" 
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
-          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>88fc7d6f-0575-4447-ac7a-9732fc9b7924</uuid>
+<ui-command xmlns="http://www.efaps.org/xsd" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+  <uuid>99000214-3625-412b-a7b9-d8ab33edd2a0</uuid>
   <file-application>eArchive</file-application>
   <file-revision>$Rev$</file-revision>
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>eArchive_NodeTree</name>
-    <!-- targets -->
+    <name>eArchive_RepositoryTree_Node_Menu_Action_CreateNodeFile</name>
+    <icon>eArchive_NodeFile+Create+Image</icon>
+    <!-- target definitions -->
     <target>
-      <menu>eArchive_NodeTree_Menu</menu>
-      <form>eArchive_NodeAbstractForm</form>
-      <evaluate program="org.efaps.esjp.earchive.StructurBrowser">
-        <property name="Types">eArchive_Node2Node</property>
-        <property name="ExpandChildTypes">false</property>
-      </evaluate>
+      <form>eArchive_NodeFileForm</form>
+      <execute program="org.efaps.esjp.earchive.node.NodeUI" 
+               method="createFile"/>
       <instance program="org.efaps.esjp.earchive.node.NodeUI"
                 method="getInstance"/>
     </target>
-    <!-- type tree for -->
-    <type>eArchive_NodeAbstract</type>
-    <!-- childs -->
-    <childs>
-      <child>eArchive_NodeTree_Node</child>
-    </childs>
     <!-- property definitions -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
-    <property name="TargetStructurBrowser">true</property>
+    <property name="Target">modal</property>
+    <property name="TargetMode">create</property>
+    <property name="TargetCreateType">eArchive_Repository</property>
+    <property name="WindowHeight">150</property>
+    <property name="WindowWidth">500</property>
   </definition>
-
-</ui-menu>
+</ui-command>

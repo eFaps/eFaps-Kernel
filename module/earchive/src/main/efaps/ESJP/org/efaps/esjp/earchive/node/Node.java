@@ -31,6 +31,7 @@ import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.esjp.earchive.NamesInterface;
 import org.efaps.esjp.earchive.repository.Repository;
 import org.efaps.esjp.earchive.revision.Revision;
 import org.efaps.util.EFapsException;
@@ -43,24 +44,9 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("4108effb-988f-42c0-a143-9b15ae57d4d9")
 @EFapsRevision("$Rev$")
-public class Node {
-
-  public static String TABLE_NODE ="T_EANODE";
-
-  public static String SEQ_NODE_HISTORYID = "T_EANODE_HISTORYID_SEQ";
-
-  public static String TYPE_DIRECTORY = "eArchive_NodeDirectory";
+public class Node implements NamesInterface{
 
   private final Long id;
-
-  /**
-   * Getter method for instance variable {@link #id}.
-   *
-   * @return value of instance variable {@link #id}
-   */
-  public Long getId() {
-    return this.id;
-  }
 
   private final Long historyId;
 
@@ -69,6 +55,53 @@ public class Node {
   private final Long revision;
 
   private Type type;
+
+  private String name;
+
+  private Long repositoryId;
+
+  private Node ancestor;
+
+  private Long fileId;
+
+  public Node() {
+    this.id = null;
+    this.historyId = null;
+    this.copyId = null;
+    this.revision = null;
+  }
+
+
+  /**
+   * @param _id
+   * @param i
+   * @param j
+   * @param k
+   * @param _name
+   */
+  private Node(final Long _id, final Type _type, final Long _historyId,
+              final Long _copyId, final Long _revision, final String _name,
+              final Long _repositoryId, final Long _fileId) {
+    this.id = _id;
+    this.type = _type;
+    this.historyId = _historyId != null ? _historyId : new Long(0);
+    this.copyId = _copyId != null ? _copyId : new Long(0);
+    this.revision = _revision != null ? _revision : new Long(0);
+    this.name = _name;
+    this.repositoryId = _repositoryId;
+    this.fileId = _fileId;
+  }
+
+
+  /**
+   * Getter method for instance variable {@link #fileId}.
+   *
+   * @return value of instance variable {@link #fileId}
+   */
+  public Long getFileId() {
+    return this.fileId;
+  }
+
 
   /**
    * Getter method for instance variable {@link #type}.
@@ -79,11 +112,16 @@ public class Node {
     return this.type;
   }
 
-  private String name;
 
-  private Long repositoryId;
+  /**
+   * Getter method for instance variable {@link #id}.
+   *
+   * @return value of instance variable {@link #id}
+   */
+  public Long getId() {
+    return this.id;
+  }
 
-  private Node ancestor;
 
   /**
    * Getter method for instance variable {@link #ancestor}.
@@ -102,34 +140,6 @@ public class Node {
    */
   public Long getRepositoryId() {
     return this.repositoryId;
-  }
-
-
-  public Node() {
-    this.id = null;
-    this.historyId = null;
-    this.copyId =null;
-    this.revision = null;
-  }
-
-
-  /**
-   * @param _id
-   * @param i
-   * @param j
-   * @param k
-   * @param _name
-   */
-  private Node(final Long _id, final Type _type, final Long _historyId,
-              final Long _copyId, final Long _revision, final String _name,
-              final Long _repositoryId) {
-    this.id = _id;
-    this.type = _type;
-    this.historyId = _historyId != null ? _historyId : new Long(0);
-    this.copyId = _copyId != null ? _copyId : new Long(0);
-    this.revision = _revision != null ? _revision : new Long(0);
-    this.name = _name;
-    this.repositoryId = _repositoryId;
   }
 
 
@@ -153,15 +163,26 @@ public class Node {
   }
 
 
-  public static Node createNewNode(final String _name) throws EFapsException {
+  public static Node createNewNode(final String _name, final String _type)
+      throws EFapsException {
+
+    Long fileIdTmp = null;
+    if (_type.equals(TYPE_NODEFILE)) {
+     fileIdTmp =  createFile();
+    }
 
     final StringBuilder cmd = new StringBuilder();
 
-    final Long typeId = Type.get(TYPE_DIRECTORY).getId();
+    final Long typeId = Type.get(_type).getId();
 
     cmd.append("insert into ").append(TABLE_NODE)
-      .append("(id, typeid, historyid, copyid, revision, name)")
-      .append(" values (?,?,?,?,?,?)");
+      .append("(id, typeid, historyid, copyid, revision, name");
+
+    if (fileIdTmp != null) {
+      cmd.append(",").append(TABLE_NODE_C_FILEID);
+    }
+    cmd.append(")")
+      .append(" values (?,?,?,?,?,?").append(fileIdTmp != null ? ",?)" : ")");
 
     Long id = null;
     Long histId = null;
@@ -184,7 +205,9 @@ public class Node {
         stmt.setInt(4, 0);
         stmt.setInt(5, 0);
         stmt.setString(6, _name);
-
+        if (fileIdTmp != null) {
+          stmt.setLong(7, fileIdTmp);
+        }
         final int rows = stmt.executeUpdate();
         if (rows == 0) {
 //           TODO fehler schmeissen
@@ -192,7 +215,7 @@ public class Node {
       } finally {
         stmt.close();
       }
-    con.commit();
+      con.commit();
   } catch (final SQLException e) {
 //    TODO fehler schmeissen
   } finally {
@@ -200,7 +223,59 @@ public class Node {
       con.abort();
     }
   }
-    return new Node(id, Type.get(typeId), histId, null, null, _name, null);
+
+
+    return new Node(id, Type.get(typeId), histId, null, null, _name, null, fileIdTmp);
+  }
+
+  private static long createFile()
+      throws EFapsException {
+    long ret = 0;
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append("insert into ").append(TABLE_FILE)
+      .append("(")
+      .append(TABLE_FILE_C_ID).append(",")
+      .append(TABLE_FILE_C_TYPEID).append(",")
+      .append(TABLE_FILE_C_FILELENGTH).append(",")
+      .append(TABLE_FILE_C_FILENAME).append(",")
+      .append(TABLE_FILE_C_MD5FILE).append(",")
+      .append(TABLE_FILE_C_MD5DELTA).append(")")
+      .append(" values (?,?,?,?,?,?)");
+    final Context context = Context.getThreadContext();
+    ConnectionResource con = null;
+    System.out.println(cmd);
+    try {
+      con = context.getConnectionResource();
+      ret = Context.getDbType().getNewId(con.getConnection(), TABLE_FILE, "ID");
+      final long typeid = Type.get(TYPE_FILE).getId();
+
+      PreparedStatement stmt = null;
+      try {
+        stmt = con.getConnection().prepareStatement(cmd.toString());
+        stmt.setLong(1, ret);
+        stmt.setLong(2, typeid);
+        stmt.setLong(3, new Long(0));
+        stmt.setString(4, "empty");
+        stmt.setString(5, "empty");
+        stmt.setString(6, "empty");
+
+        final int rows = stmt.executeUpdate();
+        if (rows == 0) {
+  //         TODO fehler schmeissen
+        }
+      } finally {
+        stmt.close();
+      }
+      con.commit();
+    } catch (final SQLException e) {
+    //  TODO fehler schmeissen
+      e.printStackTrace();
+    } finally {
+      if ((con != null) && con.isOpened()) {
+        con.abort();
+      }
+    }
+    return ret;
   }
 
   public static List<Node> getNodeHirachy(final String _instanceKey)
@@ -245,7 +320,8 @@ public class Node {
                                Type.get(resultset.getLong(2)),
                                resultset.getLong(3),
                                resultset.getLong(4), resultset.getLong(5),
-                               resultset.getString(6), resultset.getLong(7));
+                               resultset.getString(6), resultset.getLong(7),
+                               null);
           ret.add(root);
           current = root;
         }
@@ -308,7 +384,7 @@ public class Node {
         if (resultset.next()) {
           ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
               resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
-              resultset.getString(6), null);
+              resultset.getString(6), null, null);
         }
         resultset.close();
       } finally {
@@ -347,7 +423,7 @@ public class Node {
        if (resultset.next()) {
          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
              resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
-             resultset.getString(6), resultset.getLong(7));
+             resultset.getString(6), resultset.getLong(7), null);
        }
        resultset.close();
      } finally {
@@ -388,7 +464,7 @@ public class Node {
        if (resultset.next()) {
          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
              resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
-             resultset.getString(6), resultset.getLong(7));
+             resultset.getString(6), resultset.getLong(7), null);
        }
        resultset.close();
      } finally {
@@ -450,7 +526,7 @@ public class Node {
      if (resultset.next()) {
        ret = new Node(resultset.getLong(3), Type.get(resultset.getLong(9)),
            resultset.getLong(5), resultset.getLong(6), resultset.getLong(7),
-           resultset.getString(8), resultset.getLong(10));
+           resultset.getString(8), resultset.getLong(10), null);
      }
      resultset.close();
    } finally {
@@ -502,7 +578,7 @@ public class Node {
          }
          if (add) {
            ret.add(new Node(childid, Type.get(resultset.getLong(2)),
-                 null, null, resultset.getLong(5), resultset.getString(3), null));
+                 null, null, resultset.getLong(5), resultset.getString(3), null,null));
          }
        }
        resultset.close();
@@ -568,7 +644,7 @@ public class Node {
   }
 
   final Node ret = new Node(idTmp, this.type, this.historyId, this.copyId, null,
-                            this.name, this.repositoryId);
+                            this.name, this.repositoryId, this.fileId);
   ret.setAncestor(this);
   return ret;
   }

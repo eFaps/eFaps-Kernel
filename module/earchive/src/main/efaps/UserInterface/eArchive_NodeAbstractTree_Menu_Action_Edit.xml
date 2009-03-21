@@ -23,20 +23,27 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" 
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
-          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>187da239-9c6f-46b9-a47b-e04ad4fbebd4</uuid>
+<ui-command xmlns="http://www.efaps.org/xsd" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+  <uuid>a23557e0-2e0f-45ad-be75-6049d3b9b7f9</uuid>
   <file-application>eArchive</file-application>
   <file-revision>$Rev$</file-revision>
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>eArchive_RepositoryTree_Node_Menu_Action</name>
-    <childs>
-      <child>eArchive_RepositoryTree_Node_Menu_Action_CreateNodeDirectory</child>
-      <child>eArchive_RepositoryTree_Node_Menu_Action_CreateNodeFile</child>
-      <child>eArchive_RepositoryTree_Node_Menu_Action_RemoveNode</child>
-    </childs>
+    <name>eArchive_NodeAbstractTree_Menu_Action_Edit</name>
+    <!-- target definitions -->
+    <target>
+      <form>eArchive_NodeAbstractForm</form>
+      <execute program="org.efaps.esjp.earchive.node.NodeUI"
+               method="rename" />
+      <instance program="org.efaps.esjp.earchive.node.NodeUI"
+                method="getInstance"/>
+    </target>
+    <!-- property definitions -->
+    <property name="Target">modal</property>
+    <property name="TargetMode">edit</property>
+    <property name="WindowHeight">150</property>
+    <property name="WindowWidth">500</property>
   </definition>
-
-</ui-menu>
+</ui-command>

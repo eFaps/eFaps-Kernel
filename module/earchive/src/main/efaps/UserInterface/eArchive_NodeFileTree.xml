@@ -26,15 +26,30 @@
 <ui-menu  xmlns="http://www.efaps.org/xsd" 
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>bb6aaa42-00ee-4329-8534-45a032b84104</uuid>
+  <uuid>8aed9379-b143-4e9c-be71-7f216b81974c</uuid>
   <file-application>eArchive</file-application>
   <file-revision>$Rev$</file-revision>
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>eArchive_NodeTree_Menu</name>
-    <childs>
-      <child>eArchive_NodeTree_Menu_Action</child>
-    </childs>
+    <name>eArchive_NodeFileTree</name>
+    <!-- targets -->
+    <target>
+      <menu>eArchive_NodeAbstractTree_Menu</menu>
+      <form>eArchive_NodeFileForm</form>
+      <evaluate program="org.efaps.esjp.earchive.StructurBrowser">
+        <property name="Types">eArchive_Node2Node</property>
+        <property name="ExpandChildTypes">false</property>
+      </evaluate>
+      <instance program="org.efaps.esjp.earchive.node.NodeUI"
+                method="getInstance"/>
+    </target>
+    <!-- type tree for -->
+    <type>eArchive_NodeFile</type>
+   
+    <!-- property definitions -->
+    <property name="Target">content</property>
+    <property name="TargetMode">view</property>
+    <property name="TargetStructurBrowser">true</property>
   </definition>
 
 </ui-menu>

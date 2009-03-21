@@ -20,6 +20,7 @@
 
 package org.efaps.esjp.earchive.node;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +31,11 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.db.Checkin;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.esjp.earchive.NamesInterface;
 import org.efaps.esjp.earchive.repository.Repository;
 import org.efaps.util.EFapsException;
 
@@ -43,7 +47,7 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("d6cb382d-a8e8-4b35-9d28-6b344c53f676")
 @EFapsRevision("$Rev$")
-public class NodeUI {
+public class NodeUI implements NamesInterface {
 
   public Return getTableUI(final Parameter _parameter) throws EFapsException {
     final Return ret = new Return();
@@ -99,9 +103,9 @@ public class NodeUI {
     } else {
       node = Node.getNodeFromDB(instance.getId());
     }
-    final Node newDir = Node.createNewNode(name);
+    final Node newDir = Node.createNewNode(name, Node.TYPE_NODEDIRECTORY);
 
-    final List<Node> updated = newDir.connectRevise(node);
+    final List<Node> update = newDir.connectRevise(node);
     return new Return();
   }
 
@@ -111,7 +115,7 @@ public class NodeUI {
     final Instance instance = _parameter.getInstance();
 
     final Node node = Node.getNodeFromDB(instance.getId());
-    final List<Node> updated = node.rename(name);
+    node.rename(name);
     return new Return();
   }
 
@@ -131,6 +135,47 @@ public class NodeUI {
     final Return ret = new Return();
     ret.put(ReturnValues.VALUES, instance);
     return ret;
+  }
+
+  public Return createFile(final Parameter _parameter)
+      throws EFapsException {
+    final String name = _parameter.getParameterValue("name");
+    final Instance instance = _parameter.getInstance();
+    final Node node;
+    if ("eArchive_Repository".equals(instance.getType().getName())) {
+      node = Node.getRootNodeFromDB(new Repository(instance));
+    } else {
+      node = Node.getNodeFromDB(instance.getId());
+    }
+    final Node newFile = Node.createNewNode(name, Node.TYPE_NODEFILE);
+    newFile.connectRevise(node);
+    final Instance fileInstance = Instance.get(Type.get(TYPE_FILE),
+                                               newFile.getFileId());
+    final Context.FileParameter fileItem =
+                Context.getThreadContext().getFileParameters().get("upload");
+
+    final Checkin checkin = new Checkin(fileInstance);
+    try {
+      checkin.execute(fileItem.getName(), fileItem.getInputStream(),
+          (int) fileItem.getSize());
+    } catch (final IOException e) {
+      throw new EFapsException(this.getClass(), "execute", e, _parameter);
+    }
+
+    return  new Return();
+  }
+
+
+  public Return removeNode(final Parameter _parameter) throws EFapsException {
+    final Instance instance = _parameter.getInstance();
+    final Node node;
+    if ("eArchive_Repository".equals(instance.getType().getName())) {
+      node = Node.getRootNodeFromDB(new Repository(instance));
+    } else {
+      node = Node.getNodeFromDB(instance.getId());
+    }
+
+    return  new Return();
   }
 
 }

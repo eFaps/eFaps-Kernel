@@ -45,7 +45,7 @@ public class RepositoryUI {
     insert.execute();
     final Instance instance = insert.getInstance();
 
-    final Node node = Node.createNewNode(name);
+    final Node node = Node.createNewNode(name, Node.TYPE_NODEDIRECTORY);
     Revision.getNewRevision(new Repository(instance), node);
 
     return new Return();

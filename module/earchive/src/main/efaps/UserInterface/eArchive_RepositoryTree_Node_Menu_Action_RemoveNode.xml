@@ -23,18 +23,24 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" 
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
-          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>69c886a1-d274-46a6-b75a-55bc8aa7d0e9</uuid>
+<ui-command xmlns="http://www.efaps.org/xsd" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+  <uuid>eecdf71c-6e54-4e5d-9dff-8abf81751ba9</uuid>
   <file-application>eArchive</file-application>
   <file-revision>$Rev$</file-revision>
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>eArchive_NodeTree_Menu_Action</name>
-    <childs>
-      <child>eArchive_NodeTree_Menu_Action_Edit</child>
-    </childs>
+    <name>eArchive_RepositoryTree_Node_Menu_Action_RemoveNode</name>
+    <!-- target definitions -->
+    <target>
+      <execute program="org.efaps.esjp.earchive.node.NodeUI" 
+               method="removeNode"/>
+      <instance program="org.efaps.esjp.earchive.node.NodeUI"
+                method="getInstance"/>
+    </target>
+    <!-- property definitions -->
+    <property name="AskUser">true</property>
+    <property name="Submit">true</property>
   </definition>
-
-</ui-menu>
+</ui-command>
