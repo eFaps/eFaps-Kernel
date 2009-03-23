@@ -62,11 +62,11 @@ public class UIFormCellSet extends UIFormCell {
    * @throws EFapsException
    */
   public UIFormCellSet(final AbstractUIObject _parent,
-                       final FieldValue _fieldValue, final String _oid,
+                       final FieldValue _fieldValue, final Instance _instance,
                        final String _value, final String _icon,
                        final String _label, final boolean _edit)
       throws EFapsException {
-    super(_parent, _fieldValue, _oid, _value, _icon, _label, "");
+    super(_parent, _fieldValue, _instance, _value, _icon, _label, "");
     this.editMode = _edit;
   }
 

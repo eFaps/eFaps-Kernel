@@ -109,16 +109,16 @@ public class UITableCell extends AbstractInstanceObject {
    * Constructor.
    *
    * @param _fieldValue   FieldValue
-   * @param _instanceId   oid of the cell
    * @param _cellvalue    Value for the cell
    * @param _icon         icon of the cell
+   * @param instance
    * @throws EFapsException on error
    */
   public UITableCell(final AbstractUIObject _parent,
-                     final FieldValue _fieldValue, final String _instanceId,
+                     final FieldValue _fieldValue, final Instance _instance,
                      final String _cellvalue, final String _icon)
       throws EFapsException  {
-    super(_instanceId);
+    super(_instance == null ? null : _instance.getKey());
     this.parent = _parent;
     this.uiClass =  _fieldValue.getClassUI();
     this.compareValue =  _fieldValue.getObject4Compare();
@@ -136,7 +136,7 @@ public class UITableCell extends AbstractInstanceObject {
     // to null
     if (_fieldValue.getField().getReference() != null) {
       if (getInstanceKey() != null) {
-        final Menu menu = Menu.getTypeTreeMenu(getInstance().getType());
+        final Menu menu = Menu.getTypeTreeMenu(_instance.getType());
         if (menu != null && menu.hasAccess(this.parent.getMode())) {
           this.reference = _fieldValue.getField().getReference();
         }

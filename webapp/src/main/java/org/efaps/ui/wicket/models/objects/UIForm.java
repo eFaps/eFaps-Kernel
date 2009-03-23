@@ -304,7 +304,7 @@ public class UIForm extends AbstractUIObject {
     }
 
     //evaluate the oid of the field
-    String oid = null;
+    final String oid = null;
     Instance fieldInstance;
     if (_field.getAlternateOID() != null) {
       fieldInstance
@@ -313,16 +313,13 @@ public class UIForm extends AbstractUIObject {
       fieldInstance = getInstance();
     }
 
-    if (fieldInstance != null) {
-      oid = fieldInstance.getOid();
-    }
     //fieldset
     if (_field instanceof FieldSet) {
-      evaluateFieldSet(_row, _query, _field, oid, label);
+      evaluateFieldSet(_row, _query, _field, fieldInstance, label);
     } else if (_field instanceof FieldCommand) {
       final UIFormCellCmd fieldCmd = new UIFormCellCmd(this,
                                                        (FieldCommand) _field,
-                                                       oid, label);
+                                                       fieldInstance, label);
       _row.add(fieldCmd);
     } else {
       evaluateField(_row, _query, _field, fieldInstance, label, attr);
@@ -340,7 +337,7 @@ public class UIForm extends AbstractUIObject {
    * @throws EFapsException on error
    */
   private void evaluateFieldSet(final FormRow _row, final ListQuery _query,
-                                final Field _field, final String _oid,
+                                final Field _field, final Instance _instance,
                                 final String _label)
       throws EFapsException {
 
@@ -360,7 +357,7 @@ public class UIForm extends AbstractUIObject {
     final UIFormCellSet cellset
         = new UIFormCellSet(this,
                             new FieldValue(_field, null, "", getInstance()),
-                            _oid, "", "", _label, isEditMode());
+                            _instance, "", "", _label, isEditMode());
 
     final Iterator<Instance> iter = fieldins.iterator();
 
@@ -445,10 +442,8 @@ public class UIForm extends AbstractUIObject {
         this.fileUpload = true;
       }
     }
-    String oid = null;
     String icon = _field.getIcon();
     if (_fieldInstance != null) {
-      oid = _fieldInstance.getOid();
       if (_field.isShowTypeIcon()
           && _fieldInstance.getType() != null) {
         final Image image = Image.getTypeIcon(_fieldInstance.getType());
@@ -460,8 +455,8 @@ public class UIForm extends AbstractUIObject {
                             ? _attr.getAttributeType().getName()
                             : "";
 
-      _row.add(new UIFormCell(this, fieldvalue, oid, strValue, icon, _label,
-                              uiType));
+      _row.add(new UIFormCell(this, fieldvalue, _fieldInstance, strValue, icon,
+                              _label, uiType));
     }
   }
 

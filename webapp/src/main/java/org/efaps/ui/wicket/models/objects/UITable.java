@@ -351,7 +351,7 @@ public class UITable extends AbstractUIObject {
         Attribute attr = null;
 
         String strValue = "";
-        String instanceKey = "";
+        final String instanceKey = "";
         for (final Field field : _fields) {
           Object value = null;
 
@@ -374,7 +374,6 @@ public class UITable extends AbstractUIObject {
           }
           String icon = field.getIcon();
           if (field.getAlternateOID() == null) {
-            instanceKey = instance.getKey();
             if (field.isShowTypeIcon()) {
               final Image image = Image.getTypeIcon(instance.getType());
               if (image != null) {
@@ -384,7 +383,6 @@ public class UITable extends AbstractUIObject {
           } else {
             final Instance inst =
                 Instance.get((String) _query.get(field.getAlternateOID()));
-            instanceKey = instance.getKey();
             if (field.isShowTypeIcon()) {
               final Image image = Image.getTypeIcon(inst.getType());
               if (image != null) {
@@ -392,7 +390,7 @@ public class UITable extends AbstractUIObject {
               }
             }
           }
-          row.add(new UITableCell(this, fieldvalue, instanceKey, strValue,
+          row.add(new UITableCell(this, fieldvalue, instance, strValue,
                                   icon));
         }
         this.values.add(row);

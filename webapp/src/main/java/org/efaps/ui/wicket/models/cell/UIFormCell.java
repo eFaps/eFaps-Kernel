@@ -30,6 +30,7 @@ import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.Picker;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.util.EFapsException;
 
@@ -121,12 +122,12 @@ public class UIFormCell extends UITableCell {
    * @throws EFapsException on error
    */
   public UIFormCell(final AbstractUIObject _parent,
-                    final FieldValue _fieldValue, final String _oid,
+                    final FieldValue _fieldValue, final Instance _instance,
                     final String _cellValue, final String _icon,
                     final String _label,
                     final String _attrTypeName)
       throws EFapsException {
-    super(_parent, _fieldValue, _oid, _cellValue, _icon);
+    super(_parent, _fieldValue, _instance, _cellValue, _icon);
     this.required = _fieldValue.getField().isRequired()
                       && ((_fieldValue.getField().isEditable()
                             && _parent.getMode().equals(TargetMode.EDIT))
