@@ -45,7 +45,9 @@
     </target>
     <!-- type tree for -->
     <type>eArchive_NodeFile</type>
-   
+    <childs>
+      <child>eArchive_NodeAbstractTree_Revision</child>
+    </childs>
     <!-- property definitions -->
     <property name="Target">content</property>
     <property name="TargetMode">view</property>

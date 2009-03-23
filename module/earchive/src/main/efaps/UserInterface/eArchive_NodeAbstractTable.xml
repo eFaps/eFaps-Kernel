@@ -39,19 +39,12 @@
       <property name="Label">eArchive_NodeAbstract/Name.Label</property>
       <property name="ShowTypeIcon">true</property>
     </field>
-     <field name="created">
+     <field name="revision">
       <property name="Creatable">false</property>
       <property name="Editable">false</property>
-      <property name="Expression">Created</property>
+      <property name="Expression">Revision</property>
       <property name="Searchable">true</property>
-      <property name="Label">eArchive_NodeAbstract/Created.Label</property>
-    </field>
-     <field name="modified">
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
-      <property name="Expression">Modified</property>
-      <property name="Searchable">true</property>
-      <property name="Label">eArchive_NodeAbstract/Modified.Label</property>
+      <property name="Label">eArchive_NodeAbstract/Revision.Label</property>
     </field>
   </definition>
 </ui-table>

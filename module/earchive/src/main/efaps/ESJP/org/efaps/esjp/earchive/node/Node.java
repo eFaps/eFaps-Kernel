@@ -23,6 +23,7 @@ package org.efaps.esjp.earchive.node;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -56,6 +57,16 @@ public class Node implements NamesInterface{
 
   private final Long revision;
 
+  /**
+   * Getter method for instance variable {@link #revision}.
+   *
+   * @return value of instance variable {@link #revision}
+   */
+  public Long getRevision() {
+    return this.revision;
+  }
+
+
   private Type type;
 
   private String name;
@@ -67,6 +78,40 @@ public class Node implements NamesInterface{
   private Long fileId;
 
   private String idPath;
+
+  private Node parent;
+
+  /**
+   * Getter method for instance variable {@link #parent}.
+   *
+   * @return value of instance variable {@link #parent}
+   */
+  public Node getParent() {
+    return this.parent;
+  }
+
+
+  /**
+   * Setter method for instance variable {@link #parent}.
+   *
+   * @param parent value for instance variable {@link #parent}
+   */
+  public void setParent(final Node parent) {
+    this.parent = parent;
+  }
+
+
+  /**
+   * Getter method for instance variable {@link #children}.
+   *
+   * @return value of instance variable {@link #children}
+   */
+  public List<Node> getChildren() {
+    return this.children;
+  }
+
+
+  private final List<Node> children = new ArrayList<Node>();
 
   public Node() {
     this.id = null;
@@ -303,7 +348,12 @@ public class Node implements NamesInterface{
   public static List<Node> getNodeHirachy(final String _instanceKey)
       throws EFapsException {
     final List<Node> ret = new ArrayList<Node>();
-    final String[] pairs = _instanceKey.split("\\|");
+    final String[] pairs;
+    if (_instanceKey.contains("|")) {
+      pairs = _instanceKey.split("\\|");
+    } else {
+      pairs = new String[]{_instanceKey};
+    }
 
     final StringBuilder cmd = new StringBuilder();
     cmd.append("select")
@@ -354,7 +404,7 @@ public class Node implements NamesInterface{
           final Node child = getChildNode(current, Long.parseLong(childPair[0]),
                                           Long.parseLong(childPair[1]));
           ret.add(child);
-          current=child;
+          current = child;
         }
 
       } finally {
@@ -544,7 +594,7 @@ public class Node implements NamesInterface{
       final Node node = iter.next();
       final Node reviseNode = node.getNodeClone();
       ret.add(reviseNode);
-      final List<Node> children = node.getChildNodes(current.getAncestor());
+      final List<Node> children = node.getChildNodes(current.getAncestor(), null);
       children.add(current);
       Node2Node.connect(reviseNode, children);
       if (reviseNode.isRoot()) {
@@ -561,13 +611,17 @@ public class Node implements NamesInterface{
    * @throws EFapsException
    *
    */
-  private List<Node> getChildNodes(final Node _excludeNode) throws EFapsException {
-    // TODO Auto-generated method stub
+  private List<Node> getChildNodes(final Node _excludeNode,
+                                   final Long _revision)
+      throws EFapsException {
 
     final StringBuilder cmd = new StringBuilder();
     cmd.append(" SELECT id, typeid, childid, name, revision, nodetype from ")
       .append(" v_eanode2node")
       .append(" where parentid = ?");
+    if (_revision != null) {
+      cmd.append("and revision = ?");
+    }
     final ConnectionResource con = Context.getThreadContext().getConnectionResource();
     final List<Node> ret = new ArrayList<Node>();
     try {
@@ -577,6 +631,9 @@ public class Node implements NamesInterface{
        stmt = con.getConnection().prepareStatement(cmd.toString());
 
        stmt.setLong(1, this.id);
+       if (_revision != null) {
+         stmt.setLong(2, _revision);
+       }
        final ResultSet resultset = stmt.executeQuery();
 
        while (resultset.next()) {
@@ -588,8 +645,10 @@ public class Node implements NamesInterface{
            }
          }
          if (add) {
-           ret.add(new Node(childid, Type.get(resultset.getLong(2)),
-                 null, null, resultset.getLong(5), resultset.getString(3), null,null));
+           final Node child = new Node(childid, Type.get(resultset.getLong(2)),
+               null, null, resultset.getLong(5), resultset.getString(3), null,null);
+           child.setParent(this);
+           ret.add(child);
          }
        }
        resultset.close();
@@ -694,12 +753,105 @@ public class Node implements NamesInterface{
     final Node clone = getNodeClone();
     ret.add(clone);
     //connect existing children to clone
-    final List<Node> children = getChildNodes(null);
+    final List<Node> children = getChildNodes(null, null);
     Node2Node.connect(clone, children);
     final List<Node> nodes = getNodeHirachy(this.idPath);
     // remove last node from the hirachy because it is the node that was renamed
     nodes.remove(nodes.size() - 1);
     clone.bubbleUp(nodes);
     return ret;
+  }
+
+
+  public static void updateRevisions() throws EFapsException {
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append("select ")
+      .append(TABLE_NODE_T_C_ID).append(",")
+      .append(TABLE_NODE_C_TYPEID).append(",")
+      .append(TABLE_NODE_C_HISTORYID).append(",")
+      .append(TABLE_NODE_C_COPYID).append(",")
+      .append(TABLE_REVISION_T_C_REVISION).append(",")
+      .append(TABLE_NODE_C_NAME).append(",")
+      .append(TABLE_REVISION_C_REPOSITORYID)
+      .append(" from ").append(TABLE_NODE)
+      .append(" join ").append(TABLE_REVISION).append(" on ")
+        .append(TABLE_NODE_T_C_ID).append(" = ")
+        .append(TABLE_REVISION_C_NODEID)
+      .append(" order by ").append(TABLE_REVISION_T_C_REVISION);
+
+    final ConnectionResource con
+                          = Context.getThreadContext().getConnectionResource();
+    final List<Node> nodes = new ArrayList<Node>();
+    try {
+
+     Statement stmt = null;
+     try {
+       stmt = con.getConnection().createStatement();
+       final ResultSet resultset = stmt.executeQuery(cmd.toString());
+
+       while (resultset.next()) {
+        nodes.add(new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
+                        resultset.getLong(3), resultset.getLong(4),
+                        resultset.getLong(5), resultset.getString(6),
+                        resultset.getLong(7), null));
+
+       }
+       resultset.close();
+     } finally {
+       stmt.close();
+     }
+     con.commit();
+    } catch (final SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } finally {
+      if ((con != null) && con.isOpened()) {
+        con.abort();
+      }
+    }
+
+    for (final Node node : nodes) {
+      node.updateRevision(node.getRevision());
+    }
+  }
+
+
+  private void updateRevision(final Long _revision) throws EFapsException {
+    this.children.addAll(getChildNodes(null, new Long (0)));
+    for (final Node child : this.children) {
+      child.updateRevision(_revision);
+    }
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append("update ")
+      .append(TABLE_NODE)
+      .append(" set ").append(TABLE_NODE_C_REVISION).append("=?")
+      .append(" where ").append(TABLE_NODE_C_ID).append("=?");
+
+    final ConnectionResource con
+                = Context.getThreadContext().getConnectionResource();
+    try {
+
+      PreparedStatement stmt = null;
+      try {
+        con.getConnection().setAutoCommit(true);
+        stmt = con.getConnection().prepareStatement(cmd.toString());
+        stmt.setLong(1, _revision);
+        stmt.setLong(2, this.id);
+        final int rows = stmt.executeUpdate();
+        if (rows == 0) {
+//           TODO fehler schmeissen
+        }
+      } finally {
+        stmt.close();
+      }
+      con.commit();
+     } catch (final SQLException e) {
+       // TODO Auto-generated catch block
+       e.printStackTrace();
+     } finally {
+       if ((con != null) && con.isOpened()) {
+         con.abort();
+       }
+     }
   }
 }

@@ -23,18 +23,22 @@
 
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd" 
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>da4ad654-d75a-4fce-b2d9-45e620b05a6b</uuid>
+<ui-command xmlns="http://www.efaps.org/xsd" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+  <uuid>6b036aec-704a-4ec3-886b-ef919e003410</uuid>
   <file-application>eArchive</file-application>
   <file-revision>$Rev$</file-revision>
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>eArchive_MyDesk</name>
-    <childs>
-      <child>eArchive_RepositoryMyDesk</child>
-      <child>eArchive_UpdateRevisionMyDesk</child>
-    </childs>
+    <name>eArchive_UpdateRevisionMyDesk</name>
+    <!-- target definitions -->
+    <target>
+      <execute program="org.efaps.esjp.earchive.revision.RevisionUI"
+               method="updateRevisions"/>
+    </target>
+    <!-- properties -->
+    <property name="Target">hidden</property>
+    <property name="NoUpdateAfterCOMMAND">true</property>
   </definition>
-</ui-menu>
+</ui-command>
