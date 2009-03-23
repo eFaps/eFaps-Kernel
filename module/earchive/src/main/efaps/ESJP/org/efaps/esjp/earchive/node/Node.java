@@ -24,6 +24,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Type;
@@ -63,6 +65,8 @@ public class Node implements NamesInterface{
   private Node ancestor;
 
   private Long fileId;
+
+  private String idPath;
 
   public Node() {
     this.id = null;
@@ -120,6 +124,26 @@ public class Node implements NamesInterface{
    */
   public Long getId() {
     return this.id;
+  }
+
+
+  /**
+   * Getter method for instance variable {@link #idPath}.
+   *
+   * @return value of instance variable {@link #idPath}
+   */
+  public String getIdPath() {
+    return this.idPath;
+  }
+
+
+  /**
+   * Setter method for instance variable {@link #idPath}.
+   *
+   * @param _idPath value for instance variable {@link #idPath}
+   */
+  public void setIdPath(final String _idPath) {
+    this.idPath = _idPath;
   }
 
 
@@ -223,9 +247,7 @@ public class Node implements NamesInterface{
       con.abort();
     }
   }
-
-
-    return new Node(id, Type.get(typeId), histId, null, null, _name, null, fileIdTmp);
+   return new Node(id, Type.get(typeId), histId, null, null, _name, null, fileIdTmp);
   }
 
   private static long createFile()
@@ -403,13 +425,27 @@ public class Node implements NamesInterface{
   }
 
 
-  public static Node getNodeFromDB(final Long _nodeId) throws EFapsException {
+  public static Node getNodeFromDB(final Long _nodeId, final String _idPath)
+      throws EFapsException {
     final StringBuilder cmd = new StringBuilder();
-    cmd.append(" select t_eanode.id, typeid, historyid, copyid, t_eanode.revision, name, t_earevision.repositoryid from ")
-      .append(TABLE_NODE)
-      .append(" left join t_earevision on t_earevision.nodeid = t_eanode.id")
-      .append(" where t_eanode.id = ?");
-    final ConnectionResource con = Context.getThreadContext().getConnectionResource();
+    cmd.append(" select ")
+      .append(TABLE_NODE_T_C_ID).append(",")
+      .append(TABLE_NODE_C_TYPEID).append(",")
+      .append(TABLE_NODE_C_HISTORYID).append(",")
+      .append(TABLE_NODE_C_COPYID).append(",")
+      .append(TABLE_NODE_T_C_REVISION).append(",")
+      .append(TABLE_NODE_C_NAME).append(",")
+      .append(TABLE_REVISION_T_C_REPOSITORYID).append(",")
+      .append(TABLE_NODE_C_FILEID)
+      .append(" from ").append(TABLE_NODE)
+      .append(" left join ").append(TABLE_REVISION).append(" on ")
+        .append(TABLE_REVISION).append(".").append(TABLE_REVISION_C_NODEID)
+        .append(" = ").append(TABLE_NODE).append(".").append(TABLE_NODE_C_ID)
+      .append(" where ").append(TABLE_NODE).append(".").append(TABLE_NODE_C_ID)
+      .append(" = ?");
+
+    final ConnectionResource con
+                          = Context.getThreadContext().getConnectionResource();
     Node ret = null;
     try {
 
@@ -422,8 +458,10 @@ public class Node implements NamesInterface{
 
        if (resultset.next()) {
          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
-             resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
-             resultset.getString(6), resultset.getLong(7), null);
+                        resultset.getLong(3), resultset.getLong(4),
+                        resultset.getLong(5), resultset.getString(6),
+                        resultset.getLong(7), resultset.getLong(8));
+         ret.setIdPath(_idPath);
        }
        resultset.close();
      } finally {
@@ -462,9 +500,12 @@ public class Node implements NamesInterface{
        final ResultSet resultset = stmt.executeQuery();
 
        if (resultset.next()) {
+         final Long historyIdTmp = resultset.getLong(3);
+         final Long copyIdTmp = resultset.getLong(4);
          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
-             resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
+             historyIdTmp, copyIdTmp , resultset.getLong(5),
              resultset.getString(6), resultset.getLong(7), null);
+         ret.setIdPath(historyIdTmp + "." + copyIdTmp);
        }
        resultset.close();
      } finally {
@@ -488,63 +529,33 @@ public class Node implements NamesInterface{
    * @return
    * @throws EFapsException
    */
-  public List<Node> connectRevise(final Node _parentNode)
+  public List<Node> connect2Parent(final Node _parentNode)
       throws EFapsException {
+    final List<Node> nodes = getNodeHirachy(_parentNode.getIdPath());
+    return bubbleUp(nodes);
+  }
+
+  private List<Node> bubbleUp(final List<Node> _nodes) throws EFapsException{
     final List<Node> ret = new ArrayList<Node>();
-    final Node reviseNode = _parentNode.getNodeClone();
-    ret.add(reviseNode);
-    final List<Node> children = _parentNode.getChildNodes(getAncestor());
-    children.add(this);
-    Node2Node.connect(reviseNode, children);
-    if (reviseNode.isRoot()) {
-      Revision.getNewRevision(new Repository(reviseNode.getRepositoryId()),
-                                             reviseNode);
-    } else {
-      final Node parent = _parentNode.getParentNode();
-      ret.addAll(reviseNode.connectRevise(parent));
+    Collections.reverse(_nodes);
+    final Iterator<Node> iter = _nodes.iterator();
+    Node current = this;
+    while (iter.hasNext()) {
+      final Node node = iter.next();
+      final Node reviseNode = node.getNodeClone();
+      ret.add(reviseNode);
+      final List<Node> children = node.getChildNodes(current.getAncestor());
+      children.add(current);
+      Node2Node.connect(reviseNode, children);
+      if (reviseNode.isRoot()) {
+        Revision.getNewRevision(new Repository(reviseNode.getRepositoryId()),
+                                               reviseNode);
+      } else {
+        current = reviseNode;
+      }
     }
     return ret;
   }
-
-  public Node getParentNode() throws EFapsException{
-
-  final StringBuilder cmd = new StringBuilder();
-  cmd.append("SELECT id, typeid, parentid, childid,HISTORYID,COPYID, REVISION,NAME,nodetype,repositoryid from ")
-    .append(" V_EANODE2NODEHIGHREV ")
-    .append(" where childid = ?");
-  final ConnectionResource con = Context.getThreadContext().getConnectionResource();
-  Node ret = null;
-  try {
-
-   PreparedStatement stmt = null;
-   try {
-     stmt = con.getConnection().prepareStatement(cmd.toString());
-
-     stmt.setLong(1, this.id);
-     final ResultSet resultset = stmt.executeQuery();
-
-     if (resultset.next()) {
-       ret = new Node(resultset.getLong(3), Type.get(resultset.getLong(9)),
-           resultset.getLong(5), resultset.getLong(6), resultset.getLong(7),
-           resultset.getString(8), resultset.getLong(10), null);
-     }
-     resultset.close();
-   } finally {
-     stmt.close();
-   }
-   con.commit();
-  } catch (final SQLException e) {
-    // TODO Auto-generated catch block
-    e.printStackTrace();
-  } finally {
-    if ((con != null) && con.isOpened()) {
-      con.abort();
-    }
-  }
-  return ret;
-
-  }
-
   /**
    * @return
    * @throws EFapsException
@@ -603,8 +614,12 @@ public class Node implements NamesInterface{
     final StringBuilder cmd = new StringBuilder();
 
     cmd.append("insert into ").append(TABLE_NODE)
-      .append("(id, typeid, historyid, copyid, revision, name)")
-      .append(" values (?,?,?,?,?,?)");
+      .append("(id, typeid, historyid, copyid, revision, name");
+    if (this.fileId != null) {
+      cmd.append(",").append(TABLE_NODE_C_FILEID);
+    }
+    cmd.append(")")
+      .append(" values (?,?,?,?,?,?").append(this.fileId == null ? ")" : ",?)");
 
     Long idTmp = null;
 
@@ -626,7 +641,9 @@ public class Node implements NamesInterface{
         stmt.setLong(4, this.copyId);
         stmt.setInt(5, 0);
         stmt.setString(6, this.name);
-
+        if (this.fileId != null) {
+          stmt.setLong(7, this.fileId);
+        }
         final int rows = stmt.executeUpdate();
         if (rows == 0) {
 //           TODO fehler schmeissen
@@ -637,6 +654,7 @@ public class Node implements NamesInterface{
     con.commit();
   } catch (final SQLException e) {
 //    TODO fehler schmeissen
+    e.printStackTrace();
   } finally {
     if ((con != null) && con.isOpened()) {
       con.abort();
@@ -646,6 +664,7 @@ public class Node implements NamesInterface{
   final Node ret = new Node(idTmp, this.type, this.historyId, this.copyId, null,
                             this.name, this.repositoryId, this.fileId);
   ret.setAncestor(this);
+  ret.setIdPath(this.idPath);
   return ret;
   }
 
@@ -677,8 +696,10 @@ public class Node implements NamesInterface{
     //connect existing children to clone
     final List<Node> children = getChildNodes(null);
     Node2Node.connect(clone, children);
-    final Node parent = getParentNode();
-    ret.addAll(clone.connectRevise(parent));
+    final List<Node> nodes = getNodeHirachy(this.idPath);
+    // remove last node from the hirachy because it is the node that was renamed
+    nodes.remove(nodes.size() - 1);
+    clone.bubbleUp(nodes);
     return ret;
   }
 }

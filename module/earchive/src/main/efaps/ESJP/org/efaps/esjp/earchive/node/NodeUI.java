@@ -97,15 +97,14 @@ public class NodeUI implements NamesInterface {
       throws EFapsException {
     final String name = _parameter.getParameterValue("name");
     final Instance instance = _parameter.getInstance();
-    final Node node;
+    final Node parentNode;
     if ("eArchive_Repository".equals(instance.getType().getName())) {
-      node = Node.getRootNodeFromDB(new Repository(instance));
+      parentNode = Node.getRootNodeFromDB(new Repository(instance));
     } else {
-      node = Node.getNodeFromDB(instance.getId());
+      parentNode = Node.getNodeFromDB(instance.getId(), instance.getKey());
     }
     final Node newDir = Node.createNewNode(name, Node.TYPE_NODEDIRECTORY);
-
-    final List<Node> update = newDir.connectRevise(node);
+    newDir.connect2Parent(newDir);
     return new Return();
   }
 
@@ -114,7 +113,7 @@ public class NodeUI implements NamesInterface {
     final String name = _parameter.getParameterValue("name");
     final Instance instance = _parameter.getInstance();
 
-    final Node node = Node.getNodeFromDB(instance.getId());
+    final Node node = Node.getNodeFromDB(instance.getId(), instance.getKey());
     node.rename(name);
     return new Return();
   }
@@ -145,10 +144,10 @@ public class NodeUI implements NamesInterface {
     if ("eArchive_Repository".equals(instance.getType().getName())) {
       node = Node.getRootNodeFromDB(new Repository(instance));
     } else {
-      node = Node.getNodeFromDB(instance.getId());
+      node = Node.getNodeFromDB(instance.getId(), instance.getKey());
     }
     final Node newFile = Node.createNewNode(name, Node.TYPE_NODEFILE);
-    newFile.connectRevise(node);
+    newFile.connect2Parent(newFile);
     final Instance fileInstance = Instance.get(Type.get(TYPE_FILE),
                                                newFile.getFileId());
     final Context.FileParameter fileItem =
@@ -172,7 +171,7 @@ public class NodeUI implements NamesInterface {
     if ("eArchive_Repository".equals(instance.getType().getName())) {
       node = Node.getRootNodeFromDB(new Repository(instance));
     } else {
-      node = Node.getNodeFromDB(instance.getId());
+      node = Node.getNodeFromDB(instance.getId(), instance.getKey());
     }
 
     return  new Return();
