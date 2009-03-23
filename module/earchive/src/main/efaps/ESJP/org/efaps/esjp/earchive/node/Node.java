@@ -348,11 +348,20 @@ public class Node implements NamesInterface{
   public static List<Node> getNodeHirachy(final String _instanceKey)
       throws EFapsException {
     final List<Node> ret = new ArrayList<Node>();
-    final String[] pairs;
-    if (_instanceKey.contains("|")) {
-      pairs = _instanceKey.split("\\|");
+    String revision = null;
+    final String instanceKey;
+    if (_instanceKey.contains("-")) {
+      final int pos = _instanceKey.indexOf("-");
+      revision = _instanceKey.substring( pos+ 1);
+      instanceKey = _instanceKey.substring(0,pos);
     } else {
-      pairs = new String[]{_instanceKey};
+      instanceKey = _instanceKey;
+    }
+    final String[] pairs;
+    if (instanceKey.contains("|")) {
+      pairs = instanceKey.split("\\|");
+    } else {
+      pairs = new String[]{instanceKey};
     }
 
     final StringBuilder cmd = new StringBuilder();
@@ -363,18 +372,25 @@ public class Node implements NamesInterface{
       .append(" t_eanode.copyid").append(",")
       .append(" t_earevision.revision").append(",")
       .append(" t_eanode.name").append(",")
-      .append(" t_earevision.repositoryid")
-      .append(" from").append(" t_earepository")
-      .append(" join").append(" t_earevision").append(" on")
+      .append(" t_earevision.repositoryid");
+   if (revision == null) {
+      cmd.append(" from").append(" t_earepository")
+         .append(" join").append(" t_earevision").append(" on ")
         .append(" t_earevision.repositoryid")
         .append("=").append(" t_earepository.id")
       .append(" and").append(" t_earevision.revision").append("=")
-      .append(" t_earepository.lastrevision")
-      .append(" join ").append(TABLE_NODE).append(" on").append(" t_eanode.id")
+      .append(" t_earepository.lastrevision");
+   } else {
+     cmd.append(" from ").append(TABLE_REVISION);
+   }
+     cmd.append(" join ").append(TABLE_NODE)
+      .append(" on ").append(TABLE_NODE_T_C_ID)
       .append("=").append(" t_earevision.nodeid")
       .append(" where ").append(" t_eanode.historyid").append("=?")
-      .append(" and").append(" t_eanode.copyid").append("=? ");
-
+      .append(" and ").append(" t_eanode.copyid").append("=? ");
+    if (revision != null) {
+      cmd.append(" and ").append(TABLE_NODE_T_C_REVISION).append("=?");
+    }
     final ConnectionResource con
                           = Context.getThreadContext().getConnectionResource();
     try {
@@ -385,6 +401,9 @@ public class Node implements NamesInterface{
         final String[] pair = pairs[0].split("\\.");
         stmt.setLong(1, Long.parseLong(pair[0]));
         stmt.setLong(2, Long.parseLong(pair[1]));
+        if (revision != null) {
+          stmt.setLong(3, Long.parseLong(revision));
+        }
         final ResultSet resultset = stmt.executeQuery();
         Node current = null;
         if (resultset.next()) {

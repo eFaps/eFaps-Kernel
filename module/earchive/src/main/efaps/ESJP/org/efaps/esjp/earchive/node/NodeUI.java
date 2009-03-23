@@ -58,9 +58,17 @@ public class NodeUI implements NamesInterface {
     }
     final String parentInstanceKey;
     final long parentId;
+    String revision = null;
     if (node == null) {
       parentId = instance.getId();
-      parentInstanceKey = instance.getKey();
+      final String keyTmp = instance.getKey();
+      if (keyTmp.contains("-")) {
+        final int pos = keyTmp.indexOf("-");
+        revision = keyTmp.substring(pos);
+        parentInstanceKey = keyTmp.substring(0, pos);
+      } else {
+        parentInstanceKey = keyTmp;
+      }
     } else {
       parentId = node.getId();
       parentInstanceKey = node.getHistoryId() + "." + node.getCopyId();
@@ -80,7 +88,8 @@ public class NodeUI implements NamesInterface {
       final List<Instance> instances = new ArrayList<Instance>(1);
       final StringBuilder instanceKey = new StringBuilder()
         .append(parentInstanceKey).append("|")
-        .append(query.get("HistoryId")).append(".").append(query.get("CopyId"));
+        .append(query.get("HistoryId")).append(".").append(query.get("CopyId"))
+        .append(revision != null ? revision : "");
 
       instances.add(Instance.get(Type.get((Long) query.get("NodeType")) ,
                                 (Long) query.get("Child"),
@@ -98,11 +107,14 @@ public class NodeUI implements NamesInterface {
       throws EFapsException {
     final Return ret = new Return();
     final Instance instance = _parameter.getInstance();
-    Node node = null;
+    final Node node;
+    final String instanceKey;
     if ("eArchive_Repository".equals(instance.getType().getName())) {
       node = Node.getRootNodeFromDB(new Repository(instance));
+      instanceKey = node.getHistoryId() + "." + node.getCopyId();
     } else {
       node = Node.getNodeFromDB(instance.getId(), instance.getKey());
+      instanceKey = instance.getKey();
     }
 
     final SearchQuery query = new SearchQuery();
@@ -119,13 +131,13 @@ public class NodeUI implements NamesInterface {
     final List<List<Instance>> list = new ArrayList<List<Instance>>();
     while (query.next()) {
       final List<Instance> instances = new ArrayList<Instance>(1);
-      final StringBuilder instanceKey = new StringBuilder()
-        .append("").append("|")
-        ;
+      final StringBuilder keyBldr = new StringBuilder()
+        .append(instanceKey).append("-")
+        .append(query.get(TYPE_NODEABSTRACT_A_REVISION));
 
        instances.add(Instance.get((Type) query.get(TYPE_NODEABSTRACT_A_TYPE),
                                   (Long) query.get(TYPE_NODEABSTRACT_A_ID),
-                                  instance.getKey()));
+                                  keyBldr.toString()));
       list.add(instances);
     }
 
@@ -194,7 +206,7 @@ public class NodeUI implements NamesInterface {
     final String instanceKey = (String) _parameter.get(ParameterValues.OTHERS);
     Instance instance = null;
     if (instanceKey != null) {
-      if (instanceKey.indexOf("|") < 0) {
+      if (instanceKey.indexOf("|") < 0 && instanceKey.indexOf("-") < 0) {
         instance = Instance.get(instanceKey);
       } else {
         final List<Node> nodes = Node.getNodeHirachy(instanceKey);
