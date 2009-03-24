@@ -66,6 +66,7 @@ public interface NamesInterface {
 
 
   String TYPE_FILE = "eArchive_File";
+
   String TYPE_NODEABSTRACT = "eArchive_NodeAbstract";
   String TYPE_NODEABSTRACT_A_TYPE = "Type";
   String TYPE_NODEABSTRACT_A_ID = "ID";
@@ -74,6 +75,17 @@ public interface NamesInterface {
   String TYPE_NODEABSTRACT_A_REVISION = "Revision";
   String TYPE_NODEABSTRACT_A_NAME = "Name";
 
+  String TYPE_NODEABSTRACTREV = "eArchive_NodeAbstractRev";
+  String TYPE_NODEABSTRACTREV_A_TYPE = "Type";
+  String TYPE_NODEABSTRACTREV_A_ID = "ID";
+  String TYPE_NODEABSTRACTREV_A_HISTORYID = "HistoryId";
+  String TYPE_NODEABSTRACTREV_A_COPYID = "CopyId";
+  String TYPE_NODEABSTRACTREV_A_REVISION = "Revision";
+  String TYPE_NODEABSTRACTREV_A_NAME = "Name";
+
   String TYPE_NODEDIRECTORY = "eArchive_NodeDirectory";
+  String TYPE_NODEDIRECTORYREV = "eArchive_NodeDirectoryRev";
   String TYPE_NODEFILE = "eArchive_NodeFile";
+  String TYPE_NODEFILEREV = "eArchive_NodeFileRev";
+
 }

@@ -23,37 +23,27 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" 
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
-          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>88fc7d6f-0575-4447-ac7a-9732fc9b7924</uuid>
+<ui-command xmlns="http://www.efaps.org/xsd" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+  <uuid>cbdf51cb-3d2e-4039-9046-3975c9f8e718</uuid>
   <file-application>eArchive</file-application>
   <file-revision>$Rev$</file-revision>
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>eArchive_NodeDirectoryTree</name>
-    <!-- targets -->
+    <name>eArchive_NodeFileTree_Menu_Action_Edit</name>
+    <!-- target definitions -->
     <target>
-      <menu>eArchive_NodeDirectoryTree_Menu</menu>
       <form>eArchive_NodeAbstractForm</form>
-      <evaluate program="org.efaps.esjp.earchive.StructurBrowser">
-        <property name="Types">eArchive_Node2Node</property>
-        <property name="ExpandChildTypes">false</property>
-      </evaluate>
+      <execute program="org.efaps.esjp.earchive.node.NodeUI"
+               method="rename" />
       <instance program="org.efaps.esjp.earchive.node.NodeUI"
                 method="getInstance"/>
     </target>
-    <!-- type tree for -->
-    <type>eArchive_NodeDirectory</type>
-    <!-- childs -->
-    <childs>
-      <child>eArchive_NodeDirectory_Node</child>
-      <child>eArchive_NodeAbstractTree_Revision</child>
-    </childs>
     <!-- property definitions -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
-    <property name="TargetStructurBrowser">true</property>
+    <property name="Target">modal</property>
+    <property name="TargetMode">edit</property>
+    <property name="WindowHeight">150</property>
+    <property name="WindowWidth">500</property>
   </definition>
-
-</ui-menu>
+</ui-command>

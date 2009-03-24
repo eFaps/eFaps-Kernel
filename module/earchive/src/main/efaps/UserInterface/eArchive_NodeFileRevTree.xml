@@ -23,27 +23,31 @@
 
 -->
 
-<ui-command xmlns="http://www.efaps.org/xsd" 
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
-            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>a23557e0-2e0f-45ad-be75-6049d3b9b7f9</uuid>
+<ui-menu  xmlns="http://www.efaps.org/xsd" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+  <uuid>d6bbe88d-032b-4381-bf56-21e7f6dad280</uuid>
   <file-application>eArchive</file-application>
   <file-revision>$Rev$</file-revision>
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>eArchive_NodeAbstractTree_Menu_Action_Edit</name>
-    <!-- target definitions -->
+    <name>eArchive_NodeFileRevTree</name>
+    <!-- targets -->
     <target>
-      <form>eArchive_NodeAbstractForm</form>
-      <execute program="org.efaps.esjp.earchive.node.NodeUI"
-               method="rename" />
+      <form>eArchive_NodeFileForm</form>
+      <evaluate program="org.efaps.esjp.earchive.StructurBrowser">
+        <property name="Types">eArchive_Node2Node</property>
+        <property name="ExpandChildTypes">false</property>
+      </evaluate>
       <instance program="org.efaps.esjp.earchive.node.NodeUI"
                 method="getInstance"/>
     </target>
+    <!-- type tree for -->
+    <type>eArchive_NodeFileRev</type>
     <!-- property definitions -->
-    <property name="Target">modal</property>
-    <property name="TargetMode">edit</property>
-    <property name="WindowHeight">150</property>
-    <property name="WindowWidth">500</property>
+    <property name="Target">content</property>
+    <property name="TargetMode">view</property>
+    <property name="TargetStructurBrowser">true</property>
   </definition>
-</ui-command>
+
+</ui-menu>

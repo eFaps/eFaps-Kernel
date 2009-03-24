@@ -26,30 +26,22 @@
 <ui-menu  xmlns="http://www.efaps.org/xsd" 
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>88fc7d6f-0575-4447-ac7a-9732fc9b7924</uuid>
+  <uuid>7570cd3f-7329-483d-9fac-23faa5a84fd9</uuid>
   <file-application>eArchive</file-application>
   <file-revision>$Rev$</file-revision>
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>eArchive_NodeDirectoryTree</name>
+    <name>eArchive_NodeDirectoryRevTree</name>
     <!-- targets -->
     <target>
-      <menu>eArchive_NodeDirectoryTree_Menu</menu>
-      <form>eArchive_NodeAbstractForm</form>
-      <evaluate program="org.efaps.esjp.earchive.StructurBrowser">
-        <property name="Types">eArchive_Node2Node</property>
-        <property name="ExpandChildTypes">false</property>
-      </evaluate>
+      <table>eArchive_NodeAbstractTable</table>
+      <evaluate program="org.efaps.esjp.earchive.node.NodeUI" 
+                method="getTableUI"/>
       <instance program="org.efaps.esjp.earchive.node.NodeUI"
                 method="getInstance"/>
     </target>
     <!-- type tree for -->
-    <type>eArchive_NodeDirectory</type>
-    <!-- childs -->
-    <childs>
-      <child>eArchive_NodeDirectory_Node</child>
-      <child>eArchive_NodeAbstractTree_Revision</child>
-    </childs>
+    <type>eArchive_NodeDirectoryRev</type>
     <!-- property definitions -->
     <property name="Target">content</property>
     <property name="TargetMode">view</property>

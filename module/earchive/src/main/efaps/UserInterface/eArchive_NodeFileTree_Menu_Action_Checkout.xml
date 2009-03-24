@@ -26,27 +26,20 @@
 <ui-command xmlns="http://www.efaps.org/xsd" 
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>0075dd50-6497-4193-b7c1-736d0bf1dfcc</uuid>
+  <uuid>a84edfcc-db82-4a1d-8b42-75b022816835</uuid>
   <file-application>eArchive</file-application>
   <file-revision>$Rev$</file-revision>
-
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>eArchive_NodeDirectory_Node</name>
+    <name>eArchive_NodeFileTree_Menu_Action_Checkout</name>
     <!-- target definitions -->
     <target>
-      <menu>eArchive_RepositoryTree_Node_Menu</menu>
-      <table>eArchive_NodeAbstractTable</table>
-      <evaluate program="org.efaps.esjp.earchive.node.NodeUI" 
-                method="getTableUI"/>
+      <execute program="org.efaps.esjp.earchive.node.NodeUI" 
+               method="checkout"/>
       <instance program="org.efaps.esjp.earchive.node.NodeUI"
                 method="getInstance"/>
     </target>
-    <!-- property definitions -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
-    <property name="TargetShowCheckBoxes">true</property>
-    <property name="DefaultSelected">true</property>
+    <property name="Target">hidden</property>
+    <property name="TargetShowFile">true</property>
   </definition>
-
 </ui-command>

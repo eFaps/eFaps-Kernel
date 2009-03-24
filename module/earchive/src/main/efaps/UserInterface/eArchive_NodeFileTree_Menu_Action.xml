@@ -26,14 +26,16 @@
 <ui-menu  xmlns="http://www.efaps.org/xsd" 
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>69c886a1-d274-46a6-b75a-55bc8aa7d0e9</uuid>
+  <uuid>614d7223-b1bf-4736-be19-83f089778730</uuid>
   <file-application>eArchive</file-application>
   <file-revision>$Rev$</file-revision>
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>eArchive_NodeAbstractTree_Menu_Action</name>
+    <name>eArchive_NodeFileTree_Menu_Action</name>
     <childs>
-      <child>eArchive_NodeAbstractTree_Menu_Action_Edit</child>
+      <child>eArchive_NodeFileTree_Menu_Action_Edit</child>
+      <child>eArchive_NodeFileTree_Menu_Action_Checkin</child>
+      <child>eArchive_NodeFileTree_Menu_Action_Checkout</child>
     </childs>
   </definition>
 

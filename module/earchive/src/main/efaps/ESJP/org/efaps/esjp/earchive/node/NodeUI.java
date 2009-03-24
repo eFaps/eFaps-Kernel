@@ -20,6 +20,8 @@
 
 package org.efaps.esjp.earchive.node;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Checkin;
+import org.efaps.db.Checkout;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -91,7 +94,15 @@ public class NodeUI implements NamesInterface {
         .append(query.get("HistoryId")).append(".").append(query.get("CopyId"))
         .append(revision != null ? revision : "");
 
-      instances.add(Instance.get(Type.get((Long) query.get("NodeType")) ,
+      Type type = Type.get((Long) query.get("NodeType"));
+      if (revision != null) {
+        if (type.getName().equals(TYPE_NODEDIRECTORY)) {
+          type = Type.get(TYPE_NODEDIRECTORYREV);
+        } else {
+          type = Type.get(TYPE_NODEFILEREV);
+        }
+      }
+      instances.add(Instance.get(type ,
                                 (Long) query.get("Child"),
                                 instanceKey.toString()));
       list.add(instances);
@@ -118,14 +129,14 @@ public class NodeUI implements NamesInterface {
     }
 
     final SearchQuery query = new SearchQuery();
-    query.setQueryTypes(TYPE_NODEABSTRACT);
+    query.setQueryTypes(TYPE_NODEABSTRACTREV);
     query.setExpandChildTypes(true);
-    query.addWhereExprEqValue(TYPE_NODEABSTRACT_A_HISTORYID,
+    query.addWhereExprEqValue(TYPE_NODEABSTRACTREV_A_HISTORYID,
                               node.getHistoryId());
-    query.addWhereExprEqValue(TYPE_NODEABSTRACT_A_COPYID, node.getCopyId());
-    query.addSelect(TYPE_NODEABSTRACT_A_TYPE);
-    query.addSelect(TYPE_NODEABSTRACT_A_REVISION);
-    query.addSelect(TYPE_NODEABSTRACT_A_ID);
+    query.addWhereExprEqValue(TYPE_NODEABSTRACTREV_A_COPYID, node.getCopyId());
+    query.addSelect(TYPE_NODEABSTRACTREV_A_TYPE);
+    query.addSelect(TYPE_NODEABSTRACTREV_A_REVISION);
+    query.addSelect(TYPE_NODEABSTRACTREV_A_ID);
     query.execute();
 
     final List<List<Instance>> list = new ArrayList<List<Instance>>();
@@ -133,11 +144,11 @@ public class NodeUI implements NamesInterface {
       final List<Instance> instances = new ArrayList<Instance>(1);
       final StringBuilder keyBldr = new StringBuilder()
         .append(instanceKey).append("-")
-        .append(query.get(TYPE_NODEABSTRACT_A_REVISION));
+        .append(query.get(TYPE_NODEABSTRACTREV_A_REVISION));
 
-       instances.add(Instance.get((Type) query.get(TYPE_NODEABSTRACT_A_TYPE),
-                                  (Long) query.get(TYPE_NODEABSTRACT_A_ID),
-                                  keyBldr.toString()));
+      instances.add(Instance.get((Type) query.get(TYPE_NODEABSTRACTREV_A_TYPE),
+                                 (Long) query.get(TYPE_NODEABSTRACTREV_A_ID),
+                                 keyBldr.toString()));
       list.add(instances);
     }
 
@@ -206,12 +217,22 @@ public class NodeUI implements NamesInterface {
     final String instanceKey = (String) _parameter.get(ParameterValues.OTHERS);
     Instance instance = null;
     if (instanceKey != null) {
-      if (instanceKey.indexOf("|") < 0 && instanceKey.indexOf("-") < 0) {
+      final boolean revision = instanceKey.contains("-");
+      if (instanceKey.indexOf("|") < 0 && !revision) {
         instance = Instance.get(instanceKey);
       } else {
         final List<Node> nodes = Node.getNodeHirachy(instanceKey);
         final Node node = nodes.get(nodes.size() - 1);
-        instance = Instance.get(node.getType(), node.getId(), instanceKey);
+        Type type = node.getType();
+        if (revision) {
+          if (type.getName().equals(TYPE_NODEDIRECTORY)) {
+            type = Type.get(TYPE_NODEDIRECTORYREV);
+          } else {
+            type = Type.get(TYPE_NODEFILEREV);
+          }
+        }
+
+        instance = Instance.get(type, node.getId(), instanceKey);
       }
     }
     final Return ret = new Return();
@@ -231,4 +252,25 @@ public class NodeUI implements NamesInterface {
     return  new Return();
   }
 
+  public Return checkout(final Parameter _parameter) throws EFapsException {
+    final Return ret = new Return();
+    final Instance instance = _parameter.getInstance();
+    final Node node = Node.getNodeFromDB(instance.getId(), instance.getKey());
+
+    final Checkout checkout = new Checkout(Instance.get(Type.get(TYPE_FILE),
+                                                           node.getFileId()));
+    File file = null;
+    try {
+      checkout.preprocess();
+      file = File.createTempFile(checkout.getFileName(), ".txt");
+
+      final FileOutputStream stream = new FileOutputStream(file);
+      checkout.execute(stream);
+    } catch (final Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    ret.put(ReturnValues.VALUES, file);
+    return ret;
+  }
 }

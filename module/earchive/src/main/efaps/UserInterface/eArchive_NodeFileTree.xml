@@ -34,7 +34,7 @@
     <name>eArchive_NodeFileTree</name>
     <!-- targets -->
     <target>
-      <menu>eArchive_NodeAbstractTree_Menu</menu>
+      <menu>eArchive_NodeFileTree_Menu</menu>
       <form>eArchive_NodeFileForm</form>
       <evaluate program="org.efaps.esjp.earchive.StructurBrowser">
         <property name="Types">eArchive_Node2Node</property>
