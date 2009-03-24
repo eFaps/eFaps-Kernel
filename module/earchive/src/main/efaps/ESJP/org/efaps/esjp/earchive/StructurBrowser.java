@@ -50,7 +50,7 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("c3967e69-82e1-4b16-9172-ef97fbeb3f54")
 @EFapsRevision("$Rev$")
-public class StructurBrowser implements EventExecution {
+public class StructurBrowser implements EventExecution, NamesInterface {
 
   /**
    * @param _parameter Parameter
@@ -156,7 +156,8 @@ public class StructurBrowser implements EventExecution {
       parentInstanceKey = _instance.getKey();
     } else {
       parentId = node.getId();
-      parentInstanceKey = node.getHistoryId() + "." + node.getCopyId();
+      parentInstanceKey = node.getHistoryId() + SEPERATOR_IDS
+                                                            + node.getCopyId();
     }
     final SearchQuery query = new SearchQuery();
     query.setQueryTypes("eArchive_Node2NodeView");
@@ -173,14 +174,14 @@ public class StructurBrowser implements EventExecution {
     while (query.next()) {
       final List<Object[]> instances = new ArrayList<Object[]>(1);
       final StringBuilder instanceKey = new StringBuilder()
-        .append(parentInstanceKey).append("|")
+        .append(parentInstanceKey).append(SEPERATOR_INSTANCE)
         .append(query.get("HistoryId")).append(".").append(query.get("CopyId"));
 
       instances.add(new Object[] {
           Instance.get(Type.get((Long) query.get("NodeType")),
           ((Long) query.get("Child")).toString(),
           instanceKey.toString()),
-          true });
+          null });
       lists.add(instances);
     }
     ret.put(ReturnValues.VALUES, lists);

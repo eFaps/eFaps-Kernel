@@ -350,16 +350,16 @@ public class Node implements NamesInterface{
     final List<Node> ret = new ArrayList<Node>();
     String revision = null;
     final String instanceKey;
-    if (_instanceKey.contains("-")) {
-      final int pos = _instanceKey.indexOf("-");
-      revision = _instanceKey.substring( pos+ 1);
-      instanceKey = _instanceKey.substring(0,pos);
+    if (_instanceKey.contains(SEPERATOR_REVISION)) {
+      final int pos = _instanceKey.indexOf(SEPERATOR_REVISION);
+      revision = _instanceKey.substring(pos + 1);
+      instanceKey = _instanceKey.substring(0, pos);
     } else {
       instanceKey = _instanceKey;
     }
     final String[] pairs;
-    if (instanceKey.contains("|")) {
-      pairs = instanceKey.split("\\|");
+    if (instanceKey.contains(SEPERATOR_INSTANCE)) {
+      pairs = instanceKey.split(SEPERATOR_INSTANCE_RE);
     } else {
       pairs = new String[]{instanceKey};
     }
@@ -398,7 +398,7 @@ public class Node implements NamesInterface{
       PreparedStatement stmt = null;
       try {
         stmt = con.getConnection().prepareStatement(cmd.toString());
-        final String[] pair = pairs[0].split("\\.");
+        final String[] pair = pairs[0].split(SEPERATOR_IDS_RE);
         stmt.setLong(1, Long.parseLong(pair[0]));
         stmt.setLong(2, Long.parseLong(pair[1]));
         if (revision != null) {
@@ -419,7 +419,7 @@ public class Node implements NamesInterface{
         resultset.close();
 
         for (int i = 1; i < pairs.length; i++) {
-          final String[] childPair = pairs[i].split("\\.");
+          final String[] childPair = pairs[i].split(SEPERATOR_IDS_RE);
           final Node child = getChildNode(current, Long.parseLong(childPair[0]),
                                           Long.parseLong(childPair[1]));
           ret.add(child);
@@ -613,7 +613,11 @@ public class Node implements NamesInterface{
       final Node node = iter.next();
       final Node reviseNode = node.getNodeClone();
       ret.add(reviseNode);
-      final List<Node> children = node.getChildNodes(current.getAncestor(), null);
+      final List<Node> list = new ArrayList<Node>();
+      if (current.getAncestor() != null) {
+        list.add(current.getAncestor());
+      }
+      final List<Node> children = node.getChildNodes(list, null);
       children.add(current);
       Node2Node.connect(reviseNode, children);
       if (reviseNode.isRoot()) {
@@ -630,18 +634,19 @@ public class Node implements NamesInterface{
    * @throws EFapsException
    *
    */
-  private List<Node> getChildNodes(final Node _excludeNode,
+  private List<Node> getChildNodes(final List<Node> _excludeNodes,
                                    final Long _revision)
       throws EFapsException {
 
     final StringBuilder cmd = new StringBuilder();
-    cmd.append(" SELECT id, typeid, childid, name, revision, nodetype from ")
+    cmd.append(" SELECT id, nodetype, childid, historyid, copyid, revision, name  from ")
       .append(" v_eanode2node")
       .append(" where parentid = ?");
     if (_revision != null) {
-      cmd.append("and revision = ?");
+      cmd.append(" and revision = ?");
     }
-    final ConnectionResource con = Context.getThreadContext().getConnectionResource();
+    final ConnectionResource con
+                          = Context.getThreadContext().getConnectionResource();
     final List<Node> ret = new ArrayList<Node>();
     try {
 
@@ -657,15 +662,31 @@ public class Node implements NamesInterface{
 
        while (resultset.next()) {
          final Long childid = resultset.getLong(3);
+         final Long historyIdTmp = resultset.getLong(4);
+         final Long copyIdTmp = resultset.getLong(5);
          boolean add = true;
-         if (_excludeNode != null) {
-           if (childid == _excludeNode.getId()) {
-             add = false;
+         if (_excludeNodes != null) {
+           for (final Node excludeNode : _excludeNodes) {
+             if (excludeNode.getId() != null) {
+               if (childid == excludeNode.getId()) {
+                 add = false;
+                 break;
+               }
+             } else {
+               if (historyIdTmp == excludeNode.getHistoryId()
+                   && copyIdTmp == excludeNode.getCopyId()) {
+                 add = false;
+                 break;
+               }
+             }
            }
+
          }
          if (add) {
            final Node child = new Node(childid, Type.get(resultset.getLong(2)),
-               null, null, resultset.getLong(5), resultset.getString(3), null,null);
+                                       historyIdTmp, copyIdTmp,
+                                       resultset.getLong(6),
+                                       resultset.getString(7), null, null);
            child.setParent(this);
            ret.add(child);
          }
@@ -772,12 +793,35 @@ public class Node implements NamesInterface{
     final Node clone = getNodeClone();
     ret.add(clone);
     //connect existing children to clone
-    final List<Node> children = getChildNodes(null, null);
-    Node2Node.connect(clone, children);
+    final List<Node> childrenTmp = getChildNodes(null, null);
+    Node2Node.connect(clone, childrenTmp);
     final List<Node> nodes = getNodeHirachy(this.idPath);
     // remove last node from the hirachy because it is the node that was renamed
     nodes.remove(nodes.size() - 1);
     clone.bubbleUp(nodes);
+    return ret;
+  }
+
+
+  public List<Node> deleteChildren(final String[] _instanceKeys) throws EFapsException{
+    final List<Node> ret = new ArrayList<Node>();
+    final List<Node> remove = new ArrayList<Node>();
+    for (final String key : _instanceKeys) {
+      System.out.println(key);
+      final String inst = key.substring(key.lastIndexOf(SEPERATOR_INSTANCE) + 1);
+      System.out.println(inst);
+      final String[] ids = inst.split(SEPERATOR_IDS_RE);
+      remove.add(new Node(null, null, Long.parseLong(ids[0]),
+                          Long.parseLong(ids[1]), null, null, null, null));
+    }
+    final List<Node> childrenTmp = getChildNodes(remove, null);
+    final Node clone = getNodeClone();
+    Node2Node.connect(clone, childrenTmp);
+    final List<Node> nodes = getNodeHirachy(this.idPath);
+    // remove last node from the hirachy because it is this node
+    nodes.remove(nodes.size() - 1);
+    clone.bubbleUp(nodes);
+    ret.add(clone);
     return ret;
   }
 

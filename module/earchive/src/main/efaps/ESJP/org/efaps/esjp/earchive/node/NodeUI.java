@@ -65,8 +65,8 @@ public class NodeUI implements NamesInterface {
     if (node == null) {
       parentId = instance.getId();
       final String keyTmp = instance.getKey();
-      if (keyTmp.contains("-")) {
-        final int pos = keyTmp.indexOf("-");
+      if (keyTmp.contains(SEPERATOR_REVISION)) {
+        final int pos = keyTmp.indexOf(SEPERATOR_REVISION);
         revision = keyTmp.substring(pos);
         parentInstanceKey = keyTmp.substring(0, pos);
       } else {
@@ -74,7 +74,7 @@ public class NodeUI implements NamesInterface {
       }
     } else {
       parentId = node.getId();
-      parentInstanceKey = node.getHistoryId() + "." + node.getCopyId();
+      parentInstanceKey = node.getHistoryId() + SEPERATOR_IDS + node.getCopyId();
     }
     final SearchQuery query = new SearchQuery();
     query.setQueryTypes("eArchive_Node2NodeView");
@@ -90,8 +90,8 @@ public class NodeUI implements NamesInterface {
     while (query.next()) {
       final List<Instance> instances = new ArrayList<Instance>(1);
       final StringBuilder instanceKey = new StringBuilder()
-        .append(parentInstanceKey).append("|")
-        .append(query.get("HistoryId")).append(".").append(query.get("CopyId"))
+        .append(parentInstanceKey).append(SEPERATOR_INSTANCE)
+        .append(query.get("HistoryId")).append(SEPERATOR_IDS).append(query.get("CopyId"))
         .append(revision != null ? revision : "");
 
       Type type = Type.get((Long) query.get("NodeType"));
@@ -122,7 +122,7 @@ public class NodeUI implements NamesInterface {
     final String instanceKey;
     if ("eArchive_Repository".equals(instance.getType().getName())) {
       node = Node.getRootNodeFromDB(new Repository(instance));
-      instanceKey = node.getHistoryId() + "." + node.getCopyId();
+      instanceKey = node.getHistoryId() + SEPERATOR_INSTANCE + node.getCopyId();
     } else {
       node = Node.getNodeFromDB(instance.getId(), instance.getKey());
       instanceKey = instance.getKey();
@@ -143,7 +143,7 @@ public class NodeUI implements NamesInterface {
     while (query.next()) {
       final List<Instance> instances = new ArrayList<Instance>(1);
       final StringBuilder keyBldr = new StringBuilder()
-        .append(instanceKey).append("-")
+        .append(instanceKey).append(SEPERATOR_REVISION)
         .append(query.get(TYPE_NODEABSTRACTREV_A_REVISION));
 
       instances.add(Instance.get((Type) query.get(TYPE_NODEABSTRACTREV_A_TYPE),
@@ -217,8 +217,8 @@ public class NodeUI implements NamesInterface {
     final String instanceKey = (String) _parameter.get(ParameterValues.OTHERS);
     Instance instance = null;
     if (instanceKey != null) {
-      final boolean revision = instanceKey.contains("-");
-      if (instanceKey.indexOf("|") < 0 && !revision) {
+      final boolean revision = instanceKey.contains(SEPERATOR_REVISION);
+      if (instanceKey.indexOf(SEPERATOR_INSTANCE) < 0 && !revision) {
         instance = Instance.get(instanceKey);
       } else {
         final List<Node> nodes = Node.getNodeHirachy(instanceKey);
@@ -231,7 +231,6 @@ public class NodeUI implements NamesInterface {
             type = Type.get(TYPE_NODEFILEREV);
           }
         }
-
         instance = Instance.get(type, node.getId(), instanceKey);
       }
     }
@@ -242,13 +241,17 @@ public class NodeUI implements NamesInterface {
 
   public Return removeNode(final Parameter _parameter) throws EFapsException {
     final Instance instance = _parameter.getInstance();
-    final Node node;
-    if ("eArchive_Repository".equals(instance.getType().getName())) {
-      node = Node.getRootNodeFromDB(new Repository(instance));
-    } else {
-      node = Node.getNodeFromDB(instance.getId(), instance.getKey());
+    final String[] instanceKeys
+                            = (String[]) _parameter.get(ParameterValues.OTHERS);
+    if (instanceKeys != null) {
+      final Node node;
+      if ("eArchive_Repository".equals(instance.getType().getName())) {
+        node = Node.getRootNodeFromDB(new Repository(instance));
+      } else {
+        node = Node.getNodeFromDB(instance.getId(), instance.getKey());
+      }
+      node.deleteChildren(instanceKeys);
     }
-
     return  new Return();
   }
 
