@@ -351,7 +351,6 @@ public class UITable extends AbstractUIObject {
         Attribute attr = null;
 
         String strValue = "";
-        final String instanceKey = "";
         for (final Field field : _fields) {
           Object value = null;
 

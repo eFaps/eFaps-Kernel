@@ -30,10 +30,15 @@ div.wicket-tree {
   font-size: 9pt;  
   border: 0px solid #ccc;
   margin: 0;
+  width:100%;
 }
 
 div.wicket-tree a {
   color: #00A000;
+}
+
+div.wicket-tree div.a_ {
+  padding-left: 0;
 }
 
 div.wicket-tree span.junction {
