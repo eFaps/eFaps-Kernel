@@ -364,7 +364,7 @@ public class StructurBrowserTree extends DefaultAbstractTree {
     protected void respond(final AjaxRequestTarget _target) {
 
       final DefaultMutableTreeNode node =
-          StructurBrowserTree.this.instanceKey2Node.get(getOid());
+          StructurBrowserTree.this.instanceKey2Node.get(getInstanceKey());
       final DefaultTreeModel treemodel =
           (DefaultTreeModel) getComponent().getDefaultModel().getObject();
       final UIStructurBrowser model =

@@ -45,7 +45,7 @@ public abstract class AbstractAjaxUpdateBehavior extends
   /**
    * This instance variable stores the oid of this behavior.
    */
-  private String oid;
+  private String instanceKey;
 
   /**
    * @return String
@@ -91,21 +91,21 @@ public abstract class AbstractAjaxUpdateBehavior extends
   }
 
   /**
-   * Setter method for instance variable {@link #oid}.
+   * Setter method for instance variable {@link #instanceKey}.
    *
-   * @param _oid value for instance variable {@link #oid}
+   * @param _instanceKey value for instance variable {@link #instanceKey}
    */
-  public void setInstanceKey(final String _oid) {
-    this.oid = _oid;
+  public void setInstanceKey(final String _instanceKey) {
+    this.instanceKey = _instanceKey;
   }
 
   /**
-   * This is the getter method for the instance variable {@link #oid}.
+   * This is the getter method for the instance variable {@link #instanceKey}.
    *
-   * @return value of instance variable {@link #oid}
+   * @return value of instance variable {@link #instanceKey}
    */
-  public String getOid() {
-    return this.oid;
+  public String getInstanceKey() {
+    return this.instanceKey;
   }
 
 
