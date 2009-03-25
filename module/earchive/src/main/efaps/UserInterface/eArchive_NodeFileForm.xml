@@ -41,6 +41,19 @@
       <property name="Searchable">false</property>
       <property name="ShowTypeIcon">true</property>
     </field>
+    <field name="upload">
+      <property name="Label">eArchive_NodeFileForm/upload.Label</property>
+      <property name="Searchable">false</property>
+      <property name="Editable">false</property>
+      <property name="Creatable">true</property>
+      <property name="Viewable">false</property>
+      <property name="Required">true</property>
+      <trigger name="eArchive_NodeFileForm/FileUpload"
+               event="UI_FIELD_VALUE" 
+               program="org.efaps.esjp.common.file.FileField"
+               method="getFieldValueUI">
+        <property name="FileNameField">name</property>
+    </trigger>
     <field name="name">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>
@@ -55,16 +68,6 @@
       <property name="Expression">Revision</property>
       <property name="Searchable">true</property>
     </field>
-    <field name="upload">
-      <property name="Label">eArchive_NodeFileForm/upload.Label</property>
-      <property name="Searchable">false</property>
-      <property name="Editable">false</property>
-      <property name="Creatable">true</property>
-      <property name="Viewable">false</property>
-      <trigger name="eArchive_NodeFileForm/FileUpload"
-               event="UI_FIELD_VALUE" 
-               program="org.efaps.esjp.common.file.FileField"
-               method="getFieldValueUI"/>
     </field>
   </definition>
 </ui-form>
