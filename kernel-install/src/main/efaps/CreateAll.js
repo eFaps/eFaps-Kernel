@@ -439,8 +439,8 @@ function _eFapsCreateDataModelTablesStep1()  {
   _eFapsCreateAttrType(stmt, null, '72221a59-df5d-4c56-9bec-c9167de80f2b', 'String',         'org.efaps.admin.datamodel.attributetype.StringType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null);
   _eFapsCreateAttrType(stmt, null, '87a372f0-9e71-45ed-be32-f2a95480a7ee', 'Password',       'org.efaps.admin.datamodel.attributetype.PasswordType',       'org.efaps.admin.datamodel.ui.PasswordUI',  null, null);
   _eFapsCreateAttrType(stmt, null, 'bb1d4c0b-4fee-4607-94b9-7c742949c099', 'OID',            'org.efaps.admin.datamodel.attributetype.OIDType',            'org.efaps.admin.datamodel.ui.StringUI',  null, null);
-  _eFapsCreateAttrType(stmt, null, 'b9d0e298-f96b-4b78-aa6c-ae8c71952f6c', 'Long',           'org.efaps.admin.datamodel.attributetype.LongType',           'org.efaps.admin.datamodel.ui.StringUI',  null, null);
-  _eFapsCreateAttrType(stmt, null, '41451b64-cb24-4e77-8d9e-5b6eb58df56f', 'Integer',        'org.efaps.admin.datamodel.attributetype.IntegerType',        'org.efaps.admin.datamodel.ui.StringUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, 'b9d0e298-f96b-4b78-aa6c-ae8c71952f6c', 'Long',           'org.efaps.admin.datamodel.attributetype.LongType',           'org.efaps.admin.datamodel.ui.NumberUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, '41451b64-cb24-4e77-8d9e-5b6eb58df56f', 'Integer',        'org.efaps.admin.datamodel.attributetype.IntegerType',        'org.efaps.admin.datamodel.ui.NumberUI',  null, null);
   _eFapsCreateAttrType(stmt, null, 'd4a96228-1af9-448b-8f0b-7fe2790835af', 'Real',           'org.efaps.admin.datamodel.attributetype.RealType',           'org.efaps.admin.datamodel.ui.StringUI',  null, null);
   _eFapsCreateAttrType(stmt, null, '7fb3799d-4e31-45a3-8c5e-4fbf445ec3c1', 'Boolean',        'org.efaps.admin.datamodel.attributetype.BooleanType',        'org.efaps.admin.datamodel.ui.BooleanUI',  null, null);
   _eFapsCreateAttrType(stmt, null, '68ce3aa6-e3e8-40bb-b48f-2a67948c2e7e', 'Date',           'org.efaps.admin.datamodel.attributetype.DateTimeType',       'org.efaps.admin.datamodel.ui.DateUI',  null, null);
