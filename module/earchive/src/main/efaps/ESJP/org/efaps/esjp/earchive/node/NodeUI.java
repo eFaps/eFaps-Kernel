@@ -122,7 +122,7 @@ public class NodeUI implements NamesInterface {
     final String instanceKey;
     if ("eArchive_Repository".equals(instance.getType().getName())) {
       node = Node.getRootNodeFromDB(new Repository(instance));
-      instanceKey = node.getHistoryId() + SEPERATOR_INSTANCE + node.getCopyId();
+      instanceKey = node.getHistoryId() + SEPERATOR_IDS + node.getCopyId();
     } else {
       node = Node.getNodeFromDB(instance.getId(), instance.getKey());
       instanceKey = instance.getKey();
