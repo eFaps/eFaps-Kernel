@@ -75,6 +75,12 @@
   border-right: 1px solid #ddd;
 }
 
+/* For firefox this must be set especially for input and textarea */
+.eFapsFormValue INPUT, .eFapsFormValue TEXTAREA {
+  font-family: arial, verdana, helvetica, sans-serif;
+  font-size: 9pt;
+}
+
 /* Input Field Appearance */
 .eFapsFormInputField {
   background-color: #eeeeee;
