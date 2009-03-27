@@ -56,10 +56,12 @@
                  HISTORYID, 
                  COPYID, 
                  T_EANODE.REVISION, 
-                 fileid, 
-                 T_EANODE.NAME
+                 FILEID, 
+                 T_EANODE.NAME,
+                 T_EAREVISION.MESSAGE
             from T_EANODE
             join T_CMABSTRACT on T_CMABSTRACT.ID = T_EANODE.TYPEID
+       left join T_EAREVISION on T_EAREVISION.ID = T_EANODE.REVISION
       </sql>
     </database>
   </definition>

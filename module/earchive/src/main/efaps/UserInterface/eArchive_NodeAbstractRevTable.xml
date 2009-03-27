@@ -23,45 +23,35 @@
 
 -->
 
-<ui-form  xmlns="http://www.efaps.org/xsd" 
+<ui-table xmlns="http://www.efaps.org/xsd" 
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>01fe14bc-3db4-4709-96d9-e84f467c5dc6</uuid>
-  <file-application></file-application>
+  <uuid>86794a98-538b-46c4-ad2f-5c1ca51ad788</uuid>
+  <file-application>eArchive</file-application>
   <file-revision>$Rev$</file-revision>
-
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>eArchive_NodeAbstractForm</name>
+    <name>eArchive_NodeAbstractRevTable</name>
     <!-- fields -->
-    <field name="type">
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
-      <property name="Expression">Type</property>
-      <property name="Searchable">false</property>
-      <property name="ShowTypeIcon">true</property>
-    </field>
     <field name="name">
-      <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
       <property name="Expression">Name</property>
-      <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Label">eArchive_NodeAbstractRev/Name.Label</property>
+      <property name="ShowTypeIcon">true</property>
     </field>
     <field name="revision">
       <property name="Creatable">false</property>
       <property name="Editable">false</property>
       <property name="Expression">Revision</property>
       <property name="Searchable">true</property>
+      <property name="Label">eArchive_NodeAbstractRev/Revision.Label</property>
     </field>
     <field name="commitMessage">
-      <property name="Creatable">true</property>
-      <property name="Viewable">false</property>
-      <property name="Expression">Name</property>
-      <property name="Label">eArchive_NodeAbstractForm/commitMessage.Label</property>
-      <property name="Rows">10</property>
-      <property name="Columns">40</property>
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">CommitMessage</property>
+      <property name="Searchable">true</property>
+      <property name="Label">eArchive_NodeAbstractRev/CommitMessage.Label</property>
     </field>
   </definition>
-</ui-form>
+</ui-table>
