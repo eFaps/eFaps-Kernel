@@ -202,6 +202,27 @@ public class NodeUI implements NamesInterface {
   }
 
 
+  public Return checkinFile(final Parameter _parameter) throws EFapsException {
+    final Instance instance = _parameter.getInstance();
+    final Node node = Node.getNodeFromDB(instance.getId(), instance.getKey());
+    final List<Node> newNodes = node.updateFile();
+     final Node newFile = newNodes.get(newNodes.size() - 1);
+    final Instance fileInstance = Instance.get(Type.get(TYPE_FILE),
+                                               newFile.getFileId());
+    final Context.FileParameter fileItem =
+                Context.getThreadContext().getFileParameters().get("upload");
+
+    final Checkin checkin = new Checkin(fileInstance);
+    try {
+      checkin.execute(fileItem.getName(), fileItem.getInputStream(),
+          (int) fileItem.getSize());
+    } catch (final IOException e) {
+      throw new EFapsException(this.getClass(), "execute", e, _parameter);
+    }
+    return new Return();
+  }
+
+
   public Return rename(final Parameter _parameter)
     throws EFapsException {
     final String name = _parameter.getParameterValue("name");

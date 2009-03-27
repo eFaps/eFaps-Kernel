@@ -604,7 +604,7 @@ public class Node implements NamesInterface{
     return bubbleUp(nodes);
   }
 
-  private List<Node> bubbleUp(final List<Node> _nodes) throws EFapsException{
+  public List<Node> bubbleUp(final List<Node> _nodes) throws EFapsException{
     final List<Node> ret = new ArrayList<Node>();
     Collections.reverse(_nodes);
     final Iterator<Node> iter = _nodes.iterator();
@@ -802,14 +802,26 @@ public class Node implements NamesInterface{
     return ret;
   }
 
+  public List<Node> updateFile() throws EFapsException {
+    final List<Node> ret = new ArrayList<Node>();
+    //make a clone
+    this.fileId = createFile();
+    final Node clone = getNodeClone();
+    ret.add(clone);
+    final List<Node> nodes = getNodeHirachy(this.idPath);
+    // remove last node from the hirachy because it is this node
+    nodes.remove(nodes.size() - 1);
+    clone.bubbleUp(nodes);
+    return ret;
+  }
+
+
 
   public List<Node> deleteChildren(final String[] _instanceKeys) throws EFapsException{
     final List<Node> ret = new ArrayList<Node>();
     final List<Node> remove = new ArrayList<Node>();
     for (final String key : _instanceKeys) {
-      System.out.println(key);
       final String inst = key.substring(key.lastIndexOf(SEPERATOR_INSTANCE) + 1);
-      System.out.println(inst);
       final String[] ids = inst.split(SEPERATOR_IDS_RE);
       remove.add(new Node(null, null, Long.parseLong(ids[0]),
                           Long.parseLong(ids[1]), null, null, null, null));

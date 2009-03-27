@@ -34,9 +34,9 @@
     <name>eArchive_NodeFileTree_Menu_Action_Checkin</name>
     <!-- target definitions -->
     <target>
-      <form>eArchive_NodeAbstractForm</form>
+      <form>eArchive_NodeFileForm</form>
       <execute program="org.efaps.esjp.earchive.node.NodeUI"
-               method="rename" />
+               method="checkinFile" />
       <instance program="org.efaps.esjp.earchive.node.NodeUI"
                 method="getInstance"/>
     </target>
