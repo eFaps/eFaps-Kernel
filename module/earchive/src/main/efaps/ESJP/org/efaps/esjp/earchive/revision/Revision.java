@@ -29,6 +29,7 @@ import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.esjp.earchive.NamesInterface;
 import org.efaps.esjp.earchive.node.Node;
 import org.efaps.esjp.earchive.repository.Repository;
 import org.efaps.util.EFapsException;
@@ -41,15 +42,12 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("28f7fa7e-0687-499d-9355-783038019331")
 @EFapsRevision("$Rev$")
-public class Revision {
+public class Revision implements NamesInterface {
 
-  private static final String TYPE_REVISION = "eArchive_Revision";
-  private static final String TABLE_REVISION = "T_EAREVISION";
-  private static final String TABLE_REPOSITORY = "T_EAREPOSITORY";
-
-
+  /**
+   * Revisionnumber of this Revision.
+   */
   private Long revision;
-
 
   /**
    * Getter method for instance variable {@link #revision}.
@@ -61,13 +59,22 @@ public class Revision {
   }
 
   public static Revision getNewRevision(final Repository _repository,
-                                        final Node _node)
+                                        final Node _node,
+                                        final String _msg)
       throws EFapsException {
     final StringBuilder cmd = new StringBuilder();
 
     cmd.append("insert into ").append(TABLE_REVISION)
-      .append("(id, repositoryid, revision, nodeid, creator, created)")
-      .append(" values (?,?,?,?,?,").append(Context.getDbType().getCurrentTimeStamp())
+      .append("(")
+      .append(TABLE_REVISION_C_ID).append(",")
+      .append(TABLE_REVISION_C_REPOSITORYID).append(",")
+      .append(TABLE_REVISION_C_REVISION).append(",")
+      .append(TABLE_REVISION_C_NODEID).append(",")
+      .append(TABLE_REVISION_C_MESSAGE).append(",")
+      .append(TABLE_REVISION_C_CREATOR).append(",")
+      .append(TABLE_REVISION_C_CREATED)
+      .append(") values (?,?,?,?,?,?,")
+      .append(Context.getDbType().getCurrentTimeStamp())
       .append(")");
 
     final Context context = Context.getThreadContext();
@@ -90,7 +97,8 @@ public class Revision {
        stmt.setLong(2, _repository.getId());
        stmt.setLong(3, revision.getRevision());
        stmt.setLong(4, _node.getId());
-       stmt.setLong(5, context.getPersonId());
+       stmt.setString(5, _msg);
+       stmt.setLong(6, context.getPersonId());
        final int rows = stmt.executeUpdate();
        final ResultSet resultset = stmt.getGeneratedKeys();
 

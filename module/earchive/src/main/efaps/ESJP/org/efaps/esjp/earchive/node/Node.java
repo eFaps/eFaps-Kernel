@@ -598,13 +598,15 @@ public class Node implements NamesInterface{
    * @return
    * @throws EFapsException
    */
-  public List<Node> connect2Parent(final Node _parentNode)
+  public List<Node> connect2Parent(final Node _parentNode,
+                                   final String _commitMsg)
       throws EFapsException {
     final List<Node> nodes = getNodeHirachy(_parentNode.getIdPath());
-    return bubbleUp(nodes);
+    return bubbleUp(nodes, _commitMsg);
   }
 
-  public List<Node> bubbleUp(final List<Node> _nodes) throws EFapsException{
+  public List<Node> bubbleUp(final List<Node> _nodes, final String _commitMsg)
+      throws EFapsException{
     final List<Node> ret = new ArrayList<Node>();
     Collections.reverse(_nodes);
     final Iterator<Node> iter = _nodes.iterator();
@@ -617,12 +619,12 @@ public class Node implements NamesInterface{
       if (current.getAncestor() != null) {
         list.add(current.getAncestor());
       }
-      final List<Node> children = node.getChildNodes(list, null);
-      children.add(current);
-      Node2Node.connect(reviseNode, children);
+      final List<Node> childrenTmp = node.getChildNodes(list, null);
+      childrenTmp.add(current);
+      Node2Node.connect(reviseNode, childrenTmp);
       if (reviseNode.isRoot()) {
         Revision.getNewRevision(new Repository(reviseNode.getRepositoryId()),
-                                               reviseNode);
+                                               reviseNode, _commitMsg);
       } else {
         current = reviseNode;
       }
@@ -786,7 +788,8 @@ public class Node implements NamesInterface{
    * @return
    * @throws EFapsException
    */
-  public List<Node> rename(final String _name) throws EFapsException {
+  public List<Node> rename(final String _name, final String _commitMsg)
+      throws EFapsException {
     final List<Node> ret = new ArrayList<Node>();
     this.name = _name;
     //make a clone
@@ -798,11 +801,11 @@ public class Node implements NamesInterface{
     final List<Node> nodes = getNodeHirachy(this.idPath);
     // remove last node from the hirachy because it is the node that was renamed
     nodes.remove(nodes.size() - 1);
-    clone.bubbleUp(nodes);
+    clone.bubbleUp(nodes, _commitMsg);
     return ret;
   }
 
-  public List<Node> updateFile() throws EFapsException {
+  public List<Node> updateFile(final String _commitMsg) throws EFapsException {
     final List<Node> ret = new ArrayList<Node>();
     //make a clone
     this.fileId = createFile();
@@ -811,13 +814,15 @@ public class Node implements NamesInterface{
     final List<Node> nodes = getNodeHirachy(this.idPath);
     // remove last node from the hirachy because it is this node
     nodes.remove(nodes.size() - 1);
-    clone.bubbleUp(nodes);
+    clone.bubbleUp(nodes, _commitMsg);
     return ret;
   }
 
 
 
-  public List<Node> deleteChildren(final String[] _instanceKeys) throws EFapsException{
+  public List<Node> deleteChildren(final String[] _instanceKeys,
+                                   final String _commitMsg)
+      throws EFapsException{
     final List<Node> ret = new ArrayList<Node>();
     final List<Node> remove = new ArrayList<Node>();
     for (final String key : _instanceKeys) {
@@ -832,7 +837,7 @@ public class Node implements NamesInterface{
     final List<Node> nodes = getNodeHirachy(this.idPath);
     // remove last node from the hirachy because it is this node
     nodes.remove(nodes.size() - 1);
-    clone.bubbleUp(nodes);
+    clone.bubbleUp(nodes, _commitMsg);
     ret.add(clone);
     return ret;
   }

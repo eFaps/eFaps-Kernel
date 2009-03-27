@@ -80,5 +80,11 @@
       <sqlcolumn>NODEID</sqlcolumn>
     </attribute>
     
+    <attribute>
+      <name>CommitMessage</name>
+      <type>String</type>
+      <sqltable>eArchive_RevisionSQLTable</sqltable>
+      <sqlcolumn>MESSAGE</sqlcolumn>
+    </attribute>
   </definition>
 </datamodel-type>

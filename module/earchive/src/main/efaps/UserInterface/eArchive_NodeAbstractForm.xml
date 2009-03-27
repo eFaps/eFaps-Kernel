@@ -55,5 +55,18 @@
       <property name="Expression">Revision</property>
       <property name="Searchable">true</property>
     </field>
+    <field name="commitMessage">
+      <property name="Creatable">true</property>
+      <property name="Viewable">false</property>
+      <property name="Expression">Name</property>
+    </field>
+    <field name="commitMessage">
+      <property name="Creatable">true</property>
+      <property name="Viewable">false</property>
+      <property name="Expression">Name</property>
+      <property name="Label">eArchive_NodeAbstractForm/commitMessage.Label</property>
+      <property name="Rows">10</property>
+      <property name="Columns">40</property>
+    </field>
   </definition>
 </ui-form>

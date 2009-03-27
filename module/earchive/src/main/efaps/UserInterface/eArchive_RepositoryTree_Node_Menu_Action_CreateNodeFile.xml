@@ -45,7 +45,7 @@
     <property name="Target">modal</property>
     <property name="TargetMode">create</property>
     <property name="TargetCreateType">eArchive_Repository</property>
-    <property name="WindowHeight">150</property>
+    <property name="WindowHeight">330</property>
     <property name="WindowWidth">500</property>
   </definition>
 </ui-command>

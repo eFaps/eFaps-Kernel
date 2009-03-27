@@ -39,6 +39,8 @@ public class RepositoryUI {
   public Return create(final Parameter _parameter) throws EFapsException {
     //create new repository
     final String name = _parameter.getParameterValue("name");
+    final String msg = _parameter.getParameterValue("commitMessage");
+
     final Insert insert = new Insert("eArchive_Repository");
     insert.add("Name", name);
     insert.add("LastRevision", "0");
@@ -46,7 +48,7 @@ public class RepositoryUI {
     final Instance instance = insert.getInstance();
 
     final Node node = Node.createNewNode(name, Node.TYPE_NODEDIRECTORY);
-    Revision.getNewRevision(new Repository(instance), node);
+    Revision.getNewRevision(new Repository(instance), node, msg);
 
     return new Return();
   }

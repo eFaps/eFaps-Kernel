@@ -39,12 +39,13 @@
       <column name="REPOSITORYID"  type="INTEGER"        not-null="true"/>
       <column name="REVISION"      type="INTEGER"        not-null="true"/>
       <column name="NODEID"        type="INTEGER"        not-null="true"/>
+      <column name="MESSAGE"       type="STRING_SHORT"                    length="1024"/>
       <column name="CREATOR"       type="INTEGER"        not-null="true"/>
       <column name="CREATED"       type="DATETIME"       not-null="true"/>
       
       <!-- contraints -->
       <foreign name="T_EAREVISION_FK_REPOSITORY" key="REPOSITORYID" reference="T_CMABSTRACT(ID)"/>
-     <!-- <foreign name="T_EAREVISION_FK_NODE"       key="NODEID"       reference="T_EANODE(ID)"/> -->
+      <foreign name="T_EAREVISION_FK_NODE"       key="NODEID"       reference="T_EANODE(ID)"/>
       <foreign name="T_EAREVISION_FK_CRTR"       key="CREATOR"      reference="T_USERPERSON(ID)"/>
       </database>
   </definition>
@@ -58,6 +59,7 @@
       <column name="REPOSITORYID"  type="INTEGER"        not-null="true"/>
       <column name="REVISION"      type="INTEGER"        not-null="true"/>
       <column name="NODEID"        type="INTEGER"        not-null="true"/>
+      <column name="MESSAGE"       type="STRING_SHORT"                    length="1024"/>
       <column name="CREATOR"       type="INTEGER"        not-null="true"/>
       <column name="CREATED"       type="DATETIME"       not-null="true"/>
      </database>

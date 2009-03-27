@@ -74,7 +74,8 @@ public class NodeUI implements NamesInterface {
       }
     } else {
       parentId = node.getId();
-      parentInstanceKey = node.getHistoryId() + SEPERATOR_IDS + node.getCopyId();
+      parentInstanceKey = node.getHistoryId() + SEPERATOR_IDS
+                            + node.getCopyId();
     }
     final SearchQuery query = new SearchQuery();
     query.setQueryTypes("eArchive_Node2NodeView");
@@ -91,7 +92,8 @@ public class NodeUI implements NamesInterface {
       final List<Instance> instances = new ArrayList<Instance>(1);
       final StringBuilder instanceKey = new StringBuilder()
         .append(parentInstanceKey).append(SEPERATOR_INSTANCE)
-        .append(query.get("HistoryId")).append(SEPERATOR_IDS).append(query.get("CopyId"))
+        .append(query.get("HistoryId")).append(SEPERATOR_IDS)
+        .append(query.get("CopyId"))
         .append(revision != null ? revision : "");
 
       Type type = Type.get((Long) query.get("NodeType"));
@@ -161,6 +163,7 @@ public class NodeUI implements NamesInterface {
   public Return createDirectory(final Parameter _parameter)
       throws EFapsException {
     final String name = _parameter.getParameterValue("name");
+    final String msg = _parameter.getParameterValue("commitMessage");
     final Instance instance = _parameter.getInstance();
     final Node parentNode;
     if ("eArchive_Repository".equals(instance.getType().getName())) {
@@ -169,13 +172,14 @@ public class NodeUI implements NamesInterface {
       parentNode = Node.getNodeFromDB(instance.getId(), instance.getKey());
     }
     final Node newDir = Node.createNewNode(name, Node.TYPE_NODEDIRECTORY);
-    newDir.connect2Parent(parentNode);
+    newDir.connect2Parent(parentNode, msg);
     return new Return();
   }
 
   public Return createFile(final Parameter _parameter)
       throws EFapsException {
     final String name = _parameter.getParameterValue("name");
+    final String msg = _parameter.getParameterValue("commitMessage");
     final Instance instance = _parameter.getInstance();
     final Node node;
     if ("eArchive_Repository".equals(instance.getType().getName())) {
@@ -184,7 +188,7 @@ public class NodeUI implements NamesInterface {
       node = Node.getNodeFromDB(instance.getId(), instance.getKey());
     }
     final Node newFile = Node.createNewNode(name, Node.TYPE_NODEFILE);
-    newFile.connect2Parent(node);
+    newFile.connect2Parent(node, msg);
     final Instance fileInstance = Instance.get(Type.get(TYPE_FILE),
                                                newFile.getFileId());
     final Context.FileParameter fileItem =
@@ -203,9 +207,10 @@ public class NodeUI implements NamesInterface {
 
 
   public Return checkinFile(final Parameter _parameter) throws EFapsException {
+    final String msg = _parameter.getParameterValue("commitMessage");
     final Instance instance = _parameter.getInstance();
     final Node node = Node.getNodeFromDB(instance.getId(), instance.getKey());
-    final List<Node> newNodes = node.updateFile();
+    final List<Node> newNodes = node.updateFile(msg);
      final Node newFile = newNodes.get(newNodes.size() - 1);
     final Instance fileInstance = Instance.get(Type.get(TYPE_FILE),
                                                newFile.getFileId());
@@ -226,10 +231,12 @@ public class NodeUI implements NamesInterface {
   public Return rename(final Parameter _parameter)
     throws EFapsException {
     final String name = _parameter.getParameterValue("name");
+    final String msg = _parameter.getParameterValue("commitMessage");
+
     final Instance instance = _parameter.getInstance();
 
     final Node node = Node.getNodeFromDB(instance.getId(), instance.getKey());
-    node.rename(name);
+    node.rename(name, msg);
     return new Return();
   }
 
@@ -261,6 +268,7 @@ public class NodeUI implements NamesInterface {
   }
 
   public Return removeNode(final Parameter _parameter) throws EFapsException {
+    final String msg = _parameter.getParameterValue("commitMessage");
     final Instance instance = _parameter.getInstance();
     final String[] instanceKeys
                             = (String[]) _parameter.get(ParameterValues.OTHERS);
@@ -271,7 +279,7 @@ public class NodeUI implements NamesInterface {
       } else {
         node = Node.getNodeFromDB(instance.getId(), instance.getKey());
       }
-      node.deleteChildren(instanceKeys);
+      node.deleteChildren(instanceKeys, msg);
     }
     return  new Return();
   }
