@@ -62,15 +62,15 @@ public class StringUI extends AbstractUI {
             } else {
               ret.append("<br/>");
             }
-            ret.append(tmp.replaceAll("\\n", "<br/>").replaceAll("<", "&lt;")
-                        .replaceAll(">", "&gt;"));
+            ret.append(tmp.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+                          .replaceAll("\\n", "<br/>"));
           }
         }
       } else {
         final String tmp = _fieldValue.getValue().toString();
         if (tmp != null) {
-          ret.append(tmp.replaceAll("\\n", "<br/>").replaceAll("<", "&lt;")
-                        .replaceAll(">", "&gt;"));
+          ret.append(tmp.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+                        .replaceAll("\\n", "<br/>"));
         }
       }
     }
