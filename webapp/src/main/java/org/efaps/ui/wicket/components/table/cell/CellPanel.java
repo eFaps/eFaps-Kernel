@@ -26,7 +26,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.components.LabelComponent;
@@ -113,8 +112,7 @@ public class CellPanel extends Panel {
     add(celllink);
 
     if (celllink.isVisible()) {
-      celllink.add(new LabelComponent("linklabel", new Model<String>(cellmodel
-          .getCellValue())));
+      celllink.add(new LabelComponent("linklabel", cellmodel.getCellValue()));
 
       if (cellmodel.getIcon() == null) {
         celllink.add(new WebMarkupContainer("linkicon").setVisible(false));
@@ -124,8 +122,7 @@ public class CellPanel extends Panel {
       add(new WebMarkupContainer("icon").setVisible(false));
       add(new WebMarkupContainer("label").setVisible(false));
     } else {
-      add(new LabelComponent("label",
-                             new Model<String>(cellmodel.getCellValue())));
+      add(new LabelComponent("label", cellmodel.getCellValue()));
       if (cellmodel.getIcon() == null) {
         add(new WebMarkupContainer("icon").setVisible(false));
       } else {
