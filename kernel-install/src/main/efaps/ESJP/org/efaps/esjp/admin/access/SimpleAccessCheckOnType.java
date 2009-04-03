@@ -72,11 +72,14 @@ public class SimpleAccessCheckOnType implements EventExecution
   /**
    * Check for the instance object if the current context user has the access
    * defined in the list of access types.
+   * @param _instance     instance to check for access for
+   * @param _accessType   accesstyep to check the access for
+   * @return  true if access is granted, else false
+   * @throws EFapsException on error
    */
   private boolean checkAccess(final Instance _instance,
                               final AccessType _accessType)
-      throws EFapsException
-  {
+      throws EFapsException {
     final Context context = Context.getThreadContext();
 
     final Type type = _instance.getType();
@@ -103,8 +106,7 @@ public class SimpleAccessCheckOnType implements EventExecution
   private boolean executeStatement(final Context _context,
                                    final StringBuilder _accessSets,
                                    final StringBuilder _users)
-      throws EFapsException
-  {
+      throws EFapsException {
     boolean hasAccess = false;
 
     final StringBuilder cmd = new StringBuilder();
@@ -127,8 +129,7 @@ public class SimpleAccessCheckOnType implements EventExecution
         }
         rs.close();
 
-      }
-      finally {
+      } finally {
         if (stmt != null) {
           stmt.close();
         }
@@ -138,8 +139,7 @@ public class SimpleAccessCheckOnType implements EventExecution
 
     } catch (final SQLException e) {
       LOG.error("sql statement '" + cmd.toString() + "' not executable!", e);
-    }
-    finally {
+    } finally {
       if ((con != null) && con.isOpened()) {
         con.abort();
       }
@@ -148,13 +148,15 @@ public class SimpleAccessCheckOnType implements EventExecution
   }
 
   public Return execute(final Parameter _parameter)
-      throws EFapsException
-  {
-    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    final AccessType accessType = (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);
+      throws EFapsException {
+    final Instance instance
+                          = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final AccessType accessType
+                      = (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);
     final Return ret = new Return();
 
-    if (checkAccess(instance, accessType)) {
+    if (Context.getThreadContext().getPerson() == null
+        || checkAccess(instance, accessType)) {
       ret.put(ReturnValues.TRUE, true);
     }
     return ret;

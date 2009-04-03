@@ -38,16 +38,17 @@ import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Chronology;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.common.SystemConfiguration;
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.datamodel.attributetype.PasswordType;
 import org.efaps.db.Context;
+import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
+import org.efaps.db.Update.Status;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.ChronologyType;
 import org.efaps.util.DateTimeUtil;
@@ -457,67 +458,24 @@ public final class Person extends AbstractUserObject {
    */
   public boolean checkPassword(final String _passwd) throws EFapsException {
     boolean ret = false;
-    ConnectionResource rsrc = null;
-    try {
-      final Context context = Context.getThreadContext();
-      rsrc = context.getConnectionResource();
 
-      PreparedStatement stmt = null;
+    final PreparedStatement stmt = null;
+    final SearchQuery query = new SearchQuery();
+    query.setObject(Type.get(USER_PERSON), getId());
+    query.addSelect("Password");
+    query.addSelect("LastLogin");
+    query.addSelect("LoginTry");
+    query.addSelect("LoginTriesCounter");
+    query.addSelect("Status");
+    query.execute();
+    if (query.next()) {
+      final String pwd = (String) query.get("Password");
 
-      final Type type = Type.get(USER_PERSON);
-
-      final Attribute attrPass = type.getAttribute("Password");
-      final PasswordType val = (PasswordType) attrPass.newInstance();
-      val.set(_passwd);
-      final String encrPass = val.getValue();
-
-      try {
-        stmt =
-            context.getConnection().prepareStatement(
-                "select PASSWORD,"
-                    + " STATUS, "
-                    + " LOGINTRY, "
-                    + " LOGINTRIES "
-                    + "from V_USERPERSON "
-                    + "where NAME=? ");
-        stmt.setString(1, getName());
-        final ResultSet resultset = stmt.executeQuery();
-        if (resultset.next()) {
-          final String pwd = resultset.getString(1).trim();
-          if (encrPass.equals(pwd)) {
-            ret = resultset.getBoolean(2);
-          } else {
-            setFalseLogin(resultset.getTimestamp(3), resultset.getInt(4));
-          }
-
-          if (resultset.next()) {
-            ret = false;
-            LOG.error("found multiple entries for user '" + getName() + "'");
-            throw new EFapsException(getClass(), "checkPassword.Multiple",
-                getName());
-          }
-        } else {
-          LOG.error("unknown username '" + getName() + "'");
-        }
-        resultset.close();
-      } catch (final SQLException e) {
-        LOG.error("password check failed for person '" + getName() + "'", e);
-        throw new EFapsException(getClass(), "checkPassword.SQLException", e,
-            getName());
-      } finally {
-        try {
-          if (stmt != null) {
-            stmt.close();
-          }
-        } catch (final SQLException e) {
-          throw new EFapsException(getClass(), "checkPassword.SQLException", e,
-              getName());
-        }
-      }
-      rsrc.commit();
-    } finally {
-      if ((rsrc != null) && rsrc.isOpened()) {
-        rsrc.abort();
+      if (_passwd.equals(pwd)) {
+        ret = (Boolean) query.get("Status");
+      } else {
+        setFalseLogin((DateTime) query.get("LoginTry"),
+                      (Integer) query.get("LoginTriesCounter"));
       }
     }
     return ret;
@@ -530,7 +488,7 @@ public final class Person extends AbstractUserObject {
    * @param _count    number of tries
    * @throws EFapsException on error
    */
-  private void setFalseLogin(final Timestamp _logintry, final int _count)
+  private void setFalseLogin(final DateTime _logintry, final int _count)
       throws EFapsException {
     if (_count > 0) {
       final Timestamp now = DateTimeUtil.getCurrentTimeFromDB();
@@ -546,7 +504,8 @@ public final class Person extends AbstractUserObject {
                         = kernelConfig.getAttributeValueAsInteger("LoginTries");
 
       final int count = _count + 1;
-      if (dif > 0 && (now.getTime() - _logintry.getTime()) > dif * 60 * 1000) {
+      if (dif > 0
+          && (now.getTime() - _logintry.getMillis()) > dif * 60 * 1000) {
         updateFalseLoginDB(1);
       } else {
         updateFalseLoginDB(count);
@@ -616,21 +575,45 @@ public final class Person extends AbstractUserObject {
    * Before the new password is set, some checks are made.
    *
    * @param _newPasswd  new Password to set
-   * @throws Exception on error
+   * @throws EFapsException on error
    */
   public void setPassword(final String _newPasswd)
-      throws Exception {
+      throws EFapsException {
     final Type type = Type.get(USER_PERSON);
 
     if (_newPasswd.length() == 0) {
       throw new EFapsException(getClass(), "PassWordLength", 1, _newPasswd
           .length());
     }
-    final Attribute attrPass = type.getAttribute("Password");
     final Update update = new Update(type, "" + getId());
-    update.add(attrPass, _newPasswd);
-    update.executeWithoutAccessCheck();
-    update.close();
+    update.add("Password", _newPasswd);
+
+    final Status status = update.add("Password", _newPasswd);
+
+    if ((status.isOk())) {
+      update.execute();
+      update.close();
+    } else {
+      LOG.error("Password could not be set by the Update, due to restrictions "
+                + "e.g. length???");
+      throw new EFapsException(getClass(), "TODO");
+    }
+  }
+
+  /**
+   * @return
+   * @throws EFapsException
+   */
+  public String getPassword() throws EFapsException {
+    String ret = null;
+    final SearchQuery query = new SearchQuery();
+    query.setObject(Type.get(USER_PERSON), getId());
+    query.addSelect("Password");
+    query.execute();
+    if (query.next()) {
+      ret = (String) query.get("Password");
+    }
+    return ret;
   }
 
   /**

@@ -20,8 +20,6 @@
 
 package org.efaps.jaas.efaps;
 
-import static org.efaps.admin.EFapsClassNames.USER_PERSON;
-
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Map;
@@ -37,17 +35,15 @@ import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.efaps.admin.datamodel.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.JAASSystem;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
-import org.efaps.db.Update;
-import org.efaps.db.Update.Status;
 import org.efaps.jaas.ActionCallback;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -170,16 +166,9 @@ public class UserLoginModule implements LoginModule {
 
           ret = true;
           if (mode.equals(ActionCallback.Mode.SET_PASSWORD)) {
-
-            final Type type = Type.get(USER_PERSON);
-            final Update update = new Update(type, "" + person.getId());
-            final Status status = update.add("Password", newPassword);
-
-            if ((status.isOk())) {
-              update.execute();
-            } else {
-              LOG
-                  .error("Password could not be set by the Update, due to restrictions e,g, Lenght???");
+            try {
+              person.setPassword(newPassword);
+            } catch (final Exception e) {
               throw new UpdateException();
             }
           }
@@ -280,8 +269,8 @@ public class UserLoginModule implements LoginModule {
   }
 
   /**
-   * This class is used to throw an error wich indicates that an Update was not
-   * sucessful.
+   * This class is used to throw an error which indicates that an Update was not
+   * successful.
    */
   public class UpdateException extends LoginException {
 
