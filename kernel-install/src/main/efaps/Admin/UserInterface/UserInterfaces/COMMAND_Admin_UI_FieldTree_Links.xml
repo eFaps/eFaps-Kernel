@@ -23,7 +23,8 @@
 
 -->
 
-<ui-command>
+<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>3dd9f62f-6212-4026-adae-89af6aa88f93</uuid>
 
   <!-- ************************************************************************
@@ -54,8 +55,8 @@
     <name>Admin_UI_FieldTree_Links</name>
     <!-- target definitions -->
     <target>
-      <table>Admin_UI_LinkList4Links</table>
       <menu>Admin_UI_FieldTree_Links_Menu</menu>
+      <table>Admin_UI_LinkList4Links</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_UI_Link\From</property>
       </evaluate>

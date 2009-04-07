@@ -23,7 +23,8 @@
 
 -->
 
-<ui-command>
+<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>b6dfa442-215d-47bb-8c7d-9925068dc83f</uuid>
 
   <!-- ************************************************************************
@@ -59,8 +60,8 @@
     </access>
     <!-- target definitions -->
     <target>
-      <table>Admin_DataModel_TypeTable</table>
       <menu>Admin_DataModel_TypeMyDesk_Menu</menu>
+      <table>Admin_DataModel_TypeTable</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
         <property name="Types">Admin_DataModel_Type</property>
       </evaluate>

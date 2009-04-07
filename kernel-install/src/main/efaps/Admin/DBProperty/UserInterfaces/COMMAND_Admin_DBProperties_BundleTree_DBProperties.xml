@@ -23,7 +23,8 @@
 
 -->
 
-<ui-command>
+<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>95f4b661-7111-4717-a0d0-7e16fb721eb5</uuid>
 
   <!-- ************************************************************************
@@ -54,8 +55,8 @@
     <name>Admin_DBProperties_BundleTree_DBProperties</name>
     <!-- target definitions -->
     <target>
-      <table>Admin_DBPropertiesTable</table>
       <menu>Admin_DBProperties_Menu</menu>
+      <table>Admin_DBPropertiesTable</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_DBProperties\BundleID</property>
       </evaluate>

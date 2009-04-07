@@ -23,7 +23,8 @@
 
 -->
 
-<ui-command>
+<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>3362a9b7-6943-4720-b725-f84360d5dd94</uuid>
 
   <!-- ************************************************************************
@@ -54,8 +55,8 @@
     <name>Admin_DBPropertiesTree_Local</name>
     <!-- target definitions -->
     <target>
-      <table>Admin_DBProperties_LocalTable</table>
       <menu>Admin_DBProperties_Local_Menu</menu>
+      <table>Admin_DBProperties_LocalTable</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_DBProperties_Local\PropertyID</property>
       </evaluate>

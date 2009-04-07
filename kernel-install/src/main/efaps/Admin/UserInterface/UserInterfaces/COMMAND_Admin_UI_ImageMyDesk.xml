@@ -23,7 +23,8 @@
 
 -->
 
-<ui-command>
+<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>8bb8e1ff-cdfc-4784-bc41-ee86c9e3ef5e</uuid>
 
   <!-- ************************************************************************
@@ -59,8 +60,8 @@
     </access>
     <!-- target definitions -->
     <target>
-      <table>Admin_UI_FileList</table>
       <menu>Admin_UI_ImageMyDesk_Menu</menu>
+      <table>Admin_UI_FileList</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
         <property name="Types">Admin_UI_Image</property>
       </evaluate>

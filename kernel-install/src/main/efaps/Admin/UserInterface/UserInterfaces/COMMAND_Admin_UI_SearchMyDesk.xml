@@ -23,7 +23,8 @@
 
 -->
 
-<ui-command>
+<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>c1a56a56-683b-4d7d-82a1-a583d9e5fa27</uuid>
 
   <!-- ************************************************************************
@@ -59,8 +60,8 @@
     </access>
     <!-- target definitions -->
     <target>
-      <table>Admin_UI_AbstractList</table>
       <menu>Admin_UI_SearchMyDesk_Menu</menu>
+      <table>Admin_UI_AbstractList</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
         <property name="Types">Admin_UI_Search</property>
       </evaluate>

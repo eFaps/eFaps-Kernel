@@ -23,7 +23,8 @@
 
 -->
 
-<ui-command>
+<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>58792eac-f3c8-4dc3-8420-6dbfa0530cd6</uuid>
 
   <!-- ************************************************************************
@@ -54,8 +55,8 @@
     <name>Admin_UI_CollectionTree_Fields</name>
     <!-- target definitions -->
     <target>
-      <table>Admin_UI_FieldList</table>
       <menu>Admin_UI_CollectionTree_Fields_Menu</menu>
+      <table>Admin_UI_FieldList</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_UI_Field\Collection</property>
       </evaluate>

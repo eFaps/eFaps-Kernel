@@ -23,7 +23,8 @@
 
 -->
 
-<ui-command>
+<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>ff3f9eb3-243c-4f39-a7e4-e52b879ea428</uuid>
 
   <!-- ************************************************************************
@@ -54,8 +55,8 @@
     <name>Admin_UI_AbstractTree_Properties</name>
     <!-- target definitions -->
     <target>
-      <table>Admin_Common_PropertyTable</table>
       <menu>Admin_UI_AbstractTree_Properties_Menu</menu>
+      <table>Admin_Common_PropertyTable</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_Common_Property\Abstract</property>
       </evaluate>

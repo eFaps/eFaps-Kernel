@@ -23,7 +23,9 @@
 
 -->
 
-<ui-command>
+<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+  
   <uuid>dd4731c9-a441-4405-b725-be872f3d0d87</uuid>
 
   <!-- ************************************************************************
@@ -39,7 +41,7 @@
     </version>
     <name>Admin_UI_AbstractTree_Access</name>
   </definition>
-
+ 
   <!-- ************************************************************************
     version definition used to define the command 
   ************************************************************************* -->
