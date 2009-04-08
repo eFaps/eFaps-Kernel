@@ -58,10 +58,12 @@
                  T_EANODE.REVISION, 
                  FILEID, 
                  T_EANODE.NAME,
-                 T_EAREVISION.MESSAGE
+                 T_EAREVISION.MESSAGE,
+                 PROPSETID,
+                 T_EANODE.REPOSITORYID
             from T_EANODE
             join T_CMABSTRACT on T_CMABSTRACT.ID = T_EANODE.TYPEID
-       left join T_EAREVISION on T_EAREVISION.ID = T_EANODE.REVISION
+       left join T_EAREVISION on T_EAREVISION.REVISION = T_EANODE.REVISION and T_EAREVISION.REPOSITORYID = T_EANODE.REPOSITORYID
       </sql>
     </database>
   </definition>

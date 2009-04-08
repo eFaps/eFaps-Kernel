@@ -37,11 +37,13 @@
     <database>
       <table-name>T_EANODE</table-name>
       <!-- columns -->
-      <column name="TYPEID"     type="INTEGER"        not-null="true"/>
-      <column name="HISTORYID"  type="INTEGER"        not-null="true"/>
-      <column name="COPYID"     type="INTEGER"        not-null="true"/>
-      <column name="REVISION"   type="INTEGER"        not-null="true"/>
-      <column name="FILEID"     type="INTEGER" />
+      <column name="TYPEID"       type="INTEGER"        not-null="true"/>
+      <column name="HISTORYID"    type="INTEGER"        not-null="true"/>
+      <column name="COPYID"       type="INTEGER"        not-null="true"/>
+      <column name="REVISION"     type="INTEGER"        not-null="true"/>
+      <column name="REPOSITORYID" type="INTEGER"        not-null="true"/>
+      <column name="FILEID"       type="INTEGER" />
+      <column name="PROPSETID"    type="INTEGER" />
       <column name="NAME"       type="STRING_SHORT"   not-null="true" length="255"/>
      </database>
   </definition>
@@ -62,11 +64,13 @@
     <database>
       <table-name>T_EANODE</table-name>
       <!-- columns -->
-      <column name="TYPEID"     type="INTEGER"        not-null="true"/>
-      <column name="HISTORYID"  type="INTEGER"        not-null="true"/>
-      <column name="COPYID"     type="INTEGER"        not-null="true"/>
-      <column name="REVISION"   type="INTEGER"        not-null="true"/>
-      <column name="FILEID"     type="INTEGER" />
+      <column name="TYPEID"       type="INTEGER"        not-null="true"/>
+      <column name="HISTORYID"    type="INTEGER"        not-null="true"/>
+      <column name="COPYID"       type="INTEGER"        not-null="true"/>
+      <column name="REVISION"     type="INTEGER"        not-null="true"/>
+      <column name="REPOSITORYID" type="INTEGER"        not-null="true"/>
+      <column name="FILEID"       type="INTEGER" />
+      <column name="PROPSETID"    type="INTEGER" />
       <column name="NAME"       type="STRING_SHORT"   not-null="true" length="255"/>
      </database>
   </definition>

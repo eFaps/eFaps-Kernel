@@ -31,6 +31,7 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.esjp.earchive.NamesInterface;
 import org.efaps.util.EFapsException;
 
 /**
@@ -41,8 +42,8 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("2966a217-7bc9-4556-b1c7-11d6bf25a3d7")
 @EFapsRevision("$Rev$")
-public class Node2Node {
-  public static String TABLE_NODE2NODE ="T_EANODE2NODE";
+public class Node2Node implements NamesInterface {
+
   private final String name;
   private final Long parent;
   private final Long child;
@@ -107,8 +108,6 @@ public class Node2Node {
       .append("(id, typeid, parentid, childid)")
       .append(" values (?,?,?,?)");
 
-    Long idTmp = null;
-
     final Context context = Context.getThreadContext();
     ConnectionResource con = null;
 
@@ -121,7 +120,7 @@ public class Node2Node {
         stmt = con.getConnection().prepareStatement(cmd.toString());
 
         for (final Node child : _children) {
-          idTmp = Context.getDbType().getNewId(con.getConnection(),
+          final Long idTmp = Context.getDbType().getNewId(con.getConnection(),
                                                TABLE_NODE2NODE,
                                                "ID");
           stmt.setLong(1, idTmp);

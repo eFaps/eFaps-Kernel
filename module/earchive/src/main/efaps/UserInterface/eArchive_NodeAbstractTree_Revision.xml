@@ -35,7 +35,7 @@
     <name>eArchive_NodeAbstractTree_Revision</name>
     <!-- target definitions -->
     <target>
-      <table>eArchive_NodeAbstractTable</table>
+      <table>eArchive_NodeAbstractRevTable</table>
       <evaluate program="org.efaps.esjp.earchive.node.NodeUI" 
                 method="getRevisionTableUI"/>
       <instance program="org.efaps.esjp.earchive.node.NodeUI"
