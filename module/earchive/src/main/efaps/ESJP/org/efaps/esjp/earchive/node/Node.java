@@ -471,7 +471,7 @@ public class Node implements NamesInterface {
       .append(" values (?,?,?,?,?,?)");
     final Context context = Context.getThreadContext();
     ConnectionResource con = null;
-    System.out.println(cmd);
+
     try {
       con = context.getConnectionResource();
       ret = Context.getDbType().getNewId(con.getConnection(), TABLE_FILE, "ID");
