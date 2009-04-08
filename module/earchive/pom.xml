@@ -44,7 +44,7 @@
   ************************************************************************* -->
   <packaging>jar</packaging>
   <groupId>org.efaps.module</groupId>
-  <artifactId>eArchive</artifactId>
+  <artifactId>eFaps-eArchive</artifactId>
 
   <name>module-eArchive</name>
   <description>
@@ -68,6 +68,22 @@
           <target>1.5</target>
         </configuration>
       </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptor>src/main/assembly/shell-distribution.xml</descriptor>
+        </configuration>
+        <executions>
+          <execution>
+            <id>shell-distribution</id>
+            <phase>package</phase>
+            <goals>
+              <goal>directory</goal>
+            </goals>
+          </execution>
+        </executions>
+     </plugin>
 
       <!--
         eFaps plugin
@@ -117,6 +133,23 @@
       <groupId>org.efaps</groupId>
       <artifactId>eFaps-Kernel</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    
+    <!--
+      Dependencies for the shell.
+      Classworlds used to startup
+    -->
+    <dependency>
+      <groupId>classworlds</groupId>
+      <artifactId>classworlds</artifactId>
+      <version>1.1</version>
+    </dependency>
+    
+    <!-- java svnserver proxy -->
+    <dependency>
+      <groupId>com.googlecode.jsvnserve</groupId>
+      <artifactId>jsvnserve</artifactId>
+      <version>0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
