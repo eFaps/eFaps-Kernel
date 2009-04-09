@@ -20,6 +20,8 @@
 
 package org.efaps.earchive.svn;
 
+import java.io.IOException;
+
 import org.tmatesoft.svn.core.SVNException;
 
 import com.googlecode.jsvnserve.SVNServer;
@@ -31,12 +33,57 @@ import com.googlecode.jsvnserve.SVNServer;
  * @author jmox
  * @version $Id$
  */
-public class SVNProxyServer {
+public class SVNProxyServer extends Thread {
 
-  public void start() throws SVNException {
-    final String file = "file:///text";
-    final SVNServer svnServer = new SVNServer();
-    svnServer.setPort(9999);
-    svnServer.setRepositoryFactory(new SRepositoryFactory(file));
+  private static SVNProxyServer SERVER;
+
+  @Override
+  public void start() {
+
+    final String file = "file:///test";
+    try {
+      final SVNServer svnServer = new SVNServer();
+      svnServer.setPort(9999);
+      svnServer.setRepositoryFactory(new RepositoryFactory(file));
+      svnServer.setCallbackHandler(new LoginHandler());
+
+      svnServer.start();
+
+    } catch (final IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (final SVNException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * @see java.lang.Thread#run()
+   */
+  @Override
+  public void run() {
+    while (!isInterrupted()) {
+      try
+      {
+       Thread.sleep( 500 );
+      }
+      catch ( final InterruptedException e )
+      {
+       interrupt();
+       System.out.println( "Unterbrechung in sleep()" );
+      }
+    }
+  }
+
+  private SVNProxyServer() {
+
+  }
+
+  public static SVNProxyServer get() {
+    if (SERVER == null) {
+      SERVER = new SVNProxyServer();
+    }
+    return SERVER;
   }
 }

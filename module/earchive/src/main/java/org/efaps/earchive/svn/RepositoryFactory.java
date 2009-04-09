@@ -98,7 +98,7 @@ import com.googlecode.jsvnserve.api.editorcommands.EditorCommandSet;
  * @author jSVNServe Team
  * @version $Id$
  */
-public class SRepositoryFactory
+public class RepositoryFactory
         implements IRepositoryFactory
 {
     /**
@@ -119,7 +119,7 @@ public class SRepositoryFactory
      */
     private final SVNURL svnURL;
 
-    public SRepositoryFactory(final String _svnURI) throws SVNException
+    public RepositoryFactory(final String _svnURI) throws SVNException
     {
         this.svnURL = SVNURL.parseURIDecoded(_svnURI);
         SVNRepositoryFactoryImpl.setup();
@@ -165,7 +165,7 @@ public class SRepositoryFactory
             this.repositoryPath = _repositoryPath;
             this.rootPath = _rootPath;
             this.clientManager = SVNClientManager.newInstance(null, new BasicAuthenticationManager(_user , _user));
-            this.svnRepository = this.clientManager.createRepository(SRepositoryFactory.this.svnURL.appendPath(_rootPath, false), false);
+            this.svnRepository = this.clientManager.createRepository(RepositoryFactory.this.svnURL.appendPath(_rootPath, false), false);
         }
 
         public UUID getUUID()

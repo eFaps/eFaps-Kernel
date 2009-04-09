@@ -5,7 +5,7 @@
   <!-- type>org.efaps.db.databases.DerbyDatabase</type -->
   <type>org.efaps.db.databases.PostgreSQLDatabase</type>
   <factory>org.apache.commons.dbcp.BasicDataSourceFactory</factory>
-  <connection><!-- 
+  <!-- 
     username        = efaps,
     password        = efaps,
     driverClassName = org.apache.derby.jdbc.ClientDriver,
@@ -16,6 +16,7 @@
     maxWait         = -1,
     removeAbandoned = true,
     logAbandoned    = true -->
+  <connection>
     username        = efaps,
     password        = efaps,
     driverClassName = org.postgresql.Driver,
