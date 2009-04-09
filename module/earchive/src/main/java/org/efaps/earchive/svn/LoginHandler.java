@@ -25,15 +25,13 @@ import java.io.IOException;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import org.apache.wicket.RestartResponseException;
-
 import org.efaps.db.Context;
 import org.efaps.jaas.ServerLoginHandler;
-import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
+ * Extends the ServerLoginHandler from the kernel, to start and stop the
+ * Context for eFaps.
  *
  * @author jmox
  * @version $Id$
@@ -64,12 +62,11 @@ public class LoginHandler extends ServerLoginHandler {
         }
       }
     } catch (final SecurityException e) {
-      throw new RestartResponseException(new ErrorPage(e));
+      //TODO logger?
     } catch (final IllegalStateException e) {
-      throw new RestartResponseException(new ErrorPage(e));
+      //TODO logger?
     } catch (final EFapsException e) {
-      throw new RestartResponseException(new ErrorPage(e));
+      //TODO logger?
     }
   }
-
 }
