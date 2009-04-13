@@ -31,6 +31,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.codehaus.classworlds.ClassRealm;
 import org.codehaus.classworlds.ClassWorld;
+import org.mortbay.log.Log;
 
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
@@ -152,6 +153,7 @@ public class Shell {
     RunLevel.init("shell");
     RunLevel.execute();
     Context.rollback();
+    Log.info("Cache reloaded");
   }
 
 

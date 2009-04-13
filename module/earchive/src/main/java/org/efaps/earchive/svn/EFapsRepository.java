@@ -34,7 +34,7 @@ import org.tmatesoft.svn.core.SVNException;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.Context;
-import org.efaps.esjp.earchive.NamesInterface;
+import org.efaps.esjp.earchive.INames;
 import org.efaps.esjp.earchive.node.Node;
 import org.efaps.esjp.earchive.repository.Repository;
 import org.efaps.util.EFapsException;
@@ -90,8 +90,6 @@ public class EFapsRepository implements IRepository {
    */
   final String rootPath;
 
-  private final String repositoryName;
-
   private final String user;
 
   ClassLoader loader = new EFapsClassLoader(this.getClass().getClassLoader());
@@ -100,18 +98,16 @@ public class EFapsRepository implements IRepository {
 
   final Map<String, Node> path2Node = new HashMap<String, Node>();
 
-  public EFapsRepository(final String _user, final String _repositoryPath,
-                    final String _rootPath, final String _repositoryName)
+  public EFapsRepository(final String _user, final String _path)
       throws SVNException {
 
     this.user = _user;
-    this.repositoryPath = _repositoryPath;
-    this.rootPath = _rootPath;
-    this.repositoryName= _repositoryName;
+    this.repositoryPath = "/" + _path.split("/")[1];
+    this.rootPath = _path.substring(this.repositoryPath.length());
     try {
       Context.begin(_user);
       Thread.currentThread().setContextClassLoader(this.loader);
-      this.repository = Repository.getByName(this.repositoryName);
+      this.repository = Repository.getByName(_path.split("/")[1]);
     } catch (final EFapsException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -183,11 +179,12 @@ public class EFapsRepository implements IRepository {
       final boolean fileSize, final boolean hasProps, final boolean createdRev, final boolean modified,
       final boolean author) {
     final DirEntryList ret = new DirEntryList();
-    final Node node = this.path2Node.get(_revision + _path.toString());
+    final String path = this.rootPath + "/" + _path.toString();
+    final Node node = this.path2Node.get(_revision + path);
     try {
       final List<Node> children = node.getChildren();
       for (final Node child: children) {
-        if (child.getType().getName().equals(NamesInterface.TYPE_FILE)) {
+        if (child.getType().getName().equals(INames.TYPE_FILE)) {
 
         } else {
           ret.addDirectory(child.getName(), child.getRevision(), new Date(),"halle");
@@ -291,11 +288,17 @@ public class EFapsRepository implements IRepository {
   public DirEntry stat(final Long _revision, final CharSequence _path, final boolean properties) {
     DirEntry ret = null;
     try {
-      final Node node = Node.getNodeFromDB(this.repository, _revision, _path);
-      this.path2Node.put(_revision + _path.toString(), node);
+      final String path = this.rootPath + "/" + _path.toString();
+      final Node node;
+      if (this.path2Node.containsKey(path)) {
+        node = this.path2Node.get(path);
+      } else {
+        node = Node.getNodeFromDB(this.repository, _revision, path);
+        this.path2Node.put(path, node);
+      }
+      this.path2Node.put(_revision + path, node);
       ret = DirEntry.createDirectory(node.getName(),
-                               node.getRevision(), new Date(),"jan");
-
+                                     node.getRevision(), new Date(),"jan");
 
     } catch (final EFapsException e) {
       // TODO Auto-generated catch block

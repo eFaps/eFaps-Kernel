@@ -42,15 +42,12 @@ public class RepositoryFactory
     public RepositoryFactory(final String _repositoryName) throws SVNException
     {
       this.repositoryName = _repositoryName;
-//        this.svnURL = SVNURL.parseURIDecoded(_svnURI);
-//        SVNRepositoryFactoryImpl.setup();
-//        FSRepositoryFactory.setup();
     }
 
     public IRepository createRepository(final String _user, final String _path)
     {
         try {
-            return new EFapsRepository(_user, "/proxy", _path.substring("/proxy".length()), this.repositoryName);
+            return new EFapsRepository(_user, _path);
         } catch (final SVNException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

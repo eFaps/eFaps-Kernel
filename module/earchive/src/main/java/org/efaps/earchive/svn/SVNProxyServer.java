@@ -37,6 +37,10 @@ public class SVNProxyServer extends Thread {
 
   private static SVNProxyServer SERVER;
 
+  private SVNProxyServer() {
+  
+  }
+
   @Override
   public void start() {
 
@@ -66,7 +70,7 @@ public class SVNProxyServer extends Thread {
     while (!isInterrupted()) {
       try
       {
-       Thread.sleep( 500 );
+       Thread.sleep(500);
       }
       catch ( final InterruptedException e )
       {
@@ -74,10 +78,6 @@ public class SVNProxyServer extends Thread {
        System.out.println( "Unterbrechung in sleep()" );
       }
     }
-  }
-
-  private SVNProxyServer() {
-
   }
 
   public static SVNProxyServer get() {
