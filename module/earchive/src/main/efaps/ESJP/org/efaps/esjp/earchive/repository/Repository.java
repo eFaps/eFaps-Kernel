@@ -23,6 +23,7 @@ package org.efaps.esjp.earchive.repository;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.esjp.EFapsRevision;
@@ -45,9 +46,13 @@ import org.efaps.util.EFapsException;
 public class Repository implements INames {
 
   private Long id;
+
   private Type type;
 
   private Long latestRevision;
+
+  private UUID uuid;
+
   public Repository(){
 
   }
@@ -94,11 +99,30 @@ public class Repository implements INames {
     return this.id;
   }
 
+  /**
+   * Getter method for instance variable {@link #uuid}.
+   *
+   * @return value of instance variable {@link #uuid}
+   */
+  public UUID getUuid() {
+    return this.uuid;
+  }
+
+  /**
+   * Setter method for instance variable {@link #uuid}.
+   *
+   * @param uuid value for instance variable {@link #uuid}
+   */
+  public void setUuid(final UUID uuid) {
+    this.uuid = uuid;
+  }
+
   public static Repository getByName(final String _name) throws EFapsException {
     Repository ret = null;
     final StringBuilder cmd = new StringBuilder();
     cmd.append(" select ")
       .append(TABLE_REPOSITORY_C_ID).append(",")
+      .append(TABLE_REPOSITORY_C_UUID).append(",")
       .append(TABLE_REPOSITORY_C_LASTREVISION)
       .append(" from ")
       .append(TABLE_REPOSITORY)
@@ -118,7 +142,8 @@ public class Repository implements INames {
 
        if (resultset.next()) {
          ret = new Repository(resultset.getLong(1));
-         ret.setLatestRevision(resultset.getLong(2));
+         ret.setUuid(UUID.fromString(resultset.getString(2).trim()));
+         ret.setLatestRevision(resultset.getLong(3));
        }
        resultset.close();
      } finally {

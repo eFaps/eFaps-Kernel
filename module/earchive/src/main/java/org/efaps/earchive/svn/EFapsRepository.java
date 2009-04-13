@@ -115,8 +115,7 @@ public class EFapsRepository implements IRepository {
   }
 
   public UUID getUUID() {
-    //TODO UUID einbauen
-    return UUID.fromString("4108effb-988f-42c0-a143-9b15ae57d4d9");
+    return this.repository.getUuid();
   }
 
   /**

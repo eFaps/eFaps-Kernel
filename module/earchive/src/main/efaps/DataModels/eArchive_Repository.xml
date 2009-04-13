@@ -84,10 +84,17 @@
     </attribute>
    
    <attribute>
-      <name>Name</name>
+    <name>Name</name>
       <type>String</type>
       <sqltable>eArchive_RepositorySQLTable</sqltable>
       <sqlcolumn>NAME</sqlcolumn>
+    </attribute>
+    
+    <attribute>
+      <name>UUID</name>
+      <type>String</type>
+      <sqltable>eArchive_RepositorySQLTable</sqltable>
+      <sqlcolumn>UUID</sqlcolumn>
     </attribute>
     
     <attribute>

@@ -20,6 +20,8 @@
 
 package org.efaps.esjp.earchive.repository;
 
+import java.util.UUID;
+
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.db.Insert;
@@ -44,6 +46,7 @@ public class RepositoryUI {
     final Insert insert = new Insert("eArchive_Repository");
     insert.add("Name", name);
     insert.add("LastRevision", "0");
+    insert.add("UUID", UUID.randomUUID().toString());
     insert.execute();
     final Instance instance = insert.getInstance();
     final Repository repository = new Repository(instance);
