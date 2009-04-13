@@ -20,10 +20,18 @@
 
 package org.efaps.esjp.earchive.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.esjp.earchive.NamesInterface;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -33,20 +41,12 @@ import org.efaps.db.Instance;
  */
 @EFapsUUID("de8eaa7f-154a-40c3-ae6a-6ad061f3cffa")
 @EFapsRevision("$Rev$")
-public class Repository {
+public class Repository implements NamesInterface {
 
   private Long id;
   private Type type;
 
-  /**
-   * Getter method for instance variable {@link #id}.
-   *
-   * @return value of instance variable {@link #id}
-   */
-  public Long getId() {
-    return this.id;
-  }
-
+  private Long latestRevision;
   public Repository(){
 
   }
@@ -65,5 +65,75 @@ public class Repository {
     this.type = _instance.getType();
     this.id = _instance.getId();
   }
+
+  /**
+   * Getter method for instance variable {@link #latestRevision}.
+   *
+   * @return value of instance variable {@link #latestRevision}
+   */
+  public Long getLatestRevision() {
+    return this.latestRevision;
+  }
+
+  /**
+   * Setter method for instance variable {@link #latestRevision}.
+   *
+   * @param latestRevision value for instance variable {@link #latestRevision}
+   */
+  public void setLatestRevision(final Long latestRevision) {
+    this.latestRevision = latestRevision;
+  }
+
+  /**
+   * Getter method for instance variable {@link #id}.
+   *
+   * @return value of instance variable {@link #id}
+   */
+  public Long getId() {
+    return this.id;
+  }
+
+  public static Repository getByName(final String _name) throws EFapsException {
+    Repository ret = null;
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append(" select ")
+      .append(TABLE_REPOSITORY_C_ID).append(",")
+      .append(TABLE_REPOSITORY_C_LASTREVISION)
+      .append(" from ")
+      .append(TABLE_REPOSITORY)
+      .append(" where ")
+      .append(TABLE_REPOSITORY_C_NAME).append("=?");
+
+    final ConnectionResource con
+                          = Context.getThreadContext().getConnectionResource();
+    try {
+
+     PreparedStatement stmt = null;
+     try {
+       stmt = con.getConnection().prepareStatement(cmd.toString());
+
+       stmt.setString(1, _name);
+       final ResultSet resultset = stmt.executeQuery();
+
+       if (resultset.next()) {
+         ret = new Repository(resultset.getLong(1));
+         ret.setLatestRevision(resultset.getLong(2));
+       }
+       resultset.close();
+     } finally {
+       stmt.close();
+     }
+     con.commit();
+    } catch (final SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } finally {
+      if ((con != null) && con.isOpened()) {
+        con.abort();
+      }
+    }
+    return ret;
+  }
+
 }
 

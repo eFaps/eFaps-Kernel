@@ -85,6 +85,16 @@ public class Node implements NamesInterface {
   private String name;
 
   /**
+   * Getter method for instance variable {@link #name}.
+   *
+   * @return value of instance variable {@link #name}
+   */
+  public String getName() {
+    return this.name;
+  }
+
+
+  /**
    * Id of the Repository this node belongs to. This id is necessary because in
    * eFaps it is possible to store various Repositories in the same
    * eFaps-Database.
@@ -109,6 +119,8 @@ public class Node implements NamesInterface {
   private Node parent;
 
   private final List<Node> children = new ArrayList<Node>();
+
+  private boolean childrenResolved = false;
 
   private boolean root;
 
@@ -189,8 +201,13 @@ public class Node implements NamesInterface {
    * Getter method for instance variable {@link #children}.
    *
    * @return value of instance variable {@link #children}
+   * @throws EFapsException
    */
-  public List<Node> getChildren() {
+  public List<Node> getChildren() throws EFapsException {
+    if (!this.childrenResolved) {
+      this.children.addAll(getChildNodes(null, this.revision));
+      this.childrenResolved = true;
+    }
     return this.children;
   }
 
@@ -657,6 +674,63 @@ public class Node implements NamesInterface {
     return ret;
   }
 
+  public static Node getNodeFromDB(final Repository _repository,
+                                   final long _revision,
+                                   final CharSequence _path) throws EFapsException {
+    final StringBuilder cmd = new StringBuilder();
+    //stmt for the rootnode
+    cmd.append(" select ")
+      .append(TABLE_NODE_T_C_ID).append(",")
+      .append(TABLE_NODE_C_TYPEID).append(",")
+      .append(TABLE_NODE_C_HISTORYID).append(",")
+      .append(TABLE_NODE_C_COPYID).append(",")
+      .append(TABLE_NODE_T_C_REVISION).append(",")
+      .append(TABLE_NODE_C_NAME).append(",")
+      .append(TABLE_NODE_T_C_REPOSITORYID).append(",")
+      .append(TABLE_NODE_C_FILEID).append(",")
+      .append(TABLE_NODE_C_PROPSETID)
+      .append(" from ").append(TABLE_NODE)
+      .append(" join ").append(TABLE_REVISION).append(" on ")
+        .append(TABLE_REVISION_T_C_NODEID)
+        .append(" = ").append(TABLE_NODE_T_C_ID)
+      .append(" where ").append(TABLE_NODE_T_C_REPOSITORYID).append(" = ?")
+      .append(" and ").append(TABLE_NODE_T_C_REVISION).append(" = ?");
+    final ConnectionResource con
+                          = Context.getThreadContext().getConnectionResource();
+    Node ret = null;
+    try {
+
+      PreparedStatement stmt = null;
+      try {
+        stmt = con.getConnection().prepareStatement(cmd.toString());
+
+        stmt.setLong(1, _repository.getId());
+        stmt.setLong(2, _revision);
+        final ResultSet resultset = stmt.executeQuery();
+
+        if (resultset.next()) {
+          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
+              resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
+              resultset.getString(6), resultset.getLong(7), resultset
+                  .getLong(8), resultset.getLong(9));
+          ret.setRoot(true);
+        }
+        resultset.close();
+      } finally {
+        stmt.close();
+      }
+      con.commit();
+    } catch (final SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } finally {
+      if ((con != null) && con.isOpened()) {
+        con.abort();
+      }
+    }
+    return ret;
+
+  }
 
   public static Node getNodeFromDB(final Long _nodeId, final String _idPath)
       throws EFapsException {
