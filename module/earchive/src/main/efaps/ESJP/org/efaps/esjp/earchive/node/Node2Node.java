@@ -31,7 +31,7 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.transaction.ConnectionResource;
-import org.efaps.esjp.earchive.NamesInterface;
+import org.efaps.esjp.earchive.INames;
 import org.efaps.util.EFapsException;
 
 /**
@@ -42,7 +42,7 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("2966a217-7bc9-4556-b1c7-11d6bf25a3d7")
 @EFapsRevision("$Rev$")
-public class Node2Node implements NamesInterface {
+public class Node2Node implements INames {
 
   private final String name;
   private final Long parent;

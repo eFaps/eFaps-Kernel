@@ -50,7 +50,8 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("c3967e69-82e1-4b16-9172-ef97fbeb3f54")
 @EFapsRevision("$Rev$")
-public class StructurBrowser implements EventExecution, NamesInterface {
+public class StructurBrowser implements EventExecution, INames
+  {
 
   /**
    * @param _parameter Parameter

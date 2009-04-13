@@ -30,8 +30,9 @@ import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
-import org.efaps.esjp.earchive.NamesInterface;
+import org.efaps.esjp.earchive.INames;
 import org.efaps.util.EFapsException;
+
 
 /**
  * TODO comment!
@@ -41,7 +42,7 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("de8eaa7f-154a-40c3-ae6a-6ad061f3cffa")
 @EFapsRevision("$Rev$")
-public class Repository implements NamesInterface {
+public class Repository implements INames {
 
   private Long id;
   private Type type;

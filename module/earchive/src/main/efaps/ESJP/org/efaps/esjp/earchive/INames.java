@@ -31,7 +31,7 @@ import org.efaps.admin.program.esjp.EFapsUUID;
  */
 @EFapsUUID("434879b4-7b41-4776-bfc5-57f91e92c460")
 @EFapsRevision("$Rev$")
-public interface NamesInterface {
+public interface INames {
   String SEPERATOR_IDS = ".";
   String SEPERATOR_IDS_RE = "\\.";
   String SEPERATOR_INSTANCE = ":";

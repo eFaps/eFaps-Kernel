@@ -29,7 +29,7 @@ import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
-import org.efaps.esjp.earchive.NamesInterface;
+import org.efaps.esjp.earchive.INames;
 import org.efaps.esjp.earchive.node.Node;
 import org.efaps.esjp.earchive.repository.Repository;
 import org.efaps.util.EFapsException;
@@ -42,7 +42,7 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("28f7fa7e-0687-499d-9355-783038019331")
 @EFapsRevision("$Rev$")
-public class Revision implements NamesInterface {
+public class Revision implements INames {
 
   /**
    * Revisionnumber of this Revision.

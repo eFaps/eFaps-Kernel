@@ -40,7 +40,7 @@ import org.efaps.db.Checkout;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
-import org.efaps.esjp.earchive.NamesInterface;
+import org.efaps.esjp.earchive.INames;
 import org.efaps.esjp.earchive.repository.Repository;
 import org.efaps.util.EFapsException;
 
@@ -52,7 +52,7 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("d6cb382d-a8e8-4b35-9d28-6b344c53f676")
 @EFapsRevision("$Rev$")
-public class NodeUI implements NamesInterface {
+public class NodeUI implements INames {
 
   public Return getTableUI(final Parameter _parameter) throws EFapsException {
      final Return ret = new Return();
