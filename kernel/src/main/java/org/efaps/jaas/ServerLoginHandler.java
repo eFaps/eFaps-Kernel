@@ -33,7 +33,8 @@ import org.efaps.admin.user.Person;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
+ * LoginHandler for the case that eFaps is the Server. e.g SVN-Server. The
+ * Class must be called using a Context.
  *
  * @author jmox
  * @version $Id$
