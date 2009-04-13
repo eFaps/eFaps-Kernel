@@ -33,7 +33,7 @@ import org.efaps.util.EFapsException;
  * Extends the ServerLoginHandler from the kernel, to start and stop the
  * Context for eFaps.
  *
- * @author jmox
+ * @author Jan Moxter
  * @version $Id$
  */
 public class LoginHandler extends ServerLoginHandler {

@@ -27,31 +27,18 @@ import com.googlecode.jsvnserve.api.IRepositoryFactory;
 
 /**
  *
- * @author jSVNServe Team
+ * @author Jan Moxter
  * @version $Id$
  */
-public class RepositoryFactory
-        implements IRepositoryFactory
-{
+public class RepositoryFactory implements IRepositoryFactory {
 
-    /**
-     * Name of the Repository.
-     */
-    private final String repositoryName;
-
-    public RepositoryFactory(final String _repositoryName) throws SVNException
-    {
-      this.repositoryName = _repositoryName;
+  public IRepository createRepository(final String _user, final String _path) {
+    try {
+      return new EFapsRepository(_user, _path);
+    } catch (final SVNException e) {
+     // TODO Auto-generated catch block
+      e.printStackTrace();
     }
-
-    public IRepository createRepository(final String _user, final String _path)
-    {
-        try {
-            return new EFapsRepository(_user, _path);
-        } catch (final SVNException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
+      return null;
+  }
 }

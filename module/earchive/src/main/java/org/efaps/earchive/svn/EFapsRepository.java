@@ -136,9 +136,6 @@ public class EFapsRepository implements IRepository {
     return this.rootPath;
   }
 
-
-
-
   public EditorCommandSet getStatus(final Long _revision, final String _path,
                                     final Depth _depth,
                                     final ReportList _report) {

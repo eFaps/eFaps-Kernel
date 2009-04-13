@@ -22,41 +22,36 @@ package org.efaps.earchive.svn;
 
 import java.io.IOException;
 
-import org.tmatesoft.svn.core.SVNException;
-
 import com.googlecode.jsvnserve.SVNServer;
 
 
 /**
  * TODO comment!
  *
- * @author jmox
+ * @author Jan Moxter
  * @version $Id$
  */
 public class SVNProxyServer extends Thread {
 
   private static SVNProxyServer SERVER;
 
+  /**
+   * Private Constructor to provide a singleton.
+   */
   private SVNProxyServer() {
-  
   }
 
   @Override
   public void start() {
-
-    final String url = "testrepository";
     try {
       final SVNServer svnServer = new SVNServer();
       svnServer.setPort(9999);
-      svnServer.setRepositoryFactory(new RepositoryFactory(url));
+      svnServer.setRepositoryFactory(new RepositoryFactory());
       svnServer.setCallbackHandler(new LoginHandler());
 
       svnServer.start();
 
     } catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (final SVNException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
