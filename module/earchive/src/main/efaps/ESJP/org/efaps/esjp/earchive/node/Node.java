@@ -402,7 +402,8 @@ public class Node implements INames {
       con.abort();
     }
   }
-   return new Node(id, Type.get(typeId), histId, null, null, _name, null, fileIdTmp, propSetId);
+   return new Node(id, Type.get(typeId), histId, null, null, _name,
+                   _repository.getId(), fileIdTmp, propSetId);
   }
 
   private static long insertProperties(final Map<String, String> _properties)
@@ -550,7 +551,7 @@ public class Node implements INames {
       .append(" t_eanode.copyid").append(",")
       .append(" t_earevision.revision").append(",")
       .append(" t_eanode.name").append(",")
-      .append(" t_earevision.repositoryid").append(",")
+      .append(" t_eanode.repositoryid").append(",")
       .append(TABLE_NODE_C_PROPSETID);
    if (revision == null) {
       cmd.append(" from").append(" t_earepository")
@@ -600,7 +601,7 @@ public class Node implements INames {
 
         for (int i = 1; i < pairs.length; i++) {
           final String[] childPair = pairs[i].split(SEPERATOR_IDS_RE);
-          final Node child = getChildNode(current, Long.parseLong(childPair[0]),
+          final Node child = current.getChildNode(Long.parseLong(childPair[0]),
                                           Long.parseLong(childPair[1]));
           ret.add(child);
           current = child;
@@ -621,24 +622,22 @@ public class Node implements INames {
     return ret;
   }
 
-  private static Node getChildNode(final Node _parent, final long _historyId,
+  private Node getChildNode(final long _historyId,
                             final long _copyId) throws EFapsException {
     Node ret = null;
     final StringBuilder cmd = new StringBuilder();
-    cmd.append("select")
-      .append(" t_eanode2node.childid").append(",")
-      .append(" t_eanode.typeid").append(",")
-      .append(" t_eanode.historyid").append(",")
-      .append(" t_eanode.copyid").append(",")
-      .append(" t_eanode.revision").append(",")
-      .append(" t_eanode.name").append(",")
-      .append(TABLE_NODE_C_PROPSETID)
-      .append(" from").append(" t_eanode2node")
-      .append(" join ").append(TABLE_NODE).append(" on").append(" t_eanode.id")
-      .append("=").append(" t_eanode2node.childid")
-      .append(" where ").append(" t_eanode.historyid").append("=?")
-      .append(" and").append(" t_eanode.copyid").append("=? ")
-      .append(" and").append(" t_eanode2node.parentid").append("=? ");
+    cmd.append(" select ")
+      .append(VIEW_NODE2NODE_C_CHILDID).append(",")
+      .append(VIEW_NODE2NODE_C_NODETYPE).append(",")
+      .append(VIEW_NODE2NODE_C_HISTORYID).append(",")
+      .append(VIEW_NODE2NODE_C_COPYID).append(",")
+      .append(VIEW_NODE2NODE_C_REVISION).append(",")
+      .append(VIEW_NODE2NODE_C_NAME).append(",")
+      .append(VIEW_NODE2NODE_C_PROPSETID)
+      .append(" from ").append(VIEW_NODE2NODE)
+      .append(" where ").append(VIEW_NODE2NODE_C_PARENTID).append(" = ?")
+      .append(" and ").append(VIEW_NODE2NODE_C_HISTORYID).append(" = ?")
+      .append(" and ").append(VIEW_NODE2NODE_C_COPYID).append(" = ?");
 
     final ConnectionResource con
                           = Context.getThreadContext().getConnectionResource();
@@ -647,16 +646,17 @@ public class Node implements INames {
       PreparedStatement stmt = null;
       try {
         stmt = con.getConnection().prepareStatement(cmd.toString());
+        stmt.setLong(1, this.id);
+        stmt.setLong(2, _historyId);
+        stmt.setLong(3, _copyId);
 
-        stmt.setLong(1, _historyId);
-        stmt.setLong(2, _copyId);
-        stmt.setLong(3, _parent.getId());
         final ResultSet resultset = stmt.executeQuery();
 
         if (resultset.next()) {
           ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
-              resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
-              resultset.getString(6), null, null, resultset.getLong(7));
+                         resultset.getLong(3), resultset.getLong(4),
+                         resultset.getLong(5), resultset.getString(6),
+                         this.repositoryId, null, resultset.getLong(7));
         }
         resultset.close();
       } finally {
@@ -821,7 +821,7 @@ public class Node implements INames {
        final ResultSet resultset = stmt.executeQuery();
 
        if (resultset.next()) {
-         ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
+          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
                         resultset.getLong(3), resultset.getLong(4),
                         resultset.getLong(5), resultset.getString(6),
                         resultset.getLong(7), resultset.getLong(8),
