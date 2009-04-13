@@ -152,7 +152,7 @@ public class Node implements INames {
     this.historyId = _historyId != null ? _historyId : new Long(0);
     this.copyId = _copyId != null ? _copyId : new Long(0);
     this.revision = _revision != null ? _revision : new Long(0);
-    this.name = _name;
+    this.name = _name != null ? _name.trim() : null;
     this.repositoryId = _repositoryId;
     this.fileId = _fileId;
     this.propSetId = _propSetId;
@@ -678,7 +678,7 @@ public class Node implements INames {
                                    final long _revision,
                                    final CharSequence _path) throws EFapsException {
     final StringBuilder cmd = new StringBuilder();
-    //stmt for the rootnode
+    //statement for the rootnode
     cmd.append(" select ")
       .append(TABLE_NODE_T_C_ID).append(",")
       .append(TABLE_NODE_C_TYPEID).append(",")
@@ -694,7 +694,7 @@ public class Node implements INames {
         .append(TABLE_REVISION_T_C_NODEID)
         .append(" = ").append(TABLE_NODE_T_C_ID)
       .append(" where ").append(TABLE_NODE_T_C_REPOSITORYID).append(" = ?")
-      .append(" and ").append(TABLE_NODE_T_C_REVISION).append(" = ?");
+      .append(" and ").append(TABLE_REVISION_T_C_REVISION).append(" = ?");
     final ConnectionResource con
                           = Context.getThreadContext().getConnectionResource();
     Node ret = null;
@@ -719,6 +719,12 @@ public class Node implements INames {
       } finally {
         stmt.close();
       }
+      final String[] childNames = _path.toString().split("/");
+      for (final String childName :  childNames) {
+        if (childName.length() > 0) {
+          ret = ret.getChildNode(childName);
+        }
+      }
       con.commit();
     } catch (final SQLException e) {
       // TODO Auto-generated catch block
@@ -729,8 +735,57 @@ public class Node implements INames {
       }
     }
     return ret;
-
   }
+
+  private Node getChildNode(final String _name) throws EFapsException {
+    Node ret = null;
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append(" select ")
+      .append(VIEW_NODE2NODE_C_CHILDID).append(",")
+      .append(VIEW_NODE2NODE_C_NODETYPE).append(",")
+      .append(VIEW_NODE2NODE_C_HISTORYID).append(",")
+      .append(VIEW_NODE2NODE_C_COPYID).append(",")
+      .append(VIEW_NODE2NODE_C_REVISION).append(",")
+      .append(VIEW_NODE2NODE_C_NAME).append(",")
+      .append(VIEW_NODE2NODE_C_PROPSETID)
+      .append(" from ").append(VIEW_NODE2NODE)
+    .append(" where ").append(VIEW_NODE2NODE_C_PARENTID).append(" = ?")
+    .append(" and ").append(VIEW_NODE2NODE_C_NAME).append(" = ?");
+
+    final ConnectionResource con = Context.getThreadContext()
+                                                      .getConnectionResource();
+    try {
+      PreparedStatement stmt = null;
+      try {
+        stmt = con.getConnection().prepareStatement(cmd.toString());
+        stmt.setLong(1, this.id);
+        stmt.setString(2, _name);
+        final ResultSet resultset = stmt.executeQuery();
+
+        if (resultset.next()) {
+          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
+              resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
+              resultset.getString(6), this.repositoryId, null, resultset.getLong(7));
+        }
+        resultset.close();
+      } finally {
+        stmt.close();
+      }
+      con.commit();
+    } catch (final SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } finally {
+      if ((con != null) && con.isOpened()) {
+        con.abort();
+      }
+    }
+    return ret;
+  }
+
+
+
+
 
   public static Node getNodeFromDB(final Long _nodeId, final String _idPath)
       throws EFapsException {
