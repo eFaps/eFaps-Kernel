@@ -63,10 +63,13 @@ public class LoginHandler extends ServerLoginHandler {
       }
     } catch (final SecurityException e) {
       //TODO logger?
+      e.printStackTrace();
     } catch (final IllegalStateException e) {
       //TODO logger?
+      e.printStackTrace();
     } catch (final EFapsException e) {
       //TODO logger?
+      e.printStackTrace();
     }
   }
 }

@@ -40,11 +40,11 @@ public class SVNProxyServer extends Thread {
   @Override
   public void start() {
 
-    final String file = "file:///test";
+    final String url = "testrepository";
     try {
       final SVNServer svnServer = new SVNServer();
       svnServer.setPort(9999);
-      svnServer.setRepositoryFactory(new RepositoryFactory(file));
+      svnServer.setRepositoryFactory(new RepositoryFactory(url));
       svnServer.setCallbackHandler(new LoginHandler());
 
       svnServer.start();

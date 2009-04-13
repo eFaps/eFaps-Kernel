@@ -42,13 +42,13 @@ import org.efaps.util.EFapsException;
 
 /**
  *
- * @author tim
+ * @author Jan Moxter
  * @version $Id$
  */
 public class Shell {
 
   public static void main(final String[] _args)  {
-    System.out.println("geht");
+
     final XMLConfiguration config = new XMLConfiguration();
     config.setDelimiterParsingDisabled(true);
 
@@ -65,8 +65,6 @@ public class Shell {
     if (configUrl != null) {
       final XMLConfiguration config2 = new XMLConfiguration();
       config2.setDelimiterParsingDisabled(true);
-//        final Log logger = new SimpleLog("myLog");
-//        config2.setLogger(logger);
         try {
           config2.load(file);
         } catch (final ConfigurationException e) {
