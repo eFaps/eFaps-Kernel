@@ -205,7 +205,7 @@ public class Node implements INames {
    */
   public List<Node> getChildren() throws EFapsException {
     if (!this.childrenResolved) {
-      this.children.addAll(getChildNodes(null, this.revision));
+      this.children.addAll(getChildNodes(null, null));
       this.childrenResolved = true;
     }
     return this.children;
@@ -944,6 +944,7 @@ public class Node implements INames {
 
     return ret;
   }
+
   /**
    * @return
    * @throws EFapsException
