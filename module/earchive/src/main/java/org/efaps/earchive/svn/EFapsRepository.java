@@ -180,8 +180,8 @@ public class EFapsRepository implements IRepository {
     try {
       final List<Node> children = node.getChildren();
       for (final Node child: children) {
-        if (child.getType().getName().equals(INames.TYPE_FILE)) {
-
+        if (child.getType().getName().equals(INames.TYPE_NODEFILE)) {
+          ret.addFile(child.getName(), child.getRevision(), new Date(), "halle", 1);
         } else {
           ret.addDirectory(child.getName(), child.getRevision(), new Date(),"halle");
         }
@@ -293,9 +293,13 @@ public class EFapsRepository implements IRepository {
         this.path2Node.put(path, node);
       }
       this.path2Node.put(_revision + path, node);
-      ret = DirEntry.createDirectory(node.getName(),
-                                     node.getRevision(), new Date(),"jan");
-
+      if (node.getType().getName().equals(INames.TYPE_NODEFILE)) {
+        ret = DirEntry.createFile(node.getName(),  node.getRevision(),
+                                  new Date(), "jan", 0, "asd");
+      } else {
+        ret = DirEntry.createDirectory(node.getName(), node.getRevision(),
+                                       new Date(),"jan");
+      }
     } catch (final EFapsException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
