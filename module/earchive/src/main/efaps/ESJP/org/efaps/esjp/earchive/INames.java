@@ -32,6 +32,7 @@ import org.efaps.admin.program.esjp.EFapsUUID;
 @EFapsUUID("434879b4-7b41-4776-bfc5-57f91e92c460")
 @EFapsRevision("$Rev$")
 public interface INames {
+  String SEPERATOR_PATH = "/";
   String SEPERATOR_IDS = ".";
   String SEPERATOR_IDS_RE = "\\.";
   String SEPERATOR_INSTANCE = ":";
@@ -62,6 +63,8 @@ public interface INames {
   String TABLE_NODE_C_PROPSETID = "PROPSETID";
   String TABLE_NODE_T_C_ID = TABLE_NODE + "." + TABLE_NODE_C_ID;
   String TABLE_NODE_T_C_TYPEID = TABLE_NODE + "." + TABLE_NODE_C_TYPEID;
+  String TABLE_NODE_T_C_HISTORYID = TABLE_NODE + "." + TABLE_NODE_C_HISTORYID;
+  String TABLE_NODE_T_C_COPYID = TABLE_NODE + "." + TABLE_NODE_C_COPYID;
   String TABLE_NODE_T_C_NAME = TABLE_NODE + "." + TABLE_NODE_C_NAME;
   String TABLE_NODE_T_C_REVISION = TABLE_NODE + "." + TABLE_NODE_C_REVISION;
   String TABLE_NODE_T_C_REPOSITORYID = TABLE_NODE + "." + TABLE_NODE_C_REPOSITORYID;

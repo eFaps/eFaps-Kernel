@@ -124,6 +124,8 @@ public class Node implements INames {
 
   private boolean root;
 
+  private String path;
+
   /**
    * COnstructor is needed to be able to use this class in eFpas as an esjp.
    */
@@ -323,6 +325,26 @@ public class Node implements INames {
    */
   public Long getCopyId() {
     return this.copyId;
+  }
+
+
+  /**
+   * Getter method for instance variable {@link #path}.
+   *
+   * @return value of instance variable {@link #path}
+   */
+  public String getPath() {
+    return this.path;
+  }
+
+
+  /**
+   * Setter method for instance variable {@link #path}.
+   *
+   * @param path value for instance variable {@link #path}
+   */
+  public void setPath(final String path) {
+    this.path = path;
   }
 
 
@@ -714,6 +736,7 @@ public class Node implements INames {
               resultset.getString(6), resultset.getLong(7), resultset
                   .getLong(8), resultset.getLong(9));
           ret.setRoot(true);
+          ret.setPath(ret.getName());
         }
         resultset.close();
       } finally {
@@ -766,6 +789,8 @@ public class Node implements INames {
           ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
               resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
               resultset.getString(6), this.repositoryId, null, resultset.getLong(7));
+          ret.setPath(this.path + SEPERATOR_PATH + ret.getName());
+          ret.setParent(this);
         }
         resultset.close();
       } finally {
@@ -890,6 +915,7 @@ public class Node implements INames {
                         resultset.getLong(8));
          ret.setIdPath(historyIdTmp + SEPERATOR_IDS + copyIdTmp);
          ret.setRoot(true);
+         ret.setPath(ret.getName());
        }
        resultset.close();
      } finally {
@@ -942,6 +968,63 @@ public class Node implements INames {
     Revision.getNewRevision(new Repository(current.getRepositoryId()),
                             current, _commitMsg);
 
+    return ret;
+  }
+
+  public Node getRevisionNode(final long _revision) throws EFapsException {
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append(" select ")
+      .append(TABLE_NODE_T_C_ID).append(",")
+      .append(TABLE_NODE_C_TYPEID).append(",")
+      .append(TABLE_NODE_C_HISTORYID).append(",")
+      .append(TABLE_NODE_C_COPYID).append(",")
+      .append(TABLE_NODE_T_C_REVISION).append(",")
+      .append(TABLE_NODE_C_NAME).append(",")
+      .append(TABLE_NODE_T_C_REPOSITORYID).append(",")
+      .append(TABLE_NODE_C_FILEID).append(",")
+      .append(TABLE_NODE_T_C_PROPSETID)
+      .append(" from ").append(TABLE_NODE)
+      .append(" where ").append(TABLE_NODE_T_C_REVISION).append(" = ?")
+      .append(" and ").append(TABLE_NODE_T_C_HISTORYID).append(" = ?")
+      .append(" and ").append(TABLE_NODE_T_C_COPYID).append(" = ?");
+
+    final ConnectionResource con = Context.getThreadContext()
+        .getConnectionResource();
+    Node ret = null;
+    try {
+
+      PreparedStatement stmt = null;
+      try {
+        stmt = con.getConnection().prepareStatement(cmd.toString());
+
+        stmt.setLong(1, _revision);
+        stmt.setLong(2, this.historyId);
+        stmt.setLong(3, this.copyId);
+
+        final ResultSet resultset = stmt.executeQuery();
+
+        if (resultset.next()) {
+          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
+                        resultset.getLong(3), resultset.getLong(4),
+                        resultset.getLong(5), resultset.getString(6),
+                        resultset.getLong(7), resultset.getLong(8),
+                        resultset.getLong(9));
+          ret.setRoot(true);
+          ret.setPath(ret.getName());
+        }
+        resultset.close();
+      } finally {
+        stmt.close();
+      }
+      con.commit();
+    } catch (final SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } finally {
+      if ((con != null) && con.isOpened()) {
+        con.abort();
+      }
+    }
     return ret;
   }
 
@@ -1015,6 +1098,7 @@ public class Node implements INames {
                                        this.repositoryId, null,
                                        resultset.getLong(8));
            child.setParent(this);
+           child.setPath(this.path + SEPERATOR_PATH + child.name);
            ret.add(child);
          }
        }
