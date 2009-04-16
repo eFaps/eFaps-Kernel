@@ -971,6 +971,84 @@ public class Node implements INames {
     return ret;
   }
 
+  /**
+   * Get this node as it was in <code>_revision</code>. It is necessary to
+   * always start at the root node and then climb down the tree, because it is
+   * possible that the node as it was in revision 300 is wanted, but the actual
+   * revision of this node was 200.
+   *
+   * @param _revision the revision the revision of the node is wanted for
+   * @return Node as it was in the given revision
+   * @throws EFapsException
+   */
+  public Node getNodeInRevision(final long _revision) throws EFapsException {
+    final StringBuilder cmd = new StringBuilder();
+    //statement for the rootnode
+    cmd.append(" select ")
+      .append(TABLE_NODE_T_C_ID).append(",")
+      .append(TABLE_NODE_C_TYPEID).append(",")
+      .append(TABLE_NODE_C_HISTORYID).append(",")
+      .append(TABLE_NODE_C_COPYID).append(",")
+      .append(TABLE_NODE_T_C_REVISION).append(",")
+      .append(TABLE_NODE_C_NAME).append(",")
+      .append(TABLE_NODE_T_C_REPOSITORYID).append(",")
+      .append(TABLE_NODE_C_FILEID).append(",")
+      .append(TABLE_NODE_C_PROPSETID)
+      .append(" from ").append(TABLE_NODE)
+      .append(" join ").append(TABLE_REVISION).append(" on ")
+        .append(TABLE_REVISION_T_C_NODEID)
+        .append(" = ").append(TABLE_NODE_T_C_ID)
+      .append(" where ").append(TABLE_NODE_T_C_REPOSITORYID).append(" = ?")
+      .append(" and ").append(TABLE_REVISION_T_C_REVISION).append(" = ?");
+    final ConnectionResource con
+                          = Context.getThreadContext().getConnectionResource();
+    Node ret = null;
+    try {
+
+      PreparedStatement stmt = null;
+      try {
+        stmt = con.getConnection().prepareStatement(cmd.toString());
+
+        stmt.setLong(1, this.repositoryId);
+        stmt.setLong(2, _revision);
+        final ResultSet resultset = stmt.executeQuery();
+
+        if (resultset.next()) {
+          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
+                         resultset.getLong(3), resultset.getLong(4),
+                         resultset.getLong(5), resultset.getString(6),
+                         resultset.getLong(7), resultset.getLong(8),
+                         resultset.getLong(9));
+          ret.setRoot(true);
+          ret.setPath(ret.getName());
+        }
+        resultset.close();
+      } finally {
+        stmt.close();
+      }
+      //if this is not the root, it must be climbed down the tree
+      if (!this.root) {
+        final String[] childNames = this.path.split("/");
+        boolean first = true;
+        for (final String childName :  childNames) {
+          if (childName.length() > 0 && !first) {
+            ret = ret.getChildNode(childName);
+          }
+          first = false;
+        }
+      }
+      con.commit();
+    } catch (final SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } finally {
+      if ((con != null) && con.isOpened()) {
+        con.abort();
+      }
+    }
+    return ret;
+  }
+
   public Node getRevisionNode(final long _revision) throws EFapsException {
     final StringBuilder cmd = new StringBuilder();
     cmd.append(" select ")
