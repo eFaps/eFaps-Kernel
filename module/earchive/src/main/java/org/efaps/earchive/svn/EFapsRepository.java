@@ -25,6 +25,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SimpleTimeZone;
@@ -50,6 +51,8 @@ import com.googlecode.jsvnserve.api.LogEntryList;
 import com.googlecode.jsvnserve.api.ReportList;
 import com.googlecode.jsvnserve.api.ServerException;
 import com.googlecode.jsvnserve.api.LockDescriptionList.LockDescription;
+import com.googlecode.jsvnserve.api.ReportList.AbstractCommand;
+import com.googlecode.jsvnserve.api.ReportList.SetPath;
 import com.googlecode.jsvnserve.api.editorcommands.EditorCommandSet;
 import com.googlecode.jsvnserve.api.properties.Properties;
 import com.googlecode.jsvnserve.api.properties.Revision0PropertyValues;
@@ -135,10 +138,93 @@ public class EFapsRepository implements IRepository {
     return this.rootPath;
   }
 
+  /**
+   * @see com.googlecode.jsvnserve.api.IRepository#getStatus(java.lang.Long, java.lang.String, com.googlecode.jsvnserve.api.Depth, com.googlecode.jsvnserve.api.ReportList)
+   * @param _revision             update revision, if not specified the value
+   *                              is <code>null</code> and means the HEAD
+   *                              revision
+   * @param _path                 udate path
+   * @param _depth                depth for update, determines the scope
+   * @param _report               report of the current directory structure of
+   *                              the client
+   * @return set of commands to be executed in the client
+   */
   public EditorCommandSet getStatus(final Long _revision, final String _path,
                                     final Depth _depth,
                                     final ReportList _report) {
-    return null;
+    final EditorCommandSet deltaEditor = new EditorCommandSet(_revision);
+    deltaEditor.updateRoot("getStatucUpdateRoot", _revision, new Date());
+    final List<AbstractCommand> values = _report.values();
+    final long clientRevision = ((SetPath) values.get(0)).getRevision();
+    final boolean firstCheckOut = ((SetPath) values.get(0)).isStartEmpty();
+    final Map<String, AbstractCommand> path2cmds = new HashMap<String, AbstractCommand>();
+    for (final AbstractCommand cmd : values) {
+      path2cmds.put(cmd.getPath(),cmd);
+    }
+    final String path = this.rootPath
+        + (_path.length() > 1 ? "/" + _path.toString() : "");
+    try {
+
+      if (firstCheckOut) {
+        final Node root = Node.getNodeFromDB(this.repository,
+                                             deltaEditor.getTargetRevision(),
+                                             path);
+        createTree(deltaEditor, root);
+        //a smaller version than existing is required by the client
+      } else if (deltaEditor.getTargetRevision() < clientRevision) {
+        final Iterator<AbstractCommand> iter = values.iterator();
+        //the first must be ignored
+        iter.next();
+        while (iter.hasNext()) {
+          final AbstractCommand cmd = iter.next();
+          if (cmd instanceof SetPath) {
+            //TODO file muss geloescht werden
+          }
+        }
+      } else {
+        final Node targetNode = Node.getNodeFromDB(this.repository,
+                                                deltaEditor.getTargetRevision(),
+                                                path);
+        updateTree(deltaEditor, targetNode, clientRevision);
+      }
+    } catch (final EFapsException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+
+    return deltaEditor;
+  }
+
+  private void updateTree(final EditorCommandSet _deltaEditor,
+                          final Node _parent, final long _clientRevision)
+      throws EFapsException {
+    final List<Node> targetChildren = _parent.getChildren();
+    for (final Node targetChild : targetChildren) {
+      //if targetChild has a higher Revision than the client
+      if (targetChild.getRevision() > _clientRevision) {
+        final Node clientChild = targetChild.getNodeInRevision(_clientRevision);
+        // if the child is not existing in the revision of the client it is
+        // a new node, else it must be updated
+        if (clientChild == null) {
+          _deltaEditor.createDir(targetChild.getPath().substring(this.repositoryPath.length()), "jan",
+                                targetChild.getRevision(),
+                                new Date());
+        } else {
+          _deltaEditor.updateDir(targetChild.getPath().substring(this.repositoryPath.length()), "updateJan",
+                                targetChild.getRevision(), new Date());
+        }
+      }
+      updateTree(_deltaEditor, targetChild, _clientRevision);
+    }
+  }
+
+  private void createTree(final EditorCommandSet _deltaEditor,
+                          final Node _parent) throws EFapsException {
+    for (final Node child : _parent.getChildren()) {
+      _deltaEditor.createDir(child.getPath().substring(this.repositoryPath.length()),
+                             "jmox", child.getRevision(), new Date());
+      createTree(_deltaEditor, child);
+    }
   }
 
   /**
@@ -172,8 +258,9 @@ public class EFapsRepository implements IRepository {
    * @return
    */
   public DirEntryList getDir(final Long _revision, final CharSequence _path,
-      final boolean fileSize, final boolean hasProps, final boolean createdRev, final boolean modified,
-      final boolean author) {
+                             final boolean _fileSize, final boolean _hasProps,
+                             final boolean _createdRev, final boolean _modified,
+                             final boolean _author) {
     final DirEntryList ret = new DirEntryList();
     final String path = this.rootPath + "/" + _path.toString();
     final Node node = this.path2Node.get(_revision + path);
@@ -181,9 +268,9 @@ public class EFapsRepository implements IRepository {
       final List<Node> children = node.getChildren();
       for (final Node child: children) {
         if (child.getType().getName().equals(INames.TYPE_NODEFILE)) {
-          ret.addFile(child.getName(), child.getRevision(), new Date(), "halle", 1);
+          ret.addFile(child.getName(), child.getRevision(), null, "halle", 1);
         } else {
-          ret.addDirectory(child.getName(), child.getRevision(), new Date(),"halle");
+          ret.addDirectory(child.getName(), child.getRevision(), null,"halle");
         }
       }
     } catch (final EFapsException e) {
@@ -225,15 +312,33 @@ public class EFapsRepository implements IRepository {
 
   /**
    * @see com.googlecode.jsvnserve.api.IRepository#getLocations(long, java.lang.String, long[])
-   * @param revision
+   * @param _revision
    * @param _path
    * @param _revisions
    * @return
    */
-  public LocationEntries getLocations(final long revision, final String _path,
-      final long... _revisions) {
-    // TODO Auto-generated method stub
-    return null;
+  public LocationEntries getLocations(final long _revision, final String _path,
+                                      final long... _revisions) {
+    final LocationEntries entries = new LocationEntries();
+    try {
+      final String path = this.rootPath + "/" + _path.toString();
+      final Node node = Node.getNodeFromDB(this.repository, _revision, path);
+      //TODO was passiert wenn kein node gefunden wird?
+      for (final long revision : _revisions) {
+        final Node revnode = node.getRevisionNode(revision);
+        if (revnode != null) {
+          entries.add(revision,
+             ("/" + revnode.getPath()).substring(this.repositoryPath.length()));
+        }
+      }
+    } catch (final EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+
+
+    return entries;
   }
 
   /**
@@ -286,19 +391,18 @@ public class EFapsRepository implements IRepository {
     try {
       final String path = this.rootPath + "/" + _path.toString();
       final Node node;
-      if (this.path2Node.containsKey(path)) {
-        node = this.path2Node.get(path);
+      if (this.path2Node.containsKey(_revision + path)) {
+        node = this.path2Node.get(_revision + path);
       } else {
         node = Node.getNodeFromDB(this.repository, _revision, path);
-        this.path2Node.put(path, node);
+        this.path2Node.put(_revision + path, node);
       }
-      this.path2Node.put(_revision + path, node);
       if (node.getType().getName().equals(INames.TYPE_NODEFILE)) {
         ret = DirEntry.createFile(node.getName(),  node.getRevision(),
-                                  new Date(), "jan", 0, "asd");
+                                 null, "jan", 0, "asd");
       } else {
         ret = DirEntry.createDirectory(node.getName(), node.getRevision(),
-                                       new Date(),"jan");
+                                       null,"jan");
       }
     } catch (final EFapsException e) {
       // TODO Auto-generated catch block
