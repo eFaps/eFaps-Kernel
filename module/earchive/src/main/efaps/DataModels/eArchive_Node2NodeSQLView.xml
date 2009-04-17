@@ -56,7 +56,8 @@
                 T_EANODE.NAME,
                 T_EANODE.REVISION,
                 T_EANODE.TYPEID as NODETYPE,
-                T_EANODE.PROPSETID
+                T_EANODE.PROPSETID,
+                T_EANODE.FILEID
            from T_EANODE2NODE 
            join T_EANODE on T_EANODE.ID = T_EANODE2NODE.CHILDID
       </sql>

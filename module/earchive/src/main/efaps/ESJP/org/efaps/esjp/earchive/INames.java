@@ -143,4 +143,7 @@ public interface INames {
   String VIEW_NODE2NODE_C_NODETYPE = "NODETYPE";
   String VIEW_NODE2NODE_C_ID = "ID";
   String VIEW_NODE2NODE_C_PARENTID = "PARENTID";
+  String VIEW_NODE2NODE_C_FILEID = "FILEID";
+
+
 }

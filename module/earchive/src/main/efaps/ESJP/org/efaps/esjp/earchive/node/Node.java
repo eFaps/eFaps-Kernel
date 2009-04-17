@@ -348,6 +348,10 @@ public class Node implements INames {
   }
 
 
+  public boolean isFile () {
+    return this.fileId != null;
+  }
+
   public static Node createNewNode(final Repository _repository,
                                    final String _name, final String _type,
                                    final Map<String, String> _properties)
@@ -644,61 +648,6 @@ public class Node implements INames {
     return ret;
   }
 
-  private Node getChildNode(final long _historyId,
-                            final long _copyId) throws EFapsException {
-    Node ret = null;
-    final StringBuilder cmd = new StringBuilder();
-    cmd.append(" select ")
-      .append(VIEW_NODE2NODE_C_CHILDID).append(",")
-      .append(VIEW_NODE2NODE_C_NODETYPE).append(",")
-      .append(VIEW_NODE2NODE_C_HISTORYID).append(",")
-      .append(VIEW_NODE2NODE_C_COPYID).append(",")
-      .append(VIEW_NODE2NODE_C_REVISION).append(",")
-      .append(VIEW_NODE2NODE_C_NAME).append(",")
-      .append(VIEW_NODE2NODE_C_PROPSETID)
-      .append(" from ").append(VIEW_NODE2NODE)
-      .append(" where ").append(VIEW_NODE2NODE_C_PARENTID).append(" = ?")
-      .append(" and ").append(VIEW_NODE2NODE_C_HISTORYID).append(" = ?")
-      .append(" and ").append(VIEW_NODE2NODE_C_COPYID).append(" = ?");
-
-    final ConnectionResource con
-                          = Context.getThreadContext().getConnectionResource();
-    try {
-
-      PreparedStatement stmt = null;
-      try {
-        stmt = con.getConnection().prepareStatement(cmd.toString());
-        stmt.setLong(1, this.id);
-        stmt.setLong(2, _historyId);
-        stmt.setLong(3, _copyId);
-
-        final ResultSet resultset = stmt.executeQuery();
-
-        if (resultset.next()) {
-          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
-                         resultset.getLong(3), resultset.getLong(4),
-                         resultset.getLong(5), resultset.getString(6),
-                         this.repositoryId, null, resultset.getLong(7));
-          ret.setPath(this.path + SEPERATOR_PATH + ret.getName());
-          ret.setIdPath(this.idPath + SEPERATOR_INSTANCE + ret.getHistoryId() + SEPERATOR_IDS + ret.getCopyId());
-          ret.setParent(this);
-        }
-        resultset.close();
-      } finally {
-        stmt.close();
-      }
-      con.commit();
-     } catch (final SQLException e) {
-       // TODO Auto-generated catch block
-       e.printStackTrace();
-     } finally {
-       if ((con != null) && con.isOpened()) {
-         con.abort();
-       }
-     }
-    return ret;
-  }
-
   /**
    * Method returns from the given Repository and revision the node for a path.
    * The path must be a valid path in the given revision, because the tree is
@@ -777,54 +726,6 @@ public class Node implements INames {
     return ret;
   }
 
-  private Node getChildNode(final String _name) throws EFapsException {
-    Node ret = null;
-    final StringBuilder cmd = new StringBuilder();
-    cmd.append(" select ")
-      .append(VIEW_NODE2NODE_C_CHILDID).append(",")
-      .append(VIEW_NODE2NODE_C_NODETYPE).append(",")
-      .append(VIEW_NODE2NODE_C_HISTORYID).append(",")
-      .append(VIEW_NODE2NODE_C_COPYID).append(",")
-      .append(VIEW_NODE2NODE_C_REVISION).append(",")
-      .append(VIEW_NODE2NODE_C_NAME).append(",")
-      .append(VIEW_NODE2NODE_C_PROPSETID)
-      .append(" from ").append(VIEW_NODE2NODE)
-    .append(" where ").append(VIEW_NODE2NODE_C_PARENTID).append(" = ?")
-    .append(" and ").append(VIEW_NODE2NODE_C_NAME).append(" = ?");
-
-    final ConnectionResource con = Context.getThreadContext()
-                                                      .getConnectionResource();
-    try {
-      PreparedStatement stmt = null;
-      try {
-        stmt = con.getConnection().prepareStatement(cmd.toString());
-        stmt.setLong(1, this.id);
-        stmt.setString(2, _name);
-        final ResultSet resultset = stmt.executeQuery();
-
-        if (resultset.next()) {
-          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
-              resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
-              resultset.getString(6), this.repositoryId, null, resultset.getLong(7));
-          ret.setPath(this.path + SEPERATOR_PATH + ret.getName());
-          ret.setIdPath(this.idPath + SEPERATOR_INSTANCE + ret.getHistoryId() + SEPERATOR_IDS + ret.getCopyId());
-          ret.setParent(this);
-        }
-        resultset.close();
-      } finally {
-        stmt.close();
-      }
-      con.commit();
-    } catch (final SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } finally {
-      if ((con != null) && con.isOpened()) {
-        con.abort();
-      }
-    }
-    return ret;
-  }
 
   public static Node getNodeFromDB(final Long _nodeId, final String _idPath)
       throws EFapsException {
@@ -948,6 +849,111 @@ public class Node implements INames {
 
   }
 
+
+  private Node getChildNode(final long _historyId,
+                            final long _copyId) throws EFapsException {
+    Node ret = null;
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append(" select ")
+      .append(VIEW_NODE2NODE_C_CHILDID).append(",")
+      .append(VIEW_NODE2NODE_C_NODETYPE).append(",")
+      .append(VIEW_NODE2NODE_C_HISTORYID).append(",")
+      .append(VIEW_NODE2NODE_C_COPYID).append(",")
+      .append(VIEW_NODE2NODE_C_REVISION).append(",")
+      .append(VIEW_NODE2NODE_C_NAME).append(",")
+      .append(VIEW_NODE2NODE_C_PROPSETID)
+      .append(" from ").append(VIEW_NODE2NODE)
+      .append(" where ").append(VIEW_NODE2NODE_C_PARENTID).append(" = ?")
+      .append(" and ").append(VIEW_NODE2NODE_C_HISTORYID).append(" = ?")
+      .append(" and ").append(VIEW_NODE2NODE_C_COPYID).append(" = ?");
+
+    final ConnectionResource con
+                          = Context.getThreadContext().getConnectionResource();
+    try {
+
+      PreparedStatement stmt = null;
+      try {
+        stmt = con.getConnection().prepareStatement(cmd.toString());
+        stmt.setLong(1, this.id);
+        stmt.setLong(2, _historyId);
+        stmt.setLong(3, _copyId);
+
+        final ResultSet resultset = stmt.executeQuery();
+
+        if (resultset.next()) {
+          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
+                         resultset.getLong(3), resultset.getLong(4),
+                         resultset.getLong(5), resultset.getString(6),
+                         this.repositoryId, null, resultset.getLong(7));
+          ret.setPath(this.path + SEPERATOR_PATH + ret.getName());
+          ret.setIdPath(this.idPath + SEPERATOR_INSTANCE + ret.getHistoryId() + SEPERATOR_IDS + ret.getCopyId());
+          ret.setParent(this);
+        }
+        resultset.close();
+      } finally {
+        stmt.close();
+      }
+      con.commit();
+     } catch (final SQLException e) {
+       // TODO Auto-generated catch block
+       e.printStackTrace();
+     } finally {
+       if ((con != null) && con.isOpened()) {
+         con.abort();
+       }
+     }
+    return ret;
+  }
+
+  private Node getChildNode(final String _name) throws EFapsException {
+    Node ret = null;
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append(" select ")
+      .append(VIEW_NODE2NODE_C_CHILDID).append(",")
+      .append(VIEW_NODE2NODE_C_NODETYPE).append(",")
+      .append(VIEW_NODE2NODE_C_HISTORYID).append(",")
+      .append(VIEW_NODE2NODE_C_COPYID).append(",")
+      .append(VIEW_NODE2NODE_C_REVISION).append(",")
+      .append(VIEW_NODE2NODE_C_NAME).append(",")
+      .append(VIEW_NODE2NODE_C_PROPSETID)
+      .append(" from ").append(VIEW_NODE2NODE)
+    .append(" where ").append(VIEW_NODE2NODE_C_PARENTID).append(" = ?")
+    .append(" and ").append(VIEW_NODE2NODE_C_NAME).append(" = ?");
+
+    final ConnectionResource con = Context.getThreadContext()
+                                                      .getConnectionResource();
+    try {
+      PreparedStatement stmt = null;
+      try {
+        stmt = con.getConnection().prepareStatement(cmd.toString());
+        stmt.setLong(1, this.id);
+        stmt.setString(2, _name);
+        final ResultSet resultset = stmt.executeQuery();
+
+        if (resultset.next()) {
+          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
+              resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
+              resultset.getString(6), this.repositoryId, null, resultset.getLong(7));
+          ret.setPath(this.path + SEPERATOR_PATH + ret.getName());
+          ret.setIdPath(this.idPath + SEPERATOR_INSTANCE + ret.getHistoryId() + SEPERATOR_IDS + ret.getCopyId());
+          ret.setParent(this);
+        }
+        resultset.close();
+      } finally {
+        stmt.close();
+      }
+      con.commit();
+    } catch (final SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } finally {
+      if ((con != null) && con.isOpened()) {
+        con.abort();
+      }
+    }
+    return ret;
+  }
+
   /**
    * @param nodeid
    * @return
@@ -1068,8 +1074,11 @@ public class Node implements INames {
 
   /**
    * Method to get all child nodes for this node.
-   * @param _excludeNodes
-   * @param _revision
+   *
+   * @param _excludeNodes  Nodes to be excluded from the list of child nodes,
+   *                       <code>null</code> if all children must be returned
+   * @param _revision      comiited revision that the child node must have,
+   *                       <code>null</code> if this filter is not necessary
    * @return
    * @throws EFapsException
    */
@@ -1086,6 +1095,7 @@ public class Node implements INames {
       .append(VIEW_NODE2NODE_C_COPYID).append(",")
       .append(VIEW_NODE2NODE_C_REVISION).append(",")
       .append(VIEW_NODE2NODE_C_NAME).append(",")
+      .append(VIEW_NODE2NODE_C_FILEID).append(",")
       .append(VIEW_NODE2NODE_C_PROPSETID)
       .append(" from ")
       .append(VIEW_NODE2NODE)
@@ -1135,8 +1145,8 @@ public class Node implements INames {
                                        historyIdTmp, copyIdTmp,
                                        resultset.getLong(6),
                                        resultset.getString(7),
-                                       this.repositoryId, null,
-                                       resultset.getLong(8));
+                                       this.repositoryId, resultset.getLong(8),
+                                       resultset.getLong(9));
            child.setParent(this);
            child.setPath(this.path + SEPERATOR_PATH + child.name);
            child.setIdPath(this.idPath + SEPERATOR_INSTANCE + child.getHistoryId() + SEPERATOR_IDS + child.getCopyId());
