@@ -70,9 +70,9 @@ public class Node implements INames {
   private final Long copyId;
 
   /**
-   * Revision of the Node.
+   * Revision the Node was comitted with.
    */
-  private final Long revision;
+  private final Long comittedRevision;
 
   /**
    * Type of the node. There are file nodes and directory nodes.
@@ -83,16 +83,6 @@ public class Node implements INames {
    * Name of the Node.
    */
   private String name;
-
-  /**
-   * Getter method for instance variable {@link #name}.
-   *
-   * @return value of instance variable {@link #name}
-   */
-  public String getName() {
-    return this.name;
-  }
-
 
   /**
    * Id of the Repository this node belongs to. This id is necessary because in
@@ -133,7 +123,7 @@ public class Node implements INames {
     this.id = null;
     this.historyId = null;
     this.copyId = null;
-    this.revision = null;
+    this.comittedRevision = null;
   }
 
 
@@ -153,7 +143,7 @@ public class Node implements INames {
     this.type = _type;
     this.historyId = _historyId != null ? _historyId : new Long(0);
     this.copyId = _copyId != null ? _copyId : new Long(0);
-    this.revision = _revision != null ? _revision : new Long(0);
+    this.comittedRevision = _revision != null ? _revision : new Long(0);
     this.name = _name != null ? _name.trim() : null;
     this.repositoryId = _repositoryId;
     this.fileId = _fileId;
@@ -215,12 +205,12 @@ public class Node implements INames {
 
 
   /**
-   * Getter method for instance variable {@link #revision}.
+   * Getter method for instance variable {@link #comittedRevision}.
    *
-   * @return value of instance variable {@link #revision}
+   * @return value of instance variable {@link #comittedRevision}
    */
-  public Long getRevision() {
-    return this.revision;
+  public Long getComittedRevision() {
+    return this.comittedRevision;
   }
 
 
@@ -251,6 +241,16 @@ public class Node implements INames {
    */
   public Long getId() {
     return this.id;
+  }
+
+
+  /**
+   * Getter method for instance variable {@link #name}.
+   *
+   * @return value of instance variable {@link #name}
+   */
+  public String getName() {
+    return this.name;
   }
 
 
@@ -679,6 +679,9 @@ public class Node implements INames {
                          resultset.getLong(3), resultset.getLong(4),
                          resultset.getLong(5), resultset.getString(6),
                          this.repositoryId, null, resultset.getLong(7));
+          ret.setPath(this.path + SEPERATOR_PATH + ret.getName());
+          ret.setIdPath(this.idPath + SEPERATOR_INSTANCE + ret.getHistoryId() + SEPERATOR_IDS + ret.getCopyId());
+          ret.setParent(this);
         }
         resultset.close();
       } finally {
@@ -696,6 +699,17 @@ public class Node implements INames {
     return ret;
   }
 
+  /**
+   * Method returns from the given Repository and revision the node for a path.
+   * The path must be a valid path in the given revision, because the tree is
+   * climbed down following the given path.
+   *
+   * @param _repository
+   * @param _revision
+   * @param _path
+   * @return
+   * @throws EFapsException
+   */
   public static Node getNodeFromDB(final Repository _repository,
                                    final long _revision,
                                    final CharSequence _path) throws EFapsException {
@@ -717,6 +731,7 @@ public class Node implements INames {
         .append(" = ").append(TABLE_NODE_T_C_ID)
       .append(" where ").append(TABLE_NODE_T_C_REPOSITORYID).append(" = ?")
       .append(" and ").append(TABLE_REVISION_T_C_REVISION).append(" = ?");
+
     final ConnectionResource con
                           = Context.getThreadContext().getConnectionResource();
     Node ret = null;
@@ -732,10 +747,12 @@ public class Node implements INames {
 
         if (resultset.next()) {
           ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
-              resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
-              resultset.getString(6), resultset.getLong(7), resultset
-                  .getLong(8), resultset.getLong(9));
+                         resultset.getLong(3), resultset.getLong(4),
+                         resultset.getLong(5), resultset.getString(6),
+                         resultset.getLong(7), resultset.getLong(8),
+                         resultset.getLong(9));
           ret.setRoot(true);
+          ret.setIdPath(ret.getHistoryId() + SEPERATOR_IDS + ret.getCopyId());
           ret.setPath(ret.getName());
         }
         resultset.close();
@@ -790,6 +807,7 @@ public class Node implements INames {
               resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
               resultset.getString(6), this.repositoryId, null, resultset.getLong(7));
           ret.setPath(this.path + SEPERATOR_PATH + ret.getName());
+          ret.setIdPath(this.idPath + SEPERATOR_INSTANCE + ret.getHistoryId() + SEPERATOR_IDS + ret.getCopyId());
           ret.setParent(this);
         }
         resultset.close();
@@ -807,10 +825,6 @@ public class Node implements INames {
     }
     return ret;
   }
-
-
-
-
 
   public static Node getNodeFromDB(final Long _nodeId, final String _idPath)
       throws EFapsException {
@@ -1028,11 +1042,14 @@ public class Node implements INames {
       }
       //if this is not the root, it must be climbed down the tree
       if (!this.root) {
-        final String[] childNames = this.path.split("/");
+        final String [] childIdPaths = this.idPath.split(SEPERATOR_INSTANCE_RE);
         boolean first = true;
-        for (final String childName :  childNames) {
-          if (childName.length() > 0 && !first) {
-            ret = ret.getChildNode(childName);
+        for (final String childIdPath :  childIdPaths) {
+          if (childIdPath.length() > 0 && !first && ret != null) {
+            System.out.println("-----------------" + childIdPath);
+            final String[] ids = childIdPath.split(SEPERATOR_IDS_RE);
+            ret = ret.getChildNode(Long.parseLong(ids[0]),
+                                   Long.parseLong(ids[1]));
           }
           first = false;
         }
@@ -1049,67 +1066,12 @@ public class Node implements INames {
     return ret;
   }
 
-  public Node getRevisionNode(final long _revision) throws EFapsException {
-    final StringBuilder cmd = new StringBuilder();
-    cmd.append(" select ")
-      .append(TABLE_NODE_T_C_ID).append(",")
-      .append(TABLE_NODE_C_TYPEID).append(",")
-      .append(TABLE_NODE_C_HISTORYID).append(",")
-      .append(TABLE_NODE_C_COPYID).append(",")
-      .append(TABLE_NODE_T_C_REVISION).append(",")
-      .append(TABLE_NODE_C_NAME).append(",")
-      .append(TABLE_NODE_T_C_REPOSITORYID).append(",")
-      .append(TABLE_NODE_C_FILEID).append(",")
-      .append(TABLE_NODE_T_C_PROPSETID)
-      .append(" from ").append(TABLE_NODE)
-      .append(" where ").append(TABLE_NODE_T_C_REVISION).append(" = ?")
-      .append(" and ").append(TABLE_NODE_T_C_HISTORYID).append(" = ?")
-      .append(" and ").append(TABLE_NODE_T_C_COPYID).append(" = ?");
-
-    final ConnectionResource con = Context.getThreadContext()
-        .getConnectionResource();
-    Node ret = null;
-    try {
-
-      PreparedStatement stmt = null;
-      try {
-        stmt = con.getConnection().prepareStatement(cmd.toString());
-
-        stmt.setLong(1, _revision);
-        stmt.setLong(2, this.historyId);
-        stmt.setLong(3, this.copyId);
-
-        final ResultSet resultset = stmt.executeQuery();
-
-        if (resultset.next()) {
-          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
-                        resultset.getLong(3), resultset.getLong(4),
-                        resultset.getLong(5), resultset.getString(6),
-                        resultset.getLong(7), resultset.getLong(8),
-                        resultset.getLong(9));
-          ret.setRoot(true);
-          ret.setPath(ret.getName());
-        }
-        resultset.close();
-      } finally {
-        stmt.close();
-      }
-      con.commit();
-    } catch (final SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } finally {
-      if ((con != null) && con.isOpened()) {
-        con.abort();
-      }
-    }
-    return ret;
-  }
-
   /**
+   * Method to get all child nodes for this node.
+   * @param _excludeNodes
+   * @param _revision
    * @return
    * @throws EFapsException
-   *
    */
   private List<Node> getChildNodes(final List<Node> _excludeNodes,
                                    final Long _revision)
@@ -1177,6 +1139,7 @@ public class Node implements INames {
                                        resultset.getLong(8));
            child.setParent(this);
            child.setPath(this.path + SEPERATOR_PATH + child.name);
+           child.setIdPath(this.idPath + SEPERATOR_INSTANCE + child.getHistoryId() + SEPERATOR_IDS + child.getCopyId());
            ret.add(child);
          }
        }
@@ -1385,7 +1348,7 @@ public class Node implements INames {
     }
 
     for (final Node node : nodes) {
-      node.updateRevision(node.getRevision());
+      node.updateRevision(node.getComittedRevision());
     }
   }
 
@@ -1427,5 +1390,21 @@ public class Node implements INames {
          con.abort();
        }
      }
+  }
+
+  @Override
+  public String toString() {
+    return "[id=" + this.id
+          + "; historyId=" + this.historyId
+          + "; copyId=" + this.copyId
+          + "; revision=" + this.comittedRevision
+          + "; name=" + this.name
+          + "; repositoryId=" + this.repositoryId
+          + "; fileId=" + this.fileId
+          + "; propSetIs=" + this.propSetId
+          + "; idPath=" + this.idPath
+          + "; path=" + this.path
+          + "; root=" + this.root
+          + "]";
   }
 }

@@ -25,7 +25,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SimpleTimeZone;
@@ -164,23 +163,19 @@ public class EFapsRepository implements IRepository {
     final String path = this.rootPath
         + (_path.length() > 1 ? "/" + _path.toString() : "");
     try {
-
+      // the client makes the first check out
       if (firstCheckOut) {
-        final Node root = Node.getNodeFromDB(this.repository,
-                                             deltaEditor.getTargetRevision(),
-                                             path);
-        createTree(deltaEditor, root);
-        //a smaller version than existing is required by the client
+        final Node targetNode = Node.getNodeFromDB(this.repository,
+                                                deltaEditor.getTargetRevision(),
+                                                path);
+        createTree(deltaEditor, targetNode);
+      // a smaller version than existing is required by the client, that means
+      // the client must be "reversed"
       } else if (deltaEditor.getTargetRevision() < clientRevision) {
-        final Iterator<AbstractCommand> iter = values.iterator();
-        //the first must be ignored
-        iter.next();
-        while (iter.hasNext()) {
-          final AbstractCommand cmd = iter.next();
-          if (cmd instanceof SetPath) {
-            //TODO file muss geloescht werden
-          }
-        }
+        final Node clientNode = Node.getNodeFromDB(this.repository,
+                                                   clientRevision,
+                                                   path);
+        reverseTree(deltaEditor, clientNode, clientRevision);
       } else {
         final Node targetNode = Node.getNodeFromDB(this.repository,
                                                 deltaEditor.getTargetRevision(),
@@ -195,23 +190,59 @@ public class EFapsRepository implements IRepository {
     return deltaEditor;
   }
 
-  private void updateTree(final EditorCommandSet _deltaEditor,
-                          final Node _parent, final long _clientRevision)
+  private void reverseTree(final EditorCommandSet _deltaEditor,
+                           final Node _clientNode,final long _clientRevision)
       throws EFapsException {
-    final List<Node> targetChildren = _parent.getChildren();
-    for (final Node targetChild : targetChildren) {
-      //if targetChild has a higher Revision than the client
-      if (targetChild.getRevision() > _clientRevision) {
-        final Node clientChild = targetChild.getNodeInRevision(_clientRevision);
-        // if the child is not existing in the revision of the client it is
-        // a new node, else it must be updated
-        if (clientChild == null) {
-          _deltaEditor.createDir(targetChild.getPath().substring(this.repositoryPath.length()), "jan",
-                                targetChild.getRevision(),
-                                new Date());
+    final List<Node> clientChildren = _clientNode.getChildren();
+    for (final Node clientChild : clientChildren) {
+      // only if the client revision is bigger than the target revision
+      // something must be done
+      if (clientChild.getComittedRevision() > _deltaEditor.getTargetRevision()) {
+        final Node targetChild = clientChild.getNodeInRevision(_deltaEditor.getTargetRevision());
+        // if the child is not exiting in the target it must be deleted in the
+        // client
+        if (targetChild == null) {
+          _deltaEditor.delete(clientChild.getPath().substring(this.repositoryPath.length()),
+                "remove", _deltaEditor.getTargetRevision(), new Date());
+        // if the child has a different name than the target child it must be
+        // renamed
+        } else if (!targetChild.getName().equals(clientChild.getName())) {
+          //TODO rename
+          reverseTree(_deltaEditor, clientChild, _clientRevision);
         } else {
           _deltaEditor.updateDir(targetChild.getPath().substring(this.repositoryPath.length()), "updateJan",
-                                targetChild.getRevision(), new Date());
+              targetChild.getComittedRevision(), new Date());
+          reverseTree(_deltaEditor, clientChild, _clientRevision);
+        }
+
+      }
+    }
+  }
+
+
+  private void updateTree(final EditorCommandSet _deltaEditor,
+                          final Node _targetNode, final long _clientRevision)
+      throws EFapsException {
+    final List<Node> targetChildren = _targetNode.getChildren();
+    for (final Node targetChild : targetChildren) {
+      // if targetChild has a higher Revision than the client
+      if (targetChild.getComittedRevision() > _clientRevision) {
+        final Node clientChild = targetChild.getNodeInRevision(_clientRevision);
+        // if the child is not existing for the revision of the client it is
+        // a new node for the client, else it must be updated in the client
+        if (clientChild == null) {
+          _deltaEditor.createDir(targetChild.getPath().substring(this.repositoryPath.length()), "jan",
+                                targetChild.getComittedRevision(),
+                                new Date());
+        // if the child is existing for the revision of the client, but it has
+        // a different name, it means that the folder was renamed
+        } else if (!targetChild.getName().equals(clientChild.getName())) {
+          //TODO rename!
+          _deltaEditor.delete(clientChild.getPath().substring(this.repositoryPath.length()), "deleteJan", clientChild.getComittedRevision(), new Date());
+        } else {
+          _deltaEditor.updateDir(targetChild.getPath().substring(this.repositoryPath.length()), "updateJan",
+                                targetChild.getComittedRevision(), new Date());
+
         }
       }
       updateTree(_deltaEditor, targetChild, _clientRevision);
@@ -219,10 +250,10 @@ public class EFapsRepository implements IRepository {
   }
 
   private void createTree(final EditorCommandSet _deltaEditor,
-                          final Node _parent) throws EFapsException {
-    for (final Node child : _parent.getChildren()) {
+                          final Node _targetNode) throws EFapsException {
+    for (final Node child : _targetNode.getChildren()) {
       _deltaEditor.createDir(child.getPath().substring(this.repositoryPath.length()),
-                             "jmox", child.getRevision(), new Date());
+                             "jmox", child.getComittedRevision(), new Date());
       createTree(_deltaEditor, child);
     }
   }
@@ -268,9 +299,9 @@ public class EFapsRepository implements IRepository {
       final List<Node> children = node.getChildren();
       for (final Node child: children) {
         if (child.getType().getName().equals(INames.TYPE_NODEFILE)) {
-          ret.addFile(child.getName(), child.getRevision(), null, "halle", 1);
+          ret.addFile(child.getName(), child.getComittedRevision(), null, "halle", 1);
         } else {
-          ret.addDirectory(child.getName(), child.getRevision(), null,"halle");
+          ret.addDirectory(child.getName(), child.getComittedRevision(), null,"halle");
         }
       }
     } catch (final EFapsException e) {
@@ -325,7 +356,7 @@ public class EFapsRepository implements IRepository {
       final Node node = Node.getNodeFromDB(this.repository, _revision, path);
       //TODO was passiert wenn kein node gefunden wird?
       for (final long revision : _revisions) {
-        final Node revnode = node.getRevisionNode(revision);
+        final Node revnode = node.getNodeInRevision(revision);
         if (revnode != null) {
           entries.add(revision,
              ("/" + revnode.getPath()).substring(this.repositoryPath.length()));
@@ -398,10 +429,10 @@ public class EFapsRepository implements IRepository {
         this.path2Node.put(_revision + path, node);
       }
       if (node.getType().getName().equals(INames.TYPE_NODEFILE)) {
-        ret = DirEntry.createFile(node.getName(),  node.getRevision(),
+        ret = DirEntry.createFile(node.getName(),  node.getComittedRevision(),
                                  null, "jan", 0, "asd");
       } else {
-        ret = DirEntry.createDirectory(node.getName(), node.getRevision(),
+        ret = DirEntry.createDirectory(node.getName(), node.getComittedRevision(),
                                        null,"jan");
       }
     } catch (final EFapsException e) {
