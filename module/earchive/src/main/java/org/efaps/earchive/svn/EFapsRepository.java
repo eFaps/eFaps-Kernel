@@ -52,6 +52,7 @@ import com.googlecode.jsvnserve.api.ServerException;
 import com.googlecode.jsvnserve.api.LockDescriptionList.LockDescription;
 import com.googlecode.jsvnserve.api.ReportList.AbstractCommand;
 import com.googlecode.jsvnserve.api.ReportList.SetPath;
+import com.googlecode.jsvnserve.api.editorcommands.AbstractDelta;
 import com.googlecode.jsvnserve.api.editorcommands.EditorCommandSet;
 import com.googlecode.jsvnserve.api.properties.Properties;
 import com.googlecode.jsvnserve.api.properties.Revision0PropertyValues;
@@ -158,7 +159,11 @@ public class EFapsRepository implements IRepository {
     final EditorCommandSet deltaEditor = new EditorCommandSet(_revision);
     try {
       final Revision rev = getRevision(_revision);
-      deltaEditor.updateRoot(rev.getCreatorName(), _revision, new Date());
+      final AbstractDelta delta = deltaEditor.updateRoot(_revision);
+      delta.setLastAuthor(rev.getCreatorName());
+      delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
+      delta.setCommittedRevision(rev.getRevision());
+
       final List<AbstractCommand> values = _report.values();
       final long clientRevision = ((SetPath) values.get(0)).getRevision();
       final boolean firstCheckOut = ((SetPath) values.get(0)).isStartEmpty();
@@ -208,9 +213,12 @@ public class EFapsRepository implements IRepository {
         // client
         if (targetChild == null) {
           final Revision rev = getRevision(clientChild.getComittedRevision());
-          _deltaEditor.delete(clientChild.getPath().substring(this.repositoryPath.length()),
-                              rev.getCreatorName(),
-                              rev.getRevision(), new Date());
+          final AbstractDelta delta = _deltaEditor.delete(clientChild.getPath().substring(this.repositoryPath.length()),
+                              rev.getRevision());
+          delta.setLastAuthor(rev.getCreatorName());
+          delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
+          delta.setCommittedRevision(rev.getRevision());
+
         // if the child has a different name than the target child it must be
         // renamed
         } else if (!targetChild.getName().equals(clientChild.getName())) {
@@ -218,16 +226,26 @@ public class EFapsRepository implements IRepository {
           reverseTree(_deltaEditor, clientChild, _clientRevision);
         } else {
           final Revision rev = getRevision(targetChild.getComittedRevision());
-          _deltaEditor.updateDir(targetChild.getPath().substring(this.repositoryPath.length()),
-                                 rev.getCreatorName(),
-                                 rev.getRevision(), new Date());
+          final AbstractDelta delta = _deltaEditor.updateDir(targetChild.getPath().substring(this.repositoryPath.length()),
+                                 rev.getRevision());
+          delta.setLastAuthor(rev.getCreatorName());
+          delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
+          delta.setCommittedRevision(rev.getRevision());
           reverseTree(_deltaEditor, clientChild, _clientRevision);
         }
       }
     }
   }
 
-
+  /**
+   * Method is called in the case that the client has got a smaller revision
+   * as the server and the Tree must be updated
+   *
+   * @param _deltaEditor      editor for the deltas
+   * @param _targetNode       target node
+   * @param _clientRevision   revion of the client
+   * @throws EFapsException
+   */
   private void updateTree(final EditorCommandSet _deltaEditor,
                           final Node _targetNode, final long _clientRevision)
       throws EFapsException {
@@ -241,33 +259,43 @@ public class EFapsRepository implements IRepository {
         // a new node for the client, else it must be updated in the client
         if (clientChild == null) {
           if (targetChild.isFile()) {
-            _deltaEditor.createFile(targetChild.getPath().substring(this.repositoryPath.length()),
-                                    rev.getCreatorName(),
-                                    rev.getRevision(),
-                                    new Date());
+            final AbstractDelta delta = _deltaEditor.createFile(targetChild.getPath().substring(this.repositoryPath.length()));
+            delta.setLastAuthor(rev.getCreatorName());
+            delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
+            delta.setCommittedRevision(rev.getRevision());
           } else {
-            _deltaEditor.createDir(targetChild.getPath().substring(this.repositoryPath.length()),
-                                   rev.getCreatorName(),
-                                   rev.getRevision(),
-                                   new Date());
+            final AbstractDelta delta = _deltaEditor.createDir(targetChild.getPath().substring(this.repositoryPath.length()));
+            delta.setLastAuthor(rev.getCreatorName());
+            delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
+            delta.setCommittedRevision(rev.getRevision());
             updateTree(_deltaEditor, targetChild, _clientRevision);
           }
         // if the child is existing for the revision of the client, but it has
-        // a different name, it means that the folder was renamed
+        // a different name, it means that the node was renamed
         } else if (!targetChild.getName().equals(clientChild.getName())) {
-          updateTree(_deltaEditor, targetChild, _clientRevision);
-          _deltaEditor.renameDir(clientChild.getPath().substring(this.repositoryPath.length()),
-                                 targetChild.getPath().substring(this.repositoryPath.length()),
-                                 rev.getCreatorName(), rev.getRevision(),
-                                 new Date());
+          if (targetChild.isFile()) {
+            //TODO rename of file
+          } else {
+            _deltaEditor.delete(clientChild.getPath().substring(this.repositoryPath.length()), rev.getRevision());
+            final AbstractDelta delta =_deltaEditor.createDir(targetChild.getPath().substring(this.repositoryPath.length()));
+            delta.setLastAuthor(rev.getCreatorName());
+            delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
+            delta.setCommittedRevision(rev.getRevision());
+            createTree(_deltaEditor, targetChild);
+          }
         } else {
-          _deltaEditor.updateDir(targetChild.getPath().substring(this.repositoryPath.length()),
-                                 rev.getCreatorName(),
-                                 rev.getRevision(), new Date());
-          updateTree(_deltaEditor, targetChild, _clientRevision);
+          if (targetChild.isFile()) {
+            //TODO update of a file
+          } else {
+            final AbstractDelta delta = _deltaEditor.updateDir(targetChild.getPath().substring(this.repositoryPath.length()),
+                rev.getRevision());
+            delta.setLastAuthor(rev.getCreatorName());
+            delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
+            delta.setCommittedRevision(rev.getRevision());
+            updateTree(_deltaEditor, targetChild, _clientRevision);
+          }
         }
       }
-
     }
   }
 
@@ -284,13 +312,15 @@ public class EFapsRepository implements IRepository {
     for (final Node child : _targetNode.getChildren()) {
       final Revision rev = getRevision(child.getComittedRevision());
       if (child.isFile()) {
-        _deltaEditor.createFile(child.getPath().substring(this.repositoryPath.length()),
-                                rev.getCreatorName(),
-                                rev.getRevision(), new Date());
+        final AbstractDelta delta = _deltaEditor.createFile(child.getPath().substring(this.repositoryPath.length()));
+        delta.setLastAuthor(rev.getCreatorName());
+        delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
+        delta.setCommittedRevision(rev.getRevision());
       } else {
-        _deltaEditor.createDir(child.getPath().substring(this.repositoryPath.length()),
-                               rev.getCreatorName(),
-                               rev.getRevision(), new Date());
+        final AbstractDelta delta = _deltaEditor.createDir(child.getPath().substring(this.repositoryPath.length()));
+        delta.setLastAuthor(rev.getCreatorName());
+        delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
+        delta.setCommittedRevision(rev.getRevision());
         // for a directory the recursive must be started
         createTree(_deltaEditor, child);
       }
