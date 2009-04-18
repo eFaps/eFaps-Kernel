@@ -34,9 +34,9 @@ import org.tmatesoft.svn.core.SVNException;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.Context;
-import org.efaps.esjp.earchive.INames;
 import org.efaps.esjp.earchive.node.Node;
 import org.efaps.esjp.earchive.repository.Repository;
+import org.efaps.esjp.earchive.revision.Revision;
 import org.efaps.util.EFapsException;
 
 import com.googlecode.jsvnserve.api.CommitInfo;
@@ -56,6 +56,7 @@ import com.googlecode.jsvnserve.api.editorcommands.EditorCommandSet;
 import com.googlecode.jsvnserve.api.properties.Properties;
 import com.googlecode.jsvnserve.api.properties.Revision0PropertyValues;
 import com.googlecode.jsvnserve.api.properties.RevisionPropertyValues;
+import com.googlecode.jsvnserve.util.Timestamp;
 
 /**
  * TODO comment!
@@ -98,7 +99,10 @@ public class EFapsRepository implements IRepository {
 
   private Repository repository;
 
-  final Map<String, Node> path2Node = new HashMap<String, Node>();
+  private final Map<String, Node> path2Node = new HashMap<String, Node>();
+
+  private final Map<Long, Revision> revisionId2Revision = new HashMap<Long, Revision>();
+
 
   public EFapsRepository(final String _user, final String _path)
       throws SVNException {
@@ -152,17 +156,19 @@ public class EFapsRepository implements IRepository {
                                     final Depth _depth,
                                     final ReportList _report) {
     final EditorCommandSet deltaEditor = new EditorCommandSet(_revision);
-    deltaEditor.updateRoot("getStatucUpdateRoot", _revision, new Date());
-    final List<AbstractCommand> values = _report.values();
-    final long clientRevision = ((SetPath) values.get(0)).getRevision();
-    final boolean firstCheckOut = ((SetPath) values.get(0)).isStartEmpty();
-    final Map<String, AbstractCommand> path2cmds = new HashMap<String, AbstractCommand>();
-    for (final AbstractCommand cmd : values) {
-      path2cmds.put(cmd.getPath(),cmd);
-    }
-    final String path = this.rootPath
-        + (_path.length() > 1 ? "/" + _path.toString() : "");
     try {
+      final Revision rev = getRevision(_revision);
+      deltaEditor.updateRoot(rev.getCreatorName(), _revision, new Date());
+      final List<AbstractCommand> values = _report.values();
+      final long clientRevision = ((SetPath) values.get(0)).getRevision();
+      final boolean firstCheckOut = ((SetPath) values.get(0)).isStartEmpty();
+      final Map<String, AbstractCommand> path2cmds = new HashMap<String, AbstractCommand>();
+      for (final AbstractCommand cmd : values) {
+        path2cmds.put(cmd.getPath(),cmd);
+      }
+      final String path = this.rootPath
+          + (_path.length() > 1 ? "/" + _path.toString() : "");
+
       // the client makes the first check out
       if (firstCheckOut) {
         final Node targetNode = Node.getNodeFromDB(this.repository,
@@ -186,7 +192,6 @@ public class EFapsRepository implements IRepository {
         // TODO Auto-generated catch block
         e.printStackTrace();
     }
-
     return deltaEditor;
   }
 
@@ -202,19 +207,22 @@ public class EFapsRepository implements IRepository {
         // if the child is not exiting in the target it must be deleted in the
         // client
         if (targetChild == null) {
+          final Revision rev = getRevision(clientChild.getComittedRevision());
           _deltaEditor.delete(clientChild.getPath().substring(this.repositoryPath.length()),
-                "remove", _deltaEditor.getTargetRevision(), new Date());
+                              rev.getCreatorName(),
+                              rev.getRevision(), new Date());
         // if the child has a different name than the target child it must be
         // renamed
         } else if (!targetChild.getName().equals(clientChild.getName())) {
           //TODO rename
           reverseTree(_deltaEditor, clientChild, _clientRevision);
         } else {
-          _deltaEditor.updateDir(targetChild.getPath().substring(this.repositoryPath.length()), "updateJan",
-              targetChild.getComittedRevision(), new Date());
+          final Revision rev = getRevision(targetChild.getComittedRevision());
+          _deltaEditor.updateDir(targetChild.getPath().substring(this.repositoryPath.length()),
+                                 rev.getCreatorName(),
+                                 rev.getRevision(), new Date());
           reverseTree(_deltaEditor, clientChild, _clientRevision);
         }
-
       }
     }
   }
@@ -228,27 +236,34 @@ public class EFapsRepository implements IRepository {
       // if targetChild has a higher Revision than the client
       if (targetChild.getComittedRevision() > _clientRevision) {
         final Node clientChild = targetChild.getNodeInRevision(_clientRevision);
+        final Revision rev = getRevision(targetChild.getComittedRevision());
         // if the child is not existing for the revision of the client it is
         // a new node for the client, else it must be updated in the client
         if (clientChild == null) {
           if (targetChild.isFile()) {
-            _deltaEditor.createFile(targetChild.getPath().substring(this.repositoryPath.length()), "jan",
-                targetChild.getComittedRevision(),
-                new Date());
+            _deltaEditor.createFile(targetChild.getPath().substring(this.repositoryPath.length()),
+                                    rev.getCreatorName(),
+                                    rev.getRevision(),
+                                    new Date());
           } else {
-            _deltaEditor.createDir(targetChild.getPath().substring(this.repositoryPath.length()), "jan",
-                                  targetChild.getComittedRevision(),
-                                  new Date());
+            _deltaEditor.createDir(targetChild.getPath().substring(this.repositoryPath.length()),
+                                   rev.getCreatorName(),
+                                   rev.getRevision(),
+                                   new Date());
             updateTree(_deltaEditor, targetChild, _clientRevision);
           }
         // if the child is existing for the revision of the client, but it has
         // a different name, it means that the folder was renamed
         } else if (!targetChild.getName().equals(clientChild.getName())) {
           updateTree(_deltaEditor, targetChild, _clientRevision);
-          _deltaEditor.renameDir(clientChild.getPath().substring(this.repositoryPath.length()), targetChild.getPath().substring(this.repositoryPath.length()),"renameJan", clientChild.getComittedRevision(), new Date());
+          _deltaEditor.renameDir(clientChild.getPath().substring(this.repositoryPath.length()),
+                                 targetChild.getPath().substring(this.repositoryPath.length()),
+                                 rev.getCreatorName(), rev.getRevision(),
+                                 new Date());
         } else {
-          _deltaEditor.updateDir(targetChild.getPath().substring(this.repositoryPath.length()), "updateJan",
-                                targetChild.getComittedRevision(), new Date());
+          _deltaEditor.updateDir(targetChild.getPath().substring(this.repositoryPath.length()),
+                                 rev.getCreatorName(),
+                                 rev.getRevision(), new Date());
           updateTree(_deltaEditor, targetChild, _clientRevision);
         }
       }
@@ -267,12 +282,15 @@ public class EFapsRepository implements IRepository {
   private void createTree(final EditorCommandSet _deltaEditor,
                           final Node _targetNode) throws EFapsException {
     for (final Node child : _targetNode.getChildren()) {
+      final Revision rev = getRevision(child.getComittedRevision());
       if (child.isFile()) {
         _deltaEditor.createFile(child.getPath().substring(this.repositoryPath.length()),
-            "jmox", child.getComittedRevision(), new Date());
+                                rev.getCreatorName(),
+                                rev.getRevision(), new Date());
       } else {
         _deltaEditor.createDir(child.getPath().substring(this.repositoryPath.length()),
-            "jmox", child.getComittedRevision(), new Date());
+                               rev.getCreatorName(),
+                               rev.getRevision(), new Date());
         // for a directory the recursive must be started
         createTree(_deltaEditor, child);
       }
@@ -297,16 +315,15 @@ public class EFapsRepository implements IRepository {
     }
   }
 
-
   /**
    * @see com.googlecode.jsvnserve.api.IRepository#getDir(java.lang.Long, java.lang.CharSequence, boolean, boolean, boolean, boolean, boolean)
    * @param _revision
    * @param _path
-   * @param fileSize
-   * @param hasProps
-   * @param createdRev
-   * @param modified
-   * @param author
+   * @param _fileSize
+   * @param _hasProps
+   * @param _createdRev
+   * @param _modified
+   * @param _author
    * @return
    */
   public DirEntryList getDir(final Long _revision, final CharSequence _path,
@@ -319,17 +336,21 @@ public class EFapsRepository implements IRepository {
     try {
       final List<Node> children = node.getChildren();
       for (final Node child: children) {
-        if (child.getType().getName().equals(INames.TYPE_NODEFILE)) {
-          ret.addFile(child.getName(), child.getComittedRevision(), null, "halle", 1);
+        final Revision rev = getRevision(child.getComittedRevision());
+        if (child.isFile()) {
+          ret.addFile(child.getName(), child.getComittedRevision(),
+                      Timestamp.valueOf(rev.getCreated()),
+                      rev.getCreatorName(), 1);
         } else {
-          ret.addDirectory(child.getName(), child.getComittedRevision(), null,"halle");
+          ret.addDirectory(child.getName(), child.getComittedRevision(),
+                           Timestamp.valueOf(rev.getCreated()),
+                           rev.getCreatorName());
         }
       }
     } catch (final EFapsException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
     return ret;
   }
 
@@ -448,7 +469,8 @@ public class EFapsRepository implements IRepository {
    * @param properties
    * @return
    */
-  public DirEntry stat(final Long _revision, final CharSequence _path, final boolean properties) {
+  public DirEntry stat(final Long _revision, final CharSequence _path,
+                       final boolean properties) {
     DirEntry ret = null;
     try {
       final String path = this.rootPath + "/" + _path.toString();
@@ -459,12 +481,15 @@ public class EFapsRepository implements IRepository {
         node = Node.getNodeFromDB(this.repository, _revision, path);
         this.path2Node.put(_revision + path, node);
       }
-      if (node.getType().getName().equals(INames.TYPE_NODEFILE)) {
-        ret = DirEntry.createFile(node.getName(),  node.getComittedRevision(),
-                                 null, "jan", 0, "asd");
+      final Revision rev = getRevision(node.getComittedRevision());
+      if (node.isFile()) {
+        ret = DirEntry.createFile(node.getName(), rev.getRevision(),
+                                  Timestamp.valueOf(rev.getCreated()),
+                                  rev.getCreatorName(), 0, "asd");
       } else {
-        ret = DirEntry.createDirectory(node.getName(), node.getComittedRevision(),
-                                       null,"jan");
+        ret = DirEntry.createDirectory(node.getName(), rev.getRevision(),
+                                       Timestamp.valueOf(rev.getCreated()),
+                                       rev.getCreatorName());
       }
     } catch (final EFapsException e) {
       // TODO Auto-generated catch block
@@ -522,5 +547,17 @@ public class EFapsRepository implements IRepository {
       throws ServerException {
     // TODO Auto-generated method stub
     return null;
+  }
+
+
+  private Revision getRevision(final Long _revision) throws EFapsException {
+    final Revision ret;
+    if (this.revisionId2Revision.containsKey(_revision)) {
+      ret = this.revisionId2Revision.get(_revision);
+    } else {
+      ret = Revision.getRevisionFromDB(this.repository, _revision);
+      this.revisionId2Revision.put(ret.getRevision(), ret);
+    }
+    return ret;
   }
 }
