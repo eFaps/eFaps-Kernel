@@ -231,30 +231,51 @@ public class EFapsRepository implements IRepository {
         // if the child is not existing for the revision of the client it is
         // a new node for the client, else it must be updated in the client
         if (clientChild == null) {
-          _deltaEditor.createDir(targetChild.getPath().substring(this.repositoryPath.length()), "jan",
-                                targetChild.getComittedRevision(),
-                                new Date());
+          if (targetChild.isFile()) {
+            _deltaEditor.createFile(targetChild.getPath().substring(this.repositoryPath.length()), "jan",
+                targetChild.getComittedRevision(),
+                new Date());
+          } else {
+            _deltaEditor.createDir(targetChild.getPath().substring(this.repositoryPath.length()), "jan",
+                                  targetChild.getComittedRevision(),
+                                  new Date());
+            updateTree(_deltaEditor, targetChild, _clientRevision);
+          }
         // if the child is existing for the revision of the client, but it has
         // a different name, it means that the folder was renamed
         } else if (!targetChild.getName().equals(clientChild.getName())) {
-          //TODO rename!
-          _deltaEditor.delete(clientChild.getPath().substring(this.repositoryPath.length()), "deleteJan", clientChild.getComittedRevision(), new Date());
+          updateTree(_deltaEditor, targetChild, _clientRevision);
+          _deltaEditor.renameDir(clientChild.getPath().substring(this.repositoryPath.length()), targetChild.getPath().substring(this.repositoryPath.length()),"renameJan", clientChild.getComittedRevision(), new Date());
         } else {
           _deltaEditor.updateDir(targetChild.getPath().substring(this.repositoryPath.length()), "updateJan",
                                 targetChild.getComittedRevision(), new Date());
-
+          updateTree(_deltaEditor, targetChild, _clientRevision);
         }
       }
-      updateTree(_deltaEditor, targetChild, _clientRevision);
+
     }
   }
 
+  /**
+   * Method is called for the fist checkout of the repository by a client.
+   * Because it is a first checkout now checking at all must be done.
+   *
+   * @param _deltaEditor      editor for the deltas
+   * @param _targetNode       target node
+   * @throws EFapsException
+   */
   private void createTree(final EditorCommandSet _deltaEditor,
                           final Node _targetNode) throws EFapsException {
     for (final Node child : _targetNode.getChildren()) {
-      _deltaEditor.createDir(child.getPath().substring(this.repositoryPath.length()),
-                             "jmox", child.getComittedRevision(), new Date());
-      createTree(_deltaEditor, child);
+      if (child.isFile()) {
+        _deltaEditor.createFile(child.getPath().substring(this.repositoryPath.length()),
+            "jmox", child.getComittedRevision(), new Date());
+      } else {
+        _deltaEditor.createDir(child.getPath().substring(this.repositoryPath.length()),
+            "jmox", child.getComittedRevision(), new Date());
+        // for a directory the recursive must be started
+        createTree(_deltaEditor, child);
+      }
     }
   }
 
@@ -319,8 +340,18 @@ public class EFapsRepository implements IRepository {
    * @return
    */
   public InputStream getFile(final Long _revision, final CharSequence _path) {
-    // TODO Auto-generated method stub
-    return null;
+    InputStream ret = null;
+    try {
+      final Node node = Node.getNodeFromDB(this.repository, _revision, _path);
+      ret = node.getFile();
+    } catch (final EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (final Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return ret;
   }
 
   /**

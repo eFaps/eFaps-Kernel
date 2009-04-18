@@ -20,6 +20,7 @@
 
 package org.efaps.esjp.earchive.node;
 
+import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,7 +35,9 @@ import java.util.Map.Entry;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.db.Checkout;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.esjp.earchive.INames;
 import org.efaps.esjp.earchive.repository.Repository;
@@ -349,7 +352,14 @@ public class Node implements INames {
 
 
   public boolean isFile () {
-    return this.fileId != null;
+    return this.fileId != null && this.fileId > 0;
+  }
+
+  public InputStream getFile() throws Exception {
+    final Checkout checkout = new Checkout(Instance.get(Type.get(TYPE_FILE),
+                                                        this.fileId));
+    checkout.preprocess();
+    return checkout.execute();
   }
 
   public static Node createNewNode(final Repository _repository,
@@ -915,6 +925,7 @@ public class Node implements INames {
       .append(VIEW_NODE2NODE_C_COPYID).append(",")
       .append(VIEW_NODE2NODE_C_REVISION).append(",")
       .append(VIEW_NODE2NODE_C_NAME).append(",")
+      .append(VIEW_NODE2NODE_C_FILEID).append(",")
       .append(VIEW_NODE2NODE_C_PROPSETID)
       .append(" from ").append(VIEW_NODE2NODE)
     .append(" where ").append(VIEW_NODE2NODE_C_PARENTID).append(" = ?")
@@ -932,8 +943,10 @@ public class Node implements INames {
 
         if (resultset.next()) {
           ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
-              resultset.getLong(3), resultset.getLong(4), resultset.getLong(5),
-              resultset.getString(6), this.repositoryId, null, resultset.getLong(7));
+                         resultset.getLong(3), resultset.getLong(4),
+                         resultset.getLong(5), resultset.getString(6),
+                         this.repositoryId, resultset.getLong(7),
+                         resultset.getLong(8));
           ret.setPath(this.path + SEPERATOR_PATH + ret.getName());
           ret.setIdPath(this.idPath + SEPERATOR_INSTANCE + ret.getHistoryId() + SEPERATOR_IDS + ret.getCopyId());
           ret.setParent(this);
