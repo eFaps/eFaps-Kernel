@@ -200,6 +200,15 @@ public class EFapsRepository implements IRepository {
     return deltaEditor;
   }
 
+  /**
+   * Method is called in the case that the client has got a bigger revision
+   * as wanted by the target and the Tree must be reversed.
+   *
+   * @param _deltaEditor      editor for the deltas
+   * @param _targetNode       node of the client
+   * @param _clientRevision   revion of the client
+   * @throws EFapsException
+   */
   private void reverseTree(final EditorCommandSet _deltaEditor,
                            final Node _clientNode,final long _clientRevision)
       throws EFapsException {
@@ -222,16 +231,29 @@ public class EFapsRepository implements IRepository {
         // if the child has a different name than the target child it must be
         // renamed
         } else if (!targetChild.getName().equals(clientChild.getName())) {
-          //TODO rename
-          reverseTree(_deltaEditor, clientChild, _clientRevision);
+          if (clientChild.isFile()) {
+            //TODO renaming of a file
+          } else {
+            final Revision rev = getRevision(targetChild.getComittedRevision());
+            _deltaEditor.delete(clientChild.getPath().substring(this.repositoryPath.length()), _clientRevision);
+            final AbstractDelta delta =_deltaEditor.createDir(targetChild.getPath().substring(this.repositoryPath.length()));
+            delta.setLastAuthor(rev.getCreatorName());
+            delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
+            delta.setCommittedRevision(rev.getRevision());
+            createTree(_deltaEditor, targetChild);
+          }
         } else {
-          final Revision rev = getRevision(targetChild.getComittedRevision());
-          final AbstractDelta delta = _deltaEditor.updateDir(targetChild.getPath().substring(this.repositoryPath.length()),
-                                 rev.getRevision());
-          delta.setLastAuthor(rev.getCreatorName());
-          delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
-          delta.setCommittedRevision(rev.getRevision());
-          reverseTree(_deltaEditor, clientChild, _clientRevision);
+          if (targetChild.isFile()) {
+            //TODO update of file
+          } else {
+            final Revision rev = getRevision(targetChild.getComittedRevision());
+            final AbstractDelta delta = _deltaEditor.updateDir(targetChild.getPath().substring(this.repositoryPath.length()),
+                                   rev.getRevision());
+            delta.setLastAuthor(rev.getCreatorName());
+            delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
+            delta.setCommittedRevision(rev.getRevision());
+            reverseTree(_deltaEditor, clientChild, _clientRevision);
+          }
         }
       }
     }
@@ -239,7 +261,7 @@ public class EFapsRepository implements IRepository {
 
   /**
    * Method is called in the case that the client has got a smaller revision
-   * as the server and the Tree must be updated
+   * as wanted by the target and the Tree must be updated.
    *
    * @param _deltaEditor      editor for the deltas
    * @param _targetNode       target node
