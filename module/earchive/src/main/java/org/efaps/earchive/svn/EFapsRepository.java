@@ -23,6 +23,8 @@ package org.efaps.earchive.svn;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,13 +49,18 @@ import com.googlecode.jsvnserve.api.IRepository;
 import com.googlecode.jsvnserve.api.LocationEntries;
 import com.googlecode.jsvnserve.api.LockDescriptionList;
 import com.googlecode.jsvnserve.api.LogEntryList;
+import com.googlecode.jsvnserve.api.OtherServerException;
 import com.googlecode.jsvnserve.api.ReportList;
 import com.googlecode.jsvnserve.api.ServerException;
 import com.googlecode.jsvnserve.api.LockDescriptionList.LockDescription;
 import com.googlecode.jsvnserve.api.ReportList.AbstractCommand;
 import com.googlecode.jsvnserve.api.ReportList.SetPath;
 import com.googlecode.jsvnserve.api.editorcommands.AbstractDelta;
+import com.googlecode.jsvnserve.api.editorcommands.DeltaDirectoryCreate;
+import com.googlecode.jsvnserve.api.editorcommands.DirectoryNotExistsException;
 import com.googlecode.jsvnserve.api.editorcommands.EditorCommandSet;
+import com.googlecode.jsvnserve.api.editorcommands.FileNotExistsException;
+import com.googlecode.jsvnserve.api.filerevisions.FileRevisionsList;
 import com.googlecode.jsvnserve.api.properties.Properties;
 import com.googlecode.jsvnserve.api.properties.Revision0PropertyValues;
 import com.googlecode.jsvnserve.api.properties.RevisionPropertyValues;
@@ -563,19 +570,49 @@ public class EFapsRepository implements IRepository {
 
   /**
    * @see com.googlecode.jsvnserve.api.IRepository#commit(java.lang.String, java.util.Map, boolean, com.googlecode.jsvnserve.api.properties.Properties, com.googlecode.jsvnserve.api.editorcommands.EditorCommandSet)
-   * @param message
+   * @param _message
    * @param _locks
    * @param locks
    * @param props
    * @param _editor
    * @return
-   * @throws ServerException
    */
-  public CommitInfo commit(final String message, final Map<String, String> _locks,
-      final boolean locks, final Properties props, final EditorCommandSet _editor)
-      throws ServerException {
-    // TODO Auto-generated method stub
-    return null;
+  public CommitInfo commit(final String _message,
+                           final Map<String, String> _locks,
+                           final boolean locks, final Properties props,
+                           final EditorCommandSet _editor)
+      throws DirectoryNotExistsException, FileNotExistsException,
+      OtherServerException {
+    CommitInfo commitInfo = null;
+    final Collection<AbstractDelta> deltas = _editor.getDeltas();
+    try {
+      final List<Node> newnodes = new ArrayList<Node>();
+      for (final AbstractDelta delta : deltas) {
+        if (delta instanceof DeltaDirectoryCreate) {
+          final int pos = delta.getPath().lastIndexOf(Node.SEPERATOR_PATH);
+          final String parentPath;
+          final String name;
+          if (pos < 0) {
+            parentPath = this.rootPath;
+            name = delta.getPath();
+          } else {
+            parentPath = delta.getPath().substring(0, pos);
+            name = delta.getPath().substring(pos + 1);
+          }
+          final Node parentNode = Node.getNodeFromDB(this.repository, getLatestRevision(), parentPath);
+          final Node newDir = Node.createNewNode(this.repository, name,
+                                                 Node.TYPE_NODEDIRECTORY, null);
+          newDir.setConnectTarget(parentNode);
+          newnodes.add(newDir);
+        }
+      }
+      final Revision rev = Node.multiBubbleUp(newnodes, _message);
+      commitInfo = new CommitInfo(rev.getRevision(), this.user, new Date());
+    } catch (final EFapsException e) {
+
+    }
+
+    return commitInfo;
   }
 
   /**
@@ -611,5 +648,29 @@ public class EFapsRepository implements IRepository {
       this.revisionId2Revision.put(ret.getRevision(), ret);
     }
     return ret;
+  }
+
+  /**
+   * @see com.googlecode.jsvnserve.api.IRepository#getFileRevs(java.lang.String, long, long, boolean)
+   * @param _path
+   * @param rev
+   * @param rev2
+   * @param info
+   * @return
+   * @throws ServerException
+   */
+  public FileRevisionsList getFileRevs(final String _path, final long rev, final long rev2,
+      final boolean info) throws ServerException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /**
+   * @see com.googlecode.jsvnserve.api.IRepository#setLocationPath(java.lang.CharSequence)
+   * @param path
+   */
+  public void setLocationPath(final CharSequence path) {
+    // TODO Auto-generated method stub
+
   }
 }

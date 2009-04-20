@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +76,7 @@ public class Node implements INames {
   /**
    * Revision the Node was comitted with.
    */
-  private final Long comittedRevision;
+  private Long comittedRevision;
 
   /**
    * Type of the node. There are file nodes and directory nodes.
@@ -118,6 +119,21 @@ public class Node implements INames {
   private boolean root;
 
   private String path;
+
+  /**
+   * Node that a new Node will be connect to on bubble up.
+   */
+  private Node connectTarget;
+
+  /**
+   * Getter method for instance variable {@link #connectTarget}.
+   *
+   * @return value of instance variable {@link #connectTarget}
+   */
+  public Node getConnectTarget() {
+    return this.connectTarget;
+  }
+
 
   /**
    * COnstructor is needed to be able to use this class in eFpas as an esjp.
@@ -200,7 +216,7 @@ public class Node implements INames {
    */
   public List<Node> getChildren() throws EFapsException {
     if (!this.childrenResolved) {
-      this.children.addAll(getChildNodes(null, null));
+      this.children.addAll(getChildNodes(null, null, false));
       this.childrenResolved = true;
     }
     return this.children;
@@ -214,6 +230,16 @@ public class Node implements INames {
    */
   public Long getComittedRevision() {
     return this.comittedRevision;
+  }
+
+
+  /**
+   * Setter method for instance variable {@link #comittedRevision}.
+   *
+   * @param comittedRevision value for instance variable {@link #comittedRevision}
+   */
+  public void setComittedRevision(final Long comittedRevision) {
+    this.comittedRevision = comittedRevision;
   }
 
 
@@ -660,6 +686,7 @@ public class Node implements INames {
 
   /**
    * Method returns from the given Repository and revision the node for a path.
+   * The node contains the whole parent/child relation like a tree.
    * The path must be a valid path in the given revision, because the tree is
    * climbed down following the given path.
    *
@@ -671,7 +698,8 @@ public class Node implements INames {
    */
   public static Node getNodeFromDB(final Repository _repository,
                                    final long _revision,
-                                   final CharSequence _path) throws EFapsException {
+                                   final CharSequence _path)
+      throws EFapsException {
     final StringBuilder cmd = new StringBuilder();
     //statement for the rootnode
     cmd.append(" select ")
@@ -754,9 +782,8 @@ public class Node implements INames {
       .append(" from ").append(TABLE_NODE)
       .append(" left join ").append(TABLE_REVISION).append(" on ")
         .append(TABLE_REVISION).append(".").append(TABLE_REVISION_C_NODEID)
-        .append(" = ").append(TABLE_NODE).append(".").append(TABLE_NODE_C_ID)
-      .append(" where ").append(TABLE_NODE).append(".").append(TABLE_NODE_C_ID)
-      .append(" = ?");
+        .append(" = ").append(TABLE_NODE_T_C_ID)
+      .append(" where ").append(TABLE_NODE_T_C_ID).append(" = ?");
 
     final ConnectionResource con
                           = Context.getThreadContext().getConnectionResource();
@@ -772,10 +799,10 @@ public class Node implements INames {
 
        if (resultset.next()) {
           ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
-                        resultset.getLong(3), resultset.getLong(4),
-                        resultset.getLong(5), resultset.getString(6),
-                        resultset.getLong(7), resultset.getLong(8),
-                        resultset.getLong(9));
+                         resultset.getLong(3), resultset.getLong(4),
+                         resultset.getLong(5), resultset.getString(6),
+                         resultset.getLong(7), resultset.getLong(8),
+                         resultset.getLong(10));
          ret.setIdPath(_idPath);
          ret.setRoot(resultset.getLong(9) > 0);
        }
@@ -858,6 +885,53 @@ public class Node implements INames {
     return ret;
 
   }
+
+  public static Revision multiBubbleUp(final List<Node> _nodes, final String _msg) throws EFapsException {
+    Node current = null;
+    final Map <String, Node> idPath2Node = new HashMap<String, Node>();
+
+    for (final Node node : _nodes) {
+
+      final Node targetParent = node.getConnectTarget();
+      final List<Node> childrenTmp;
+
+      if (idPath2Node.containsKey(targetParent.getIdPath())) {
+        current = idPath2Node.get(targetParent.getIdPath());
+        childrenTmp= new ArrayList<Node>();
+      } else {
+        current = targetParent.getNodeClone();
+        idPath2Node.put(current.getIdPath(), current);
+        final List<Node> exclude = new ArrayList<Node>();
+        exclude.add(current);
+        childrenTmp = targetParent.getChildNodes(exclude, null, false);
+      }
+      childrenTmp.add(node);
+      Node2Node.connect(current, childrenTmp);
+
+      while (!current.isRoot()) {
+        final Node parentTmp = current.getParent();
+        final Node rev;
+        final List<Node> newchildren;
+        if (idPath2Node.containsKey(parentTmp.getIdPath())) {
+          rev = idPath2Node.get(parentTmp.getIdPath());
+          newchildren= new ArrayList<Node>();
+        } else {
+          rev = parentTmp.getNodeClone();
+          idPath2Node.put(rev.getIdPath(), rev);
+          final List<Node> exclude = new ArrayList<Node>();
+          exclude.add(current);
+          newchildren = parentTmp.getChildNodes(exclude, null, false);
+        }
+        newchildren.add(current);
+        Node2Node.connect(rev, newchildren);
+        current = rev;
+      }
+    }
+    return Revision.getNewRevision(new Repository(current.getRepositoryId()),
+        current, _msg);
+  }
+
+
 
 
   private Node getChildNode(final long _historyId,
@@ -993,14 +1067,16 @@ public class Node implements INames {
       if (current.getAncestor() != null) {
         list.add(current.getAncestor());
       }
-      final List<Node> childrenTmp = node.getChildNodes(list, null);
+      final List<Node> childrenTmp = node.getChildNodes(list, null, false);
       childrenTmp.add(current);
       Node2Node.connect(reviseNode, childrenTmp);
       current = reviseNode;
     }
-    Revision.getNewRevision(new Repository(current.getRepositoryId()),
-                            current, _commitMsg);
-
+    final Revision rev = Revision.getNewRevision(new Repository(current.getRepositoryId()),
+                                                      current, _commitMsg);
+    for (final Node node: ret) {
+      node.setComittedRevision(rev.getRevision());
+    }
     return ret;
   }
 
@@ -1096,7 +1172,8 @@ public class Node implements INames {
    * @throws EFapsException
    */
   private List<Node> getChildNodes(final List<Node> _excludeNodes,
-                                   final Long _revision)
+                                   final Long _revision,
+                                   final boolean _compareById)
       throws EFapsException {
 
     final StringBuilder cmd = new StringBuilder();
@@ -1138,7 +1215,7 @@ public class Node implements INames {
          boolean add = true;
          if (_excludeNodes != null) {
            for (final Node excludeNode : _excludeNodes) {
-             if (excludeNode.getId() != null) {
+             if (_compareById) {
                if (childid == excludeNode.getId()) {
                  add = false;
                  break;
@@ -1252,6 +1329,9 @@ public class Node implements INames {
                             this.propSetId);
   ret.setAncestor(this);
   ret.setIdPath(this.idPath);
+  ret.setPath(this.path);
+  ret.setParent(this.parent);
+  ret.setRoot(isRoot());
   return ret;
   }
 
@@ -1276,7 +1356,7 @@ public class Node implements INames {
     final Node clone = getNodeClone();
     ret.add(clone);
     //connect existing children to clone
-    final List<Node> childrenTmp = getChildNodes(null, null);
+    final List<Node> childrenTmp = getChildNodes(null, null, true);
     Node2Node.connect(clone, childrenTmp);
     final List<Node> nodes = getNodeHirachy(this.idPath);
     // remove last node from the hirachy because it is the node that was renamed
@@ -1311,7 +1391,7 @@ public class Node implements INames {
       remove.add(new Node(null, null, Long.parseLong(ids[0]),
                           Long.parseLong(ids[1]), null, null, null, null, null));
     }
-    final List<Node> childrenTmp = getChildNodes(remove, null);
+    final List<Node> childrenTmp = getChildNodes(remove, null, true);
     final Node clone = getNodeClone();
     Node2Node.connect(clone, childrenTmp);
     final List<Node> nodes = getNodeHirachy(this.idPath);
@@ -1377,7 +1457,7 @@ public class Node implements INames {
 
 
   private void updateRevision(final Long _revision) throws EFapsException {
-    this.children.addAll(getChildNodes(null, new Long (0)));
+    this.children.addAll(getChildNodes(null, new Long (0), false));
     for (final Node child : this.children) {
       child.updateRevision(_revision);
     }
@@ -1429,5 +1509,13 @@ public class Node implements INames {
           + "; path=" + this.path
           + "; root=" + this.root
           + "]";
+  }
+
+
+  /**
+   * @param parentNode
+   */
+  public void setConnectTarget(final Node parentNode) {
+    this.connectTarget = parentNode;
   }
 }

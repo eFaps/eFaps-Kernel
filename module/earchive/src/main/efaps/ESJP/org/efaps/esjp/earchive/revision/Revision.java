@@ -153,9 +153,10 @@ public class Revision implements INames {
   }
 
   public static Revision getNewRevision(final Repository _repository,
-                                        final Node _node,
+                                        final Node _rootNode,
                                         final String _msg)
       throws EFapsException {
+    final Revision ret = new Revision();
     final StringBuilder cmd = new StringBuilder();
 
     cmd.append("insert into ").append(TABLE_REVISION)
@@ -180,8 +181,7 @@ public class Revision implements INames {
                                        TABLE_REVISION,
                                        "ID");
 
-     final Revision revision = new Revision();
-     revision.newRevision(_repository, con);
+     ret.insertRevision(_repository, con);
 
      PreparedStatement stmt = null;
      try {
@@ -189,8 +189,8 @@ public class Revision implements INames {
 
        stmt.setLong(1, id);
        stmt.setLong(2, _repository.getId());
-       stmt.setLong(3, revision.getRevision());
-       stmt.setLong(4, _node.getId());
+       stmt.setLong(3, ret.getRevision());
+       stmt.setLong(4, _rootNode.getId());
        stmt.setString(5, _msg);
        stmt.setLong(6, context.getPersonId());
        final int rows = stmt.executeUpdate();
@@ -200,6 +200,7 @@ public class Revision implements INames {
            id = resultset.getLong(1);
        }
        resultset.close();
+
      } finally {
        stmt.close();
      }
@@ -212,11 +213,11 @@ public class Revision implements INames {
         con.abort();
       }
     }
-    return new Revision();
+    return ret;
   }
 
 
-  private void newRevision(final Repository _repository,
+  private void insertRevision(final Repository _repository,
                            final ConnectionResource _con) {
 
     final StringBuilder cmd = new StringBuilder();
