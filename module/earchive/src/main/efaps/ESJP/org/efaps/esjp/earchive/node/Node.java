@@ -390,12 +390,13 @@ public class Node implements INames {
 
   public static Node createNewNode(final Repository _repository,
                                    final String _name, final String _type,
-                                   final Map<String, String> _properties)
+                                   final Map<String, String> _properties,
+                                   final Long _fileId)
       throws EFapsException {
 
     Long fileIdTmp = null;
     if (_type.equals(TYPE_NODEFILE)) {
-     fileIdTmp =  createFile();
+     fileIdTmp = (_fileId != null && _fileId > 0) ? _fileId : createFile();
     }
     Long propSetId = null;
     if (_properties != null) {

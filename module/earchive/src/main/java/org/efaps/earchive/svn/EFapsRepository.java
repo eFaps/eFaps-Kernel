@@ -36,6 +36,7 @@ import org.tmatesoft.svn.core.SVNException;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.Context;
+import org.efaps.esjp.earchive.node.EFapsFile;
 import org.efaps.esjp.earchive.node.Node;
 import org.efaps.esjp.earchive.repository.Repository;
 import org.efaps.esjp.earchive.revision.Revision;
@@ -57,6 +58,8 @@ import com.googlecode.jsvnserve.api.ReportList.AbstractCommand;
 import com.googlecode.jsvnserve.api.ReportList.SetPath;
 import com.googlecode.jsvnserve.api.editorcommands.AbstractDelta;
 import com.googlecode.jsvnserve.api.editorcommands.DeltaDirectoryCreate;
+import com.googlecode.jsvnserve.api.editorcommands.DeltaFileCreate;
+import com.googlecode.jsvnserve.api.editorcommands.DeltaRootOpen;
 import com.googlecode.jsvnserve.api.editorcommands.DirectoryNotExistsException;
 import com.googlecode.jsvnserve.api.editorcommands.EditorCommandSet;
 import com.googlecode.jsvnserve.api.editorcommands.FileNotExistsException;
@@ -586,9 +589,22 @@ public class EFapsRepository implements IRepository {
     CommitInfo commitInfo = null;
     final Collection<AbstractDelta> deltas = _editor.getDeltas();
     try {
+      final Map <DeltaFileCreate,EFapsFile> delta2File = new HashMap<DeltaFileCreate,EFapsFile>();
+      //first check all the files in
+      for (final AbstractDelta delta : deltas) {
+        if (delta instanceof DeltaFileCreate) {
+          final DeltaFileCreate fileDelta = (DeltaFileCreate) delta;
+          final int pos = delta.getPath().lastIndexOf(Node.SEPERATOR_PATH);
+          final String name = delta.getPath().substring(pos + 1);
+          final EFapsFile file = EFapsFile.createFile(fileDelta.getInputStream(), name);
+          delta2File.put(fileDelta, file);
+        }
+      }
+
+      //build the structur
       final List<Node> newnodes = new ArrayList<Node>();
       for (final AbstractDelta delta : deltas) {
-        if (delta instanceof DeltaDirectoryCreate) {
+        if (!(delta instanceof DeltaRootOpen)) {
           final int pos = delta.getPath().lastIndexOf(Node.SEPERATOR_PATH);
           final String parentPath;
           final String name;
@@ -600,10 +616,19 @@ public class EFapsRepository implements IRepository {
             name = delta.getPath().substring(pos + 1);
           }
           final Node parentNode = Node.getNodeFromDB(this.repository, getLatestRevision(), parentPath);
-          final Node newDir = Node.createNewNode(this.repository, name,
-                                                 Node.TYPE_NODEDIRECTORY, null);
-          newDir.setConnectTarget(parentNode);
-          newnodes.add(newDir);
+
+          if (delta instanceof DeltaDirectoryCreate) {
+            final Node newDir = Node.createNewNode(this.repository, name,
+                                                   Node.TYPE_NODEDIRECTORY, null, null);
+            newDir.setConnectTarget(parentNode);
+            newnodes.add(newDir);
+          } else if (delta instanceof DeltaFileCreate) {
+            final EFapsFile file = delta2File.get(delta);
+            final Node newFile = Node.createNewNode(this.repository, name,
+                Node.TYPE_NODEFILE, null, file.getId());
+            newFile.setConnectTarget(parentNode);
+            newnodes.add(newFile);
+          }
         }
       }
       final Revision rev = Node.multiBubbleUp(newnodes, _message);

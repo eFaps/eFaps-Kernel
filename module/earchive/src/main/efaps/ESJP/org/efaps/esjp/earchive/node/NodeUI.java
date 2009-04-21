@@ -180,7 +180,7 @@ public class NodeUI implements INames {
     test.put("EOF", "LF");
 
     final Node newDir = Node.createNewNode(repository, name,
-                                           Node.TYPE_NODEDIRECTORY, test);
+                                           Node.TYPE_NODEDIRECTORY, test, null);
     newDir.connect2Parent(parentNode, msg);
     return new Return();
   }
@@ -204,7 +204,7 @@ public class NodeUI implements INames {
     test.put("paremeter", "nur ein test");
 
     final Node newFile = Node.createNewNode(repository, name,
-                                            Node.TYPE_NODEFILE, test);
+                                            Node.TYPE_NODEFILE, test, null);
     newFile.connect2Parent(node, msg);
     final Instance fileInstance = Instance.get(Type.get(TYPE_FILE),
                                                newFile.getFileId());
