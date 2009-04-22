@@ -632,7 +632,7 @@ public class EFapsRepository implements IRepository {
           final DeltaFileCreate fileDelta = (DeltaFileCreate) delta;
           final int pos = delta.getPath().lastIndexOf(Node.SEPERATOR_PATH);
           final String name = delta.getPath().substring(pos + 1);
-          final EFapsFile file = EFapsFile.createFile(fileDelta.getInputStream(), name);
+          final EFapsFile file = EFapsFile.createFile(fileDelta.getInputStream(), name, fileDelta.getFileSize());
           delta2File.put(fileDelta, file);
         }
       }

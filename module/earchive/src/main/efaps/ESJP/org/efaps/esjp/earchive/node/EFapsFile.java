@@ -51,7 +51,7 @@ public class EFapsFile implements INames {
   public EFapsFile() {
   }
 
-  public static EFapsFile createFile(final InputStream _inputStream, final String _name) throws EFapsException {
+  public static EFapsFile createFile(final InputStream _inputStream, final String _name, final Long _size) throws EFapsException {
     final EFapsFile ret = new EFapsFile();
     ret.setName(_name);
     final StringBuilder cmd = new StringBuilder();
@@ -77,7 +77,7 @@ public class EFapsFile implements INames {
         stmt = con.getConnection().prepareStatement(cmd.toString());
         stmt.setLong(1, id);
         stmt.setLong(2, typeid);
-        stmt.setLong(3, new Long(0));
+        stmt.setLong(3, _size);
         stmt.setString(4, "empty");
         stmt.setString(5, "empty");
         stmt.setString(6, "empty");
@@ -94,7 +94,7 @@ public class EFapsFile implements INames {
       final Instance fileInstance = Instance.get(Type.get(TYPE_FILE), ret.id);
 
       final Checkin checkin = new Checkin(fileInstance);
-      checkin.execute(_name, _inputStream, 1);
+      checkin.execute(_name, _inputStream, _size.intValue());
 
     } catch (final SQLException e) {
       // TODO fehler schmeissen
