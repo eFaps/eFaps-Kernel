@@ -504,16 +504,46 @@ public class EFapsRepository implements IRepository {
 
   /**
    * @see com.googlecode.jsvnserve.api.IRepository#getLog(long, long, boolean, java.lang.CharSequence[])
-   * @param revision
-   * @param revision2
-   * @param changedPaths
+   * @param _fromRevision
+   * @param _toRevision
+   * @param _changedPaths
    * @param _paths
    * @return
    */
-  public LogEntryList getLog(final long revision, final long revision2,
-      final boolean changedPaths, final CharSequence... _paths) {
-    // TODO Auto-generated method stub
-    return null;
+  public LogEntryList getLog(final long _startRevision, final long _endRevision,
+                             final boolean _changedPaths,
+                             final CharSequence... _paths) {
+    //TODO changedPaths wir nicht beruecksichtigt
+    final LogEntryList entryList = new LogEntryList();
+    try {
+      for (final CharSequence pathSeq : _paths) {
+        final String path = this.rootPath
+                        + (pathSeq.length() > 1 ? "/" + pathSeq.toString() : "");
+        Node current = Node.getNodeFromDB(this.repository, _startRevision, path);
+        Revision rev = Revision.getRevisionFromDB(this.repository, current.getComittedRevision());
+        entryList.addLogEntry(current.getComittedRevision(),
+                              rev.getCreatorName(), rev.getCreated(),
+                              rev.getMessage());
+
+        Long curRev = rev.getRevision() - 1;
+        while (curRev > 0 && curRev > _endRevision) {
+          current = current.getNodeInRevision(curRev);
+          if (current != null) {
+            rev = Revision.getRevisionFromDB(this.repository, current.getComittedRevision());
+            entryList.addLogEntry(current.getComittedRevision(),
+                                  rev.getCreatorName(), rev.getCreated(),
+                                  rev.getMessage());
+            curRev = rev.getRevision() - 1;
+          } else {
+            curRev = new Long(0);
+          }
+        }
+      }
+    } catch (final EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return entryList;
   }
 
   /**
