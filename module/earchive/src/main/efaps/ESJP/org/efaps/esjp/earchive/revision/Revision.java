@@ -74,7 +74,7 @@ public class Revision implements INames {
     this.repositoryId = _repositoryId;
     this.revision = _revision;
     this.nodeId = _nodeId;
-    this.message = _message;
+    this.message = _message.trim();
     this.creatorId = _creatorId;
     this.created = _created;
     this.creatorName = _creatorName.trim();
