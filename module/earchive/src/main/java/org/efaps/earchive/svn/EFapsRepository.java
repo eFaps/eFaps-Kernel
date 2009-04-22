@@ -241,11 +241,14 @@ public class EFapsRepository implements IRepository {
         // if the child has a different name than the target child it must be
         // renamed
         } else if (!targetChild.getName().equals(clientChild.getName())) {
+          final Revision rev = getRevision(targetChild.getComittedRevision());
+          _deltaEditor.delete(clientChild.getPath().substring(this.repositoryPath.length()), _clientRevision);
           if (clientChild.isFile()) {
-            //TODO renaming of a file
+            final AbstractDelta delta = _deltaEditor.createFile(targetChild.getPath().substring(this.repositoryPath.length()));
+            delta.setLastAuthor(rev.getCreatorName());
+            delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
+            delta.setCommittedRevision(rev.getRevision());
           } else {
-            final Revision rev = getRevision(targetChild.getComittedRevision());
-            _deltaEditor.delete(clientChild.getPath().substring(this.repositoryPath.length()), _clientRevision);
             final AbstractDelta delta =_deltaEditor.createDir(targetChild.getPath().substring(this.repositoryPath.length()));
             delta.setLastAuthor(rev.getCreatorName());
             delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
@@ -305,10 +308,13 @@ public class EFapsRepository implements IRepository {
         // if the child is existing for the revision of the client, but it has
         // a different name, it means that the node was renamed
         } else if (!targetChild.getName().equals(clientChild.getName())) {
+          _deltaEditor.delete(clientChild.getPath().substring(this.repositoryPath.length()), rev.getRevision());
           if (targetChild.isFile()) {
-            //TODO rename of file
+            final AbstractDelta delta = _deltaEditor.createFile(targetChild.getPath().substring(this.repositoryPath.length()));
+            delta.setLastAuthor(rev.getCreatorName());
+            delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
+            delta.setCommittedRevision(rev.getRevision());
           } else {
-            _deltaEditor.delete(clientChild.getPath().substring(this.repositoryPath.length()), rev.getRevision());
             final AbstractDelta delta =_deltaEditor.createDir(targetChild.getPath().substring(this.repositoryPath.length()));
             delta.setLastAuthor(rev.getCreatorName());
             delta.setCommittedDate(Timestamp.valueOf(rev.getCreated()));
