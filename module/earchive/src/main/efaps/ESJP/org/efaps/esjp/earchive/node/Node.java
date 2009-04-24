@@ -287,6 +287,17 @@ public class Node implements INames {
 
 
   /**
+   * Getter method for instance variable {@link #propSetId}.
+   *
+   * @return value of instance variable {@link #propSetId}
+   */
+  public Long getPropSetId() {
+    return this.propSetId;
+  }
+
+
+
+  /**
    * Getter method for instance variable {@link #fileId}.
    *
    * @return value of instance variable {@link #fileId}

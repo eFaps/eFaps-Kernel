@@ -38,6 +38,7 @@ import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.Context;
 import org.efaps.esjp.earchive.node.EFapsFile;
 import org.efaps.esjp.earchive.node.Node;
+import org.efaps.esjp.earchive.node.PropSet;
 import org.efaps.esjp.earchive.repository.Repository;
 import org.efaps.esjp.earchive.revision.Revision;
 import org.efaps.util.EFapsException;
@@ -115,6 +116,8 @@ public class EFapsRepository implements IRepository {
   private final Map<Long, Revision> revisionId2Revision = new HashMap<Long, Revision>();
 
   private final Map<Long, EFapsFile> fileId2EFapsFile = new HashMap<Long, EFapsFile>();
+
+  private final Map<Long, PropSet> setId2PropSet = new HashMap<Long, PropSet>();
 
   public EFapsRepository(final String _user, final String _path)
       throws SVNException {
@@ -569,7 +572,7 @@ public class EFapsRepository implements IRepository {
    * @return
    */
   public DirEntry stat(final Long _revision, final CharSequence _path,
-                       final boolean properties) {
+                       final boolean _includeProperties) {
     DirEntry ret = null;
     try {
       final Long revision= (_revision == null) ? getLatestRevision() : _revision;
@@ -594,6 +597,10 @@ public class EFapsRepository implements IRepository {
           ret = DirEntry.createDirectory(node.getName(), rev.getRevision(),
                                          Timestamp.valueOf(rev.getCreated()),
                                          rev.getCreatorName());
+        }
+        if (_includeProperties) {
+          final PropSet propset = getPropSet(node.getPropSetId());
+          ret.putAll(propset.getProperties());
         }
       }
     } catch (final EFapsException e) {
@@ -728,6 +735,18 @@ public class EFapsRepository implements IRepository {
     }
     return ret;
   }
+
+  private PropSet getPropSet(final Long _setId) throws EFapsException {
+    final PropSet ret;
+    if (this.setId2PropSet.containsKey(_setId)) {
+      ret = this.setId2PropSet.get(_setId);
+    } else {
+      ret = PropSet.get(_setId);
+      this.setId2PropSet.put(ret.getId(), ret);
+    }
+    return ret;
+  }
+
 
   /**
    * @see com.googlecode.jsvnserve.api.IRepository#getFileRevs(java.lang.String, long, long, boolean)
