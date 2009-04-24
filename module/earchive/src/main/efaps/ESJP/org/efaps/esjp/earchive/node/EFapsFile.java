@@ -44,16 +44,28 @@ import org.efaps.util.EFapsException;
 @EFapsRevision("$Rev$")
 public class EFapsFile implements INames {
 
-
-
+  /**
+   * Id of this EFapsFile;
+   */
   private long id;
-  private String name;
-  public EFapsFile() {
-  }
 
-  public static EFapsFile createFile(final InputStream _inputStream, final String _name, final Long _size) throws EFapsException {
+  /**
+   * Name of this EFapsFile;
+   */
+  private String name;
+
+  /**
+   * Size of this EFapsFile;
+   */
+  private Long size;
+
+
+  public static EFapsFile createFile(final InputStream _inputStream,
+                                     final String _name, final Long _size)
+      throws EFapsException {
     final EFapsFile ret = new EFapsFile();
     ret.setName(_name);
+    ret.setSize(_size);
     final StringBuilder cmd = new StringBuilder();
     cmd.append("insert into ").append(TABLE_FILE)
       .append("(")
@@ -107,6 +119,58 @@ public class EFapsFile implements INames {
     return ret;
   }
 
+  public static EFapsFile createFile() throws EFapsException {
+    final EFapsFile ret = new EFapsFile();
+
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append("insert into ").append(TABLE_FILE)
+      .append("(")
+      .append(TABLE_FILE_C_ID).append(",")
+      .append(TABLE_FILE_C_TYPEID).append(",")
+      .append(TABLE_FILE_C_FILELENGTH).append(",")
+      .append(TABLE_FILE_C_FILENAME).append(",")
+      .append(TABLE_FILE_C_MD5FILE).append(",")
+      .append(TABLE_FILE_C_MD5DELTA).append(")")
+      .append(" values (?,?,?,?,?,?)");
+    final Context context = Context.getThreadContext();
+    ConnectionResource con = null;
+
+    try {
+      con = context.getConnectionResource();
+      final long idTmp = Context.getDbType().getNewId(con.getConnection(), TABLE_FILE, "ID");
+      final long typeid = Type.get(TYPE_FILE).getId();
+
+      PreparedStatement stmt = null;
+      try {
+        stmt = con.getConnection().prepareStatement(cmd.toString());
+        stmt.setLong(1, idTmp);
+        stmt.setLong(2, typeid);
+        stmt.setLong(3, new Long(0));
+        stmt.setString(4, "empty");
+        stmt.setString(5, "empty");
+        stmt.setString(6, "empty");
+        ret.setId(idTmp);
+        final int rows = stmt.executeUpdate();
+        if (rows == 0) {
+          // TODO fehler schmeissen
+        }
+      } finally {
+        stmt.close();
+      }
+      con.commit();
+    } catch (final SQLException e) {
+      // TODO fehler schmeissen
+      e.printStackTrace();
+    } finally {
+      if ((con != null) && con.isOpened()) {
+        con.abort();
+      }
+    }
+    return ret;
+  }
+
+
+
   /**
    * Getter method for instance variable {@link #id}.
    *
@@ -139,5 +203,23 @@ public class EFapsFile implements INames {
    */
   public void setName(final String name) {
     this.name = name;
+  }
+
+  /**
+   * Getter method for instance variable {@link #size}.
+   *
+   * @return value of instance variable {@link #size}
+   */
+  public Long getSize() {
+    return this.size;
+  }
+
+  /**
+   * Setter method for instance variable {@link #size}.
+   *
+   * @param size value for instance variable {@link #size}
+   */
+  public void setSize(final Long size) {
+    this.size = size;
   }
 }

@@ -73,8 +73,10 @@ public class Node implements INames {
    */
   private final Long copyId;
 
+  private final List<Node> children = new ArrayList<Node>();
+
   /**
-   * Revision the Node was comitted with.
+   * Revision the Node was committed with.
    */
   private Long comittedRevision;
 
@@ -106,18 +108,44 @@ public class Node implements INames {
    */
   private Long propSetId;
 
+  /**
+   * Node that this node was cloned from.
+   */
   private Node ancestor;
 
+  /**
+   * Id Path of this Node. The id path is a path made out of the ids from the
+   * parent - child relation. In comparison to the path it does not change when
+   * a node is renamed. <br>
+   * The idpath is constructed like this: <br><code>
+   * [parent history id] SEPERATOR_IDS [parent copy id] SEPERATOR_INSTANCE
+   * [child history id] SEPERATOR_IDS [child copy id] ... </code><br>
+   * e.g.:<br>
+   * 23:0-25:1-27:0
+   */
   private String idPath;
 
+  /**
+   * Parent node of this node.
+   */
   private Node parent;
 
-  private final List<Node> children = new ArrayList<Node>();
-
+  /**
+   * This boolean stores if the children of this node where already resolved, or
+   * if the database must be queried still.
+   */
   private boolean childrenResolved = false;
 
+  /**
+   * Is this node the root node of the repository.
+   */
   private boolean root;
 
+  /**
+   * Path of this node. The path is constructed like a normal path in a file
+   * system, using a seperator.<br><code>
+   * [name of the parent node] SEPERATOR_PATH [name of the child node]</code>
+   */
   private String path;
 
   /**
@@ -126,17 +154,7 @@ public class Node implements INames {
   private Node connectTarget;
 
   /**
-   * Getter method for instance variable {@link #connectTarget}.
-   *
-   * @return value of instance variable {@link #connectTarget}
-   */
-  public Node getConnectTarget() {
-    return this.connectTarget;
-  }
-
-
-  /**
-   * COnstructor is needed to be able to use this class in eFpas as an esjp.
+   * Constructor is needed to be able to use this class in eFpas as an esjp.
    */
   public Node() {
     this.id = null;
@@ -146,13 +164,19 @@ public class Node implements INames {
   }
 
 
+
   /**
-   * @param _id
-   * @param i
-   * @param j
-   * @param k
-   * @param _name
-   * @param propSetId
+   * Constructor.
+   *
+   * @param _id           id of this node
+   * @param _type         type of this node
+   * @param _historyId    history id of this node
+   * @param _copyId       copy id of this node
+   * @param _revision     revision of this node
+   * @param _name         name of this node
+   * @param _repositoryId id of the repository this node belongs to
+   * @param _fileId       id of the file if this node is a file node., else null
+   * @param _propSetId    id of the property set
    */
   private Node (final Long _id, final Type _type, final Long _historyId,
                 final Long _copyId, final Long _revision, final String _name,
@@ -206,6 +230,25 @@ public class Node implements INames {
   public Node getParent() {
     return this.parent;
   }
+
+
+  /**
+   * Getter method for instance variable {@link #connectTarget}.
+   *
+   * @return value of instance variable {@link #connectTarget}
+   */
+  public Node getConnectTarget() {
+    return this.connectTarget;
+  }
+
+
+  /**
+   * @param parentNode
+   */
+  public void setConnectTarget(final Node parentNode) {
+    this.connectTarget = parentNode;
+  }
+
 
 
   /**
@@ -312,7 +355,6 @@ public class Node implements INames {
     return this.ancestor;
   }
 
-
   /**
    * Getter method for instance variable {@link #repositoryId}.
    *
@@ -321,7 +363,6 @@ public class Node implements INames {
   public Long getRepositoryId() {
     return this.repositoryId;
   }
-
 
   /**
    * @return
@@ -336,7 +377,6 @@ public class Node implements INames {
     return ret;
   }
 
-
   /**
    * Getter method for instance variable {@link #historyId}.
    *
@@ -345,7 +385,6 @@ public class Node implements INames {
   public Long getHistoryId() {
     return this.historyId;
   }
-
 
   /**
    * Getter method for instance variable {@link #copyId}.
@@ -356,7 +395,6 @@ public class Node implements INames {
     return this.copyId;
   }
 
-
   /**
    * Getter method for instance variable {@link #path}.
    *
@@ -366,7 +404,6 @@ public class Node implements INames {
     return this.path;
   }
 
-
   /**
    * Setter method for instance variable {@link #path}.
    *
@@ -375,7 +412,6 @@ public class Node implements INames {
   public void setPath(final String path) {
     this.path = path;
   }
-
 
   public boolean isFile () {
     return this.fileId != null && this.fileId > 0;
@@ -388,6 +424,20 @@ public class Node implements INames {
     return checkout.execute();
   }
 
+  /**
+   * Method creates a new node in the eFaps database and returns an instance of
+   * this node.
+   *
+   * @param _repository   Repository the the newly created node belongs to.
+   * @param _name         name of the newly created node
+   * @param _type         type of the node to be created
+   * @param _properties   properties for the the newly created node
+   * @param _fileId       file id for the newly created node. If null, but the
+   *                      type of the node is a file node a new file will be
+   *                      created automatically
+   * @return  new Node
+   * @throws EFapsException
+   */
   public static Node createNewNode(final Repository _repository,
                                    final String _name, final String _type,
                                    final Map<String, String> _properties,
@@ -396,7 +446,9 @@ public class Node implements INames {
 
     Long fileIdTmp = null;
     if (_type.equals(TYPE_NODEFILE)) {
-     fileIdTmp = (_fileId != null && _fileId > 0) ? _fileId : createFile();
+     fileIdTmp = (_fileId != null && _fileId > 0)
+                 ? _fileId
+                 : EFapsFile.createFile().getId();
     }
     Long propSetId = null;
     if (_properties != null) {
@@ -537,55 +589,7 @@ public class Node implements INames {
   }
 
 
-  private static long createFile()
-      throws EFapsException {
-    long ret = 0;
-    final StringBuilder cmd = new StringBuilder();
-    cmd.append("insert into ").append(TABLE_FILE)
-      .append("(")
-      .append(TABLE_FILE_C_ID).append(",")
-      .append(TABLE_FILE_C_TYPEID).append(",")
-      .append(TABLE_FILE_C_FILELENGTH).append(",")
-      .append(TABLE_FILE_C_FILENAME).append(",")
-      .append(TABLE_FILE_C_MD5FILE).append(",")
-      .append(TABLE_FILE_C_MD5DELTA).append(")")
-      .append(" values (?,?,?,?,?,?)");
-    final Context context = Context.getThreadContext();
-    ConnectionResource con = null;
 
-    try {
-      con = context.getConnectionResource();
-      ret = Context.getDbType().getNewId(con.getConnection(), TABLE_FILE, "ID");
-      final long typeid = Type.get(TYPE_FILE).getId();
-
-      PreparedStatement stmt = null;
-      try {
-        stmt = con.getConnection().prepareStatement(cmd.toString());
-        stmt.setLong(1, ret);
-        stmt.setLong(2, typeid);
-        stmt.setLong(3, new Long(0));
-        stmt.setString(4, "empty");
-        stmt.setString(5, "empty");
-        stmt.setString(6, "empty");
-
-        final int rows = stmt.executeUpdate();
-        if (rows == 0) {
-  //         TODO fehler schmeissen
-        }
-      } finally {
-        stmt.close();
-      }
-      con.commit();
-    } catch (final SQLException e) {
-    //  TODO fehler schmeissen
-      e.printStackTrace();
-    } finally {
-      if ((con != null) && con.isOpened()) {
-        con.abort();
-      }
-    }
-    return ret;
-  }
 
   public static List<Node> getNodeHirachy(final String _instanceKey)
       throws EFapsException {
@@ -1369,7 +1373,7 @@ public class Node implements INames {
   public List<Node> updateFile(final String _commitMsg) throws EFapsException {
     final List<Node> ret = new ArrayList<Node>();
     //make a clone
-    this.fileId = createFile();
+    this.fileId = EFapsFile.createFile().getId();
     final Node clone = getNodeClone();
     ret.add(clone);
     final List<Node> nodes = getNodeHirachy(this.idPath);
@@ -1510,13 +1514,5 @@ public class Node implements INames {
           + "; path=" + this.path
           + "; root=" + this.root
           + "]";
-  }
-
-
-  /**
-   * @param parentNode
-   */
-  public void setConnectTarget(final Node parentNode) {
-    this.connectTarget = parentNode;
   }
 }
