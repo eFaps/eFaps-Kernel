@@ -22,6 +22,7 @@ package org.efaps.esjp.earchive.node;
 
 import java.io.InputStream;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.efaps.admin.datamodel.Type;
@@ -59,6 +60,7 @@ public class EFapsFile implements INames {
    */
   private Long size;
 
+  private String MD5;
 
   public static EFapsFile createFile(final InputStream _inputStream,
                                      final String _name, final Long _size)
@@ -169,7 +171,51 @@ public class EFapsFile implements INames {
     return ret;
   }
 
+  public static EFapsFile getFile(final Long _fileId) throws EFapsException {
 
+    final StringBuilder cmd = new StringBuilder();
+    //statement for the rootnode
+    cmd.append(" select ")
+      .append(TABLE_FILE_C_ID).append(",")
+      .append(TABLE_FILE_C_FILENAME).append(",")
+      .append(TABLE_FILE_C_FILELENGTH).append(",")
+      .append(TABLE_FILE_C_MD5FILE).append(",")
+      .append(TABLE_FILE_C_MD5DELTA)
+      .append(" from ").append(TABLE_FILE)
+      .append(" where ").append(TABLE_FILE_C_ID).append(" = ?");
+
+    final ConnectionResource con
+                          = Context.getThreadContext().getConnectionResource();
+    final EFapsFile ret = new EFapsFile();
+    try {
+
+      PreparedStatement stmt = null;
+      try {
+        stmt = con.getConnection().prepareStatement(cmd.toString());
+        stmt.setLong(1, _fileId);
+        final ResultSet resultset = stmt.executeQuery();
+
+        if (resultset.next()) {
+          ret.setId(_fileId);
+          ret.setName(resultset.getString(2));
+          ret.setSize(resultset.getLong(3));
+          ret.setMD5(resultset.getString(4));
+        }
+        resultset.close();
+      } finally {
+        stmt.close();
+      }
+      con.commit();
+    } catch (final SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } finally {
+      if ((con != null) && con.isOpened()) {
+        con.abort();
+      }
+    }
+    return ret;
+  }
 
   /**
    * Getter method for instance variable {@link #id}.
@@ -210,8 +256,8 @@ public class EFapsFile implements INames {
    *
    * @return value of instance variable {@link #size}
    */
-  public Long getSize() {
-    return this.size;
+  public int getSize() {
+    return this.size.intValue();
   }
 
   /**
@@ -221,5 +267,23 @@ public class EFapsFile implements INames {
    */
   public void setSize(final Long size) {
     this.size = size;
+  }
+
+  /**
+   * Getter method for instance variable {@link #mD5}.
+   *
+   * @return value of instance variable {@link #mD5}
+   */
+  public String getMD5() {
+    return this.MD5;
+  }
+
+  /**
+   * Setter method for instance variable {@link #mD5}.
+   *
+   * @param md5 value for instance variable {@link #mD5}
+   */
+  public void setMD5(final String md5) {
+    this.MD5 = md5;
   }
 }

@@ -114,6 +114,7 @@ public class EFapsRepository implements IRepository {
 
   private final Map<Long, Revision> revisionId2Revision = new HashMap<Long, Revision>();
 
+  private final Map<Long, EFapsFile> fileId2EFapsFile = new HashMap<Long, EFapsFile>();
 
   public EFapsRepository(final String _user, final String _path)
       throws SVNException {
@@ -571,23 +572,29 @@ public class EFapsRepository implements IRepository {
                        final boolean properties) {
     DirEntry ret = null;
     try {
-      final String path = this.rootPath + "/" + _path.toString();
+      final Long revision= (_revision == null) ? getLatestRevision() : _revision;
+      final String path = this.rootPath
+                        + (_path.length() > 1 ? "/" + _path.toString() : "");
       final Node node;
-      if (this.path2Node.containsKey(_revision + path)) {
-        node = this.path2Node.get(_revision + path);
+      if (this.path2Node.containsKey(revision + path)) {
+        node = this.path2Node.get(revision + path);
       } else {
-        node = Node.getNodeFromDB(this.repository, _revision, path);
-        this.path2Node.put(_revision + path, node);
+        node = Node.getNodeFromDB(this.repository, revision, path);
+        this.path2Node.put(revision + path, node);
       }
-      final Revision rev = getRevision(node.getComittedRevision());
-      if (node.isFile()) {
-        ret = DirEntry.createFile(node.getName(), rev.getRevision(),
-                                  Timestamp.valueOf(rev.getCreated()),
-                                  rev.getCreatorName(), 0, "asd");
-      } else {
-        ret = DirEntry.createDirectory(node.getName(), rev.getRevision(),
-                                       Timestamp.valueOf(rev.getCreated()),
-                                       rev.getCreatorName());
+      if (node != null) {
+        final Revision rev = getRevision(node.getComittedRevision());
+        if (node.isFile()) {
+          final EFapsFile file = getFile(node.getFileId());
+          ret = DirEntry.createFile(node.getName(), rev.getRevision(),
+                                    Timestamp.valueOf(rev.getCreated()),
+                                    rev.getCreatorName(), file.getSize(),
+                                    file.getMD5());
+        } else {
+          ret = DirEntry.createDirectory(node.getName(), rev.getRevision(),
+                                         Timestamp.valueOf(rev.getCreated()),
+                                         rev.getCreatorName());
+        }
       }
     } catch (final EFapsException e) {
       // TODO Auto-generated catch block
@@ -707,6 +714,17 @@ public class EFapsRepository implements IRepository {
     } else {
       ret = Revision.getRevisionFromDB(this.repository, _revision);
       this.revisionId2Revision.put(ret.getRevision(), ret);
+    }
+    return ret;
+  }
+
+  private EFapsFile getFile(final Long _fileId) throws EFapsException {
+    final EFapsFile ret;
+    if (this.fileId2EFapsFile.containsKey(_fileId)) {
+      ret = this.fileId2EFapsFile.get(_fileId);
+    } else {
+      ret = EFapsFile.getFile(_fileId);
+      this.fileId2EFapsFile.put(ret.getId(), ret);
     }
     return ret;
   }
