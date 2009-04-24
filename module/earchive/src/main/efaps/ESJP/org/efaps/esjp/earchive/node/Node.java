@@ -1396,7 +1396,7 @@ public class Node implements INames {
       remove.add(new Node(null, null, Long.parseLong(ids[0]),
                           Long.parseLong(ids[1]), null, null, null, null, null));
     }
-    final List<Node> childrenTmp = getChildNodes(remove, null, true);
+    final List<Node> childrenTmp = getChildNodes(remove, null, false);
     final Node clone = getNodeClone();
     Node2Node.connect(clone, childrenTmp);
     final List<Node> nodes = getNodeHirachy(this.idPath);
