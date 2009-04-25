@@ -63,11 +63,13 @@ public class EFapsFile implements INames {
   private String MD5;
 
   public static EFapsFile createFile(final InputStream _inputStream,
-                                     final String _name, final Long _size)
+                                     final String _name, final Long _size,
+                                     final String _md5)
       throws EFapsException {
     final EFapsFile ret = new EFapsFile();
     ret.setName(_name);
     ret.setSize(_size);
+    ret.setMD5(_md5);
     final StringBuilder cmd = new StringBuilder();
     cmd.append("insert into ").append(TABLE_FILE)
       .append("(")
@@ -92,8 +94,8 @@ public class EFapsFile implements INames {
         stmt.setLong(1, id);
         stmt.setLong(2, typeid);
         stmt.setLong(3, _size);
-        stmt.setString(4, "empty");
-        stmt.setString(5, "empty");
+        stmt.setString(4, _name);
+        stmt.setString(5, _md5);
         stmt.setString(6, "empty");
         ret.setId(id);
         final int rows = stmt.executeUpdate();
