@@ -20,10 +20,11 @@
 
 package org.efaps.earchive.svn;
 
-import org.tmatesoft.svn.core.SVNException;
+import org.efaps.util.EFapsException;
 
 import com.googlecode.jsvnserve.api.IRepository;
 import com.googlecode.jsvnserve.api.IRepositoryFactory;
+import com.googlecode.jsvnserve.api.ServerException;
 
 /**
  *
@@ -32,13 +33,12 @@ import com.googlecode.jsvnserve.api.IRepositoryFactory;
  */
 public class RepositoryFactory implements IRepositoryFactory {
 
-  public IRepository createRepository(final String _user, final String _path) {
+  public IRepository createRepository(final String _user, final String _path)
+      throws ServerException{
     try {
       return new EFapsRepository(_user, _path);
-    } catch (final SVNException e) {
-     // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (final EFapsException e) {
+      throw new ServerException(e.getMessage());
     }
-      return null;
   }
 }

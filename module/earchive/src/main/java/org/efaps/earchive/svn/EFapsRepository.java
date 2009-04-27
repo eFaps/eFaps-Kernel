@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.UUID;
 
-import org.tmatesoft.svn.core.SVNException;
-
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.Context;
 import org.efaps.esjp.earchive.node.EFapsFile;
@@ -109,7 +107,7 @@ public class EFapsRepository implements IRepository {
 
   ClassLoader loader = new EFapsClassLoader(this.getClass().getClassLoader());
 
-  private Repository repository;
+  private final Repository repository;
 
   private final Map<String, Node> path2Node = new HashMap<String, Node>();
 
@@ -119,19 +117,15 @@ public class EFapsRepository implements IRepository {
 
   private final Map<Long, PropSet> setId2PropSet = new HashMap<Long, PropSet>();
 
-  public EFapsRepository(final String _user, final String _path)
-      throws SVNException {
-
+  public EFapsRepository(final String _user, final String _path) throws EFapsException  {
     this.user = _user;
     this.repositoryPath = "/" + _path.split("/")[1];
     this.rootPath = _path.substring(this.repositoryPath.length());
-    try {
-      Context.begin(_user);
-      Thread.currentThread().setContextClassLoader(this.loader);
-      this.repository = Repository.getByName(_path.split("/")[1]);
-    } catch (final EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    Context.begin(_user);
+    Thread.currentThread().setContextClassLoader(this.loader);
+    this.repository = Repository.getByName(_path.split("/")[1]);
+    if (this.repository == null) {
+      throw new EFapsException(EFapsRepository.class, "Repository not found!");
     }
   }
 
@@ -700,8 +694,8 @@ public class EFapsRepository implements IRepository {
    */
   public Revision0PropertyValues getRevision0Properties()
       throws ServerException {
-    // TODO Auto-generated method stub
-    return null;
+    final Revision0PropertyValues ret = new Revision0PropertyValues();
+    return ret;
   }
 
   /**
