@@ -127,6 +127,8 @@ public class EFapsRepository implements IRepository {
     if (this.repository == null) {
       throw new EFapsException(EFapsRepository.class, "Repository not found!");
     }
+    //TODO das darf hier nicht bleiben
+    Node.updateRevisions();
   }
 
   public UUID getUUID() {
@@ -397,7 +399,8 @@ public class EFapsRepository implements IRepository {
                              final boolean _createdRev, final boolean _modified,
                              final boolean _author) {
     final DirEntryList ret = new DirEntryList();
-    final String path = this.rootPath + "/" + _path.toString();
+    final String path = this.rootPath
+                          + (_path.length() > 1 ? "/" + _path.toString() : "");
     final Node node = this.path2Node.get(_revision + path);
     try {
       final List<Node> children = node.getChildren();
