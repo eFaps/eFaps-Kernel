@@ -53,7 +53,6 @@
     ************************************************************************* -->
   <modules>
     <module>contactwork</module>
-    <module>earchive</module>
     <module>teamwork</module>
   </modules>
   <dependencies>
