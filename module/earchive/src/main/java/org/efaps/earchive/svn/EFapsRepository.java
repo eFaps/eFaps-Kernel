@@ -368,20 +368,28 @@ public class EFapsRepository implements IRepository {
   }
 
   /**
-   * @see com.googlecode.jsvnserve.api.IRepository#getDir(java.lang.Long, java.lang.CharSequence, boolean, boolean, boolean, boolean, boolean)
-   * @param _revision
-   * @param _path
-   * @param _fileSize
-   * @param _hasProps
-   * @param _createdRev
-   * @param _modified
-   * @param _author
-   * @return
-   */
+  * The created revision is always returned (meaning that the parameter
+  * <code>_retCreatedRev</code> is ignored), because the information is
+  * available without any further query to the database.
+  *
+  * @param _revision         revision for which the entries of a directory
+  *                          must be returned
+  * @param _path             path of the directory
+  * @param _retFileSize      must the size of files returned?
+  * @param _retHasProps      must the information that properties exists
+  *                          returned?
+  * @param _retCreatedRev    must the created revision returned?
+  * @param _retModified      must the modified date time returned?
+  * @param _retAuthor        must the author returned?
+  * @return
+  */
   public DirEntryList getDir(final Long _revision, final CharSequence _path,
-                             final boolean _fileSize, final boolean _hasProps,
-                             final boolean _createdRev, final boolean _modified,
-                             final boolean _author) {
+                             final boolean _retFileSize,
+                             final boolean _retHasProps,
+                             final boolean _retCreatedRev,
+                             final boolean _retModified,
+                             final boolean _retAuthor) {
+    //TODO _retHasProps is ignored??
     final DirEntryList ret = new DirEntryList();
     final String path = this.rootPath
                           + (_path.length() > 1 ? "/" + _path.toString() : "");
@@ -389,15 +397,22 @@ public class EFapsRepository implements IRepository {
     try {
       final List<Node> children = node.getChildren();
       for (final Node child: children) {
-        final Revision rev = getRevision(child.getComittedRevision());
+        Revision rev = null;
+        if (_retCreatedRev || _retModified || _retAuthor) {
+          rev = getRevision(child.getComittedRevision());
+        }
         if (child.isFile()) {
+          int size = 1;
+          if (_retFileSize) {
+            size = getFile(child.getFileId()).getSize();
+          }
           ret.addFile(child.getName(), child.getComittedRevision(),
-                      Timestamp.valueOf(rev.getCreated()),
-                      rev.getCreatorName(), 1);
+                      rev == null ? null : Timestamp.valueOf(rev.getCreated()),
+                      rev == null ? null : rev.getCreatorName(), size);
         } else {
           ret.addDirectory(child.getName(), child.getComittedRevision(),
-                           Timestamp.valueOf(rev.getCreated()),
-                           rev.getCreatorName());
+                       rev == null ? null : Timestamp.valueOf(rev.getCreated()),
+                       rev == null ? null : rev.getCreatorName());
         }
       }
     } catch (final EFapsException e) {

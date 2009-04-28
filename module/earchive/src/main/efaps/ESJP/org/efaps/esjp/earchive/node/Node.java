@@ -295,7 +295,9 @@ public class Node implements INames {
     return this.propSetId;
   }
 
-
+  public boolean hasProperties() {
+    return this.propSetId != null && this.propSetId > 0;
+  }
 
   /**
    * Getter method for instance variable {@link #fileId}.
