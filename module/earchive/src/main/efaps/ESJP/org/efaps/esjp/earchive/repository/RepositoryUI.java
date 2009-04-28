@@ -45,7 +45,7 @@ public class RepositoryUI {
 
     final Insert insert = new Insert("eArchive_Repository");
     insert.add("Name", name);
-    insert.add("LastRevision", "0");
+    insert.add("LastRevision", "-1");
     insert.add("UUID", UUID.randomUUID().toString());
     insert.execute();
     final Instance instance = insert.getInstance();
