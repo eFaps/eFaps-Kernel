@@ -21,15 +21,12 @@
 package org.efaps.earchive.svn;
 
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SimpleTimeZone;
 import java.util.UUID;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
@@ -75,19 +72,6 @@ import com.googlecode.jsvnserve.util.Timestamp;
  * @version $Id$
  */
 public class EFapsRepository implements IRepository {
-
-  /**
-   * Date time format from SVN used to format date instance to strings.<br/>
-   * Example:<br/>
-   * <code>2009-03-14T18:49:06.097886Z</code>
-   *
-   * @see #StringElement(Date)
-   */
-  private static final DateFormat DATETIMEFORMAT
-                            = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-  static {
-    DATETIMEFORMAT.setTimeZone(new SimpleTimeZone(0, "GMT"));
-  }
 
   /**
    * Repository path.
@@ -709,8 +693,20 @@ public class EFapsRepository implements IRepository {
    */
   public RevisionPropertyValues getRevisionProperties(final long _revision)
       throws ServerException {
-    // TODO Auto-generated method stub
-    return null;
+    final RevisionPropertyValues ret = new RevisionPropertyValues();
+    try {
+      final Revision rev = Revision.getRevisionFromDB(this.repository, _revision);
+      if (rev == null) {
+        throw new ServerException("revision " +_revision + "does not exsist");
+      }
+      ret.setAuthor(rev.getCreatorName());
+      ret.setDate(Timestamp.valueOf(rev.getCreated()));
+      ret.setLog(rev.getMessage());
+    } catch (final EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return ret;
   }
 
 
