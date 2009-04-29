@@ -134,7 +134,6 @@
     <module>maven</module>
     <module>kernel-install</module>
     <module>module</module>
-    <module>webapp</module>
     <!--  <module>site</module>-->
   </modules>
 
