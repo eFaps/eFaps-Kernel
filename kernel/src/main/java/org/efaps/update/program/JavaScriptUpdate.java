@@ -20,14 +20,10 @@
 
 package org.efaps.update.program;
 
-import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_JAVASCRIPT;
-import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_JAVASCRIPT2JAVASCRIPT;
-
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.staticsource.JavaScriptImporter;
 import org.efaps.update.LinkInstance;
 import org.efaps.util.EFapsException;
@@ -44,10 +40,10 @@ public class JavaScriptUpdate extends AbstractSourceUpdate {
    * Link from JavaScript extending JavaScript.
    */
   private static final Link LINK2SUPER =
-      new Link(Type.get(ADMIN_PROGRAM_JAVASCRIPT2JAVASCRIPT).getName(),
+      new Link("Admin_Program_JavaScript2JavaScript",
                "From",
-                Type.get(ADMIN_PROGRAM_JAVASCRIPT).getName(),
-                "To");
+               "Admin_Program_JavaScript",
+               "To");
 
   /**
    * Set off all links for this JavaScriptUpdate.
@@ -63,7 +59,7 @@ public class JavaScriptUpdate extends AbstractSourceUpdate {
    * @param _url URL of the file
    */
   protected JavaScriptUpdate(final URL _url) {
-    super(_url, Type.get(ADMIN_PROGRAM_JAVASCRIPT).getName(), ALLLINKS);
+    super(_url, "Admin_Program_JavaScript", ALLLINKS);
   }
 
   /**
