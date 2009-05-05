@@ -63,6 +63,8 @@ import org.apache.maven.tools.plugin.Component;
 import org.apache.maven.tools.plugin.Execute;
 import org.apache.maven.tools.plugin.Goal;
 import org.apache.maven.tools.plugin.Parameter;
+import org.apache.maven.tools.plugin.PluginToolsRequest;
+import org.apache.maven.tools.plugin.extractor.ExtractionException;
 import org.apache.maven.tools.plugin.extractor.MojoDescriptorExtractor;
 import org.apache.maven.tools.plugin.lifecycle.Phase;
 import org.codehaus.plexus.PlexusConstants;
@@ -546,5 +548,8 @@ public class EfapsAnnotationDescriptorExtractor extends AbstractLogEnabled imple
            ? null
            : _value;
   }
-
+  public List execute(final PluginToolsRequest _pluginToolRequest) throws ExtractionException,
+  InvalidPluginDescriptorException {
+return execute(_pluginToolRequest.getProject(), _pluginToolRequest.getPluginDescriptor());
+}
 }
