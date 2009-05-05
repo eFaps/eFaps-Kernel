@@ -33,6 +33,7 @@ import java.util.Set;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.tools.plugin.Parameter;
 import org.apache.tools.ant.DirectoryScanner;
+
 import org.efaps.maven.plugin.EFapsAbstractMojo;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
 import org.efaps.update.FileType;
@@ -104,20 +105,17 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo
   /**
    * List of includes.
    */
-  @Parameter()
   private final List<String> includes = null;
 
   /**
    * List of excludes.
    */
-  @Parameter()
   private final List<String> excludes = null;
 
 
   /**
    * Map of TypeMapping
    */
-  @Parameter()
   private final Map<String, String> typeMapping = null;
 
   /**
@@ -180,7 +178,7 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo
                                                             getEFapsDir());
         appls.put(appl.getApplication(), appl);
       }
-    } catch (IOException e)  {
+    } catch (final IOException e)  {
       throw new MojoExecutionException("Could not access the install.xml file "
               + "(in path META-INF/efaps/ path of each eFaps install jar).", e);
     }

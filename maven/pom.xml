@@ -63,5 +63,24 @@
     <module>run</module>
     <!-- module>ivy</module-->
   </modules>
-
+  
+  <!-- The existing maven-plugin-plugin will fail if no mojos are found during 
+  the "descriptor" goal execution (which is run as part of a "maven-project" 
+  packaging type. Since you cannot skip this goal - your plugin either must contain 
+  a mojo using plain-old-fashioned javadoc annotations - or package your project 
+  as a "jar" and manually add the other plugin-plugin goal executions - or add 
+  a javadoc to one goal with a /** @goal "name" */ class comment.
+  The solution here is to use version 2.4.3 and not the newest!
+   -->
+<build>
+<pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <version>2.4.3</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+</build>
 </project>

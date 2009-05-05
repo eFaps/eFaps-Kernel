@@ -101,9 +101,7 @@ public abstract class EFapsAbstractMojo implements Mojo {
    * @see #initDatabase
    */
   @Parameter(required = true,
-             expression = "${org.efaps.db.factory}"/*,
-                 description = "SQL database factory class name (implementing "
-                               + "interface javax.sql.DataSource)"*/)
+             expression = "${org.efaps.db.factory}")
   private String factory;
 
   /**
@@ -144,9 +142,7 @@ public abstract class EFapsAbstractMojo implements Mojo {
    * @see #initStores
    */
   @Parameter(expression = "${org.efaps.stores}",
-             required = false/*,
-                 description = "Comma separated list of properties defining "
-                               + "all store configurations."*/)
+             required = false)
   private String stores;
 
   /**

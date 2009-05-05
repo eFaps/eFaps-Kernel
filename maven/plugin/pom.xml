@@ -85,7 +85,7 @@
             due to Java5 annotations, which can only be read after compilation, 
             the maven-plugin-plugin must be executed a second time after compilation
           -->
-            <id>extract-after-copmile</id>
+            <id>extract-after-compile</id>
             <phase>compile</phase>
             <goals>
               <goal>descriptor</goal>
