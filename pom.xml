@@ -117,9 +117,9 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:svn:http://svn.berlios.de/svnroot/repos/efaps/trunk</connection>
-    <developerConnection>scm:svn:https://developername@svn.berlios.de/svnroot/repos/efaps/trunk</developerConnection>
-    <url>http://svn.berlios.de/svnroot/repos/efaps/trunk</url>
+    <connection>scm:svn:http://efaps.googlecode.com/svn/trunk/</connection>
+    <developerConnection>scm:svn:https://developername@efaps.googlecode.com/svn/trunk/</developerConnection>
+    <url>http://efaps.googlecode.com/svn/trunk/</url>
   </scm>
   <organization>
     <name>eFaps</name>
@@ -394,6 +394,7 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration/>
       </plugin>
+      <!-- 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
@@ -402,6 +403,7 @@
           <javadocDir>apidocs</javadocDir>
         </configuration>
       </plugin>
+       -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
