@@ -55,7 +55,6 @@
   * All Modules
   ************************************************************************* -->
   <modules>
-    <module>logger</module>
     <module>plugin</module>
     <module>derby</module>
     <module>jetty</module>
