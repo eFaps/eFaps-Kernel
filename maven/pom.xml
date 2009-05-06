@@ -55,7 +55,6 @@
   * All Modules
   ************************************************************************* -->
   <modules>
-    <module>java5</module>
     <module>logger</module>
     <module>plugin</module>
     <module>derby</module>
