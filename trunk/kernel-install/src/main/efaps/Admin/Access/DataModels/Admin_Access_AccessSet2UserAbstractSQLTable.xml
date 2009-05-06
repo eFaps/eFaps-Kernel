@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003 - 2009 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>67317fd6-f1a9-4dd3-a4e1-d002aa2c48b5</uuid>
+  <file-application>eFaps-Kernel</file-application>
+  <file-revision>$Rev$</file-revision>
+
+  <!-- Link from Access Sets to Users object -->
+  <definition>
+    <version-expression>(version==4) || (version==latest)</version-expression>
+    <name>Admin_Access_AccessSet2UserAbstractSQLTable</name>
+    <database>
+      <table-name>T_ACCESSSET2USER</table-name>
+      <!-- columns -->
+      <column name="ACCESSSET"      type="INTEGER"                      not-null="true"/>
+      <column name="USERABSTRACT"   type="INTEGER"                      not-null="true"/>
+      <column name="CREATOR"        type="INTEGER"                      not-null="true"/>
+      <column name="CREATED"        type="DATETIME"                     not-null="true"/>
+      <column name="MODIFIER"       type="INTEGER"                      not-null="true"/>
+      <column name="MODIFIED"       type="DATETIME"                     not-null="true"/>
+       <!-- unique keys -->
+      <unique name="ACSST2USER_UK_ST2USR"   columns="ACCESSSET,USERABSTRACT"/>
+      <!-- foreign keys -->
+      <foreign name="ACSST2USER_FK_SET"     key="ACCESSSET"     reference="T_ACCESSSET(ID)"/>
+      <foreign name="ACSST2USER_FK_TYPE"    key="USERABSTRACT"  reference="T_USERABSTRACT(ID)"/>
+      <foreign name="ACSST2USER_FK_CRTR"    key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="ACSST2USER_FK_MDFR"    key="MODIFIER"      reference="T_USERPERSON(ID)"/>
+    </database>
+  </definition>
+
+  <!-- create base data model -->
+  <definition>
+    <version-expression>(version==1)</version-expression>
+    <database>
+      <table-name>T_ACCESSSET2USER</table-name>
+      <!-- columns -->
+      <column name="ACCESSSET"      type="INTEGER"                      not-null="true"/>
+      <column name="USERABSTRACT"   type="INTEGER"                      not-null="true"/>
+      <column name="CREATOR"        type="INTEGER"                      not-null="true"/>
+      <column name="CREATED"        type="DATETIME"                     not-null="true"/>
+      <column name="MODIFIER"       type="INTEGER"                      not-null="true"/>
+      <column name="MODIFIED"       type="DATETIME"                     not-null="true"/>
+       <!-- unique keys -->
+      <unique name="ACSST2USER_UK_ST2USR"   columns="ACCESSSET,USERABSTRACT"/>
+    </database>
+  </definition>
+
+</datamodel-sqltable>
+

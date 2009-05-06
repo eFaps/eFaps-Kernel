@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  Copyright 2003 - 2009 The eFaps Team
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Author:          jmox
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+
+-->
+
+<ui-menu xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>b0156ec7-02d4-4dfa-8a0f-ec17fc4f079d</uuid>
+  <file-application>eFaps-Kernel</file-application>
+  <file-revision>$Rev$</file-revision>
+
+  <definition>
+    <version-expression>(version==latest)</version-expression>
+    <name>Admin_Program_CSSTree</name>
+    <!-- targets -->
+    <target>
+      <form>Admin_Program_CSSForm</form>
+      <!--menu>TeamWork_CollectionTree_Menu</menu-->
+    </target>
+    <!-- type tree for -->
+    <type>Admin_Program_CSS</type>
+    <!-- properties -->
+    <property name="Target">content</property>
+    <property name="TargetMode">view</property>
+  </definition>
+
+</ui-menu>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003 - 2009 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>30152cda-e5a3-418d-ad1e-ad44be1307c2</uuid>
+  <file-application>eFaps-Kernel</file-application>
+  <file-revision>$Rev$</file-revision>
+
+  <!-- attribute types -->
+  <definition>
+    <version-expression>(version==4) || (version==latest)</version-expression>
+    <name>Admin_DataModel_AttributeTypeSQLTable</name>
+    <database>
+      <table-name>T_DMATTRIBUTETYPE</table-name>
+      <parent-table>T_CMABSTRACT</parent-table>
+      <!-- columns -->
+      <column name="CLASSNAME"      type="STRING_SHORT" length="128"    not-null="true"/>
+      <column name="CLASSNAMEUI"    type="STRING_SHORT" length="128"    not-null="true"/>
+      <column name="ALWAYSUPDATE"   type="INTEGER"/>
+      <column name="CREATEUPDATE"   type="INTEGER"/>
+    </database>
+  </definition>
+
+  <!-- create view representing all types -->
+  <definition>
+    <version-expression>(version==2)</version-expression>
+    <database>
+      <table-name>T_DMATTRIBUTETYPE</table-name>
+      <sql>
+        create view V_DMATTRIBUTETYPE as
+            select
+                T_CMABSTRACT.ID,
+                T_CMABSTRACT.UUID,
+                T_CMABSTRACT.NAME,
+                T_DMATTRIBUTETYPE.CLASSNAME,
+                T_DMATTRIBUTETYPE.CLASSNAMEUI,
+                T_DMATTRIBUTETYPE.ALWAYSUPDATE,
+                T_DMATTRIBUTETYPE.CREATEUPDATE
+            from T_DMATTRIBUTETYPE,T_CMABSTRACT
+            where T_CMABSTRACT.ID=T_DMATTRIBUTETYPE.ID
+      </sql>
+    </database>
+  </definition>
+
+  <!--  create base SQL tables -->
+  <definition>
+    <version-expression>(version==1)</version-expression>
+    <database>
+      <table-name>T_DMATTRIBUTETYPE</table-name>
+      <parent-table>T_CMABSTRACT</parent-table>
+      <!-- columns -->
+      <column name="CLASSNAME"      type="STRING_SHORT" length="128"    not-null="true"/>
+      <column name="CLASSNAMEUI"    type="STRING_SHORT" length="128"    not-null="true"/>
+      <column name="ALWAYSUPDATE"   type="INTEGER"/>
+      <column name="CREATEUPDATE"   type="INTEGER"/>
+    </database>
+  </definition>
+
+</datamodel-sqltable>

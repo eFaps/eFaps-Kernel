@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003 - 2009 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          jmox
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<ui-table xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>cd42d35e-7cc4-4afb-8883-7805a39f7e49</uuid>
+  <file-application>eFaps-Kernel</file-application>
+  <file-revision>$Rev$</file-revision>
+
+  <definition>
+    <version-expression>(version==latest)</version-expression>
+    <name>Common_History_AbstractTable</name>
+    <!-- fields -->
+    <field name="eventtype">
+      <property name="Expression">EventType</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Label">Common_History_Abstract/EventType.Label</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    <field name="fortype">
+      <property name="Expression">ForType.Name</property>
+      <property name="Label">Common_History_Abstract/ForType.Label</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    <field name="creator">
+      <property name="Expression">Creator</property>
+      <property name="Label">Common_History_Abstract/Creator.Label</property>
+    </field>
+     <field name="created">
+      <property name="Expression">Created</property>
+      <property name="Label">Common_History_Abstract/Created.Label</property>
+    </field>
+    <field name="buttonOpenInNewWindow">
+      <icon>eFapsActionNewWindow</icon>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Target">popup</property>
+      <property name="Width">15px</property>
+    </field>
+  </definition>
+
+</ui-table>

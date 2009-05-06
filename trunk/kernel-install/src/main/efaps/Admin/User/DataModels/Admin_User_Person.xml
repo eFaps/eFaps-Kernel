@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  Copyright 2003 - 2009 The eFaps Team
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Author:          tmo
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+
+-->
+
+<datamodel-type xmlns="http://www.efaps.org/xsd"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>fe9d94fd-2ed8-4c44-b1f0-00e150555888</uuid>
+  <file-application>eFaps-Kernel</file-application>
+  <file-revision>$Rev$</file-revision>
+
+  <!-- define type (is already defined) -->
+  <definition>
+    <version-expression>(version==6) || (version==latest)</version-expression>
+    <name>Admin_User_Person</name>
+    <parent>Admin_User_Abstract</parent>
+    <!-- attributes -->
+    <attribute>
+      <name>FirstName</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>FIRSTNAME</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>LastName</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>LASTNAME</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>TimeZone</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>TIMZONE</sqlcolumn>
+      <defaultvalue>UTC</defaultvalue>
+    </attribute>
+    <attribute>
+      <name>Chronology</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>CHRONOLOGY</sqlcolumn>
+      <defaultvalue>ISO8601</defaultvalue>
+    </attribute>
+    <attribute>
+      <name>Locale</name>
+      <type>Link</type>
+      <typelink>Admin_Language</typelink>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>LOCALE</sqlcolumn>
+      <defaultvalue>1</defaultvalue>
+    </attribute>
+    <attributeset>
+      <name>EmailSet</name>
+      <type>MultiLineArray</type>
+      <sqltable>Admin_User_PersonAttributeSQLTable</sqltable>
+      <sqlcolumn>PERSONID</sqlcolumn>
+    </attributeset>
+    <attribute>
+      <name>Password</name>
+      <type>Password</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>PASSWORD</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>LastLogin</name>
+      <type>DateTime</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>LASTLOGIN</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>LoginTry</name>
+      <type>DateTime</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>LOGINTRY</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>LoginTriesCounter</name>
+      <type>Integer</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>LOGINTRIES</sqlcolumn>
+    </attribute>
+  </definition>
+
+  <definition>
+    <version-expression>(version==latest)</version-expression>
+    <name>Admin_User_Person</name>
+    <parent>Admin_User_Abstract</parent>
+    <!-- attributes -->
+    <attribute>
+      <name>FirstName</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>FIRSTNAME</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>LastName</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>LASTNAME</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>TimeZone</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>TIMZONE</sqlcolumn>
+      <defaultvalue>UTC</defaultvalue>
+    </attribute>
+    <attribute>
+      <name>Chronology</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>CHRONOLOGY</sqlcolumn>
+      <defaultvalue>ISO8601</defaultvalue>
+    </attribute>
+    <attribute>
+      <name>Locale</name>
+      <type>LinkWithRanges</type>
+      <typelink>Admin_Language</typelink>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>LOCALE</sqlcolumn>
+      <defaultvalue>1</defaultvalue>
+      <trigger program="org.efaps.esjp.admin.datamodel.RangesValue" 
+               name="Admin_User_Person_LocaleRange" 
+               event="RANGE_VALUE">
+        <property name="Value">Language</property>
+        <property name="Type">Admin_Language</property>
+      </trigger>
+    </attribute>
+    
+    <attributeset>
+      <name>EmailSet</name>
+      <type>MultiLineArray</type>
+      <sqltable>Admin_User_PersonAttributeSQLTable</sqltable>
+      <sqlcolumn>PERSONID</sqlcolumn>
+      <attribute>
+        <name>Email</name>
+        <type>String</type>
+        <sqltable>Admin_User_PersonAttributeSQLTable</sqltable>
+        <sqlcolumn>VALUE</sqlcolumn>
+      </attribute>
+      <attribute>
+        <name>Primary</name>
+        <type>Boolean</type>
+        <sqltable>Admin_User_PersonAttributeSQLTable</sqltable>
+        <sqlcolumn>FLAG</sqlcolumn>
+      </attribute>
+    </attributeset>
+    
+    <attribute>
+      <name>Password</name>
+      <type>Password</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>PASSWORD</sqlcolumn>
+      <validate program="org.efaps.esjp.admin.user.Password" method="validatePwdValue"/>
+    </attribute>
+    <attribute>
+      <name>LastLogin</name>
+      <type>DateTime</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>LASTLOGIN</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>LoginTry</name>
+      <type>DateTime</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>LOGINTRY</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>LoginTriesCounter</name>
+      <type>Integer</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>LOGINTRIES</sqlcolumn>
+    </attribute>
+    <!-- triggers -->
+    <trigger name="Admin_User_Person_ACCESSCHECK" event="ACCESSCHECK" program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType" />
+    <trigger name="Admin_User_Person_INSERT_POST" event="INSERT_POST" program="org.efaps.esjp.admin.user.Person" method="insertJaaskeyTrg" />
+  </definition>
+
+</datamodel-type>

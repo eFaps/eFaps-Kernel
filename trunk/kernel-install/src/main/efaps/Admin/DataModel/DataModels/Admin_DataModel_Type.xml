@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  Copyright 2003 - 2009 The eFaps Team
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Author:          tmo
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+
+-->
+
+<datamodel-type xmlns="http://www.efaps.org/xsd"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>8770839d-60fd-4bb4-81fd-3903d4c916ec</uuid>
+  <file-application>eFaps-Kernel</file-application>
+  <file-revision>$Rev$</file-revision>
+
+  <description>
+    Abstract definition of the data model type.
+  </description>
+
+  <definition>
+    <version-expression>(version==latest)</version-expression>
+    <name>Admin_DataModel_Type</name>
+    <parent>Admin_DataModel_Abstract</parent>
+    <!-- attributes -->
+    <attribute>
+      <name>SQLCacheExpr</name>
+      <type>String</type>
+      <sqltable>Admin_DataModel_TypeSQLTable</sqltable>
+      <sqlcolumn>SQLCACHEEXPR</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>ParentType</name>
+      <type>Link</type>
+      <typelink>Admin_DataModel_Type</typelink>
+      <sqltable>Admin_DataModel_TypeSQLTable</sqltable>
+      <sqlcolumn>PARENTDMTYPE</sqlcolumn>
+    </attribute>
+    <!-- triggers -->
+    <trigger name="Admin_DataModel_Type_AccessCheck"
+             event="ACCESSCHECK"
+             program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType" />
+  </definition>
+
+  <!-- define type (is already defined), and trigger could not be created.. -->
+  <definition>
+    <version-expression>(version==6)</version-expression>
+    <name>Admin_DataModel_Type</name>
+    <parent>Admin_DataModel_Abstract</parent>
+    <!-- attributes -->
+    <attribute>
+      <name>SQLCacheExpr</name>
+      <type>String</type>
+      <sqltable>Admin_DataModel_TypeSQLTable</sqltable>
+      <sqlcolumn>SQLCACHEEXPR</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>ParentType</name>
+      <type>Link</type>
+      <typelink>Admin_DataModel_Type</typelink>
+      <sqltable>Admin_DataModel_TypeSQLTable</sqltable>
+      <sqlcolumn>PARENTDMTYPE</sqlcolumn>
+    </attribute>
+  </definition>
+
+</datamodel-type>

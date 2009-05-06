@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003 - 2009 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          jmox
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>251e7dfc-8bb8-4430-83c3-52b5588aa7da</uuid>
+  <file-application>eFaps-Kernel</file-application>
+  <file-revision>$Rev$</file-revision>
+
+  <!-- History of Events for Objects -->
+
+  <definition>
+    <version-expression>(version==latest)</version-expression>
+    <name>Common_History_ReferenceSQLTable</name>
+    <parent>Common_History_AbstractSQLTable</parent>
+    <database>
+      <table-name>T_HISTORYREFERENCE</table-name>
+      <!-- columns -->
+      <column name="TOTYPEID"          type="INTEGER"                      not-null="true"/>
+      <column name="TOID"              type="INTEGER"                      not-null="true"/>
+      <!-- constraints -->
+      <foreign name="HIST_FK_TOTYPEID"     key="TOTYPEID"        reference="T_DMTYPE(ID)"/>
+    </database>
+  </definition>
+</datamodel-sqltable>

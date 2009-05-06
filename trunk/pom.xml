@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  
+  Copyright 2003 - 2009 The eFaps Team
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  Author:          tmo
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+  
+-->
+
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- ************************************************************************
+    * Properties
+    ************************************************************************+ -->
+  <properties>
+    <!-- definition of the dependency version of derby -->
+    <dependency.version.derby>10.4.1.3</dependency.version.derby>
+    <!-- definition of the dependency version of jetty -->
+    <dependency.version.jetty>6.1.5</dependency.version.jetty>
+    <!-- defnition of the dependency version of maven core -->
+    <dependency.version.maven-core>2.0.9</dependency.version.maven-core>
+    <!-- defnition of the dependency version of maven plugin api -->
+    <dependency.version.maven-plugin-api>2.0.9</dependency.version.maven-plugin-api>
+  </properties>
+
+
+  <packaging>pom</packaging>
+  <groupId>org.efaps</groupId>
+  <artifactId>efaps</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <inceptionYear>2002</inceptionYear>
+  <description>
+    eFaps is a framework used to map objects with or without attached files to
+    a relational database and optional file systems (only for attaches files). 
+    Configurable access control can be provided down to object and attribute 
+    level depending on implementation and use case. Depending on requirements, 
+    events (like triggers) allow to implement business logic and to separate 
+    business logic from user interface.
+    The framework includes integrations (e.g. webdav, full text search) and a 
+    web application as 'simple' configurable user interface. Some best
+    practises, example web application modules (e.g. team work module) support
+    administrators and implementers using this framework.
+  </description>
+  <name>eFaps</name>
+  <url>http://www.efaps.org</url>
+
+
+  <developers>
+    <developer>
+      <id>tjo</id>
+      <name>Tim Jouaux</name>
+      <email>tim.jouaux at efaps.org</email>
+      <url>www.efaps.org</url>
+      <organization>eFaps</organization>
+      <organizationUrl />
+      <roles></roles>
+      <timezone>+1</timezone>
+      <properties />
+    </developer>
+    <developer>
+      <id>tmo</id>
+      <name>Tim Moxter</name>
+      <email>tmo at users.berlios.de</email>
+      <url>www.efaps.org</url>
+      <organization>eFaps</organization>
+      <organizationUrl />
+      <roles>
+        <role>Architect</role>
+        <role>Release Manager</role>
+      </roles>
+      <timezone>+1</timezone>
+      <properties />
+    </developer>
+    <developer>
+      <id>jmox</id>
+      <name>Jan Moxter</name>
+      <email>jmox at users.berlios.de</email>
+      <url>www.efaps.org</url>
+      <organization>moxter.net S.A.C, Peru</organization>
+      <organizationUrl />
+      <roles>
+        <role>Architect</role>
+      </roles>
+      <timezone>-5</timezone>
+      <properties />
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution />
+      <comments />
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:svn:http://efaps.googlecode.com/svn/trunk/</connection>
+    <developerConnection>scm:svn:https://developername@efaps.googlecode.com/svn/trunk/</developerConnection>
+    <url>http://efaps.googlecode.com/svn/trunk/</url>
+  </scm>
+  <organization>
+    <name>eFaps</name>
+    <url>http://www.efaps.org/</url>
+  </organization>
+
+  <!-- ************************************************************************
+    * All Modules
+    ************************************************************************+ -->
+  <modules>
+    <module>kernel</module>
+    <module>maven</module>
+    <module>kernel-install</module>
+  </modules>
+
+  <!-- ************************************************************************
+    * Depencies
+    ************************************************************************+ -->
+  <dependencies>
+
+    <!-- used for toString methods
+      http://jakarta.apache.org/commons/lang
+    -->
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.3</version>
+    </dependency>
+
+    <!-- easy XML reader -->
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <version>1.8</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- For interpreting expressions (e.g. of xml definitions) -->
+    <dependency>
+      <groupId>commons-jexl</groupId>
+      <artifactId>commons-jexl</artifactId>
+      <version>1.1</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!--
+      The component is needed for the file upload use case from the eFaps web
+      application. It helps to access in the form process JSP to a file like a
+      normal request paramter.
+      The commons-io must be excluded because of old used version (and included
+      separatly).
+    -->
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- For Logging Purpose
+      http://www.slf4j.org
+    -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.4.3</version>
+    </dependency>
+
+    <!-- Transaction Manager -->
+    <dependency>
+      <groupId>geronimo-spec</groupId>
+      <artifactId>geronimo-spec-jta</artifactId>
+      <version>1.0-M1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-transaction</groupId>
+      <artifactId>commons-transaction</artifactId>
+      <version>1.1</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!--
+      Java program compiler.
+      The commons logging must be exluded because eFaps uses slf4j logger.
+      The commons-io must be excluded because of old used version (and included
+      separatly).
+      
+      http://jakarta.apache.org/commons/jci/
+    -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-core</artifactId>
+      <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-javac</artifactId>
+      <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-eclipse</artifactId>
+      <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-groovy</artifactId>
+      <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-rhino</artifactId>
+      <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-janino</artifactId>
+      <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!--
+      Apache commons-io needed by commons-jci and commons-fileupload.
+     -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>1.4</version>
+    </dependency>
+
+    <!--
+      File system used for checkin / checkout on external resources. The
+      commons logging must be exluded because eFaps uses slf4j logger.
+      
+      http://commons.apache.org/vfs/ 
+    -->
+    <dependency>
+      <groupId>commons-vfs</groupId>
+      <artifactId>commons-vfs</artifactId>
+      <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!--
+      <url>http://java.sun.com/products/servlet</url>
+      <properties>
+      <comment>Needed to compile the servlets from eFaps.</comment>
+      </properties>
+    -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.yahoo.platform.yui</groupId>
+      <artifactId>yuicompressor</artifactId>
+      <version>2.2.5</version>
+    </dependency>
+    <!-- JDBC driver -->
+    
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>8.3-603.jdbc3</version>
+    </dependency>
+  </dependencies>
+  
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration/>
+      </plugin>
+      <!-- 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <configuration>
+          <linkJavadoc>true</linkJavadoc>
+          <javadocDir>apidocs</javadocDir>
+        </configuration>
+      </plugin>
+       -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>index</report>
+              <report>summary</report>
+              <report>dependencies</report>
+              <report>project-team</report>
+           <!--   <report>mailing-list</report>--> 
+             <!-- <report>cim</report> --> 
+              <report>issue-tracking</report>
+              <report>license</report>
+              <report>scm</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+    
+  </reporting>
+  <distributionManagement>
+    <site>
+      <id>eFaps-WebPage</id>
+      <url>scp://shell.berlios.de/home/groups/efaps/htdocs/</url>
+    </site>
+  </distributionManagement>
+</project>

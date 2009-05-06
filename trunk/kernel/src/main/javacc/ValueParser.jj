@@ -1,0 +1,223 @@
+/*
+ * Copyright 2003 - 2009 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+/*****************************************
+ * OPTIONS *
+ *****************************************/
+
+options {
+  JAVA_UNICODE_ESCAPE = false;
+  UNICODE_INPUT = true;
+  STATIC = false;
+}
+
+
+/*****************************************
+ * PARSER JAVA CODE *
+ *****************************************/
+
+PARSER_BEGIN(ValueParser)
+
+package org.efaps.beans.valueparser;
+
+import java.util.HashSet;
+
+import org.efaps.beans.ValueList;
+
+public class ValueParser {
+
+private final static String[] tests = new String[]{
+	"$<Expr>",
+	"Text$<Expr>",
+	"Text$Expr",
+	"Text$$<Expr>",
+	"Dies ist ein Test fuer $<Expr1> und $<Expr2>",
+	"Dies ist ein Test fuer $<Expr1> und $<Expr2>\nin zwei Zeilen mit $<Expr3> in 2. Zeile."
+};
+
+private final static String[][] expressions = new String[][]{
+	{"Expr"},
+	{"Expr"},
+	{},
+	{"Expr"},
+	{"Expr1", "Expr2"},
+	{"Expr1", "Expr2", "Expr3"}
+};
+
+
+  public static void main(String args[]) throws ParseException {
+	for (int i=0; i<tests.length; i++)  {
+System.out.println("------------------------------------");
+System.out.println("test of |"+tests[i]+"|");
+    		ValueParser parser = new ValueParser(new java.io.StringReader(tests[i]));
+		ValueList list = parser.ExpressionString();
+boolean identical = (tests[i].equals(list.getValueList()));
+String[] expr4test = expressions[i];
+boolean exprSize = false;
+boolean identExpr = false;
+if (expr4test.length == list.getExpressions().size())  {
+	exprSize = true;
+	identExpr = true;
+	for (int j=0; j<expr4test.length; j++)  {
+		if (!list.getExpressions().contains(expr4test[j]))  {
+			identExpr = false;
+			break;
+		}
+	}
+}
+System.out.println("  identical        = "+identical);
+System.out.println("  expression size  = "+exprSize);
+System.out.println("  expression ident = "+identExpr);
+
+	}
+  }
+
+}
+
+PARSER_END(ValueParser)
+
+/*****************************************
+ * TOKENS *
+ *****************************************/
+
+/*****************************************
+/** Tokens appearing outside of an $<...> construct **/
+
+<DEFAULT> TOKEN:
+{
+  < NON_EXPRESSION_TEXT:
+    (~["$"])+ | ("$" (~["<", "$"])+) | "$"
+  >
+|
+  < START_EXPRESSION: "$<" > : IN_EXPRESSION
+}
+
+/*****************************************
+/** Tokens appearing inside of an $<...> construct **/
+
+/* WHITE SPACE */
+
+<IN_EXPRESSION> SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+<IN_EXPRESSION> TOKEN :
+{
+  < EXPRESSION: (<LETTER>) (<LETTER>|<DIGIT>)* >
+|
+  < END_EXPRESSION: ">" > : DEFAULT
+|
+  < #LETTER:
+      [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff",
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+|
+  < #DIGIT:
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+}
+
+
+/*****************************************
+ * GRAMMAR PRODUCTIONS *
+ *****************************************/
+
+/**
+ *
+ * Returns a String if the expression string is a single String, an
+ * Expression if the expression string is a single Expression, an
+ * ExpressionString if it's a mixture of both.
+ **/
+ValueList ExpressionString () :
+{
+  Token string, expr;
+  ValueList ret = new ValueList();
+}
+{
+  (
+    (string = AttrValueString ()
+      {
+        ret.addText(string.image);
+      }
+    | expr = AttrValueExpression ()
+      {
+        ret.addExpression(expr.image);
+      }
+    )
+  )*
+  {
+    return ret;
+  }
+}
+
+
+
+
+Token AttrValueString () :
+{
+  Token string;
+}
+{
+  string = <NON_EXPRESSION_TEXT>
+  {
+    return string;
+  }
+}
+
+Token AttrValueExpression() :
+{
+  Token expr;
+}
+{
+  <START_EXPRESSION> expr = <EXPRESSION> <END_EXPRESSION>
+  {
+    return expr;
+  }
+}
