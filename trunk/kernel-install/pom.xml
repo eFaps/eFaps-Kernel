@@ -43,7 +43,7 @@
   ************************************************************************* -->
   <packaging>jar</packaging>
   <groupId>org.efaps</groupId>
-  <artifactId>eFaps-Kernel-Install</artifactId>
+  <artifactId>efaps-kernel-install</artifactId>
 
   <name>eFaps-Kernel-Install</name>
   <description>eFaps-Kernel-Install contains all definitions for the kernel in form
