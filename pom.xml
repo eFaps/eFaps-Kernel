@@ -430,4 +430,18 @@
       <url>scp://shell.berlios.de/home/groups/efaps/htdocs/</url>
     </site>
   </distributionManagement>
+  
+  <repositories>
+    <repository>
+      <id>eFaps-Snapshot</id>
+      <name>eFaps Snapshot Repository</name>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <url>http://efaps.googlecode.com/svn/repo/snapshot</url>
+    </repository>
+  </repositories>
 </project>
