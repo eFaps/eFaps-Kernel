@@ -21,8 +21,9 @@
 package org.efaps.maven.plugin;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.tools.plugin.Goal;
+
 import org.efaps.maven.plugin.goal.efaps.install.ApplicationVersion;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
 import org.efaps.util.EFapsException;
 
 /**
@@ -51,9 +52,9 @@ public final class CompileMojo extends EFapsAbstractMojo {
       applVers.setClasspathElements(getClasspathElements());
       applVers.compileAll(getUserName());
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       getLog().error(e);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       getLog().error(e);
     }
   }

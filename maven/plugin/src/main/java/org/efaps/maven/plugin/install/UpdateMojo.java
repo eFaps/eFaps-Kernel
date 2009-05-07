@@ -23,8 +23,9 @@ package org.efaps.maven.plugin.install;
 import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.tools.plugin.Goal;
+
 import org.efaps.maven.plugin.goal.efaps.install.Application;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
 
 /**
  * Makes an update of an eFaps application for the last version of the
@@ -50,7 +51,7 @@ public final class UpdateMojo extends AbstractEFapsInstallMojo
       for (final Application appl : appls) {
         appl.updateLastVersion(getUserName(), getPassWord());
       }
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       getLog().error(e);
     }
   }

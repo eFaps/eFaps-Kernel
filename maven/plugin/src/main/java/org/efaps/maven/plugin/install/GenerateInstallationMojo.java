@@ -43,13 +43,14 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.tools.plugin.Goal;
-import org.apache.maven.tools.plugin.Parameter;
 import org.apache.tools.ant.DirectoryScanner;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Parameter;
 
 /**
  * @author tmo
@@ -277,9 +278,9 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
       os.close();
 
       return rootPackage;
-    } catch (MojoFailureException e) {
+    } catch (final MojoFailureException e) {
       throw e;
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new MojoExecutionException("could not create target XML "
           + "installation file", e);
     }
@@ -309,7 +310,7 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
             new File(this.targetDirectory, _rootPackage + fileName);
         FileUtils.copyFile(srcFile, dstFile, true);
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new MojoExecutionException("could not copy files", e);
     }
   }

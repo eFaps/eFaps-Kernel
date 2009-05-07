@@ -27,8 +27,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.tools.plugin.Goal;
-import org.apache.maven.tools.plugin.Parameter;
+
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Parameter;
+
 
 /**
  * Opens the console to the derby database. The Mojo uses the eFaps connection
@@ -67,7 +69,7 @@ public class IJMojo extends DerbyAbstractMojo
 
     try {
       org.apache.derby.tools.ij.main(new String[]{});
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new MojoExecutionException("Execution of IJ failed", e);
     }
   }

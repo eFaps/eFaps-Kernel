@@ -23,8 +23,9 @@ package org.efaps.maven.plugin.install;
 import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.tools.plugin.Goal;
+
 import org.efaps.maven.plugin.goal.efaps.install.Application;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
 
 /**
  * TODO description

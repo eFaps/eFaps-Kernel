@@ -28,13 +28,13 @@ import java.util.regex.Pattern;
 
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.tools.plugin.Parameter;
 
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.init.StartupDatabaseConnection;
 import org.efaps.init.StartupException;
 import org.efaps.maven.logger.SLF4JOverMavenLog;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Parameter;
 import org.efaps.util.EFapsException;
 
 /**

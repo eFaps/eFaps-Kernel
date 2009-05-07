@@ -24,7 +24,9 @@ import java.util.Properties;
 import java.util.Map.Entry;
 
 import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.tools.plugin.Parameter;
+
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Parameter;
+
 
 /**
  * The class is used to initialize the system properties depending on given

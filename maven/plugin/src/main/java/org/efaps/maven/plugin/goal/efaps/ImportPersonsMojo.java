@@ -21,10 +21,11 @@
 package org.efaps.maven.plugin.goal.efaps;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.tools.plugin.Goal;
-import org.apache.maven.tools.plugin.Parameter;
+
 import org.efaps.jaas.ImportHandler;
 import org.efaps.maven.plugin.EFapsAbstractMojo;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Parameter;
 
 /**
  * The class is used to start the import of persons directly as parameter from
@@ -70,7 +71,7 @@ public final class ImportPersonsMojo extends EFapsAbstractMojo  {
       startTransaction();
       (new ImportHandler(this.application)).importPersons();
       commitTransaction();
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       throw new MojoExecutionException("import of persons failed", e);
     }
   }

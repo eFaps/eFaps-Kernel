@@ -22,17 +22,18 @@ package org.efaps.maven.jetty;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.tools.plugin.Execute;
-import org.apache.maven.tools.plugin.Goal;
-import org.apache.maven.tools.plugin.Parameter;
-import org.apache.maven.tools.plugin.lifecycle.Phase;
-import org.efaps.maven.jetty.configuration.ServerDefinition;
-import org.efaps.maven.plugin.EFapsAbstractMojo;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.servlet.Context;
+
+import org.efaps.maven.jetty.configuration.ServerDefinition;
+import org.efaps.maven.plugin.EFapsAbstractMojo;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Execute;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Parameter;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.lifecycle.Phase;
 
 /**
  * The goal starts the Jetty web server.
@@ -90,15 +91,15 @@ public class JettyRunMojo extends EFapsAbstractMojo {
     connector.setHost(this.host);
     server.addConnector(connector);
 
-    ContextHandlerCollection contexts = new ContextHandlerCollection();
+    final ContextHandlerCollection contexts = new ContextHandlerCollection();
     server.setHandler(contexts);
 
     System.setProperty("java.security.auth.login.config",
                        this.jaasConfigFile);
 
-    Context handler = new Context(contexts,"/eFaps", Context.SESSIONS);
+    final Context handler = new Context(contexts,"/eFaps", Context.SESSIONS);
 
-    ServerDefinition serverDef = ServerDefinition.read(this.configFile);
+    final ServerDefinition serverDef = ServerDefinition.read(this.configFile);
     serverDef.updateServer(handler);
 
     try {
@@ -106,7 +107,7 @@ public class JettyRunMojo extends EFapsAbstractMojo {
       server.start();
       getLog().info("Server Started");
       server.join();
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new MojoExecutionException("Could not Start Jetty Server", e);
     }
   }

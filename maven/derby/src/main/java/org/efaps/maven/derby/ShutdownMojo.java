@@ -22,7 +22,9 @@ package org.efaps.maven.derby;
 
 import org.apache.derby.drda.NetworkServerControl;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.tools.plugin.Goal;
+
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
+
 
 /**
  * Shut downs the derby database.
