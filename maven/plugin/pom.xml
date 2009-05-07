@@ -186,6 +186,15 @@
       <version>1.6R7</version>
     </dependency>
 
+    <!--
+      Apache commons-io needed by commons-jci and commons-fileupload.
+     -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>1.4</version>
+    </dependency>
+    
     <!-- java transaction manager -->
     <dependency>
       <groupId>jotm</groupId>
