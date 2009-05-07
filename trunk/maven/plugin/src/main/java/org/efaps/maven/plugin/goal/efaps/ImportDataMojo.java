@@ -21,8 +21,9 @@
 package org.efaps.maven.plugin.goal.efaps;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.tools.plugin.Goal;
+
 import org.efaps.maven.plugin.EFapsAbstractMojo;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
 
 /**
  * Data defined in an XML-Struktur is imported into the eFaps-Database

@@ -72,7 +72,7 @@
         <dependencies>
           <!-- used to get annotations within Java source code -->
           <dependency>
-            <groupId>org.efaps.maven</groupId>
+            <groupId>org.efaps</groupId>
             <artifactId>maven-java5</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>

@@ -21,8 +21,9 @@
 package org.efaps.maven.plugin;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.tools.plugin.Goal;
+
 import org.efaps.db.Context;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
 
 /**
  * Delete Old Data and Data Model within eFaps of current logged in SQL
@@ -48,7 +49,7 @@ public class CleanMojo extends EFapsAbstractMojo  {
       Context.begin();
       Context.getDbType().deleteAll(Context.getThreadContext().getConnection());
       Context.commit();
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new MojoExecutionException("Delete of Old Data and Data Model "
                                        + "failed", e);
     }

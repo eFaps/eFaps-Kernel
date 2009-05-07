@@ -127,8 +127,8 @@
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>org.efaps.maven</groupId>
-          <artifactId>maven-efaps-logger</artifactId>
+          <groupId>org.efaps</groupId>
+          <artifactId>maven-SLF4JLogger</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

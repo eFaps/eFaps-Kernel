@@ -72,7 +72,7 @@
         <dependencies>
           <!-- used to get annotations within Java source code -->
           <dependency>
-            <groupId>org.efaps.maven</groupId>
+            <groupId>org.efaps</groupId>
             <artifactId>maven-java5</artifactId>
             <version>1.0-SNAPSHOT</version>
              <scope>runtime</scope>
@@ -103,7 +103,7 @@
 
     <!-- annotations used to identify maven plugin syntax -->
     <dependency>
-      <groupId>org.efaps.maven</groupId>
+      <groupId>org.efaps</groupId>
       <artifactId>maven-java5</artifactId>
       <version>${project.version}</version>
     </dependency>

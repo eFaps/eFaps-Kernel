@@ -31,11 +31,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.tools.plugin.Parameter;
 import org.apache.tools.ant.DirectoryScanner;
 
 import org.efaps.maven.plugin.EFapsAbstractMojo;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Parameter;
 import org.efaps.update.FileType;
 
 
