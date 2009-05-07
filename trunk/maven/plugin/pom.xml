@@ -111,14 +111,14 @@
     <!-- eFaps kernel -->
     <dependency>
       <groupId>org.efaps</groupId>
-      <artifactId>eFaps-Kernel</artifactId>
+      <artifactId>efaps-kernel</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <!-- eFaps Maven Logger -->
     <dependency>
       <groupId>org.efaps</groupId>
-      <artifactId>maven-SLF4JLogger</artifactId>
+      <artifactId>maven-slf4jlogger</artifactId>
       <version>${project.version}</version>
     </dependency>
 
