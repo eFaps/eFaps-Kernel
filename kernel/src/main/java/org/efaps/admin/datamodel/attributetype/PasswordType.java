@@ -49,9 +49,9 @@ import org.efaps.db.query.CachedResult;
  * the password is encrypted before storing it in the eFaps-Database, so that it
  * can not be read. After retrieving it from the database the password is
  * decrypted and is available in clear text. This is necessary because e.g. the
- * CRAM-MD5 autorisation needs the password in clear text.
+ * CRAM-MD5 authorisation needs the password in clear text.
  *
- * @author jmox
+ * @author Jan Moxter
  *
  * @version $Id$
  */
@@ -62,17 +62,31 @@ public class PasswordType extends StringType {
    */
   private static final Logger LOG = LoggerFactory.getLogger(PasswordType.class);
 
+  /**
+   * The method updates for the statement the value.
+   *
+   * @param _object   Object to set
+   * @param _stmt     SQL statement to update the value
+   * @param _indexes  index in the SQL statement to update the value
+   * @throws SQLException on error with sql statement
+   */
   @Override
   public void update(final Object _object, final PreparedStatement _stmt,
-      final List<Integer> _indexes) throws SQLException {
+                     final List<Integer> _indexes)
+      throws SQLException {
     _stmt.setString(_indexes.get(0), decryptEncrypt(getValue(), false));
   }
 
   /**
-   * @todo test that only one value is given for indexes
+   * Read the value from the cache.
+   *
+   * @param _rs  cached result
+   * @param _indexes  indexs
+   * @return  value
    */
   @Override
-  public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
+  public Object readValue(final CachedResult _rs,
+                          final List<Integer> _indexes) {
     String ret = _rs.getString(_indexes.get(0).intValue());
     if (ret != null) {
       ret = ret.trim();
@@ -99,82 +113,77 @@ public class PasswordType extends StringType {
   }
 
   /**
-   * Returns encrypted by salt password. Uses SHA-1 Message Digest Algorithm as
-   * defined in NIST's FIPS 180-1. The output of this algorithm is a 160-bit
-   * digest.
+   * Returns encrypted/decrypted by salt password. Uses SHA-1 Message Digest
+   * Algorithm as defined in NIST's FIPS 180-1. The output of this algorithm is
+   * a 160-bit digest.
    *
-   * @param _password unencrypted password
+   * @param _password  password to encrypt/decrypt
+   * @param _decrypt   decrypt or encrypt?
    * @return encrypted by salt password
    */
-  private String decryptEncrypt(final String _password, final boolean _decrypt) {
-     String ret = null;
-    try {
-      final char[] password = "password".toCharArray();
-      // Salt
-      final byte[] salt = {
-          (byte) 0xA9, (byte) 0x9B, (byte) 0xC8, (byte) 0x32,
-          (byte) 0x56, (byte) 0x34, (byte) 0xE3, (byte) 0x03
-      };
-      // Iteration count
-      final int count = 19;
+  private String decryptEncrypt(final String _password,
+                                final boolean _decrypt) {
+    String ret = null;
+    if (_password != null) {
+      try {
+        final char[] password = "password".toCharArray();
+        // Salt
+        final byte[] salt = {
+            (byte) 0xA9, (byte) 0x9B, (byte) 0xC8, (byte) 0x32,
+            (byte) 0x56, (byte) 0x34, (byte) 0xE3, (byte) 0x03
+        };
+        // Iteration count
+        final int count = 19;
 
-      // Create PBE parameter set
-      final PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, count);
-      final PBEKeySpec pbeKeySpec = new PBEKeySpec(password, salt, count);
+        // Create PBE parameter set
+        final PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, count);
+        final PBEKeySpec pbeKeySpec = new PBEKeySpec(password, salt, count);
+        // TODO make this part configurable
+        final SecretKeyFactory keyFac =
+                               SecretKeyFactory.getInstance("PBEWithMD5AndDES");
+        final SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
 
-      final SecretKeyFactory keyFac = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
-      final SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
+        final Cipher cipher = Cipher.getInstance(pbeKey.getAlgorithm());
 
-      final Cipher cipher = Cipher.getInstance(pbeKey.getAlgorithm());
+        if (_decrypt) {
+          cipher.init(Cipher.DECRYPT_MODE, pbeKey, pbeParamSpec);
+          // Decode base64 to get bytes
+          final byte[] dec
+                        = new sun.misc.BASE64Decoder().decodeBuffer(_password);
+          // Decrypt
+          final byte[] ciphertext = cipher.doFinal(dec);
 
-      if (_decrypt) {
-        cipher.init(Cipher.DECRYPT_MODE, pbeKey, pbeParamSpec);
-        // Decode base64 to get bytes
-        final byte[] dec = new sun.misc.BASE64Decoder().decodeBuffer(_password);
-        // Decrypt
-        final byte[] ciphertext = cipher.doFinal(dec);
+          ret = new String(ciphertext, "UTF8");
 
-        ret = new String(ciphertext, "UTF8");
+        } else {
+          cipher.init(Cipher.ENCRYPT_MODE, pbeKey, pbeParamSpec);
+          final byte[] pwdText = _password.getBytes("UTF8");
+          // Encrypt the cleartext
+            final byte[] ciphertext = cipher.doFinal(pwdText);
 
-      } else {
-        cipher.init(Cipher.ENCRYPT_MODE, pbeKey, pbeParamSpec);
-        final byte[] pwdText = _password.getBytes("UTF8");
-        // Encrypt the cleartext
-        final byte[] ciphertext = cipher.doFinal(pwdText);
-
-        ret = new sun.misc.BASE64Encoder().encode(ciphertext);
+            ret = new sun.misc.BASE64Encoder().encode(ciphertext);
+        }
+        //TODO rework errorhandling
+      } catch (final NoSuchAlgorithmException e) {
+        LOG.error("Encryption/Decryption failed!", e);
+      } catch (final NoSuchPaddingException e) {
+        LOG.error("Encryption/Decryption failed!", e);
+      } catch (final InvalidKeySpecException e) {
+        LOG.error("Encryption/Decryption failed!", e);
+      } catch (final InvalidKeyException e) {
+        LOG.error("Encryption/Decryption failed!", e);
+      } catch (final InvalidAlgorithmParameterException e) {
+        LOG.error("Encryption/Decryption failed!", e);
+      } catch (final IllegalBlockSizeException e) {
+        LOG.error("Encryption/Decryption failed!", e);
+      } catch (final BadPaddingException e) {
+        LOG.error("Encryption/Decryption failed!", e);
+      } catch (final UnsupportedEncodingException e) {
+        LOG.error("Encryption/Decryption failed!", e);
+      } catch (final IOException e) {
+        LOG.error("Encryption/Decryption failed!", e);
       }
-
-    } catch (final NoSuchAlgorithmException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (final NoSuchPaddingException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (final InvalidKeySpecException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (final InvalidKeyException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (final InvalidAlgorithmParameterException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (final IllegalBlockSizeException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (final BadPaddingException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (final UnsupportedEncodingException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
     }
-
     return ret;
   }
-
 }
