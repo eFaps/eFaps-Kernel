@@ -75,7 +75,7 @@
           <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>maven-java5</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.0</version>
             <scope>runtime</scope>
           </dependency>
         </dependencies>
@@ -105,7 +105,7 @@
     <dependency>
       <groupId>org.efaps</groupId>
       <artifactId>maven-java5</artifactId>
-      <version>${project.version}</version>
+      <version>1.0.0</version>
     </dependency>
 
     <!-- eFaps kernel -->
