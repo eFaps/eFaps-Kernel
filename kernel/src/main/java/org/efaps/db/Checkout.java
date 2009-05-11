@@ -91,9 +91,10 @@ public class Checkout extends AbstractAction {
   }
 
   /**
-   * @throws Exception on error
+   * @throws EFapsException on error
+   *
    */
-  public void preprocess() throws Exception {
+  public void preprocess() throws EFapsException {
 
     final Type type = getInstance().getType();
     final String fileNameTmp = type.getProperty(PROPERTY_ATTR_FILE_NAME);
@@ -113,9 +114,7 @@ public class Checkout extends AbstractAction {
         this.fileLength = filelength;
       }
     }
-    // } finally {
     query.close();
-    // }
   }
 
   /**
