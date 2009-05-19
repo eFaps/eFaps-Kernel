@@ -73,12 +73,26 @@ public class TypeUpdate extends AbstractUpdate
     private static final Link LINK2STORE = new Link("Admin_DataModel_Type2Store", "From", "DB_Store", "To");
 
     /**
+     * Link the data model type to a type that it classifies.
+     */
+    private static final Link LINK2CLASSIFIES = new Link("Admin_DataModel_TypeClassifies", "From",
+                                                         "Admin_DataModel_Type", "To");
+
+    /**
+     * Link the data model type to a tyep used for classification.
+     */
+    private static final Link LINK2CLASSIFYREL = new Link("Admin_DataModel_TypeClassifyRelation", "From",
+                                                          "Admin_DataModel_Type", "To");
+
+    /**
      * List of all links for the type.
      */
     private static final Set<Link> ALLLINKS = new HashSet<Link>();
     static {
         TypeUpdate.ALLLINKS.add(TypeUpdate.LINK2ALLOWEDEVENT);
         TypeUpdate.ALLLINKS.add(TypeUpdate.LINK2STORE);
+        TypeUpdate.ALLLINKS.add(TypeUpdate.LINK2CLASSIFIES);
+        TypeUpdate.ALLLINKS.add(TypeUpdate.LINK2CLASSIFYREL);
     }
 
      /**
@@ -618,8 +632,8 @@ public class TypeUpdate extends AbstractUpdate
         protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
         {
             final String value = _tags.get(0);
-            if ("specification".equals(value)) {
-                addValue("Specification", Type.Specification.valueOf(_text).getId().toString());
+            if ("purpose".equals(value)) {
+                addValue("Purpose", Type.Purpose.valueOf(_text).getId().toString());
             } else if ("attribute".equals(value)) {
                 if (_tags.size() == 1) {
                     this.curAttr = new AttributeDefinition();
@@ -637,13 +651,15 @@ public class TypeUpdate extends AbstractUpdate
             } else if ("event-for".equals(value)) {
                 // Adds the name of a allowed event type
                 addLink(TypeUpdate.LINK2ALLOWEDEVENT, new LinkInstance(_attributes.get("type")));
+            } else if ("classifies".equals(value)) {
+                addLink(TypeUpdate.LINK2CLASSIFIES, new LinkInstance(_attributes.get("type")));
+                addLink(TypeUpdate.LINK2CLASSIFYREL, new LinkInstance(_attributes.get("relation")));
             } else if ("parent".equals(value)) {
                 this.parentType = _text;
             } else if ("store".equals(value)) {
                 addLink(TypeUpdate.LINK2STORE, new LinkInstance(_attributes.get("name")));
                 getProperties().put(PROPERTY_ATTR_FILE_LENGTH, _attributes.get("attributeFileLength"));
                 getProperties().put(PROPERTY_ATTR_FILE_NAME, _attributes.get("attributeFileName"));
-
             } else if ("trigger".equals(value)) {
                 if (_tags.size() == 1) {
                     this.events.add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),

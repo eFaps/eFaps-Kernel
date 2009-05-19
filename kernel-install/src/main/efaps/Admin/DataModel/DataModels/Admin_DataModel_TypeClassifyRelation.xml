@@ -27,28 +27,33 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>96a6cfac-9bc5-47af-9a7d-42abbc466ba6</uuid>
+  <uuid>fa6abe39-f23a-48bc-806d-0ee30d83449f</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
-  <definition>
-    <version-expression>(version==latest)</version-expression>
-    <name>Admin_DataModel_Type_Trigger</name>
-    <parent>Admin_Event_Definition</parent>
-    <purpose>ABSTRACT</purpose>
-    
-    <trigger program="org.efaps.esjp.admin.event.EventDeleteTrigger" 
-             name="Admin_DataModel_Type_Trigger.DELETE_PRE" 
-             event="DELETE_PRE"/>
-    <!-- event for type? -->
-    <event-for type="Admin_DataModel_Type"/>
-  </definition>
+  <description>
+    Defines the type that contains the classification relations for a type .
+  </description>
 
   <definition>
-    <version-expression>(version==6)</version-expression>
-    <name>Admin_DataModel_Type_Trigger</name>
-    <parent>Admin_Event_Definition</parent>
-    <purpose>ABSTRACT</purpose>
+    <version-expression>(version==6) || (version==latest)</version-expression>
+    <name>Admin_DataModel_TypeClassifyRelation</name>
+    <parent>Admin_UI_Abstract2Abstract</parent>
+    <!-- attributes -->
+    <attribute>
+      <name>From</name>
+      <type>Link</type>
+      <typelink>Admin_DataModel_Type</typelink>
+      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
+      <sqlcolumn>FROMID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>To</name>
+      <type>Link</type>
+      <typelink>Admin_DataModel_Type</typelink>
+      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
+      <sqlcolumn>TOID</sqlcolumn>
+    </attribute>
   </definition>
 
 </datamodel-type>
