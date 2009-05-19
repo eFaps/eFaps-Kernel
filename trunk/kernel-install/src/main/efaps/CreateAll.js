@@ -568,7 +568,7 @@ function _eFapsCreateCommonTablesStep2()  {
   _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Name',             'NAME',             'String',       null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'UUID',             'UUID',             'String',       null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Revision',         'REVISION',         'String',       null);
-  _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Specification',    'SPEC',             'Integer',      null);
+  _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Purpose',          'PURPOSE',          'Integer',      null);
 
   /////////////////////////////////////////
   // update attribute types

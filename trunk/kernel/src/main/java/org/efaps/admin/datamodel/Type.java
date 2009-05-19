@@ -62,25 +62,25 @@ import org.efaps.util.cache.CacheReloadException;
 public class Type extends AbstractDataModelObject
 {
     /**
-     * Enum for the different specifications of a type.
+     * Enum for the different purpose of a type.
      */
-    public enum Specification
+    public enum Purpose
     {
-        /** default specification. */
+        /** default purpose. */
         DEFAULT (0),
-        /** Abstract specification.*/
+        /** Abstract purpose.*/
         ABSTRACT (1),
-        /** classification specification.*/
+        /** classification purpose.*/
         CLASSIFICATION (2);
 
-        /** id of this specification. */
+        /** id of this purpose. */
         private final int id;
 
         /**
          * Constructor setting the id.
-         *  @param _id id of this specification
+         *  @param _id id of this purpose
          */
-        private Specification(final int _id)
+        private Purpose(final int _id)
         {
             this.id = _id;
         }
@@ -88,7 +88,7 @@ public class Type extends AbstractDataModelObject
         /**
          *  Getter method for instance variable {@link #id}.
          *
-         * @return id of this specification
+         * @return id of this purpose
          */
         public Integer getId()
         {
@@ -111,7 +111,7 @@ public class Type extends AbstractDataModelObject
                 + "  ID,"
                 + "  UUID,"
                 + "  NAME,"
-                + "  SPEC,"
+                + "  PURPOSE,"
                 + "  PARENTDMTYPE,"
                 + "  SQLCACHEEXPR "
                 + "from V_ADMINTYPE";
@@ -240,7 +240,7 @@ public class Type extends AbstractDataModelObject
     /**
      * Stores the specification oft this type.
      */
-    private Specification specification;
+    private Purpose purpose;
 
     /**
      * This is the constructor for class Type. Every instance of class Type must
@@ -693,23 +693,23 @@ public class Type extends AbstractDataModelObject
     }
 
     /**
-     * Getter method for instance variable {@link #specification}.
+     * Getter method for instance variable {@link #purpose}.
      *
-     * @return value of instance variable {@link #specification}
+     * @return value of instance variable {@link #purpose}
      */
-    public Specification getSpecification()
+    public Purpose getPurpose()
     {
-        return this.specification;
+        return this.purpose;
     }
 
     /**
-     * Setter method for instance variable {@link #specification}.
+     * Setter method for instance variable {@link #purpose}.
      *
-     * @param _specification value for instance variable {@link #specification}
+     * @param _purpose value for instance variable {@link #purpose}
      */
-    public void setSpecification(final Specification _specification)
+    public void setPurpose(final Purpose _purpose)
     {
-        this.specification = _specification;
+        this.purpose = _purpose;
     }
 
     /**
@@ -852,7 +852,7 @@ public class Type extends AbstractDataModelObject
                         final long id = rs.getLong(1);
                         final String uuid = rs.getString(2).trim();
                         final String name = rs.getString(3).trim();
-                        final int specification = rs.getInt(4);
+                        final int purpose = rs.getInt(4);
                         final long parentTypeId = rs.getLong(5);
                         String sqlCacheExpr = rs.getString(6);
                         sqlCacheExpr = sqlCacheExpr != null ? sqlCacheExpr.trim() : null;
@@ -861,12 +861,12 @@ public class Type extends AbstractDataModelObject
                         }
                         final Type type = new Type(id, uuid, name);
 
-                        if (specification == Type.Specification.ABSTRACT.getId()) {
-                            type.setSpecification(Type.Specification.ABSTRACT);
-                        } else if (specification == Type.Specification.CLASSIFICATION.getId()) {
-                            type.setSpecification(Type.Specification.ABSTRACT);
+                        if (purpose == Type.Purpose.ABSTRACT.getId()) {
+                            type.setPurpose(Type.Purpose.ABSTRACT);
+                        } else if (purpose == Type.Purpose.CLASSIFICATION.getId()) {
+                            type.setPurpose(Type.Purpose.ABSTRACT);
                         } else {
-                            type.setSpecification(Type.Specification.DEFAULT);
+                            type.setPurpose(Type.Purpose.DEFAULT);
                         }
 
                         _cache4Id.put(type.getId(), type);

@@ -59,7 +59,7 @@
                 T_CMABSTRACT.ID,
                 T_CMABSTRACT.UUID,
                 T_CMABSTRACT.NAME,
-                T_CMABSTRACT.SPEC,
+                T_CMABSTRACT.PURPOSE,
                 T_DMTYPE.PARENTDMTYPE,
                 T_DMTYPE.SQLCACHEEXPR
             from T_DMTYPE
