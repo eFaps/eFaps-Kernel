@@ -81,6 +81,16 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
         }
 
         /**
+         * Getter method for instance variable {@link #value}.
+         *
+         * @return value of instance variable {@link #value}
+         */
+        public String getValue()
+        {
+            return this.value;
+        }
+
+        /**
          * Method to get a SortDirection by its value.
          *
          * @param _value Value for sort direction
