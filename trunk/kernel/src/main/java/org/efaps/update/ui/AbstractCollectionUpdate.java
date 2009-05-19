@@ -21,6 +21,7 @@
 package org.efaps.update.ui;
 
 import static org.efaps.admin.EFapsClassNames.FIELD;
+import static org.efaps.admin.EFapsClassNames.FIELDCLASSIFICATION;
 import static org.efaps.admin.EFapsClassNames.FIELDCOMMAND;
 import static org.efaps.admin.EFapsClassNames.FIELDGROUP;
 import static org.efaps.admin.EFapsClassNames.FIELDHEADING;
@@ -52,254 +53,256 @@ import org.efaps.util.EFapsException;
  * <code>org.apache.commons.digester.Digester</code> to create ojects and to
  * execute methods.
  *
- * @author tmo
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
- * @todo description
+ *
  */
-public abstract class AbstractCollectionUpdate extends AbstractUpdate {
+public abstract class AbstractCollectionUpdate extends AbstractUpdate
+{
 
-  /** Link from field to icon. */
-  private static final Link LINKFIELD2ICON = new Link("Admin_UI_LinkIcon",
-                                                      "From",
-                                                      "Admin_UI_Image", "To");
+    /** Link from field to icon. */
+    private static final Link LINKFIELD2ICON = new Link("Admin_UI_LinkIcon", "From", "Admin_UI_Image", "To");
 
-  /** Link from field to table as target. */
-  private static final Link LINK2TARGETTABLE
-                                          = new Link("Admin_UI_LinkTargetTable",
-                                                     "From",
-                                                     "Admin_UI_Table", "To");
-
-  /**
-   * @param _url        URL of the file
-   * @param _typeName   name of the type
-   */
-  protected AbstractCollectionUpdate(final URL _url,
-                                     final String _typeName) {
-    super(_url, _typeName);
-  }
-
-  /**
-   * Creates new instance of class {@link Definition}.
-   *
-   * @return new definition instance
-   * @see Definition
-   */
-  @Override
-  protected AbstractDefinition newDefinition() {
-    return new Definition();
-  }
-
-  private class FieldDefinition extends AbstractDefinition {
-
-    /** Name of the field. */
-    private final String name;
-
-    /** Icon of the field. */
-    private String icon = null;
-
-    /** set the character of the field. */
-    private final String character;
+    /** Link from field to table as target. */
+    private static final Link LINK2TARGETTABLE = new Link("Admin_UI_LinkTargetTable", "From", "Admin_UI_Table", "To");
 
     /**
-     *
-     * @param _name
-     * @param _character
+     * @param _url URL of the file
+     * @param _typeName name of the type
      */
-    private FieldDefinition(final String _name,
-                            final String _character) {
-      this.name = _name;
-      this.character = _character;
-    }
-
-    @Override
-    protected void readXML(final List<String> _tags,
-                           final Map<String, String> _attributes,
-                           final String _text) {
-      final String value = _tags.get(0);
-      if ("evaluate".equals(value))  {
-        if (_tags.size() == 1)  {
-          this.events.add(new Event(_attributes.get("name"),
-                                  EventType.UI_TABLE_EVALUATE,
-                                  _attributes.get("program"),
-                                  _attributes.get("method"),
-                                  _attributes.get("index")));
-        } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
-          this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"),
-                                                            _text);
-        } else  {
-          super.readXML(_tags, _attributes, _text);
-        }
-      } else if ("icon".equals(value))  {
-        this.icon = _text;
-      } else if ("table".equals(value))  {
-        // assigns a table as target for this field definition
-        addLink(LINK2TARGETTABLE, new LinkInstance(_text));
-      } else if ("trigger".equals(value))  {
-        if (_tags.size() == 1)  {
-          this.events.add(new Event(_attributes.get("name"),
-                                    EventType.valueOf(_attributes.get("event")),
-                                    _attributes.get("program"),
-                                    _attributes.get("method"),
-                                    _attributes.get("index")));
-        } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
-          this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"),
-                                                              _text);
-        } else  {
-          super.readXML(_tags, _attributes, _text);
-        }
-      } else  {
-        super.readXML(_tags, _attributes, _text);
-      }
+    protected AbstractCollectionUpdate(final URL _url, final String _typeName)
+    {
+        super(_url, _typeName);
     }
 
     /**
-     * Returns a string representation with values of all instance variables of
-     * a field.
+     * Creates new instance of class {@link Definition}.
      *
-     * @return string representation of this definition of a column
+     * @return new definition instance
+     * @see Definition
      */
     @Override
-    public String toString() {
-      return new ToStringBuilder(this).append("name", this.name).append(
-          "properties", getProperties()).toString();
-    }
-  }
-
-  protected class Definition extends AbstractDefinition {
-
-    /** All fields for the collection are stored in this variable */
-    private final List<FieldDefinition> fields
-                                            = new ArrayList<FieldDefinition>();
-
-    /**
-     * Current read field definition.
-     *
-     * @see #readXML(List, Map, String)
-     */
-    private FieldDefinition curField = null;
-
-    @Override
-    protected void readXML(final List<String> _tags,
-                           final Map<String, String> _attributes,
-                           final String _text) {
-      final String value = _tags.get(0);
-      if ("field".equals(value))  {
-        if (_tags.size() == 1)  {
-          this.curField = new FieldDefinition(_attributes.get("name"),
-                                              _attributes.get("character"));
-          this.fields.add(this.curField);
-        } else  {
-          this.curField.readXML(_tags.subList(1, _tags.size()),
-                                _attributes,
-                                _text);
-        }
-      } else  {
-        super.readXML(_tags, _attributes, _text);
-      }
+    protected AbstractDefinition newDefinition()
+    {
+        return new Definition();
     }
 
     /**
-     * Updates / creates the instance in the database. Only the
-     * fields are also updated for collection defined through this definiton.
-     *
-     * @param _instance instance to update (or null if instance is to create)
-     * @param _allLinkTypes
-     * @see #setFieldsInDB
+     * Class for defining a field.
      */
-    @Override
-    public void updateInDB(final Set<Link> _allLinkTypes)
-        throws EFapsException {
-      super.updateInDB(_allLinkTypes);
-      setFieldsInDB();
-    }
+    private final class FieldDefinition extends AbstractDefinition
+    {
 
-    /**
-     * The fields for this collection are created and / or updated in the
-     * database.
-     *
-     * @todo rework that a complete cleanup and create is not needed
-     */
-    protected void setFieldsInDB()
-        throws EFapsException {
-      // cleanup fields (remove all fields from table)
-      final SearchQuery query = new SearchQuery();
-      query.setExpand(this.instance, "Admin_UI_Field\\Collection");
-      query.addSelect("OID");
-      query.executeWithoutAccessCheck();
-      while (query.next()) {
-        final Instance field = Instance.get((String) query.get("OID"));
-        setPropertiesInDb(field, null);
-        removeLinksInDB(field, LINKFIELD2ICON);
-        removeLinksInDB(field, LINK2TARGETTABLE);
-        (new Delete(field)).executeWithoutAccessCheck();
-      }
-      query.close();
+        /** Name of the field. */
+        private final String name;
 
-      // append new fields
-      for (final FieldDefinition field : this.fields) {
-        Insert insert;
-        if ("Command".equals(field.character)) {
-          insert = new Insert(Type.get(FIELDCOMMAND));
-        } else if ("Target".equals(field.character)) {
-          insert = new Insert(Type.get(FIELDTABLE));
-        } else if ("Heading".equals(field.character)) {
-          insert = new Insert(Type.get(FIELDHEADING));
-        } else if ("Group".equals(field.character)) {
-          insert = new Insert(Type.get(FIELDGROUP));
-        } else if ("Set".equals(field.character)) {
-          insert = new Insert(Type.get(FIELDSET));
-        } else {
-          insert = new Insert(Type.get(FIELD));
+        /** Icon of the field. */
+        private String icon = null;
+
+        /** set the character of the field. */
+        private final String character;
+
+        /**
+         *
+         * @param _name         Name of the field
+         * @param _character    charachter of the field
+         */
+        private FieldDefinition(final String _name, final String _character)
+        {
+            this.name = _name;
+            this.character = _character;
         }
 
-        insert.add("Collection", "" + this.instance.getId());
-        insert.add("Name", field.name);
-        insert.executeWithoutAccessCheck();
-        setPropertiesInDb(insert.getInstance(), field.getProperties());
-
-        if (field.icon != null) {
-          final Set<LinkInstance> iconset = new HashSet<LinkInstance>();
-          iconset.add(new LinkInstance(field.icon));
-          setLinksInDB(insert.getInstance(), LINKFIELD2ICON, iconset);
+        /**
+         * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List, java.util.Map, java.lang.String)
+         * @param _tags         tags
+         * @param _attributes   attributes
+         * @param _text         text
+         */
+        @Override
+        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        {
+            final String value = _tags.get(0);
+            if ("evaluate".equals(value)) {
+                if (_tags.size() == 1) {
+                    this.events.add(new Event(_attributes.get("name"), EventType.UI_TABLE_EVALUATE, _attributes
+                                    .get("program"), _attributes.get("method"), _attributes.get("index")));
+                } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
+                    this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"), _text);
+                } else {
+                    super.readXML(_tags, _attributes, _text);
+                }
+            } else if ("icon".equals(value)) {
+                this.icon = _text;
+            } else if ("table".equals(value)) {
+                // assigns a table as target for this field definition
+                addLink(AbstractCollectionUpdate.LINK2TARGETTABLE, new LinkInstance(_text));
+            } else if ("trigger".equals(value)) {
+                if (_tags.size() == 1) {
+                    this.events.add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
+                                    _attributes.get("program"), _attributes.get("method"), _attributes.get("index")));
+                } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
+                    this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"), _text);
+                } else {
+                    super.readXML(_tags, _attributes, _text);
+                }
+            } else {
+                super.readXML(_tags, _attributes, _text);
+            }
         }
 
-        // link to table
-        setLinksInDB(insert.getInstance(),
-                     LINK2TARGETTABLE,
-                     field.getLinks(LINK2TARGETTABLE));
-
-        // append events
-        for (final Event event : field.getEvents()) {
-          final Instance newInstance = event.updateInDB(insert.getInstance(),
-                                                        field.name);
-          setPropertiesInDb(newInstance, event.getProperties());
+        /**
+         * Returns a string representation with values of all instance variables
+         * of a field.
+         *
+         * @return string representation of this definition of a column
+         */
+        @Override
+        public String toString()
+        {
+            return new ToStringBuilder(this).append("name", this.name).append("properties", getProperties()).toString();
         }
-
-      }
     }
 
     /**
-     * Adds a new field to this definition of the table.
+     * Class used to define a collection.
      *
-     * @param _field  new field to add to this table
-     * @see #fields
-     * @see #Field
      */
-    public void addField(final FieldDefinition _field) {
-      this.fields.add(_field);
-    }
+    protected class Definition extends AbstractDefinition
+    {
+        /** All fields for the collection are stored in this variable. */
+        private final List<AbstractCollectionUpdate.FieldDefinition> fields
+                                                            = new ArrayList<AbstractCollectionUpdate.FieldDefinition>();
 
-    /**
-     * Returns a string representation with values of all instance variables of
-     * a field.
-     *
-     * @return string representation of this definition of a column
-     */
-    @Override
-    public String toString() {
-      return new ToStringBuilder(this).appendSuper(super.toString()).append(
-          "fields", this.fields).toString();
+        /**
+         * Current read field definition.
+         *
+         * @see #readXML(List, Map, String)
+         */
+        private FieldDefinition curField = null;
+
+        /**
+         * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List, java.util.Map, java.lang.String)
+         * @param _tags         tags
+         * @param _attributes   attributes
+         * @param _text         text
+         */
+        @Override
+        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        {
+            final String value = _tags.get(0);
+            if ("field".equals(value)) {
+                if (_tags.size() == 1) {
+                    this.curField = new FieldDefinition(_attributes.get("name"), _attributes.get("character"));
+                    this.fields.add(this.curField);
+                } else {
+                    this.curField.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
+                }
+            } else {
+                super.readXML(_tags, _attributes, _text);
+            }
+        }
+
+        /**
+         * Updates / creates the instance in the database. Only the fields are
+         * also updated for collection defined through this definition.
+         *
+         * @param _allLinkTypes set of all type of links
+         * @param _allLinkTypes
+         * @see #setFieldsInDB
+         */
+        @Override
+        public void updateInDB(final Set<Link> _allLinkTypes) throws EFapsException
+        {
+            super.updateInDB(_allLinkTypes);
+            setFieldsInDB();
+        }
+
+        /**
+         * The fields for this collection are created and / or updated in the
+         * database.
+         * @throws EFapsException on error
+         */
+        protected void setFieldsInDB() throws EFapsException
+        {
+            // cleanup fields (remove all fields from table)
+            final SearchQuery query = new SearchQuery();
+            query.setExpand(this.instance, "Admin_UI_Field\\Collection");
+            query.addSelect("OID");
+            query.executeWithoutAccessCheck();
+            while (query.next()) {
+                final Instance field = Instance.get((String) query.get("OID"));
+                setPropertiesInDb(field, null);
+                removeLinksInDB(field, AbstractCollectionUpdate.LINKFIELD2ICON);
+                removeLinksInDB(field, AbstractCollectionUpdate.LINK2TARGETTABLE);
+                (new Delete(field)).executeWithoutAccessCheck();
+            }
+            query.close();
+
+            // append new fields
+            for (final FieldDefinition field : this.fields) {
+                Insert insert;
+                if ("Command".equals(field.character)) {
+                    insert = new Insert(Type.get(FIELDCOMMAND));
+                } else if ("Target".equals(field.character)) {
+                    insert = new Insert(Type.get(FIELDTABLE));
+                } else if ("Heading".equals(field.character)) {
+                    insert = new Insert(Type.get(FIELDHEADING));
+                } else if ("Group".equals(field.character)) {
+                    insert = new Insert(Type.get(FIELDGROUP));
+                } else if ("Set".equals(field.character)) {
+                    insert = new Insert(Type.get(FIELDSET));
+                } else if ("Classification".equals(field.character)) {
+                    insert = new Insert(Type.get(FIELDCLASSIFICATION));
+                } else {
+                    insert = new Insert(Type.get(FIELD));
+                }
+
+                insert.add("Collection", "" + this.instance.getId());
+                insert.add("Name", field.name);
+                insert.executeWithoutAccessCheck();
+                setPropertiesInDb(insert.getInstance(), field.getProperties());
+
+                if (field.icon != null) {
+                    final Set<LinkInstance> iconset = new HashSet<LinkInstance>();
+                    iconset.add(new LinkInstance(field.icon));
+                    setLinksInDB(insert.getInstance(), AbstractCollectionUpdate.LINKFIELD2ICON, iconset);
+                }
+
+                // link to table
+                setLinksInDB(insert.getInstance(), AbstractCollectionUpdate.LINK2TARGETTABLE,
+                             field.getLinks(AbstractCollectionUpdate.LINK2TARGETTABLE));
+
+                // append events
+                for (final Event event : field.getEvents()) {
+                    final Instance newInstance = event.updateInDB(insert.getInstance(), field.name);
+                    setPropertiesInDb(newInstance, event.getProperties());
+                }
+            }
+        }
+
+        /**
+         * Adds a new field to this definition of the table.
+         *
+         * @param _field new field to add to this table
+         * @see #fields
+         * @see #Field
+         */
+        public void addField(final FieldDefinition _field)
+        {
+            this.fields.add(_field);
+        }
+
+        /**
+         * Returns a string representation with values of all instance variables
+         * of a field.
+         *
+         * @return string representation of this definition of a column
+         */
+        @Override
+        public String toString()
+        {
+            return new ToStringBuilder(this).appendSuper(super.toString()).append("fields", this.fields).toString();
+        }
     }
-  }
 }
