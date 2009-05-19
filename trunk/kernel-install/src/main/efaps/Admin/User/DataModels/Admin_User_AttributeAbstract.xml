@@ -16,7 +16,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          jmox
+  Author:          The eFaps Team
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -34,7 +34,7 @@
   <definition>
     <version-expression>(version==6) || (version==latest)</version-expression>
     <name>Admin_User_AttributeAbstract</name>
-    <abstract>true</abstract>
+    <specification>ABSTRACT</specification>
     <!-- attributes -->
     <attribute>
       <name>Type</name>

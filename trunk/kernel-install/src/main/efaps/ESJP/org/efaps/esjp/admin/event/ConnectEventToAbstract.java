@@ -42,182 +42,177 @@ import org.efaps.util.EFapsException;
 /**
  * ESJP used to create and update events.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
 @EFapsUUID("3e6ba860-22ff-486b-b424-27a0ee9e72f2")
 @EFapsRevision("$Rev$")
-public class ConnectEventToAbstract {
-  /**
-   * UUID of the program type.
-   */
-  private static final UUID UUID_PROGRAM
-                      = UUID.fromString("11043a35-f73c-481c-8c77-00306dbce824");
+public class ConnectEventToAbstract
+{
+    /**
+     * UUID of the program type.
+     */
+    private static final UUID UUID_PROGRAM = UUID.fromString("11043a35-f73c-481c-8c77-00306dbce824");
 
-  /**
-   * Shows a drop down list of all allowed event types depending on the parent
-   * type.
-   *
-   * @param _parameter  parameters from the field type4NotView of the form
-   *                    Admin_Event_Definition
-   * @return HTML string with the drop down list
-   * @throws EFapsException on error
-   */
-  public Return getEventTypesUI(final Parameter _parameter)
-      throws EFapsException {
-    final FieldValue fieldvalue
-                      = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
-    final HtmlType htmlType = fieldvalue.getHtmlType();
+    /**
+     * Shows a drop down list of all allowed event types depending on the parent
+     * type.
+     *
+     * @param _parameter parameters from the field type4NotView of the form
+     *            Admin_Event_Definition
+     * @return HTML string with the drop down list
+     * @throws EFapsException on error
+     */
+    public Return getEventTypesUI(final Parameter _parameter) throws EFapsException
+    {
+        final FieldValue fieldvalue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+        final HtmlType htmlType = fieldvalue.getHtmlType();
 
-    final Instance callInstance = _parameter.getCallInstance();
+        final Instance callInstance = _parameter.getCallInstance();
 
-    // get parent instance and current selected instance
-    Instance parentInstance = null;
-    long selectedId = 0;
-    if (htmlType == HtmlType.CREATEHTML)  {
-      parentInstance = callInstance;
-    } else if (htmlType == HtmlType.EDITHTML)  {
-      final SearchQuery query = new SearchQuery();
-      query.setObject(callInstance);
-      query.addSelect("Abstract.OID");
-      query.execute();
-      query.next();
-      parentInstance = Instance.get((String) query.get("Abstract.OID"));
-      query.close();
-      selectedId = callInstance.getType().getId();
-    }
-
-    // evaluate all possible event types
-    final Map<String, Long> map = new TreeMap<String, Long>();
-    for (final Type type : parentInstance.getType().getAllowedEventTypes())  {
-      collectAllowedEventTypes(map, type);
-    }
-
-    final String fieldName = fieldvalue.getField().getName();
-    final StringBuilder ret = new StringBuilder();
-    ret.append("<select name=\"").append(fieldName).append("\" size=\"1\">");
-
-    for (final Map.Entry<String, Long> entry : map.entrySet())  {
-        ret.append("<option value=\"").append(entry.getValue()).append("\"");
-        if (selectedId == entry.getValue())  {
-          ret.append(" selected=\"selected\"");
+        // get parent instance and current selected instance
+        Instance parentInstance = null;
+        long selectedId = 0;
+        if (htmlType == HtmlType.CREATEHTML) {
+            parentInstance = callInstance;
+        } else if (htmlType == HtmlType.EDITHTML) {
+            final SearchQuery query = new SearchQuery();
+            query.setObject(callInstance);
+            query.addSelect("Abstract.OID");
+            query.execute();
+            query.next();
+            parentInstance = Instance.get((String) query.get("Abstract.OID"));
+            query.close();
+            selectedId = callInstance.getType().getId();
         }
-        ret.append(">").append(entry.getKey()).append("</option>");
+
+        // evaluate all possible event types
+        final Map<String, Long> map = new TreeMap<String, Long>();
+        for (final Type type : parentInstance.getType().getAllowedEventTypes()) {
+            collectAllowedEventTypes(map, type);
+        }
+
+        final String fieldName = fieldvalue.getField().getName();
+        final StringBuilder ret = new StringBuilder();
+        ret.append("<select name=\"").append(fieldName).append("\" size=\"1\">");
+
+        for (final Map.Entry<String, Long> entry : map.entrySet()) {
+            ret.append("<option value=\"").append(entry.getValue()).append("\"");
+            if (selectedId == entry.getValue()) {
+                ret.append(" selected=\"selected\"");
+            }
+            ret.append(">").append(entry.getKey()).append("</option>");
+        }
+
+        ret.append("</select>");
+
+        final Return retVal = new Return();
+        if (ret != null) {
+            retVal.put(ReturnValues.SNIPLETT, ret);
+        }
+        return retVal;
     }
 
-    ret.append("</select>");
-
-    final Return retVal = new Return();
-    if (ret != null) {
-      retVal.put(ReturnValues.SNIPLETT, ret);
-    }
-    return retVal;
-  }
-
-  /**
-   * Evaluates given event type and adds them to the allowed event types map.
-   *
-   * @param _map   map in which the information about the event types are stored
-   * @param _type current event type to collect to the map
-   */
-  protected void collectAllowedEventTypes(final Map<String, Long> _map,
-                                          final Type _type) {
-    if (!_type.isAbstractType())  {
-      final String labelName = new StringBuilder(_type.getName())
-                                                  .append(".Label").toString();
-      _map.put(DBProperties.getProperty(labelName),
-              _type.getId());
-    }
-    for (final Type childType : _type.getChildTypes())  {
-      collectAllowedEventTypes(_map, childType);
-    }
-  }
-
-
-  /**
-   * Search for all existing programs in eFaps and returns them as drop down
-   * list so that the user could select one.
-   *
-   * @param _parameter  parameters from the field program4NotView of the form
-   *                    Admin_Event_Definition
-   * @return HTML with the drop down list for all existing programs within
-   *         eFaps
-   * @throws EFapsException on error
-   * @see #UUID_PROGRAM
-   */
-  public Return getProgramsUI(final Parameter _parameter) throws EFapsException
-  {
-    final FieldValue fieldvalue
-                      = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
-    final HtmlType htmlType = fieldvalue.getHtmlType();
-
-    // selected program (if mode edit)
-    long selectedId = 0;
-    if (htmlType == HtmlType.EDITHTML)  {
-      final Instance callInstance = _parameter.getCallInstance();
-      final SearchQuery query = new SearchQuery();
-      query.setObject(callInstance);
-      query.addSelect("JavaProg");
-      query.execute();
-      query.next();
-      selectedId = (Long) query.get("JavaProg");
-      query.close();
+    /**
+     * Evaluates given event type and adds them to the allowed event types map.
+     *
+     * @param _map map in which the information about the event types are stored
+     * @param _type current event type to collect to the map
+     */
+    protected void collectAllowedEventTypes(final Map<String, Long> _map, final Type _type)
+    {
+        if (_type.getSpecification() != Type.Specification.ABSTRACT) {
+            final String labelName = new StringBuilder(_type.getName()).append(".Label").toString();
+            _map.put(DBProperties.getProperty(labelName), _type.getId());
+        }
+        for (final Type childType : _type.getChildTypes()) {
+            collectAllowedEventTypes(_map, childType);
+        }
     }
 
-    // search for all programs
-    final SearchQuery query = new SearchQuery();
-    query.setQueryTypes(Type.get(UUID_PROGRAM).getName());
-    query.addSelect("Name");
-    query.addSelect("ID");
-    query.execute();
+    /**
+     * Search for all existing programs in eFaps and returns them as drop down
+     * list so that the user could select one.
+     *
+     * @param _parameter parameters from the field program4NotView of the form
+     *            Admin_Event_Definition
+     * @return HTML with the drop down list for all existing programs within
+     *         eFaps
+     * @throws EFapsException on error
+     * @see #UUID_PROGRAM
+     */
+    public Return getProgramsUI(final Parameter _parameter) throws EFapsException
+    {
+        final FieldValue fieldvalue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+        final HtmlType htmlType = fieldvalue.getHtmlType();
 
-    // build drop down list
-    final String fieldName = fieldvalue.getField().getName();
-    final StringBuilder ret = new StringBuilder();
-    ret.append("<select name=\"").append(fieldName).append("\" size=\"1\">");
-    while (query.next())  {
-      final long id = (Long) query.get("ID");
-      final String name = (String) query.get("Name");
-      ret.append("<option value=\"").append(id).append("\"");
-      if (id == selectedId)  {
-        ret.append(" selected=\"selected\"");
-      }
-      ret.append(">").append(name).append("</option>");
+        // selected program (if mode edit)
+        long selectedId = 0;
+        if (htmlType == HtmlType.EDITHTML) {
+            final Instance callInstance = _parameter.getCallInstance();
+            final SearchQuery query = new SearchQuery();
+            query.setObject(callInstance);
+            query.addSelect("JavaProg");
+            query.execute();
+            query.next();
+            selectedId = (Long) query.get("JavaProg");
+            query.close();
+        }
+
+        // search for all programs
+        final SearchQuery query = new SearchQuery();
+        query.setQueryTypes(Type.get(ConnectEventToAbstract.UUID_PROGRAM).getName());
+        query.addSelect("Name");
+        query.addSelect("ID");
+        query.execute();
+
+        // build drop down list
+        final String fieldName = fieldvalue.getField().getName();
+        final StringBuilder ret = new StringBuilder();
+        ret.append("<select name=\"").append(fieldName).append("\" size=\"1\">");
+        while (query.next()) {
+            final long id = (Long) query.get("ID");
+            final String name = (String) query.get("Name");
+            ret.append("<option value=\"").append(id).append("\"");
+            if (id == selectedId) {
+                ret.append(" selected=\"selected\"");
+            }
+            ret.append(">").append(name).append("</option>");
+        }
+        ret.append("</select>");
+
+        // and return the string
+        final Return retVal = new Return();
+        retVal.put(ReturnValues.SNIPLETT, ret);
+        return retVal;
     }
-    ret.append("</select>");
 
-    // and return the string
-    final Return retVal = new Return();
-    retVal.put(ReturnValues.SNIPLETT, ret);
-    return retVal;
-  }
+    /**
+     * Creates a new event for given type and program depending on the user
+     * input on the web form Admin_Event_Definition.
+     *
+     * @param _parameter from the form Admin_Event_Definition in mode create
+     * @return empty Return
+     * @throws EFapsException on error
+     */
+    public Return createNewEventUI(final Parameter _parameter) throws EFapsException
+    {
+        final Instance callInstance = _parameter.getCallInstance();
+        final String eventTypeId = _parameter.getParameterValue("type4NotView");
+        final String name = _parameter.getParameterValue("name");
+        final String index = _parameter.getParameterValue("index");
+        final String programId = _parameter.getParameterValue("program4NotView");
+        final String method = _parameter.getParameterValue("method");
 
-  /**
-   * Creates a new event for given type and program depending on the user input
-   * on the web form Admin_Event_Definition.
-   *
-   * @param _parameter  from the form Admin_Event_Definition in mode create
-   * @return empty Return
-   * @throws EFapsException on error
-   */
-  public Return createNewEventUI(final Parameter _parameter)
-      throws EFapsException {
-    final Instance callInstance  = _parameter.getCallInstance();
-    final String eventTypeId = _parameter.getParameterValue("type4NotView");
-    final String name = _parameter.getParameterValue("name");
-    final String index = _parameter.getParameterValue("index");
-    final String programId = _parameter.getParameterValue("program4NotView");
-    final String method = _parameter.getParameterValue("method");
+        final Type eventType = Type.get(Long.parseLong(eventTypeId));
 
-    final Type eventType = Type.get(Long.parseLong(eventTypeId));
-
-    final Insert insert = new Insert(eventType);
-    insert.add("Name", name);
-    insert.add("IndexPosition", index);
-    insert.add("Abstract", "" + callInstance.getId());
-    insert.add("JavaProg", programId);
-    insert.add("Method", method);
-    insert.execute();
-    return new Return();
-  }
+        final Insert insert = new Insert(eventType);
+        insert.add("Name", name);
+        insert.add("IndexPosition", index);
+        insert.add("Abstract", "" + callInstance.getId());
+        insert.add("JavaProg", programId);
+        insert.add("Method", method);
+        insert.execute();
+        return new Return();
+    }
 }

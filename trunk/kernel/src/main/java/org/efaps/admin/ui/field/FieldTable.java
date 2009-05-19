@@ -22,64 +22,82 @@ package org.efaps.admin.ui.field;
 
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.ui.Table;
+import org.efaps.util.EFapsException;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class FieldTable extends Field {
+public class FieldTable extends Field
+{
 
-  /**
-   * The static variable defines the class name in eFaps.
-   */
-  public final static EFapsClassNames EFAPS_CLASSNAME = EFapsClassNames.FIELDTABLE;
+    /**
+     * The static variable defines the class name in eFaps.
+     */
+    public static final EFapsClassNames EFAPS_CLASSNAME = EFapsClassNames.FIELDTABLE;
 
-  /**
-   * The instance variable stores the target user interface table object which
-   * is shown by the this field.
-   *
-   * @see #getTargetTable
-   * @see #setTargetTable
-   */
-  private Table targetTable = null;
+    /**
+     * The instance variable stores the target user interface table object which
+     * is shown by the this field.
+     *
+     * @see #getTargetTable
+     * @see #setTargetTable
+     */
+    private Table targetTable = null;
 
-  public FieldTable(final long _id, final String _uuid, final String _name) {
-    super(_id, _uuid, _name);
-  }
-
-  @Override
-  protected void setLinkProperty(final EFapsClassNames _linkType,
-                                 final long _toId,
-                                 final EFapsClassNames _toType,
-                                 final String _toName) throws Exception {
-    switch (_linkType) {
-      case LINK_TARGET_TABLE:
-        this.targetTable = Table.get(_toId);
-        break;
-      default:
-        super.setLinkProperty(_linkType, _toId, _toType, _toName);
-        break;
+    /**
+     * Costructor.
+     * @param _id       id of this FieldTable
+     * @param _uuid     uuid of this FieldTable
+     * @param _name     name of this FieldTable
+     */
+    public FieldTable(final long _id, final String _uuid, final String _name)
+    {
+        super(_id, _uuid, _name);
     }
-  }
 
-  /**
-   * Returns for given parameter <i>_id</i> the instance of class {@link Field}.
-   *
-   * @param _id
-   *                id to search in the cache
-   * @return instance of class {@link Field}
-   */
-  static public FieldTable get(final long _id) {
-    return (FieldTable) Field.get(_id);
-  }
+    /**
+     * @see org.efaps.admin.ui.field.Field#setLinkProperty(org.efaps.admin.EFapsClassNames, long, org.efaps.admin.EFapsClassNames, java.lang.String)
+     * @param _linkType     link type
+     * @param _toId         to id
+     * @param _toType       to type
+     * @param _toName       to name
+     * @throws EFapsException on error
+     */
+    @Override
+    protected void setLinkProperty(final EFapsClassNames _linkType, final long _toId, final EFapsClassNames _toType,
+                    final String _toName) throws EFapsException
+    {
+        switch (_linkType) {
+            case LINK_TARGET_TABLE:
+                this.targetTable = Table.get(_toId);
+                break;
+            default:
+                super.setLinkProperty(_linkType, _toId, _toType, _toName);
+                break;
+        }
+    }
 
-  /**
-   * This is the getter method for the instance variable {@link #targetTable}.
-   *
-   * @return value of instance variable {@link #targetTable}
-   */
-  public Table getTargetTable() {
-    return this.targetTable;
-  }
+    /**
+     * Returns for given parameter <i>_id</i> the instance of class
+     * {@link Field}.
+     *
+     * @param _id id to search in the cache
+     * @return instance of class {@link Field}
+     */
+    public static FieldTable get(final long _id)
+    {
+        return (FieldTable) Field.get(_id);
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #targetTable}.
+     *
+     * @return value of instance variable {@link #targetTable}
+     */
+    public Table getTargetTable()
+    {
+        return this.targetTable;
+    }
 
 }

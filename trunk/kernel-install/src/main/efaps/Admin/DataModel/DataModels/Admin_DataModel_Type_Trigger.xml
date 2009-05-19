@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -35,7 +35,8 @@
     <version-expression>(version==latest)</version-expression>
     <name>Admin_DataModel_Type_Trigger</name>
     <parent>Admin_Event_Definition</parent>
-    <abstract>true</abstract>
+    <specification>ABSTRACT</specification>
+    
     <trigger program="org.efaps.esjp.admin.event.EventDeleteTrigger" 
              name="Admin_DataModel_Type_Trigger.DELETE_PRE" 
              event="DELETE_PRE"/>
@@ -47,7 +48,7 @@
     <version-expression>(version==6)</version-expression>
     <name>Admin_DataModel_Type_Trigger</name>
     <parent>Admin_Event_Definition</parent>
-    <abstract>true</abstract>
+    <specification>ABSTRACT</specification>
   </definition>
 
 </datamodel-type>

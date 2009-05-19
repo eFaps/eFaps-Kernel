@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -59,7 +59,7 @@
                 T_CMABSTRACT.ID,
                 T_CMABSTRACT.UUID,
                 T_CMABSTRACT.NAME,
-                T_CMABSTRACT.ABSTRACT,
+                T_CMABSTRACT.SPEC,
                 T_DMTYPE.PARENTDMTYPE,
                 T_DMTYPE.SQLCACHEEXPR
             from T_DMTYPE

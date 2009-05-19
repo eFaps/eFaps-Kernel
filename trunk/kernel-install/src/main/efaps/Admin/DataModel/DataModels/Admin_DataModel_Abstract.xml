@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -35,7 +35,7 @@
     <version-expression>(version==6) || (version==latest)</version-expression>
     <name>Admin_DataModel_Abstract</name>
     <parent>Admin_Abstract</parent>
-    <abstract>true</abstract>
+    <specification>ABSTRACT</specification>
   </definition>
 
 </datamodel-type>
