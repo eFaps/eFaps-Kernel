@@ -119,7 +119,7 @@
     <dependency>
       <groupId>org.efaps</groupId>
       <artifactId>maven-slf4jlogger</artifactId>
-      <version>${project.version}</version>
+      <version>1.0.0</version>
     </dependency>
 
     <!-- it's used for some depencies in the type class -->
