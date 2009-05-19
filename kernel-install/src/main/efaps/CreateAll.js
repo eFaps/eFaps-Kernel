@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          tmo
+ * Author:          The eFaps Team
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -568,7 +568,7 @@ function _eFapsCreateCommonTablesStep2()  {
   _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Name',             'NAME',             'String',       null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'UUID',             'UUID',             'String',       null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Revision',         'REVISION',         'String',       null);
-  _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Abstract',         'ABSTRACT',         'Boolean',      null);
+  _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Specification',    'SPEC',             'Integer',      null);
 
   /////////////////////////////////////////
   // update attribute types
