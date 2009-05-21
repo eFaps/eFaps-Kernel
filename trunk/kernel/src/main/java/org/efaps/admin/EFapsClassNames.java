@@ -53,6 +53,10 @@ public enum EFapsClassNames
     DATAMODEL_TYPE("8770839d-60fd-4bb4-81fd-3903d4c916ec"),
     /** Admin_DataModel_TypeEventIsAllowedFor. */
     DATAMODEL_TYPEEVENTISALLOWEDFOR("bf3d70ce-206e-4328-aa35-761c4aeb9d1d"),
+    /** Admin_DataModel_TypeClassifies. */
+    DATAMDOEL_TYPECLASSIFIES("276e9d68-08db-4ad2-91cb-26aa3947c690"),
+    /** Admin_DataModel_TypeClassifyRelation. */
+    DATAMDOEL_TYPECLASSIFYRELATION("fa6abe39-f23a-48bc-806d-0ee30d83449f"),
     /** Admin_DataModel_Attribute. */
     DATAMODEL_ATTRIBUTE("518a9802-cf0e-4359-9b3c-880f71e1387f"),
     /** Admin_DataModel_AttributeSet. */
@@ -130,6 +134,8 @@ public enum EFapsClassNames
     LINK_ICONISTYPEICONFOR("74b91e57-e5a3-43df-b0e4-43815ad79fec"),
     /** */
     LINK_MENUISTYPETREEFOR("ce5087b5-ee5c-49c3-adfb-5da18f95a4d0"),
+    /** Admin_UI_LinkIsTypeFormFor. */
+    LINK_MENUISTYPEFORMFOR("3daa3a22-9399-4716-a670-2adaacfb6be4"),
     /** */
     LINK_TARGET_FORM("3eb6f003-c04e-48f0-8fac-797438ed6501"),
     /** */

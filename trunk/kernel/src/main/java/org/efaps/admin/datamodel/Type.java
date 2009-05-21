@@ -44,7 +44,6 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.ui.Form;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
@@ -66,8 +65,6 @@ public class Type extends AbstractDataModelObject
      */
     public enum Purpose
     {
-        /** default purpose. */
-        DEFAULT (0),
         /** Abstract purpose.*/
         ABSTRACT (1),
         /** classification purpose.*/
@@ -138,7 +135,7 @@ public class Type extends AbstractDataModelObject
      * @see #getParentTypeId
      * @see #setParentTypeId
      */
-    // private String parentTypeIds = "";
+
     /**
      * Instance variable for all child types derived from this type.
      *
@@ -146,7 +143,9 @@ public class Type extends AbstractDataModelObject
      */
     private final Set<Type> childTypes = new HashSet<Type>();
 
-      /**
+
+
+        /**
      * The instance variables stores all attributes for this type object.
      *
      * @see #getAttributes()
@@ -176,30 +175,6 @@ public class Type extends AbstractDataModelObject
      * @see #setMainTable
      */
     private SQLTable mainTable = null;
-
-    /**
-     * This instance variable stores the form for the viewing mode.
-     *
-     * @see #getFormView
-     * @see #setFormView
-     */
-    private final Form formView = null;
-
-    /**
-     * This instance variable stores the form for the editing mode.
-     *
-     * @see #getFormEdit
-     * @see #setFormEdit
-     */
-    private final Form formEdit = null;
-
-    /**
-     * This instance variable stores the form for the creating mode.
-     *
-     * @see #getFormCreate
-     * @see #setFormCreate
-     */
-    private final Form formCreate = null;
 
     /**
      * The instance variable stores all unique keys of this type instance.
@@ -237,10 +212,27 @@ public class Type extends AbstractDataModelObject
      */
     private long storeId;
 
+    private boolean abstractBool;
+
     /**
-     * Stores the specification oft this type.
+     * Getter method for instance variable {@link #abstractBool}.
+     *
+     * @return value of instance variable {@link #abstractBool}
      */
-    private Purpose purpose;
+    public boolean isAbstract()
+    {
+        return this.abstractBool;
+    }
+
+    /**
+     * Setter method for instance variable {@link #abstractBool}.
+     *
+     * @param _abstract value for instance variable {@link #abstractBool}
+     */
+    private void setAbstract(final boolean _abstract)
+    {
+        this.abstractBool = _abstract;
+    }
 
     /**
      * This is the constructor for class Type. Every instance of class Type must
@@ -594,42 +586,6 @@ public class Type extends AbstractDataModelObject
     }
 
     /**
-     * This is the getter method for instance variable {@link #formView}.
-     *
-     * @return value of instance variable {@link #formView}
-     * @see #setFormView
-     * @see #formView
-     */
-    public Form getFormView()
-    {
-        return this.formView;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #formEdit}.
-     *
-     * @return value of instance variable {@link #formEdit}
-     * @see #setFormEdit
-     * @see #formEdit
-     */
-    public Form getFormEdit()
-    {
-        return this.formEdit;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #formCreate}.
-     *
-     * @return value of instance variable {@link #formCreate}
-     * @see #setFormCreate
-     * @see #formCreate
-     */
-    public Form getFormCreate()
-    {
-        return this.formCreate;
-    }
-
-    /**
      * This is the getter method for instance variable {@link #uniqueKeys}.
      *
      * @return value of instance variable {@link #uniqueKeys}
@@ -692,25 +648,6 @@ public class Type extends AbstractDataModelObject
         return ret;
     }
 
-    /**
-     * Getter method for instance variable {@link #purpose}.
-     *
-     * @return value of instance variable {@link #purpose}
-     */
-    public Purpose getPurpose()
-    {
-        return this.purpose;
-    }
-
-    /**
-     * Setter method for instance variable {@link #purpose}.
-     *
-     * @param _purpose value for instance variable {@link #purpose}
-     */
-    public void setPurpose(final Purpose _purpose)
-    {
-        this.purpose = _purpose;
-    }
 
     /**
      * The method overrides the original method 'toString' and returns
@@ -721,8 +658,9 @@ public class Type extends AbstractDataModelObject
     @Override
     public String toString()
     {
-        return new ToStringBuilder(this).appendSuper(super.toString()).append("parentType",
-                        getParentType() != null ? getParentType().getName() : "").append("uniqueKey", getUniqueKeys())
+        return new ToStringBuilder(this).appendSuper(super.toString())
+                        .append("parentType", getParentType() != null ? getParentType().getName() : "")
+                        .append("uniqueKey", getUniqueKeys())
                         .toString();
     }
 
@@ -859,14 +797,18 @@ public class Type extends AbstractDataModelObject
                         if (Type.LOG.isDebugEnabled()) {
                             Type.LOG.debug("read type '" + name + "' (id = " + id + ")");
                         }
-                        final Type type = new Type(id, uuid, name);
 
+                        Type type;
                         if (purpose == Type.Purpose.ABSTRACT.getId()) {
-                            type.setPurpose(Type.Purpose.ABSTRACT);
+                            type = new Type(id, uuid, name);
+                            type.setAbstract(true);
                         } else if (purpose == Type.Purpose.CLASSIFICATION.getId()) {
-                            type.setPurpose(Type.Purpose.ABSTRACT);
+                            type = new Classification(id, uuid, name);
+                        } else if (purpose == Type.Purpose.CLASSIFICATION.getId() + Type.Purpose.ABSTRACT.getId()) {
+                            type = new Classification(id, uuid, name);
+                            type.setAbstract(true);
                         } else {
-                            type.setPurpose(Type.Purpose.DEFAULT);
+                            type = new Type(id, uuid, name);
                         }
 
                         _cache4Id.put(type.getId(), type);
@@ -893,8 +835,13 @@ public class Type extends AbstractDataModelObject
                     if (child.getId() == parent.getId()) {
                         throw new CacheReloadException("child and parent type is equal!child is " + child);
                     }
-                    child.parentType = parent;
-                    parent.addChildType(child);
+                    if (child instanceof Classification) {
+                        ((Classification) child).setParentClassification((Classification) parent);
+                        ((Classification) parent).getChildClassifications().add((Classification) child);
+                    } else {
+                        child.setParentType(parent);
+                        parent.addChildType(child);
+                    }
                 }
                 con.commit();
             } catch (final SQLException e) {

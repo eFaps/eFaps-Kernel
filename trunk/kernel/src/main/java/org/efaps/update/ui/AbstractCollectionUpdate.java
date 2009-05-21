@@ -76,6 +76,18 @@ public abstract class AbstractCollectionUpdate extends AbstractUpdate
     }
 
     /**
+     * @param _url              url of the file
+     * @param _typeName         name of the type
+     * @param _allLinkTypes     set of all links
+     */
+    protected AbstractCollectionUpdate(final URL _url,
+                                       final String _typeName,
+                                       final Set<Link> _allLinkTypes)
+    {
+        super(_url, _typeName, _allLinkTypes);
+    }
+
+    /**
      * Creates new instance of class {@link Definition}.
      *
      * @return new definition instance
@@ -209,10 +221,12 @@ public abstract class AbstractCollectionUpdate extends AbstractUpdate
          *
          * @param _allLinkTypes set of all type of links
          * @param _allLinkTypes
+         * @throws EFapsException on error
          * @see #setFieldsInDB
          */
         @Override
-        public void updateInDB(final Set<Link> _allLinkTypes) throws EFapsException
+        public void updateInDB(final Set<Link> _allLinkTypes)
+                throws EFapsException
         {
             super.updateInDB(_allLinkTypes);
             setFieldsInDB();

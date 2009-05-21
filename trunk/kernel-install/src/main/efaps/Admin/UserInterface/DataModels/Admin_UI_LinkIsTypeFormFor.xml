@@ -27,28 +27,14 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>96a6cfac-9bc5-47af-9a7d-42abbc466ba6</uuid>
+  <uuid>3daa3a22-9399-4716-a670-2adaacfb6be4</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version-expression>(version==latest)</version-expression>
-    <name>Admin_DataModel_Type_Trigger</name>
-    <parent>Admin_Event_Definition</parent>
-    <purpose abstract="true" />
-    
-    <trigger program="org.efaps.esjp.admin.event.EventDeleteTrigger" 
-             name="Admin_DataModel_Type_Trigger.DELETE_PRE" 
-             event="DELETE_PRE"/>
-    <!-- event for type? -->
-    <event-for type="Admin_DataModel_Type"/>
-  </definition>
-
-  <definition>
-    <version-expression>(version==6)</version-expression>
-    <name>Admin_DataModel_Type_Trigger</name>
-    <parent>Admin_Event_Definition</parent>
-    <purpose abstract="true" />
+    <version-expression>(version==6) || (version==latest)</version-expression>
+    <name>Admin_UI_LinkIsTypeFormFor</name>
+    <parent>Admin_UI_Link</parent>
   </definition>
 
 </datamodel-type>
