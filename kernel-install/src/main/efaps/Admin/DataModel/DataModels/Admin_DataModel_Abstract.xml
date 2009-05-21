@@ -35,7 +35,7 @@
     <version-expression>(version==6) || (version==latest)</version-expression>
     <name>Admin_DataModel_Abstract</name>
     <parent>Admin_Abstract</parent>
-    <purpose>ABSTRACT</purpose>
+    <purpose abstract="true" />
   </definition>
 
 </datamodel-type>

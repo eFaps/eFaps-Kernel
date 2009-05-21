@@ -121,7 +121,7 @@ public class ConnectEventToAbstract
      */
     protected void collectAllowedEventTypes(final Map<String, Long> _map, final Type _type)
     {
-        if (_type.getPurpose() != Type.Purpose.ABSTRACT) {
+        if (!_type.isAbstract()) {
             final String labelName = new StringBuilder(_type.getName()).append(".Label").toString();
             _map.put(DBProperties.getProperty(labelName), _type.getId());
         }

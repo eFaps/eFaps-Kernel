@@ -22,9 +22,16 @@ package org.efaps.admin.ui;
 
 import static org.efaps.admin.EFapsClassNames.FORM;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.EFapsClassNames;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -32,78 +39,139 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  * @todo description
  */
-public class Form extends AbstractCollection {
+public class Form extends AbstractCollection
+{
 
-  /**
-   * The static variable defines the class name in eFaps.
-   */
-  public final static EFapsClassNames EFAPS_CLASSNAME = FORM;
+    /**
+     * The static variable defines the class name in eFaps.
+     */
+    public final static EFapsClassNames EFAPS_CLASSNAME = FORM;
 
-  private static final FormCache CACHE = new FormCache();
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(Menu.class);
 
-  /**
+    private static final FormCache CACHE = new FormCache();
+
+    /**
+     * Stores the mapping from type to tree menu.
+     */
+    private static final Map<Type, Form> TYPE2FORMS = new HashMap<Type, Form>();
+
+    /**
    *
    */
-  public Form(final Long _id, final String _uuid, final String _name) {
-    super(_id, _uuid, _name);
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Returns for given parameter <i>_id</i> the instance of class {@link Form}.
-   *
-   * @param _id
-   *                id to search in the cache
-   * @return instance of class {@link Form}
-   * @throws CacheReloadException
-   * @see #getCache
-   */
-  public static Form get(final long _id) {
-    return CACHE.get(_id);
-  }
-
-  /**
-   * Returns for given parameter <i>_name</i> the instance of class
-   * {@link Form}.
-   *
-   * @param _name
-   *                name to search in the cache
-   * @return instance of class {@link Form}
-   * @throws CacheReloadException
-   * @see #getCache
-   */
-  public static Form get(final String _name) {
-    return CACHE.get(_name);
-  }
-
-  /**
-   * Returns for given parameter <i>_uuid</i> the instance of class
-   * {@link Form}.
-   *
-   * @param _uuid
-   *                UUID to search in the cache
-   * @return instance of class {@link Form}
-   * @throws CacheReloadException
-   * @see #getCache
-   */
-  public static Form get(final UUID _uuid)  {
-    return CACHE.get(_uuid);
-  }
-
-  /**
-   * Static getter method for the type hashtable {@link #CACHE}.
-   *
-   * @return value of static variable {@link #CACHE}
-   */
-  protected static UserInterfaceObjectCache<Form> getCache() {
-    return CACHE;
-  }
-
-  private static class FormCache extends UserInterfaceObjectCache<Form> {
-
-    protected FormCache() {
-      super(Form.class);
+    public Form(final Long _id, final String _uuid, final String _name)
+    {
+        super(_id, _uuid, _name);
     }
-  }
+
+    /**
+     * Sets the link properties for this object.
+     *
+     * @param _linkType type of the link property
+     * @param _toId to id
+     * @param _toType to type
+     * @param _toName to name
+     * @throws EFapsException on error
+     */
+    @Override
+    protected void setLinkProperty(final EFapsClassNames _linkType, final long _toId, final EFapsClassNames _toType,
+                    final String _toName) throws EFapsException
+    {
+        switch (_linkType) {
+            case LINK_MENUISTYPEFORMFOR:
+                final Type type = Type.get(_toId);
+                if (type == null) {
+                    Form.LOG.error("Form '" + getName() + "' could not defined as type form for type '" + _toName
+                                    + "'! Type does not " + "exists!");
+                } else {
+                    Form.TYPE2FORMS.put(type, this);
+                }
+                break;
+            default:
+                super.setLinkProperty(_linkType, _toId, _toType, _toName);
+        }
+    }
+
+    /**
+     * Returns for given parameter <i>_id</i> the instance of class {@link Form}
+     * .
+     *
+     * @param _id id to search in the cache
+     * @return instance of class {@link Form}
+     * @throws CacheReloadException
+     * @see #getCache
+     */
+    public static Form get(final long _id)
+    {
+        return CACHE.get(_id);
+    }
+
+    /**
+     * Returns for given parameter <i>_name</i> the instance of class
+     * {@link Form}.
+     *
+     * @param _name name to search in the cache
+     * @return instance of class {@link Form}
+     * @throws CacheReloadException
+     * @see #getCache
+     */
+    public static Form get(final String _name)
+    {
+        return CACHE.get(_name);
+    }
+
+    /**
+     * Returns for given parameter <i>_uuid</i> the instance of class
+     * {@link Form}.
+     *
+     * @param _uuid UUID to search in the cache
+     * @return instance of class {@link Form}
+     * @throws CacheReloadException
+     * @see #getCache
+     */
+    public static Form get(final UUID _uuid)
+    {
+        return CACHE.get(_uuid);
+    }
+
+    /**
+     * Returns for given type the type form. If no type form is
+     * defined for the type, it is searched if for parent type a menu is
+     * defined.
+     *
+     * @param _type type for which the type form is searched
+     * @return type form for given type if found; otherwise
+     *         <code>null</code>.
+     */
+    public static Form getTypeForm(final Type _type)
+    {
+        Form ret = Form.TYPE2FORMS.get(_type);
+        if ((ret == null) && (_type.getParentType() != null)) {
+            ret = getTypeForm(_type.getParentType());
+        }
+        return ret;
+    }
+
+
+    /**
+     * Static getter method for the type hashtable {@link #CACHE}.
+     *
+     * @return value of static variable {@link #CACHE}
+     */
+    protected static UserInterfaceObjectCache<Form> getCache()
+    {
+        return CACHE;
+    }
+
+    private static class FormCache extends UserInterfaceObjectCache<Form>
+    {
+
+        protected FormCache()
+        {
+            super(Form.class);
+        }
+    }
 }

@@ -285,10 +285,15 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
         Statement stmt = null;
         try {
             stmt = Context.getThreadContext().getConnection().createStatement();
-            final ResultSet resultset = stmt.executeQuery("select " + "T_CMABSTRACT2ABSTRACT.TYPEID,"
-                            + "T_CMABSTRACT2ABSTRACT.TOID," + "T_CMABSTRACT.TYPEID," + "T_CMABSTRACT.NAME "
-                            + "from T_CMABSTRACT2ABSTRACT, T_CMABSTRACT " + "where T_CMABSTRACT2ABSTRACT.FROMID="
-                            + getId() + " and T_CMABSTRACT2ABSTRACT.TOID=T_CMABSTRACT.ID");
+            final ResultSet resultset = stmt.executeQuery("select "
+                            + "T_CMABSTRACT2ABSTRACT.TYPEID,"
+                            + "T_CMABSTRACT2ABSTRACT.TOID,"
+                            + "T_CMABSTRACT.TYPEID,"
+                            + "T_CMABSTRACT.NAME "
+                            + "from T_CMABSTRACT2ABSTRACT, T_CMABSTRACT "
+                            + "where T_CMABSTRACT2ABSTRACT.FROMID=" + getId()
+                            + " and T_CMABSTRACT2ABSTRACT.TOID=T_CMABSTRACT.ID");
+
             while (resultset.next()) {
                 final long conTypeId = resultset.getLong(1);
                 final long toId = resultset.getLong(2);

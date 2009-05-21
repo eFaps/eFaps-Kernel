@@ -20,6 +20,7 @@
 
 package org.efaps.update.datamodel;
 
+
 import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_LENGTH;
 import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_NAME;
 
@@ -35,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.AttributeSet;
+import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Insert;
@@ -633,7 +635,18 @@ public class TypeUpdate extends AbstractUpdate
         {
             final String value = _tags.get(0);
             if ("purpose".equals(value)) {
-                addValue("Purpose", Type.Purpose.valueOf(_text).getId().toString());
+                if (_tags.size() == 1) {
+                    Integer valueTmp = 0;
+                    if ("true".equalsIgnoreCase(_attributes.get("abstract"))) {
+                        valueTmp = valueTmp + Type.Purpose.ABSTRACT.getId();
+                    }
+                    if ("true".equalsIgnoreCase(_attributes.get("classification"))) {
+                        valueTmp = valueTmp + Type.Purpose.CLASSIFICATION.getId();
+                    }
+                    addValue("Purpose", valueTmp.toString());
+                } else if (_tags.size() == 2) {
+                    getProperties().put(Classification.Keys.LINKATTR.getValue(), _text);
+                }
             } else if ("attribute".equals(value)) {
                 if (_tags.size() == 1) {
                     this.curAttr = new AttributeDefinition();
@@ -652,8 +665,14 @@ public class TypeUpdate extends AbstractUpdate
                 // Adds the name of a allowed event type
                 addLink(TypeUpdate.LINK2ALLOWEDEVENT, new LinkInstance(_attributes.get("type")));
             } else if ("classifies".equals(value)) {
-                addLink(TypeUpdate.LINK2CLASSIFIES, new LinkInstance(_attributes.get("type")));
-                addLink(TypeUpdate.LINK2CLASSIFYREL, new LinkInstance(_attributes.get("relation")));
+                addLink(TypeUpdate.LINK2CLASSIFIES,
+                        new LinkInstance(_attributes.get(Classification.Keys.TYPE.getValue())));
+                addLink(TypeUpdate.LINK2CLASSIFYREL,
+                        new LinkInstance(_attributes.get(Classification.Keys.RELTYPE.getValue())));
+                getProperties().put(Classification.Keys.RELTYPEATTR.getValue(),
+                                    _attributes.get(Classification.Keys.RELTYPEATTR.getValue()));
+                getProperties().put(Classification.Keys.RELLINKATTR.getValue(),
+                                    _attributes.get(Classification.Keys.RELLINKATTR.getValue()));
             } else if ("parent".equals(value)) {
                 this.parentType = _text;
             } else if ("store".equals(value)) {
