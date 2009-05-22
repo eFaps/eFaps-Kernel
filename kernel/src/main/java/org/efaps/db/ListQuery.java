@@ -252,9 +252,10 @@ public class ListQuery extends AbstractQuery {
    * @param _key
    *                key for which the attribute value must returned
    * @return attribute for given key
+ * @throws EFapsException
    */
   @Override
-  public Attribute getAttribute(final String _select) throws Exception {
+  public Attribute getAttribute(final String _select) throws EFapsException {
     final int idx = _select.indexOf(".");
     Attribute ret = null;
     if (idx > 0) {

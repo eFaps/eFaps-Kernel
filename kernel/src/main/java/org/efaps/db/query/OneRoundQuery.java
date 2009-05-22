@@ -238,9 +238,10 @@ public class OneRoundQuery {
    *
    * @param _expression   expression for which the attribute value must returned
    * @return attribute value for given key
+ * @throws EFapsException
    * @throws Exception on error
    */
-  public Object getValue(final String _expression) throws Exception {
+  public Object getValue(final String _expression) throws EFapsException {
     Object ret = null;
 
     Type typeTmp = getType();
@@ -300,9 +301,9 @@ public class OneRoundQuery {
    *
    * @param _expression  expression for which the attribute value must returned
    * @return attribute for given expression
-   * @throws Exception on error
+   *
    */
-  public Attribute getAttribute(final String _expression) throws Exception {
+  public Attribute getAttribute(final String _expression) {
     Attribute ret = null;
     ret = getType().getAttribute(_expression);
     if (ret == null) {
@@ -460,9 +461,10 @@ public class OneRoundQuery {
      * Method to get the value for an expression.
      * @param _expr expression the value will be returned for
      * @return  Object
+     * @throws EFapsException
      * @throws Exception on error
      */
-    public Object getValue(final String _expr) throws Exception {
+    public Object getValue(final String _expr) throws EFapsException  {
       // System.out.println("getValue.expression="+_expression);
       Object ret = null;
       final Attribute attr = this.expr2Attr.get(_expr);
@@ -625,14 +627,20 @@ public class OneRoundQuery {
      *
      * @param _attribute    Attribute the value is wanted for
      * @return  value Object
+     * @throws EFapsException
      * @throws Exception on error
      */
-    public Object getValue(final Attribute _attribute) throws Exception {
+    public Object getValue(final Attribute _attribute) throws EFapsException{
       final AttributeTypeInterface attrInterf = _attribute.newInstance();
       Object ret = null;
       if (this.expandHasResult) {
-          ret = attrInterf.readValue(OneRoundQuery.this.cachedResult,
-                                     this.attr2index.get(_attribute));
+          try {
+            ret = attrInterf.readValue(OneRoundQuery.this.cachedResult,
+                                         this.attr2index.get(_attribute));
+        } catch (final Exception e) {
+            //TODO correct errorhandling
+            throw new EFapsException(SQLTableMapping2Attributes.class,"TODO", e);
+        }
       }
       return ret;
     }
