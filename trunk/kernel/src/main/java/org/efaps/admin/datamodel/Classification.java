@@ -28,7 +28,7 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- * TODO comment!
+ * Class extending type for classification purpose.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -36,17 +36,31 @@ import org.efaps.util.cache.CacheReloadException;
 public class Classification extends Type
 {
 
+    /**
+     * Enum contains the keys for the attributes.
+     */
     public enum Keys {
+        /** key to the type {@link Classification#classifiesType}. */
         TYPE("type"),
+        /** key to the relation type {@link Classification#classifyRelation}. */
         RELTYPE ("relType"),
+        /** key to attribute of the relation type {@link Classification#relLinkAttributeName}. */
         RELLINKATTR ("relLinkAttribute"),
+        /**  key to attribute of the relation type {@link Classification#relTypeAttributeName}. */
         RELTYPEATTR ("relTypeAttribute"),
+        /** key to attribute of the type {@link Classification#linkAttributeName}. */
         LINKATTR ("classLinkAttribute");
 
+        /** value. */
         private final String value;
 
-        private Keys(final String _value) {
-          this.value = _value;
+        /**
+         * Private constructor setting the instance variable.
+         * @param _value  value
+         */
+        private Keys(final String _value)
+        {
+            this.value = _value;
         }
 
         /**
@@ -60,41 +74,59 @@ public class Classification extends Type
         }
     }
 
-
-
     /**
-     * Instance variable for the parent classification  this type is child from.
+     * Instance variable for the parent classification this classification is
+     * child of.
      */
     private Classification parent = null;
 
     /**
-     * Instance variable for all child classification of this type.
+     * Instance variable for all child classification of this classification.
      */
     private final Set<Classification> childs = new HashSet<Classification>();
 
+    /**
+     * Type this Classification is classifying.
+     */
     private Type classifiesType;
 
+    /**
+     * Relation belonging to the type this Classification is classifying.
+     */
     private Type classifyRelation;
-
-    private String linkAttribute;
-
-    private String relLinkAttribute;
-
-    private String relTypeAttribute;
 
 
     /**
-     * @param _id
-     * @param _uuid
-     * @param _name
-     * @throws CacheReloadException
+     * Name of the Attribute of the Relation {@link #classifyRelation} that
+     * links the Relation to the type {@link #classifiesType} that is classified.
      */
-    protected Classification(final long _id, final String _uuid, final String _name) throws CacheReloadException
+    private String relLinkAttributeName;
+
+    /**
+     * Name of the Attribute of the Relation {@link #classifyRelation} that
+     * contains the ids of the classifications that are classifying the type
+     *  {@link #classifiesType}.
+     */
+    private String relTypeAttributeName;
+
+    /**
+     * Name of the Attribute that links this Classification to the type it
+     * classifies.
+     */
+    private String linkAttributeName;
+
+
+    /**
+     * @param _id       id of this Classification
+     * @param _uuid     uuid of this Classification
+     * @param _name     name of this Classification
+     * @throws CacheReloadException on error
+     */
+    protected Classification(final long _id, final String _uuid, final String _name)
+            throws CacheReloadException
     {
         super(_id, _uuid, _name);
     }
-
-
 
     /**
      * Getter method for instance variable {@link #parent}.
@@ -127,60 +159,85 @@ public class Classification extends Type
     }
 
     /**
-     * Getter method for instance variable {@link #classifiesType}.
+     * Getter method for instance variable {@link #linkAttributeName}.
+     *
+     * @return value of instance variable {@link #linkAttributeName}
+     */
+    public String getLinkAttributeName()
+    {
+        return this.linkAttributeName;
+    }
+
+    /**
+     * Getter method for instance variable {@link #classifiesType}. If the
+     * variable is null the value for this instance variable of the parent
+     * classification will be returned.
      *
      * @return value of instance variable {@link #classifiesType}
      */
     public Type getClassifiesType()
     {
-        return this.classifiesType;
+        final Type ret;
+        if (this.classifiesType == null && this.parent != null) {
+            ret = this.parent.getClassifiesType();
+        } else {
+            ret = this.classifiesType;
+        }
+        return ret;
     }
 
     /**
-     * Getter method for instance variable {@link #classifyRelation}.
+     * Getter method for instance variable {@link #classifyRelation}. If the
+     * variable is null the value for this instance variable of the parent
+     * classification will be returned.
      *
      * @return value of instance variable {@link #classifyRelation}
      */
-    public Type getClassifyRelation()
+    public Type getClassifyRelationType()
     {
-        return this.classifyRelation;
+        final Type ret;
+        if (this.classifyRelation == null && this.parent != null) {
+            ret = this.parent.getClassifyRelationType();
+        } else {
+            ret = this.classifyRelation;
+        }
+        return ret;
     }
 
     /**
-     * Getter method for instance variable {@link #linkAttribute}.
+     * Getter method for instance variable {@link #relLinkAttributeName}. If the
+     * variable is null the value for this instance variable of the parent
+     * classification will be returned.
      *
-     * @return value of instance variable {@link #linkAttribute}
+     * @return value of instance variable {@link #relLinkAttributeName}
      */
-    public String getLinkAttribute()
+    public String getRelLinkAttributeName()
     {
-        return this.linkAttribute;
+        final String ret;
+        if (this.relLinkAttributeName == null && this.parent != null) {
+            ret = this.parent.getRelLinkAttributeName();
+        } else {
+            ret = this.relLinkAttributeName;
+        }
+        return ret;
     }
-
-
 
     /**
-     * Getter method for instance variable {@link #relLinkAttribute}.
-     *
-     * @return value of instance variable {@link #relLinkAttribute}
+     * Getter method for instance variable {@link #relTypeAttributeName}. If the
+     * variable is null the value for this instance variable of the parent
+     * classification will be returned.
+     * @return value of instance variable {@link #relTypeAttributeName}
      */
-    public String getRelLinkAttribute()
+    public String getRelTypeAttributeName()
     {
-        return this.relLinkAttribute;
+        final String ret;
+        if (this.relTypeAttributeName == null && this.parent != null) {
+            ret = this.parent.getRelTypeAttributeName();
+        } else {
+            ret = this.relTypeAttributeName;
+        }
+        return ret;
     }
-
-
-
-    /**
-     * Getter method for instance variable {@link #relTypeAttribute}.
-     *
-     * @return value of instance variable {@link #relTypeAttribute}
-     */
-    public String getRelTypeAttribute()
-    {
-        return this.relTypeAttribute;
-    }
-
-
 
     /**
      *
@@ -221,15 +278,13 @@ public class Classification extends Type
     protected void setProperty(final String _name, final String _value) throws CacheReloadException
     {
         if (_name.equals(Classification.Keys.LINKATTR.value)) {
-            this.linkAttribute = _value;
+            this.linkAttributeName = _value;
         } else if (_name.equals(Classification.Keys.RELLINKATTR.value)) {
-            this.relLinkAttribute = _value;
+            this.relLinkAttributeName = _value;
         } else if (_name.equals(Classification.Keys.RELTYPEATTR.value)) {
-            this.relTypeAttribute = _value;
+            this.relTypeAttributeName = _value;
         } else {
             super.setProperty(_name, _value);
         }
     }
-
-
 }

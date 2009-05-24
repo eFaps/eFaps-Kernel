@@ -31,186 +31,193 @@ import org.efaps.db.Instance;
 /**
  * Class witch is used for parsing Parameters to the Events.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class Parameter  {
-
-  /**
-   * This enum holds the definitions of Parameters, to be accessed.
-   */
-  public enum ParameterValues {
+public class Parameter
+{
 
     /**
-     * Holds an AccessType, used for AccessCheck-Programs.
+     * This enum holds the definitions of Parameters, to be accessed.
      */
-    ACCESSTYPE,
+    public enum ParameterValues
+    {
+
+        /**
+         * Holds an AccessType, used for AccessCheck-Programs.
+         */
+        ACCESSTYPE,
+
+        /**
+         * Holds the mode of the access for the ui.
+         */
+        ACCESSMODE,
+
+        /**
+         * Call instance, means
+         * <ul>
+         * <li>for a web table, the instance for which the table values are
+         * evaluated</li>
+         * <li>for a web form, on which the web form is executed (if exists);
+         * e.g. in edit mode it is the instance of the called object</li>
+         * <li>for a command the instance on which the command was executed</li>
+         * </ul>
+         */
+        CALL_INSTANCE,
+
+        /**
+         * Contains the class that called the esjp.
+         */
+        CLASS,
+
+        /**
+         * Contains a list of classifcations.
+         */
+        CLASSIFICATIONS,
+
+        /**
+         * Holds an Instance.
+         * */
+        INSTANCE,
+
+        /**
+         * Holds the new Values for an Instance, used e.g. by Creation of a new
+         * Object
+         */
+        NEW_VALUES,
+
+        /**
+         * Further Parameters as map (key is string, value is string array),
+         * e.g. from called form, command etc.
+         */
+        PARAMETERS,
+
+        /**
+         * Holds the Properties of the trigger.
+         */
+        PROPERTIES,
+
+        /**
+         * Place mark for additional Informations.
+         */
+        OTHERS,
+
+        /**
+         * Holds the UserInterfaceObject on which the event is called.
+         */
+        UIOBJECT;
+    }
 
     /**
-     * Holds the mode of the access for the ui.
+     * Map used as the store for this Parameter.
      */
-    ACCESSMODE,
+    private final Map<Parameter.ParameterValues, Object> map = new HashMap<Parameter.ParameterValues, Object>();
 
     /**
-     * Call instance, means
-     * <ul>
-     * <li>for a web table, the instance for which the table values are
-     *     evaluated</li>
-     * <li>for a web form, on which the web form is executed (if exists);
-     *     e.g. in edit mode it is the instance of the called object</li>
-     * <li>for a command the instance on which the command was executed</li>
-     * </ul>
+     * Put an object into the underlying map.
+     *
+     * @param _key key to the object
+     * @param _value object
      */
-    CALL_INSTANCE,
+    public void put(final ParameterValues _key, final Object _value)
+    {
+        this.map.put(_key, _value);
+    }
 
     /**
-     * Contains the class that called the esjp.
+     * Method to get an object from the underlying map.
+     *
+     * @param _key key to the object
+     * @return object from the underlying map
      */
-    CLASS,
+    public Object get(final ParameterValues _key)
+    {
+        return this.map.get(_key);
+    }
 
     /**
-     * Holds an Instance.
-     * */
-    INSTANCE,
-
-    /**
-     * Holds the new Values for an Instance, used e.g. by Creation of a new
-     * Object
+     * Returns the value of map with the key
+     * {@link ParameterValues#CALL_INSTANCE}.
+     *
+     * @return call instance of this parameter; or if not defined
+     *         <code>null</code>
      */
-    NEW_VALUES,
+    public Instance getCallInstance()
+    {
+        return (Instance) this.map.get(Parameter.ParameterValues.CALL_INSTANCE);
+    }
 
     /**
-     * Further Parameters as map (key is string, value is string array), e.g.
-     * from called form, command etc.
+     * Returns the value of map with the key {@link ParameterValues#INSTANCE}.
+     *
+     * @return instance of this parameter; or if not defined <code>null</code>
      */
-    PARAMETERS,
+    public Instance getInstance()
+    {
+        return (Instance) this.map.get(Parameter.ParameterValues.INSTANCE);
+    }
 
     /**
-     * Holds the Properties of the trigger.
+     * Returns the value of map with the key {@link ParameterValues#PARAMETERS}.
+     *
+     * @return further parameters of this parameter; or if not defined
+     *         <code>null</code>
      */
-    PROPERTIES,
+    @SuppressWarnings("unchecked")
+    public Map<String, String[]> getParameters()
+    {
+        return (Map<String, String[]>) this.map.get(Parameter.ParameterValues.PARAMETERS);
+    }
 
     /**
-     * Place mark for additional Informations.
+     * Evaluates with given key in the list of all parameters for given key and
+     * returns them (if found) as string array. If not found a <code>null</code>
+     * is returned.
+     *
+     * @param _key name of parameter values which should returned
+     * @return array of parameter values for given key of <code>null</code> if
+     *         not exists
+     * @see #getParameters to get the map of parameters
      */
-    OTHERS,
+    public String[] getParameterValues(final String _key)
+    {
+        final Map<String, String[]> params = getParameters();
+        return (params != null) ? params.get(_key) : null;
+    }
 
     /**
-     * Holds the UserInterfaceObject on which the event is called.
+     * Evaluates with given key in the list of all parameters for given key and
+     * returns them (if found) as string with index 0 in the string array of the
+     * parameter values. If not found a <code>null</code> is returned.
+     *
+     * @param _key name of parameter value which should returned
+     * @return value for given key or <code>null</code> if not exists
+     * @see #getParameterValues to get the string array for given key
      */
-    UIOBJECT;
-  }
+    public String getParameterValue(final String _key)
+    {
+        final String[] paramValues = getParameterValues(_key);
+        return ((paramValues != null) && (paramValues.length > 0)) ? paramValues[0] : null;
+    }
 
-  /**
-   * Map used as the store for this Parameter.
-   */
-  private final Map<ParameterValues, Object> map
-                                      = new HashMap<ParameterValues, Object>();
+    /**
+     * Method to get the entry set of the underlying map.
+     *
+     * @return entry set
+     */
+    public Set<?> entrySet()
+    {
+        return this.map.entrySet();
+    }
 
-  /**
-   * Put an object into the underlying map.
-   * @param _key key to the object
-   * @param _value  object
-   */
-  public void put(final ParameterValues _key,
-                  final Object _value) {
-    this.map.put(_key, _value);
-  }
-
-
-  /**
-   * Method to get an object from the underlying map.
-   *
-   * @param _key key  to the object
-   * @return  object from the underlying map
-   */
-  public Object get(final ParameterValues _key) {
-    return this.map.get(_key);
-  }
-
-  /**
-   * Returns the value of map with the key
-   * {@link ParameterValues#CALL_INSTANCE}.
-   *
-   * @return call instance of this parameter; or if not defined
-   *         <code>null</code>
-   */
-  public Instance getCallInstance() {
-    return (Instance) this.map.get(ParameterValues.CALL_INSTANCE);
-  }
-
-  /**
-   * Returns the value of map with the key {@link ParameterValues#INSTANCE}.
-   *
-   * @return instance of this parameter; or if not defined <code>null</code>
-   */
-  public Instance getInstance() {
-    return (Instance) this.map.get(ParameterValues.INSTANCE);
-  }
-
-  /**
-   * Returns the value of map with the key {@link ParameterValues#PARAMETERS}.
-   *
-   * @return further parameters of this parameter; or if not defined
-   *         <code>null</code>
-   */
-  @SuppressWarnings("unchecked")
-  public Map<String, String[]> getParameters() {
-    return (Map<String, String[]>) this.map.get(ParameterValues.PARAMETERS);
-  }
-
-  /**
-   * Evaluates with given key in the list of all parameters for given key and
-   * returns them (if found) as string array. If not found a <code>null</code>
-   * is returned.
-   *
-   * @param _key  name of parameter values which should returned
-   * @return array of parameter values for given key of <code>null</code> if
-   *         not exists
-   * @see #getParameters  to get the map of parameters
-   */
-  public String[] getParameterValues(final String _key) {
-    final Map<String, String[]> params = getParameters();
-    return (params != null)
-           ? params.get(_key)
-           : null;
-  }
-
-  /**
-   * Evaluates with given key in the list of all parameters for given key and
-   * returns them (if found) as string with index 0 in the string array of the
-   * parameter values. If not found a <code>null</code> is returned.
-   *
-   * @param _key  name of parameter value which should returned
-   * @return value for given key or <code>null</code> if not exists
-   * @see #getParameterValues to get the string array for given key
-   */
-  public String getParameterValue(final String _key) {
-    final String[] paramValues = getParameterValues(_key);
-    return ((paramValues != null) && (paramValues.length > 0))
-           ? paramValues[0]
-           : null;
-  }
-
-  /**
-   * Method to get the entry set of the underlying map.
-   *
-   * @return entry set
-   */
-  public Set<?> entrySet() {
-    return this.map.entrySet();
-  }
-
-  /**
-   * Returns a string representation of this parameter instance.
-   *
-   * @return string representation of this parameter instance.
-   */
-  @Override
-  public String toString() {
-    return new ToStringBuilder(this)
-                .appendSuper(super.toString())
-                .append("map", this.map.toString())
-                .toString();
-  }
+    /**
+     * Returns a string representation of this parameter instance.
+     *
+     * @return string representation of this parameter instance.
+     */
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this).appendSuper(super.toString()).append("map", this.map.toString()).toString();
+    }
 }

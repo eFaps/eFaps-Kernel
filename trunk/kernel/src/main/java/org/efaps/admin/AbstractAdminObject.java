@@ -211,12 +211,12 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
      * @return List with Returns
      * @throws EFapsException on error
      */
-    public List<Return> executeEvents(final EventType _eventtype, final Object... _args) throws EFapsException
+    public List<Return> executeEvents(final EventType _eventtype, final Object... _args)
+            throws EFapsException
     {
         final List<Return> ret = new ArrayList<Return>();
         if (hasEvents(_eventtype)) {
             final Parameter param = new Parameter();
-
             if (_args != null) {
                 // add all parameters
                 for (int i = 0; i < _args.length; i += 2) {
@@ -225,13 +225,32 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
                     }
                 }
             }
+            ret.addAll(executeEvents(_eventtype, param));
+        }
+        return ret;
+    }
+
+    /**
+     * The method gets all events for the given event type and executes them in
+     * the given order. If no events are defined, nothing is done.
+     *
+     * @param _eventtype  type of event to execute
+     * @param _param      Parameter to be passed to the esjp
+     * @return List with Returns
+     * @throws EFapsException on error
+     */
+    public List<Return> executeEvents(final EventType _eventtype, final Parameter _param)
+            throws EFapsException
+    {
+        final List<Return> ret = new ArrayList<Return>();
+        if (hasEvents(_eventtype)) {
             if (this instanceof AbstractUserInterfaceObject) {
                 // add ui object to parameter
-                param.put(ParameterValues.UIOBJECT, this);
+                _param.put(ParameterValues.UIOBJECT, this);
             }
             // execute all triggers
             for (final EventDefinition evenDef : this.events.get(_eventtype)) {
-                ret.add(evenDef.execute(param));
+                ret.add(evenDef.execute(_param));
             }
         }
         return ret;
