@@ -52,10 +52,10 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
+
 /**
- * @author jmox
- * @version $Id:Edit.java 1563 2007-10-28 14:07:41Z tmo $
- * @todo description
+ * @author The eFaps Team
+ * @version $Id$
  */
 @EFapsUUID("d9ba2b85-8b9a-46b0-929e-8e938e7d5577")
 @EFapsRevision("$Rev$")
