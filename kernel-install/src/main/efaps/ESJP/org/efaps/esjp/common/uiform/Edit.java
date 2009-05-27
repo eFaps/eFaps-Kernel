@@ -167,10 +167,6 @@ public class Edit implements EventExecution
         if (this.classifcationName != null) {
             updateClassifcation(_parameter, instance);
         }
-
-
-
-
         return new Return();
     }
 
@@ -193,7 +189,7 @@ public class Edit implements EventExecution
                     final Attribute attr = _instance.getType().getAttribute(field.getExpression());
                     // check if not a fileupload
                     if (attr != null
-                                    && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
+                                  && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
                         query.addSelect(field.getExpression());
                         fields.add(field);
                     }
@@ -220,16 +216,19 @@ public class Edit implements EventExecution
     }
 
 
-    private void updateClassifcation(final Parameter _parameter, final Instance _instance) throws EFapsException {
+    private void updateClassifcation(final Parameter _parameter, final Instance _instance) throws EFapsException
+    {
         final Context context = Context.getThreadContext();
         final List<?> classifications = (List<?>) _parameter.get(ParameterValues.CLASSIFICATIONS);
         final Classification classType = (Classification) Type.get(this.classifcationName);
         final SearchQuery relQuery = new SearchQuery();
-        relQuery.setExpand(_instance, classType.getClassifyRelationType().getName()
-                                        + "\\" + classType.getRelLinkAttributeName());
+        relQuery.setExpand(_instance, classType.getClassifyRelationType().getName() + "\\"
+                        + classType.getRelLinkAttributeName());
         relQuery.addSelect(classType.getRelTypeAttributeName());
+        relQuery.addSelect("OID");
         relQuery.execute();
-        final Map<Classification, Map<String, Object>> class2values = new HashMap<Classification, Map<String, Object>>();
+        final Map<Classification, Map<String, Object>> class2values
+                                                                   = new HashMap<Classification, Map<String, Object>>();
         while (relQuery.next()) {
             final Long typeid = (Long) relQuery.get(classType.getRelTypeAttributeName());
             final Classification subClassType = (Classification) Type.get(typeid);
@@ -237,21 +236,20 @@ public class Edit implements EventExecution
             class2values.put(subClassType, values);
 
             final SearchQuery subquery = new SearchQuery();
-            subquery.setExpand(_instance,
-                               subClassType.getName() + "\\" + subClassType.getLinkAttributeName());
+            subquery.setExpand(_instance, subClassType.getName() + "\\" + subClassType.getLinkAttributeName());
             subquery.addSelect("OID");
 
             final List<Field> fields = new ArrayList<Field>();
             final Form form = Form.getTypeForm(subClassType);
             for (final Field field : form.getFields()) {
                 if (field instanceof FieldSet) {
-                    //fieldsets.add((FieldSet) field);
+                    // fieldsets.add((FieldSet) field);
                 } else {
                     if (field.getExpression() != null && field.isEditable()) {
                         final Attribute attr = subClassType.getAttribute(field.getExpression());
                         // check if not a fileupload
-                        if (attr != null
-                                        && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
+                        if (attr != null && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
+                                                        .getClassRepr())) {
                             subquery.addSelect(field.getExpression());
                             fields.add(field);
                         }
@@ -266,54 +264,66 @@ public class Edit implements EventExecution
                 values.put("OID", subquery.get("OID"));
             }
             subquery.close();
+            values.put("relOID", relQuery.get("OID"));
         }
         relQuery.close();
+        if (classifications != null) {
+            for (final Object object : classifications) {
+                final Classification classification = (Classification) object;
+                // if the classification does not exist yet the relation must be
+                // created,
+                // and the new instance of the classification inserted
+                final Form form = Form.getTypeForm(classification);
+                if (!class2values.containsKey(classification)) {
+                    final Insert relInsert = new Insert(classification.getClassifyRelationType());
+                    relInsert.add(classification.getRelLinkAttributeName(), ((Long) _instance.getId()).toString());
+                    relInsert.add(classification.getRelTypeAttributeName(), ((Long) classification.getId()).toString());
+                    relInsert.execute();
 
-        for (final Object object : classifications) {
-            final Classification classification = (Classification) object;
-            // if the classification does not exist yet the relation must be created,
-            // and the new instance of the classification inserted
-            final Form form = Form.getTypeForm(classification);
-            if (!class2values.containsKey(classification)) {
-                final Insert relInsert = new Insert(classification.getClassifyRelationType());
-                relInsert.add(classification.getRelLinkAttributeName(), ((Long) _instance.getId()).toString());
-                relInsert.add(classification.getRelTypeAttributeName(), ((Long) classification.getId()).toString());
-                relInsert.execute();
-
-                final Insert classInsert = new Insert(classification);
-                classInsert.add(classification.getLinkAttributeName(), ((Long) _instance.getId()).toString());
-                for (final Field field : form.getFields()) {
-                    if (field.getExpression() != null && (field.isCreatable() || field.isHidden())) {
-                        final Attribute attr = classification.getAttribute(field.getExpression());
-                        if (attr != null
-                                        && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
-                                                        .getClassRepr())) {
-                            if (context.getParameters().containsKey(field.getName())) {
-                                final String value = context.getParameter(field.getName());
-                                classInsert.add(attr, value);
+                    final Insert classInsert = new Insert(classification);
+                    classInsert.add(classification.getLinkAttributeName(), ((Long) _instance.getId()).toString());
+                    for (final Field field : form.getFields()) {
+                        if (field.getExpression() != null && (field.isCreatable() || field.isHidden())) {
+                            final Attribute attr = classification.getAttribute(field.getExpression());
+                            if (attr != null
+                                            && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
+                                                            .getClassRepr())) {
+                                if (context.getParameters().containsKey(field.getName())) {
+                                    final String value = context.getParameter(field.getName());
+                                    classInsert.add(attr, value);
+                                }
                             }
                         }
                     }
-                }
-                classInsert.execute();
-            } else {
-                final Map<String, Object> values = class2values.get(classification);
-                final Update update = new Update((String) values.get("OID"));
-                boolean execUpdate = false;
-                for (final Field field : form.getFields()) {
-                    if (context.getParameters().containsKey(field.getName())) {
-                        final String newValue = context.getParameter(field.getName());
-                        final Object value = values.get(field.getName());
-                        final String oldValue = value != null ? value.toString() : null;
-                        if (!newValue.equals(oldValue)) {
-                            update.add(field.getExpression(), newValue);
-                            execUpdate = true;
+                    classInsert.execute();
+                } else {
+                    final Map<String, Object> values = class2values.get(classification);
+                    final Update update = new Update((String) values.get("OID"));
+                    boolean execUpdate = false;
+                    for (final Field field : form.getFields()) {
+                        if (context.getParameters().containsKey(field.getName())) {
+                            final String newValue = context.getParameter(field.getName());
+                            final Object value = values.get(field.getName());
+                            final String oldValue = value != null ? value.toString() : null;
+                            if (!newValue.equals(oldValue)) {
+                                update.add(field.getExpression(), newValue);
+                                execUpdate = true;
+                            }
                         }
                     }
+                    if (execUpdate) {
+                        update.execute();
+                    }
                 }
-                if (execUpdate) {
-                    update.execute();
-                }
+            }
+        }
+        // remove the classifications that are not any more wanted
+        for (final Classification clas : class2values.keySet()) {
+            if (classifications == null || !classifications.contains(clas)) {
+                Delete del = new Delete((String) class2values.get(clas).get("OID"));
+                del.execute();
+                del = new Delete((String) class2values.get(clas).get("relOID"));
+                del.execute();
             }
         }
     }
