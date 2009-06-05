@@ -56,6 +56,11 @@ public enum EventType  {
   UPDATE_PRE         ("Admin_DataModel_Type_Trigger_UpdatePre"),
   RANGE_VALUE        ("Admin_DataModel_AttributeRangeEvent"),
   /**
+   * EventType for a field that depends on another field The event will be executed,
+   * if the value for the field it depends on is changed.
+   */
+  UI_FIELD_DEPENDENCY("Admin_UI_FieldDependencyEvent"),
+  /**
    * EventType for generating the value for a field instead of retrieving it
    * directly from the database.
    */

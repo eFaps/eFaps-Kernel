@@ -256,6 +256,8 @@ public class Field extends AbstractUserInterfaceObject
      */
     private int rowSpan = 0;
 
+    private String dependOnFieldName;
+
     /**
      * Standart-Constructor.
      */
@@ -471,6 +473,8 @@ public class Field extends AbstractUserInterfaceObject
             } else if ("popup".equals(_value)) {
                 setTarget(Target.POPUP);
             }
+        } else if ("DependOnField".equals(_name)) {
+            setDependOnFieldName(_value.trim());
         } else {
             super.setProperty(_name, _value);
         }
@@ -1072,6 +1076,26 @@ public class Field extends AbstractUserInterfaceObject
     public boolean isViewable()
     {
         return this.viewable;
+    }
+
+    /**
+     * Getter method for instance variable {@link #dependOnFieldName}.
+     *
+     * @return value of instance variable {@link #dependOnFieldName}
+     */
+    public String getDependOnFieldName()
+    {
+        return this.dependOnFieldName;
+    }
+
+    /**
+     * Setter method for instance variable {@link #dependOnFieldName}.
+     *
+     * @param _dependOnFieldName value for instance variable {@link #dependOnFieldName}
+     */
+    private void setDependOnFieldName(final String _dependOnFieldName)
+    {
+        this.dependOnFieldName = _dependOnFieldName;
     }
 
 }
