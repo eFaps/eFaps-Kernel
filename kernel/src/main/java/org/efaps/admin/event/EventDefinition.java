@@ -135,7 +135,7 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
                 super.setProperty((String) query.get("Name"), (String) query.get("Value"));
             }
         } catch (final EFapsException e) {
-            LOG.error("setProperties(String)", e);
+            EventDefinition.LOG.error("setProperties(String)", e);
         }
     }
 
@@ -172,15 +172,16 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
             this.method = cls.getMethod(this.methodName, new Class[] { Parameter.class });
             this.progInstance = cls.newInstance();
         } catch (final ClassNotFoundException e) {
-            LOG.error("could not find Class: '" + this.resourceName + "'", e);
+            EventDefinition.LOG.error("could not find Class: '" + this.resourceName + "'", e);
         } catch (final InstantiationException e) {
-            LOG.error("could not instantiat Class: '" + this.resourceName + "'", e);
+            EventDefinition.LOG.error("could not instantiat Class: '" + this.resourceName + "'", e);
         } catch (final IllegalAccessException e) {
-            LOG.error("could not access Class: '" + this.resourceName + "'", e);
+            EventDefinition.LOG.error("could not access Class: '" + this.resourceName + "'", e);
         } catch (final SecurityException e) {
-            LOG.error("could not access Class: '" + this.resourceName + "'", e);
+            EventDefinition.LOG.error("could not access Class: '" + this.resourceName + "'", e);
         } catch (final NoSuchMethodException e) {
-            LOG.error("could not find method: '" + this.methodName + "' in class: '" + this.resourceName + "'", e);
+            EventDefinition.LOG.error("could not find method: '"
+                                        + this.methodName + "' in class: '" + this.resourceName + "'", e);
         }
     }
 
@@ -200,13 +201,14 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
             ret = (Return) this.method.invoke(this.progInstance, _parameter);
 
         } catch (final SecurityException e) {
-            LOG.error("could not access class: '" + this.resourceName, e);
+            EventDefinition.LOG.error("could not access class: '" + this.resourceName, e);
         } catch (final IllegalArgumentException e) {
-            LOG.error("execute(Context, Instance, Map<TriggerKeys4Values,Map>)", e);
+            EventDefinition.LOG.error("execute(Context, Instance, Map<TriggerKeys4Values,Map>)", e);
         } catch (final IllegalAccessException e) {
-            LOG.error("could not access class: '" + this.resourceName, e);
+            EventDefinition.LOG.error("could not access class: '" + this.resourceName, e);
         } catch (final InvocationTargetException e) {
-            LOG.error("could not invoke method: '" + this.methodName + "' in class: '" + this.resourceName, e);
+            EventDefinition.LOG.error("could not invoke method: '" + this.methodName
+                                        + "' in class: '" + this.resourceName, e);
             throw (EFapsException) e.getCause();
         }
         return ret;
@@ -234,8 +236,8 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
         query.addSelect("Method");
         query.executeWithoutAccessCheck();
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initialise Triggers ---------------------------------------");
+        if (EventDefinition.LOG.isDebugEnabled()) {
+            EventDefinition.LOG.debug("initialise Triggers ---------------------------------------");
         }
         while (query.next()) {
             final String eventOID = (String) query.get("OID");
@@ -249,16 +251,16 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
 
             final String resName = getClassName(programId.toString());
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("   OID=" + eventOID);
-                LOG.debug("   eventId=" + eventId);
-                LOG.debug("   eventType=" + eventType);
-                LOG.debug("   eventName=" + eventName);
-                LOG.debug("   eventPos=" + eventPos);
-                LOG.debug("   parentId=" + abstractID);
-                LOG.debug("   programId=" + programId);
-                LOG.debug("   Method=" + method);
-                LOG.debug("   resName=" + resName);
+            if (EventDefinition.LOG.isDebugEnabled()) {
+                EventDefinition.LOG.debug("   OID=" + eventOID);
+                EventDefinition.LOG.debug("   eventId=" + eventId);
+                EventDefinition.LOG.debug("   eventType=" + eventType);
+                EventDefinition.LOG.debug("   eventName=" + eventName);
+                EventDefinition.LOG.debug("   eventPos=" + eventPos);
+                EventDefinition.LOG.debug("   parentId=" + abstractID);
+                EventDefinition.LOG.debug("   programId=" + programId);
+                EventDefinition.LOG.debug("   Method=" + method);
+                EventDefinition.LOG.debug("   resName=" + resName);
             }
 
             final EFapsClassNames eFapsClass = EFapsClassNames.getEnum(getTypeName(abstractID));
@@ -267,8 +269,8 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
             for (final EventType trigger : EventType.values()) {
                 final Type triggerClass = Type.get(trigger.name);
                 if (eventType.isKindOf(triggerClass)) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("     found trigger " + trigger + ":" + triggerClass);
+                    if (EventDefinition.LOG.isDebugEnabled()) {
+                        EventDefinition.LOG.debug("     found trigger " + trigger + ":" + triggerClass);
                     }
                     triggerEvent = trigger;
                     break;
@@ -277,8 +279,8 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
 
             if (eFapsClass == DATAMODEL_TYPE) {
                 final Type type = Type.get(abstractID);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("    type=" + type);
+                if (EventDefinition.LOG.isDebugEnabled()) {
+                    EventDefinition.LOG.debug("    type=" + type);
                 }
 
                 type.addEvent(triggerEvent,
@@ -287,8 +289,8 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
             } else if (eFapsClass == COMMAND) {
                 final Command command = Command.get(abstractID);
 
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("    Command=" + command.getName());
+                if (EventDefinition.LOG.isDebugEnabled()) {
+                    EventDefinition.LOG.debug("    Command=" + command.getName());
                 }
                 command.addEvent(triggerEvent,
                                  new EventDefinition(eventId, eventName, eventPos, resName, method, eventOID));
@@ -297,8 +299,8 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
 
                 final Field field = Field.get(abstractID);
 
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("       Field=" + field.getName());
+                if (EventDefinition.LOG.isDebugEnabled()) {
+                    EventDefinition.LOG.debug("       Field=" + field.getName());
                 }
 
                 field.addEvent(triggerEvent,
@@ -306,8 +308,8 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
 
             } else if (eFapsClass == DATAMODEL_ATTRIBUTE || eFapsClass == DATAMODEL_ATTRIBUTESETATTRIBUTE) {
                 final Attribute attribute = Attribute.get(abstractID);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("      Attribute=" + attribute.getName());
+                if (EventDefinition.LOG.isDebugEnabled()) {
+                    EventDefinition.LOG.debug("      Attribute=" + attribute.getName());
                 }
 
                 attribute.addEvent(triggerEvent,
@@ -315,8 +317,8 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
 
             } else if (eFapsClass == MENU) {
                 final Menu menu = Menu.get(abstractID);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("      Menu=" + menu.getName());
+                if (EventDefinition.LOG.isDebugEnabled()) {
+                    EventDefinition.LOG.debug("      Menu=" + menu.getName());
                 }
 
                 menu.addEvent(triggerEvent,
@@ -326,8 +328,8 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
 
                 final FieldTable fieldtable = FieldTable.get(abstractID);
 
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("       Field=" + fieldtable.getName());
+                if (EventDefinition.LOG.isDebugEnabled()) {
+                    EventDefinition.LOG.debug("       Field=" + fieldtable.getName());
                 }
 
                 fieldtable.addEvent(triggerEvent,
@@ -337,15 +339,15 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
 
                 final Picker picker = Picker.get(abstractID);
 
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("       Picker=" + picker.getName());
+                if (EventDefinition.LOG.isDebugEnabled()) {
+                    EventDefinition.LOG.debug("       Picker=" + picker.getName());
                 }
 
                 picker.addEvent(triggerEvent,
                                 new EventDefinition(eventId, eventName, eventPos, resName, method, eventOID));
 
-            } else if (LOG.isDebugEnabled()) {
-                LOG.debug("initialise() - unknown event trigger connection");
+            } else if (EventDefinition.LOG.isDebugEnabled()) {
+                EventDefinition.LOG.debug("initialise() - unknown event trigger connection");
             }
         }
     }
@@ -368,10 +370,10 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
             if (query.next()) {
                 name = (String) query.get("Name");
             } else {
-                LOG.error("Can't find the Name for the Program with ID: " + _id);
+                EventDefinition.LOG.error("Can't find the Name for the Program with ID: " + _id);
             }
         } catch (final EFapsException e) {
-            LOG.error("getClassName(String)", e);
+            EventDefinition.LOG.error("getClassName(String)", e);
         }
         return name;
     }
@@ -386,6 +388,7 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
     {
         final SearchQuery query = new SearchQuery();
         Type type = null;
+        UUID ret = null;
         try {
             query.setQueryTypes("Admin_Abstract");
             query.addSelect("Type");
@@ -399,13 +402,13 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
                 type = Type.get(_abstractID);
             }
         } catch (final EFapsException e) {
-            LOG.error("getClassName(String)", e);
+            EventDefinition.LOG.error("getClassName(String)", e);
         }
         if (type == null) {
-            LOG.error("Can't find the Type  with ID: " + _abstractID);
+            EventDefinition.LOG.error("Can't find the Type  with ID: " + _abstractID);
         } else {
-            return type.getUUID();
+            ret = type.getUUID();
         }
-        return null;
+        return ret;
     }
 }
