@@ -33,7 +33,7 @@
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_UI_FieldDependencyEvent</name>
+    <name>Admin_UI_FieldUpdateEvent</name>
     <parent>Admin_Event_Definition</parent>
     <trigger program="org.efaps.esjp.admin.event.EventDeleteTrigger" 
              name="Admin_UI_FieldValueEvent.DELETE_PRE" 
@@ -44,7 +44,7 @@
 
   <definition>
     <version-expression>(version==6)</version-expression>
-    <name>Admin_UI_FieldDependencyEvent</name>
+    <name>Admin_UI_FieldUpdateEvent</name>
     <parent>Admin_Event_Definition</parent>
   </definition>
 
