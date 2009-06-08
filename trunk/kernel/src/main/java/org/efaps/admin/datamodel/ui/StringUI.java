@@ -27,152 +27,151 @@ import org.efaps.admin.ui.field.Field;
 /**
  * Class to represent a String for the user interface.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  *
  */
-public class StringUI extends AbstractUI {
+public class StringUI extends AbstractUI
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Method to get the Value for viewing in an html document.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return value for field
-   *
-   */
-  @Override
-  public String getViewHtml(final FieldValue _fieldValue) {
-    final StringBuilder ret = new StringBuilder();
+    /**
+     * Method to get the Value for viewing in an html document.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @return value for field
+     *
+     */
+    @Override
+    public String getViewHtml(final FieldValue _fieldValue)
+    {
+        final StringBuilder ret = new StringBuilder();
 
-    if (_fieldValue.getValue() != null) {
+        if (_fieldValue.getValue() != null) {
 
-      if (_fieldValue.getValue() instanceof List) {
-        final List<?> values = (List<?>) _fieldValue.getValue();
-        boolean first = true;
-        for (final Object value : values) {
-          final String tmp = value.toString();
-          if (tmp != null) {
-            if (first) {
-              first = false;
+            if (_fieldValue.getValue() instanceof List) {
+                final List<?> values = (List<?>) _fieldValue.getValue();
+                boolean first = true;
+                for (final Object value : values) {
+                    final String tmp = value.toString();
+                    if (tmp != null) {
+                        if (first) {
+                            first = false;
+                        } else {
+                            ret.append("<br/>");
+                        }
+                        ret.append(tmp.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\n", "<br/>"));
+                    }
+                }
             } else {
-              ret.append("<br/>");
+                final String tmp = _fieldValue.getValue().toString();
+                if (tmp != null) {
+                    ret.append(tmp.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\n", "<br/>"));
+                }
             }
-            ret.append(tmp.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
-                          .replaceAll("\\n", "<br/>"));
-          }
         }
-      } else {
-        final String tmp = _fieldValue.getValue().toString();
-        if (tmp != null) {
-          ret.append(tmp.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
-                        .replaceAll("\\n", "<br/>"));
+        return ret.toString();
+    }
+
+    /**
+     * Method to get the Value for editing in an html document.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @return value for field
+     *
+     */
+    @Override
+    public String getEditHtml(final FieldValue _fieldValue)
+    {
+        final StringBuilder ret = new StringBuilder();
+        final Field field = _fieldValue.getField();
+        final Object value = _fieldValue.getValue();
+        if (field.getRows() > 1) {
+            ret.append("<textarea type=\"text\"")
+                .append(" cols=\"").append(field.getCols())
+                .append("\" rows=\"").append(field.getRows())
+                .append("\" name=\"").append(field.getName()).append("\"")
+                .append(EFAPSTMPTAG).append("/>");
+            if (value != null) {
+                ret.append(value);
+            }
+            ret.append("</textarea>");
+        } else {
+            ret.append("<input type=\"text\" size=\"").append(field.getCols())
+                .append("\" name=\"").append(field.getName())
+                .append("\" value=\"").append(value != null ? value : "").append("\"")
+                .append(EFAPSTMPTAG).append("/>");
         }
-      }
+        return ret.toString();
     }
-    return ret.toString();
-  }
 
-  /**
-   * Method to get the Value for editing in an html document.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return value for field
-   *
-   */
-  @Override
-  public String getEditHtml(final FieldValue _fieldValue) {
-    String ret;
-    final Field field = _fieldValue.getField();
-    final Object value = _fieldValue.getValue();
-    if (field.getRows() > 1) {
-      ret =
-          "<textarea " + "type=\"text\" " + "cols=\"" + field.getCols() + "\" "
-              + "rows=\"" + field.getRows() + "\" " + "name=\""
-              + field.getName() + "\"" + ">";
-      if (value != null) {
-        ret += value;
-      }
-      ret += "</textarea>";
-    } else {
-      ret =
-          "<input type=\"text\" " + "size=\"" + field.getCols() + "\" "
-              + "name=\"" + field.getName() + "\" " + "value=\""
-              + (value != null ? value : "") + "\"" + "/>";
+    /**
+     * Method to get the Value for create in an html document.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @return value for field
+     *
+     */
+    @Override
+    public String getCreateHtml(final FieldValue _fieldValue)
+    {
+        final StringBuilder ret = new StringBuilder();
+        final Field field = _fieldValue.getField();
+        final Object value = _fieldValue.getValue();
+
+        if (field.getRows() > 1) {
+            ret.append("<textarea type=\"text\"")
+                .append(" cols=\"").append(field.getCols())
+                .append("\" rows=\"").append(field.getRows())
+                .append("\" name=\"").append(field.getName()).append("\"")
+                .append(EFAPSTMPTAG).append("/>");
+            if (value != null) {
+                ret.append(value);
+            }
+            ret.append("</textarea>");
+        } else {
+            ret.append("<input type=\"text\" size=\"").append(field.getCols())
+                .append("\" name=\"").append(field.getName())
+                .append("\" value=\"").append(value != null ? value : "").append("\"")
+                .append(EFAPSTMPTAG).append("/>");
+        }
+        return ret.toString();
     }
-    return ret;
-  }
 
-  /**
-   * Method to get the Value for create in an html document.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return value for field
-   *
-   */
-  @Override
-  public String getCreateHtml(final FieldValue _fieldValue) {
-    final StringBuffer ret = new StringBuffer();
-    final Field field = _fieldValue.getField();
-    final Object value = _fieldValue.getValue();
-
-    if (field.getRows() > 1) {
-      ret.append("<textarea " + "type=\"text\" " + "cols=\"").append(
-          field.getCols()).append("\" " + "rows=\"").append(field.getRows())
-          .append("\" " + "name=\"").append(field.getName()).append("\" ");
-
-      ret.append(">");
-      if (value != null) {
-        ret.append(value);
-      }
-      ret.append("</textarea>");
-    } else {
-      ret.append("<input type=\"text\" size=\"").append(field.getCols())
-          .append("\" name=\"").append(field.getName())
-          .append("\" value=\"").append((value != null ? value : ""))
-          .append("\" ");
-
-      ret.append(">");
+    /**
+     * Method to get the Value for viewing in an html document.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @return value for field
+     *
+     */
+    @Override
+    public String getSearchHtml(final FieldValue _fieldValue)
+    {
+        final StringBuilder ret = new StringBuilder();
+        final Field field = _fieldValue.getField();
+        final Object value = _fieldValue.getValue();
+        ret.append("<input type=\"text\"").append(" size=\"").append(field.getCols()).append("\" name=\"").append(
+                        field.getName()).append("\" value=\"").append((value != null ? value : "*")).append("\" />");
+        return ret.toString();
     }
-    return ret.toString();
-  }
 
-  /**
-   * Method to get the Value for viewing in an html document.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return value for field
-   *
-   */
-  @Override
-  public String getSearchHtml(final FieldValue _fieldValue) {
-    final StringBuilder ret = new StringBuilder();
-    final Field field = _fieldValue.getField();
-    final Object value = _fieldValue.getValue();
-    ret.append("<input type=\"text\"")
-      .append(" size=\"").append(field.getCols())
-      .append("\" name=\"").append(field.getName())
-      .append("\" value=\"").append((value != null ? value : "*"))
-      .append("\" />");
-    return ret.toString();
-  }
-
-  /**
-   * Method to compare the values.
-   *
-   * @param _fieldValue first Value
-   * @param _fieldValue2 second Value
-   * @return 0
-   */
-  @Override
-  public int compare(final FieldValue _fieldValue,
-                     final FieldValue _fieldValue2) {
-    final String value = _fieldValue.getValue().toString();
-    final String value2 = _fieldValue2.getValue().toString();
-    return value.compareTo(value2);
-  }
+    /**
+     * Method to compare the values.
+     *
+     * @param _fieldValue first Value
+     * @param _fieldValue2 second Value
+     * @return 0
+     */
+    @Override
+    public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2)
+    {
+        final String value = _fieldValue.getValue().toString();
+        final String value2 = _fieldValue2.getValue().toString();
+        return value.compareTo(value2);
+    }
 }
