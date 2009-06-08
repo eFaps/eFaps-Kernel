@@ -22,6 +22,9 @@ package org.efaps.admin.ui.field;
 
 import static org.efaps.admin.EFapsClassNames.FIELD;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +51,19 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public class Field extends AbstractUserInterfaceObject
 {
-
+    /**
+     * Used to define the different display modes for the Userinterface.
+     */
+    public static enum Display {
+        /** the displayed Field is editabel. */
+        EDITABLE,
+        /** the displayed Field is read only.. */
+        READONLY,
+        /** the displayed Field is rendered but hidden. */
+        HIDDEN,
+        /** the field will not be displayed. */
+        NONE;
+    }
     /**
      * The static variable defines the class name in eFaps.
      */
@@ -112,45 +127,12 @@ public class Field extends AbstractUserInterfaceObject
     private int cols = 20;
 
     /**
-     * Is a field creatable? Default value is <i>true</i>.
-     *
-     * @see #setCreatable
-     * @see #isCreatable
-     */
-    private boolean creatable = true;
-
-    /**
-     * Is a field editable? Default value is <i>true</i>.
-     *
-     * @see #setEditable
-     * @see #isEditable
-     */
-    private boolean editable = true;
-
-    /**
-     * Is a field editable? Default value is <i>true</i>.
-     *
-     * @see #setSearchable
-     * @see #isSearchable
-     */
-    private boolean searchable = true;
-
-    /**
      * Is a field required? Default value is <i>false</i>.
      *
      * @see #setRequired
      * @see #isRequired
      */
     private boolean required = false;
-
-    /**
-     * Is a field hidden? Default value is <i>false</i>. It used to store some
-     * values in the form in the modification and creating forms.
-     *
-     * @see #setHidden
-     * @see #isHidden
-     */
-    private boolean hidden = false;
 
     /**
      * Instance variable to hold the reference to call.
@@ -242,11 +224,6 @@ public class Field extends AbstractUserInterfaceObject
     private boolean fixedWidth = false;
 
     /**
-     * Is this field in case of targetmode view viewable.
-     */
-    private boolean viewable = true;
-
-    /**
      * Should the Label been hidden.
      */
     private boolean hideLabel = false;
@@ -255,6 +232,12 @@ public class Field extends AbstractUserInterfaceObject
      * Should rows been spanned.
      */
     private int rowSpan = 0;
+
+    /**
+     * Map stores the target mode to display relations for this field.
+     */
+    private final Map<AbstractUserInterfaceObject.TargetMode, Field.Display> mode2display
+                                                 = new HashMap<AbstractUserInterfaceObject.TargetMode, Field.Display>();
 
     /**
      * Standart-Constructor.
@@ -412,12 +395,8 @@ public class Field extends AbstractUserInterfaceObject
             }
         } else if ("Columns".equals(_name)) {
             setCols(Integer.parseInt(_value));
-        } else if ("Creatable".equals(_name)) {
-            setCreatable("true".equals(_value));
         } else if ("CreateValue".equals(_name)) {
             setCreateValue(_value);
-        } else if ("Editable".equals(_name)) {
-            setEditable("true".equals(_value));
         } else if ("Expression".equals(_name)) {
             setExpression(_value);
         } else if ("Width".equals(_name)) {
@@ -426,18 +405,24 @@ public class Field extends AbstractUserInterfaceObject
             setSortAble(!"false".equals(_value));
         } else if ("Filterable".equals(_name)) {
             setFilterable("true".equals(_value));
-        } else if ("Hidden".equals(_name)) {
-            setHidden("true".equals(_value));
         } else if ("HideLabel".equals(_name)) {
             setHideLabel("true".equals(_value));
         } else if ("HRef".equals(_name)) {
             setReference(RequestHandler.replaceMacrosInUrl(_value));
         } else if ("Icon".equals(_name)) {
             setIcon(RequestHandler.replaceMacrosInUrl(_value));
-        } else if ("Viewable".equals(_name)) {
-            this.viewable = !("false".equalsIgnoreCase(_value));
         } else if ("Label".equals(_name)) {
             setLabel(_value);
+        } else if ("ModeConnect".equals(_name)) {
+            this.mode2display.put(TargetMode.CONNECT, Field.Display.valueOf(_value.toUpperCase()));
+        } else if ("ModeCreate".equals(_name)) {
+            this.mode2display.put(TargetMode.CREATE, Field.Display.valueOf(_value.toUpperCase()));
+        } else if ("ModeEdit".equals(_name)) {
+            this.mode2display.put(TargetMode.EDIT, Field.Display.valueOf(_value.toUpperCase()));
+        } else if ("ModeSearch".equals(_name)) {
+            this.mode2display.put(TargetMode.SEARCH, Field.Display.valueOf(_value.toUpperCase()));
+        } else if ("ModeView".equals(_name)) {
+            this.mode2display.put(TargetMode.VIEW, Field.Display.valueOf(_value.toUpperCase()));
         } else if ("ProgramValue".equals(_name)) {
             try {
                 final Class<?> programValueClass = Class.forName(_value);
@@ -459,8 +444,6 @@ public class Field extends AbstractUserInterfaceObject
             setRows(Integer.parseInt(_value));
         } else if ("RowSpan".equals(_name)) {
             setRowSpan(Integer.parseInt(_value));
-        } else if ("Searchable".equals(_name)) {
-            setSearchable("true".equals(_value));
         } else if ("ShowTypeIcon".equals(_name)) {
             setShowTypeIcon("true".equals(_value));
         } else if ("Target".equals(_name)) {
@@ -621,53 +604,6 @@ public class Field extends AbstractUserInterfaceObject
         return this.cols;
     }
 
-    /**
-     * This is the setter method for instance variable {@link #creatable}.
-     *
-     * @param _creatable new value for instance variable {@link #creatable}
-     * @see #creatable
-     * @see #isCreatable
-     */
-    public void setCreatable(final boolean _creatable)
-    {
-        this.creatable = _creatable;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #creatable}.
-     *
-     * @return the value of the instance variable {@link #creatable}.
-     * @see #creatable
-     * @see #setCreatable
-     */
-    public boolean isCreatable()
-    {
-        return this.creatable;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #editable}.
-     *
-     * @param _editable new value for instance variable {@link #editable}
-     * @see #editable
-     * @see #isEditable
-     */
-    public void setEditable(final boolean _editable)
-    {
-        this.editable = _editable;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #editable}.
-     *
-     * @return the value of the instance variable {@link #editable}.
-     * @see #editable
-     * @see #setEditable
-     */
-    public boolean isEditable()
-    {
-        return this.editable;
-    }
 
     /**
      * This is the getter method for instance variable {@link #filterable}.
@@ -693,29 +629,6 @@ public class Field extends AbstractUserInterfaceObject
         this.filterable = _filterable;
     }
 
-    /**
-     * This is the setter method for instance variable {@link #searchable}.
-     *
-     * @param _searchable new value for instance variable {@link #searchable}
-     * @see #searchable
-     * @see #isSearchable
-     */
-    public void setSearchable(final boolean _searchable)
-    {
-        this.searchable = _searchable;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #searchable}.
-     *
-     * @return the value of the instance variable {@link #searchable}.
-     * @see #searchable
-     * @see #setSearchable
-     */
-    public boolean isSearchable()
-    {
-        return this.searchable;
-    }
 
     /**
      * This is the setter method for instance variable {@link #required}.
@@ -739,30 +652,6 @@ public class Field extends AbstractUserInterfaceObject
     public boolean isRequired()
     {
         return this.required;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #hidden}.
-     *
-     * @param _hidden new value for instance variable {@link #hidden}
-     * @see #hidden
-     * @see #isHidden
-     */
-    public void setHidden(final boolean _hidden)
-    {
-        this.hidden = _hidden;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #hidden}.
-     *
-     * @return the value of the instance variable {@link #hidden}.
-     * @see #hidden
-     * @see #setHidden
-     */
-    public boolean isHidden()
-    {
-        return this.hidden;
     }
 
     /**
@@ -1065,12 +954,124 @@ public class Field extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the getter method for the instance variable {@link #viewable}.
+     * Is this field editable in the given target mode. If not explicitly set
+     * in the definition following defaults apply:
+     * <ul>
+     * <li>ModeConnect: false</li>
+     * <li>ModeCreate: false</li>
+     * <li>ModeView: false</li>
+     * <li>ModeEdit: false</li>
+     * <li>ModeSearch: false</li>
+     * </ul>
      *
-     * @return value of instance variable {@link #viewable}
+     * @param _mode  target mode
+     * @return true if editable in the given mode, else false
      */
-    public boolean isViewable()
+    public boolean isEditable(final TargetMode _mode)
     {
-        return this.viewable;
+        boolean ret = false;
+        if (this.mode2display.containsKey(_mode)) {
+            ret = this.mode2display.get(_mode).equals(Field.Display.EDITABLE);
+        }
+        return ret;
     }
+
+    /**
+     * Is this field read only in the given target mode. If not explicitly set
+     * in the definition following defaults apply:
+     * <ul>
+     * <li>ModeConnect: true</li>
+     * <li>ModeCreate: false</li>
+     * <li>ModeView: true</li>
+     * <li>ModeEdit: true</li>
+     * <li>ModeSearch: false</li>
+     * </ul>
+     *
+     * @param _mode  target mode
+     * @return true if editable in the given mode, else false
+     */
+    public boolean isReadonly(final TargetMode _mode)
+    {
+        boolean ret = false;
+        if (this.mode2display.containsKey(_mode)) {
+            ret = this.mode2display.get(_mode).equals(Field.Display.READONLY);
+        } else if (_mode.equals(TargetMode.CONNECT) || _mode.equals(TargetMode.VIEW)
+                        || _mode.equals(TargetMode.EDIT)) {
+            ret = true;
+        }
+        return ret;
+    }
+
+    /**
+     * Is this field hidden in the given target mode. If not explicitly set
+     * in the definition following defaults apply:
+     * <ul>
+     * <li>ModeConnect: false</li>
+     * <li>ModeCreate: false</li>
+     * <li>ModeView: false</li>
+     * <li>ModeEdit: false</li>
+     * <li>ModeSearch: false</li>
+     * </ul>
+     *
+     * @param _mode  target mode
+     * @return true if editable in the given mode, else false
+     */
+    public boolean isHidden(final TargetMode _mode)
+    {
+        boolean ret = false;
+        if (this.mode2display.containsKey(_mode)) {
+            ret = this.mode2display.get(_mode).equals(Field.Display.HIDDEN);
+        }
+        return ret;
+    }
+
+    /**
+     * Is this field not displayed in the given target mode. If not explicitly set
+     * in the definition following defaults apply:
+     * <ul>
+     * <li>ModeConnect: false</li>
+     * <li>ModeCreate: false</li>
+     * <li>ModeView: false</li>
+     * <li>ModeEdit: false</li>
+     * <li>ModeSearch: false</li>
+     * </ul>
+     *
+     * @param _mode  target mode
+     * @return true if editable in the given mode, else false
+     */
+    public boolean isNoDisplay(final TargetMode _mode)
+    {
+        boolean ret = false;
+        if (this.mode2display.containsKey(_mode)) {
+            ret = this.mode2display.get(_mode).equals(Field.Display.NONE);
+        }
+        return ret;
+    }
+
+    /**
+     * Method to get the display for the given target mode. The following
+     * defaults apply:
+     * <ul>
+     * <li>ModeConnect: READONLY</li>
+     * <li>ModeCreate: NONE</li>
+     * <li>ModeView: READONLY</li>
+     * <li>ModeEdit: READONLY</li>
+     * <li>ModeSearch: NONE</li>
+     * </ul>
+     *
+     * @param _mode  target mode
+     * @return display for the given target mode
+     */
+    public Display getDisplay(final TargetMode _mode)
+    {
+        Display ret = Field.Display.NONE;
+        if (this.mode2display.containsKey(_mode)) {
+            ret = this.mode2display.get(_mode);
+        } else if (_mode.equals(TargetMode.CONNECT) || _mode.equals(TargetMode.VIEW)
+                        || _mode.equals(TargetMode.EDIT)) {
+            ret = Field.Display.READONLY;
+        }
+        return ret;
+    }
+
 }

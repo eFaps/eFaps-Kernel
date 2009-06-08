@@ -35,6 +35,7 @@ import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Form;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Checkin;
 import org.efaps.db.Context;
@@ -70,7 +71,8 @@ public class Create implements EventExecution
 
         final Insert insert = new Insert(command.getTargetCreateType());
         for (final Field field : command.getTargetForm().getFields()) {
-            if (field.getExpression() != null && (field.isCreatable() || field.isHidden())) {
+            if (field.getExpression() != null && (field.isEditable(TargetMode.CREATE)
+                                                            || field.isHidden(TargetMode.CREATE))) {
                 final Attribute attr = command.getTargetCreateType().getAttribute(field.getExpression());
                 if (attr != null && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
                     if (context.getParameters().containsKey(field.getName())) {
@@ -100,7 +102,7 @@ public class Create implements EventExecution
 
         // check if we have a fileupload field
         for (final Field field : command.getTargetForm().getFields()) {
-            if (field.getExpression() == null && field.isCreatable()) {
+            if (field.getExpression() == null && field.isEditable(TargetMode.CREATE)) {
                 final Context.FileParameter fileItem = context.getFileParameters().get(field.getName());
 
                 if (fileItem != null) {
@@ -129,7 +131,8 @@ public class Create implements EventExecution
                 final Insert classInsert = new Insert(classification);
                 classInsert.add(classification.getLinkAttributeName(), ((Long) instance.getId()).toString());
                 for (final Field field : form.getFields()) {
-                    if (field.getExpression() != null && (field.isCreatable() || field.isHidden())) {
+                    if (field.getExpression() != null && (field.isEditable(TargetMode.CREATE)
+                                                            || field.isHidden(TargetMode.CREATE))) {
                         final Attribute attr = classification.getAttribute(field.getExpression());
                         if (attr != null
                                         && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()

@@ -40,6 +40,7 @@ import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Form;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.FieldClassification;
 import org.efaps.admin.ui.field.FieldSet;
@@ -150,7 +151,7 @@ public class Edit implements EventExecution
         // check if we have a fileupload field
         if (context.getFileParameters().size() > 0) {
             for (final Field field : command.getTargetForm().getFields()) {
-                if (field.getExpression() == null && field.isEditable()) {
+                if (field.getExpression() == null && field.isEditable(TargetMode.EDIT)) {
                     final Context.FileParameter fileItem = context.getFileParameters().get(field.getName());
                     if (fileItem != null) {
                         final Checkin checkin = new Checkin(instance);
@@ -185,7 +186,7 @@ public class Edit implements EventExecution
             } else if (field instanceof FieldClassification) {
                this.classifcationName = ((FieldClassification) field).getClassificationName();
             } else {
-                if (field.getExpression() != null && field.isEditable()) {
+                if (field.getExpression() != null && field.isEditable(TargetMode.EDIT)) {
                     final Attribute attr = _instance.getType().getAttribute(field.getExpression());
                     // check if not a fileupload
                     if (attr != null
@@ -245,7 +246,7 @@ public class Edit implements EventExecution
                 if (field instanceof FieldSet) {
                     // fieldsets.add((FieldSet) field);
                 } else {
-                    if (field.getExpression() != null && field.isEditable()) {
+                    if (field.getExpression() != null && field.isEditable(TargetMode.EDIT)) {
                         final Attribute attr = subClassType.getAttribute(field.getExpression());
                         // check if not a fileupload
                         if (attr != null && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
@@ -283,7 +284,7 @@ public class Edit implements EventExecution
                     final Insert classInsert = new Insert(classification);
                     classInsert.add(classification.getLinkAttributeName(), ((Long) _instance.getId()).toString());
                     for (final Field field : form.getFields()) {
-                        if (field.getExpression() != null && (field.isCreatable() || field.isHidden())) {
+                        if (field.getExpression() != null && field.isEditable(TargetMode.EDIT)) {
                             final Attribute attr = classification.getAttribute(field.getExpression());
                             if (attr != null
                                             && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()

@@ -27,42 +27,43 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  *
  */
-public class FieldHeading extends Field {
+public class FieldHeading extends Field
+{
 
-  /**
-   * instance variable to store the level of the Heading
-   */
-  private int level = 1;
+    /**
+     * instance variable to store the level of the Heading.
+     */
+    private int level = 1;
 
-  public FieldHeading(final long _id, final String _uuid, final String _name) {
-    super(_id, _uuid, _name);
-    super.setCreatable(false);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.efaps.admin.ui.field.Field#setProperty(java.lang.String,
-   *      java.lang.String)
-   */
-  @Override
-  protected void setProperty(final String _name, final String _value)
-                                                         throws CacheReloadException {
-    if ("Level".equals(_name)) {
-      this.level = Integer.parseInt(_value);
-    } else {
-      super.setProperty(_name, _value);
+    public FieldHeading(final long _id, final String _uuid, final String _name)
+    {
+        super(_id, _uuid, _name);
     }
-  }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.efaps.admin.ui.field.Field#setProperty(java.lang.String,
+     * java.lang.String)
+     */
+    @Override
+    protected void setProperty(final String _name, final String _value) throws CacheReloadException
+    {
+        if ("Level".equals(_name)) {
+            this.level = Integer.parseInt(_value);
+        } else {
+            super.setProperty(_name, _value);
+        }
+    }
 
-  /**
-   * This is the getter method for the instance variable {@link #level}.
-   *
-   * @return value of instance variable {@link #level}
-   */
-  public int getLevel() {
-    return this.level;
-  }
+    /**
+     * This is the getter method for the instance variable {@link #level}.
+     *
+     * @return value of instance variable {@link #level}
+     */
+    public int getLevel()
+    {
+        return this.level;
+    }
 
 }
