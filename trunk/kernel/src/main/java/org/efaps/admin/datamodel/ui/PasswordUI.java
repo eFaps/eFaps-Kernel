@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
 
@@ -27,32 +28,33 @@ import org.efaps.util.EFapsException;
  * This class returns the different Html-Snipplets wich are needed for a
  * PasswordType.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class PasswordUI extends AbstractUI {
+public class PasswordUI extends AbstractUI
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Method to get the Value for editing in an html document.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return password field
-   * @throws EFapsException on error
-   */
-  @Override
-  public String getEditHtml(final FieldValue _fieldValue)
-      throws EFapsException {
-    final StringBuffer ret = new StringBuffer();
-    final Field field = _fieldValue.getField();
-    ret.append("<input type=\"password\" size=\"").append(field.getCols())
-        .append("\" name=\"").append(field.getName()).append(
-            "\" " + "value=\"\">");
-    return ret.toString();
-  }
+    /**
+     * Method to get the Value for editing in an html document.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @param _mode target mode
+     * @return password field
+     * @throws EFapsException on error
+     */
+    @Override
+    public String getEditHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    {
+        final StringBuffer ret = new StringBuffer();
+        final Field field = _fieldValue.getField();
+        ret.append("<input type=\"password\" size=\"").append(field.getCols()).append("\" name=\"").append(
+                        field.getName()).append("\" " + "value=\"\">");
+        return ret.toString();
+    }
 
 }

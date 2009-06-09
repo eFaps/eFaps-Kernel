@@ -28,148 +28,100 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
 
 /**
  * This Class is the representation of
- * {@link org.efaps.admin.datamodel.attributetype.LinkWithRanges} for the
- * user interface.<br>
+ * {@link org.efaps.admin.datamodel.attributetype.LinkWithRanges} for the user
+ * interface.<br>
  * Depending on the access mode (e.g. edit) the Value of a Field is presented in
  * an editable or non editable mode.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class LinkWithRangesUI extends AbstractUI {
+public class LinkWithRangesUI extends AbstractUI
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Method to get the Value for viewing in an html document.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return value for field
-   * @throws EFapsException on error
-   */
-  @Override
-  public String getViewHtml(final FieldValue _fieldValue)
-      throws EFapsException {
+    /**
+     * Method to get the Value for viewing in an html document.
+     * @param _mode         target mode
+     * @param _fieldValue   Fieldvalue the representation is requested
+     * @return value for field
+     * @throws EFapsException on error
+     */
+    @Override
+    public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    {
 
-    final StringBuilder ret = new StringBuilder();
-    final Attribute attribute = _fieldValue.getAttribute();
+        final StringBuilder ret = new StringBuilder();
+        final Attribute attribute = _fieldValue.getAttribute();
 
-    if (_fieldValue.getValue() != null) {
-      if (attribute.hasEvents(EventType.RANGE_VALUE)) {
+        if (_fieldValue.getValue() != null) {
+            if (attribute.hasEvents(EventType.RANGE_VALUE)) {
 
-        for (final Return values
-                            : attribute.executeEvents(EventType.RANGE_VALUE)) {
-          final TreeMap<?, ?> treemap
-                            = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES));
-          for (final Entry<?, ?> entry : treemap.entrySet()) {
-            if (entry.getValue().equals(_fieldValue.getValue().toString())) {
-              ret.append(entry.getKey().toString());
+                for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
+                    final TreeMap<?, ?> treemap = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES));
+                    for (final Entry<?, ?> entry : treemap.entrySet()) {
+                        if (entry.getValue().equals(_fieldValue.getValue().toString())) {
+                            ret.append(entry.getKey().toString());
+                        }
+                    }
+                }
             }
-          }
         }
-      }
+        return ret.toString();
     }
-    return ret.toString();
-  }
-  /**
-   * Method to get the Value for viewing in an html document.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return dropdown with values
-   * @throws EFapsException on error
-   */
-  @Override
-  public String getEditHtml(final FieldValue _fieldValue)
-      throws EFapsException {
-    final StringBuilder ret = new StringBuilder();
-    final Attribute attribute = _fieldValue.getAttribute();
-    if (_fieldValue.getValue() != null) {
-      if (attribute.hasEvents(EventType.RANGE_VALUE)) {
-        for (final Return values
-                            : attribute.executeEvents(EventType.RANGE_VALUE)) {
 
-          ret.append("<select name=\"").append(
-              _fieldValue.getField().getName()).append(
-              "\" size=\"1\">");
+    /**
+     * Method to get the Value for viewing in an html document.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @param _mode         target mode
+     * @return dropdown with values
+     * @throws EFapsException
+     * @throws EFapsException on error
+     */
+    @Override
+    public String getEditHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    {
+        final StringBuilder ret = new StringBuilder();
+        final Attribute attribute = _fieldValue.getAttribute();
+        if (_mode.equals(TargetMode.SEARCH)) {
+            final Field field = _fieldValue.getField();
+            ret.append("<input type=\"text\" ").append("size=\"").append(field.getCols()).append(
+                            "\" ").append("name=\"").append(field.getName()).append("\" ").append("value=\"*\"").append(
+                            "/>").toString();
+        } else {
+            if (_fieldValue.getValue() != null) {
+                if (attribute.hasEvents(EventType.RANGE_VALUE)) {
+                    for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
 
-          final Iterator<?> iter =
-              ((TreeMap<?, ?>) values.get(ReturnValues.VALUES)).entrySet()
-                  .iterator();
+                        ret.append("<select name=\"").append(_fieldValue.getField().getName()).append("\" size=\"1\">");
 
-          while (iter.hasNext()) {
-            final Entry<?, ?> entry = (Entry<?, ?>) iter.next();
-            ret.append("<option value=\"").append(entry.getValue());
-            if (_fieldValue.getValue().toString().equals(entry.getValue())) {
-              ret.append("\" selected=\"selected");
+                        final Iterator<?> iter
+                                              = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES)).entrySet().iterator();
+
+                        while (iter.hasNext()) {
+                            final Entry<?, ?> entry = (Entry<?, ?>) iter.next();
+                            ret.append("<option value=\"").append(entry.getValue());
+                            if (_fieldValue.getValue().toString().equals(entry.getValue())) {
+                                ret.append("\" selected=\"selected");
+                            }
+                            ret.append("\">").append(entry.getKey()).append("</option>");
+                        }
+                        ret.append("</select>");
+                    }
+                }
             }
-            ret.append("\">").append(entry.getKey()).append("</option>");
-          }
-
-          ret.append("</select>");
         }
-      }
+        return ret.toString();
     }
-    return ret.toString();
-  }
-  /**
-   * Method to get the Value for viewing in an html document.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return dropdown with values
-   * @throws EFapsException on error
-   */
-  @Override
-  public String getCreateHtml(final FieldValue _fieldValue)
-      throws EFapsException {
-    final StringBuilder ret = new StringBuilder();
-    final Attribute attribute = _fieldValue.getAttribute();
-    if (attribute.hasEvents(EventType.RANGE_VALUE)) {
-      for (final Return values
-                             : attribute.executeEvents(EventType.RANGE_VALUE)) {
-
-        ret.append("<select name=\"").append(
-            _fieldValue.getField().getName()).append(
-            "\" size=\"1\">");
-
-        final Iterator<?> iter =
-                  ((TreeMap<?, ?>) values.get(ReturnValues.VALUES))
-                                                         .entrySet().iterator();
-
-        while (iter.hasNext()) {
-          final Entry<?, ?> entry = (Entry<?, ?>) iter.next();
-          ret.append("<option value=\"").append(entry.getValue()).append("\">")
-              .append(entry.getKey()).append("</option>");
-        }
-
-        ret.append("</select>");
-      }
-    }
-    return ret.toString();
-  }
-
-  /**
-   * Method to get the Value for viewing in an html document.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return value for field
-   * @throws EFapsException on error
-   */
-  @Override
-  public String getSearchHtml(final FieldValue _fieldValue)
-      throws EFapsException {
-    final Field field = _fieldValue.getField();
-    return new StringBuilder().append("<input type=\"text\" ")
-                .append("size=\"").append(field.getCols()).append("\" ")
-                .append("name=\"").append(field.getName()).append("\" ")
-                .append("value=\"*\"").append("/>").toString();
-  }
-
 }

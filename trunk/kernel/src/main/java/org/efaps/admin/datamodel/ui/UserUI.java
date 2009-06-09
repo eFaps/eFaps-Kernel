@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
 import org.efaps.util.EFapsException;
@@ -27,69 +28,68 @@ import org.efaps.util.EFapsException;
 /**
  * Class to represent a User for the user interface.
  *
- * @author tmo
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class UserUI extends AbstractUI {
+public class UserUI extends AbstractUI
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-  * Method to get the Value for viewing in an html document.
-  *
-  * @param _fieldValue  Feildvalue the view must be evaluated for
-  * @throws EFapsException if value is not Person or Role
-  * @return STring with the value for the field
-  */
-  @Override
-  public String getViewHtml(final FieldValue _fieldValue)
-      throws EFapsException {
-    String ret = null;
-    final Object value = _fieldValue.getValue();
-    if (value instanceof Person) {
-      final Person person = (Person) value;
-      ret = person.getName();
-    } else if (value instanceof Role) {
-      final Role role = (Role) value;
-      ret = role.getName();
-    } else {
-      throw new EFapsException(this.getClass(),
-                               "getViewHtml.noPersonOrRole",
-                               (Object[]) null);
+    /**
+     * Method to get the Value for viewing in an html document.
+     *
+     * @param _fieldValue Feildvalue the view must be evaluated for
+     * @param _mode target mode
+     * @throws EFapsException if value is not Person or Role
+     * @return STring with the value for the field
+     */
+    @Override
+    public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    {
+        String ret = null;
+        final Object value = _fieldValue.getValue();
+        if (value instanceof Person) {
+            final Person person = (Person) value;
+            ret = person.getName();
+        } else if (value instanceof Role) {
+            final Role role = (Role) value;
+            ret = role.getName();
+        } else {
+            throw new EFapsException(this.getClass(), "getViewHtml.noPersonOrRole", (Object[]) null);
+        }
+        return ret;
     }
-    return ret;
-  }
 
-  /**
-   * Method to compare the values.
-   *
-   * @param _fieldValue first Value
-   * @param _fieldValue2 second Value
-   * @return 0
-   */
-  @Override
-  public int compare(final FieldValue _fieldValue,
-      final FieldValue _fieldValue2) {
-    String value = null;
-    if (_fieldValue.getValue() instanceof Person) {
-      final Person person = (Person) _fieldValue.getValue();
-      value = person.getName();
-    } else if (_fieldValue.getValue() instanceof Role) {
-      final Role role = (Role) _fieldValue.getValue();
-      value = role.getName();
+    /**
+     * Method to compare the values.
+     *
+     * @param _fieldValue first Value
+     * @param _fieldValue2 second Value
+     * @return 0
+     */
+    @Override
+    public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2)
+    {
+        String value = null;
+        if (_fieldValue.getValue() instanceof Person) {
+            final Person person = (Person) _fieldValue.getValue();
+            value = person.getName();
+        } else if (_fieldValue.getValue() instanceof Role) {
+            final Role role = (Role) _fieldValue.getValue();
+            value = role.getName();
+        }
+        final String value2 = null;
+        if (_fieldValue2.getValue() instanceof Person) {
+            final Person person = (Person) _fieldValue2.getValue();
+            value = person.getName();
+        } else if (_fieldValue2.getValue() instanceof Role) {
+            final Role role = (Role) _fieldValue2.getValue();
+            value = role.getName();
+        }
+        return value.compareTo(value2);
     }
-    final String value2 = null;
-    if (_fieldValue2.getValue() instanceof Person) {
-      final Person person = (Person) _fieldValue2.getValue();
-      value = person.getName();
-    } else if (_fieldValue2.getValue() instanceof Role) {
-      final Role role = (Role) _fieldValue2.getValue();
-      value = role.getName();
-    }
-    return value.compareTo(value2);
-  }
 }

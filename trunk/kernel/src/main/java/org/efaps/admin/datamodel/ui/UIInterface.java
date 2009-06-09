@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.util.EFapsException;
 
 /**
@@ -42,37 +43,31 @@ public interface UIInterface
      * Method to get the Value for creation in an html document.
      *
      * @param _fieldValue Fieldvalue the representation is requested
+     * @param _mode target mode
      * @return String representation of the object for creation
      * @throws EFapsException on error
      */
-    String getCreateHtml(final FieldValue _fieldValue) throws EFapsException;
+    String getHiddenHtml(final FieldValue _fieldValue, TargetMode _mode) throws EFapsException;
 
     /**
      * Method to get the Value for editing in an html document.
      *
      * @param _fieldValue Fieldvalue the representation is requested
+     * @param _mode target mode
      * @return String representation of the object for editing
      * @throws EFapsException on error
      */
-    String getEditHtml(final FieldValue _fieldValue) throws EFapsException;
-
-    /**
-     * Method to get the Value for search in an html document.
-     *
-     * @param _fieldValue Fieldvalue the representation is requested
-     * @return String representation of the object for search
-     * @throws EFapsException on error
-     */
-    String getSearchHtml(final FieldValue _fieldValue) throws EFapsException;
+    String getEditHtml(final FieldValue _fieldValue, TargetMode _mode) throws EFapsException;
 
     /**
      * Method to get the Value for viewing in an html document.
      *
      * @param _fieldValue Fieldvalue the representation is requested
+     * @param _mode target mode
      * @return String representation of the object for viewing
      * @throws EFapsException on error
      */
-    String getViewHtml(final FieldValue _fieldValue) throws EFapsException;
+    String getReadOnlyHtml(final FieldValue _fieldValue, TargetMode _mode) throws EFapsException;
 
     /**
      * Method to get the Object for use in case of comparison.

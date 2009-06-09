@@ -22,91 +22,85 @@ package org.efaps.admin.datamodel.ui;
 
 import java.io.Serializable;
 
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.util.EFapsException;
 
 /**
- * Abstract class for the UIInterface interface implementing for all
- * required methods a default.
+ * Abstract class for the UIInterface interface implementing for all required
+ * methods a default.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractUI implements UIInterface, Serializable {
+public abstract class AbstractUI implements UIInterface, Serializable
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Method to get the Value for creation in an html document.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return "create"
-   * @throws EFapsException on error
-   */
-  public String getCreateHtml(final FieldValue _fieldValue)
-      throws EFapsException {
-    return "create";
-  }
+    /**
+     * Method to get the Value for editing in an html document.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @param _mode the target mode
+     * @return "edit"
+     * @throws EFapsException on error
+     */
+    public String getEditHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    {
+        return "edit";
+    }
 
-  /**
-   * Method to get the Value for editing in an html document.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return "edit"
-   * @throws EFapsException on error
-   */
-  public String getEditHtml(final FieldValue _fieldValue)
-      throws EFapsException {
-    return "edit";
-  }
+    /**
+     * Method to get the Value for hidden field in an html document.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @param _mode the target mode
+     * @return "view"
+     * @throws EFapsException on error
+     */
+    public String getHiddenHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    {
+        return "hidden";
+    }
 
-  /**
-   * Method to get the Value for search in an html document.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return "search"
-   * @throws EFapsException on error
-   */
-  public String getSearchHtml(final FieldValue _fieldValue)
-      throws EFapsException {
-    return "search";
-  }
+    /**
+     * Method to get the Value for a read only field in an html document.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @param _mode the target mode
+     * @return "view"
+     * @throws EFapsException on error
+     */
+    public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    {
+        return "read only";
+    }
 
-  /**
-   * Method to get the Value for viewing in an html document.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return "view"
-   * @throws EFapsException on error
-   */
-  public String getViewHtml(final FieldValue _fieldValue)
-      throws EFapsException {
-    return "view";
-  }
 
-  /**
-   * Method to get the Object for use in case of comparison.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return null
-   * @throws EFapsException on error
-   */
-  public Object getObject4Compare(final FieldValue _fieldValue)
-      throws EFapsException {
-    return null;
-  }
+    /**
+     * Method to get the Object for use in case of comparison.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @return null
+     * @throws EFapsException on error
+     */
+    public Object getObject4Compare(final FieldValue _fieldValue) throws EFapsException
+    {
+        return null;
+    }
 
-  /**
-   * Method to compare the values.
-   *
-   * @param _fieldValue first Value
-   * @param _fieldValue2 second Value
-   * @return 0
-   */
-  public int compare(final FieldValue _fieldValue,
-                     final FieldValue _fieldValue2) {
-    return 0;
-  }
+    /**
+     * Method to compare the values.
+     *
+     * @param _fieldValue first Value
+     * @param _fieldValue2 second Value
+     * @return 0
+     */
+    public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2)
+    {
+        return 0;
+    }
 }
