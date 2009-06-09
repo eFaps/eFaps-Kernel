@@ -16,7 +16,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          tmo
+  Author:          The eFaps Team
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -37,7 +37,7 @@
     <!-- fields -->
     <field name="TimeZone4Edit">
       <property name="Columns">40</property>
-      <property name="Creatable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
       <property name="Expression">TimeZone</property>
       <trigger program="org.efaps.esjp.admin.user.TimeZoneUI"
                method="get4Setting" 
@@ -46,7 +46,7 @@
     </field>
     <field name="Chronology4Edit">
       <property name="Columns">40</property>
-      <property name="Creatable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
       <property name="Expression">Chronology</property>
       <trigger program="org.efaps.esjp.admin.user.ChronologyUI"
                method="get4Setting" 
@@ -55,7 +55,7 @@
     </field>
     <field name="Locale">
       <property name="Columns">40</property>
-      <property name="Creatable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
       <property name="Expression">Locale</property>
       <trigger program="org.efaps.esjp.admin.user.ChgSetting"
                method="getLocale4Setting" 

@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -37,8 +37,8 @@
     <!-- fields -->
     <field name="setpassword">
       <property name="Columns">20</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
+      <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Password</property>
       <property name="Required">true</property>
     </field>
