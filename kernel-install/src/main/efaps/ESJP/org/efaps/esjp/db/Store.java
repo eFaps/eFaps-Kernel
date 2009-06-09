@@ -23,7 +23,6 @@ package org.efaps.esjp.db;
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.datamodel.ui.FieldValue.HtmlType;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
@@ -31,6 +30,7 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
@@ -43,56 +43,54 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("0f824311-3747-4cfc-85ce-a5268a6ba9c9")
 @EFapsRevision("$Rev$")
-public class Store implements EventExecution {
+public class Store implements EventExecution
+{
 
-  public Return execute(final Parameter _parameter) throws EFapsException {
-    final Return ret = new Return();
-    final Insert insert = new Insert(Type.get(EFapsClassNames.DB_STORE));
-    insert.add("Name", _parameter.getParameterValue("name"));
-    insert.add("UUID" , _parameter.getParameterValue("uuid"));
-    insert.add("Revision", _parameter.getParameterValue("revision"));
-    insert.execute();
-    final Instance instance = insert.getInstance();
+    public Return execute(final Parameter _parameter) throws EFapsException
+    {
+        final Return ret = new Return();
+        final Insert insert = new Insert(Type.get(EFapsClassNames.DB_STORE));
+        insert.add("Name", _parameter.getParameterValue("name"));
+        insert.add("UUID", _parameter.getParameterValue("uuid"));
+        insert.add("Revision", _parameter.getParameterValue("revision"));
+        insert.execute();
+        final Instance instance = insert.getInstance();
 
-    final Insert resourceInsert
-                            = new Insert(Type.get(EFapsClassNames.DB_RESOURCE));
-    resourceInsert.add("Name", _parameter.getParameterValue("resource4create"));
-    resourceInsert.execute();
-    final Instance resource = resourceInsert.getInstance();
+        final Insert resourceInsert = new Insert(Type.get(EFapsClassNames.DB_RESOURCE));
+        resourceInsert.add("Name", _parameter.getParameterValue("resource4create"));
+        resourceInsert.execute();
+        final Instance resource = resourceInsert.getInstance();
 
-    final Insert connect =
-                        new Insert(Type.get(EFapsClassNames.DB_STORE2RESOURCE));
-    connect.add("From", ((Long) instance.getId()).toString());
-    connect.add("To" , ((Long) resource.getId()).toString());
-    connect.execute();
+        final Insert connect = new Insert(Type.get(EFapsClassNames.DB_STORE2RESOURCE));
+        connect.add("From", ((Long) instance.getId()).toString());
+        connect.add("To", ((Long) resource.getId()).toString());
+        connect.execute();
 
-    return ret;
-  }
-
-  /**
-   * This method is called first to render simple inputfields.
-   *
-   * @param _parameter Parameter as passed from eFaps to esjp
-   * @return Return
-   */
-  public Return getResourceFieldValueUI(final Parameter _parameter) {
-    final StringBuilder ret = new StringBuilder();
-    final FieldValue fieldvalue =
-        (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
-
-    final HtmlType htmltype = fieldvalue.getHtmlType();
-
-    final Return retVal = new Return();
-
-    if (htmltype == HtmlType.CREATEHTML) {
-     ret.append("<input name=\"").append(fieldvalue.getField().getName())
-        .append("\" type=\"text\" ")
-        .append(" size=\"").append(fieldvalue.getField().getCols())
-        .append("\">");
+        return ret;
     }
-    if (ret != null) {
-      retVal.put(ReturnValues.SNIPLETT, ret);
+
+    /**
+     * This method is called first to render simple inputfields.
+     *
+     * @param _parameter Parameter as passed from eFaps to esjp
+     * @return Return
+     */
+    public Return getResourceFieldValueUI(final Parameter _parameter)
+    {
+        final StringBuilder ret = new StringBuilder();
+        final FieldValue fieldvalue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+
+        final TargetMode mode = fieldvalue.getTargetMode();
+
+        final Return retVal = new Return();
+
+        if (mode.equals(TargetMode.CREATE)) {
+            ret.append("<input name=\"").append(fieldvalue.getField().getName()).append("\" type=\"text\" ").append(
+                            " size=\"").append(fieldvalue.getField().getCols()).append("\">");
+        }
+        if (ret != null) {
+            retVal.put(ReturnValues.SNIPLETT, ret);
+        }
+        return retVal;
     }
-    return retVal;
-  }
 }
