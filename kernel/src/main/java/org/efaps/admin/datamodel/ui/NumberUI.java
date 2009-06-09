@@ -25,51 +25,50 @@ import org.efaps.util.EFapsException;
 /**
  * Class used to represent any type of number for the UI.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class NumberUI extends StringUI {
+public class NumberUI extends StringUI
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Method to get the Object for use in case of comparison.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return value
-   * @throws EFapsException on error
-   */
-  @Override
-  public Object getObject4Compare(final FieldValue _fieldValue)
-      throws EFapsException {
-    return _fieldValue.getValue();
-  }
+    /**
+     * Method to get the Object for use in case of comparison.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @return value
+     * @throws EFapsException on error
+     */
+    @Override
+    public Object getObject4Compare(final FieldValue _fieldValue) throws EFapsException
+    {
+        return _fieldValue.getValue();
+    }
 
-  /**
-   * Method to compare the values.
-   *
-   * @param _fieldValue first Value
-   * @param _fieldValue2 second Value
-   * @return 0
-   */
-  @Override
-  public int compare(final FieldValue _fieldValue,
-                     final FieldValue _fieldValue2) {
-    int ret = 0;
-    if (_fieldValue.getValue() instanceof Long
-        && _fieldValue2.getValue() instanceof Long) {
-      final Long num = (Long) _fieldValue.getValue();
-      final Long num2 = (Long) _fieldValue2.getValue();
-      ret = num.compareTo(num2);
-    } else if (_fieldValue.getValue() instanceof Integer
-        && _fieldValue2.getValue() instanceof Integer) {
-      final Integer num = (Integer) _fieldValue.getValue();
-      final Integer num2 = (Integer) _fieldValue2.getValue();
-      ret = num.compareTo(num2);
-     }
-    return ret;
-  }
+    /**
+     * Method to compare the values.
+     *
+     * @param _fieldValue first Value
+     * @param _fieldValue2 second Value
+     * @return 0
+     */
+    @Override
+    public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2)
+    {
+        int ret = 0;
+        if (_fieldValue.getValue() instanceof Long && _fieldValue2.getValue() instanceof Long) {
+            final Long num = (Long) _fieldValue.getValue();
+            final Long num2 = (Long) _fieldValue2.getValue();
+            ret = num.compareTo(num2);
+        } else if (_fieldValue.getValue() instanceof Integer && _fieldValue2.getValue() instanceof Integer) {
+            final Integer num = (Integer) _fieldValue.getValue();
+            final Integer num2 = (Integer) _fieldValue2.getValue();
+            ret = num.compareTo(num2);
+        }
+        return ret;
+    }
 }

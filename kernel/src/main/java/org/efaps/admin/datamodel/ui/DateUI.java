@@ -26,83 +26,81 @@ import org.joda.time.DateTimeComparator;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**
  * Class to represent a Date for the user interface.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class DateUI extends AbstractUI {
+public class DateUI extends AbstractUI
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Method to get the Value for viewing in an html document.
-   *
-   * @param _fieldValue  Feildvalue the view must be evaluated for
-   * @throws EFapsException if value is not DateTime
-   * @return STring with the value for the field
-   */
-  @Override
-  public String getViewHtml(final FieldValue _fieldValue)
-        throws EFapsException {
-    String ret = null;
+    /**
+     * Method to get the Value for viewing in an html document.
+     *
+     * @param _fieldValue   Fieldvalue the view must be evaluated for
+     * @param _mode         target mode
+     * @throws EFapsException if value is not DateTime
+     * @return STring with the value for the field
+     */
+    @Override
+    public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    {
+        String ret = null;
 
-    if (_fieldValue.getValue() instanceof DateTime) {
-      final DateMidnight datetime = ((DateTime) _fieldValue.getValue())
-                                                            .toDateMidnight();
-      if (datetime != null) {
-        final DateTimeFormatter formatter = DateTimeFormat.mediumDate();
-        //format the Date with the Locale and Chronology from the user context
-        ret = datetime.withChronology(
-            Context.getThreadContext().getChronology()).toString(
-            formatter.withLocale(Context.getThreadContext().getLocale()));
-      }
-    } else if (_fieldValue.getValue() != null) {
-      throw new EFapsException(this.getClass(),
-                               "getViewHtml.noDateTime",
-                               (Object[]) null);
+        if (_fieldValue.getValue() instanceof DateTime) {
+            final DateMidnight datetime = ((DateTime) _fieldValue.getValue()).toDateMidnight();
+            if (datetime != null) {
+                final DateTimeFormatter formatter = DateTimeFormat.mediumDate();
+                // format the Date with the Locale and Chronology from the user
+                // context
+                ret = datetime.withChronology(Context.getThreadContext().getChronology()).toString(
+                                formatter.withLocale(Context.getThreadContext().getLocale()));
+            }
+        } else if (_fieldValue.getValue() != null) {
+            throw new EFapsException(this.getClass(), "getViewHtml.noDateTime", (Object[]) null);
+        }
+        return ret;
     }
-    return ret;
-  }
 
-  /**
-   * Method to get the Object for use in case of comparison.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return value
-   * @throws EFapsException on error
-   */
-  @Override
-  public Object getObject4Compare(final FieldValue _fieldValue)
-      throws EFapsException {
-    return _fieldValue.getValue();
-  }
-
-  /**
-   * Method to compare the values.
-   *
-   * @param _fieldValue first Value
-   * @param _fieldValue2 second Value
-   * @return 0
-   */
-  @Override
-  public int compare(final FieldValue _fieldValue,
-      final FieldValue _fieldValue2) {
-    int ret = 0;
-    if (_fieldValue.getValue() instanceof DateTime
-        && _fieldValue2.getValue() instanceof DateTime) {
-
-      ret = DateTimeComparator.getDateOnlyInstance()
-                  .compare(_fieldValue.getValue(), _fieldValue2.getValue());
+    /**
+     * Method to get the Object for use in case of comparison.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @return value
+     * @throws EFapsException on error
+     */
+    @Override
+    public Object getObject4Compare(final FieldValue _fieldValue) throws EFapsException
+    {
+        return _fieldValue.getValue();
     }
-    return ret;
-  }
+
+    /**
+     * Method to compare the values.
+     *
+     * @param _fieldValue first Value
+     * @param _fieldValue2 second Value
+     * @return 0
+     */
+    @Override
+    public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2)
+    {
+        int ret = 0;
+        if (_fieldValue.getValue() instanceof DateTime && _fieldValue2.getValue() instanceof DateTime) {
+
+            ret = DateTimeComparator.getDateOnlyInstance().compare(_fieldValue.getValue(), _fieldValue2.getValue());
+        }
+        return ret;
+    }
 
 }

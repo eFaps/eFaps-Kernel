@@ -967,7 +967,7 @@ public class Field extends AbstractUserInterfaceObject
      * @param _mode  target mode
      * @return true if editable in the given mode, else false
      */
-    public boolean isEditable(final TargetMode _mode)
+    public boolean isEditableDisplay(final TargetMode _mode)
     {
         boolean ret = false;
         if (this.mode2display.containsKey(_mode)) {
@@ -990,7 +990,7 @@ public class Field extends AbstractUserInterfaceObject
      * @param _mode  target mode
      * @return true if editable in the given mode, else false
      */
-    public boolean isReadonly(final TargetMode _mode)
+    public boolean isReadonlyDisplay(final TargetMode _mode)
     {
         boolean ret = false;
         if (this.mode2display.containsKey(_mode)) {
@@ -1016,7 +1016,7 @@ public class Field extends AbstractUserInterfaceObject
      * @param _mode  target mode
      * @return true if editable in the given mode, else false
      */
-    public boolean isHidden(final TargetMode _mode)
+    public boolean isHiddenDisplay(final TargetMode _mode)
     {
         boolean ret = false;
         if (this.mode2display.containsKey(_mode)) {
@@ -1030,20 +1030,22 @@ public class Field extends AbstractUserInterfaceObject
      * in the definition following defaults apply:
      * <ul>
      * <li>ModeConnect: false</li>
-     * <li>ModeCreate: false</li>
+     * <li>ModeCreate: true</li>
      * <li>ModeView: false</li>
      * <li>ModeEdit: false</li>
-     * <li>ModeSearch: false</li>
+     * <li>ModeSearch: true</li>
      * </ul>
      *
      * @param _mode  target mode
      * @return true if editable in the given mode, else false
      */
-    public boolean isNoDisplay(final TargetMode _mode)
+    public boolean isNoneDisplay(final TargetMode _mode)
     {
         boolean ret = false;
         if (this.mode2display.containsKey(_mode)) {
             ret = this.mode2display.get(_mode).equals(Field.Display.NONE);
+        } else if (_mode.equals(TargetMode.CREATE) || _mode.equals(TargetMode.SEARCH)) {
+            ret = true;
         }
         return ret;
     }

@@ -22,73 +22,69 @@ package org.efaps.admin.datamodel.ui;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.util.EFapsException;
 
 /**
  * Class to represent a Date for the user interface.
  *
- * @author tmo
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class TypeUI extends AbstractUI {
+public class TypeUI extends AbstractUI
+{
 
-  /**
-   * Needed for serialization.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Method to get the Value for view in an html document.
-   *
-   * @param _fieldValue Fieldvalue the representation is requested
-   * @return "create"
-   * @throws EFapsException on error
-   */
-  @Override
-  public String getViewHtml(final FieldValue _fieldValue)
-      throws EFapsException {
-    String ret = null;
+    /**
+     * Method to get the Value for view in an html document.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @param _mode target mode
+     * @return "create"
+     * @throws EFapsException on error
+     */
+    @Override
+    public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    {
+        String ret = null;
 
-    if (_fieldValue.getValue() instanceof Type) {
-      final Type value = ((Type) _fieldValue.getValue());
+        if (_fieldValue.getValue() instanceof Type) {
+            final Type value = ((Type) _fieldValue.getValue());
 
-      final String name = value.getName();
+            final String name = value.getName();
 
-      ret = DBProperties.getProperty(name + ".Label");
+            ret = DBProperties.getProperty(name + ".Label");
 
-    } else {
-      throw new EFapsException(this.getClass(),
-                               "getViewHtml.noType",
-                               (Object[]) null);
-    }
-    return ret;
-  }
-
-  /**
-   * Method to compare the values.
-   *
-   * @param _fieldValue first Value
-   * @param _fieldValue2 second Value
-   * @return 0
-   */
-  @Override
-  public int compare(final FieldValue _fieldValue,
-                     final FieldValue _fieldValue2) {
-    String value = null;
-    String value2 = null;
-    if (_fieldValue.getValue() instanceof Type
-        && _fieldValue2.getValue() instanceof Type) {
-      value = DBProperties.getProperty(((Type) _fieldValue.getValue())
-          .getName() + ".Label");
-      value2 = DBProperties.getProperty(((Type) _fieldValue2.getValue())
-          .getName() + ".Label");
-    } else if (_fieldValue.getValue() instanceof String
-        && _fieldValue2.getValue() instanceof String) {
-      value = (String) _fieldValue.getValue();
-      value2 = (String) _fieldValue2.getValue();
+        } else {
+            throw new EFapsException(this.getClass(), "getViewHtml.noType", (Object[]) null);
+        }
+        return ret;
     }
 
-    return value.compareTo(value2);
-  }
+    /**
+     * Method to compare the values.
+     *
+     * @param _fieldValue first Value
+     * @param _fieldValue2 second Value
+     * @return 0
+     */
+    @Override
+    public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2)
+    {
+        String value = null;
+        String value2 = null;
+        if (_fieldValue.getValue() instanceof Type && _fieldValue2.getValue() instanceof Type) {
+            value = DBProperties.getProperty(((Type) _fieldValue.getValue()).getName() + ".Label");
+            value2 = DBProperties.getProperty(((Type) _fieldValue2.getValue()).getName() + ".Label");
+        } else if (_fieldValue.getValue() instanceof String && _fieldValue2.getValue() instanceof String) {
+            value = (String) _fieldValue.getValue();
+            value2 = (String) _fieldValue2.getValue();
+        }
+
+        return value.compareTo(value2);
+    }
 }
