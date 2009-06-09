@@ -52,28 +52,29 @@ public class StringUI extends AbstractUI
     public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode)
     {
         final StringBuilder ret = new StringBuilder();
+        final Field field = _fieldValue.getField();
+        final Object value = _fieldValue.getValue();
 
-        if (_fieldValue.getValue() != null) {
-
-            if (_fieldValue.getValue() instanceof List) {
-                final List<?> values = (List<?>) _fieldValue.getValue();
-                boolean first = true;
-                for (final Object value : values) {
-                    final String tmp = value.toString();
-                    if (tmp != null) {
-                        if (first) {
-                            first = false;
-                        } else {
-                            ret.append("<br/>");
-                        }
-                        ret.append(tmp.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\n", "<br/>"));
-                    }
-                }
-            } else {
-                final String tmp = _fieldValue.getValue().toString();
+        if (value instanceof List) {
+            final List<?> values = (List<?>) value;
+            boolean first = true;
+            for (final Object obj : values) {
+                final String tmp = obj.toString();
                 if (tmp != null) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        ret.append("<br/>");
+                    }
                     ret.append(tmp.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\n", "<br/>"));
                 }
+            }
+        } else {
+            final String tmp = value != null ? value.toString() : "";
+            if (tmp != null) {
+                ret.append("<span name=\"").append(field.getName()).append("\" ").append(EFAPSTMPTAG).append(">")
+                    .append(tmp.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\n", "<br/>"))
+                    .append("</span>");
             }
         }
         return ret.toString();
