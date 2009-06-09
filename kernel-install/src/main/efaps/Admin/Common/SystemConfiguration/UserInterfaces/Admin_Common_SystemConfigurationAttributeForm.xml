@@ -41,7 +41,7 @@
       <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Key</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="value">
       <property name="Columns">80</property>
@@ -49,7 +49,7 @@
       <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Value</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="description">
       <property name="Columns">80</property>
@@ -58,7 +58,7 @@
       <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Description</property>
       <property name="Required">false</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
   </definition>
 

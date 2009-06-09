@@ -59,7 +59,7 @@
       <property name="Expression">Name</property>
       <property name="Label">Admin_Event_Definition/Name.Label</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
       <property name="Viewable">true</property>
     </field>
     <field name="abstract">
@@ -76,7 +76,7 @@
       <property name="Expression">IndexPosition</property>
       <property name="Label">Admin_Event_Definition/IndexPosition.Label</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
       <property name="Viewable">true</property>
     </field>
     <field name="program4View">

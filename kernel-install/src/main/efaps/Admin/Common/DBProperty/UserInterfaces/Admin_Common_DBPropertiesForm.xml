@@ -39,7 +39,7 @@
       <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Key</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="default">
       <property name="Columns">40</property>
@@ -47,7 +47,7 @@
       <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Default</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="bundleid">
       <property name="Columns">20</property>

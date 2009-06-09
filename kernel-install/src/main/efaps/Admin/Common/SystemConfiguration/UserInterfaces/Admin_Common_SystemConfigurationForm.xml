@@ -38,13 +38,13 @@
       <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Name</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="uuid">
       <property name="Columns">80</property>
       <property name="Expression">UUID</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
   </definition>
 </ui-form>

@@ -39,7 +39,7 @@
       <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Value</property>
       <property name="Required">false</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="language">
       <property name="Columns">20</property>
@@ -47,14 +47,14 @@
       
       <property name="Expression">LanguageID</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="key">
       <property name="Columns">20</property>
       
       <property name="Expression">PropertyID.Key</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
   </definition>
 </ui-form>
