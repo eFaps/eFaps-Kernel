@@ -43,7 +43,7 @@
       <property name="ModeCreate">EDITABLE</property>
       <property name="Label">Admin_Event_Definition/Type.Label</property>
       <property name="Required">true</property>
-      <property name="Viewable">false</property>
+      <property name="ModeView">NONE</property>
       <trigger name="Admin_Event_DefinitionForm.type4NotView"
                event="UI_FIELD_VALUE" 
                program="org.efaps.esjp.admin.event.ConnectEventToAbstract"
@@ -96,7 +96,7 @@
       <property name="Expression">JavaProg</property>
       <property name="Required">true</property>
       <property name="Label">Admin_Event_Definition/JavaProg.Label</property>
-      <property name="Viewable">false</property>
+      <property name="ModeView">NONE</property>
       <trigger name="Admin_Event_DefinitionForm.program4NotView"
         event="UI_FIELD_VALUE" program="org.efaps.esjp.admin.event.ConnectEventToAbstract"
         method="getProgramsUI" />
