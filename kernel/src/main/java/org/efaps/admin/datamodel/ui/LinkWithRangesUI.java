@@ -96,29 +96,26 @@ public class LinkWithRangesUI extends AbstractUI
         final Attribute attribute = _fieldValue.getAttribute();
         if (_mode.equals(TargetMode.SEARCH)) {
             final Field field = _fieldValue.getField();
-            ret.append("<input type=\"text\" ").append("size=\"").append(field.getCols()).append(
-                            "\" ").append("name=\"").append(field.getName()).append("\" ").append("value=\"*\"").append(
-                            "/>").toString();
+            ret.append("<input type=\"text\" ")
+                .append("size=\"").append(field.getCols())
+                .append("\" name=\"").append(field.getName())
+                .append("\" value=\"*\"").append("/>").toString();
         } else {
-            if (_fieldValue.getValue() != null) {
-                if (attribute.hasEvents(EventType.RANGE_VALUE)) {
-                    for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
+            if (attribute.hasEvents(EventType.RANGE_VALUE)) {
+                for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
+                    ret.append("<select name=\"").append(_fieldValue.getField().getName()).append("\" size=\"1\">");
+                    final Iterator<?> iter = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES)).entrySet().iterator();
 
-                        ret.append("<select name=\"").append(_fieldValue.getField().getName()).append("\" size=\"1\">");
-
-                        final Iterator<?> iter
-                                              = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES)).entrySet().iterator();
-
-                        while (iter.hasNext()) {
-                            final Entry<?, ?> entry = (Entry<?, ?>) iter.next();
-                            ret.append("<option value=\"").append(entry.getValue());
-                            if (_fieldValue.getValue().toString().equals(entry.getValue())) {
-                                ret.append("\" selected=\"selected");
-                            }
-                            ret.append("\">").append(entry.getKey()).append("</option>");
+                    while (iter.hasNext()) {
+                        final Entry<?, ?> entry = (Entry<?, ?>) iter.next();
+                        ret.append("<option value=\"").append(entry.getValue());
+                        if (_fieldValue.getValue() != null
+                                        && _fieldValue.getValue().toString().equals(entry.getValue())) {
+                            ret.append("\" selected=\"selected");
                         }
-                        ret.append("</select>");
+                        ret.append("\">").append(entry.getKey()).append("</option>");
                     }
+                    ret.append("</select>");
                 }
             }
         }
