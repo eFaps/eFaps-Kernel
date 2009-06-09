@@ -41,35 +41,39 @@
       <property name="Columns">40</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
+      
       <property name="Expression">Name</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="uuid">
+      
       <property name="Expression">UUID</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="revision">
       <property name="Columns">20</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
+      
       <property name="Expression">Revision</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="createGroup" character="Group">
       <property name="GroupCount">2</property>
     </field>
     <field name="creator">
+      
       <property name="AlternateOID">Creator.OID</property>
       <property name="Expression">Creator</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="created">
       <property name="Expression">Created</property>
-      <property name="Searchable">true</property>
+      
     </field>
     <field name="modifyGroup" character="Group">
       <property name="GroupCount">2</property>
@@ -78,23 +82,24 @@
       <property name="AlternateOID">Modifier.OID</property>
       <property name="Expression">Modifier</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="modified">
+    
       <property name="Expression">Modified</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="SQLCacheExpr">
       <property name="Expression">SQLCacheExpr</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="ParentType">
       <property name="AlternateOID">ParentType.OID</property>
       <property name="Expression">ParentType.Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_DataModel_Type/ParentType.Label</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
       <property name="ShowTypeIcon">true</property>
     </field>
   </definition>

@@ -39,7 +39,7 @@
       <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Name</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="Value">
       <property name="Columns">80</property>
@@ -47,7 +47,7 @@
       <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Value</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
   </definition>
 </ui-form>

@@ -41,7 +41,7 @@
       <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Key</property>
       <property name="Required">true</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="createGroup" character="Group">
       
@@ -53,14 +53,14 @@
       
       <property name="Expression">Creator</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="created">
       
       
       <property name="Expression">Created</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="modifyGroup" character="Group">
       
@@ -72,21 +72,21 @@
       
       <property name="Expression">Modifier</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="modified">
       
       
       <property name="Expression">Modified</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="jaassystem">
       <property name="Columns">40</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">JAASSystemLink.Name</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
       <property name="Label">Admin_User_JAASKey/JAASSystemLink.Label</property>
     </field>
     <field name="userlink">
@@ -94,7 +94,7 @@
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">UserLink.Name</property>
-      <property name="Searchable">true</property>
+      <property name="ModeSearch">EDITABLE</property>
       <property name="Label">Admin_User_JAASKey/UserLink.Label</property>
     </field>
   </definition>
