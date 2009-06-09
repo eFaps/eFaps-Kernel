@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -36,7 +36,7 @@
     <name>Admin_UI_FileCheckinForm</name>
     <!-- fields -->
     <field name="file">
-      <property name="Editable">true</property>
+      <property name="ModeEdit">EDITABLE</property>
       <property name="Label">Admin_UI_File/File.Label</property>
       <trigger name="Admin_UI_File/file"
                event="UI_FIELD_VALUE"

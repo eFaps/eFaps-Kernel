@@ -16,7 +16,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          jmox
+  Author:          The eFaps Team
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -37,7 +37,7 @@
     <!-- fields -->
     <field name="passwordold">
       <property name="Columns">40</property>
-      <property name="Creatable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
       <property name="Required">true</property>
       <property name="Label">Admin_User_PwdChgForm.passwordold.Label</property>
       <trigger name="Common_Main_PwdChgForm/passwordold" 
@@ -48,7 +48,7 @@
     </field>
     <field name="passwordnew">
       <property name="Columns">40</property>
-      <property name="Creatable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
       <property name="Required">true</property>
       <property name="Label">Admin_User_PwdChgForm.passwordnew.Label</property>
       <trigger name="Common_Main_PwdChgForm/passwordnew" 
@@ -59,7 +59,7 @@
     </field>
     <field name="passwordnew2">
       <property name="Columns">40</property>
-      <property name="Creatable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
       <property name="Required">true</property>
       <property name="Label">Admin_User_PwdChgForm.passwordnew2.Label</property>
       <trigger name="Common_Main_PwdChgForm/passwordnew2" 
