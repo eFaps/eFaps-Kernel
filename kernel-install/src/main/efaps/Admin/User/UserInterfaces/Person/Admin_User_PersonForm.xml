@@ -117,31 +117,33 @@
     </field>
     <field name="TimeZone4View">
       <property name="Columns">40</property>
-      <property name="Viewable">true</property>
       <property name="Expression">TimeZone</property>
       <trigger program="org.efaps.esjp.admin.access.AccessOnField"
-        method="viewOnly" name="Admin_User_PersonForm/TimeZone4View"
-        event="UI_ACCESSCHECK"></trigger>
+                method="viewOnly" 
+                name="Admin_User_PersonForm/TimeZone4View"
+                event="UI_ACCESSCHECK"></trigger>
     </field>
     <field name="TimeZone4Edit">
       <property name="Columns">40</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
-      <property name="Viewable">false</property>
+      <property name="ModeView">NONE</property>
       <property name="Expression">TimeZone</property>
       <trigger program="org.efaps.esjp.admin.user.TimeZoneUI"
-        name="Admin_User_PersonForm/TimeZone4Edit" event="UI_FIELD_VALUE" />
+                name="Admin_User_PersonForm/TimeZone4Edit" 
+                event="UI_FIELD_VALUE" />
       <trigger program="org.efaps.esjp.admin.access.AccessOnField"
-        method="hideOnSearch" name="Admin_User_PersonForm/TimeZone4Edit.UI_ACCESSCHECK"
-        event="UI_ACCESSCHECK" />
+                method="hideOnSearch" 
+                name="Admin_User_PersonForm/TimeZone4Edit.UI_ACCESSCHECK"
+                event="UI_ACCESSCHECK" />
     </field>
     <field name="Chronology4View">
       <property name="Columns">40</property>
-      <property name="Viewable">true</property>
       <property name="Expression">Chronology</property>
       <trigger program="org.efaps.esjp.admin.user.ChronologyUI"
-        method="execute" name="Admin_User_PersonForm/Chronology4View.UI_FIELD_VALUE"
-        event="UI_FIELD_VALUE" />
+                method="execute" 
+                name="Admin_User_PersonForm/Chronology4View.UI_FIELD_VALUE"
+                event="UI_FIELD_VALUE" />
       <trigger program="org.efaps.esjp.admin.access.AccessOnField"
         method="viewOnly" name="Admin_User_PersonForm/Chronology4View.UI_ACCESSCHECK"
         event="UI_ACCESSCHECK" />
@@ -150,14 +152,16 @@
       <property name="Columns">40</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
-      <property name="Viewable">false</property>
+      <property name="ModeView">NONE</property>
       <property name="Expression">Chronology</property>
       <trigger program="org.efaps.esjp.admin.user.ChronologyUI"
-        method="get4Edit" name="Admin_User_PersonForm/Chronology4Edit"
-        event="UI_FIELD_VALUE" />
+                method="get4Edit" 
+                name="Admin_User_PersonForm/Chronology4Edit"
+                event="UI_FIELD_VALUE" />
       <trigger program="org.efaps.esjp.admin.access.AccessOnField"
-        method="hideOnSearch" name="Admin_User_PersonForm/Chronology4Edit.UI_ACCESSCHECK"
-        event="UI_ACCESSCHECK" />
+                method="hideOnSearch" 
+                name="Admin_User_PersonForm/Chronology4Edit.UI_ACCESSCHECK"
+                event="UI_ACCESSCHECK" />
     </field>
     <field name="Locale">
       <property name="Columns">40</property>

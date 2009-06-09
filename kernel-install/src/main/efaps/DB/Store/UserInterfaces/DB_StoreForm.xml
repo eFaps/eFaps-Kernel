@@ -64,7 +64,7 @@
     <field name="resource4create">
       <property name="Columns">40</property>
       <property name="ModeCreate">EDITABLE</property>
-      <property name="Viewable">false</property>
+      <property name="ModeView">NONE</property>
       <property name="Required">true</property>
       <property name="Searchable">false</property>
       <property name="Label">DB_StoreForm/resource4create</property>
