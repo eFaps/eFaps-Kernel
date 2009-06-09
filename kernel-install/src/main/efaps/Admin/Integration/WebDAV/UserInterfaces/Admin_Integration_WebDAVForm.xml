@@ -16,28 +16,23 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          jmox
+  Author:          The eFaps Team
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
 
 -->
 
-<ui-form xmlns="http://www.efaps.org/xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-
+<ui-form xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>54de5dc4-ce3a-428f-b206-4faabf05455a</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
-
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>Admin_Integration_WebDAVForm</name>
     <!-- fields -->
     <field name="type">
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
       <property name="Expression">Type</property>
       <property name="Searchable">false</property>
       <property name="ShowTypeIcon">true</property>
@@ -63,16 +58,12 @@
     </field>
     <field name="creator">
       <property name="AlternateOID">Creator.OID</property>
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
       <property name="Expression">Creator</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Searchable">true</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="created">
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
       <property name="Expression">Created</property>
       <property name="Searchable">true</property>
     </field>
@@ -81,19 +72,14 @@
     </field>
     <field name="modifier">
       <property name="AlternateOID">Modifier.OID</property>
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
       <property name="Expression">Modifier</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Searchable">true</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="modified">
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
       <property name="Expression">Modified</property>
       <property name="Searchable">true</property>
     </field>
   </definition>
-
 </ui-form>

@@ -16,28 +16,23 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-form xmlns="http://www.efaps.org/xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-
+<ui-form xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>279dd5ff-3364-4352-bf79-c636f77c8ad9</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
-
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>Admin_Event_DefinitionForm</name>
     <!-- fields -->
     <field name="type4View">
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
       <property name="Expression">Type</property>
       <property name="Label">Admin_Event_Definition/Type.Label</property>
       <property name="Searchable">false</property>
@@ -45,23 +40,22 @@
       <property name="Viewable">true</property>
     </field>
     <field name="type4NotView">
-      <property name="Creatable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
       <property name="Label">Admin_Event_Definition/Type.Label</property>
       <property name="Required">true</property>
-      <property name="Editable">false</property>
       <property name="Viewable">false</property>
       <trigger name="Admin_Event_DefinitionForm.type4NotView"
-               event="UI_FIELD_VALUE"
+               event="UI_FIELD_VALUE" 
                program="org.efaps.esjp.admin.event.ConnectEventToAbstract"
-               method="getEventTypesUI"/>
+               method="getEventTypesUI" />
       <trigger name="Admin_Event_DefinitionForm.type4NotView.hideOnEdit"
-               event="UI_ACCESSCHECK"
-               program="org.efaps.esjp.admin.access.AccessOnField"   
-               method="hideOnEdit"/>
+               event="UI_ACCESSCHECK" 
+               program="org.efaps.esjp.admin.access.AccessOnField"
+               method="hideOnEdit" />
     </field>
     <field name="name">
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
+      <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Name</property>
       <property name="Label">Admin_Event_Definition/Name.Label</property>
       <property name="Required">true</property>
@@ -70,8 +64,6 @@
     </field>
     <field name="abstract">
       <property name="AlternateOID">Abstract.OID</property>
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
       <property name="Expression">Abstract.Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_Event_Definition/Abstract.Label</property>
@@ -79,8 +71,8 @@
       <property name="Viewable">true</property>
     </field>
     <field name="index">
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
+      <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">IndexPosition</property>
       <property name="Label">Admin_Event_Definition/IndexPosition.Label</property>
       <property name="Required">true</property>
@@ -89,38 +81,33 @@
     </field>
     <field name="program4View">
       <property name="AlternateOID">JavaProg.OID</property>
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
       <property name="Expression">JavaProg.Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_Event_Definition/JavaProg.Label</property>
       <property name="ShowTypeIcon">true</property>
       <property name="Viewable">true</property>
       <trigger name="Admin_Event_DefinitionForm.program4View"
-               event="UI_ACCESSCHECK"
-               program="org.efaps.esjp.admin.access.AccessOnField"   
-               method="viewOnly"/>
+               event="UI_ACCESSCHECK" program="org.efaps.esjp.admin.access.AccessOnField"
+        method="viewOnly" />
     </field>
     <field name="program4NotView">
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
+      <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">JavaProg</property>
       <property name="Required">true</property>
       <property name="Label">Admin_Event_Definition/JavaProg.Label</property>
       <property name="Viewable">false</property>
       <trigger name="Admin_Event_DefinitionForm.program4NotView"
-               event="UI_FIELD_VALUE"
-               program="org.efaps.esjp.admin.event.ConnectEventToAbstract"
-               method="getProgramsUI"/>
+        event="UI_FIELD_VALUE" program="org.efaps.esjp.admin.event.ConnectEventToAbstract"
+        method="getProgramsUI" />
     </field>
     <field name="method">
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
+      <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Method</property>
       <property name="Label">Admin_Event_Definition/Method.Label</property>
       <property name="Required">true</property>
       <property name="Viewable">true</property>
     </field>
   </definition>
-
 </ui-form>
