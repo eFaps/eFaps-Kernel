@@ -71,8 +71,8 @@ public class Create implements EventExecution
 
         final Insert insert = new Insert(command.getTargetCreateType());
         for (final Field field : command.getTargetForm().getFields()) {
-            if (field.getExpression() != null && (field.isEditable(TargetMode.CREATE)
-                                                            || field.isHidden(TargetMode.CREATE))) {
+            if (field.getExpression() != null && (field.isEditableDisplay(TargetMode.CREATE)
+                                                            || field.isHiddenDisplay(TargetMode.CREATE))) {
                 final Attribute attr = command.getTargetCreateType().getAttribute(field.getExpression());
                 if (attr != null && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
                     if (context.getParameters().containsKey(field.getName())) {
@@ -102,7 +102,7 @@ public class Create implements EventExecution
 
         // check if we have a fileupload field
         for (final Field field : command.getTargetForm().getFields()) {
-            if (field.getExpression() == null && field.isEditable(TargetMode.CREATE)) {
+            if (field.getExpression() == null && field.isEditableDisplay(TargetMode.CREATE)) {
                 final Context.FileParameter fileItem = context.getFileParameters().get(field.getName());
 
                 if (fileItem != null) {
@@ -131,8 +131,8 @@ public class Create implements EventExecution
                 final Insert classInsert = new Insert(classification);
                 classInsert.add(classification.getLinkAttributeName(), ((Long) instance.getId()).toString());
                 for (final Field field : form.getFields()) {
-                    if (field.getExpression() != null && (field.isEditable(TargetMode.CREATE)
-                                                            || field.isHidden(TargetMode.CREATE))) {
+                    if (field.getExpression() != null && (field.isEditableDisplay(TargetMode.CREATE)
+                                                            || field.isHiddenDisplay(TargetMode.CREATE))) {
                         final Attribute attr = classification.getAttribute(field.getExpression());
                         if (attr != null
                                         && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()

@@ -26,7 +26,6 @@ import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.datamodel.ui.FieldValue.HtmlType;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
@@ -34,6 +33,7 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -66,16 +66,16 @@ public class ConnectEventToAbstract
     public Return getEventTypesUI(final Parameter _parameter) throws EFapsException
     {
         final FieldValue fieldvalue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
-        final HtmlType htmlType = fieldvalue.getHtmlType();
+        final TargetMode mode = fieldvalue.getTargetMode();
 
         final Instance callInstance = _parameter.getCallInstance();
 
         // get parent instance and current selected instance
         Instance parentInstance = null;
         long selectedId = 0;
-        if (htmlType == HtmlType.CREATEHTML) {
+        if (mode.equals(TargetMode.CREATE)) {
             parentInstance = callInstance;
-        } else if (htmlType == HtmlType.EDITHTML) {
+        } else if (mode.equals(TargetMode.EDIT)) {
             final SearchQuery query = new SearchQuery();
             query.setObject(callInstance);
             query.addSelect("Abstract.OID");
@@ -144,11 +144,11 @@ public class ConnectEventToAbstract
     public Return getProgramsUI(final Parameter _parameter) throws EFapsException
     {
         final FieldValue fieldvalue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
-        final HtmlType htmlType = fieldvalue.getHtmlType();
+        final TargetMode mode = fieldvalue.getTargetMode();
 
         // selected program (if mode edit)
         long selectedId = 0;
-        if (htmlType == HtmlType.EDITHTML) {
+        if (mode.equals(TargetMode.EDIT)) {
             final Instance callInstance = _parameter.getCallInstance();
             final SearchQuery query = new SearchQuery();
             query.setObject(callInstance);
