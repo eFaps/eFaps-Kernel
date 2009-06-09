@@ -16,45 +16,41 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmox
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-form xmlns="http://www.efaps.org/xsd"
+<ui-form xmlns="http://www.efaps.org/xsd" 
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-
   <uuid>7d7fe7a3-094b-4152-8e10-2855d0ecd963</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
-
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>Admin_Common_DBPropertiesForm</name>
     <!-- fields -->
     <field name="key">
       <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
+      <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Key</property>
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
     <field name="default">
       <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
+      <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Default</property>
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
     <field name="bundleid">
       <property name="Columns">20</property>
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
       <property name="Expression">BundleID.Name</property>
       <property name="Required">false</property>
       <property name="Label">Admin_Common_DBPropertiesForm/BundleID.Name</property>
@@ -70,5 +66,4 @@
       </evaluate>
     </field>
   </definition>
-
 </ui-form>

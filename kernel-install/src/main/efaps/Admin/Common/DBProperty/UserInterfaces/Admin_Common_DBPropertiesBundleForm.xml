@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmox
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -37,24 +37,24 @@
     <!-- fields -->
     <field name="name">
       <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
+      <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Name</property>
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
     <field name="uuid">
       <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
+      <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">UUID</property>
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
     <field name="sequence">
       <property name="Columns">20</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
+      <property name="ModeCreate">EDITABLE</property>
+      <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Sequence</property>
       <property name="Required">true</property>
       <property name="Searchable">true</property>
