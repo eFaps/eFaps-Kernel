@@ -105,7 +105,8 @@ public class FieldValue implements Comparable<Object>
         this.attribute = _attr;
         this.value = _value;
         this.instance = _instance;
-        this.ui = (_attr == null) ? null : _attr.getAttributeType().getUI();
+        this.ui = (_attr == null) ? _field.getClassUI() : _attr.getAttributeType().getUI();
+
     }
 
     /**
