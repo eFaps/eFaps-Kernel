@@ -240,6 +240,31 @@ public class FieldValue implements Comparable<Object>
     }
 
     /**
+     * Method to get a plain string for this FieldValue .
+     *
+     * @see #executeEvents
+     * @param _mode         target mode
+     * @param _callInstance Instance that called the value
+     * @param _instance     instance
+     * @throws EFapsException on error
+     * @return plain string
+     * @throws EFapsException
+     */
+    public Object getStringValue(final TargetMode _mode, final Instance _callInstance, final Instance _instance)
+            throws EFapsException
+    {
+        String ret = null;
+
+        ret = executeEvents(_mode, _callInstance, _instance);
+        if (ret == null) {
+            if (this.ui != null) {
+                ret = this.ui.getStringValue(this, _mode);
+            }
+        }
+        return ret;
+    }
+
+    /**
      * Method is used to retrieve the value that mut be used for comparison.
      *
      * @return Object

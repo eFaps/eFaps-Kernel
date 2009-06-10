@@ -70,6 +70,17 @@ public interface UIInterface
     String getReadOnlyHtml(final FieldValue _fieldValue, TargetMode _mode) throws EFapsException;
 
     /**
+     * Method to get a String representation of the value. This is used e.g.
+     * for labels. In comparison to the Html-Methods it should not contain html.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @param _mode target mode
+     * @return String representation of the object for viewing
+     * @throws EFapsException on error
+     */
+    String getStringValue(final FieldValue _fieldValue, TargetMode _mode) throws EFapsException;
+
+    /**
      * Method to get the Object for use in case of comparison.
      *
      * @param _fieldValue Fieldvalue the representation is requested

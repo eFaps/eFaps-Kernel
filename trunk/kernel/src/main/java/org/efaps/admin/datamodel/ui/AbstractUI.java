@@ -81,6 +81,18 @@ public abstract class AbstractUI implements UIInterface, Serializable
 
 
     /**
+     * @see org.efaps.admin.datamodel.ui.UIInterface#getStringValue(org.efaps.admin.datamodel.ui.FieldValue, org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode)
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @param _mode the target mode
+     * @return "String-Value"
+     * @throws EFapsException on error
+     */
+    public String getStringValue(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    {
+        return "String-Value";
+    }
+
+    /**
      * Method to get the Object for use in case of comparison.
      *
      * @param _fieldValue Fieldvalue the representation is requested
