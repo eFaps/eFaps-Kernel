@@ -419,6 +419,8 @@ public class Field extends AbstractUserInterfaceObject
             this.mode2display.put(TargetMode.CREATE, Field.Display.valueOf(_value.toUpperCase()));
         } else if ("ModeEdit".equals(_name)) {
             this.mode2display.put(TargetMode.EDIT, Field.Display.valueOf(_value.toUpperCase()));
+        } else if ("ModePrint".equals(_name)) {
+            this.mode2display.put(TargetMode.PRINT, Field.Display.valueOf(_value.toUpperCase()));
         } else if ("ModeSearch".equals(_name)) {
             this.mode2display.put(TargetMode.SEARCH, Field.Display.valueOf(_value.toUpperCase()));
         } else if ("ModeView".equals(_name)) {
@@ -960,6 +962,7 @@ public class Field extends AbstractUserInterfaceObject
      * <li>ModeConnect: false</li>
      * <li>ModeCreate: false</li>
      * <li>ModeView: false</li>
+     * <li>ModePrint: false</li>
      * <li>ModeEdit: false</li>
      * <li>ModeSearch: false</li>
      * </ul>
@@ -983,6 +986,7 @@ public class Field extends AbstractUserInterfaceObject
      * <li>ModeConnect: true</li>
      * <li>ModeCreate: false</li>
      * <li>ModeView: true</li>
+     * <li>ModePrint: true</li>
      * <li>ModeEdit: true</li>
      * <li>ModeSearch: false</li>
      * </ul>
@@ -996,7 +1000,7 @@ public class Field extends AbstractUserInterfaceObject
         if (this.mode2display.containsKey(_mode)) {
             ret = this.mode2display.get(_mode).equals(Field.Display.READONLY);
         } else if (_mode.equals(TargetMode.CONNECT) || _mode.equals(TargetMode.VIEW)
-                        || _mode.equals(TargetMode.EDIT)) {
+                        || _mode.equals(TargetMode.EDIT) || _mode.equals(TargetMode.PRINT)) {
             ret = true;
         }
         return ret;
@@ -1011,6 +1015,7 @@ public class Field extends AbstractUserInterfaceObject
      * <li>ModeView: false</li>
      * <li>ModeEdit: false</li>
      * <li>ModeSearch: false</li>
+     * <li>ModePrint: false</li>
      * </ul>
      *
      * @param _mode  target mode
@@ -1034,6 +1039,7 @@ public class Field extends AbstractUserInterfaceObject
      * <li>ModeView: false</li>
      * <li>ModeEdit: false</li>
      * <li>ModeSearch: true</li>
+     * <li>ModePrint: false</li>
      * </ul>
      *
      * @param _mode  target mode
