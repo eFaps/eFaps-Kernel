@@ -251,7 +251,7 @@ public class FieldValue implements Comparable<Object>
      * @return plain string
      * @throws EFapsException
      */
-    public Object getStringValue(final TargetMode _mode, final Instance _callInstance, final Instance _instance)
+    public String getStringValue(final TargetMode _mode, final Instance _callInstance, final Instance _instance)
             throws EFapsException
     {
         String ret = null;
