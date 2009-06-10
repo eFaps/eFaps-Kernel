@@ -89,7 +89,7 @@ public abstract class AbstractUI implements UIInterface, Serializable
      */
     public String getStringValue(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
     {
-        return "String-Value";
+        return getReadOnlyHtml(_fieldValue, _mode);
     }
 
     /**
