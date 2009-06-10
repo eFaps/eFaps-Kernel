@@ -72,6 +72,8 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
     CREATE,
     /** TargetMode for create. */
     EDIT,
+    /** TargetMode for print. */
+    PRINT,
     /** TargetMode for edit. */
     SEARCH,
     /** TargetMode for unkown. */
