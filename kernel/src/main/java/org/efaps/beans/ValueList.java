@@ -145,7 +145,7 @@ public class ValueList
                 case EXPRESSION:
                     final Attribute attr = _query.getAttribute(token.value);
                     final Object value = _query.get(token.value);
-                    buf.append((new FieldValue(null, attr, value, null)).getReadOnlyHtml(_mode, _callInstance, null));
+                    buf.append((new FieldValue(null, attr, value, null)).getStringValue(_mode, _callInstance, null));
                     break;
                 case TEXT:
                     buf.append(token.value);

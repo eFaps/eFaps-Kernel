@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.util.EFapsException;
 
 /**
  * Class to represent a String for the user interface.
@@ -116,6 +117,19 @@ public class StringUI extends AbstractUI
             }
         }
         return ret.toString();
+    }
+
+    /**
+     * @see org.efaps.admin.datamodel.ui.UIInterface#getStringValue(org.efaps.admin.datamodel.ui.FieldValue, org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode)
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @param _mode the target mode
+     * @return "String-Value"
+     * @throws EFapsException on error
+     */
+    @Override
+    public String getStringValue(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    {
+        return _fieldValue.getValue() == null ? "" : _fieldValue.getValue().toString();
     }
 
     /**
