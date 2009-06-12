@@ -244,6 +244,12 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     private Menu targetMenu = null;
 
     /**
+     * The instance method stores the command that will be executed after this
+     * command.
+     */
+    private AbstractCommand targetCommand = null;
+
+    /**
      * The instance variable stores the mode of the target user interface
      * object.
      *
@@ -636,6 +642,26 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     {
         this.targetMenu = _targetMenu;
 
+    }
+
+    /**
+     * Getter method for instance variable {@link #targetCommand}.
+     *
+     * @return value of instance variable {@link #targetCommand}
+     */
+    public AbstractCommand getTargetCommand()
+    {
+        return this.targetCommand;
+    }
+
+    /**
+     * Setter method for instance variable {@link #targetCommand}.
+     *
+     * @param _targetCommand value for instance variable {@link #targetCommand}
+     */
+    public void setTargetCommand(final AbstractCommand _targetCommand)
+    {
+        this.targetCommand = _targetCommand;
     }
 
     /**
@@ -1053,6 +1079,9 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
                 break;
             case LINK_TARGET_TABLE:
                 setTargetTable(Table.get(_toId));
+                break;
+            case LINK_TARGET_CMD:
+                setTargetCommand(Command.get(_toId));
                 break;
             default:
                 super.setLinkProperty(_linkType, _toId, _toType, _toName);
