@@ -250,6 +250,11 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     private AbstractCommand targetCommand = null;
 
     /**
+     * Should the revise/previous button be rendered.
+     */
+    private boolean targetCmdRevise = true;
+
+    /**
      * The instance variable stores the mode of the target user interface
      * object.
      *
@@ -662,6 +667,26 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     public void setTargetCommand(final AbstractCommand _targetCommand)
     {
         this.targetCommand = _targetCommand;
+    }
+
+    /**
+     * Getter method for instance variable {@link #targetCmdRevise}.
+     *
+     * @return value of instance variable {@link #targetCmdRevise}
+     */
+    public boolean isTargetCmdRevise()
+    {
+        return this.targetCmdRevise;
+    }
+
+    /**
+     * Setter method for instance variable {@link #targetCmdRevise}.
+     *
+     * @param _targetCmdRevise value for instance variable {@link #targetCmdRevise}
+     */
+    public void setTargetCmdRevise(final boolean _targetCmdRevise)
+    {
+        this.targetCmdRevise = _targetCmdRevise;
     }
 
     /**
@@ -1132,6 +1157,8 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
             }
         } else if ("TargetBottomHeight".equals(_name)) {
             setTargetBottomHeight(Integer.parseInt(_value));
+        } else if ("TargetCmdRevise".equals(_name)) {
+            setTargetCmdRevise("TRUE".equalsIgnoreCase(_value));
         } else if ("TargetConnectAttribute".equals(_name)) {
             setTargetConnectAttribute(Attribute.get(_value));
         } else if ("TargetCreateType".equals(_name)) {
