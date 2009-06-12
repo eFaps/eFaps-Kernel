@@ -136,6 +136,8 @@ public enum EFapsClassNames
     LINK_MENUISTYPETREEFOR("ce5087b5-ee5c-49c3-adfb-5da18f95a4d0"),
     /** Admin_UI_LinkIsTypeFormFor. */
     LINK_MENUISTYPEFORMFOR("3daa3a22-9399-4716-a670-2adaacfb6be4"),
+    /** Admin_UI_LinkTargetCommand. */
+    LINK_TARGET_CMD("8909acf2-2f38-474d-ba7f-713b3bddbef7"),
     /** */
     LINK_TARGET_FORM("3eb6f003-c04e-48f0-8fac-797438ed6501"),
     /** */
