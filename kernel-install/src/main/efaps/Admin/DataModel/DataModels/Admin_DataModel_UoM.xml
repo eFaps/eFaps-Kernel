@@ -33,48 +33,48 @@
   <definition>
   
     <version-expression>(version==6) || (version==latest)</version-expression>
-    <name>Admin_Datamodel_UoM</name>
+    <name>Admin_DataModel_UoM</name>
     
     <attribute>
       <name>OID</name>
       <type>OID</type>
-      <sqltable>Admin_Datamodel_UoMSQLTable</sqltable>
+      <sqltable>Admin_DataModel_UoMSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
 
     <attribute>
       <name>ID</name>
       <type>Integer</type>
-      <sqltable>Admin_Datamodel_UoMSQLTable</sqltable>
+      <sqltable>Admin_DataModel_UoMSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
     
     <attribute>
       <name>Dimension</name>
       <type>Link</type>
-      <typelink>Admin_Datamodel_Dimension</typelink>
-      <sqltable>Admin_Datamodel_UoMSQLTable</sqltable>
+      <typelink>Admin_DataModel_Dimension</typelink>
+      <sqltable>Admin_DataModel_UoMSQLTable</sqltable>
       <sqlcolumn>DIMID</sqlcolumn>
     </attribute>
     
     <attribute>
       <name>Name</name>
       <type>String</type>
-      <sqltable>Admin_Datamodel_UoMSQLTable</sqltable>
+      <sqltable>Admin_DataModel_UoMSQLTable</sqltable>
       <sqlcolumn>NAME</sqlcolumn>
     </attribute>
     
     <attribute>
       <name>Numerator</name>
       <type>Integer</type>
-      <sqltable>Admin_Datamodel_UoMSQLTable</sqltable>
+      <sqltable>Admin_DataModel_UoMSQLTable</sqltable>
       <sqlcolumn>NUMERATOR</sqlcolumn>
     </attribute>
   
     <attribute>
       <name>Denominator</name>
       <type>Integer</type>
-      <sqltable>Admin_Datamodel_UoMSQLTable</sqltable>
+      <sqltable>Admin_DataModel_UoMSQLTable</sqltable>
       <sqlcolumn>DENOMINATOR</sqlcolumn>
     </attribute>
 

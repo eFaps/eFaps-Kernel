@@ -23,26 +23,20 @@
 
 -->
 
-<ui-command xmlns="http://www.efaps.org/xsd"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-menu xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>f7ae8128-627f-44b4-af2f-1adfe778dd1e</uuid>
+  <uuid>3e4fb744-67f9-4fa3-a1ee-21d832ead737</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_DataModel_DimensionMyDesk_Menu_Action_Create</name>
-    <!-- target definitions -->
-    <target>
-      <form>Admin_DataModel_DimensionForm</form>
-      <execute program="org.efaps.esjp.common.uiform.Create"/>
-    </target>
-    <!-- properties -->
-    <property name="Target">modal</property>
-    <property name="TargetCreateType">Admin_DataModel_Dimension</property>
-    <property name="TargetMode">create</property>
+    <name>Admin_DataModel_DimensionTree_UoMs_Menu_Action</name>
+    <childs>
+      <child>Admin_DataModel_DimensionTree_UoMs_Action_AddUoM</child>
+    </childs>
   </definition>
 
-</ui-command>
+</ui-menu>

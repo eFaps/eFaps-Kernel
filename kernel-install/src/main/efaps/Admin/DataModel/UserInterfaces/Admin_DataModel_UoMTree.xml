@@ -27,24 +27,22 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>0fa6e952-686a-4660-8e66-fae9bdaa2324</uuid>
+  <uuid>4b8adae4-29d2-476b-8f14-19fa142ae050</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_DataModel_DimensionTree</name>
+    <name>Admin_DataModel_UoMTree</name>
     <!-- targets -->
     <target>
-      <menu>Admin_DataModel_DimensionTree_Menu</menu>
-      <form>Admin_DataModel_DimensionForm</form>
+      <menu>Admin_DataModel_UoMTree_Menu</menu>
+      <form>Admin_DataModel_UoMForm</form>
     </target>
     <!-- type tree for -->
-    <type>Admin_DataModel_Dimension</type>
+    <type>Admin_DataModel_UoM</type>
     <!-- childs -->
-    <childs>
-      <child>Admin_DataModel_DimensionTree_UoMs</child>
-    </childs>
+    
     <!-- properties -->
     <property name="Target">content</property>
     <property name="TargetMode">view</property>

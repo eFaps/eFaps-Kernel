@@ -32,7 +32,7 @@
   
   <definition>
     <version-expression>(version==6) || (version==latest)</version-expression>
-    <name>Admin_Datamodel_UoMSQLTable</name>
+    <name>Admin_DataModel_UoMSQLTable</name>
     <database>
       <table-name>T_DMUOM</table-name>
       <!-- columns -->

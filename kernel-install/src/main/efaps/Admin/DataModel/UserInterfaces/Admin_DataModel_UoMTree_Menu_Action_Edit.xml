@@ -27,22 +27,21 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>f7ae8128-627f-44b4-af2f-1adfe778dd1e</uuid>
+  <uuid>21d5544d-bb70-4ba9-9fab-a852700d24de</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_DataModel_DimensionMyDesk_Menu_Action_Create</name>
+    <name>Admin_DataModel_UoMTree_Menu_Action_Edit</name>
     <!-- target definitions -->
     <target>
-      <form>Admin_DataModel_DimensionForm</form>
-      <execute program="org.efaps.esjp.common.uiform.Create"/>
+      <form>Admin_DataModel_UoMForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Edit"/>
     </target>
     <!-- properties -->
     <property name="Target">modal</property>
-    <property name="TargetCreateType">Admin_DataModel_Dimension</property>
-    <property name="TargetMode">create</property>
+    <property name="TargetMode">edit</property>
   </definition>
 
 </ui-command>
