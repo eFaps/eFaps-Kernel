@@ -27,7 +27,7 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>010d8944-da77-4769-8773-749dca81b377</uuid>
+  <uuid></uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
@@ -36,9 +36,10 @@
     <name>Admin_DataModel_DimensionTree_UoMs</name>
     <!-- target definitions -->
     <target>
+      <menu>Admin_DataModel_DimensionTree_UoMs_Menu</menu>
       <table>Admin_DataModel_UoMTable</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
-        <property name="Expand">Admin_Datamodel_UoM\Dimension</property>
+        <property name="Expand">Admin_DataModel_UoM\Dimension</property>
       </evaluate>
     </target>
     <!-- properties -->

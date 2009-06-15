@@ -33,66 +33,66 @@
   <definition>
   
     <version-expression>(version==6) || (version==latest)</version-expression>
-    <name>Admin_Datamodel_Dimension</name>
+    <name>Admin_DataModel_Dimension</name>
     
     <attribute>
       <name>OID</name>
       <type>OID</type>
-      <sqltable>Admin_Datamodel_DimensionSQLTable</sqltable>
+      <sqltable>Admin_DataModel_DimensionSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
 
     <attribute>
       <name>ID</name>
       <type>Integer</type>
-      <sqltable>Admin_Datamodel_DimensionSQLTable</sqltable>
+      <sqltable>Admin_DataModel_DimensionSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
     
     <attribute>
       <name>Name</name>
       <type>String</type>
-      <sqltable>Admin_Datamodel_DimensionSQLTable</sqltable>
+      <sqltable>Admin_DataModel_DimensionSQLTable</sqltable>
       <sqlcolumn>NAME</sqlcolumn>
     </attribute>
     
     <attribute>
       <name>Description</name>
       <type>String</type>
-      <sqltable>Admin_Datamodel_DimensionSQLTable</sqltable>
+      <sqltable>Admin_DataModel_DimensionSQLTable</sqltable>
       <sqlcolumn>DESCR</sqlcolumn>
     </attribute>
     
     <attribute>
       <name>BaseUoM</name>
       <type>Link</type>
-      <typelink>Admin_Datamodel_UoM</typelink>
-      <sqltable>Admin_Datamodel_DimensionSQLTable</sqltable>
+      <typelink>Admin_DataModel_UoM</typelink>
+      <sqltable>Admin_DataModel_DimensionSQLTable</sqltable>
       <sqlcolumn>BASEUOM</sqlcolumn>
     </attribute>
 
     <attribute>
       <name>Creator</name>
       <type>CreatorLink</type>
-      <sqltable>Admin_Datamodel_DimensionSQLTable</sqltable>
+      <sqltable>Admin_DataModel_DimensionSQLTable</sqltable>
       <sqlcolumn>CREATOR</sqlcolumn>
     </attribute>
     <attribute>
       <name>Created</name>
       <type>Created</type>
-      <sqltable>Admin_Datamodel_DimensionSQLTable</sqltable>
+      <sqltable>Admin_DataModel_DimensionSQLTable</sqltable>
       <sqlcolumn>CREATED</sqlcolumn>
     </attribute>
     <attribute>
       <name>Modifier</name>
       <type>ModifierLink</type>
-      <sqltable>Admin_Datamodel_DimensionSQLTable</sqltable>
+      <sqltable>Admin_DataModel_DimensionSQLTable</sqltable>
       <sqlcolumn>MODIFIER</sqlcolumn>
     </attribute>
     <attribute>
       <name>Modified</name>
       <type>Modified</type>
-      <sqltable>Admin_Datamodel_DimensionSQLTable</sqltable>
+      <sqltable>Admin_DataModel_DimensionSQLTable</sqltable>
       <sqlcolumn>MODIFIED</sqlcolumn>
     </attribute>
 
