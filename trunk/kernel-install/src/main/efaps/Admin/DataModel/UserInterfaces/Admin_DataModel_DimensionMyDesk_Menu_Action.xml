@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 
  Copyright 2003 - 2009 The eFaps Team
@@ -26,18 +27,16 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>9cebf60b-541c-4656-9ed0-6bcca06cc0a3</uuid>
+  <uuid>745907e8-f80c-42e2-a1ac-c3eb9fd36039</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_DataModel_AbstractMyDesk</name>
+    <name>Admin_DataModel_DimensionMyDesk_Menu_Action</name>
     <childs>
-      <child>Admin_DataModel_SQLTableMyDesk</child>
-      <child>Admin_DataModel_TypeMyDesk</child>
-      <child>Admin_DataModel_AttributeTypeMyDesk</child>
-      <child>Admin_DataModel_DimensionMyDesk</child>
+      <child>Admin_DataModel_DimensionMyDesk_Menu_Action_Create</child>
+      <child>Admin_DataModel_DimensionMyDesk_Menu_Action_Delete</child>
     </childs>
   </definition>
 
