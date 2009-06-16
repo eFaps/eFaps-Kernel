@@ -51,9 +51,19 @@
     </field>
     <field name="baseOuM">
       <property name="Columns">20</property>
+      <property name="ModeCreate">NONE</property>
+      <property name="ModeEdit">NONE</property>
+      <property name="Expression">BaseUoM.Name</property>
+    </field>
+    <field name="baseOuM4Edit">
+      <property name="Columns">20</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
-      <property name="Expression">BaseUoM.Name</property>
+      <property name="ModeView">NONE</property>
+      <property name="Expression">BaseUoM</property>
+      <trigger  program="org.efaps.esjp.admin.datamodel.DimensionUI" 
+                name="Admin_DataModel_DimensionForm/baseOuM4Edit.UI_Field_Value" 
+                event="UI_FIELD_VALUE"></trigger>
     </field>
     <field name="createGroup" character="Group">
       <property name="GroupCount">2</property>
