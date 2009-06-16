@@ -40,6 +40,14 @@
       <property name="Required">true</property>
       <property name="ModeSearch">EDITABLE</property>
     </field>
+    <field name="uuid">
+      <property name="Columns">40</property>
+      <property name="ModeCreate">EDITABLE</property>
+      <property name="ModeEdit">EDITABLE</property>
+      <property name="Expression">UUID</property>
+      <property name="Required">true</property>
+      <property name="ModeSearch">EDITABLE</property>
+    </field>
     <field name="description">
       <property name="Columns">40</property>
       <property name="Rows">10</property>
