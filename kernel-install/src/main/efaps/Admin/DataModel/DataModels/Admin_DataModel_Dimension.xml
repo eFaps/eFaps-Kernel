@@ -64,6 +64,13 @@
     </attribute>
     
     <attribute>
+      <name>UUID</name>
+      <type>String</type>
+      <sqltable>Admin_DataModel_DimensionSQLTable</sqltable>
+      <sqlcolumn>UUID</sqlcolumn>
+    </attribute>
+    
+    <attribute>
       <name>BaseUoM</name>
       <type>Link</type>
       <typelink>Admin_DataModel_UoM</typelink>
