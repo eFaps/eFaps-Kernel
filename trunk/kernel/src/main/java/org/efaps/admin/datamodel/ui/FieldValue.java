@@ -258,6 +258,7 @@ public class FieldValue implements Comparable<Object>
             final StringBuilder html = new StringBuilder();
             if (events != null) {
                 final Parameter parameter = new Parameter();
+                parameter.put(ParameterValues.ACCESSMODE, this.targetMode);
                 parameter.put(ParameterValues.UIOBJECT, this);
                 parameter.put(ParameterValues.CALL_INSTANCE, _callInstance);
                 parameter.put(ParameterValues.INSTANCE, _instance);
