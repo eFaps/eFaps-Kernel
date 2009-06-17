@@ -42,7 +42,7 @@ import org.efaps.util.EFapsException;
  * This class is used as the value for a field. It can be used to get the for
  * the user interface necessary strings etc.
  *
- * @author The eFaps TEam
+ * @author The eFaps Team
  * @version $Id$
  */
 public class FieldValue implements Comparable<Object>
@@ -132,51 +132,6 @@ public class FieldValue implements Comparable<Object>
 
 
     /**
-     * Executes the field value events for a field.
-     * @param _mode         target mode
-     * @param _display      display
-     * @param _callInstance instance for which this field is called (not the
-     *                      same as the instance of the field...)
-     * @param _instance     instance of the field (needed for table fields)
-     * @throws EFapsException on error
-     * @return string from called field value events or <code>null</code> if no
-     *         field value event is defined
-     *
-     */
-    protected String executeEvents(final TargetMode _mode, final Display _display, final Instance _callInstance,
-                                   final Instance _instance)
-            throws EFapsException
-    {
-        this.targetMode = _mode;
-        this.display = _display;
-        String ret = null;
-        if ((this.field != null) && this.field.hasEvents(EventType.UI_FIELD_VALUE)) {
-
-            final List<EventDefinition> events = this.field.getEvents(EventType.UI_FIELD_VALUE);
-
-            final StringBuilder html = new StringBuilder();
-            if (events != null) {
-                final Parameter parameter = new Parameter();
-                parameter.put(ParameterValues.UIOBJECT, this);
-                parameter.put(ParameterValues.CALL_INSTANCE, _callInstance);
-                parameter.put(ParameterValues.INSTANCE, _instance);
-                for (final EventDefinition evenDef : events) {
-                    final Return retu = evenDef.execute(parameter);
-                    if (retu.get(ReturnValues.SNIPLETT) != null) {
-                        html.append(retu.get(ReturnValues.SNIPLETT));
-                    } else if (retu.get(ReturnValues.VALUES) != null) {
-                        this.value = retu.get(ReturnValues.VALUES);
-                    }
-                }
-            }
-            if (html.length() > 0) {
-                ret = html.toString();
-            }
-        }
-        return ret;
-    }
-
-    /**
      * Method to get html code for this FieldValue in case of edit.
      *
      * @see #executeEvents
@@ -189,10 +144,13 @@ public class FieldValue implements Comparable<Object>
     public String getEditHtml(final TargetMode _mode, final Instance _callInstance, final Instance _instance)
             throws EFapsException
     {
+        this.targetMode = _mode;
+        this.display = Display.EDITABLE;
         String ret = null;
-        ret = executeEvents(_mode, Display.EDITABLE, _callInstance, _instance);
+        ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_VALUE);
         if (ret == null) {
-            if (this.ui != null) {
+            ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_FORMAT);
+            if (ret == null && this.ui != null) {
                 ret = this.ui.getEditHtml(this, _mode);
             }
         }
@@ -212,11 +170,13 @@ public class FieldValue implements Comparable<Object>
     public String getReadOnlyHtml(final TargetMode _mode, final Instance _callInstance, final Instance _instance)
             throws EFapsException
     {
+        this.targetMode = _mode;
+        this.display = Display.READONLY;
         String ret = null;
-
-        ret = executeEvents(_mode, Display.READONLY, _callInstance, _instance);
+        ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_VALUE);
         if (ret == null) {
-            if (this.ui != null) {
+            ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_FORMAT);
+            if (ret == null && this.ui != null) {
                 ret = this.ui.getReadOnlyHtml(this, _mode);
             }
         }
@@ -236,11 +196,13 @@ public class FieldValue implements Comparable<Object>
     public String getHiddenHtml(final TargetMode _mode, final Instance _callInstance, final Instance _instance)
                 throws EFapsException
     {
+        this.targetMode = _mode;
+        this.display = Display.HIDDEN;
         String ret = null;
-
-        ret = executeEvents(_mode, Display.HIDDEN, _callInstance, _instance);
+        ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_VALUE);
         if (ret == null) {
-            if (this.ui != null) {
+            ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_FORMAT);
+            if (ret == null && this.ui != null) {
                 ret = this.ui.getHiddenHtml(this, _mode);
             }
         }
@@ -261,12 +223,55 @@ public class FieldValue implements Comparable<Object>
     public String getStringValue(final TargetMode _mode, final Instance _callInstance, final Instance _instance)
             throws EFapsException
     {
+        this.targetMode = _mode;
+        this.display = Display.NONE;
         String ret = null;
-
-        ret = executeEvents(_mode, Display.NONE, _callInstance, _instance);
+        ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_VALUE);
         if (ret == null) {
-            if (this.ui != null) {
+            ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_FORMAT);
+            if (ret == null && this.ui != null) {
                 ret = this.ui.getStringValue(this, _mode);
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Executes the field value events for a field.
+     * @param _callInstance instance for which this field is called (not the
+     *                      same as the instance of the field...)
+     * @param _instance     instance of the field (needed for table fields)
+     * @param _eventType    event type
+     * @throws EFapsException on error
+     * @return string from called field value events or <code>null</code> if no
+     *         field value event is defined
+     *
+     */
+    protected String executeEvents(final Instance _callInstance, final Instance _instance, final EventType _eventType)
+            throws EFapsException
+    {
+        String ret = null;
+        if ((this.field != null) && this.field.hasEvents(_eventType)) {
+
+            final List<EventDefinition> events = this.field.getEvents(_eventType);
+
+            final StringBuilder html = new StringBuilder();
+            if (events != null) {
+                final Parameter parameter = new Parameter();
+                parameter.put(ParameterValues.UIOBJECT, this);
+                parameter.put(ParameterValues.CALL_INSTANCE, _callInstance);
+                parameter.put(ParameterValues.INSTANCE, _instance);
+                for (final EventDefinition evenDef : events) {
+                    final Return retu = evenDef.execute(parameter);
+                    if (retu.get(ReturnValues.SNIPLETT) != null) {
+                        html.append(retu.get(ReturnValues.SNIPLETT));
+                    } else if (retu.get(ReturnValues.VALUES) != null) {
+                        this.value = retu.get(ReturnValues.VALUES);
+                    }
+                }
+            }
+            if (html.length() > 0) {
+                ret = html.toString();
             }
         }
         return ret;

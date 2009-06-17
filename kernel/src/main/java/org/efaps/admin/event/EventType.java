@@ -56,6 +56,11 @@ public enum EventType  {
   UPDATE_PRE         ("Admin_DataModel_Type_Trigger_UpdatePre"),
   RANGE_VALUE        ("Admin_DataModel_AttributeRangeEvent"),
   /**
+   * EventType to get a formated Value for a Field. It is executed after
+   * retrieving the value. The value is passed to the esjp fopr formatting it.
+   */
+  UI_FIELD_FORMAT("Admin_UI_FieldFormatEvent"),
+  /**
    * EventType for a field that updates other fields. The event will be executed,
    * if the value for the field is changed.
    */
