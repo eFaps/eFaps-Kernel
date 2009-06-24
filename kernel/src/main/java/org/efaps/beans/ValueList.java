@@ -43,7 +43,6 @@ import org.efaps.util.EFapsException;
  */
 public class ValueList
 {
-
     /**
      * Enum used to differ expression parts from text parts.
      */
@@ -64,6 +63,16 @@ public class ValueList
      * Holds the tokens of this ValueList.
      */
     private final ArrayList<Token> tokens = new ArrayList<Token>();
+
+    /**
+     * Getter method for instance variable {@link #tokens}.
+     *
+     * @return value of instance variable {@link #tokens}
+     */
+    public ArrayList<Token> getTokens()
+    {
+        return this.tokens;
+    }
 
     /**
      * Get the ValueList.
@@ -96,7 +105,7 @@ public class ValueList
      */
     public void addExpression(final String _expression)
     {
-        this.tokens.add(new Token(TokenType.EXPRESSION, _expression));
+        this.tokens.add(new Token(ValueList.TokenType.EXPRESSION, _expression));
         getExpressions().add(_expression);
     }
 
@@ -107,7 +116,7 @@ public class ValueList
      */
     public void addText(final String _text)
     {
-        this.tokens.add(new Token(TokenType.TEXT, _text));
+        this.tokens.add(new Token(ValueList.TokenType.TEXT, _text));
     }
 
     /**
@@ -169,11 +178,10 @@ public class ValueList
     }
 
     /**
-     * This private class holds the Definitios of the ValueList.
+     * This class holds the definitions of the ValueList.
      */
-    private final class Token
+    public final class Token
     {
-
         /**
          * This instance variable holds the Type of this token.
          */
@@ -194,6 +202,26 @@ public class ValueList
         {
             this.type = _type;
             this.value = _value;
+        }
+
+        /**
+         * Getter method for instance variable {@link #type}.
+         *
+         * @return value of instance variable {@link #type}
+         */
+        public TokenType getType()
+        {
+            return this.type;
+        }
+
+        /**
+         * Getter method for instance variable {@link #value}.
+         *
+         * @return value of instance variable {@link #value}
+         */
+        public String getValue()
+        {
+            return this.value;
         }
     }
 }
