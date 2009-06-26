@@ -286,7 +286,7 @@ public class Insert extends Update
                 cmd.append(sqColumn);
             }
             val.append(first ? "" : ",");
-            if (!attrType.prepareUpdate(val)) {
+            if (!attrType.prepareInsert(val)) {
                 updateAttr.add(attrType);
             }
         }

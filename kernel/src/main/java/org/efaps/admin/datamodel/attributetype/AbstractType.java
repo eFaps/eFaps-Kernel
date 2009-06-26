@@ -31,11 +31,17 @@ public abstract class AbstractType implements IAttributeType
 {
     private Attribute attribute = null;
 
+    public boolean prepareInsert(final StringBuilder _stmt)
+    {
+        return prepareUpdate(_stmt);
+    }
+
     public boolean prepareUpdate(final StringBuilder _stmt)
     {
         _stmt.append("?");
         return false;
     }
+
 
     /**
      * This is the getter method for the field variable {@link #attribute}.

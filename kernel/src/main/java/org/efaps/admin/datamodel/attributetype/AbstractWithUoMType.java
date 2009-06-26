@@ -57,7 +57,7 @@ public abstract class AbstractWithUoMType extends AbstractType
     }
 
     @Override
-    public boolean prepareUpdate(final StringBuilder _stmt)
+    public boolean prepareInsert(final StringBuilder _stmt)
     {
         _stmt.append("?,?");
         return false;

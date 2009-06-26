@@ -476,6 +476,7 @@ public class Update
         cmd.append("update ").append(_table.getSqlTable()).append(" set ");
         boolean first = true;
         for (final IAttributeType attrType : _expressions) {
+            boolean added = false;
             for (final String sqColumn : attrType.getAttribute().getSqlColNames()) {
                 if (first) {
                     first = false;
@@ -483,10 +484,12 @@ public class Update
                     cmd.append(",");
                 }
                 cmd.append(sqColumn).append("=");
-            }
-
-            if (!attrType.prepareUpdate(cmd)) {
-                updateAttr.add(attrType);
+                if (!attrType.prepareUpdate(cmd)) {
+                    if (!added) {
+                        updateAttr.add(attrType);
+                        added = true;
+                    }
+                }
             }
         }
         cmd.append(" where ").append(_table.getSqlColId()).append("=").append(getId()).append("");
