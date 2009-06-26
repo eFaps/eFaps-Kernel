@@ -136,7 +136,7 @@ public class Update
             final Attribute attr = (Attribute) entry.getValue();
             final AttributeType attrType = attr.getAttributeType();
             if (attrType.isAlwaysUpdate()) {
-                add(attr, new Object[]{null}, false);
+                add(attr, false, (Object) null);
             }
         }
     }
@@ -176,43 +176,7 @@ public class Update
         return ret;
     }
 
-    /**
-     * @param _attr name of attribute to update
-     * @param _value attribute value
-     * @throws EFapsException on error
-     * @return Status
-     */
-    public Status add(final String _attr, final String _value) throws EFapsException
-    {
-        final Attribute attr = getInstance().getType().getAttribute(_attr);
-        if (attr == null) {
-            throw new EFapsException(getClass(), "add.UnknownAttributeName");
-        }
-        return add(attr, _value, true);
-    }
 
-    /**
-     * @param _attr     attribute to update
-     * @param _value    attribute value
-     * @throws EFapsException on error
-     * @return Status
-     */
-    public Status add(final Attribute _attr, final String _value) throws EFapsException
-    {
-        return add(_attr, _value, true);
-    }
-
-    /**
-     * @param _attr             attribute to update
-     * @param _value            new attribute value
-     * @param _triggerRelevant is the attribute treiiger relevant
-     * @throws EFapsException on error
-     * @return Status
-     */
-    public Status add(final Attribute _attr, final String _value, final boolean _triggerRelevant) throws EFapsException
-    {
-        return add(_attr, new Object[]{_value}, _triggerRelevant);
-    }
 
     /**
      * @param _attr     name of the attribute to update
@@ -237,7 +201,7 @@ public class Update
      */
     public Status add(final Attribute _attr, final DateTime _value) throws EFapsException
     {
-        return add(_attr, new Object[]{_value}, true);
+        return add(_attr, true, _value);
     }
 
     /**
@@ -246,13 +210,13 @@ public class Update
      * @throws EFapsException on error
      * @return Status
      */
-    public Status add(final String _attr, final String[] _values) throws EFapsException
+    public Status add(final String _attr, final String... _values) throws EFapsException
     {
         final Attribute attr = getInstance().getType().getAttribute(_attr);
         if (attr == null) {
             throw new EFapsException(getClass(), "add.UnknownAttributeName");
         }
-        return add(attr, _values, true);
+        return add(attr, _values);
     }
 
     /**
@@ -261,11 +225,24 @@ public class Update
      * @throws EFapsException on error
      * @return Status
      */
-    public Status add(final Attribute _attr, final String[] _values) throws EFapsException
+    public Status add(final Attribute _attr, final String... _values) throws EFapsException
     {
-        return add(_attr, _values, true);
+        return add(_attr, true, _values);
     }
 
+
+    /**
+     * @param _attr             attribute to update
+     * @param _value            new attribute value
+     * @param _triggerRelevant is the attribute treiiger relevant
+     * @throws EFapsException on error
+     * @return Status
+     */
+    public Status add(final Attribute _attr, final boolean _triggerRelevant, final String... _value)
+            throws EFapsException
+    {
+        return add(_attr, _triggerRelevant, (Object[]) _value);
+    }
 
     /**
      * @param _attr             Attribute to add
@@ -274,7 +251,7 @@ public class Update
      * @return Status
      * @throws EFapsException on error
      */
-    private Status add(final Attribute _attr, final Object[] _value, final boolean _triggerRelevant)
+    protected Status add(final Attribute _attr, final boolean _triggerRelevant, final Object... _value)
             throws EFapsException
     {
         Status ret = Update.STATUSOK;

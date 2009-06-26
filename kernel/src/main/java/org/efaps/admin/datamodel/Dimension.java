@@ -40,7 +40,7 @@ import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- * TODO comment!
+ * Class for Dimensions inside eFaps.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -55,6 +55,12 @@ public class Dimension extends AbstractAdminObject
      */
     private static final String SQL_SELECT_DIM = "select ID, NAME, UUID, DESCR, BASEUOM from T_DMDIM";
 
+    /**
+     * This is the sql select statement to select all UoM from the
+     * database.
+     *
+     * @see #initialise
+     */
     private static final String SQL_SELECT_UOM = "select ID, DIMID, NAME, NUMERATOR, DENOMINATOR  from T_DMUOM";
 
     /**
@@ -64,34 +70,51 @@ public class Dimension extends AbstractAdminObject
      */
     private static DimensionCache CACHE = new DimensionCache();
 
+    /**
+     * Mapping of UoMId to UoM.
+     */
     private static Map<Long, UoM> ID2UOM = new HashMap<Long, UoM>();
     /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(Dimension.class);
 
+    /**
+     * List of UoM belonging to this Dimension.
+     */
     private final List<UoM> uoMs = new ArrayList<UoM>();
 
+    /**
+     * Id of the base UoM.
+     */
     private final long baseUoMId;
 
+    /**
+     * Base UoM.
+     */
     private UoM baseUoM;
 
+
     /**
-     * @param _id
-     * @param _uuid
-     * @param _name
+     * Constructor.
+     * @param _id           id of this dimension
+     * @param _uuid         UUID of this dimension
+     * @param _name         Name of this dimension
+     * @param _description  description for this dimension
+     * @param _baseUoMId    id of the base UoM for this dimension
      */
     protected Dimension(final long _id, final String _uuid, final String _name, final String _description,
-                    final long _baseUoMId)
+                        final long _baseUoMId)
     {
         super(_id, _uuid, _name);
         this.baseUoMId = _baseUoMId;
     }
 
     /**
-     * @param _uom
+     * Method to add an UoM to this dimension.
+     * @param _uom UoM to add
      */
-    public void addUoM(final UoM _uom)
+    private void addUoM(final UoM _uom)
     {
         this.uoMs.add(_uom);
         if (_uom.getId() == this.baseUoMId) {
@@ -190,33 +213,61 @@ public class Dimension extends AbstractAdminObject
     }
 
 
-    public static UoM getUoM(final Long _uoMId) {
-       return Dimension.ID2UOM.get(_uoMId);
+    /**
+     * Static Method to get an UoM for an id.
+     * @param _uoMId    if the UoM is wanted for.
+     * @return UoM
+     */
+    public static UoM getUoM(final Long _uoMId)
+    {
+        return Dimension.ID2UOM.get(_uoMId);
     }
 
+    /**
+     * Class for an UoM. (Unit of Measurement)
+     */
     public class UoM
     {
-
+        /**
+         * Id of this UoM.
+         */
         private final long id;
+
+        /**
+         * Id of the dimension this UoM belongs to.
+         */
         private final long dimId;
+
+        /**
+         * Name of this UoM.
+         */
         private final String name;
+
+        /**
+         * Numerator for this UoM.
+         */
         private final int numerator;
+
+        /**
+         * Denominator for this UoM.
+         */
         private final int denominator;
 
         /**
-         * @param id
-         * @param dimId
-         * @param name
-         * @param numerator
-         * @param denominator
+         * @param _id           id of this UoM
+         * @param _dimId        Id of the dimension this UoM belongs to
+         * @param _name         Name of this UoM
+         * @param _numerator    Numerator for this UoM
+         * @param _denominator  Denominator for this UoM
          */
-        protected UoM(final long id, final long dimId, final String name, final int numerator, final int denominator)
+        protected UoM(final long _id, final long _dimId, final String _name, final int _numerator,
+                      final int _denominator)
         {
-            this.id = id;
-            this.dimId = dimId;
-            this.name = name;
-            this.numerator = numerator;
-            this.denominator = denominator;
+            this.id = _id;
+            this.dimId = _dimId;
+            this.name = _name;
+            this.numerator = _numerator;
+            this.denominator = _denominator;
         }
 
         /**
@@ -269,11 +320,30 @@ public class Dimension extends AbstractAdminObject
             return this.denominator;
         }
 
-        public Dimension getDimension() {
+        /**
+         * Method to get the Dimension this UoM belongs to.
+         * @return Dimension
+         */
+        public Dimension getDimension()
+        {
             return Dimension.get(this.dimId);
+        }
+
+        /**
+         * Method to calculate the given value into an base value.
+         * @param _value value to be calculated
+         * @return calculated base value
+         */
+        public Double getBaseDouble(final Double _value)
+        {
+            return _value * this.numerator / this.denominator;
         }
     }
 
+    /**
+     * Cache for Dimension.
+     *
+     */
     private static class DimensionCache extends Cache<Dimension>
     {
         /**
