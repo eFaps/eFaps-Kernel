@@ -41,6 +41,15 @@ public interface IAttributeType
      */
      boolean prepareUpdate(final StringBuilder _stmt);
 
+     /**
+      * The method prepares the statement for insert the object in the database.
+      *
+      * @param _stmt string buffer to append the statement
+      * @return <i>true</i> if only a preparation is needed, otherwise
+      *         <i>false</i> if the value must be set
+      */
+      boolean prepareInsert(final StringBuilder _stmt);
+
     /**
      * The method updates in the statement the value.
      *
