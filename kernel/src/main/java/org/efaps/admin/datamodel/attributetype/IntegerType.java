@@ -27,82 +27,92 @@ import java.util.List;
 import org.efaps.db.query.CachedResult;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class IntegerType extends AbstractType {
-
-  @Override
-  public void update(final Object _object, final PreparedStatement _stmt,
-      final List<Integer> _index) throws SQLException {
-    _stmt.setInt(_index.get(0), getValue());
-  }
-
-  /**
-   * @todo test that only one value is given for indexes
-   */
-  @Override
-  public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
-
-    final Long val = _rs.getLong(_indexes.get(0).intValue());
-    this.value = (val != null) ? val.intValue() : 0;
-    return _rs.getLong(_indexes.get(0).intValue());
-  }
-
-  // //////////////////////////////////////////////////////////////////////////7
-
-  @Override
-  public void set(final Object _value) {
-    if (_value != null) {
-      if ((_value instanceof String) && (((String) _value).length() > 0)) {
-        setValue(Integer.parseInt((String) _value));
-      } else if (_value instanceof Number) {
-        setValue(((Number) _value).intValue());
-      }
+public class IntegerType extends AbstractType
+{
+    /**
+     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
+     * @param _object   object
+     * @param _stmt     SQL statement to update the value
+     * @param _index    index in the SQL statement to update the value
+     * @return number of indexes used in the method, if the return value is null an error should be thrown
+     * @throws SQLException on error
+     */
+    public int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException
+    {
+        _stmt.setInt(_index, getValue());
+        return 1;
     }
-  }
 
-  // ///////////////////////////////////////////////////////////////////////////
+    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    {
 
-  /**
-   * @see #getValue
-   * @see #setValue
-   */
-  private int value = 0;
+        final Long val = _rs.getLong(_indexes.get(0).intValue());
+        this.value = (val != null) ? val.intValue() : 0;
+        return _rs.getLong(_indexes.get(0).intValue());
+    }
 
-  // ///////////////////////////////////////////////////////////////////////////
+    public void set(final Object[] _value)
+    {
+        if (_value != null) {
+            if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
+                setValue(Integer.parseInt((String) _value[0]));
+            } else if (_value[0] instanceof Number) {
+                setValue(((Number) _value[0]).intValue());
+            }
+        }
+    }
 
-  /**
-   * This is the setter method for instance variable {@link #value}.
-   *
-   * @param _value
-   *          new value for instance variable {@link #value}
-   * @see #value
-   * @see #getValue
-   */
-  public void setValue(final int _value) {
-    this.value = _value;
-  }
+    // ///////////////////////////////////////////////////////////////////////////
 
-  /**
-   * This is the getter method for instance variable {@link #value}.
-   *
-   * @return the value of the instance variable {@link #value}.
-   * @see #value
-   * @see #setValue
-   */
-  public int getValue() {
-    return this.value;
-  }
-  /* (non-Javadoc)
-   * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
-   */
-  public Object get() {
-    return value;
-  }
-  @Override
-  public String toString() {
-    return "" + getValue();
-  }
+    /**
+     * @see #getValue
+     * @see #setValue
+     */
+    private int value = 0;
+
+    // ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     * This is the setter method for instance variable {@link #value}.
+     *
+     * @param _value new value for instance variable {@link #value}
+     * @see #value
+     * @see #getValue
+     */
+    public void setValue(final int _value)
+    {
+        this.value = _value;
+    }
+
+    /**
+     * This is the getter method for instance variable {@link #value}.
+     *
+     * @return the value of the instance variable {@link #value}.
+     * @see #value
+     * @see #setValue
+     */
+    public int getValue()
+    {
+        return this.value;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
+     */
+    public Object get()
+    {
+        return this.value;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "" + getValue();
+    }
 
 }

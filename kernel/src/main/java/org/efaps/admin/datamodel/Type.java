@@ -246,7 +246,7 @@ public class Type extends AbstractDataModelObject
     protected Type(final long _id, final String _uuid, final String _name) throws CacheReloadException
     {
         super(_id, _uuid, _name);
-        addAttribute(new Attribute(0, "Type", "", (SQLTable) null, AttributeType.get("Type"), null));
+        addAttribute(new Attribute(0, "Type", "", (SQLTable) null, AttributeType.get("Type"), null, null));
     }
 
   /**

@@ -20,12 +20,11 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
@@ -33,56 +32,60 @@ import org.efaps.util.EFapsException;
 /**
  * The class is the attribute type representation for the modifier person of a
  * business object.
- * 
- * @author tmo
+ *
+ * @author The eFaps Team
  * @version $Id$
  */
-public class ModifierLinkType extends PersonLinkType {
-  /**
-   * Logger for this class
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(ModifierLinkType.class);
+public class ModifierLinkType extends PersonLinkType
+{
+    /**
+     * Logger for this class
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ModifierLinkType.class);
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // interface to the data base
+    // ///////////////////////////////////////////////////////////////////////////
+    // interface to the data base
 
-  /**
-   * The value of the modifier is added via the prepared statement setter
-   * method. So only a question mark ('?') is added to the statement. The value
-   * is set with method {@link #update}.
-   * 
-   * @param _stmt
-   *          string buffer with the statement
-   * @see #update
-   */
-  public boolean prepareUpdate(final StringBuilder _stmt) {
-    _stmt.append("?");
-    return false;
-  }
-
-  /**
-   * The instance method sets the value in the prepared statement to the id of
-   * the current context user.
-   * 
-   * @param _context
-   *          context for this request
-   * @param _stmt
-   *          sql prepared statement where to set the value
-   * @param _index
-   *          index in the prepared statement to set the value
-   * @see #prepareUpdate
-   */
-  public void update(final Object _object, final PreparedStatement _stmt,
-      final List<Integer> _indexes) throws SQLException {
-    try {
-      _stmt.setLong(_indexes.get(0), Context.getThreadContext().getPerson()
-          .getId());
-    } catch (EFapsException e) {
-      LOG.error("update(Object, PreparedStatement, List<Integer>)", e);
+    /**
+     * The value of the modifier is added via the prepared statement setter
+     * method. So only a question mark ('?') is added to the statement. The
+     * value is set with method {@link #update}.
+     *
+     * @param _stmt string buffer with the statement
+     * @see #update
+     */
+    @Override
+    public boolean prepareUpdate(final StringBuilder _stmt)
+    {
+        _stmt.append("?");
+        return false;
     }
-  }
 
-  public String toString() {
-    return "" + getValue();
-  }
+    /**
+     * The instance method sets the value in the prepared statement to the id of
+     * the current context user.
+     *
+     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
+     * @param _object   object
+     * @param _stmt     SQL statement to update the value
+     * @param _index    index in the SQL statement to update the value
+     * @return number of indexes used in the method, if the return value is null an error should be thrown
+     * @throws SQLException on error
+     */
+    @Override
+    public int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException
+    {
+        try {
+            _stmt.setLong(_index, Context.getThreadContext().getPerson().getId());
+        } catch (final EFapsException e) {
+            LOG.error("update(Object, PreparedStatement, List<Integer>)", e);
+        }
+        return 1;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "" + getValue();
+    }
 }

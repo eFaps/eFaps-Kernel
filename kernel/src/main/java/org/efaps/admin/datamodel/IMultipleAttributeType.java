@@ -30,7 +30,7 @@ import org.efaps.db.query.CachedResult;
  * @author jmox
  * @version $Id$
  */
-public interface MultipleAttributeTypeInterface extends AttributeTypeInterface{
+public interface IMultipleAttributeType extends IAttributeType{
 
   // ///////////////////////////////////////////////////////////////////////////
   // methods for the interface to the database

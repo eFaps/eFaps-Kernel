@@ -60,9 +60,11 @@
 
       var c = Context.begin(EFAPS_USERNAME);
 
-      EFAPS_LOGGER.info("    Update '" + EFAPS_USERNAME + "' Password"); c.getPerson().setPassword(EFAPS_PASSWORD);
+      EFAPS_LOGGER.info("    Update '" + EFAPS_USERNAME + "' Password"); 
+      c.getPerson().setPassword(EFAPS_PASSWORD);
 
-      EFAPS_LOGGER.info("    Activate Person '" + EFAPS_USERNAME + "'"); var update = new Update(Type.get("Admin_User_Abstract"), "1");
+      EFAPS_LOGGER.info("    Activate Person '" + EFAPS_USERNAME + "'"); 
+      var update = new Update(Type.get("Admin_User_Abstract"), "1");
       update.add("Status","true"); 
       update.executeWithoutAccessCheck();
       

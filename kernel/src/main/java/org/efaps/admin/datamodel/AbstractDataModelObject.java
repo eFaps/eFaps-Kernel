@@ -52,7 +52,7 @@ public abstract class AbstractDataModelObject extends AbstractAdminObject
         AttributeType.initialize(AbstractDataModelObject.class);
         SQLTable.initialize(AbstractDataModelObject.class);
         Type.initialize(AbstractDataModelObject.class);
-        Attribute.initialize(AbstractDataModelObject.class);
         Dimension.initialize(AbstractDataModelObject.class);
+        Attribute.initialize(AbstractDataModelObject.class);
     }
 }

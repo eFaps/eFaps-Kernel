@@ -27,96 +27,85 @@ import java.util.List;
 import org.efaps.db.query.CachedResult;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class StringType extends AbstractType {
+public class StringType extends AbstractType
+{
 
-  @Override
-  public void update(final Object _object, final PreparedStatement _stmt,
-      final List<Integer> _indexes) throws SQLException {
-    _stmt.setString(_indexes.get(0), getValue());
-  }
+    // ///////////////////////////////////////////////////////////////////////////
 
-  /**
-   * @todo test that only one value is given for indexes
-   */
-  @Override
-  public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
+    /**
+     * @see #getValue
+     * @see #setValue
+     */
+    private  String value = null;
 
-    setValue(_rs.getString(_indexes.get(0).intValue()));
-    String ret = _rs.getString(_indexes.get(0).intValue());
-    if (ret != null) {
-      ret = ret.trim();
+
+    /**
+     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
+     * @param _object   object
+     * @param _stmt     SQL statement to update the value
+     * @param _index    index in the SQL statement to update the value
+     * @return number of indexes used in the method, if the return value is null an error should be thrown
+     * @throws SQLException on error
+     */
+    public int update(final Object _object, final PreparedStatement _stmt, final int _indexes)
+                    throws SQLException
+    {
+        _stmt.setString(_indexes,  this.value);
+        return 1;
     }
-    return ret;
-  }
 
-  // //////////////////////////////////////////////////////////////////////////7
+    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    {
 
-  /**
-   * The localised string and the internal string value are equal. So the
-   * internal value can be set directly with method {@link #setValue}.
-   *
-   * @param _context
-   *          context for this request
-   * @param _value
-   *          new value to set
-   */
-  @Override
-  public void set(final Object _value) {
-    if (_value instanceof String) {
-      setValue((String) _value);
-    } else if (_value != null) {
-      setValue(_value.toString());
+        this.value = (_rs.getString(_indexes.get(0).intValue()));
+        if ( this.value != null) {
+            this.value =  this.value.trim();
+        }
+        return  this.value;
     }
-  }
 
+    /**
+     * The localised string and the internal string value are equal. So the
+     * internal value can be set directly with method {@link #setValue}.
+     *
+     * @param _context context for this request
+     * @param _value new value to set
+     */
+    public void set(final Object[] _value)
+    {
+        if (_value[0] instanceof String) {
+            this.value = ((String) _value[0]);
+        } else if (_value[0] != null) {
+            this.value = (_value[0].toString());
+        }
+    }
 
+    /**
+     * Getter method for instance variable {@link #value}.
+     *
+     * @return value of instance variable {@link #value}
+     */
+    protected String getValue()
+    {
+        return this.value;
+    }
 
-  // ///////////////////////////////////////////////////////////////////////////
+    /**
+     * Setter method for instance variable {@link #value}.
+     *
+     * @param value value for instance variable {@link #value}
+     */
+    protected void setValue(final String value)
+    {
+        this.value = value;
+    }
 
-  /**
-   * @see #getValue
-   * @see #setValue
-   */
-  private String value = null;
-
-  // ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This is the setter method for instance variable {@link #value}.
-   *
-   * @param _value
-   *          new value for instance variable {@link #value}
-   * @see #value
-   * @see #getValue
-   */
-  public void setValue(final String _value) {
-    this.value = (_value != null ? _value.trim() : null);
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #value}.
-   *
-   * @return the value of the instance variable {@link #value}.
-   * @see #value
-   * @see #setValue
-   */
-  public String getValue() {
-    return this.value;
-  }
-
-  /* (non-Javadoc)
-   * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
-   */
-  public Object get() {
-    return value;
-  }
-
-
-  @Override
-  public String toString() {
-    return "" + getValue();
-  }
+    @Override
+    public String toString()
+    {
+        return "" + this.value;
+    }
 }

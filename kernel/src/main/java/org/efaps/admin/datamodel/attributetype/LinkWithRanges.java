@@ -22,14 +22,15 @@ package org.efaps.admin.datamodel.attributetype;
 
 /**
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
 public class LinkWithRanges extends AbstractLinkType {
 
   // ///////////////////////////////////////////////////////////////////////////
 
-  public String toString() {
+  @Override
+public String toString() {
     return "" + getValue();
   }
 

@@ -34,101 +34,99 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class JavaScriptUpdate extends AbstractSourceUpdate {
-
-  /**
-   * Link from JavaScript extending JavaScript.
-   */
-  private static final Link LINK2SUPER =
-      new Link("Admin_Program_JavaScript2JavaScript",
-               "From",
-               "Admin_Program_JavaScript",
-               "To");
-
-  /**
-   * Set off all links for this JavaScriptUpdate.
-   */
-  private static final Set<Link> ALLLINKS = new HashSet<Link>();
-  static {
-    ALLLINKS.add(LINK2SUPER);
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param _url URL of the file
-   */
-  protected JavaScriptUpdate(final URL _url) {
-    super(_url, "Admin_Program_JavaScript", ALLLINKS);
-  }
-
-  /**
-   * Read the file.
-   *
-   * @param _url URL to the file
-   * @return  JavaScriptUpdate
-   */
-  public static JavaScriptUpdate readFile(final URL _url) {
-    final JavaScriptUpdate ret = new JavaScriptUpdate(_url);
-    final JavaScriptDefinition definition = ret.new JavaScriptDefinition(_url);
-    ret.addDefinition(definition);
-
-    return ret;
-  }
-
-  /**
-   * Definition for the JavaScript.
-   *
-   * @author jmox
-   * @version $Id$
-   */
-  public class JavaScriptDefinition extends SourceDefinition {
+public class JavaScriptUpdate extends AbstractSourceUpdate
+{
 
     /**
-     * Importer for the css.
+     * Link from JavaScript extending JavaScript.
      */
-    private JavaScriptImporter sourceCode = null;
+    private static final Link LINK2SUPER = new Link("Admin_Program_JavaScript2JavaScript", "From",
+                    "Admin_Program_JavaScript", "To");
 
     /**
-     * Construtor.
-     *
-     * @param _url URL to the css file
-     *
+     * Set off all links for this JavaScriptUpdate.
      */
-    public JavaScriptDefinition(final URL _url) {
-      super(_url);
+    private static final Set<Link> ALLLINKS = new HashSet<Link>();
+    static {
+        ALLLINKS.add(LINK2SUPER);
     }
 
     /**
-     * Search the instance.
+     * Constructor.
      *
-     * @throws EFapsException if the Java source code could not be read or the
-     *                        file could not be accessed because of the wrong
-     *                        URL
+     * @param _url URL of the file
      */
-    @Override
-    protected void searchInstance() throws EFapsException {
-      if (this.sourceCode == null) {
-        this.sourceCode = new JavaScriptImporter(getUrl());
-      }
-      setName(this.sourceCode.getProgramName());
-
-      if (this.sourceCode.getEFapsUUID() != null) {
-        addValue("UUID", this.sourceCode.getEFapsUUID().toString());
-      }
-
-      if (this.sourceCode.getRevision() != null) {
-        addValue("Revision", this.sourceCode.getRevision());
-      }
-
-      if (this.sourceCode.getExtendSource() != null) {
-        addLink(LINK2SUPER,
-                new LinkInstance(this.sourceCode.getExtendSource()));
-      }
-
-      if (this.instance == null) {
-        this.instance = this.sourceCode.searchInstance();
-      }
+    protected JavaScriptUpdate(final URL _url)
+    {
+        super(_url, "Admin_Program_JavaScript", ALLLINKS);
     }
-  }
+
+    /**
+     * Read the file.
+     *
+     * @param _url URL to the file
+     * @return JavaScriptUpdate
+     */
+    public static JavaScriptUpdate readFile(final URL _url)
+    {
+        final JavaScriptUpdate ret = new JavaScriptUpdate(_url);
+        final JavaScriptDefinition definition = ret.new JavaScriptDefinition(_url);
+        ret.addDefinition(definition);
+
+        return ret;
+    }
+
+    /**
+     * Definition for the JavaScript.
+     *
+     * @author jmox
+     * @version $Id: JavaScriptUpdate.java 2342 2009-05-04 23:58:04Z jan.moxter
+     *          $
+     */
+    public class JavaScriptDefinition extends SourceDefinition
+    {
+
+        /**
+         * Importer for the css.
+         */
+        private JavaScriptImporter sourceCode = null;
+
+        /**
+         * Construtor.
+         *
+         * @param _url URL to the css file
+         *
+         */
+        public JavaScriptDefinition(final URL _url)
+        {
+            super(_url);
+        }
+
+        /**
+         * Search the instance.
+         *
+         * @throws EFapsException if the Java source code could not be read or
+         *             the file could not be accessed because of the wrong URL
+         */
+        @Override
+        protected void searchInstance() throws EFapsException
+        {
+            if (this.sourceCode == null) {
+                this.sourceCode = new JavaScriptImporter(getUrl());
+            }
+            setName(this.sourceCode.getProgramName());
+
+            if (this.sourceCode.getEFapsUUID() != null) {
+                addValue("UUID", this.sourceCode.getEFapsUUID().toString());
+            }
+
+            if (this.sourceCode.getExtendSource() != null) {
+                addLink(LINK2SUPER, new LinkInstance(this.sourceCode.getExtendSource()));
+            }
+
+            if (this.instance == null) {
+                this.instance = this.sourceCode.searchInstance();
+            }
+        }
+    }
 }

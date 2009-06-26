@@ -33,7 +33,7 @@ import org.efaps.util.EFapsException;
  * @author tmo
  * @version $Id$
  */
-public interface AttributeDefinitionStoreInterface  {
+public interface IAttributeDefinitionStore  {
 
   /**
    * @param _context  eFaps context for this request

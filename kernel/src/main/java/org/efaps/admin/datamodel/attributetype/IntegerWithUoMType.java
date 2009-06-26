@@ -24,23 +24,21 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.efaps.admin.datamodel.Dimension;
 import org.efaps.db.query.CachedResult;
 
 /**
  * @author The eFaps Team
  * @version $Id$
- * @todo description
  */
-public class LongType extends AbstractType
+public class IntegerWithUoMType extends AbstractWithUoMType
 {
-
-    // ///////////////////////////////////////////////////////////////////////////
 
     /**
      * @see #getValue
      * @see #setValue
      */
-    private long value = 0;
+    private int value = 0;
 
     /**
      * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
@@ -50,45 +48,50 @@ public class LongType extends AbstractType
      * @return number of indexes used in the method, if the return value is null an error should be thrown
      * @throws SQLException on error
      */
-    public int update(final Object _Object, final PreparedStatement _stmt, final int _index)
-                    throws SQLException
+    public int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException
     {
-        _stmt.setLong(_index, this.value);
-        return 1;
+        _stmt.setInt(_index, getValue());
+        _stmt.setLong(_index + 1, getUoM().getId());
+        return 2;
     }
 
     public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
     {
-        final Long temp = _rs.getLong(_indexes.get(0).intValue());
-        this.value = (temp != null ? temp.longValue() : 0);
-        return this.value;
+        this.value = _rs.getLong(_indexes.get(0)).intValue();
+        setUoM(Dimension.getUoM(_rs.getLong(_indexes.get(1))));
+        return new Object[]{this.value, getUoM()};
     }
 
-
+    /**
+     * The localised string and the internal string value are equal. So the
+     * internal value can be set directly with method {@link #setValue}.
+     *
+     * @param _value new value to set
+     */
     public void set(final Object[] _value)
     {
-        if (_value != null) {
+        if (_value instanceof Object[]) {
             if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
-                this.value = Long.parseLong((String) _value[0]);
+                this.value = (Integer.parseInt((String) _value[0]));
             } else if (_value[0] instanceof Number) {
-                this.value = (((Number) _value[0]).longValue());
+                this.value = (((Number) _value[0]).intValue());
+            }
+            if ((_value[1] instanceof String) && (((String) _value[1]).length() > 0)) {
+                setUoM(Dimension.getUoM(Long.parseLong((String) _value[1])));
+            } else if (_value[1] instanceof Number) {
+                setUoM(Dimension.getUoM(((Number) _value[1]).longValue()));
             }
         }
     }
 
-
-    @Override
-    public String toString()
-    {
-        return "" + this.value;
-    }
-
-    /*
-     * (non-Javadoc)
+    /**
+     * This is the getter method for instance variable {@link #value}.
      *
-     * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
+     * @return the value of the instance variable {@link #value}.
+     * @see #value
+     * @see #setValue
      */
-    public Object get()
+    public Integer getValue()
     {
         return this.value;
     }

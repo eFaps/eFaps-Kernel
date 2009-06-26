@@ -91,10 +91,10 @@ public class AttributeType extends AbstractDataModelObject  {
    * @return new instance of the class representation
    * @see #classRepr
    */
-  public AttributeTypeInterface newInstance() throws EFapsException  {
-    AttributeTypeInterface ret = null;
+  public IAttributeType newInstance() throws EFapsException  {
+    IAttributeType ret = null;
     try  {
-      ret = (AttributeTypeInterface)getClassRepr().newInstance();
+      ret = (IAttributeType)getClassRepr().newInstance();
     } catch (final InstantiationException e)  {
       throw new EFapsException(getClass(), "newInstance.InstantiationException", e);
     } catch (final IllegalAccessException e)  {

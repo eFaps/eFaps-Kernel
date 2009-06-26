@@ -25,30 +25,30 @@ import org.efaps.db.Context;
 /**
  * The class is the attribute type representation for the modified date time of
  * a business object.
- * 
- * @author tmo
+ *
+ * @author The eFaps Team
  * @version $Id$
  */
-public class ModifiedType extends DateTimeType {
+public class ModifiedType extends DateTimeType
+{
+    /**
+     * The instance method appends <i>SYSDATE</i> to the sql statement. Because
+     * This is not a value, the method returns a <i>true</i>, that the value is
+     * hard coded and must not updated via a prepared sql statement.
+     *
+     * @param _stmt string buffer with the statement
+     * @return always <i>true</i>
+     */
+    @Override
+    public boolean prepareUpdate(final StringBuilder _stmt)
+    {
+        _stmt.append(Context.getDbType().getCurrentTimeStamp());
+        return true;
+    }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // interface to the data base
-
-  /**
-   * The instance method appends <i>SYSDATE</i> to the sql statement. Because
-   * This is not a value, the method returns a <i>true</i>, that the value is
-   * hard coded and must not updated via a prepared sql statement.
-   * 
-   * @param _stmt
-   *          string buffer with the statement
-   * @return always <i>true</i>
-   */
-  public boolean prepareUpdate(final StringBuilder _stmt) {
-    _stmt.append(Context.getDbType().getCurrentTimeStamp());
-    return true;
-  }
-
-  public String toString() {
-    return "" + getValue();
-  }
+    @Override
+    public String toString()
+    {
+        return "" + getValue();
+    }
 }

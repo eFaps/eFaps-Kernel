@@ -28,93 +28,73 @@ import java.util.List;
 import org.efaps.db.query.CachedResult;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  * @todo till now only integer / Long ID's are allowed; this must be changed
  */
-public abstract class AbstractLinkType extends AbstractType {
+public abstract class AbstractLinkType extends AbstractType
+{
+    /**
+     * @see #getValue
+     * @see #setValue
+     */
+    private Object value = null;
 
-  /**
-   * @param _value
-   *          new value to set
-   */
-  @Override
-  public void set(final Object _value) {
-    if (_value != null) {
-      if ((_value instanceof String) && (((String) _value).length() > 0)) {
-        setValue(Long.parseLong((String) _value));
-      } else if (_value instanceof Long) {
-        setValue(_value);
-      }
+    /**
+     * @param _value new value to set
+     */
+    public void set(final Object[] _value)
+    {
+        if (_value != null) {
+            if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
+                this.value = (Long.parseLong((String) _value[0]));
+            } else if (_value[0] instanceof Long) {
+                this.value = (_value[0]);
+            }
+        }
     }
-  }
 
-  // ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Updates the value in the database with the stored value in the cache. If
-   * the value is '0', the value in the database is set to <i>NULL</i> (a zero
-   * in the cache means no link!).
-   */
-  @Override
-  public void update(final Object _object,
-                     final PreparedStatement _stmt,
-                     final List<Integer> _index)
-      throws SQLException {
-
-    if (this.value == null)  {
-      _stmt.setNull(_index.get(0), Types.INTEGER);
-    } else  {
-      _stmt.setObject(_index.get(0), getValue());
+    /**
+     *  Updates the value in the database with the stored value in the cache. If
+     * the value is '0', the value in the database is set to <i>NULL</i> (a zero
+     * in the cache means no link!).
+     *
+     * @param _object   object
+     * @param _stmt     SQL statement to update the value
+     * @param _index    index in the SQL statement to update the value
+     * @return number of indexes used in the method, if the return value is null an error should be thrown
+     * @throws SQLException on error
+     */
+    public int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException
+    {
+        if (this.value == null) {
+            _stmt.setNull(_index, Types.INTEGER);
+        } else {
+            _stmt.setObject(_index, getValue());
+        }
+        return 1;
     }
-  }
 
-  /**
-   * @param _rs
-   * @param _index
-   * @todo test that only one value is given for indexes
-   */
-  @Override
-  public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
+    /**
+     * @param _rs
+     * @param _index
+     * @todo test that only one value is given for indexes
+     */
+    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    {
+        this.value = (_rs.getObject(_indexes.get(0)));
+        return getValue();
+    }
 
-    setValue(_rs.getObject(_indexes.get(0)));
-    return getValue();
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * @see #getValue
-   * @see #setValue
-   */
-  private Object value = null;
-
-  // ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This is the setter method for instance variable {@link #value}.
-   *
-   * @param _value
-   *          new value for instance variable {@link #value}
-   * @see #value
-   * @see #getValue
-   */
-  public void setValue(final Object _value) {
-    this.value = _value;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #value}.
-   *
-   * @return the value of the instance variable {@link #value}.
-   * @see #value
-   * @see #setValue
-   */
-  public Object getValue() {
-    return this.value;
-  }
-
-  public Object get(){
-    return value;
-  }
+    /**
+     * This is the getter method for instance variable {@link #value}.
+     *
+     * @return the value of the instance variable {@link #value}.
+     * @see #value
+     * @see #setValue
+     */
+    protected Object getValue()
+    {
+        return this.value;
+    }
 }

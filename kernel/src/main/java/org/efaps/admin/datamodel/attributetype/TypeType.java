@@ -28,91 +28,84 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.query.CachedResult;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class TypeType extends AbstractType {
+public class TypeType extends AbstractType
+{
 
-  @Override
-  public void update(final Object _object, final PreparedStatement _stmt,
-      final List<Integer> _indexes) throws SQLException {
-    throw new SQLException("Update value for Type not allowed!!!");
-  }
+    /**
+     * The value stores the instance of {@link org.efaps.admin.datamodel.Type}
+     * which represents current value.
+     *
+     * @see #setType
+     * @see #getType
+     */
+    private Type value = null;
 
-  /**
-   * The method reads from a SQL result set the value for the type. If no type
-   * sql column is given in the type description, the value is read directly
-   * from the attribute.
-   */
-  @Override
-  public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
-      throws Exception {
-    Type value;
-
-    if (getAttribute().getSqlColNames().size() > 0) {
-      value = Type.get(_rs.getLong(_indexes.get(0).intValue()));
-    } else {
-      value = getAttribute().getParent();
+    /**
+     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
+     * @param _object   object
+     * @param _stmt     SQL statement to update the value
+     * @param _index    index in the SQL statement to update the value
+     * @return number of indexes used in the method, if the return value is null an error should be thrown
+     * @throws SQLException on error
+     */
+    public int update(final Object _object, final PreparedStatement _stmt, final int _index)
+            throws SQLException
+    {
+        throw new SQLException("Update value for Type not allowed!!!");
     }
-    setValue(value);
-    return value;
-  }
 
-  // ///////////////////////////////////////////////////////////////////////////
+    /**
+     * The method reads from a SQL result set the value for the type. If no type
+     * sql column is given in the type description, the value is read directly
+     * from the attribute.
+     */
+    public Object readValue(final CachedResult _rs, final List<Integer> _indexes) throws Exception
+    {
+        Type value;
 
-  /**
-   * @todo must an exception thrown?
-   */
-  @Override
-  public void set(final Object _value) {
-  }
+        if (getAttribute().getSqlColNames().size() > 0) {
+            value = Type.get(_rs.getLong(_indexes.get(0).intValue()));
+        } else {
+            value = getAttribute().getParent();
+        }
+        setValue(value);
+        return value;
+    }
 
-  // ///////////////////////////////////////////////////////////////////////////
+    public void set(final Object[] _value)
+    {
+    }
 
-  /**
-   * The value stores the instance of {@link org.efaps.admin.datamodel.Type}
-   * which represents current value.
-   *
-   * @see #setType
-   * @see #getType
-   */
-  private Type value = null;
+    /**
+     * This is the setter method for instance variable {@link #value}.
+     *
+     * @param _value new value for instance variable {@link #value}
+     * @see #value
+     * @see #getValue
+     */
+    public void setValue(final Type _value)
+    {
+        this.value = _value;
+    }
 
-  // ///////////////////////////////////////////////////////////////////////////
+    /**
+     * This is the getter method for instance variable {@link #value}.
+     *
+     * @return the value of the instance variable {@link #value}.
+     * @see #value
+     * @see #setValue
+     */
+    public Type getValue()
+    {
+        return this.value;
+    }
 
-  /**
-   * This is the setter method for instance variable {@link #value}.
-   *
-   * @param _value
-   *          new value for instance variable {@link #value}
-   * @see #value
-   * @see #getValue
-   */
-  public void setValue(final Type _value) {
-    this.value = _value;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #value}.
-   *
-   * @return the value of the instance variable {@link #value}.
-   * @see #value
-   * @see #setValue
-   */
-  public Type getValue() {
-    return this.value;
-  }
-
-  /* (non-Javadoc)
-   * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
-   */
-  public Object get() {
-    return value;
-  }
-
-
-  @Override
-  public String toString() {
-    return "" + getValue();
-  }
+    @Override
+    public String toString()
+    {
+        return "" + getValue();
+    }
 }

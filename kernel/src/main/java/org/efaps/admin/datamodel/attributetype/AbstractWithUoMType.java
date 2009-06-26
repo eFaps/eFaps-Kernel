@@ -20,36 +20,47 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import org.efaps.db.Context;
+import org.efaps.admin.datamodel.Dimension.UoM;
+
 
 /**
- * The class is the attribute type representation for the created date time of a
- * business object.
+ * Abstract class for an attribute type with an UoM.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class CreatedType extends DateTimeType
+public abstract class AbstractWithUoMType extends AbstractType
 {
+    /**
+     * Uom of this attribute type.
+     */
+    private UoM uoM = null;
 
     /**
-     * The instance method appends <i>SYSDATE</i> to the sql statement. Because
-     * This is not a value, the method returns a <i>true</i>, that the value is
-     * hard coded and must not updated via a prepared sql statement.
+     * Getter method for instance variable {@link #uoM}.
      *
-     * @param _stmt string buffer with the statement
-     * @return always <i>true</i>
+     * @return value of instance variable {@link #uoM}
      */
+    public UoM getUoM()
+    {
+        return this.uoM;
+    }
+
+    /**
+     * Setter method for instance variable {@link #uoM}.
+     *
+     * @param _uoM value for instance variable {@link #uoM}
+     */
+    public void setUoM(final UoM _uoM)
+    {
+        this.uoM = _uoM;
+    }
+
     @Override
     public boolean prepareUpdate(final StringBuilder _stmt)
     {
-        _stmt.append(Context.getDbType().getCurrentTimeStamp());
-        return true;
+        _stmt.append("?,?");
+        return false;
     }
 
-    @Override
-    public String toString()
-    {
-        return "" + getValue();
-    }
 }
