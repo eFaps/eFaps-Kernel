@@ -265,8 +265,8 @@ public class Edit implements EventExecution
                     if (field.getExpression() != null && field.isEditableDisplay(TargetMode.EDIT)) {
                         final Attribute attr = subClassType.getAttribute(field.getExpression());
                         // check if not a fileupload
-                        if (attr != null && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
-                                                        .getClassRepr())) {
+                        if (attr != null
+                                  && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
                             subquery.addSelect(field.getExpression());
                             fields.add(field);
                         }
@@ -287,8 +287,7 @@ public class Edit implements EventExecution
         if (classifications != null) {
             for (final Object object : classifications) {
                 final Classification classification = (Classification) object;
-                // if the classification does not exist yet the relation must be
-                // created,
+                // if the classification does not exist yet the relation must be created,
                 // and the new instance of the classification inserted
                 final Form form = Form.getTypeForm(classification);
                 if (!class2values.containsKey(classification)) {
@@ -303,11 +302,15 @@ public class Edit implements EventExecution
                         if (field.getExpression() != null && field.isEditableDisplay(TargetMode.EDIT)) {
                             final Attribute attr = classification.getAttribute(field.getExpression());
                             if (attr != null
-                                            && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
-                                                            .getClassRepr())) {
+                                  && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
                                 if (context.getParameters().containsKey(field.getName())) {
                                     final String value = context.getParameter(field.getName());
-                                    classInsert.add(attr, value);
+                                    if (attr.hasUoM()) {
+                                        classInsert.add(attr, new String[] {context.getParameter(field.getName()),
+                                                                        context.getParameter(field.getName() + "UoM")});
+                                    } else {
+                                        classInsert.add(attr, value);
+                                    }
                                 }
                             }
                         }
@@ -318,13 +321,24 @@ public class Edit implements EventExecution
                     final Update update = new Update((String) values.get("OID"));
                     boolean execUpdate = false;
                     for (final Field field : form.getFields()) {
-                        if (context.getParameters().containsKey(field.getName())) {
-                            final String newValue = context.getParameter(field.getName());
-                            final Object value = values.get(field.getName());
-                            final String oldValue = value != null ? value.toString() : null;
-                            if (!newValue.equals(oldValue)) {
-                                update.add(field.getExpression(), newValue);
-                                execUpdate = true;
+                        if (field.getExpression() != null && field.isEditableDisplay(TargetMode.EDIT)) {
+                            final Attribute attr = classification.getAttribute(field.getExpression());
+                            if (attr != null
+                                  && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
+                                if (context.getParameters().containsKey(field.getName())) {
+                                    final String newValue = context.getParameter(field.getName());
+                                    final Object value = values.get(field.getName());
+                                    final String oldValue = value != null ? value.toString() : null;
+                                    if (!newValue.equals(oldValue)) {
+                                        execUpdate = true;
+                                        if (attr.hasUoM()) {
+                                            update.add(attr, new String[] {newValue,
+                                                                        context.getParameter(field.getName() + "UoM")});
+                                        } else {
+                                            update.add(attr, newValue);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

@@ -113,7 +113,7 @@ public class Insert extends Update
             final Attribute attr = (Attribute) entry.getValue();
             final AttributeType attrType = attr.getAttributeType();
             if (attrType.isCreateUpdate()) {
-                add(attr, null, false);
+                add(attr, false, (Object) null);
             }
         }
     }

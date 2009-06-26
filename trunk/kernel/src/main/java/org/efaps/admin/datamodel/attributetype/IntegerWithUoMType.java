@@ -22,7 +22,6 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.efaps.admin.datamodel.Dimension;
 import org.efaps.db.query.CachedResult;
@@ -38,29 +37,7 @@ public class IntegerWithUoMType extends AbstractWithUoMType
      * @see #getValue
      * @see #setValue
      */
-    private int value = 0;
-
-    /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
-     * @throws SQLException on error
-     */
-    public int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException
-    {
-        _stmt.setInt(_index, getValue());
-        _stmt.setLong(_index + 1, getUoM().getId());
-        return 2;
-    }
-
-    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
-    {
-        this.value = _rs.getLong(_indexes.get(0)).intValue();
-        setUoM(Dimension.getUoM(_rs.getLong(_indexes.get(1))));
-        return new Object[]{this.value, getUoM()};
-    }
+    private Integer value = 0;
 
     /**
      * The localised string and the internal string value are equal. So the
@@ -91,8 +68,34 @@ public class IntegerWithUoMType extends AbstractWithUoMType
      * @see #value
      * @see #setValue
      */
-    public Integer getValue()
+    @Override
+    protected Double getValue()
     {
+        return this.value.doubleValue();
+    }
+
+    /**
+     * @see org.efaps.admin.datamodel.attributetype.AbstractWithUoMType#setValueStmt(java.sql.PreparedStatement, int)
+     * @param _stmt     prepared statement
+     * @param _index    index
+     * @throws SQLException on error
+     */
+    @Override
+    protected void setValueStmt(final PreparedStatement _stmt, final int _index) throws SQLException
+    {
+        _stmt.setInt(_index, this.value);
+    }
+
+    /**
+     * @see org.efaps.admin.datamodel.attributetype.AbstractWithUoMType#readValue(org.efaps.db.query.CachedResult, int)
+     * @param _rs       cached result
+     * @param _index     index
+     * @return the value as Integer
+     */
+    @Override
+    protected Object readValue(final CachedResult _rs, final int _index)
+    {
+        this.value = _rs.getLong(_index).intValue();
         return this.value;
     }
 }
