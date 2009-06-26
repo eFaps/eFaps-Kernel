@@ -20,17 +20,16 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class LinkType extends AbstractLinkType {
+public class LinkType extends AbstractLinkType
+{
 
-  // ///////////////////////////////////////////////////////////////////////////
-
-  public String toString() {
-    return "" + getValue();
-  }
-
+    @Override
+    public String toString()
+    {
+        return "" + getValue();
+    }
 }

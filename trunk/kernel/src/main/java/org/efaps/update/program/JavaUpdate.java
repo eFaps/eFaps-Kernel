@@ -90,11 +90,11 @@ public class JavaUpdate extends AbstractSourceUpdate {
       setName(this.javaCode.getProgramName());
 
       if (this.javaCode.getEFapsUUID() != null) {
-        this.addValue("UUID", this.javaCode.getEFapsUUID().toString());
+        addValue("UUID", this.javaCode.getEFapsUUID().toString());
       }
 
       if (this.javaCode.getRevision() != null) {
-        this.addValue("Revision", this.javaCode.getRevision());
+        addValue("Revision", this.javaCode.getRevision());
       }
       if (this.instance == null) {
         this.instance = this.javaCode.searchInstance();
@@ -111,7 +111,6 @@ public class JavaUpdate extends AbstractSourceUpdate {
     @Override
     public void updateInDB(final Set<Link> _allLinkTypes)
         throws EFapsException {
-      super.updateInDB(_allLinkTypes);
       this.javaCode.updateDB(this.instance);
     }
   }

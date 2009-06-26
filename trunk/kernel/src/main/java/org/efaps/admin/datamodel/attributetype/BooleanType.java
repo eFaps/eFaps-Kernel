@@ -27,102 +27,67 @@ import java.util.List;
 import org.efaps.db.query.CachedResult;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class BooleanType extends AbstractType {
+public class BooleanType extends AbstractType
+{
+    /**
+     * @see #getValue
+     * @see #setValue
+     */
+    private boolean value = false;
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // interface to the data base
-  @Override
-  public void update(final Object _object, final PreparedStatement _stmt,
-      final List<Integer> _index) throws SQLException {
-    _stmt.setBoolean(_index.get(0), getValue());
-
-  }
-
-  /**
-   * @todo test that only one value is given for indexes
-   */
-  @Override
-  public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
-      throws SQLException {
-    final Boolean value = _rs.getBoolean(_indexes.get(0).intValue());
-    if (value != null) {
-      setValue(value);
+    /**
+     * @see org.efaps.admin.datamodel.IAttributeType#update(java.lang.Object, java.sql.PreparedStatement, int)
+     * @param _object   object
+     * @param _stmt     SQL statement to update the value
+     * @param _index    index in the SQL statement to update the value
+     * @return number of indexes used in the method, if the return value is null an error should be thrown
+     * @throws SQLException on error
+     */
+    public int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException
+    {
+        _stmt.setBoolean(_index, this.value);
+        return 1;
     }
-    return value;
-  }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // interface to the user interface
-
-  /**
-   * @param _context
-   *          context for this request
-   * @param _value
-   *          new value to set
-   */
-  @Override
-  public void set(final Object _value) {
-    if (_value != null) {
-      if (_value instanceof String) {
-        if (((String) _value).equalsIgnoreCase("TRUE")) {
-          setValue(true);
-        } else {
-          setValue(false);
+    /**
+     * @todo test that only one value is given for indexes
+     */
+    public Object readValue(final CachedResult _rs, final List<Integer> _indexes) throws SQLException
+    {
+        final Boolean tmp = _rs.getBoolean(_indexes.get(0).intValue());
+        if (tmp != null) {
+            this.value = tmp;
         }
-      } else if (_value instanceof Boolean) {
-        setValue((Boolean) _value);
-      }
-    } else {
-      setValue(false);
+        return tmp;
     }
-  }
 
-  // ///////////////////////////////////////////////////////////////////////////
+    /**
+     * @param _context context for this request
+     * @param _value new value to set
+     */
+    public void set(final Object[] _value)
+    {
+        if (_value != null) {
+            if (_value[0] instanceof String) {
+                if (((String) _value[0]).equalsIgnoreCase("TRUE")) {
+                    this.value = true;
+                } else {
+                    this.value = false;
+                }
+            } else if (_value[0] instanceof Boolean) {
+                this.value = ((Boolean) _value[0]);
+            }
+        } else {
+            this.value = false;
+        }
+    }
 
-  /**
-   * @see #getValue
-   * @see #setValue
-   */
-  private boolean value = false;
-
-  // ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This is the setter method for instance variable {@link #value}.
-   *
-   * @param _value
-   *          new value for instance variable {@link #value}
-   * @see #value
-   * @see #getValue
-   */
-  public void setValue(final boolean _value) {
-    this.value = _value;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #value}.
-   *
-   * @return the value of the instance variable {@link #value}.
-   * @see #value
-   * @see #setValue
-   */
-  public boolean getValue() {
-    return this.value;
-  }
-
-  /* (non-Javadoc)
-   * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
-   */
-  public Object get() {
-    return value;
-  }
-
-  @Override
-  public String toString() {
-    return "" + getValue();
-  }
-
+    @Override
+    public String toString()
+    {
+        return "" + this.value;
+    }
 }

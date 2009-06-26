@@ -20,71 +20,45 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
-
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.AttributeTypeInterface;
-import org.efaps.db.query.CachedResult;
+import org.efaps.admin.datamodel.IAttributeType;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-abstract public class AbstractType implements AttributeTypeInterface {
+public abstract class AbstractType implements IAttributeType
+{
+    private Attribute attribute = null;
 
-  public boolean prepareUpdate(final StringBuilder _stmt) {
-    _stmt.append("?");
-    return false;
-  }
+    public boolean prepareUpdate(final StringBuilder _stmt)
+    {
+        _stmt.append("?");
+        return false;
+    }
 
-  public void update(final Object _object, final PreparedStatement _stmt,
-      final List<Integer> _index) throws SQLException {
-  }
+    /**
+     * This is the getter method for the field variable {@link #attribute}.
+     *
+     * @return value of field variable {@link #attribute}
+     * @see #attribute
+     * @see #setAttribute
+     */
+    public Attribute getAttribute()
+    {
+        return this.attribute;
+    }
 
-  /**
-   *
-   *
-   */
-  abstract public Object readValue(final CachedResult _rs,
-      final List<Integer> _indexes) throws Exception;
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // methods for the user interface
-
-  abstract public void set(final Object _value);
-
-  // ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   *
-   */
-  private Attribute attribute = null;
-
-  // ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This is the getter method for the field variable {@link #attribute}.
-   * 
-   * @return value of field variable {@link #attribute}
-   * @see #attribute
-   * @see #setAttribute
-   */
-  public Attribute getAttribute() {
-    return this.attribute;
-  }
-
-  /**
-   * This is the setter method for the field variable {@link #attribute}.
-   * 
-   * @param _field
-   *          new value for field variable {@link #attribute}
-   * @see #attribute
-   * @see #getAttribute
-   */
-  public void setAttribute(final Attribute _attribute) {
-    this.attribute = _attribute;
-  }
+    /**
+     * This is the setter method for the field variable {@link #attribute}.
+     *
+     * @param _field new value for field variable {@link #attribute}
+     * @see #attribute
+     * @see #getAttribute
+     */
+    public void setAttribute(final Attribute _attribute)
+    {
+        this.attribute = _attribute;
+    }
 
 }

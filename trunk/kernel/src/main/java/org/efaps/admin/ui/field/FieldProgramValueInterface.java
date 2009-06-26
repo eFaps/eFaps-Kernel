@@ -20,7 +20,7 @@
 
 package org.efaps.admin.ui.field;
 
-import org.efaps.admin.datamodel.AttributeTypeInterface;
+import org.efaps.admin.datamodel.IAttributeType;
 import org.efaps.db.AbstractQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -54,7 +54,7 @@ public interface FieldProgramValueInterface  {
    * @param _context  context for this request
    * @param _query    query with the attribute values
    */
-  public AttributeTypeInterface evalAttributeValue(Context _context, AbstractQuery _query) throws Exception;
+  public IAttributeType evalAttributeValue(Context _context, AbstractQuery _query) throws Exception;
 
   /////////////////////////////////////////////////////////////////////////////
   // methods for search mode
@@ -76,5 +76,5 @@ public interface FieldProgramValueInterface  {
    * @param _instance business object for which the search is done (if
    *                  connect search mode is selected)
    */
-  public AttributeTypeInterface evalSearchAttributeValue(Context _context, Instance _instance) throws Exception;
+  public IAttributeType evalSearchAttributeValue(Context _context, Instance _instance) throws Exception;
 }

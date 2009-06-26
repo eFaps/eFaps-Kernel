@@ -105,7 +105,12 @@ public class Edit implements EventExecution
                         final String fieldName = fieldset.getName() + nf.format(idy) + nf.format(idx);
 
                         if (context.getParameters().containsKey(fieldName)) {
-                            setupdate.add(child, context.getParameter(fieldName));
+                            if (child.hasUoM()) {
+                                setupdate.add(child, new String[] {context.getParameter(fieldName),
+                                                                   context.getParameter(fieldName + "UoM")});
+                            } else {
+                                setupdate.add(child, context.getParameter(fieldName));
+                            }
                         }
                         idx++;
                     }
@@ -128,7 +133,12 @@ public class Edit implements EventExecution
                             final String fieldName = fieldset.getName() + "eFapsNew"
                                             + nf.format(Integer.parseInt(newOne)) + nf.format(idx);
                             if (context.getParameters().containsKey(fieldName)) {
-                                insert.add(child, context.getParameter(fieldName));
+                                if (child.hasUoM()) {
+                                    insert.add(child, new String[] {context.getParameter(fieldName),
+                                                                       context.getParameter(fieldName + "UoM")});
+                                } else {
+                                    insert.add(child, context.getParameter(fieldName));
+                                }
                             }
                             idx++;
                         }
@@ -207,7 +217,13 @@ public class Edit implements EventExecution
                     final Object object = query.get(field.getExpression());
                     final String oldValue = object != null ? object.toString() : null;
                     if (!newValue.equals(oldValue)) {
-                        update.add(field.getExpression(), newValue);
+                        final Attribute attr = _instance.getType().getAttribute(field.getExpression());
+                        if (attr.hasUoM()) {
+                            update.add(attr, new String[] {context.getParameter(field.getName()),
+                                                           context.getParameter(field.getName() + "UoM")});
+                        } else {
+                            update.add(attr, newValue);
+                        }
                     }
                 }
             }

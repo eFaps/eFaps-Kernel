@@ -27,41 +27,51 @@ import java.util.List;
 import org.efaps.db.query.CachedResult;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class OIDType extends StringType {
-
-  @Override
-  public void update(final Object _object, final PreparedStatement _stmt,
-      final List<Integer> _indexes) throws SQLException {
-    throw new SQLException("Update value for OID not allowed!!!");
-  }
-
-  /**
-   * The oid (object id) is the type id, than a point and the id itself. If in
-   * the attribute the attribute has no defined type id SQL column name, the
-   * type from the attribute is used (this means, the type itself is not derived
-   * and has no childs).
-   *
-   * @param _context
-   *          eFaps context for this request
-   */
-  @Override
-  public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
-    if (getAttribute().getSqlColNames().size() > 1) {
-      final long typeId = _rs.getLong(_indexes.get(0).intValue());
-      final long id = _rs.getLong(_indexes.get(1).intValue());
-      setValue(typeId + "." + id);
-    } else {
-      final long id = _rs.getLong(_indexes.get(0).intValue());
-      setValue(getAttribute().getParent().getId() + "." + id);
+public class OIDType extends StringType
+{
+    /**
+     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
+     * @param _object   object
+     * @param _stmt     SQL statement to update the value
+     * @param _index    index in the SQL statement to update the value
+     * @return number of indexes used in the method, if the return value is null an error should be thrown
+     * @throws SQLException on error
+     */
+    @Override
+    public int update(final Object _object, final PreparedStatement _stmt, final int _index)
+            throws SQLException
+    {
+        throw new SQLException("Update value for OID not allowed!!!");
     }
-    return getValue();
-  }
 
-  @Override
-  public String toString() {
-    return "" + getValue();
-  }
+    /**
+     * The oid (object id) is the type id, than a point and the id itself. If in
+     * the attribute the attribute has no defined type id SQL column name, the
+     * type from the attribute is used (this means, the type itself is not
+     * derived and has no childs).
+     *
+     * @param _context eFaps context for this request
+     */
+    @Override
+    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    {
+        if (getAttribute().getSqlColNames().size() > 1) {
+            final long typeId = _rs.getLong(_indexes.get(0).intValue());
+            final long id = _rs.getLong(_indexes.get(1).intValue());
+            setValue(typeId + "." + id);
+        } else {
+            final long id = _rs.getLong(_indexes.get(0).intValue());
+            setValue(getAttribute().getParent().getId() + "." + id);
+        }
+        return getValue();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "" + getValue();
+    }
 }

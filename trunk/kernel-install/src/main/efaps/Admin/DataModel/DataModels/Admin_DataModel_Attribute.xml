@@ -76,6 +76,12 @@
       <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
       <sqlcolumn>DEFAULTVAL</sqlcolumn>
     </attribute>
+    <attribute>
+      <name>DimensionUUID</name>
+      <type>String</type>
+      <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
+      <sqlcolumn>DIMENSION</sqlcolumn>
+    </attribute>
   </definition>
 
 </datamodel-type>

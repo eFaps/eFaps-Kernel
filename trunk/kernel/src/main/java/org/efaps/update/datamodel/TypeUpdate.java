@@ -145,6 +145,12 @@ public class TypeUpdate extends AbstractUpdate
         private String defaultValue = null;
 
         /**
+         * UUID of the Dimension for this Attribute.
+         * (Used in conjunction with e.g. IntegerWithUoM).
+         */
+        private String dimensionUUID;
+
+        /**
          * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List, java.util.Map, java.lang.String)
          * @param _tags         list of the tags
          * @param _attributes   attributes
@@ -153,9 +159,12 @@ public class TypeUpdate extends AbstractUpdate
         @Override
         protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
         {
+
             final String value = _tags.get(0);
             if ("defaultvalue".equals(value)) {
                 this.defaultValue = _text;
+            } else if ("dimensionUUID".equals(value)) {
+                this.dimensionUUID = _text;
             } else if ("name".equals(value)) {
                 this.name = _text;
             } else if ("sqlcolumn".equals(value)) {
@@ -337,6 +346,9 @@ public class TypeUpdate extends AbstractUpdate
             }
             if (this.defaultValue != null) {
                 update.add("DefaultValue", this.defaultValue);
+            }
+            if (this.dimensionUUID != null) {
+                update.add("DimensionUUID", this.dimensionUUID);
             }
             if (_setID != 0) {
                 update.add("ParentAttributeSet", "" + _setID);

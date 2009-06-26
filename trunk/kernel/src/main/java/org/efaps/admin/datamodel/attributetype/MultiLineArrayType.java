@@ -20,73 +20,69 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.efaps.admin.datamodel.MultipleAttributeTypeInterface;
+import org.efaps.admin.datamodel.IMultipleAttributeType;
 import org.efaps.db.query.CachedResult;
 
 /**
  * TODO comment
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class MultiLineArrayType extends AbstractType implements MultipleAttributeTypeInterface{
+public class MultiLineArrayType extends AbstractType implements IMultipleAttributeType
+{
 
-  /* (non-Javadoc)
-   * @see org.efaps.admin.datamodel.attributetype.AbstractType#readValue(org.efaps.db.query.CachedResult, java.util.List)
-   */
-  @Override
-  public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
-      throws Exception {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.efaps.admin.datamodel.attributetype.AbstractType#set(java.lang.Object)
-   */
-  @Override
-  public void set(final Object _value) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /* (non-Javadoc)
-   * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
-   */
-  public Object get() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.efaps.admin.datamodel.MultipleAttributeTypeInterface#readValues()
-   */
-  public Map<String,List<Object>> readValues(final CachedResult _rs,
-        final Map<Integer, String> _index2expression) {
-
-    final Map<String,List<Object>> ret = new HashMap<String, List<Object>>();
-
-    for (final Entry<Integer, String> entry : _index2expression.entrySet()) {
-      final List<?> objList = (List<?>) _rs.getObject(entry.getKey());
-      final List<Object> tmp = new ArrayList<Object>();
-      for (final Object obj :objList){
-        if (obj instanceof String && obj != null){
-          tmp.add(((String)obj).trim());
-        } else {
-          tmp.add(obj);
-        }
-      }
-
-      ret.put(entry.getValue(), tmp);
+    public Object readValue(final CachedResult _rs, final List<Integer> _indexes) throws Exception
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    return ret;
-  }
+    public void set(final Object[] _value)
+    {
+    }
+
+    public Map<String, List<Object>> readValues(final CachedResult _rs, final Map<Integer, String> _index2expression)
+    {
+
+        final Map<String, List<Object>> ret = new HashMap<String, List<Object>>();
+
+        for (final Entry<Integer, String> entry : _index2expression.entrySet()) {
+            final List<?> objList = (List<?>) _rs.getObject(entry.getKey());
+            final List<Object> tmp = new ArrayList<Object>();
+            for (final Object obj : objList) {
+                if (obj instanceof String && obj != null) {
+                    tmp.add(((String) obj).trim());
+                } else {
+                    tmp.add(obj);
+                }
+            }
+
+            ret.put(entry.getValue(), tmp);
+        }
+
+        return ret;
+    }
+
+    /**
+     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
+     * @param _object   object
+     * @param _stmt     SQL statement to update the value
+     * @param _index    index in the SQL statement to update the value
+     * @return number of indexes used in the method, if the return value is null an error should be thrown
+     * @throws SQLException on error
+     */
+    public int update(final Object _object, final PreparedStatement _stmt, final int _indexes) throws SQLException
+    {
+        throw new SQLException("Update value for Type not allowed!!!");
+    }
 
 }

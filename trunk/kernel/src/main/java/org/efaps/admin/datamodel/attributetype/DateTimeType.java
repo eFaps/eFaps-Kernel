@@ -37,118 +37,101 @@ import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.db.query.CachedResult;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class DateTimeType extends AbstractType {
+public class DateTimeType extends AbstractType
+{
 
-  /**
-   * @see #getValue
-   * @see #setValue
-   */
-  private DateTime value = null;
+    /**
+     * @see #getValue
+     * @see #setValue
+     */
+    private DateTime value = null;
 
-  /**
-   * @todo test that only one value is given for indexes
-   */
-  @Override
-  public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
-    setValue(_rs.getDateTime(_indexes.get(0).intValue()));
-    return getValue();
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The value that can be set is a Date, a DateTime or a String
-   * yyyy-MM-dd'T'HH:mm:ss.SSSZZ. It will be normalized to ISO Calender with
-   * TimeZone from SystemAttribute Admin_Common_DataBaseTimeZone. In case that
-   * the SystemAttribute is missing UTC will be used.
-   *
-   *
-   * @param _value
-   *          new value to set
-   */
-  @Override
-  public void set(final Object _value) {
-    if (_value != null) {
-      // reads the Value from "Admin_Common_DataBaseTimeZone"
-      final SystemConfiguration kernelConfig = SystemConfiguration.get(
-                  UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
-      final String timezoneID
-                           = kernelConfig.getAttributeValue("DataBaseTimeZone");
-      final ISOChronology chron;
-      if (timezoneID != null) {
-        final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
-        chron = ISOChronology.getInstance(timezone);
-      } else {
-        chron = ISOChronology.getInstanceUTC();
-      }
-      if (_value instanceof Date) {
-        final DateTime datetime = new DateTime(_value);
-        this.value = datetime.withChronology(chron);
-      } else if (_value instanceof DateTime) {
-        this.value = ((DateTime) _value)
-                        .withChronology(chron);
-      } else if (_value instanceof String) {
-        final DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
-        this.value = fmt.parseDateTime((String) _value);
-      }
+    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    {
+        setValue(_rs.getDateTime(_indexes.get(0).intValue()));
+        return getValue();
     }
-  }
 
-  // ///////////////////////////////////////////////////////////////////////////
+    /**
+     * The value that can be set is a Date, a DateTime or a String
+     * yyyy-MM-dd'T'HH:mm:ss.SSSZZ. It will be normalized to ISO Calender with
+     * TimeZone from SystemAttribute Admin_Common_DataBaseTimeZone. In case that
+     * the SystemAttribute is missing UTC will be used.
+     *
+     *
+     * @param _value new value to set
+     */
+    public void set(final Object[] _value)
+    {
+        if (_value[0] != null) {
+            // reads the Value from "Admin_Common_DataBaseTimeZone"
+            final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
+                            .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+            final String timezoneID = kernelConfig.getAttributeValue("DataBaseTimeZone");
+            final ISOChronology chron;
+            if (timezoneID != null) {
+                final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
+                chron = ISOChronology.getInstance(timezone);
+            } else {
+                chron = ISOChronology.getInstanceUTC();
+            }
+            if (_value[0] instanceof Date) {
+                final DateTime datetime = new DateTime(_value[0]);
+                this.value = datetime.withChronology(chron);
+            } else if (_value[0] instanceof DateTime) {
+                this.value = ((DateTime) _value[0]).withChronology(chron);
+            } else if (_value[0] instanceof String) {
+                final DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
+                this.value = fmt.parseDateTime((String) _value[0]);
+            }
+        }
+    }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  /**
-   * Method to update the DateTime Object.
-   * @param _object   not used in this case
-   * @param _stmt     prepared Statement that will be used
-   * @param _index    indexs
-   * @throws SQLException if prepared Statement is extended with invalid value
-   */
-  @Override
-  public void update(final Object _object, final PreparedStatement _stmt,
-                     final List<Integer> _index) throws SQLException {
-    _stmt.setTimestamp(_index.get(0), new Timestamp(this.value.getMillis()));
-  }
+    /**
+     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
+     * @param _object   object
+     * @param _stmt     SQL statement to update the value
+     * @param _index    index in the SQL statement to update the value
+     * @return number of indexes used in the method, if the return value is null an error should be thrown
+     * @throws SQLException on error
+     */
+    public int update(final Object _object, final PreparedStatement _stmt, final int _index)
+                    throws SQLException
+    {
+        _stmt.setTimestamp(_index, new Timestamp(this.value.getMillis()));
+        return 1;
+    }
 
+    /**
+     * This is the setter method for instance variable {@link #value}.
+     *
+     * @param _value new value for instance variable {@link #value}
+     * @see #value
+     * @see #getValue
+     */
+    public final void setValue(final DateTime _value)
+    {
+        this.value = _value;
+    }
 
-  // ///////////////////////////////////////////////////////////////////////////
+    /**
+     * This is the getter method for instance variable {@link #value}.
+     *
+     * @return the value of the instance variable {@link #value}.
+     * @see #value
+     * @see #setValue
+     */
+    public DateTime getValue()
+    {
+        return this.value;
+    }
 
-  /**
-   * This is the setter method for instance variable {@link #value}.
-   *
-   * @param _value
-   *          new value for instance variable {@link #value}
-   * @see #value
-   * @see #getValue
-   */
-  public final void setValue(final DateTime _value) {
-    this.value = _value;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #value}.
-   *
-   * @return the value of the instance variable {@link #value}.
-   * @see #value
-   * @see #setValue
-   */
-  public DateTime getValue() {
-    return this.value;
-  }
-
-
-  /* (non-Javadoc)
-   * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
-   */
-  public Object get() {
-    return this.value;
-  }
-
-  @Override
-  public String toString() {
-    return "" + getValue();
-  }
+    @Override
+    public String toString()
+    {
+        return "" + getValue();
+    }
 }

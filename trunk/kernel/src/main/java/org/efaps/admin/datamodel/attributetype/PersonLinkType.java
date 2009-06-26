@@ -27,41 +27,46 @@ import org.efaps.admin.user.Role;
 import org.efaps.db.query.CachedResult;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  * @todo description
  */
-public class PersonLinkType extends AbstractLinkType {
+public class PersonLinkType extends AbstractLinkType
+{
 
-  /**
-   * @param _rs
-   * @param _index
-   */
-  public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
-    Object ret = null;
+    /**
+     * @param _rs
+     * @param _index
+     */
+    @Override
+    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    {
+        Object ret = null;
 
-    Object userId = super.readValue(_rs, _indexes);
-    if (userId != null) {
-      try {
-        long id = 0;
-        if (userId instanceof Number) {
-          id = ((Number) userId).longValue();
-        } else if (userId != null) {
-          id = Long.parseLong(userId.toString());
+        final Object userId = super.readValue(_rs, _indexes);
+        if (userId != null) {
+            try {
+                long id = 0;
+                if (userId instanceof Number) {
+                    id = ((Number) userId).longValue();
+                } else if (userId != null) {
+                    id = Long.parseLong(userId.toString());
+                }
+                ret = Person.get(id);
+                if (ret == null) {
+                    ret = Role.get(id);
+                }
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
         }
-        ret = Person.get(id);
-        if (ret == null) {
-          ret = Role.get(id);
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+
+        return ret;
     }
 
-    return ret;
-  }
-
-  public String toString() {
-    return "" + getValue();
-  }
+    @Override
+    public String toString()
+    {
+        return "" + getValue();
+    }
 }

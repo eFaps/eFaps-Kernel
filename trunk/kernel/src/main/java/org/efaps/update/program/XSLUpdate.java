@@ -34,71 +34,72 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class XSLUpdate extends AbstractSourceUpdate {
-
-  /**
-   * Constructor.
-   *
-   * @param _url URL of the file
-   */
-  protected XSLUpdate(final URL _url) {
-    super(_url, Type.get(ADMIN_PROGRAM_XSL).getName());
-  }
-
-  /**
-   * Read the file.
-   *
-   * @param _url URL to the file
-   * @return  XSLUpdate
-   */
-  public static XSLUpdate readFile(final URL _url) {
-    final XSLUpdate ret = new XSLUpdate(_url);
-    final XSLDefinition definition = ret.new XSLDefinition(_url);
-    ret.addDefinition(definition);
-    return ret;
-  }
-
-  public class XSLDefinition extends SourceDefinition {
-
-    /**
-     * Importer for the css.
-     */
-    private XSLImporter sourceCode = null;
-
+public class XSLUpdate extends AbstractSourceUpdate
+{
 
     /**
      * Constructor.
      *
      * @param _url URL of the file
      */
-    public XSLDefinition(final URL _url) {
-      super(_url);
+    protected XSLUpdate(final URL _url)
+    {
+        super(_url, Type.get(ADMIN_PROGRAM_XSL).getName());
     }
+
     /**
-     * Search the instance.
+     * Read the file.
      *
-     * @throws EFapsException if the Java source code could not be read or the
-     *                        file could not be accessed because of the wrong
-     *                        URL
+     * @param _url URL to the file
+     * @return XSLUpdate
      */
-    @Override
-    protected void searchInstance() throws EFapsException {
-      if (this.sourceCode == null) {
-        this.sourceCode = new XSLImporter(getUrl());
-      }
-      setName(this.sourceCode.getProgramName());
-
-      if (this.sourceCode.getEFapsUUID() != null) {
-        addValue("UUID", this.sourceCode.getEFapsUUID().toString());
-      }
-
-      if (this.sourceCode.getRevision() != null) {
-        addValue("Revision", this.sourceCode.getRevision());
-      }
-
-      if (this.instance == null) {
-        this.instance = this.sourceCode.searchInstance();
-      }
+    public static XSLUpdate readFile(final URL _url)
+    {
+        final XSLUpdate ret = new XSLUpdate(_url);
+        final XSLDefinition definition = ret.new XSLDefinition(_url);
+        ret.addDefinition(definition);
+        return ret;
     }
-  }
+
+    public class XSLDefinition extends SourceDefinition
+    {
+
+        /**
+         * Importer for the css.
+         */
+        private XSLImporter sourceCode = null;
+
+        /**
+         * Constructor.
+         *
+         * @param _url URL of the file
+         */
+        public XSLDefinition(final URL _url)
+        {
+            super(_url);
+        }
+
+        /**
+         * Search the instance.
+         *
+         * @throws EFapsException if the Java source code could not be read or
+         *             the file could not be accessed because of the wrong URL
+         */
+        @Override
+        protected void searchInstance() throws EFapsException
+        {
+            if (this.sourceCode == null) {
+                this.sourceCode = new XSLImporter(getUrl());
+            }
+            setName(this.sourceCode.getProgramName());
+
+            if (this.sourceCode.getEFapsUUID() != null) {
+                addValue("UUID", this.sourceCode.getEFapsUUID().toString());
+            }
+
+            if (this.instance == null) {
+                this.instance = this.sourceCode.searchInstance();
+            }
+        }
+    }
 }

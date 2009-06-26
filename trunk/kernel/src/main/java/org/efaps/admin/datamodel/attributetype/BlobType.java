@@ -20,37 +20,27 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.efaps.db.query.CachedResult;
 
 /**
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class BlobType extends AbstractFileType {
+public class BlobType extends AbstractFileType
+{
+    @Override
+    public boolean prepareUpdate(final StringBuilder _stmt)
+    {
+        _stmt.append("''");
+        return true;
+    }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // db interface
-
-  public boolean prepareUpdate(final StringBuilder _stmt) {
-    _stmt.append("''");
-    return true;
-  }
-
-  @Override
-  public void update(final Object _object, final PreparedStatement _stmt,
-      final List<Integer> _index) throws SQLException {
-    throw new SQLException("Update value for file not allowed!!!");
-  }
-
-  public Object readValue(final CachedResult _rs, final List<Integer> _index)
-      throws Exception {
-    setFileName(_rs.getString(_index.get(0).intValue()));
-    return getFileName();
-  }
-
+    public Object readValue(final CachedResult _rs, final List<Integer> _index) throws Exception
+    {
+        setFileName(_rs.getString(_index.get(0).intValue()));
+        return getFileName();
+    }
 }

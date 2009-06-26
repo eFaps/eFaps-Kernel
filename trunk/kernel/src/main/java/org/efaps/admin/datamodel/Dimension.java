@@ -70,7 +70,7 @@ public class Dimension extends AbstractAdminObject
      */
     private static final Logger LOG = LoggerFactory.getLogger(Dimension.class);
 
-    private final List<UoM> uoM = new ArrayList<UoM>();
+    private final List<UoM> uoMs = new ArrayList<UoM>();
 
     private final long baseUoMId;
 
@@ -93,20 +93,20 @@ public class Dimension extends AbstractAdminObject
      */
     public void addUoM(final UoM _uom)
     {
-        this.uoM.add(_uom);
+        this.uoMs.add(_uom);
         if (_uom.getId() == this.baseUoMId) {
             this.baseUoM = _uom;
         }
     }
 
     /**
-     * Getter method for instance variable {@link #uoM}.
+     * Getter method for instance variable {@link #uoMs}.
      *
-     * @return value of instance variable {@link #uoM}
+     * @return value of instance variable {@link #uoMs}
      */
-    public List<UoM> getUoM()
+    public List<UoM> getUoMs()
     {
-        return this.uoM;
+        return this.uoMs;
     }
 
     /**

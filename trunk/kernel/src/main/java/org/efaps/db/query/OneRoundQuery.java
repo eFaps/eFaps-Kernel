@@ -34,8 +34,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
-import org.efaps.admin.datamodel.AttributeTypeInterface;
-import org.efaps.admin.datamodel.MultipleAttributeTypeInterface;
+import org.efaps.admin.datamodel.IAttributeType;
+import org.efaps.admin.datamodel.IMultipleAttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
@@ -46,7 +46,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @todo description
- * @author tmo
+ * @author The eFasp Team
  * @version $Id$
  */
 public class OneRoundQuery
@@ -80,7 +80,8 @@ public class OneRoundQuery
     /**
      * Mappeing of sql tables.
      */
-    private final Map<SQLTable, SQLTableMapping2Attributes> sqlTableMappings = new HashMap<SQLTable, SQLTableMapping2Attributes>();
+    private final Map<SQLTable, SQLTableMapping2Attributes> sqlTableMappings
+                                                                  = new HashMap<SQLTable, SQLTableMapping2Attributes>();
 
     /**
      * The result of this query will be cached.
@@ -348,7 +349,7 @@ public class OneRoundQuery
             }
         }
 
-        final MultipleAttributeTypeInterface attrInterf = this.listquery.getAttributeSet().getAttributeTypeInstance();
+        final IMultipleAttributeType attrInterf = this.listquery.getAttributeSet().getAttributeTypeInstance();
         ret = attrInterf.readValues(OneRoundQuery.this.cachedResult, indexes);
         return ret;
     }
@@ -631,7 +632,7 @@ public class OneRoundQuery
          */
         public Object getValue(final Attribute _attribute) throws EFapsException
         {
-            final AttributeTypeInterface attrInterf = _attribute.newInstance();
+            final IAttributeType attrInterf = _attribute.newInstance();
             Object ret = null;
             if (this.expandHasResult) {
                 try {

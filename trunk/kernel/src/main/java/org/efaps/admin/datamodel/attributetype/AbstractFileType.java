@@ -20,64 +20,68 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
- * @todo description
  */
-abstract public class AbstractFileType extends AbstractType {
+public abstract class AbstractFileType extends AbstractType
+{
+    /**
+     * The value stores the file name of the file.
+     *
+     * @see #getFileName
+     * @see #setFileName
+     */
+    private String fileName = null;
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // user interface
+    /**
+     * This is the setter method for instance variable {@link #fileName}.
+     *
+     * @param _fileName new fileName for instance variable {@link #fileName}
+     * @see #fileName
+     * @see #getFileName
+     */
+    public void setFileName(final String _fileName)
+    {
+        this.fileName = (_fileName != null ? _fileName.trim() : null);
+    }
 
-  /**
-   * @todo must an exception thrown?
-   */
-  @Override
-  public void set(final Object _value) {
-  }
+    /**
+     * This is the getter method for instance variable {@link #fileName}.
+     *
+     * @return the fileName of the instance variable {@link #fileName}.
+     * @see #fileName
+     * @see #setFileName
+     */
+    public String getFileName()
+    {
+        return this.fileName;
+    }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance variables
+    /**
+     * @see org.efaps.admin.datamodel.IAttributeType#set(java.lang.Object[])
+     * @param _values values to set
+     */
+    public void set(final Object[] _values)
+    {
+        // set can not be used in file types. it must be done with a checkin
+    }
 
-  /**
-   * The value stores the file name of the file.
-   *
-   * @see #getFileName
-   * @see #setFileName
-   */
-  private String fileName = null;
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // setter and getter methods
-
-  /**
-   * This is the setter method for instance variable {@link #fileName}.
-   *
-   * @param _fileName
-   *          new fileName for instance variable {@link #fileName}
-   * @see #fileName
-   * @see #getFileName
-   */
-  public void setFileName(final String _fileName) {
-    this.fileName = (_fileName != null ? _fileName.trim() : null);
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #fileName}.
-   *
-   * @return the fileName of the instance variable {@link #fileName}.
-   * @see #fileName
-   * @see #setFileName
-   */
-  public String getFileName() {
-    return this.fileName;
-  }
-
-  /* (non-Javadoc)
-   * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
-   */
-  public Object get() {
-    return null;
-  }
+    /**
+     * The method updates in the statement the value.
+     *
+     * @param _object   object
+     * @param _stmt     SQL statement to update the value
+     * @param _index    index in the SQL statement to update the value
+     * @return number of indexes used in the method, if the return value is null an error should be thrown
+     * @throws SQLException on error
+     */
+    public int update(final Object _object, final PreparedStatement _stmt, final int _index)
+            throws SQLException
+    {
+        throw new SQLException("Update value for Type not allowed!!!");
+    }
 }

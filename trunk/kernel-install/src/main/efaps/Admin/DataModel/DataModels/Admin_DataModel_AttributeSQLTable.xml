@@ -47,6 +47,7 @@
       <column name="PARENTSET"          type="INTEGER"/>
       <column name="SQLCOLUMN"          type="STRING_SHORT" length="50"     not-null="true"/>
       <column name="DEFAULTVAL"         type="STRING_SHORT" length="240" />
+      <column name="DIMENSION"          type="STRING_SHORT" length="128"/>
       <!-- constraints -->
       <foreign name="DMATTR_FK_DMTABLE"     key="DMTABLE"           reference="T_DMTABLE(ID)"/>
       <foreign name="DMATTR_FK_DMTYPE"      key="DMTYPE"            reference="T_DMTYPE(ID)"/>
@@ -72,7 +73,8 @@
                 T_DMATTRIBUTE.DMTYPELINK,
                 T_DMATTRIBUTE.PARENTSET,
                 T_DMATTRIBUTE.SQLCOLUMN,
-                T_DMATTRIBUTE.DEFAULTVAL
+                T_DMATTRIBUTE.DEFAULTVAL,
+                T_DMATTRIBUTE.DIMENSION
             from T_DMATTRIBUTE,T_CMABSTRACT
             where T_CMABSTRACT.ID=T_DMATTRIBUTE.ID
       </sql>
@@ -93,6 +95,7 @@
       <column name="PARENTSET"          type="INTEGER"/>
       <column name="SQLCOLUMN"          type="STRING_SHORT" length="50"     not-null="true"/>
       <column name="DEFAULTVAL"         type="STRING_SHORT" length="240" />
+      <column name="DIMENSION"         type="STRING_SHORT" length="128"/>
      </database>
   </definition>
 

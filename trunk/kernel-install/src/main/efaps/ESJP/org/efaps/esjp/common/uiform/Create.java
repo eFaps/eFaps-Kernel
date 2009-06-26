@@ -77,7 +77,12 @@ public class Create implements EventExecution
                 if (attr != null && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
                     if (context.getParameters().containsKey(field.getName())) {
                         final String value = context.getParameter(field.getName());
-                        insert.add(attr, value);
+                        if (attr.hasUoM()) {
+                            final String uom = context.getParameter(field.getName() + "UoM");
+                            insert.add(attr, new String[]{value, uom});
+                        } else {
+                            insert.add(attr, value);
+                        }
                     }
                 }
             }
@@ -135,11 +140,15 @@ public class Create implements EventExecution
                                                             || field.isHiddenDisplay(TargetMode.CREATE))) {
                         final Attribute attr = classification.getAttribute(field.getExpression());
                         if (attr != null
-                                        && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
-                                                        .getClassRepr())) {
+                                 && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
                             if (context.getParameters().containsKey(field.getName())) {
                                 final String value = context.getParameter(field.getName());
-                                classInsert.add(attr, value);
+                                if (attr.hasUoM()) {
+                                    final String uom = context.getParameter(field.getName() + "UoM");
+                                    classInsert.add(attr, new String[]{value, uom});
+                                } else {
+                                    classInsert.add(attr, value);
+                                }
                             }
                         }
                     }

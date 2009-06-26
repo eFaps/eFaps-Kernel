@@ -33,104 +33,101 @@ import org.efaps.update.LinkInstance;
 import org.efaps.util.EFapsException;
 
 /**
- * The class updates programs from type <code>Admin_Program_CSS</code>
- * inside the eFaps database.
+ * The class updates programs from type <code>Admin_Program_CSS</code> inside
+ * the eFaps database.
  *
  * @author jmox
  * @version $Id$
  */
-public class CSSUpdate extends AbstractSourceUpdate {
-
-  /**
-   * Link from CSS extending CSS.
-   */
-  private static final Link LINK2SUPER =
-      new Link(Type.get(ADMIN_PROGRAM_CSS2CSS).getName(),
-               "From",
-                Type.get(ADMIN_PROGRAM_CSS).getName(),
-                "To");
-
-  /**
-   * Set off all links for this cssupdate.
-   */
-  private static final Set<Link> ALLLINKS = new HashSet<Link>();
-  static {
-    ALLLINKS.add(LINK2SUPER);
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param _url URL of the file
-   */
-  protected CSSUpdate(final URL _url) {
-    super(_url, Type.get(ADMIN_PROGRAM_CSS).getName(), ALLLINKS);
-  }
-
-  /**
-   * Read the file.
-   *
-   * @param _url URL to the file
-   * @return  CSSUpdate
-   */
-  public static CSSUpdate readFile(final URL _url) {
-
-    final CSSUpdate ret = new CSSUpdate(_url);
-    final CSSDefinition definition = ret.new CSSDefinition(_url);
-    ret.addDefinition(definition);
-    return ret;
-  }
-
-  /**
-   *
-   */
-  public class CSSDefinition extends SourceDefinition {
+public class CSSUpdate extends AbstractSourceUpdate
+{
 
     /**
-     * Importer for the css.
+     * Link from CSS extending CSS.
      */
-    private CSSImporter sourceCode = null;
+    private static final Link LINK2SUPER = new Link(Type.get(ADMIN_PROGRAM_CSS2CSS).getName(), "From", Type.get(
+                    ADMIN_PROGRAM_CSS).getName(), "To");
 
     /**
-     * Construtor.
-     *
-     * @param _url URL to the css file
-     *
+     * Set off all links for this cssupdate.
      */
-    public CSSDefinition(final URL _url) {
-      super(_url);
+    private static final Set<Link> ALLLINKS = new HashSet<Link>();
+    static {
+        ALLLINKS.add(LINK2SUPER);
     }
 
     /**
-     * Search the instance.
+     * Constructor.
      *
-     * @throws EFapsException if the Java source code could not be read or the
-     *                        file could not be accessed because of the wrong
-     *                        URL
+     * @param _url URL of the file
      */
-    @Override
-    protected void searchInstance() throws EFapsException {
-      if (this.sourceCode == null) {
-        this.sourceCode = new CSSImporter(getUrl());
-      }
-      setName(this.sourceCode.getProgramName());
-
-      if (this.sourceCode.getEFapsUUID() != null) {
-        addValue("UUID", this.sourceCode.getEFapsUUID().toString());
-      }
-
-      if (this.sourceCode.getRevision() != null) {
-        addValue("Revision", this.sourceCode.getRevision());
-      }
-
-      if (this.sourceCode.getExtendSource() != null) {
-        addLink(LINK2SUPER,
-                new LinkInstance(this.sourceCode.getExtendSource()));
-      }
-
-      if (this.instance == null) {
-        this.instance = this.sourceCode.searchInstance();
-      }
+    protected CSSUpdate(final URL _url)
+    {
+        super(_url, Type.get(ADMIN_PROGRAM_CSS).getName(), ALLLINKS);
     }
-  }
+
+    /**
+     * Read the file.
+     *
+     * @param _url URL to the file
+     * @return CSSUpdate
+     */
+    public static CSSUpdate readFile(final URL _url)
+    {
+
+        final CSSUpdate ret = new CSSUpdate(_url);
+        final CSSDefinition definition = ret.new CSSDefinition(_url);
+        ret.addDefinition(definition);
+        return ret;
+    }
+
+    /**
+   *
+   */
+    public class CSSDefinition extends SourceDefinition
+    {
+
+        /**
+         * Importer for the css.
+         */
+        private CSSImporter sourceCode = null;
+
+        /**
+         * Construtor.
+         *
+         * @param _url URL to the css file
+         *
+         */
+        public CSSDefinition(final URL _url)
+        {
+            super(_url);
+        }
+
+        /**
+         * Search the instance.
+         *
+         * @throws EFapsException if the Java source code could not be read or
+         *             the file could not be accessed because of the wrong URL
+         */
+        @Override
+        protected void searchInstance() throws EFapsException
+        {
+            if (this.sourceCode == null) {
+                this.sourceCode = new CSSImporter(getUrl());
+            }
+            setName(this.sourceCode.getProgramName());
+
+            if (this.sourceCode.getEFapsUUID() != null) {
+                addValue("UUID", this.sourceCode.getEFapsUUID().toString());
+            }
+
+            if (this.sourceCode.getExtendSource() != null) {
+                addLink(LINK2SUPER, new LinkInstance(this.sourceCode.getExtendSource()));
+            }
+
+            if (this.instance == null) {
+                this.instance = this.sourceCode.searchInstance();
+            }
+        }
+    }
 }

@@ -28,86 +28,101 @@ import java.util.List;
 import org.efaps.db.query.CachedResult;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class DecimalType extends AbstractType {
-
-  @Override
-  public void update(final Object _object, final PreparedStatement _stmt,
-      final List<Integer> _index) throws SQLException {
-    _stmt.setBigDecimal(_index.get(0), getValue());
-  }
-
-  /**
-   * @todo test that only one value is given for indexes
-   */
-  @Override
-  public Object readValue(final CachedResult _rs,
-                          final List<Integer> _indexes) {
-
-    final BigDecimal val = _rs.getDecimal(_indexes.get(0).intValue());
-    this.value = (val != null) ? val : new BigDecimal(0);
-    return this.value;
-  }
-
-  // //////////////////////////////////////////////////////////////////////////7
-
-  @Override
-  public void set(final Object _value) {
-    if (_value != null) {
-      if ((_value instanceof String) && (((String) _value).length() > 0)) {
-        setValue(new BigDecimal((String) _value));
-      } else if (_value instanceof BigDecimal) {
-        setValue((BigDecimal) _value);
-      } else if (_value instanceof Number) {
-        setValue(new BigDecimal(((Number) _value).toString()));
-      }
+public class DecimalType extends AbstractType
+{
+    /**
+     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
+     * @param _object   object
+     * @param _stmt     SQL statement to update the value
+     * @param _index    index in the SQL statement to update the value
+     * @return number of indexes used in the method, if the return value is null an error should be thrown
+     * @throws SQLException on error
+     */
+    public int update(final Object _object, final PreparedStatement _stmt, final int _index)
+            throws SQLException
+    {
+        _stmt.setBigDecimal(_index, getValue());
+        return 1;
     }
-  }
 
-  // ///////////////////////////////////////////////////////////////////////////
+    /**
+     * @todo test that only one value is given for indexes
+     */
 
-  /**
-   * @see #getValue
-   * @see #setValue
-   */
-  private BigDecimal value = new BigDecimal(0);
+    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    {
 
-  // ///////////////////////////////////////////////////////////////////////////
+        final BigDecimal val = _rs.getDecimal(_indexes.get(0).intValue());
+        this.value = (val != null) ? val : new BigDecimal(0);
+        return this.value;
+    }
 
-  /**
-   * This is the setter method for instance variable {@link #value}.
-   *
-   * @param _value
-   *          new value for instance variable {@link #value}
-   * @see #value
-   * @see #getValue
-   */
-  public void setValue(final BigDecimal _value) {
-    this.value = _value;
-  }
+    // //////////////////////////////////////////////////////////////////////////7
 
-  /**
-   * This is the getter method for instance variable {@link #value}.
-   *
-   * @return the value of the instance variable {@link #value}.
-   * @see #value
-   * @see #setValue
-   */
-  public BigDecimal getValue() {
-    return this.value;
-  }
-  /* (non-Javadoc)
-   * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
-   */
-  public Object get() {
-    return this.value;
-  }
+    public void set(final Object[] _value)
+    {
+        if (_value != null) {
+            if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
+                setValue(new BigDecimal((String) _value[0]));
+            } else if (_value[0] instanceof BigDecimal) {
+                setValue((BigDecimal) _value[0]);
+            } else if (_value[0] instanceof Number) {
+                setValue(new BigDecimal(((Number) _value[0]).toString()));
+            }
+        }
+    }
 
-  @Override
-  public String toString() {
-    return "" + getValue();
-  }
+    // ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @see #getValue
+     * @see #setValue
+     */
+    private BigDecimal value = new BigDecimal(0);
+
+    // ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     * This is the setter method for instance variable {@link #value}.
+     *
+     * @param _value new value for instance variable {@link #value}
+     * @see #value
+     * @see #getValue
+     */
+    public void setValue(final BigDecimal _value)
+    {
+        this.value = _value;
+    }
+
+    /**
+     * This is the getter method for instance variable {@link #value}.
+     *
+     * @return the value of the instance variable {@link #value}.
+     * @see #value
+     * @see #setValue
+     */
+    public BigDecimal getValue()
+    {
+        return this.value;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
+     */
+    public Object get()
+    {
+        return this.value;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "" + getValue();
+    }
 
 }
