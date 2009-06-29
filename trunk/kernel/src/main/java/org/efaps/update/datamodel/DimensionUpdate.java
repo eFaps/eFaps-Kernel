@@ -201,12 +201,20 @@ public class DimensionUpdate extends AbstractUpdate
             }
         }
 
+        /**
+         * Overwritten to set the description.
+         *
+         * @see org.efaps.update.AbstractUpdate.AbstractDefinition#createInDB(org.efaps.db.Insert)
+         * @param _insert insert to be executed
+         * @throws EFapsException on error
+         */
         @Override
         protected void createInDB(final Insert _insert) throws EFapsException
         {
             final String name = super.getValue("Name");
             _insert.add("Name", (name == null) ? "-" : name);
             _insert.add("Description", (this.description == null) ? "-" : this.description);
+            LOG.info("    Insert " + _insert.getInstance().getType().getName() + " '" + name + "'");
             _insert.executeWithoutAccessCheck();
             this.instance = _insert.getInstance();
         }
