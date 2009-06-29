@@ -459,6 +459,8 @@ function _eFapsCreateDataModelTablesStep1()  {
   _eFapsCreateAttrType(stmt, null, '358d1f0e-43ae-425d-a4a0-8d5bad6f40d7', 'Decimal',        'org.efaps.admin.datamodel.attributetype.DecimalType',        'org.efaps.admin.datamodel.ui.StringUI',         null, null);
   _eFapsCreateAttrType(stmt, null, 'b093219c-1d3f-4e30-812a-041b36ecd2e2', 'StringWithUoM',  'org.efaps.admin.datamodel.attributetype.StringWithUoMType',  'org.efaps.admin.datamodel.ui.StringWithUoMUI',  null, null);
   _eFapsCreateAttrType(stmt, null, 'f1795d01-1567-4cb3-9620-b3cd4e2af932', 'IntegerWithUoM', 'org.efaps.admin.datamodel.attributetype.IntegerWithUoMType', 'org.efaps.admin.datamodel.ui.StringWithUoMUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, 'de1c00bc-b041-49d6-9d85-82de0a6bee0d', 'DecimalWithUoM', 'org.efaps.admin.datamodel.attributetype.DecimalWithUoMType', 'org.efaps.admin.datamodel.ui.StringWithUoMUI',  null, null);
+  
   
   _eFapsCreateInsertAttr(stmt, ATTRTYPESQLTABLEID, ATTRTYPETYPEID, 'Classname',     'CLASSNAME',    'String', null);
   _eFapsCreateInsertAttr(stmt, ATTRTYPESQLTABLEID, ATTRTYPETYPEID, 'ClassnameUI',   'CLASSNAMEUI',  'String', null);
