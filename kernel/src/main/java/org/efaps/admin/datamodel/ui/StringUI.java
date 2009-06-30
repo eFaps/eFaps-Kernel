@@ -56,7 +56,7 @@ public class StringUI extends AbstractUI
         final Field field = _fieldValue.getField();
         final Object value = _fieldValue.getValue();
 
-        if (value instanceof List) {
+        if (value instanceof List<?>) {
             final List<?> values = (List<?>) value;
             boolean first = true;
             for (final Object obj : values) {
@@ -78,6 +78,27 @@ public class StringUI extends AbstractUI
                     .append("</span>");
             }
         }
+        return ret.toString();
+    }
+
+    /**
+     * @see org.efaps.admin.datamodel.ui.AbstractUI#getHiddenHtml(org.efaps.admin.datamodel.ui.FieldValue, org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode)
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @param _mode target mode
+     * @return value for field
+     * @throws EFapsException on error
+     */
+    @Override
+    public String getHiddenHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    {
+        final StringBuilder ret = new StringBuilder();
+        final Field field = _fieldValue.getField();
+        final Object value = _fieldValue.getValue();
+
+        ret.append("<input type=\"hidden\" ").append(" name=\"").append(field.getName())
+            .append("\" value=\"").append(value != null ? value : "").append("\"")
+            .append(EFAPSTMPTAG).append("/>");
+
         return ret.toString();
     }
 
