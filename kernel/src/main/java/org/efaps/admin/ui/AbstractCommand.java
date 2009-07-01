@@ -21,14 +21,17 @@
 package org.efaps.admin.ui;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.Vector;
 
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Role;
@@ -219,6 +222,11 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
      * @see #setTargetCreateType
      */
     private Type targetCreateType = null;
+
+    /**
+     * Classifications that will be added to the object on create.
+     */
+    private final Set<Classification> targetCreateClassification = new HashSet<Classification>();
 
     /**
      * Is the target Menu/Command the default.
@@ -687,6 +695,30 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     public void setTargetCmdRevise(final boolean _targetCmdRevise)
     {
         this.targetCmdRevise = _targetCmdRevise;
+    }
+
+    /**
+     * @param _value comma separated list of classifications
+     */
+    private void setTargetCreateClassifications(final String _value)
+    {
+        final String[] values = _value.split(",");
+        for (final String value : values) {
+            final Type classification = Classification.get(value.trim());
+            if (classification != null) {
+                this.targetCreateClassification.add((Classification) classification);
+            }
+        }
+    }
+
+    /**
+     * Getter method for instance variable {@link #targetCreateClassification}.
+     *
+     * @return value of instance variable {@link #targetCreateClassification}
+     */
+    public Set<Classification> getTargetCreateClassification()
+    {
+        return this.targetCreateClassification;
     }
 
     /**
@@ -1163,6 +1195,8 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
             setTargetConnectAttribute(Attribute.get(_value));
         } else if ("TargetCreateType".equals(_name)) {
             setTargetCreateType(Type.get(_value));
+        } else if ("TargetCreateClassifications".equals(_name)) {
+            setTargetCreateClassifications(_value);
         } else if ("TargetDefaultMenu".equals(_name)) {
             if ("none".equals(_value)) {
                 setTargetDefaultMenu(false);
