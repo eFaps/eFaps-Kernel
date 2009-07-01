@@ -167,8 +167,11 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
     private void setInstance()
     {
         try {
+            if (EventDefinition.LOG.isDebugEnabled()) {
+                EventDefinition.LOG.debug("setting Instance: " + this.resourceName + " - " + this.methodName);
+            }
             final Class<?> cls = Class.forName(this.resourceName, true,
-                                               new EFapsClassLoader(this.getClass().getClassLoader()));
+                                               new EFapsClassLoader(EventDefinition.class.getClassLoader()));
             this.method = cls.getMethod(this.methodName, new Class[] { Parameter.class });
             this.progInstance = cls.newInstance();
         } catch (final ClassNotFoundException e) {
