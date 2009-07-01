@@ -30,81 +30,80 @@ import org.slf4j.LoggerFactory;
  * This Class extends the ClassLoader of java, to be able to load Classes on
  * demand from the eFaps Database.
  *
- * @author jmox
- *
+ * @author The eFaps Team
+ * @version $Id$
  */
-public class EFapsClassLoader extends ClassLoader {
-  /**
-   * Logger for this class
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(EFapsClassLoader.class);
+public class EFapsClassLoader extends ClassLoader
+{
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(EFapsClassLoader.class);
 
-  /**
-   * should the Class be kept in a local Cache
-   */
-  private static boolean                   HOLDCLASSESINCACHE = false;
+    /**
+     * should the Class be kept in a local Cache.
+     */
+    private static boolean HOLDCLASSESINCACHE = false;
 
-  /**
-   * holds all allready loaded Classes
-   */
-  private static final Map<String, byte[]> LOADEDCLASSES      = new HashMap<String, byte[]>();
+    /**
+     * holds all allready loaded Classes.
+     */
+    private static final Map<String, byte[]> LOADEDCLASSES = new HashMap<String, byte[]>();
 
-  /**
-   * Constructor setting the Parent of the EFapsClassLoader in ClassLoader
-   *
-   * @param _parentClassLoader
-   *          the Parent of the this EFapsClassLoader
-   */
-  public EFapsClassLoader(ClassLoader _parentClassLoader) {
-    super(_parentClassLoader);
-
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.ClassLoader#findClass(java.lang.String)
-   */
-  @Override
-  public Class<?> findClass(String name) {
-
-    byte[] b = getLoadedClasse(name);
-    if (b == null) {
-      b = loadClassData(name);
+    /**
+     * Constructor setting the Parent of the EFapsClassLoader in ClassLoader.
+     *
+     * @param _parentClassLoader the Parent of the this EFapsClassLoader
+     */
+    public EFapsClassLoader(final ClassLoader _parentClassLoader)
+    {
+        super(_parentClassLoader);
     }
-    return defineClass(name, b, 0, b.length);
-  }
 
-  /**
-   * Loads the wanted Resource with the EFapsResourceStore into a byte-Array to
-   * pass it on to findClass
-   *
-   * @param _resourceName
-   *          name of the Resource to load
-   * @return byte[] containing the compiled javaclass
-   */
-  public byte[] loadClassData(final String _resourceName) {
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Loading Class '" + _resourceName + "' from Database");
+
+    /**
+     * @see java.lang.ClassLoader#findClass(java.lang.String)
+     * @param _name name of the class
+     * @return Class
+     */
+    @Override
+    public Class<?> findClass(final String _name)
+    {
+        byte[] b = getLoadedClasse(_name);
+        if (b == null) {
+            b = loadClassData(_name);
+        }
+        return defineClass(_name, b, 0, b.length);
     }
-    final byte[] x = new EFapsResourceStore(new Compiler()).read(_resourceName);
 
-    if (x != null && HOLDCLASSESINCACHE) {
-      LOADEDCLASSES.put(_resourceName, x);
+    /**
+     * Loads the wanted Resource with the EFapsResourceStore into a byte-Array
+     * to pass it on to findClass.
+     *
+     * @param _resourceName name of the Resource to load
+     * @return byte[] containing the compiled javaclass
+     */
+    public byte[] loadClassData(final String _resourceName)
+    {
+        if (EFapsClassLoader.LOG.isDebugEnabled()) {
+            EFapsClassLoader.LOG.debug("Loading Class '" + _resourceName + "' from Database");
+        }
+        final byte[] x = new EFapsResourceStore(new Compiler()).read(_resourceName);
+
+        if (x != null && EFapsClassLoader.HOLDCLASSESINCACHE) {
+            EFapsClassLoader.LOADEDCLASSES.put(_resourceName, x);
+        }
+        return x;
     }
-    return x;
 
-  }
-
-  /**
-   * get the Binary Class sored inthe lokal Cache
-   *
-   * @param _resourceName
-   *          Name of the Class
-   * @return binary Class, null if not in Cache
-   */
-  public byte[] getLoadedClasse(String _resourceName) {
-
-    return LOADEDCLASSES.get(_resourceName);
-  }
+    /**
+     * Get the Binary Class stored in the local Cache.
+     *
+     * @param _resourceName Name of the Class
+     * @return binary Class, null if not in Cache
+     */
+    public byte[] getLoadedClasse(final String _resourceName)
+    {
+        return EFapsClassLoader.LOADEDCLASSES.get(_resourceName);
+    }
 }
