@@ -35,6 +35,8 @@ public enum EFapsClassNames
     ATTRTYPE_LINK("440f472f-7be2-41d3-baec-4a2f0e4e5b31"),
     /** Attribute type Link with Ranges. */
     ATTRTYPE_LINK_WITH_RANGES("9d6b2e3e-68ce-4509-a5f0-eae42323a696"),
+    /** Attribute type PersonLink. */
+    ATTRTYPE_PERSON_LINK("7b8f98de-1967-44e0-b174-027349868a61"),
     /** Attribute type Creator Link. */
     ATTRTYPE_CREATOR_LINK("76122fe9-8fde-4dd4-a229-e48af0fb4083"),
     /** Attribute type Modifier Link. */
