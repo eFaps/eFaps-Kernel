@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.efaps.db.query.CachedResult;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -39,31 +40,46 @@ public interface IAttributeType
      * @return <i>true</i> if only a preparation is needed, otherwise
      *         <i>false</i> if the value must be set
      */
-     boolean prepareUpdate(final StringBuilder _stmt);
+    boolean prepareUpdate(final StringBuilder _stmt);
 
-     /**
-      * The method prepares the statement for insert the object in the database.
-      *
-      * @param _stmt string buffer to append the statement
-      * @return <i>true</i> if only a preparation is needed, otherwise
-      *         <i>false</i> if the value must be set
-      */
-      boolean prepareInsert(final StringBuilder _stmt);
+    /**
+     * The method prepares the statement for insert the object in the database.
+     *
+     * @param _stmt string buffer to append the statement
+     * @return <i>true</i> if only a preparation is needed, otherwise
+     *         <i>false</i> if the value must be set
+     */
+    boolean prepareInsert(final StringBuilder _stmt);
 
     /**
      * The method updates in the statement the value.
      *
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
+     * @param _object object
+     * @param _stmt SQL statement to update the value
+     * @param _index index in the SQL statement to update the value
+     * @return number of indexes used in the method, if the return value is null
+     *         an error should be thrown
      * @throws SQLException on error
      */
     int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException;
 
     /**
-     * @param _rs       cached result from the JDBC select statement
-     * @param _indexes  index in the result set
+     * Method is used to read the values, retrieved from an jdbc resultset and
+     * put into the given parameter <code>_objectList</code>. This is
+     * necessary, because only in the different instances of this interface
+     * it can be determined what to do with the objects from the database. e.g.
+     * in case of DateTimeType the values will be cased into a DateTime Object
+     * and in case of a PersonLinkType a Person or Role instance will be returned.
+     *
+     * @param _objectList list of objects from the eFaps Database
+     * @return Object as needed for eFaps
+     * @throws EFapsException on error
+     */
+    Object readValue(final List<Object> _objectList) throws EFapsException;
+
+    /**
+     * @param _rs cached result from the JDBC select statement
+     * @param _indexes index in the result set
      * @throws Exception on error
      * @return Object
      */
@@ -89,5 +105,5 @@ public interface IAttributeType
      *
      * @param _attribute attribute
      */
-     void setAttribute(final Attribute _attribute);
+    void setAttribute(final Attribute _attribute);
 }

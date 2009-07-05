@@ -65,6 +65,30 @@ public class BooleanType extends AbstractType
     }
 
     /**
+     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
+     * @param _objectList List of Objects
+     * @return Boolean
+     * TODO throw error if more than one value is given
+     */
+    public Object readValue(final List<Object> _objectList)
+    {
+        Boolean ret = null;
+        final Object obj = _objectList.get(0);
+        if (obj instanceof Boolean) {
+            ret = (Boolean) obj;
+        } else if (obj instanceof Number) {
+            final Integer intvalue = ((Number) obj).intValue();
+            if ((intvalue != null) && (intvalue != 0)) {
+                ret = true;
+            } else {
+                ret = false;
+            }
+        }
+        this.value = ret;
+        return ret;
+    }
+
+    /**
      * @param _context context for this request
      * @param _value new value to set
      */

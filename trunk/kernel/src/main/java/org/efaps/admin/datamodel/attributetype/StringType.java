@@ -32,15 +32,11 @@ import org.efaps.db.query.CachedResult;
  */
 public class StringType extends AbstractType
 {
-
-    // ///////////////////////////////////////////////////////////////////////////
-
     /**
      * @see #getValue
      * @see #setValue
      */
     private  String value = null;
-
 
     /**
      * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
@@ -50,28 +46,49 @@ public class StringType extends AbstractType
      * @return number of indexes used in the method, if the return value is null an error should be thrown
      * @throws SQLException on error
      */
-    public int update(final Object _object, final PreparedStatement _stmt, final int _indexes)
+    public int update(final Object _object, final PreparedStatement _stmt, final int _index)
                     throws SQLException
     {
-        _stmt.setString(_indexes,  this.value);
+        _stmt.setString(_index,  this.value);
         return 1;
     }
 
+    /**
+     * @see org.efaps.admin.datamodel.IAttributeType#readValue(org.efaps.db.query.CachedResult, java.util.List)
+     * @param _rs       CachedResult
+     * @param _indexes  indexsx
+     * @return Object
+     */
     public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
     {
-
         this.value = (_rs.getString(_indexes.get(0).intValue()));
-        if ( this.value != null) {
+        if (this.value != null) {
             this.value =  this.value.trim();
         }
         return  this.value;
     }
 
     /**
+     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
+     * @param _objectList List of Objects
+     * @return String
+     */
+    public Object readValue(final List<Object> _objectList)
+    {
+        final StringBuilder ret = new StringBuilder();
+        boolean retNull = true;
+        for (final Object object : _objectList) {
+            retNull = retNull ? object == null : false;
+            ret.append(object == null ? "" : object.toString().trim());
+        }
+        this.value = retNull ? null : ret.toString();
+        return this.value;
+    }
+
+    /**
      * The localised string and the internal string value are equal. So the
      * internal value can be set directly with method {@link #setValue}.
      *
-     * @param _context context for this request
      * @param _value new value to set
      */
     public void set(final Object[] _value)
@@ -96,13 +113,17 @@ public class StringType extends AbstractType
     /**
      * Setter method for instance variable {@link #value}.
      *
-     * @param value value for instance variable {@link #value}
+     * @param _value value for instance variable {@link #value}
      */
-    protected void setValue(final String value)
+    protected void setValue(final String _value)
     {
-        this.value = value;
+        this.value = _value;
     }
 
+    /**
+     * @see java.lang.Object#toString()
+     * @return string representation
+     */
     @Override
     public String toString()
     {

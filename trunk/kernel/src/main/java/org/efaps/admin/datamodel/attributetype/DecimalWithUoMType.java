@@ -25,7 +25,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.efaps.admin.datamodel.Dimension;
-import org.efaps.db.query.CachedResult;
 
 /**
  * @author The eFaps Team
@@ -90,14 +89,17 @@ public class DecimalWithUoMType extends AbstractWithUoMType
 
     /**
      * @see org.efaps.admin.datamodel.attributetype.AbstractWithUoMType#readValue(org.efaps.db.query.CachedResult, int)
-     * @param _rs       cached result
-     * @param _index     index
+     * @param _object    Object to read
      * @return the value as Integer
      */
     @Override
-    protected Object readValue(final CachedResult _rs, final int _index)
+    protected Object readValue(final Object _object)
     {
-        this.value = _rs.getDecimal(_index);
+        if (_object instanceof BigDecimal) {
+            this.value = (BigDecimal) _object;
+        } else if (_object != null) {
+            this.value = new BigDecimal(_object.toString());
+        }
         return this.value;
     }
 }

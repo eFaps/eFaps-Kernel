@@ -56,6 +56,34 @@ public class DateTimeType extends AbstractType
     }
 
     /**
+     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
+     * @param _objectList List of Objects
+     * @return DateTime
+     * TODO throw error if more than one value is given
+     */
+    public Object readValue(final List<Object> _objectList)
+    {
+        DateTime ret = null;
+        final Object obj = _objectList.get(0);
+        if (obj instanceof Timestamp || obj instanceof Date) {
+            // reads the Value from "Admin_Common_DataBaseTimeZone"
+            final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
+                            .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+            final String timezoneID = kernelConfig.getAttributeValue("DataBaseTimeZone");
+            final ISOChronology chron;
+            if (timezoneID != null) {
+                final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
+                chron = ISOChronology.getInstance(timezone);
+            } else {
+                chron = ISOChronology.getInstanceUTC();
+            }
+            ret = new DateTime(obj, chron);
+        }
+        this.value = ret;
+        return ret;
+    }
+
+    /**
      * The value that can be set is a Date, a DateTime or a String
      * yyyy-MM-dd'T'HH:mm:ss.SSSZZ. It will be normalized to ISO Calender with
      * TimeZone from SystemAttribute Admin_Common_DataBaseTimeZone. In case that

@@ -64,48 +64,41 @@ public class TypeType extends AbstractType
      */
     public Object readValue(final CachedResult _rs, final List<Integer> _indexes) throws Exception
     {
-        Type value;
-
+        Type ret;
         if (getAttribute().getSqlColNames().size() > 0) {
-            value = Type.get(_rs.getLong(_indexes.get(0).intValue()));
+            ret = Type.get(_rs.getLong(_indexes.get(0).intValue()));
         } else {
-            value = getAttribute().getParent();
+            ret = getAttribute().getParent();
         }
-        setValue(value);
-        return value;
+        this.value = ret;
+        return ret;
+    }
+
+    /**
+     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
+     * @param _objectList List of Objects
+     * @return DateTime
+     * TODO throw error if more than one value is given
+     */
+    public Object readValue(final List<Object> _objectList)
+    {
+        Type ret;
+        if (getAttribute().getSqlColNames().size() > 0) {
+            ret = Type.get((Long) _objectList.get(0));
+        } else {
+            ret = getAttribute().getParent();
+        }
+        this.value = ret;
+        return ret;
     }
 
     public void set(final Object[] _value)
     {
     }
 
-    /**
-     * This is the setter method for instance variable {@link #value}.
-     *
-     * @param _value new value for instance variable {@link #value}
-     * @see #value
-     * @see #getValue
-     */
-    public void setValue(final Type _value)
-    {
-        this.value = _value;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #value}.
-     *
-     * @return the value of the instance variable {@link #value}.
-     * @see #value
-     * @see #setValue
-     */
-    public Type getValue()
-    {
-        return this.value;
-    }
-
     @Override
     public String toString()
     {
-        return "" + getValue();
+        return "" + this.value;
     }
 }

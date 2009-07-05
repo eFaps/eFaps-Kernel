@@ -26,6 +26,7 @@ import java.sql.Types;
 import java.util.List;
 
 import org.efaps.db.query.CachedResult;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -83,7 +84,20 @@ public abstract class AbstractLinkType extends AbstractType
     public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
     {
         this.value = (_rs.getObject(_indexes.get(0)));
-        return getValue();
+        return this.value;
+    }
+
+    /**
+     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
+     * @param _objectList List of Objects
+     * @return Object
+     * TODO throw error if more than one value is given
+     * @throws EFapsException
+     */
+    public Object readValue(final List<Object> _objectList) throws EFapsException
+    {
+        this.value = _objectList.get(0);
+        return  this.value;
     }
 
     /**
@@ -96,5 +110,15 @@ public abstract class AbstractLinkType extends AbstractType
     protected Object getValue()
     {
         return this.value;
+    }
+
+    /**
+     * Setter method for instance variable {@link #value}.
+     *
+     * @param _value value for instance variable {@link #value}
+     */
+    protected void setValue(final Object _value)
+    {
+        this.value = _value;
     }
 }

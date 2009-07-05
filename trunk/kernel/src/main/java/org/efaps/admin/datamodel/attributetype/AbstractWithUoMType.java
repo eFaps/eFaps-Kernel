@@ -116,7 +116,7 @@ public abstract class AbstractWithUoMType extends AbstractType
      */
     public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
     {
-        final Object object = readValue(_rs, _indexes.get(0));
+        final Object object = readValue(_rs.getObject(_indexes.get(0)));
         setUoM(Dimension.getUoM(_rs.getLong(_indexes.get(1))));
         final Object[] ret;
         if (getAttribute().getSqlColNames().size() > 2) {
@@ -128,14 +128,39 @@ public abstract class AbstractWithUoMType extends AbstractType
     }
 
     /**
+     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
+     * @param _objectList List of Objects
+     * @return DateTime
+     * TODO throw error if more than one value is given
+     */
+    public Object readValue(final List<Object> _objectList)
+    {
+        final Object object = _objectList.get(0);
+        setUoM(Dimension.getUoM((Long) _objectList.get(1)));
+        final Object[] ret;
+        if (getAttribute().getSqlColNames().size() > 2) {
+            final Object obj = _objectList.get(2);
+            double dbl = 0;
+            if (obj instanceof Number) {
+                dbl = ((Number) obj).doubleValue();
+            } else if (obj != null) {
+                dbl = Double.parseDouble(obj.toString());
+            }
+            ret = new Object[]{object, getUoM(), dbl};
+        } else {
+            ret = new Object[]{object, getUoM()};
+        }
+        return ret;
+    }
+
+    /**
      * Method to read the value from the cached result.
      * @see #readValue(CachedResult, List)
      *
-     * @param _rs       cached result from the JDBC select statement
-     * @param _index    index in the result set
+     * @param _object   Object to read
      * @return value as object
      */
-    protected abstract Object readValue(final CachedResult _rs, final int _index);
+    protected abstract Object readValue(final Object _object);
 
     /**
      * Method to set the statement belonging to the value.

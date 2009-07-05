@@ -33,6 +33,12 @@ import org.efaps.db.query.CachedResult;
 public class IntegerType extends AbstractType
 {
     /**
+     * @see #getValue
+     * @see #setValue
+     */
+    private int value = 0;
+
+    /**
      * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
      * @param _object   object
      * @param _stmt     SQL statement to update the value
@@ -42,7 +48,7 @@ public class IntegerType extends AbstractType
      */
     public int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException
     {
-        _stmt.setInt(_index, getValue());
+        _stmt.setInt(_index, this.value);
         return 1;
     }
 
@@ -54,65 +60,44 @@ public class IntegerType extends AbstractType
         return _rs.getLong(_indexes.get(0).intValue());
     }
 
+    /**
+     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
+     * @param _objectList List of Objects
+     * @return DateTime
+     * TODO throw error if more than one value is given
+     */
+    public Object readValue(final List<Object> _objectList)
+    {
+        Integer ret = null;
+        Object obj = _objectList.get(0);
+        if (obj instanceof List<?>) {
+            obj = ((List<?>) obj).get(0);
+        }
+        if (obj instanceof Number) {
+            ret = ((Number) obj).intValue();
+        } else if (obj != null) {
+            ret = Integer.parseInt(obj.toString());
+        }
+        this.value = ret == null ? 0 : ret;
+        return ret;
+    }
+
+
     public void set(final Object[] _value)
     {
         if (_value != null) {
             if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
-                setValue(Integer.parseInt((String) _value[0]));
+                this.value = (Integer.parseInt((String) _value[0]));
             } else if (_value[0] instanceof Number) {
-                setValue(((Number) _value[0]).intValue());
+                this.value = (((Number) _value[0]).intValue());
             }
         }
-    }
-
-    // ///////////////////////////////////////////////////////////////////////////
-
-    /**
-     * @see #getValue
-     * @see #setValue
-     */
-    private int value = 0;
-
-    // ///////////////////////////////////////////////////////////////////////////
-
-    /**
-     * This is the setter method for instance variable {@link #value}.
-     *
-     * @param _value new value for instance variable {@link #value}
-     * @see #value
-     * @see #getValue
-     */
-    public void setValue(final int _value)
-    {
-        this.value = _value;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #value}.
-     *
-     * @return the value of the instance variable {@link #value}.
-     * @see #value
-     * @see #setValue
-     */
-    public int getValue()
-    {
-        return this.value;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
-     */
-    public Object get()
-    {
-        return this.value;
     }
 
     @Override
     public String toString()
     {
-        return "" + getValue();
+        return "" + this.value;
     }
 
 }

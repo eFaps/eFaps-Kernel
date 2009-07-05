@@ -64,6 +64,27 @@ public class LongType extends AbstractType
         return this.value;
     }
 
+    /**
+     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
+     * @param _objectList List of Objects
+     * @return DateTime
+     * TODO throw error if more than one value is given
+     */
+    public Object readValue(final List<Object> _objectList)
+    {
+        Long ret = null;
+        Object obj = _objectList.get(0);
+        if (obj instanceof List<?>) {
+            obj = ((List<?>) obj).get(0);
+        }
+        if (obj instanceof Number) {
+            ret = ((Number) obj).longValue();
+        } else if (obj != null) {
+            ret = Long.parseLong(obj.toString());
+        }
+        this.value = ret == null ? 0 : ret;
+        return ret;
+    }
 
     public void set(final Object[] _value)
     {
@@ -81,15 +102,5 @@ public class LongType extends AbstractType
     public String toString()
     {
         return "" + this.value;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
-     */
-    public Object get()
-    {
-        return this.value;
     }
 }
