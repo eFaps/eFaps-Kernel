@@ -24,7 +24,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
@@ -52,82 +51,49 @@ public class RealType extends AbstractType
     public int update(final Object _object, final PreparedStatement _stmt, final int _indexes)
                     throws SQLException
     {
-        _stmt.setDouble(_indexes, getValue());
+        _stmt.setDouble(_indexes, this.value);
         return 1;
     }
 
     public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
     {
-        setValue(_rs.getDouble(_indexes.get(0).intValue()));
+        this.value = (_rs.getDouble(_indexes.get(0).intValue()));
         return _rs.getDouble(_indexes.get(0).intValue());
     }
 
-    // //////////////////////////////////////////////////////////////////////////7
-
     /**
-     * The instance method sets {@link #value} by parsing the parameter
-     * <i>_value</i>.
-     *
-     * @param _context context for this request
-     * @param _value new value to set
+     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
+     * @param _objectList List of Objects
+     * @return DateTime
+     * TODO throw error if more than one value is given
      */
-    public void set(final String _value) throws NumberFormatException
+    public Object readValue(final List<Object> _objectList)
     {
-        if (_value != null) {
-            setValue(Double.parseDouble(_value));
+        Double ret = null;
+        final Object obj = _objectList.get(0);
+        if (obj instanceof Number) {
+            ret = ((Number) obj).doubleValue();
+        } else if (obj != null) {
+            ret = Double.parseDouble(obj.toString());
         }
-    }
-
-    public void set(final Context _context, final Object _value)
-    {
-        if (_value != null) {
-            if ((_value instanceof String) && (((String) _value).length() > 0)) {
-                setValue(Double.parseDouble((String) _value));
-            } else if (_value instanceof Number) {
-                setValue(((Number) _value).doubleValue());
-            }
-        }
-    }
-
-
-    /**
-     * This is the setter method for instance variable {@link #value}.
-     *
-     * @param _value new value for instance variable {@link #value}
-     * @see #value
-     * @see #getValue
-     */
-    public void setValue(final double _value)
-    {
-        this.value = _value;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #value}.
-     *
-     * @return the value of the instance variable {@link #value}.
-     * @see #value
-     * @see #setValue
-     */
-    public double getValue()
-    {
-        return this.value;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "" + getValue();
+        this.value = ret;
+        return ret;
     }
 
     public void set(final Object[] _value)
     {
         if (_value != null) {
             if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
-                setValue(Double.parseDouble((String) _value[0]));
+                this.value = (Double.parseDouble((String) _value[0]));
             } else if (_value[0] instanceof Number) {
-                setValue(((Number) _value[0]).doubleValue());
+                this.value = (((Number) _value[0]).doubleValue());
             }
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return "" + this.value;
     }
 }

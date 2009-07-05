@@ -24,7 +24,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.efaps.admin.datamodel.Dimension;
-import org.efaps.db.query.CachedResult;
 
 /**
  * @author The eFaps Team
@@ -88,14 +87,17 @@ public class IntegerWithUoMType extends AbstractWithUoMType
 
     /**
      * @see org.efaps.admin.datamodel.attributetype.AbstractWithUoMType#readValue(org.efaps.db.query.CachedResult, int)
-     * @param _rs       cached result
-     * @param _index     index
+     * @param _object    Object to read
      * @return the value as Integer
      */
     @Override
-    protected Object readValue(final CachedResult _rs, final int _index)
+    protected Object readValue(final Object _object)
     {
-        this.value = _rs.getLong(_index).intValue();
+        if (_object instanceof Number) {
+            this.value = ((Number) _object).intValue();
+        } else if (_object != null) {
+            this.value = Integer.parseInt(_object.toString());
+        }
         return this.value;
     }
 }

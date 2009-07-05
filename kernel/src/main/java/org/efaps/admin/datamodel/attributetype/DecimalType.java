@@ -34,6 +34,12 @@ import org.efaps.db.query.CachedResult;
 public class DecimalType extends AbstractType
 {
     /**
+     * @see #getValue
+     * @see #setValue
+     */
+    private BigDecimal value = new BigDecimal(0);
+
+    /**
      * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
      * @param _object   object
      * @param _stmt     SQL statement to update the value
@@ -60,7 +66,25 @@ public class DecimalType extends AbstractType
         return this.value;
     }
 
-    // //////////////////////////////////////////////////////////////////////////7
+    /**
+     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
+     * @param _objectList List of Objects
+     * @return Decimal
+     * TODO throw error if more than one value is given
+     */
+    public Object readValue(final List<Object> _objectList)
+    {
+        BigDecimal ret = null;
+        final Object obj = _objectList.get(0);
+        if (obj instanceof BigDecimal) {
+            ret = (BigDecimal) obj;
+        } else if (obj != null) {
+            ret = new BigDecimal(obj.toString());
+        }
+
+        this.value = ret;
+        return ret;
+    }
 
     public void set(final Object[] _value)
     {
@@ -74,16 +98,6 @@ public class DecimalType extends AbstractType
             }
         }
     }
-
-    // ///////////////////////////////////////////////////////////////////////////
-
-    /**
-     * @see #getValue
-     * @see #setValue
-     */
-    private BigDecimal value = new BigDecimal(0);
-
-    // ///////////////////////////////////////////////////////////////////////////
 
     /**
      * This is the setter method for instance variable {@link #value}.

@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 
 import org.efaps.admin.datamodel.IMultipleAttributeType;
 import org.efaps.db.query.CachedResult;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment
@@ -83,6 +84,18 @@ public class MultiLineArrayType extends AbstractType implements IMultipleAttribu
     public int update(final Object _object, final PreparedStatement _stmt, final int _indexes) throws SQLException
     {
         throw new SQLException("Update value for Type not allowed!!!");
+    }
+
+    /**
+     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
+     * @param objectList
+     * @return
+     * @throws EFapsException
+     */
+    public Object readValue(final List<Object> objectList) throws EFapsException
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

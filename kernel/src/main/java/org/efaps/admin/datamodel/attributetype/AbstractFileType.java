@@ -22,6 +22,9 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
+
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -83,5 +86,17 @@ public abstract class AbstractFileType extends AbstractType
             throws SQLException
     {
         throw new SQLException("Update value for Type not allowed!!!");
+    }
+
+    /**
+     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
+     * @param _objectList List of Objects
+     * @return nothing, because error will be thrown
+     * @throws EFapsException allways
+     *
+     */
+    public Object readValue(final List<Object> _objectList) throws EFapsException
+    {
+        throw new EFapsException(AbstractFileType.class, "readValue.notAllowed");
     }
 }

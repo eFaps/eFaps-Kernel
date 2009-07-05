@@ -25,6 +25,7 @@ import java.util.List;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
 import org.efaps.db.query.CachedResult;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -63,6 +64,35 @@ public class PersonLinkType extends AbstractLinkType
 
         return ret;
     }
+
+    /**
+     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
+     * @param _objectList List of Objects
+     * @return DateTime
+     * TODO throw error if more than one value is given
+     * @throws EFapsException on error
+     */
+    @Override
+    public Object readValue(final List<Object> _objectList) throws EFapsException
+    {
+        Object ret = null;
+        final Object obj = _objectList.get(0);
+        if (obj != null) {
+            long id = 0;
+            if (obj instanceof Number) {
+                id = ((Number) obj).longValue();
+            } else if (obj != null) {
+                id = Long.parseLong(obj.toString());
+            }
+            ret = Person.get(id);
+            if (ret == null) {
+                ret = Role.get(id);
+            }
+        }
+        setValue(ret);
+        return ret;
+    }
+
 
     @Override
     public String toString()
