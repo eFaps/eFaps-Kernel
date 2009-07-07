@@ -69,6 +69,7 @@
       <property name="Label">Admin_UI_Menu_Childs/sortid.Label</property>
       <property name="Width">1</property>
       <property name="SortAble">false</property>
+      <property name="ClassNameUI">org.efaps.admin.datamodel.ui.StringUI</property>
       <trigger program="org.efaps.esjp.admin.ui.MenuChilds" 
                name="Admin_UI_Menu_Childs/sortid" 
                event="UI_FIELD_VALUE"/>
