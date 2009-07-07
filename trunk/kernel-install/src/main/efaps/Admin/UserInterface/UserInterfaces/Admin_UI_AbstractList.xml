@@ -41,22 +41,26 @@
       <property name="ShowTypeIcon">true</property>
       <property name="SortAble">false</property>
       <property name="Width">2</property>
+      <property name="ModeSearch">READONLY</property>
     </field>
     <field name="name">
       <property name="Expression">Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_UI_Abstract/Name.Label</property>
       <property name="Width">6</property>
+      <property name="ModeSearch">READONLY</property>
     </field>
     <field name="uuid">
       <property name="Expression">UUID</property>
       <property name="Label">Admin_UI_Abstract/UUID.Label</property>
       <property name="Width">4</property>
+      <property name="ModeSearch">READONLY</property>
     </field>
     <field name="revision">
       <property name="Expression">Revision</property>
       <property name="Label">Admin_UI_Abstract/Revision.Label</property>
       <property name="Width">2</property>
+      <property name="ModeSearch">READONLY</property>
     </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>

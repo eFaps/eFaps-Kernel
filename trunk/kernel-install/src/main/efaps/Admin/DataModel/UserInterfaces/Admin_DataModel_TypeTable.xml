@@ -40,17 +40,20 @@
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_DataModel_Type/Name.Label</property>
       <property name="ShowTypeIcon">true</property>
+      <property name="ModeSearch">READONLY</property>
     </field>
     <field name="uuid">
       <property name="Expression">UUID</property>
       <property name="Label">Admin_DataModel_Type/UUID.Label</property>
+      <property name="ModeSearch">READONLY</property>
     </field>
-    <field name="revision">
+    <field name="parentType">
       <property name="AlternateOID">ParentType.OID</property>
       <property name="Expression">ParentType.Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_DataModel_Type/ParentType.Label</property>
       <property name="ShowTypeIcon">true</property>
+      <property name="ModeSearch">READONLY</property>
     </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>

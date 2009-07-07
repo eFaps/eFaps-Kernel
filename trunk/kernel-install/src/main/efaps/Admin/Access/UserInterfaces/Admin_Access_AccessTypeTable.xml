@@ -40,10 +40,12 @@
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_Access_AccessType/Name.Label</property>
       <property name="ShowTypeIcon">true</property>
+      <property name="ModeSearch">READONLY</property>
     </field>
     <field name="uuid">
       <property name="Expression">UUID</property>
       <property name="Label">Admin_Access_AccessType/UUID.Label</property>
+      <property name="ModeSearch">READONLY</property>
     </field>
     <field name="revision">
       <property name="Expression">Revision</property>
