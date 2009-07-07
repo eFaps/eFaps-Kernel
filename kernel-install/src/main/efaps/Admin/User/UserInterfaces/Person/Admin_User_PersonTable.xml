@@ -40,14 +40,17 @@
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_User_Person/Name.Label</property>
       <property name="ShowTypeIcon">true</property>
+      <property name="ModeSearch">READONLY</property>
     </field>
     <field name="lastname">
       <property name="Expression">LastName</property>
       <property name="Label">Admin_User_Person/LastName.Label</property>
+      <property name="ModeSearch">READONLY</property>
     </field>
     <field name="firstname">
       <property name="Expression">FirstName</property>
       <property name="Label">Admin_User_Person/FirstName.Label</property>
+      <property name="ModeSearch">READONLY</property>
     </field>
     <field name="email">
       <property name="Expression">Email</property>

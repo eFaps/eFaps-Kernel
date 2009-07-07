@@ -40,11 +40,13 @@
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_User_Abstract/Name.Label</property>
       <property name="ShowTypeIcon">true</property>
+      <property name="ModeSearch">READONLY</property>
     </field>
     <field name="status">
       <property name="Expression">Status</property>
       <property name="Label">Admin_User_Abstract/Status.Label</property>
       <property name="Filterable">true</property>
+      <property name="ModeSearch">READONLY</property>
     </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>
