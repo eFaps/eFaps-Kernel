@@ -64,6 +64,7 @@ public class Field extends AbstractUserInterfaceObject
         /** the field will not be displayed. */
         NONE;
     }
+
     /**
      * The static variable defines the class name in eFaps.
      */
@@ -106,6 +107,33 @@ public class Field extends AbstractUserInterfaceObject
      * @see #getLabel
      */
     private String label = null;
+
+    /**
+     * This field has got a filter. Only if this is set to true
+     * {@link #filterMemoryBased}, {@link #filterRequired},
+     * {@link #filterPickList} should be evaluated.
+     */
+    private boolean filter = false;
+
+    /**
+     * Is the filter a picklist or a FreeText filter.
+     */
+    private boolean filterPickList = true;
+
+    /**
+     * Is the filter memory or database based.
+     */
+    private boolean filterMemoryBased = true;
+
+    /**
+     * Is this filter required.
+     */
+    private boolean filterRequired = false;
+
+    /**
+     * Set the default value for a filter.
+     */
+    private String filterDefault;
 
     /**
      * Is a field multi line? If yes, the value must be higher than the default
@@ -206,14 +234,6 @@ public class Field extends AbstractUserInterfaceObject
     private boolean sortAble = true;
 
     /**
-     * This field can be filtered in a Webtable.
-     *
-     * @see #isFilterable()
-     * @see #setFilterable(boolean)
-     */
-    private boolean filterable = false;
-
-    /**
      * The width of the field as weighted int.
      */
     private int width;
@@ -261,38 +281,6 @@ public class Field extends AbstractUserInterfaceObject
     }
 
     /**
-     * Returns for given parameter <i>_id</i> the instance of class
-     * {@link Field}.
-     *
-     * @param _id id to search in the cache
-     * @return instance of class {@link Field}
-     */
-    public static Field get(final long _id)
-    {
-        AbstractCollection col = null;
-
-        try {
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes(Type.get(FIELD).getName());
-            query.setExpandChildTypes(true);
-            query.addSelect("Collection");
-            query.addWhereExprEqValue("ID", _id);
-            query.executeWithoutAccessCheck();
-
-            if (query.next()) {
-                col = Form.get(((Number) query.get("Collection")).longValue());
-                if (col == null) {
-                    col = Table.get(((Number) query.get("Collection")).longValue());
-                }
-                query.close();
-            }
-        } catch (final EFapsException e) {
-            Field.LOG.error("get(long)", e);
-        }
-        return col.getFieldsMap().get(_id);
-    }
-
-    /**
      * Test, if the value of instance variable {@link AbstractCommand.target} is
      * equal to {@link AbstractCommand.TARGET_CONTENT}.
      *
@@ -332,133 +320,53 @@ public class Field extends AbstractUserInterfaceObject
     }
 
     /**
-     * The method overrides the original method 'toString' and returns the
-     * information of the field user interface object.
+     * Getter method for instance variable {@link #filter}.
      *
-     * @return name of the user interface object
+     * @return value of instance variable {@link #filter}
      */
-    @Override
-    public String toString()
+    public boolean isFilter()
     {
-        return new ToStringBuilder(this).appendSuper(super.toString()).append("expression", getExpression()).append(
-                        "alternateOID", getAlternateOID()).toString();
-    }
-
-    // ///////////////////////////////////////////////////////////////////////////
-
-    /**
-     *
-     * Set a link property for the field.
-     *
-     * @param _linkType type of the link property
-     * @param _toId to id
-     * @param _toType to type
-     * @param _toName to name
-     * @throws EFapsException on error
-     */
-    @Override
-    protected void setLinkProperty(final EFapsClassNames _linkType, final long _toId, final EFapsClassNames _toType,
-                    final String _toName) throws EFapsException
-    {
-        switch (_linkType) {
-            case LINK_ICON:
-                setIcon(RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + _toName));
-                break;
-            default:
-                super.setLinkProperty(_linkType, _toId, _toType, _toName);
-                break;
-        }
+        return this.filter;
     }
 
     /**
-     * The instance method sets a new property value.
+     * Getter method for instance variable {@link #filterPickList}.
      *
-     * @param _name name of the property
-     * @param _value value of the property
-     * @throws CacheReloadException on problems with the cache
+     * @return value of instance variable {@link #filterPickList}
      */
-    @Override
-    protected void setProperty(final String _name, final String _value) throws CacheReloadException
+    public boolean isFilterPickList()
     {
-        if ("AlternateOID".equals(_name)) {
-            setAlternateOID(_value);
-        } else if ("ClassNameUI".equals(_name)) {
-            try {
-                setClassUI((UIInterface) Class.forName(_value).newInstance());
-            } catch (final ClassNotFoundException e) {
-                throw new CacheReloadException("could not found class '" + _value + "' for '" + getName() + "'", e);
-            } catch (final InstantiationException e) {
-                throw new CacheReloadException("could not instantiate class '" + _value + "' for '" + getName() + "'",
-                                e);
-            } catch (final IllegalAccessException e) {
-                throw new CacheReloadException("could not access class '" + _value + "' for '" + getName() + "'", e);
-            }
-        } else if ("Columns".equals(_name)) {
-            setCols(Integer.parseInt(_value));
-        } else if ("CreateValue".equals(_name)) {
-            setCreateValue(_value);
-        } else if ("Expression".equals(_name)) {
-            setExpression(_value);
-        } else if ("Width".equals(_name)) {
-            setWidth(_value);
-        } else if ("SortAble".equals(_name)) {
-            setSortAble(!"false".equals(_value));
-        } else if ("Filterable".equals(_name)) {
-            setFilterable("true".equals(_value));
-        } else if ("HideLabel".equals(_name)) {
-            setHideLabel("true".equals(_value));
-        } else if ("HRef".equals(_name)) {
-            setReference(RequestHandler.replaceMacrosInUrl(_value));
-        } else if ("Icon".equals(_name)) {
-            setIcon(RequestHandler.replaceMacrosInUrl(_value));
-        } else if ("Label".equals(_name)) {
-            setLabel(_value);
-        } else if ("ModeConnect".equals(_name)) {
-            this.mode2display.put(TargetMode.CONNECT, Field.Display.valueOf(_value.toUpperCase()));
-        } else if ("ModeCreate".equals(_name)) {
-            this.mode2display.put(TargetMode.CREATE, Field.Display.valueOf(_value.toUpperCase()));
-        } else if ("ModeEdit".equals(_name)) {
-            this.mode2display.put(TargetMode.EDIT, Field.Display.valueOf(_value.toUpperCase()));
-        } else if ("ModePrint".equals(_name)) {
-            this.mode2display.put(TargetMode.PRINT, Field.Display.valueOf(_value.toUpperCase()));
-        } else if ("ModeSearch".equals(_name)) {
-            this.mode2display.put(TargetMode.SEARCH, Field.Display.valueOf(_value.toUpperCase()));
-        } else if ("ModeView".equals(_name)) {
-            this.mode2display.put(TargetMode.VIEW, Field.Display.valueOf(_value.toUpperCase()));
-        } else if ("ProgramValue".equals(_name)) {
-            try {
-                final Class<?> programValueClass = Class.forName(_value);
-                setProgramValue((FieldProgramValueInterface) programValueClass.newInstance());
-            } catch (final ClassNotFoundException e) {
-                throw new CacheReloadException("could not found class '" + _value + "' for '" + getName() + "'", e);
-            } catch (final InstantiationException e) {
-                throw new CacheReloadException("could not instantiate class '" + _value + "' for '" + getName() + "'",
-                                e);
-            } catch (final IllegalAccessException e) {
-                throw new CacheReloadException("could not access class '" + _value + "' for '" + getName() + "'", e);
-            }
+        return this.filterPickList;
+    }
 
-        } else if ("Required".equals(_name)) {
-            if ("true".equals(_value)) {
-                setRequired(true);
-            }
-        } else if ("Rows".equals(_name)) {
-            setRows(Integer.parseInt(_value));
-        } else if ("RowSpan".equals(_name)) {
-            setRowSpan(Integer.parseInt(_value));
-        } else if ("ShowTypeIcon".equals(_name)) {
-            setShowTypeIcon("true".equals(_value));
-        } else if ("Target".equals(_name)) {
-            if ("content".equals(_value)) {
-                setTarget(Target.CONTENT);
-            } else if ("hidden".equals(_value)) {
-                setTarget(Target.HIDDEN);
-            } else if ("popup".equals(_value)) {
-                setTarget(Target.POPUP);
-            }
-        } else {
-            super.setProperty(_name, _value);
-        }
+    /**
+     * Getter method for instance variable {@link #filterMemoryBased}.
+     *
+     * @return value of instance variable {@link #filterMemoryBased}
+     */
+    public boolean isFilterMemoryBased()
+    {
+        return this.filterMemoryBased;
+    }
+
+    /**
+     * Getter method for instance variable {@link #filterRequired}.
+     *
+     * @return value of instance variable {@link #filterRequired}
+     */
+    public boolean isFilterRequired()
+    {
+        return this.filterRequired;
+    }
+
+    /**
+     * Getter method for instance variable {@link #filterDefault}.
+     *
+     * @return value of instance variable {@link #filterDefault}
+     */
+    public String getFilterDefault()
+    {
+        return this.filterDefault;
     }
 
     /**
@@ -605,32 +513,6 @@ public class Field extends AbstractUserInterfaceObject
     {
         return this.cols;
     }
-
-
-    /**
-     * This is the getter method for instance variable {@link #filterable}.
-     *
-     * @return the value of the instance variable {@link #filterable}
-     * @see #filterable
-     * @see #setFilterable
-     */
-    public boolean isFilterable()
-    {
-        return this.filterable;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #filterable}.
-     *
-     * @param _filterable set instance variable to this
-     * @see #filterable
-     * @see #setFilterable
-     */
-    private void setFilterable(final boolean _filterable)
-    {
-        this.filterable = _filterable;
-    }
-
 
     /**
      * This is the setter method for instance variable {@link #required}.
@@ -1082,4 +964,169 @@ public class Field extends AbstractUserInterfaceObject
         return ret;
     }
 
+    /**
+     * Returns for given parameter <i>_id</i> the instance of class
+     * {@link Field}.
+     *
+     * @param _id id to search in the cache
+     * @return instance of class {@link Field}
+     */
+    public static Field get(final long _id)
+    {
+        AbstractCollection col = null;
+
+        try {
+            final SearchQuery query = new SearchQuery();
+            query.setQueryTypes(Type.get(FIELD).getName());
+            query.setExpandChildTypes(true);
+            query.addSelect("Collection");
+            query.addWhereExprEqValue("ID", _id);
+            query.executeWithoutAccessCheck();
+
+            if (query.next()) {
+                col = Form.get(((Number) query.get("Collection")).longValue());
+                if (col == null) {
+                    col = Table.get(((Number) query.get("Collection")).longValue());
+                }
+                query.close();
+            }
+        } catch (final EFapsException e) {
+            Field.LOG.error("get(long)", e);
+        }
+        return col.getFieldsMap().get(_id);
+    }
+
+    /**
+     *
+     * Set a link property for the field.
+     *
+     * @param _linkType type of the link property
+     * @param _toId to id
+     * @param _toType to type
+     * @param _toName to name
+     * @throws EFapsException on error
+     */
+    @Override
+    protected void setLinkProperty(final EFapsClassNames _linkType, final long _toId, final EFapsClassNames _toType,
+                    final String _toName) throws EFapsException
+    {
+        switch (_linkType) {
+            case LINK_ICON:
+                setIcon(RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + _toName));
+                break;
+            default:
+                super.setLinkProperty(_linkType, _toId, _toType, _toName);
+                break;
+        }
+    }
+
+    /**
+     * The instance method sets a new property value.
+     *
+     * @param _name name of the property
+     * @param _value value of the property
+     * @throws CacheReloadException on problems with the cache
+     */
+    @Override
+    protected void setProperty(final String _name, final String _value) throws CacheReloadException
+    {
+        if ("AlternateOID".equals(_name)) {
+            setAlternateOID(_value);
+        } else if ("ClassNameUI".equals(_name)) {
+            try {
+                setClassUI((UIInterface) Class.forName(_value).newInstance());
+            } catch (final ClassNotFoundException e) {
+                throw new CacheReloadException("could not found class '" + _value + "' for '" + getName() + "'", e);
+            } catch (final InstantiationException e) {
+                throw new CacheReloadException("could not instantiate class '" + _value + "' for '" + getName() + "'",
+                                e);
+            } catch (final IllegalAccessException e) {
+                throw new CacheReloadException("could not access class '" + _value + "' for '" + getName() + "'", e);
+            }
+        } else if ("Columns".equals(_name)) {
+            setCols(Integer.parseInt(_value));
+        } else if ("CreateValue".equals(_name)) {
+            setCreateValue(_value);
+        } else if ("Expression".equals(_name)) {
+            setExpression(_value);
+        } else if ("Width".equals(_name)) {
+            setWidth(_value);
+        } else if ("SortAble".equals(_name)) {
+            setSortAble(!"false".equals(_value));
+        } else if ("FilterBase".equals(_name)) {
+            this.filterMemoryBased = !"DATABASE".equalsIgnoreCase(_value);
+        } else if ("FilterDefault".equals(_name)) {
+            this.filterDefault = _value.trim();
+        } else if ("FilterType".equals(_name)) {
+            this.filter = true;
+            this.filterPickList = !"FREETEXT".equalsIgnoreCase(_value);
+        } else if ("FilterRequired".equals(_name)) {
+            this.filterRequired  = "TRUE".equalsIgnoreCase(_value);
+        } else if ("HideLabel".equals(_name)) {
+            setHideLabel("true".equals(_value));
+        } else if ("HRef".equals(_name)) {
+            setReference(RequestHandler.replaceMacrosInUrl(_value));
+        } else if ("Icon".equals(_name)) {
+            setIcon(RequestHandler.replaceMacrosInUrl(_value));
+        } else if ("Label".equals(_name)) {
+            setLabel(_value);
+        } else if ("ModeConnect".equals(_name)) {
+            this.mode2display.put(TargetMode.CONNECT, Field.Display.valueOf(_value.toUpperCase()));
+        } else if ("ModeCreate".equals(_name)) {
+            this.mode2display.put(TargetMode.CREATE, Field.Display.valueOf(_value.toUpperCase()));
+        } else if ("ModeEdit".equals(_name)) {
+            this.mode2display.put(TargetMode.EDIT, Field.Display.valueOf(_value.toUpperCase()));
+        } else if ("ModePrint".equals(_name)) {
+            this.mode2display.put(TargetMode.PRINT, Field.Display.valueOf(_value.toUpperCase()));
+        } else if ("ModeSearch".equals(_name)) {
+            this.mode2display.put(TargetMode.SEARCH, Field.Display.valueOf(_value.toUpperCase()));
+        } else if ("ModeView".equals(_name)) {
+            this.mode2display.put(TargetMode.VIEW, Field.Display.valueOf(_value.toUpperCase()));
+        } else if ("ProgramValue".equals(_name)) {
+            try {
+                final Class<?> programValueClass = Class.forName(_value);
+                setProgramValue((FieldProgramValueInterface) programValueClass.newInstance());
+            } catch (final ClassNotFoundException e) {
+                throw new CacheReloadException("could not found class '" + _value + "' for '" + getName() + "'", e);
+            } catch (final InstantiationException e) {
+                throw new CacheReloadException("could not instantiate class '" + _value + "' for '" + getName() + "'",
+                                e);
+            } catch (final IllegalAccessException e) {
+                throw new CacheReloadException("could not access class '" + _value + "' for '" + getName() + "'", e);
+            }
+        } else if ("Required".equals(_name)) {
+            if ("true".equals(_value)) {
+                setRequired(true);
+            }
+        } else if ("Rows".equals(_name)) {
+            setRows(Integer.parseInt(_value));
+        } else if ("RowSpan".equals(_name)) {
+            setRowSpan(Integer.parseInt(_value));
+        } else if ("ShowTypeIcon".equals(_name)) {
+            setShowTypeIcon("true".equals(_value));
+        } else if ("Target".equals(_name)) {
+            if ("content".equals(_value)) {
+                setTarget(Target.CONTENT);
+            } else if ("hidden".equals(_value)) {
+                setTarget(Target.HIDDEN);
+            } else if ("popup".equals(_value)) {
+                setTarget(Target.POPUP);
+            }
+        } else {
+            super.setProperty(_name, _value);
+        }
+    }
+
+    /**
+     * The method overrides the original method 'toString' and returns the
+     * information of the field user interface object.
+     *
+     * @return name of the user interface object
+     */
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this).appendSuper(super.toString()).append("expression", getExpression()).append(
+                        "alternateOID", getAlternateOID()).toString();
+    }
 }
