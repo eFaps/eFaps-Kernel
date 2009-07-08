@@ -34,7 +34,7 @@
     <!-- fields -->
     <field name="type">
       <property name="Expression">Type</property>
-      <property name="Searchable">false</property>
+      
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="name">
@@ -91,7 +91,7 @@
     </field>
     <field name="java">
       <property name="Label">Admin_Program_JavaForm/java.Label</property>
-      <property name="Searchable">false</property>
+      
       <trigger name="Admin_Program_JavaForm/java" event="UI_FIELD_VALUE"
         program="org.efaps.esjp.admin.program.FormatOutput" method="java" />
     </field>

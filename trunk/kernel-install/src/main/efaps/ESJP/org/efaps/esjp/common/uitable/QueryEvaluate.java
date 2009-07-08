@@ -39,7 +39,7 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
- * The ESJP is used to launch a query against the eFaps-Database, wich is
+ * The ESJP is used to launch a query against the eFaps-Database, which is
  * afterwards used to fill a webtable.<br>
  * <br>
  * <b>Properties:</b><br>
@@ -50,7 +50,6 @@ import org.efaps.util.EFapsException;
  * <td><u>Default</u></td>
  * <td><u>mandatory</u></td>
  * <td><u>Description</u></td>
- * </b></tr>
  * <tr>
  * <td>Types</td>
  * <td>-</td>
@@ -65,7 +64,8 @@ import org.efaps.util.EFapsException;
  * <td>no</td>
  * <td>should the ChildTypes be expanded</td>
  * </tr>
- * </table><br>
+ * </table>
+ * <br>
  * <b>Example:</b><br>
  * <code>
  * &lt;target&gt;<br>
@@ -75,49 +75,49 @@ import org.efaps.util.EFapsException;
  * &nbsp;&nbsp;&lt;/evaluate&gt;<br>
  * &lt;/target&gt;</code>
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id:QueryEvaluate.java 1563 2007-10-28 14:07:41Z tmo $
  */
 @EFapsUUID("bbe633db-b098-46d0-8dd8-84af34e7ff8c")
 @EFapsRevision("$Rev$")
 public class QueryEvaluate implements EventExecution
 {
-  /**
-   * Logger for this class
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(QueryEvaluate.class);
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(QueryEvaluate.class);
 
-  /**
-   * @param _parameter
-   */
-  public Return execute(final Parameter _parameter) throws EFapsException
-  {
-    final Return ret = new Return();
-    final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+    /**
+     * @param _parameter
+     */
+    public Return execute(final Parameter _parameter) throws EFapsException
+    {
+        final Return ret = new Return();
+        final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
 
-    final String types = (String) properties.get("Types");
+        final String types = (String) properties.get("Types");
 
-    final boolean expandChildTypes = "true".equals(properties.get("ExpandChildTypes"));
+        final boolean expandChildTypes = "true".equals(properties.get("ExpandChildTypes"));
 
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("types=" + types);
+        if (QueryEvaluate.LOG.isDebugEnabled()) {
+            QueryEvaluate.LOG.debug("types=" + types);
+        }
+
+        final SearchQuery query = new SearchQuery();
+        query.setQueryTypes(types);
+        query.setExpandChildTypes(expandChildTypes);
+        query.addSelect("OID");
+        query.execute();
+
+        final List<List<Instance>> list = new ArrayList<List<Instance>>();
+        while (query.next()) {
+            final List<Instance> instances = new ArrayList<Instance>(1);
+            instances.add(Instance.get((String) query.get("OID")));
+            list.add(instances);
+        }
+
+        ret.put(ReturnValues.VALUES, list);
+
+        return ret;
     }
-
-    final SearchQuery query = new SearchQuery();
-    query.setQueryTypes(types);
-    query.setExpandChildTypes(expandChildTypes);
-    query.addSelect("OID");
-    query.execute();
-
-    final List<List<Instance>> list = new ArrayList<List<Instance>>();
-    while (query.next()) {
-      final List<Instance> instances = new ArrayList<Instance>(1);
-      instances.add(Instance.get((String) query.get("OID")));
-      list.add(instances);
-    }
-
-    ret.put(ReturnValues.VALUES, list);
-
-    return ret;
-  }
 }

@@ -70,19 +70,16 @@
     </field>
     <field name="collectionGroup" character="Group">
       <property name="GroupCount">2</property>
-      <property name="Searchable">false</property>
     </field>
     <field name="collectionType">
       <property name="AlternateOID">Collection.OID</property>
       <property name="Expression">Collection.Type</property>
-      <property name="Searchable">false</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="collection">
       <property name="AlternateOID">Collection.OID</property>
       <property name="Expression">Collection.Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Searchable">false</property>
     </field>
   </definition>
 </ui-form>
