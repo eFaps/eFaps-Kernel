@@ -34,7 +34,6 @@
     <!-- fields -->
     <field name="type">
       <property name="Expression">Type</property>
-      <property name="Searchable">false</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="name">
@@ -108,7 +107,7 @@
       <property name="Expression">DMTableMain.Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_DataModel_SQLTable/DMTableMain.Label</property>
-      <property name="Searchable">false</property>
+      
       <property name="ShowTypeIcon">true</property>
     </field>
   </definition>

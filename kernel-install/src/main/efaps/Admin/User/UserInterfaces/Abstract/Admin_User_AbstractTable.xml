@@ -45,7 +45,7 @@
     <field name="status">
       <property name="Expression">Status</property>
       <property name="Label">Admin_User_Abstract/Status.Label</property>
-      <property name="Filterable">true</property>
+      <property name="FilterType">PickList</property>
       <property name="ModeSearch">READONLY</property>
     </field>
     <field name="buttonOpenInNewWindow">

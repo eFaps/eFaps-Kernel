@@ -35,9 +35,7 @@
     <field name="type4View">
       <property name="Expression">Type</property>
       <property name="Label">Admin_Event_Definition/Type.Label</property>
-      <property name="Searchable">false</property>
       <property name="ShowTypeIcon">true</property>
-      <property name="Viewable">true</property>
     </field>
     <field name="type4NotView">
       <property name="ModeCreate">EDITABLE</property>
@@ -60,7 +58,6 @@
       <property name="Label">Admin_Event_Definition/Name.Label</property>
       <property name="Required">true</property>
       <property name="ModeSearch">EDITABLE</property>
-      <property name="Viewable">true</property>
     </field>
     <field name="abstract">
       <property name="AlternateOID">Abstract.OID</property>
@@ -68,7 +65,6 @@
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_Event_Definition/Abstract.Label</property>
       <property name="ShowTypeIcon">true</property>
-      <property name="Viewable">true</property>
     </field>
     <field name="index">
       <property name="ModeCreate">EDITABLE</property>
@@ -77,7 +73,6 @@
       <property name="Label">Admin_Event_Definition/IndexPosition.Label</property>
       <property name="Required">true</property>
       <property name="ModeSearch">EDITABLE</property>
-      <property name="Viewable">true</property>
     </field>
     <field name="program4View">
       <property name="AlternateOID">JavaProg.OID</property>
@@ -85,7 +80,6 @@
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_Event_Definition/JavaProg.Label</property>
       <property name="ShowTypeIcon">true</property>
-      <property name="Viewable">true</property>
       <trigger name="Admin_Event_DefinitionForm.program4View"
                event="UI_ACCESSCHECK" program="org.efaps.esjp.admin.access.AccessOnField"
         method="viewOnly" />
@@ -107,7 +101,6 @@
       <property name="Expression">Method</property>
       <property name="Label">Admin_Event_Definition/Method.Label</property>
       <property name="Required">true</property>
-      <property name="Viewable">true</property>
     </field>
   </definition>
 </ui-form>

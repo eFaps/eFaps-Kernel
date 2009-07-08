@@ -39,7 +39,6 @@
       <property name="Expression">Type</property>
       <property name="Label">Admin_Event_Definition/Type.Label</property>
       <property name="ShowTypeIcon">true</property>
-      <property name="Filterable">true</property>
       <property name="Width">3</property>
     </field>
     <field name="name">

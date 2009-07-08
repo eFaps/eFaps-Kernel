@@ -34,7 +34,6 @@
     <!-- fields -->
     <field name="type">
       <property name="Expression">Type</property>
-      <property name="Searchable">false</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="name">
@@ -86,7 +85,6 @@
       <property name="Expression">ParentType.Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_DataModel_Attribute/ParentType.Label</property>
-      <property name="Searchable">false</property>
     </field>
     <field name="SQLColumn">
       <property name="ModeCreate">EDITABLE</property>
@@ -99,19 +97,16 @@
       <property name="Expression">Table.Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_DataModel_Attribute/Table.Label</property>
-      <property name="Searchable">false</property>
     </field>
     <field name="AttributeType">
       <property name="AlternateOID">AttributeType.OID</property>
       <property name="Expression">AttributeType.Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_DataModel_Attribute/AttributeType.Label</property>
-      <property name="Searchable">false</property>
     </field>
     <field name="TypeLink">
       <property name="Expression">TypeLink.Name</property>
       <property name="Label">Admin_DataModel_Attribute/TypeLink.Label</property>
-      <property name="Searchable">false</property>
     </field>
   </definition>
 </ui-form>
