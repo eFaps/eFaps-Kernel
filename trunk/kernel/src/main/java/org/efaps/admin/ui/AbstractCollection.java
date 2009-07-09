@@ -74,6 +74,11 @@ public abstract class AbstractCollection extends AbstractUserInterfaceObject
     private final Map<Long, Field> fields = new TreeMap<Long, Field>();
 
     /**
+     * Map to have the fields belonging to this collection accessible for name.
+     */
+    private final Map<String, Field> fieldName2Field = new TreeMap<String, Field>();
+
+    /**
      * Instance variable for the length of the field expression list.
      *
      * @see #allFieldExpr
@@ -108,7 +113,7 @@ public abstract class AbstractCollection extends AbstractUserInterfaceObject
     public void add(final Field _field)
     {
         this.fields.put(_field.getId(), _field);
-
+        this.fieldName2Field.put(_field.getName(), _field);
         if (_field.getReference() != null && _field.getReference().length() > 0) {
             final String ref = _field.getReference();
             int index, end = 0;
@@ -292,5 +297,15 @@ public abstract class AbstractCollection extends AbstractUserInterfaceObject
     public Map<Long, Field> getFieldsMap()
     {
         return this.fields;
+    }
+
+    /**
+     * Method to get a field belonging to this collection by its name.
+     * @param _fieldName name of the field wanted
+     * @return Field if found, else null
+     */
+    public Field getField(final String _fieldName)
+    {
+        return this.fieldName2Field.get(_fieldName);
     }
 }
