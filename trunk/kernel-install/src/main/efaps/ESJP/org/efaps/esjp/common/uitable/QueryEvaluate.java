@@ -23,10 +23,16 @@ package org.efaps.esjp.common.uitable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.Map.Entry;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.attributetype.DateTimeType;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
@@ -34,6 +40,8 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -88,12 +96,15 @@ public class QueryEvaluate implements EventExecution
     private static final Logger LOG = LoggerFactory.getLogger(QueryEvaluate.class);
 
     /**
-     * @param _parameter
+     * @param _parameter Parameter
+     * @throws EFapsException on error
      */
     public Return execute(final Parameter _parameter) throws EFapsException
     {
         final Return ret = new Return();
         final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+
+        final Map<?, ?> filter = (Map<?, ?>) _parameter.get(ParameterValues.OTHERS);
 
         final String types = (String) properties.get("Types");
 
@@ -106,16 +117,58 @@ public class QueryEvaluate implements EventExecution
         final SearchQuery query = new SearchQuery();
         query.setQueryTypes(types);
         query.setExpandChildTypes(expandChildTypes);
-        query.addSelect("OID");
-        query.execute();
+        boolean exec = true;
+        if (filter.size() > 0) {
+            final Type type = Type.get(types);
+            final AbstractCommand command = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
 
-        final List<List<Instance>> list = new ArrayList<List<Instance>>();
-        while (query.next()) {
-            final List<Instance> instances = new ArrayList<Instance>(1);
-            instances.add(Instance.get((String) query.get("OID")));
-            list.add(instances);
+            for (final Entry<?, ?> entry : filter.entrySet()) {
+                final String fieldName = (String) entry.getKey();
+                final Field field = command.getTargetTable().getField(fieldName);
+                if (!field.isFilterPickList()) {
+                    final Attribute attr = type.getAttribute(field.getExpression());
+                    final UUID attrTypeUUId = attr.getAttributeType().getUUID();
+                    final Map<?, ?> inner = (Map<?, ?>) entry.getValue();
+                    final String from = (String) inner.get("from");
+                    final String to = (String) inner.get("to");
+                    if ((from == null || to == null) && field.getFilterDefault() == null) {
+                        exec = false;
+                        break;
+                    } else {
+                        // Date or DateTime
+                        if (UUID.fromString("68ce3aa6-e3e8-40bb-b48f-2a67948c2e7e").equals(attrTypeUUId)
+                                      || UUID.fromString("e764db0f-70f2-4cd4-b2fe-d23d3da72f78").equals(attrTypeUUId)) {
+                            final DateTimeType dateType = new DateTimeType();
+                            final DateTime dateFrom;
+                            final DateTime dateTo;
+                            if ((from == null || to == null) && "today".equalsIgnoreCase(field.getFilterDefault())) {
+                                dateType.set(new DateTime[] { new DateTime() });
+                                dateFrom = dateType.getValue().toDateMidnight().toDateTime().minusSeconds(1);
+                                dateTo = dateFrom.plusDays(1).plusSeconds(1);
+                            } else {
+                                dateType.set(new String[] { from });
+                                dateFrom = dateType.getValue().minusSeconds(1);
+                                dateType.set(new String[] { to });
+                                dateTo = dateType.getValue().plusDays(1);
+                            }
+                            query.addWhereExprGreaterValue(field.getExpression(), dateFrom);
+                            query.addWhereExprLessValue(field.getExpression(), dateTo);
+                        }
+                    }
+                }
+            }
         }
+        final List<List<Instance>> list = new ArrayList<List<Instance>>();
+        if (exec) {
+            query.addSelect("OID");
+            query.execute();
 
+            while (query.next()) {
+                final List<Instance> instances = new ArrayList<Instance>(1);
+                instances.add(Instance.get((String) query.get("OID")));
+                list.add(instances);
+            }
+        }
         ret.put(ReturnValues.VALUES, list);
 
         return ret;
