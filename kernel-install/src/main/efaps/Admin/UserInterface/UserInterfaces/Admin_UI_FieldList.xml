@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFasp Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -39,13 +39,22 @@
       <property name="Expression">Type</property>
       <property name="Label">Admin_UI_Field/Type.Label</property>
       <property name="ShowTypeIcon">true</property>
+       <property name="SortAble">false</property>
+       <property name="Width">2</property>
     </field>
     <field name="name">
       <property name="Expression">Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_UI_Field/Name.Label</property>
       <property name="Width">4</property>
+      <property name="SortAble">false</property>
     </field>
+     <field name="sortid">
+      <property name="Expression">ID</property>
+      <property name="Label">Admin_UI_FieldList/sortid.Label</property>
+      <property name="Width">1</property>
+      <property name="SortAble">false</property>
+     </field> 
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
