@@ -45,6 +45,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.EventType;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.ColumnInformation;
 import org.efaps.db.transaction.ConnectionResource;
@@ -287,6 +289,21 @@ public class Attribute extends AbstractDataModelObject
         ret.setUniqueKeys(getUniqueKeys());
         ret.getProperties().putAll(getProperties());
         return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addEvent(final EventType _eventtype, final EventDefinition _eventdef)
+    {
+        super.addEvent(_eventtype, _eventdef);
+        for (final Type child : this.parent.getChildTypes()) {
+            final Attribute childAttr =  child.getAttribute(getName());
+            if (childAttr != null) {
+                childAttr.addEvent(_eventtype, _eventdef);
+            }
+        }
     }
 
     /**
