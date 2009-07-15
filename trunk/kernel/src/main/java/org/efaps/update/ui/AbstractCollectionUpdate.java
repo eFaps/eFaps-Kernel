@@ -235,6 +235,7 @@ public abstract class AbstractCollectionUpdate extends AbstractUpdate
         /**
          * The fields for this collection are created and / or updated in the
          * database.
+         * TODO the deletion of existing fields is nested! Thats not the best idea.
          * @throws EFapsException on error
          */
         protected void setFieldsInDB() throws EFapsException
@@ -249,6 +250,22 @@ public abstract class AbstractCollectionUpdate extends AbstractUpdate
                 setPropertiesInDb(field, null);
                 removeLinksInDB(field, AbstractCollectionUpdate.LINKFIELD2ICON);
                 removeLinksInDB(field, AbstractCollectionUpdate.LINK2TARGETTABLE);
+                //remove events
+                final SearchQuery eventQuery = new SearchQuery();
+                eventQuery.setExpand(field, "Admin_Event_Definition\\Abstract");
+                eventQuery.addSelect("OID");
+                eventQuery.execute();
+                while (eventQuery.next()) {
+                    final Instance event = Instance.get((String) eventQuery.get("OID"));
+                    final SearchQuery propQuery = new SearchQuery();
+                    propQuery.setExpand(event, "Admin_Common_Property\\Abstract");
+                    propQuery.addSelect("OID");
+                    propQuery.execute();
+                    while (propQuery.next()) {
+                        (new Delete((String) propQuery.get("OID"))).executeWithoutAccessCheck();
+                    }
+                    (new Delete(event)).executeWithoutAccessCheck();
+                }
                 (new Delete(field)).executeWithoutAccessCheck();
             }
             query.close();
