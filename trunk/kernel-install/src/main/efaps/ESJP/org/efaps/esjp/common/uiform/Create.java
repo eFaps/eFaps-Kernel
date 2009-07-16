@@ -21,10 +21,14 @@
 package org.efaps.esjp.common.uiform;
 
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.attributetype.AbstractFileType;
 import org.efaps.admin.event.EventExecution;
@@ -37,6 +41,7 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.db.Checkin;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
@@ -86,23 +91,29 @@ public class Create implements EventExecution
      */
     protected Instance basicInsert(final Parameter _parameter) throws EFapsException
     {
-        final Context context = Context.getThreadContext();
         final AbstractCommand command = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
         final Instance parent = _parameter.getInstance();
+        final List<FieldSet> fieldsets = new ArrayList<FieldSet>();
 
         final Insert insert = new Insert(command.getTargetCreateType());
         for (final Field field : command.getTargetForm().getFields()) {
             if (field.getExpression() != null
                           && (field.isEditableDisplay(TargetMode.CREATE) || field.isHiddenDisplay(TargetMode.CREATE))) {
-                final Attribute attr = command.getTargetCreateType().getAttribute(field.getExpression());
-                if (attr != null && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
-                    if (context.getParameters().containsKey(field.getName())) {
-                        final String value = context.getParameter(field.getName());
-                        if (attr.hasUoM()) {
-                            final String uom = context.getParameter(field.getName() + "UoM");
-                            insert.add(attr, new String[] { value, uom });
-                        } else {
-                            insert.add(attr, value);
+                if (field instanceof FieldSet) {
+                    fieldsets.add((FieldSet) field);
+                } else {
+                    final Attribute attr = command.getTargetCreateType().getAttribute(field.getExpression());
+                    // check if not a fileupload field
+                    if (attr != null
+                                  && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
+                        if (_parameter.getParameters().containsKey(field.getName())) {
+                            final String value = _parameter.getParameterValue(field.getName());
+                            if (attr.hasUoM()) {
+                                final String uom = _parameter.getParameterValue(field.getName() + "UoM");
+                                insert.add(attr, new String[] { value, uom });
+                            } else {
+                                insert.add(attr, value);
+                            }
                         }
                     }
                 }
@@ -112,8 +123,64 @@ public class Create implements EventExecution
             insert.add(command.getTargetConnectAttribute(), "" + parent.getId());
         }
         insert.execute();
-        return insert.getInstance();
+
+        final Instance instance = insert.getInstance();
+        insertFieldSets(_parameter, instance, fieldsets);
+
+        return instance;
     }
+
+    /**
+     * Method to create the related fieldsets if parameters are given for them.
+     *
+     * @param _parameter    Parameter as passed from the efaps API.
+     * @param _instance     Instance of the new object
+     * @param _fieldsets    fieldsets to insert
+     * @throws EFapsException on error
+     */
+    protected void insertFieldSets(final Parameter _parameter, final Instance _instance,
+                                   final List<FieldSet> _fieldsets)
+            throws EFapsException
+    {
+        final Map<?, ?> others = (HashMap<?, ?>) _parameter.get(ParameterValues.OTHERS);
+        // to find out if new values where added for a field set, first it is checked
+        // if it exists in this map
+        if (others != null) {
+
+            final NumberFormat nf = NumberFormat.getInstance();
+            nf.setMinimumIntegerDigits(2);
+            nf.setMaximumIntegerDigits(2);
+
+            for (final FieldSet fieldset : _fieldsets) {
+                final String[] yCoords = (String[]) others.get(fieldset.getName() + "_eFapsNew");
+                if (yCoords != null) {
+                    final AttributeSet set = AttributeSet.find(_instance.getType().getName(), fieldset.getExpression());
+
+                    for (final String yCoord : yCoords) {
+                        final Insert insert = new Insert(set);
+                        insert.add(set.getAttribute(fieldset.getExpression()), ((Long) _instance.getId()).toString());
+                        int xCoord = 0;
+                        for (final String attrName : fieldset.getOrder()) {
+                            final Attribute child = set.getAttribute(attrName);
+                            final String fieldName = fieldset.getName() + "_eFapsNew_"
+                                            + nf.format(Integer.parseInt(yCoord)) + nf.format(xCoord);
+                            if (_parameter.getParameters().containsKey(fieldName)) {
+                                if (child.hasUoM()) {
+                                    insert.add(child, new String[] { _parameter.getParameterValue(fieldName),
+                                                    _parameter.getParameterValue(fieldName + "UoM") });
+                                } else {
+                                    insert.add(child, _parameter.getParameterValue(fieldName));
+                                }
+                            }
+                            xCoord++;
+                        }
+                        insert.execute();
+                    }
+                }
+            }
+        }
+    }
+
 
     /**
      * Method to connect the new instance to parent via middle object.
@@ -178,12 +245,12 @@ public class Create implements EventExecution
     protected void insertClassification(final Parameter _parameter, final Instance _instance) throws EFapsException
     {
         if (_parameter.get(ParameterValues.CLASSIFICATIONS) != null) {
-            final Context context = Context.getThreadContext();
 
             final List<?> classifications = (List<?>) _parameter.get(ParameterValues.CLASSIFICATIONS);
 
             for (final Object object : classifications) {
                 final Classification classification = (Classification) object;
+                final List<FieldSet> fieldsets = new ArrayList<FieldSet>();
 
                 final Insert relInsert = new Insert(classification.getClassifyRelationType());
                 relInsert.add(classification.getRelLinkAttributeName(), ((Long) _instance.getId()).toString());
@@ -195,24 +262,28 @@ public class Create implements EventExecution
                 classInsert.add(classification.getLinkAttributeName(), ((Long) _instance.getId()).toString());
                 for (final Field field : form.getFields()) {
                     if (field.getExpression() != null
-                                    && (field.isEditableDisplay(TargetMode.CREATE) || field
-                                                    .isHiddenDisplay(TargetMode.CREATE))) {
-                        final Attribute attr = classification.getAttribute(field.getExpression());
-                        if (attr != null
+                          && (field.isEditableDisplay(TargetMode.CREATE) || field.isHiddenDisplay(TargetMode.CREATE))) {
+                        if (field instanceof FieldSet) {
+                            fieldsets.add((FieldSet) field);
+                        } else {
+                            final Attribute attr = classification.getAttribute(field.getExpression());
+                            if (attr != null
                                   && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
-                            if (context.getParameters().containsKey(field.getName())) {
-                                final String value = context.getParameter(field.getName());
-                                if (attr.hasUoM()) {
-                                    final String uom = context.getParameter(field.getName() + "UoM");
-                                    classInsert.add(attr, new String[] { value, uom });
-                                } else {
-                                    classInsert.add(attr, value);
+                                if (_parameter.getParameters().containsKey(field.getName())) {
+                                    final String value = _parameter.getParameterValue(field.getName());
+                                    if (attr.hasUoM()) {
+                                        final String uom = _parameter.getParameterValue(field.getName() + "UoM");
+                                        classInsert.add(attr, new String[] { value, uom });
+                                    } else {
+                                        classInsert.add(attr, value);
+                                    }
                                 }
                             }
                         }
                     }
                 }
                 classInsert.execute();
+                insertFieldSets(_parameter, classInsert.getInstance(), fieldsets);
             }
         }
     }
