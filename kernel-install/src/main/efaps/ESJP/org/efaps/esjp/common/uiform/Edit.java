@@ -49,10 +49,10 @@ import org.efaps.db.Context;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
+import org.efaps.db.PrintQuery;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
-
 
 /**
  * @author The eFaps Team
@@ -62,9 +62,6 @@ import org.efaps.util.EFapsException;
 @EFapsRevision("$Rev$")
 public class Edit implements EventExecution
 {
-
-    private String classifcationName;
-
     /**
      * @param _parameter Parameter as provided by eFaps for a esjp
      * @throws EFapsException on error
@@ -75,87 +72,10 @@ public class Edit implements EventExecution
 
         final Instance instance = _parameter.getInstance();
         final AbstractCommand command = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
-        final Map<?, ?> others = (HashMap<?, ?>) _parameter.get(ParameterValues.OTHERS);
 
         final Context context = Context.getThreadContext();
         // update the Values for the general form
-        final List<FieldSet> fieldsets = updateForm(command.getTargetForm(), instance);
-
-        // ************************************
-        // Update for FieldSets
-        final NumberFormat nf = NumberFormat.getInstance();
-        nf.setMinimumIntegerDigits(2);
-        nf.setMaximumIntegerDigits(2);
-
-        for (final FieldSet fieldset : fieldsets) {
-
-            final AttributeSet set = AttributeSet.find(instance.getType().getName(), fieldset.getExpression());
-
-            boolean updateExisting = true;
-            int idy = 0;
-            while (updateExisting) {
-                final String idfield = "hiddenId" + fieldset.getName() + nf.format(idy);
-                if (context.getParameters().containsKey(idfield)) {
-                    final String id = context.getParameter(idfield);
-
-                    final Update setupdate = new Update(set, id);
-                    int idx = 0;
-                    for (final String attrName : fieldset.getOrder()) {
-                        final Attribute child = set.getAttribute(attrName);
-                        final String fieldName = fieldset.getName() + nf.format(idy) + nf.format(idx);
-
-                        if (context.getParameters().containsKey(fieldName)) {
-                            if (child.hasUoM()) {
-                                setupdate.add(child, new String[] {context.getParameter(fieldName),
-                                                                   context.getParameter(fieldName + "UoM")});
-                            } else {
-                                setupdate.add(child, context.getParameter(fieldName));
-                            }
-                        }
-                        idx++;
-                    }
-                    setupdate.execute();
-                } else {
-                    updateExisting = false;
-                }
-                idy++;
-            }
-            if (others != null) {
-                // add new Values
-                final String[] newOnes = (String[]) others.get(fieldset.getName() + "eFapsNew");
-                if (newOnes != null) {
-                    for (final String newOne : newOnes) {
-                        final Insert insert = new Insert(set);
-                        insert.add(set.getAttribute(fieldset.getExpression()), ((Long) instance.getId()).toString());
-                        int idx = 0;
-                        for (final String attrName : fieldset.getOrder()) {
-                            final Attribute child = set.getAttribute(attrName);
-                            final String fieldName = fieldset.getName() + "eFapsNew"
-                                            + nf.format(Integer.parseInt(newOne)) + nf.format(idx);
-                            if (context.getParameters().containsKey(fieldName)) {
-                                if (child.hasUoM()) {
-                                    insert.add(child, new String[] {context.getParameter(fieldName),
-                                                                       context.getParameter(fieldName + "UoM")});
-                                } else {
-                                    insert.add(child, context.getParameter(fieldName));
-                                }
-                            }
-                            idx++;
-                        }
-                        insert.execute();
-                    }
-                }
-
-                // remove Values
-                final String[] removeOnes = (String[]) others.get(fieldset.getName() + "eFapsRemove");
-                if (removeOnes != null) {
-                    for (final String removeOne : removeOnes) {
-                        final Delete delete = new Delete(set, removeOne);
-                        delete.execute();
-                    }
-                }
-            }
-        }
+        final String classifcationName = updateMainElements(_parameter, command.getTargetForm(), instance);
 
         // ************************************
         // check if we have a fileupload field
@@ -175,16 +95,25 @@ public class Edit implements EventExecution
             }
         }
 
-        if (this.classifcationName != null) {
-            updateClassifcation(_parameter, instance);
+        if (classifcationName != null) {
+            updateClassifcation(_parameter, instance, classifcationName);
         }
         return new Return();
     }
 
-    private List<FieldSet> updateForm(final Form _form, final Instance _instance) throws EFapsException {
-
-        // ************************************
-        // Update for Fields
+    /**
+     * Method updates the main elements from the form.
+     *
+     * @param _parameter    _parameter Parameter as provided by eFaps for a esjp
+     * @param _form         from used for the update
+     * @param _instance     instance that must be updated
+     * @return  the name of a classification if found in the form, else null
+     * @throws EFapsException on error
+     */
+    protected String updateMainElements(final Parameter _parameter, final Form _form, final Instance _instance)
+            throws EFapsException
+    {
+        String ret = null;
         final List<FieldSet> fieldsets = new ArrayList<FieldSet>();
         final List<Field> fields = new ArrayList<Field>();
 
@@ -194,7 +123,7 @@ public class Edit implements EventExecution
             if (field instanceof FieldSet) {
                 fieldsets.add((FieldSet) field);
             } else if (field instanceof FieldClassification) {
-               this.classifcationName = ((FieldClassification) field).getClassificationName();
+                ret = ((FieldClassification) field).getClassificationName();
             } else {
                 if (field.getExpression() != null && field.isEditableDisplay(TargetMode.EDIT)) {
                     final Attribute attr = _instance.getType().getAttribute(field.getExpression());
@@ -219,8 +148,8 @@ public class Edit implements EventExecution
                     if (!newValue.equals(oldValue)) {
                         final Attribute attr = _instance.getType().getAttribute(field.getExpression());
                         if (attr.hasUoM()) {
-                            update.add(attr, new String[] {context.getParameter(field.getName()),
-                                                           context.getParameter(field.getName() + "UoM")});
+                            update.add(attr, new String[] { context.getParameter(field.getName()),
+                                            context.getParameter(field.getName() + "UoM") });
                         } else {
                             update.add(attr, newValue);
                         }
@@ -229,23 +158,144 @@ public class Edit implements EventExecution
             }
             update.execute();
         }
-        return fieldsets;
+        updateFieldSets(_parameter, _instance, fieldsets);
+        return ret;
     }
 
-
-    private void updateClassifcation(final Parameter _parameter, final Instance _instance) throws EFapsException
+    /**
+     * Method to update the related fieldsets if parameters are given for them.
+     *
+     * @param _parameter    Parameter as passed from the efaps API.
+     * @param _instance     Instance of the new object
+     * @param _fieldsets    fieldsets to insert
+     * @throws EFapsException on error
+     */
+    protected void updateFieldSets(final Parameter _parameter, final Instance _instance,
+                                   final List<FieldSet> _fieldsets)
+            throws EFapsException
     {
-        final Context context = Context.getThreadContext();
+        final NumberFormat nf = NumberFormat.getInstance();
+        nf.setMinimumIntegerDigits(2);
+        nf.setMaximumIntegerDigits(2);
+
+        for (final FieldSet fieldset : _fieldsets) {
+
+            final AttributeSet set = AttributeSet.find(_instance.getType().getName(), fieldset.getExpression());
+
+            // first already existing values must be updated, if they were altered
+            boolean updateExisting = true;
+            int yCoord = 0;
+            while (updateExisting) {
+                //check in the context if already existing values might have been altered, by
+                //using the hidden field that is added when existing values for a fieldset are shown
+                final String idfield = "hiddenId_" + fieldset.getName() + "_" + nf.format(yCoord);
+                if (_parameter.getParameters().containsKey(idfield)) {
+                    final String id = _parameter.getParameterValue(idfield);
+                    //check the values in the database
+                    final PrintQuery printQuery = new PrintQuery(set, id);
+                    for (final Attribute attr : set.getAttributes().values()) {
+                        printQuery.addAttribute(attr);
+                    }
+                    printQuery.execute();
+
+                    final Update setupdate = new Update(set, id);
+                    int xCoord = 0;
+                    boolean update = false;
+                    for (final String attrName : fieldset.getOrder()) {
+                        final Attribute child = set.getAttribute(attrName);
+                        final String fieldName = fieldset.getName() + "_" + nf.format(yCoord) + nf.format(xCoord);
+                        if (_parameter.getParameters().containsKey(fieldName)) {
+                            final Object object = printQuery.getAttribute(attrName);
+                            final String oldValue = object != null ? object.toString() : null;
+                            final String newValue = _parameter.getParameterValue(fieldName);
+                            if (!newValue.equals(oldValue)) {
+                                if (child.hasUoM()) {
+                                    setupdate.add(child, new String[] { newValue,
+                                                                     _parameter.getParameterValue(fieldName + "UoM") });
+                                } else {
+                                    setupdate.add(child, newValue);
+                                }
+                                update = true;
+                            }
+                        }
+                        xCoord++;
+                    }
+                    if (update) {
+                        setupdate.execute();
+                    }
+                } else {
+                    updateExisting = false;
+                }
+                yCoord++;
+            }
+
+            // add new values
+            final Map<?, ?> others = (HashMap<?, ?>) _parameter.get(ParameterValues.OTHERS);
+            if (others != null) {
+                // add new Values
+                final String[] yCoords = (String[]) others.get(fieldset.getName() + "_eFapsNew");
+                if (yCoords != null) {
+
+                    for (final String ayCoord : yCoords) {
+                        final Insert insert = new Insert(set);
+                        insert.add(set.getAttribute(fieldset.getExpression()), ((Long) _instance.getId()).toString());
+                        int xCoord = 0;
+                        for (final String attrName : fieldset.getOrder()) {
+                            final Attribute child = set.getAttribute(attrName);
+                            final String fieldName = fieldset.getName() + "_eFapsNew_"
+                                            + nf.format(Integer.parseInt(ayCoord)) + nf.format(xCoord);
+                            if (_parameter.getParameters().containsKey(fieldName)) {
+                                if (child.hasUoM()) {
+                                    insert.add(child, new String[] { _parameter.getParameterValue(fieldName),
+                                                    _parameter.getParameterValue(fieldName + "UoM") });
+                                } else {
+                                    insert.add(child, _parameter.getParameterValue(fieldName));
+                                }
+                            }
+                            xCoord++;
+                        }
+                        insert.execute();
+                    }
+                }
+
+                // remove deleted Values
+                final String[] removeOnes = (String[]) others.get(fieldset.getName() + "eFapsRemove");
+                if (removeOnes != null) {
+                    for (final String removeOne : removeOnes) {
+                        final Delete delete = new Delete(set, removeOne);
+                        delete.execute();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Method to update the classifications.
+     *
+     * @param _parameter Parameter as passed from the efaps API.
+     * @param _instance Instance of the new object
+     * @param _classifcationName name of the classificationto be updated
+     * @throws EFapsException on error
+     */
+    protected void updateClassifcation(final Parameter _parameter, final Instance _instance,
+                                       final String _classifcationName)
+            throws EFapsException
+    {
+
         final List<?> classifications = (List<?>) _parameter.get(ParameterValues.CLASSIFICATIONS);
-        final Classification classType = (Classification) Type.get(this.classifcationName);
+        final Classification classType = (Classification) Type.get(_classifcationName);
+
+        final Map<Classification, Map<String, Object>> class2values
+                                                                   = new HashMap<Classification, Map<String, Object>>();
+        // get the already existing classifications
         final SearchQuery relQuery = new SearchQuery();
         relQuery.setExpand(_instance, classType.getClassifyRelationType().getName() + "\\"
-                        + classType.getRelLinkAttributeName());
+                                                                                + classType.getRelLinkAttributeName());
         relQuery.addSelect(classType.getRelTypeAttributeName());
         relQuery.addSelect("OID");
         relQuery.execute();
-        final Map<Classification, Map<String, Object>> class2values
-                                                                   = new HashMap<Classification, Map<String, Object>>();
+
         while (relQuery.next()) {
             final Long typeid = (Long) relQuery.get(classType.getRelTypeAttributeName());
             final Classification subClassType = (Classification) Type.get(typeid);
@@ -259,17 +309,13 @@ public class Edit implements EventExecution
             final List<Field> fields = new ArrayList<Field>();
             final Form form = Form.getTypeForm(subClassType);
             for (final Field field : form.getFields()) {
-                if (field instanceof FieldSet) {
-                    // fieldsets.add((FieldSet) field);
-                } else {
-                    if (field.getExpression() != null && field.isEditableDisplay(TargetMode.EDIT)) {
-                        final Attribute attr = subClassType.getAttribute(field.getExpression());
-                        // check if not a fileupload
-                        if (attr != null
+                if (field.getExpression() != null && field.isEditableDisplay(TargetMode.EDIT)) {
+                    final Attribute attr = subClassType.getAttribute(field.getExpression());
+                    // check if not a fileupload
+                    if (attr != null
                                   && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
-                            subquery.addSelect(field.getExpression());
-                            fields.add(field);
-                        }
+                        subquery.addSelect(field.getExpression());
+                        fields.add(field);
                     }
                 }
             }
@@ -284,11 +330,12 @@ public class Edit implements EventExecution
             values.put("relOID", relQuery.get("OID"));
         }
         relQuery.close();
+
         if (classifications != null) {
             for (final Object object : classifications) {
                 final Classification classification = (Classification) object;
-                // if the classification does not exist yet the relation must be created,
-                // and the new instance of the classification inserted
+                // if the classification does not exist yet the relation must be
+                // created, and the new instance of the classification inserted
                 final Form form = Form.getTypeForm(classification);
                 if (!class2values.containsKey(classification)) {
                     final Insert relInsert = new Insert(classification.getClassifyRelationType());
@@ -298,44 +345,57 @@ public class Edit implements EventExecution
 
                     final Insert classInsert = new Insert(classification);
                     classInsert.add(classification.getLinkAttributeName(), ((Long) _instance.getId()).toString());
+                    final List<FieldSet> fieldsets = new ArrayList<FieldSet>();
                     for (final Field field : form.getFields()) {
-                        if (field.getExpression() != null && field.isEditableDisplay(TargetMode.EDIT)) {
-                            final Attribute attr = classification.getAttribute(field.getExpression());
-                            if (attr != null
-                                  && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
-                                if (context.getParameters().containsKey(field.getName())) {
-                                    final String value = context.getParameter(field.getName());
-                                    if (attr.hasUoM()) {
-                                        classInsert.add(attr, new String[] {context.getParameter(field.getName()),
-                                                                        context.getParameter(field.getName() + "UoM")});
-                                    } else {
-                                        classInsert.add(attr, value);
+                        if (field instanceof FieldSet) {
+                            fieldsets.add((FieldSet) field);
+                        } else {
+                            if (field.getExpression() != null && field.isEditableDisplay(TargetMode.EDIT)) {
+                                final Attribute attr = classification.getAttribute(field.getExpression());
+                                if (attr != null
+                                        && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
+                                                        .getClassRepr())) {
+                                    if (_parameter.getParameters().containsKey(field.getName())) {
+                                        final String value = _parameter.getParameterValue(field.getName());
+                                        if (attr.hasUoM()) {
+                                            classInsert.add(attr, new String[] { value,
+                                                              _parameter.getParameterValue(field.getName() + "UoM") });
+                                        } else {
+                                            classInsert.add(attr, value);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                     classInsert.execute();
+                    updateFieldSets(_parameter, classInsert.getInstance(), fieldsets);
                 } else {
                     final Map<String, Object> values = class2values.get(classification);
+                    final List<FieldSet> fieldsets = new ArrayList<FieldSet>();
                     final Update update = new Update((String) values.get("OID"));
                     boolean execUpdate = false;
                     for (final Field field : form.getFields()) {
-                        if (field.getExpression() != null && field.isEditableDisplay(TargetMode.EDIT)) {
-                            final Attribute attr = classification.getAttribute(field.getExpression());
-                            if (attr != null
-                                  && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
-                                if (context.getParameters().containsKey(field.getName())) {
-                                    final String newValue = context.getParameter(field.getName());
-                                    final Object value = values.get(field.getName());
-                                    final String oldValue = value != null ? value.toString() : null;
-                                    if (!newValue.equals(oldValue)) {
-                                        execUpdate = true;
-                                        if (attr.hasUoM()) {
-                                            update.add(attr, new String[] {newValue,
-                                                                        context.getParameter(field.getName() + "UoM")});
-                                        } else {
-                                            update.add(attr, newValue);
+                        if (field instanceof FieldSet) {
+                            fieldsets.add((FieldSet) field);
+                        } else {
+                            if (field.getExpression() != null && field.isEditableDisplay(TargetMode.EDIT)) {
+                                final Attribute attr = classification.getAttribute(field.getExpression());
+                                if (attr != null
+                                                && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
+                                                                .getClassRepr())) {
+                                    if (_parameter.getParameters().containsKey(field.getName())) {
+                                        final String newValue = _parameter.getParameterValue(field.getName());
+                                        final Object value = values.get(field.getName());
+                                        final String oldValue = value != null ? value.toString() : null;
+                                        if (!newValue.equals(oldValue)) {
+                                            execUpdate = true;
+                                            if (attr.hasUoM()) {
+                                                update.add(attr, new String[] { newValue,
+                                                               _parameter.getParameterValue(field.getName() + "UoM") });
+                                            } else {
+                                                update.add(attr, newValue);
+                                            }
                                         }
                                     }
                                 }
@@ -345,6 +405,7 @@ public class Edit implements EventExecution
                     if (execUpdate) {
                         update.execute();
                     }
+                    updateFieldSets(_parameter, update.getInstance(), fieldsets);
                 }
             }
         }
