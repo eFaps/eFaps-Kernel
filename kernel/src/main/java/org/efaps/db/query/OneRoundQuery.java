@@ -448,6 +448,15 @@ public class OneRoundQuery
                 }
                 sqlTable2Attr.addAttribute(attribute);
             }
+            // in case that only fieldsets are selected, it must be added at least one SQLTableMapping2Attributes
+            // to the sqlTable2Atte mapping so that the table is stored for later access
+            if (this.expr2Attr.values().isEmpty() && !this.multiExpr.isEmpty()) {
+                final SQLTableMapping2Attributes sqlTable2Attr
+                                                      = new SQLTableMapping2Attributes(OneRoundQuery.this.mainSQLTable);
+                OneRoundQuery.this.sqlTableMappings.put(OneRoundQuery.this.mainSQLTable, sqlTable2Attr);
+                this.sqlTable2Attrs.put(OneRoundQuery.this.mainSQLTable, sqlTable2Attr);
+            }
+
             // add all instances to the sql table mapping
             for (final SQLTableMapping2Attributes sqlTableMapping : this.sqlTable2Attrs.values()) {
                 sqlTableMapping.addInstances(this.instances);
