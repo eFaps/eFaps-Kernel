@@ -22,11 +22,9 @@ package org.efaps.admin.ui;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Vector;
 
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.common.SystemConfiguration;
@@ -298,14 +296,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     private Table targetTable = null;
 
     /**
-     * The instance variable store the filters for the targer table.
-     *
-     * @see #getTargetTableFilters
-     * @see #setTargetTableFilters
-     */
-    private List<TargetTableFilter> targetTableFilters = null;
-
-    /**
      * The instance variable stores for target user interface table object the
      * default sort direction. The default value is NONE. .
      *
@@ -351,8 +341,21 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
      */
     private int windowWidth = 600;
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // Constructors
+    /**
+     * Does the executed esjp return a file that must be shown.
+     */
+    private boolean targetShowFile = false;
+
+    /**
+     * Must the update after command be deactivated.
+     */
+    private boolean noUpdateAfterCmd;
+
+    /**
+     * Name of the field the Structurbrowser sits in the target.
+     */
+    private String targetStructurBrowserField;
+
     /**
      * Constructor to set the id and name of the command object. The constructor
      * also sets the label of the command and the titel of the target.
@@ -365,8 +368,8 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     protected AbstractCommand(final long _id, final String _uuid, final String _name)
     {
         super(_id, _uuid, _name);
-        setLabel(_name + ".Label");
-        setTargetTitle(_name + ".Title");
+        this.label = _name + ".Label";
+        this.targetTitle = _name + ".Title";
     }
 
     /**
@@ -394,18 +397,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     }
 
     /**
-     * Set the new icon reference value.
-     *
-     * @param _icon new icon reference to set
-     * @see #icon
-     * @see #getIcon
-     */
-    public void setIcon(final String _icon)
-    {
-        this.icon = _icon;
-    }
-
-    /**
      * This method returns the Property of the Label and not the name.
      *
      * @return String
@@ -428,18 +419,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the setter method for the instance variable {@link #label}.
-     *
-     * @param _label new value for instance variable {@link #label}
-     * @see #label
-     * @see #getLabel
-     */
-    public void setLabel(final String _label)
-    {
-        this.label = _label;
-    }
-
-    /**
      * Get the current reference value.
      *
      * @return the value of the instance variable {@link #reference}.
@@ -452,18 +431,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     }
 
     /**
-     * Set the new reference value.
-     *
-     * @param _reference new reference to set
-     * @see #reference
-     * @see #getReference
-     */
-    public void setReference(final String _reference)
-    {
-        this.reference = _reference;
-    }
-
-    /**
      * This is the setter method for the instance variable {@link #target}.
      *
      * @return value of instance variable {@link #target}
@@ -473,18 +440,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     public Target getTarget()
     {
         return this.target;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #target}.
-     *
-     * @param _target new value for instance variable {@link #target}
-     * @see #target
-     * @see #getTarget
-     */
-    public void setTarget(final Target _target)
-    {
-        this.target = _target;
     }
 
     /**
@@ -502,20 +457,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
 
     /**
      * This is the setter method for the instance variable
-     * {@link #targetBottomHeight}.
-     *
-     * @param _targetBottomHeight new value for instance variable
-     *            {@link #targetBottomHeight}
-     * @see #targetBottomHeight
-     * @see #getTargetBottomHeight
-     */
-    public void setTargetBottomHeight(final int _targetBottomHeight)
-    {
-        this.targetBottomHeight = _targetBottomHeight;
-    }
-
-    /**
-     * This is the setter method for the instance variable
      * {@link #targetConnectAttribute}.
      *
      * @return value of instance variable {@link #targetConnectAttribute}
@@ -525,20 +466,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     public Attribute getTargetConnectAttribute()
     {
         return this.targetConnectAttribute;
-    }
-
-    /**
-     * This is the setter method for the instance variable
-     * {@link #targetConnectAttribute}.
-     *
-     * @param _targetConnectAttr new value for instance variable
-     *            {@link #targetConnectAttribute}
-     * @see #targetConnectAttribute
-     * @see #getTargetConnectAttribute
-     */
-    public void setTargetConnectAttribute(final Attribute _targetConnectAttr)
-    {
-        this.targetConnectAttribute = _targetConnectAttr;
     }
 
     /**
@@ -555,20 +482,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the setter method for the instance variable
-     * {@link #targetCreateType}.
-     *
-     * @param _targetCreateType new value for instance variable
-     *            {@link #targetCreateType}
-     * @see #targetCreateType
-     * @see #getTargetCreateType
-     */
-    public void setTargetCreateType(final Type _targetCreateType)
-    {
-        this.targetCreateType = _targetCreateType;
-    }
-
-    /**
      * This is the getter method for the instance variable
      * {@link #targetDefaultMenu}.
      *
@@ -577,17 +490,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     public boolean hasTargetDefaultMenu()
     {
         return this.targetDefaultMenu;
-    }
-
-    /**
-     * This is the setter method for the instance variable
-     * {@link #targetDefaultMenu}.
-     *
-     * @param _targetDefaultMenu the targetDefaultMenu to set
-     */
-    public void setTargetDefaultMenu(final boolean _targetDefaultMenu)
-    {
-        this.targetDefaultMenu = _targetDefaultMenu;
     }
 
     /**
@@ -600,18 +502,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     public Form getTargetForm()
     {
         return this.targetForm;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #targetForm}.
-     *
-     * @param _targetForm new value for instance variable {@link #targetForm}
-     * @see #targetForm
-     * @see #getTargetForm
-     */
-    public void setTargetForm(final Form _targetForm)
-    {
-        this.targetForm = _targetForm;
     }
 
     /**
@@ -645,19 +535,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the setter method for the instance variable {@link #targetMenu}.
-     *
-     * @param _targetMenu new value for instance variable {@link #targetMenu}
-     * @see #targetMenu
-     * @see #getTargetMenu
-     */
-    public void setTargetMenu(final Menu _targetMenu)
-    {
-        this.targetMenu = _targetMenu;
-
-    }
-
-    /**
      * Getter method for instance variable {@link #targetCommand}.
      *
      * @return value of instance variable {@link #targetCommand}
@@ -668,16 +545,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     }
 
     /**
-     * Setter method for instance variable {@link #targetCommand}.
-     *
-     * @param _targetCommand value for instance variable {@link #targetCommand}
-     */
-    public void setTargetCommand(final AbstractCommand _targetCommand)
-    {
-        this.targetCommand = _targetCommand;
-    }
-
-    /**
      * Getter method for instance variable {@link #targetCmdRevise}.
      *
      * @return value of instance variable {@link #targetCmdRevise}
@@ -685,16 +552,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     public boolean isTargetCmdRevise()
     {
         return this.targetCmdRevise;
-    }
-
-    /**
-     * Setter method for instance variable {@link #targetCmdRevise}.
-     *
-     * @param _targetCmdRevise value for instance variable {@link #targetCmdRevise}
-     */
-    public void setTargetCmdRevise(final boolean _targetCmdRevise)
-    {
-        this.targetCmdRevise = _targetCmdRevise;
     }
 
     /**
@@ -734,18 +591,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the setter method for the instance variable {@link #targetMode}.
-     *
-     * @param _targetMode new value for instance variable {@link #targetMode}
-     * @see #targetMode
-     * @see #getTargetMode
-     */
-    public void setTargetMode(final TargetMode _targetMode)
-    {
-        this.targetMode = _targetMode;
-    }
-
-    /**
      * This is the setter method for the instance variable {@link #targetSearch}
      * .
      *
@@ -759,20 +604,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the setter method for the instance variable {@link #targetSearch}
-     * .
-     *
-     * @param _targetSearch new value for instance variable
-     *            {@link #targetSearch}
-     * @see #targetSearch
-     * @see #getTargetSearch
-     */
-    public void setTargetSearch(final Search _targetSearch)
-    {
-        this.targetSearch = _targetSearch;
-    }
-
-    /**
      * This is the setter method for the instance variable {@link #targetTable}.
      *
      * @return value of instance variable {@link #targetTable}
@@ -782,45 +613,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     public Table getTargetTable()
     {
         return this.targetTable;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #targetTable}.
-     *
-     * @param _targetTable new value for instance variable {@link #targetTable}
-     * @see #targetTable
-     * @see #getTargetTable
-     */
-    public void setTargetTable(final Table _targetTable)
-    {
-        this.targetTable = _targetTable;
-    }
-
-    /**
-     * This is the setter method for the instance variable
-     * {@link #targetTableFilters}.
-     *
-     * @return value of instance variable {@link #targetTableFilters}
-     * @see #targetTableFilters
-     * @see #setTargetTableFilters
-     */
-    public List<TargetTableFilter> getTargetTableFilters()
-    {
-        return this.targetTableFilters;
-    }
-
-    /**
-     * This is the setter method for the instance variable
-     * {@link #targetTableFilters}.
-     *
-     * @param _targetTableFilters new value for instance variable
-     *            {@link #targetTableFilters}
-     * @see #targetTableFilters
-     * @see #getTargetTableFilters
-     */
-    private void setTargetTableFilters(final List<TargetTableFilter> _targetTableFilters)
-    {
-        this.targetTableFilters = _targetTableFilters;
     }
 
     /**
@@ -838,20 +630,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
 
     /**
      * This is the setter method for the instance variable
-     * {@link #targetTableSortDirection}.
-     *
-     * @param _targetTableSortDirection new value for instance variable
-     *            {@link #targetTableSortDirection}
-     * @see #targetTableSortDirection
-     * @see #getTargetTableSortDirection
-     */
-    public void setTargetTableSortDirection(final SortDirection _targetTableSortDirection)
-    {
-        this.targetTableSortDirection = _targetTableSortDirection;
-    }
-
-    /**
-     * This is the setter method for the instance variable
      * {@link #targetTableSortKey}.
      *
      * @return value of instance variable {@link #targetTableSortKey}
@@ -864,20 +642,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the setter method for the instance variable
-     * {@link #targetTableSortKey}.
-     *
-     * @param _targetTableSortKey new value for instance variable
-     *            {@link #targetTableSortKey}
-     * @see #targetTableSortKey
-     * @see #getTargetTableSortKey
-     */
-    public void setTargetTableSortKey(final String _targetTableSortKey)
-    {
-        this.targetTableSortKey = _targetTableSortKey;
-    }
-
-    /**
      * This is the setter method for the instance variable {@link #targetTitle}.
      *
      * @return value of instance variable {@link #targetTitle}
@@ -887,18 +651,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     public String getTargetTitle()
     {
         return this.targetTitle;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #targetTitle}.
-     *
-     * @param _targetTitle new value for instance variable {@link #targetTitle}
-     * @see #targetTitle
-     * @see #isTargetTitle
-     */
-    public void setTargetTitle(final String _targetTitle)
-    {
-        this.targetTitle = _targetTitle;
     }
 
     /**
@@ -931,21 +683,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
         return this.windowHeight;
     }
 
-    /**
-     * This is the setter method for the instance variable {@link #windowHeight}
-     * .
-     *
-     * @param _windowHeight new value for instance variable
-     *            {@link #windowHeight}
-     * @see #windowHeight
-     * @see #getWindowHeight
-     */
-    private void setWindowHeight(final int _windowHeight)
-    {
-        this.windowHeight = _windowHeight;
-    }
-
-    /**
+        /**
      * This is the getter method for the instance variable {@link #windowWidth}.
      *
      * @return value of instance variable {@link #windowWidth}
@@ -958,18 +696,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the setter method for the instance variable {@link #windowWidth}.
-     *
-     * @param _windowWidth new value for instance variable {@link #windowWidth}
-     * @see #windowWidth
-     * @see #getWindowWidth
-     */
-    private void setWindowWidth(final int _windowWidth)
-    {
-        this.windowWidth = _windowWidth;
-    }
-
-    /**
      * This is the getter method for the instance variable {@link #askUser}.
      *
      * @return value of instance variable {@link #askUser}
@@ -979,18 +705,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     public boolean isAskUser()
     {
         return this.askUser;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #askUser}.
-     *
-     * @param _askUser new value for instance variable {@link #askUser}
-     * @see #askUser
-     * @see #getAskUser
-     */
-    private void setAskUser(final boolean _askUser)
-    {
-        this.askUser = _askUser;
     }
 
     /**
@@ -1007,20 +721,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the setter method for the instance variable
-     * {@link #defaultSelected}.
-     *
-     * @param _defaultSelected new value for instance variable
-     *            {@link #defaultSelected}
-     * @see #defaultSelected
-     * @see #isDefaultSelected
-     */
-    public void setDefaultSelected(final boolean _defaultSelected)
-    {
-        this.defaultSelected = _defaultSelected;
-    }
-
-    /**
      * This is the setter method for the instance variable {@link #submit}.
      *
      * @return value of instance variable {@link #submit}
@@ -1030,18 +730,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     public boolean isSubmit()
     {
         return this.submit;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #submit}.
-     *
-     * @param _submit new value for instance variable {@link #submit}
-     * @see #submit
-     * @see #isSubmit
-     */
-    public void setSubmit(final boolean _submit)
-    {
-        this.submit = _submit;
     }
 
     /**
@@ -1097,17 +785,33 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the setter method for the instance variable
-     * {@link #targetShowCheckBoxes}.
+     * Getter method for instance variable {@link #targetShowFile}.
      *
-     * @param _targetShowCheckBoxes new value for instance variable
-     *            {@link #targetShowCheckBoxes}
-     * @see #targetShowCheckBoxes
-     * @see #isTargetShowCheckBoxes
+     * @return value of instance variable {@link #targetShowFile}
      */
-    public void setTargetShowCheckBoxes(final boolean _targetShowCheckBoxes)
+    public boolean isTargetShowFile()
     {
-        this.targetShowCheckBoxes = _targetShowCheckBoxes;
+        return this.targetShowFile;
+    }
+
+    /**
+     * Getter method for instance variable {@link #noUpdateAfterCmd}.
+     *
+     * @return value of instance variable {@link #noUpdateAfterCmd}
+     */
+    public boolean isNoUpdateAfterCmd()
+    {
+        return this.noUpdateAfterCmd;
+    }
+
+    /**
+     * Getter method for instance variable {@link #targetStructurBrowserField}.
+     *
+     * @return value of instance variable {@link #targetStructurBrowserField}
+     */
+    public String getTargetStructurBrowserField()
+    {
+        return this.targetStructurBrowserField;
     }
 
     /**
@@ -1123,22 +827,22 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     {
         switch (_linkType) {
             case LINK_ICON:
-                setIcon(RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + _toName));
+                this.icon = (RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + _toName));
                 break;
             case LINK_TARGET_FORM:
-                setTargetForm(Form.get(_toId));
+                this.targetForm = Form.get(_toId);
                 break;
             case LINK_TARGET_MENU:
-                setTargetMenu(Menu.get(_toId));
+                this.targetMenu = Menu.get(_toId);
                 break;
             case LINK_TARGET_SEARCH:
-                setTargetSearch(Search.get(_toName));
+                this.targetSearch = Search.get(_toName);
                 break;
             case LINK_TARGET_TABLE:
-                setTargetTable(Table.get(_toId));
+                this.targetTable = Table.get(_toId);
                 break;
             case LINK_TARGET_CMD:
-                setTargetCommand(Command.get(_toId));
+                this.targetCommand = Command.get(_toId);
                 break;
             default:
                 super.setLinkProperty(_linkType, _toId, _toType, _toName);
@@ -1156,140 +860,74 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     protected void setProperty(final String _name, final String _value) throws CacheReloadException
     {
         if ("AskUser".equals(_name)) {
-            if ("true".equalsIgnoreCase(_value)) {
-                setAskUser(true);
-            } else {
-                setAskUser(false);
-            }
+            this.askUser = "true".equalsIgnoreCase(_value);
         } else if ("DefaultSelected".equals(_name)) {
-            if ("true".equalsIgnoreCase(_value)) {
-                setDefaultSelected(true);
-            } else {
-                setDefaultSelected(false);
-            }
+            this.defaultSelected = "true".equalsIgnoreCase(_value);
         } else if ("HRef".equals(_name)) {
-            setReference(RequestHandler.replaceMacrosInUrl(_value));
-        } else if ("Icon".equals(_name)) {
-            setIcon(RequestHandler.replaceMacrosInUrl(_value));
+            this.reference = (RequestHandler.replaceMacrosInUrl(_value));
         } else if ("Label".equals(_name)) {
-            setLabel(_value);
+            this.label = _value;
         } else if ("Submit".equals(_name)) {
-            if ("true".equals(_value)) {
-                setSubmit(true);
-            }
+            this.submit = "true".equalsIgnoreCase(_value);
         } else if ("Target".equals(_name)) {
             if ("content".equals(_value)) {
-                setTarget(AbstractCommand.Target.CONTENT);
+                this.target = (AbstractCommand.Target.CONTENT);
             } else if ("hidden".equals(_value)) {
-                setTarget(AbstractCommand.Target.HIDDEN);
+                this.target = (AbstractCommand.Target.HIDDEN);
             } else if ("popup".equals(_value)) {
-                setTarget(AbstractCommand.Target.POPUP);
+                this.target = (AbstractCommand.Target.POPUP);
             } else if ("modal".equals(_value)) {
-                setTarget(AbstractCommand.Target.MODAL);
+                this.target = (AbstractCommand.Target.MODAL);
             }
         } else if ("TargetBottomHeight".equals(_name)) {
-            setTargetBottomHeight(Integer.parseInt(_value));
+            this.targetBottomHeight = (Integer.parseInt(_value));
         } else if ("TargetCmdRevise".equals(_name)) {
-            setTargetCmdRevise("TRUE".equalsIgnoreCase(_value));
+            this.targetCmdRevise = ("TRUE".equalsIgnoreCase(_value));
         } else if ("TargetConnectAttribute".equals(_name)) {
-            setTargetConnectAttribute(Attribute.get(_value));
+            this.targetConnectAttribute = (Attribute.get(_value));
         } else if ("TargetCreateType".equals(_name)) {
-            setTargetCreateType(Type.get(_value));
+            this.targetCreateType = (Type.get(_value));
         } else if ("TargetCreateClassifications".equals(_name)) {
             setTargetCreateClassifications(_value);
         } else if ("TargetDefaultMenu".equals(_name)) {
-            if ("none".equals(_value)) {
-                setTargetDefaultMenu(false);
-            }
+            this.targetDefaultMenu = "none".equalsIgnoreCase(_value);
         } else if ("TargetMode".equals(_name)) {
             if ("create".equals(_value)) {
-                setTargetMode(TargetMode.CREATE);
+                this.targetMode = (TargetMode.CREATE);
             } else if ("edit".equals(_value)) {
-                setTargetMode(TargetMode.EDIT);
+                this.targetMode = (TargetMode.EDIT);
             } else if ("connect".equals(_value)) {
-                setTargetMode(TargetMode.CONNECT);
+                this.targetMode = (TargetMode.CONNECT);
             } else if ("search".equals(_value)) {
-                setTargetMode(TargetMode.SEARCH);
+                this.targetMode = (TargetMode.SEARCH);
             } else if ("view".equals(_value)) {
-                setTargetMode(TargetMode.VIEW);
+                this.targetMode = (TargetMode.VIEW);
             }
         } else if ("TargetShowCheckBoxes".equals(_name)) {
-            if ("true".equalsIgnoreCase(_value)) {
-                setTargetShowCheckBoxes(true);
-            } else {
-                setTargetShowCheckBoxes(false);
-            }
-        } else if (_name.startsWith("TargetTableFilter")) {
-            if (getTargetTableFilters() == null) {
-                setTargetTableFilters(new Vector<TargetTableFilter>());
-            }
-            getTargetTableFilters().add(new TargetTableFilter(_value));
+            this.targetShowCheckBoxes = "true".equalsIgnoreCase(_value);
         } else if ("TargetTableSortKey".equals(_name)) {
-            setTargetTableSortKey(_value);
-            setTargetTableSortDirection(AbstractCommand.SortDirection.ASCENDING);
+            this.targetTableSortKey = _value;
+            this.targetTableSortDirection = AbstractCommand.SortDirection.ASCENDING;
         } else if ("TargetTableSortDirection".equals(_name)) {
             if (AbstractCommand.SortDirection.DESCENDING.value.equals(_value)) {
-                setTargetTableSortDirection(AbstractCommand.SortDirection.DESCENDING);
+                this.targetTableSortDirection = AbstractCommand.SortDirection.DESCENDING;
             } else {
-                setTargetTableSortDirection(AbstractCommand.SortDirection.ASCENDING);
+                this.targetTableSortDirection = AbstractCommand.SortDirection.ASCENDING;
             }
         } else if ("TargetTitle".equals(_name)) {
-            setTargetTitle(_value);
+            this.targetTitle = _value;
+        } else if ("TargetShowFile".equals(_name)) {
+            this.targetShowFile = "true".equalsIgnoreCase(_value);
+        } else if ("NoUpdateAfterCOMMAND".equals(_name)) {
+            this.noUpdateAfterCmd = "true".equalsIgnoreCase(_value);
+        } else if ("TargetStructurBrowserField".equals(_name)) {
+            this.targetStructurBrowserField = _value.trim();
         } else if ("WindowHeight".equals(_name)) {
-            setWindowHeight(Integer.parseInt(_value));
+            this.windowHeight = (Integer.parseInt(_value));
         } else if ("WindowWidth".equals(_name)) {
-            setWindowWidth(Integer.parseInt(_value));
+            this.windowWidth = (Integer.parseInt(_value));
         } else {
             super.setProperty(_name, _value);
-        }
-    }
-
-    /**
-     * The class stores the filter of the target table.
-     */
-    public final class TargetTableFilter
-    {
-
-        /**
-         * The instance variable stores the sql clause.
-         *
-         * @see #getClause
-         * @see #setClause
-         */
-        private String clause = null;
-
-        /**
-         * Constructor to create a new target table filter instance.
-         *
-         * @param _clause sql where clause for this filter
-         */
-        private TargetTableFilter(final String _clause)
-        {
-            setClause(_clause);
-        }
-
-        /**
-         * This is the setter method for the instance variable {@link #clause}.
-         *
-         * @return value of instance variable {@link #clause}
-         * @see #clause
-         * @see #setClause
-         */
-        public String getClause()
-        {
-            return this.clause;
-        }
-
-        /**
-         * This is the setter method for the instance variable {@link #clause}.
-         *
-         * @param _clause new value for instance variable {@link #clause}
-         * @see #clause
-         * @see #getClause
-         */
-        public void setClause(final String _clause)
-        {
-            this.clause = _clause;
         }
     }
 }
