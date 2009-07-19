@@ -689,6 +689,13 @@ public class PrintQuery
                         .append(".").append(type.getMainTable().getSqlColId());
                     this.colIndexs.add(_colIndex);
                     ret++;
+                } else if ("oid".equals(this.attrName)) {
+                    this.attribute = type.getAttribute("OID");
+                    for (final String colName : this.attribute.getSqlColNames()) {
+                        _fromBldr.append(",T").append(this.tableIndex).append(".").append(colName);
+                        this.colIndexs.add(_colIndex + ret);
+                        ret++;
+                    }
                 } else {
                     this.attribute = type.getAttribute(this.attrName);
                     for (final String colName : this.attribute.getSqlColNames()) {
