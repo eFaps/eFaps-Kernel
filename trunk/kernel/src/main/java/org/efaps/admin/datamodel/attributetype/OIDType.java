@@ -53,7 +53,6 @@ public class OIDType extends StringType
      * type from the attribute is used (this means, the type itself is not
      * derived and has no childs).
      *
-     * @param _context eFaps context for this request
      */
     @Override
     public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
@@ -68,6 +67,23 @@ public class OIDType extends StringType
         }
         return getValue();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object readValue(final List<Object> _objectList)
+    {
+        final StringBuilder ret = new StringBuilder();
+        if (_objectList.size() > 1) {
+            ret.append(_objectList.get(0)).append(".").append(_objectList.get(1));
+        } else {
+            ret.append(getAttribute().getParent().getId()).append(".").append(_objectList.get(0));
+        }
+        setValue(ret.toString());
+        return getValue();
+    }
+
 
     @Override
     public String toString()
