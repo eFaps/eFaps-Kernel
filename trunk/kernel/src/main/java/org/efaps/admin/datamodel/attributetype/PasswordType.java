@@ -94,7 +94,6 @@ public class PasswordType extends StringType
             ret = ret.trim();
         }
         ret = decryptEncrypt(ret, true);
-        setValue(ret);
         return ret;
     }
 

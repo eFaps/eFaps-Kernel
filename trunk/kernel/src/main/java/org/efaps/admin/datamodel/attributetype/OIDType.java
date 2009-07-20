@@ -57,15 +57,16 @@ public class OIDType extends StringType
     @Override
     public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
     {
+        final StringBuilder ret = new StringBuilder();
         if (getAttribute().getSqlColNames().size() > 1) {
             final long typeId = _rs.getLong(_indexes.get(0).intValue());
             final long id = _rs.getLong(_indexes.get(1).intValue());
-            setValue(typeId + "." + id);
+            ret.append(typeId).append(".").append(id);
         } else {
             final long id = _rs.getLong(_indexes.get(0).intValue());
-            setValue(getAttribute().getParent().getId() + "." + id);
+            ret.append(getAttribute().getParent().getId()).append(".").append(id);
         }
-        return getValue();
+        return ret.toString();
     }
 
     /**
@@ -80,8 +81,7 @@ public class OIDType extends StringType
         } else {
             ret.append(getAttribute().getParent().getId()).append(".").append(_objectList.get(0));
         }
-        setValue(ret.toString());
-        return getValue();
+        return ret.toString();
     }
 
 

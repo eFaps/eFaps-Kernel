@@ -23,6 +23,7 @@ package org.efaps.admin.datamodel.attributetype;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.db.query.CachedResult;
@@ -96,8 +97,16 @@ public abstract class AbstractLinkType extends AbstractType
      */
     public Object readValue(final List<Object> _objectList) throws EFapsException
     {
+        Object ret = null;
         this.value = _objectList.get(0);
-        return  this.value;
+        if (_objectList.size() > 0) {
+            final List<Object> list = new ArrayList<Object>();
+            ret = list;
+            list.addAll(_objectList);
+        } else {
+            ret = this.value;
+        }
+        return ret;
     }
 
     /**

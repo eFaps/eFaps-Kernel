@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.IAttributeType;
 import org.efaps.admin.datamodel.Type;
@@ -50,9 +51,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * TODO description!
- * TODO .oid
  * TODO .type
- * TODO .linkfrom[]
  * TODO .value
  * TODO .attribute[ValueUOM].number .attribute[ValueUOM].uom .attribute[ValueUOM].base
  *
@@ -67,7 +66,7 @@ public class PrintQuery
     private static final Logger LOG = LoggerFactory.getLogger(PrintQuery.class);
 
     /**
-     * Instance this PrintQUery is based on.
+     * Instance this PrintQuery is based on.
      */
     private final Instance instance;
 
@@ -79,7 +78,7 @@ public class PrintQuery
     /**
      * Mapping of attributes to OneSelect.
      */
-    private final Map<Attribute, OneSelect> attr2OneSelect = new HashMap<Attribute, OneSelect>();
+    private final Map<String, OneSelect> attr2OneSelect = new HashMap<String, OneSelect>();
 
     /**
      * Mapping of sql tables to table index.
@@ -155,11 +154,40 @@ public class PrintQuery
     {
         final Type type = this.instance.getType();
         for (final String attrName : _attrNames) {
-            addAttribute(type.getAttribute(attrName));
+            final Attribute attr = type.getAttribute(attrName);
+            if (attr == null) {
+                final AttributeSet set = AttributeSet.find(type.getName(), attrName);
+                if (set != null) {
+                    addAttributeSet(set);
+                }
+            } else {
+                addAttribute(attr);
+            }
         }
         return this;
     }
 
+    public PrintQuery addAttributeSet(final String _setName) {
+        final Type type = this.instance.getType();
+        final AttributeSet set = AttributeSet.find(type.getName(), _setName);
+        addAttributeSet(set);
+        return this;
+    }
+
+    public PrintQuery addAttributeSet(final AttributeSet _set) {
+        final String key = "linkfrom[" + _set.getName() + "#" + _set.getAttributeName() + "]";
+        final OneSelect oneselect = new OneSelect(key);
+        this.allSelects.add(oneselect);
+        this.attr2OneSelect.put(_set.getAttributeName(), oneselect);
+        oneselect.analyzeSelectStmt();
+        for (final String setAttrName :  _set.getSetAttributes()) {
+            if (!setAttrName.equals(_set.getAttributeName())) {
+                oneselect.getFromSelect().addOneSelect(new OneSelect(_set.getAttribute(setAttrName)));
+            }
+        }
+        oneselect.getFromSelect().getMainOneSelect().setAttribute(_set.getAttribute(_set.getAttributeName()));
+        return this;
+    }
     /**
      * Add an attribute to the PrintQuery. It is used to get editable values
      * from the eFaps DataBase.
@@ -172,9 +200,28 @@ public class PrintQuery
         for (final Attribute attr : _attributes) {
             final OneSelect oneselect = new OneSelect(attr);
             this.allSelects.add(oneselect);
-            this.attr2OneSelect.put(attr, oneselect);
+            this.attr2OneSelect.put(attr.getName(), oneselect);
         }
         return this;
+    }
+
+    /**
+     * Method to get the attribute for an attributename.
+     * @param _name name of the attribute
+     * @return Attribute
+     */
+    public Attribute getAttribute4Attribute(final String _name) {
+        return this.attr2OneSelect.get(_name).getAttribute();
+    }
+
+    /**
+     * @param attribute
+     * @return
+     */
+    public List<Instance> getInstances4Attribute(final String _attributeName)
+    {
+        final OneSelect oneselect = this.attr2OneSelect.get(_attributeName);
+        return oneselect.getInstances();
     }
 
     /**
@@ -187,8 +234,41 @@ public class PrintQuery
     public Object getAttribute(final String _attributeName)
             throws EFapsException
     {
-        final Type type = this.instance.getType();
-        return getAttribute(type.getAttribute(_attributeName));
+        final OneSelect oneselect = this.attr2OneSelect.get(_attributeName);
+        return oneselect.getObject();
+    }
+
+    /**
+     * Get the object returned by the given name of an AttributeSet.
+     *
+     * @param _attributeName name of the attribute the object is wanted for
+     * @return object for the select statement
+     * @throws EFapsException on error
+     */
+    public Object getAttributeSet(final String _setName) throws EFapsException
+    {
+        final OneSelect oneselect = this.attr2OneSelect.get(_setName);
+        Map<String, Object> ret = null;
+        if (oneselect.getFromSelect().hasResult) {
+            ret = new HashMap<String, Object>();
+            // in an attributset the first one is fake
+            boolean first = true;
+            for (final OneSelect onsel : oneselect.getFromSelect().getOneSelects()) {
+                if (first) {
+                    first = false;
+                } else {
+                    final ArrayList<Object> list = new ArrayList<Object>();
+                    final Object object = onsel.getObject();
+                    if (object instanceof List<?>) {
+                        list.addAll((List<?>) object);
+                    } else {
+                        list.add(object);
+                    }
+                    ret.put(onsel.getAttribute().getName(), list);
+                }
+            }
+        }
+        return ret;
     }
 
     /**
@@ -201,8 +281,7 @@ public class PrintQuery
     public Object getAttribute(final Attribute _attribute)
             throws EFapsException
     {
-        final OneSelect oneselect = this.attr2OneSelect.get(_attribute);
-        return oneselect.getObject();
+        return getAttribute(_attribute.getName());
     }
 
     /**
@@ -319,6 +398,26 @@ public class PrintQuery
         return oneselect.getObject();
     }
 
+    public Attribute getAttribute4Select(final String _selectStmt) {
+        final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectStmt);
+        return oneselect.getAttribute();
+    }
+
+    /**
+     * @param attribute
+     * @return
+     */
+    public List<Instance> getInstances4Select(final String _selectStmt)
+    {
+        final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectStmt);
+        return oneselect.getInstances();
+    }
+
+    public boolean isList4Select(final String _selectStmt) {
+        final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectStmt);
+        return oneselect.isMulitple();
+    }
+
     /**
      * The instance method executes the query.
      *
@@ -339,7 +438,25 @@ public class PrintQuery
     public boolean executeWithoutAccessCheck()
             throws EFapsException
     {
-        return executeOneCompleteStmt(createSQLStatement());
+        final boolean ret =  executeOneCompleteStmt(createSQLStatement(), this.allSelects);
+        if (ret) {
+            for (final OneSelect onesel : this.allSelects) {
+                if (onesel.getFromSelect() != null) {
+                    onesel.getFromSelect().execute();
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Getter method for instance variable {@link #instance}.
+     *
+     * @return value of instance variable {@link #instance}
+     */
+    public Instance getInstance()
+    {
+        return this.instance;
     }
 
     /**
@@ -380,7 +497,7 @@ public class PrintQuery
      * @return true if the query contains values, else false
      * @throws EFapsException on error
      */
-    private boolean executeOneCompleteStmt(final StringBuilder _complStmt)
+    private boolean executeOneCompleteStmt(final StringBuilder _complStmt, final List<OneSelect> _oneSelects)
             throws EFapsException
     {
         boolean ret = false;
@@ -397,7 +514,7 @@ public class PrintQuery
             final ResultSet rs = stmt.executeQuery(_complStmt.toString());
 
             while (rs.next()) {
-                for (final OneSelect onesel : this.allSelects) {
+                for (final OneSelect onesel : _oneSelects) {
                     onesel.setObject(rs);
                 }
                 ret = true;
@@ -542,6 +659,11 @@ public class PrintQuery
         private final List<ISelectPart> selectParts = new ArrayList<ISelectPart>();
 
         /**
+         * FromSelect this OneSelect belong to.
+         */
+        private FromSelect fromSelect;
+
+        /**
          * List of column indexes the values have in the ResultSet returned
          * from the eFaps database.
          */
@@ -552,6 +674,12 @@ public class PrintQuery
          * from the eFaps database.
          */
         private final List<Object> objectList = new ArrayList<Object>();
+
+        /**
+         * List of ids retrieved from the ResultSet returned
+         * from the eFaps database.
+         */
+        private final List<Long> idList = new ArrayList<Long>();
 
         /**
          * table index for this table. It will finally contain the index of
@@ -571,11 +699,21 @@ public class PrintQuery
 
         /**
          * @param _selectStmt selectStatement this OneSelect belongs to
+         * @param _subQuery
          * @param tableIndex
          */
         public OneSelect(final String _selectStmt)
         {
             this.selectStmt = _selectStmt;
+        }
+
+        /**
+         * @param _attribute
+         */
+        public void setAttribute(final Attribute _attribute)
+        {
+           this.attribute = _attribute;
+
         }
 
         /**
@@ -596,7 +734,8 @@ public class PrintQuery
         public void setObject(final ResultSet _rs) throws SQLException
         {
             final ResultSetMetaData metaData = _rs.getMetaData();
-
+            // store the ids also
+            this.idList.add(_rs.getLong(1));
             for (final Integer colIndex : this.colIndexs) {
                 switch (metaData.getColumnType(colIndex)) {
                     case java.sql.Types.TIMESTAMP:
@@ -617,6 +756,8 @@ public class PrintQuery
         {
             this.attrName = _attrName;
         }
+
+
 
         /**
          * Add a classification name evaluated from an
@@ -648,13 +789,24 @@ public class PrintQuery
         }
 
         /**
+         * Add the name of the type and attribute the link comes from,
+         * evaluated from an <code>linkTo[TYPENAME#ATTRIBUTENAME]</code>
+         * part of an select statement.
+         * @param _linkFrom   name of the attribute the link comes from
+         */
+        public void addLinkFromSelectPart(final String _linkFrom)
+        {
+            this.fromSelect = new FromSelect(_linkFrom);
+        }
+
+        /**
          * Method used to append to the from part of an sql statement.
          * @param _fromBldr builder to append to
          */
         public void append2SQLFrom(final StringBuilder _fromBldr)
         {
             for (final ISelectPart sel : this.selectParts) {
-                this.tableIndex = sel.join(_fromBldr, this.tableIndex);
+                this.tableIndex = sel.join(this, _fromBldr, this.tableIndex);
             }
         }
 
@@ -667,7 +819,7 @@ public class PrintQuery
         public int append2SQLSelect(final StringBuilder _fromBldr, final int _colIndex)
         {
             int ret = 0;
-            //in case that the OneSelct was instantiated for an attribute
+            //in case that the OneSelect was instantiated for an attribute
             if (this.selectStmt == null) {
                 for (final String colName : this.attribute.getSqlColNames()) {
                     _fromBldr.append(",T0.").append(colName);
@@ -696,7 +848,7 @@ public class PrintQuery
                         this.colIndexs.add(_colIndex + ret);
                         ret++;
                     }
-                } else {
+                } else if (this.attrName != null) {
                     this.attribute = type.getAttribute(this.attrName);
                     for (final String colName : this.attribute.getSqlColNames()) {
                         _fromBldr.append(",T").append(this.tableIndex).append(".").append(colName);
@@ -714,24 +866,35 @@ public class PrintQuery
          */
         public void analyzeSelectStmt()
         {
-            final Pattern pattern = Pattern.compile("(?<=\\[)[a-zA-Z_]*(?=\\])");
-            final String[] parts = this.selectStmt.split("\\.");
+            final Pattern pattern = Pattern.compile("(?<=\\[)[0-9a-zA-Z_]*(?=\\])");
+            final Pattern linkfomPat = Pattern.compile("(?<=\\[)[0-9a-zA-Z_#:]*(?=\\])");
 
+            final String[] parts = this.selectStmt.split("\\.");
+            OneSelect currentSelect = this;
             for (final String part : parts) {
                 if (part.startsWith("class")) {
                     final Matcher matcher = pattern.matcher(part);
-                    matcher.find();
-                    addClassificationSelectPart(matcher.group());
+                    if (matcher.find()) {
+                        currentSelect.addClassificationSelectPart(matcher.group());
+                    }
                 } else if (part.startsWith("linkto")) {
                     final Matcher matcher = pattern.matcher(part);
-                    matcher.find();
-                    addLinkToSelectPart(matcher.group());
+                    if (matcher.find()) {
+                        currentSelect.addLinkToSelectPart(matcher.group());
+                    }
                 } else if (part.startsWith("attribute")) {
                     final Matcher matcher = pattern.matcher(part);
-                    matcher.find();
-                    addAttributeSelectPart(matcher.group());
+                    if (matcher.find()) {
+                        currentSelect.addAttributeSelectPart(matcher.group());
+                    }
+                } else if (part.startsWith("linkfrom")) {
+                    final Matcher matcher = linkfomPat.matcher(part);
+                    if (matcher.find()) {
+                        currentSelect.addLinkFromSelectPart(matcher.group());
+                        currentSelect = currentSelect.fromSelect.getMainOneSelect();
+                    }
                 } else {
-                    addAttributeSelectPart(part);
+                    currentSelect.addAttributeSelectPart(part);
                 }
             }
         }
@@ -743,8 +906,98 @@ public class PrintQuery
          */
         public Object getObject() throws EFapsException
         {
-            final IAttributeType attrInterf = this.attribute.newInstance();
-            return attrInterf.readValue(this.objectList);
+            Object ret = null;
+            if (this.attribute == null) {
+                if (this.fromSelect.hasResult) {
+                    ret = this.fromSelect.getMainOneSelect().getObject();
+                }
+            } else {
+                final IAttributeType attrInterf = this.attribute.newInstance();
+                ret = attrInterf.readValue(this.objectList);
+            }
+            return ret;
+        }
+
+        /**
+         * Methdo return the instances this OneSelect has returned.
+         * @return Collection of Insatcne
+         */
+        public List<Instance> getInstances()
+        {
+            final List<Instance> ret = new ArrayList<Instance>();
+            if (this.attribute == null) {
+                ret.addAll(this.fromSelect.getMainOneSelect().getInstances());
+            } else {
+                for (final Long id : this.idList) {
+                    ret.add(Instance.get(this.attribute.getParent(), id.toString()));
+                }
+            }
+            return ret;
+        }
+
+        /**
+         * Getter method for instance variable {@link #attribute}.
+         *
+         * @return value of instance variable {@link #attribute}
+         */
+        public Attribute getAttribute()
+        {
+            Attribute ret;
+            if (this.attribute == null) {
+                ret = this.fromSelect.getMainOneSelect().getAttribute();
+            } else {
+                ret = this.attribute;
+            }
+            return ret;
+        }
+
+        /**
+         * Getter method for instance variable {@link #fromSelect}.
+         *
+         * @return value of instance variable {@link #fromSelect}
+         */
+        public FromSelect getFromSelect()
+        {
+            return this.fromSelect;
+        }
+
+        public boolean isMulitple() {
+            boolean ret;
+            if (this.attribute == null) {
+                ret = this.fromSelect.getMainOneSelect().isMulitple();
+            } else {
+                ret = this.objectList.size() > 1;
+            }
+            return ret;
+        }
+
+        private Integer getNewTableIndex(final String _tableName, final Integer _relIndex)
+        {
+            int ret;
+            if (this.attribute == null  && this.fromSelect != null) {
+                ret = this.fromSelect.getNewTableIndex(_tableName, _relIndex);
+            } else {
+                ret = PrintQuery.this.getNewTableIndex(_tableName, _relIndex);
+            }
+            return ret;
+        }
+
+        /**
+         * Method to get an table index from {@link #sqlTable2Index}.
+         *
+         * @param _tableName tablename the index is wanted for
+         * @param _relIndex relation the table is used in
+         * @return index of the table or null if not found
+         */
+        private Integer getTableIndex(final String _tableName, final int _relIndex)
+        {
+            Integer ret;
+            if (this.attribute == null && this.fromSelect != null) {
+                ret = this.fromSelect.getTableIndex(_tableName, _relIndex);
+            } else {
+                ret = PrintQuery.this.getTableIndex(_tableName, _relIndex);
+            }
+            return ret;
         }
     }
 
@@ -755,17 +1008,185 @@ public class PrintQuery
     {
         /**
          * Method to join a table to the given from select statement.
+         * @param _oneselect oneselect this select part must be joined to
          * @param _fromBldr StringBuilder containing the from select statement
          * @param _relIndex relation index
          * @return table index of the joint table
          */
-        int join(final StringBuilder _fromBldr, final int _relIndex);
+        int join(final OneSelect _oneselect, final StringBuilder _fromBldr, final int _relIndex);
 
         /**
-         * Method to get the TYpe the part belongs to.
+         * Method to get the Type the part belongs to.
          * @return type
          */
         Type getType();
+    }
+
+    /**
+     * Select Part for <code>linkfrom[TYPERNAME#ATTRIBUTENAME]</code>.
+     */
+    public class FromSelect
+    {
+        /**
+         * Name of the Attribute the link to is based on.
+         */
+        private final String attrName;
+
+        /**
+         * Type the {@link #attrName} belongs to.
+         */
+        private final Type type;
+
+        /**
+         * Mapping of Select statements to OneSelect.
+         */
+        private final List<PrintQuery.OneSelect> oneSelects = new ArrayList<PrintQuery.OneSelect>();
+
+        /**
+         * Getter method for instance variable {@link #oneSelects}.
+         *
+         * @return value of instance variable {@link #oneSelects}
+         */
+        public List<PrintQuery.OneSelect> getOneSelects()
+        {
+            return this.oneSelects;
+        }
+
+        /**
+         * Mapping of sql tables to table index.
+         * @see #tableIndex
+         */
+        private final Map<String, Integer> sqlTable2Index = new HashMap<String, Integer>();
+
+        private int tableIndex;
+
+        private boolean hasResult;
+
+
+        /**
+         * @param _linkFrom linkfrom element of the query
+         */
+        public FromSelect(final String _linkFrom)
+        {
+            final String[] linkfrom = _linkFrom.split("#");
+            this.type = Type.get(linkfrom[0]);
+            this.attrName = linkfrom[1];
+            final OneSelect onsel = new OneSelect(_linkFrom);
+            this.oneSelects.add(onsel);
+            onsel.fromSelect = this;
+            onsel.selectParts.add(new ISelectPart() {
+
+                public Type getType()
+                {
+                    return PrintQuery.FromSelect.this.type;
+                }
+
+                public int join(final OneSelect _oneselect, final StringBuilder _fromBldr, final int _relIndex)
+                {
+                    // TODO Auto-generated method stub
+                    return 0;
+                }
+            });
+        }
+
+        /**
+         * @param _oneSelect
+         */
+        public void addOneSelect(final OneSelect _oneSelect)
+        {
+            this.oneSelects.add(_oneSelect);
+        }
+
+        /**
+         * Method to get an table index from {@link #sqlTable2Index}.
+         *
+         * @param _tableName    tablename the index is wanted for
+         * @param _relIndex     relation the table is used in
+         * @return  index of the table or null if not found
+         */
+        private Integer getTableIndex(final String _tableName, final int _relIndex)
+        {
+            return this.sqlTable2Index.get(_relIndex + "__" + _tableName);
+        }
+
+        /**
+         * Get a new table index and add the table to the map of existing table
+         * indexes.
+         * @param _tableName    tablename the index is wanted for
+         * @param _relIndex     relation the table is used in
+         * @return new index for the table
+         */
+        private Integer getNewTableIndex(final String _tableName, final Integer _relIndex)
+        {
+            this.tableIndex++;
+            this.sqlTable2Index.put(_relIndex + "__" + _tableName, this.tableIndex);
+            return this.tableIndex;
+        }
+
+        /**
+         * Execute the from select.
+         * @throws EFapsException on error
+         */
+        public void execute() throws EFapsException
+        {
+            this.hasResult = executeOneCompleteStmt(createSQLStatement(), this.oneSelects);
+        }
+
+        /**
+         * Method to create on Statement out of the different parts.
+         * @return StringBuilder containing the sql statement
+         */
+        private StringBuilder createSQLStatement()
+        {
+            final Attribute attr = this.type.getAttribute(this.attrName);
+            final StringBuilder selBldr = new StringBuilder();
+            selBldr.append("select T0.ID, T0.").append(attr.getSqlColNames().get(0));
+
+            final StringBuilder fromBldr = new StringBuilder();
+            fromBldr.append(" from ").append(this.type.getMainTable().getSqlTable()).append(" T0");
+
+            // on a from  select only on table is the base
+            this.oneSelects.get(0).append2SQLFrom(fromBldr);
+
+            int colIndex = 3;
+            for (final OneSelect oneSel : this.oneSelects) {
+                colIndex += oneSel.append2SQLSelect(selBldr, colIndex);
+            }
+
+            final StringBuilder whereBldr = new StringBuilder();
+            whereBldr.append(" where T0.").append(attr.getSqlColNames().get(0)).append("=")
+                .append(PrintQuery.this.instance.getId());
+            // in a subquery the type must also be set
+            if (this.type.getMainTable().getSqlColType() != null) {
+                whereBldr.append(" and T0.").append(this.type.getMainTable().getSqlColType()).append("=")
+                .append(this.type.getId());
+            }
+
+            selBldr.append(fromBldr).append(whereBldr);
+
+            if (PrintQuery.LOG.isDebugEnabled()) {
+                PrintQuery.LOG.debug(selBldr.toString());
+            }
+            return selBldr;
+        }
+
+        /**
+         * Getter method for instance variable {@link #oneSelect}.
+         *
+         * @return value of instance variable {@link #oneSelect}
+         */
+        public OneSelect getMainOneSelect()
+        {
+            return this.oneSelects.get(0);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public Type getType()
+        {
+            return this.type;
+        }
     }
 
     /**
@@ -794,19 +1215,16 @@ public class PrintQuery
         }
 
         /**
-         * @see org.efaps.db.PrintQuery.ISelectPart#join(java.lang.StringBuilder)
-         * @param _fromBldr StringBuilder containing the from select statement
-         * @param _relIndex relation index
-         * @return table index of the joint table
+         * {@inheritDoc}
          */
-        public int join(final StringBuilder _fromBldr, final int _relIndex)
+        public int join(final OneSelect _oneSelect, final StringBuilder _fromBldr, final int _relIndex)
         {
             final Attribute attr = this.type.getAttribute(this.attrName);
             Integer ret;
             final String tableName = attr.getLink().getMainTable().getSqlTable();
-            ret = getTableIndex(tableName, _relIndex);
+            ret = _oneSelect.getTableIndex(tableName, _relIndex);
             if (ret == null) {
-                ret = getNewTableIndex(tableName, _relIndex);
+                ret = _oneSelect.getNewTableIndex(tableName, _relIndex);
                 _fromBldr.append(" left join ").append(tableName).append(" T").append(ret)
                     .append(" on T").append(_relIndex).append(".").append(attr.getSqlColNames().get(0))
                     .append("=T").append(ret).append(".ID");
@@ -815,8 +1233,7 @@ public class PrintQuery
         }
 
         /**
-         * @see org.efaps.db.PrintQuery.ISelectPart#getType()
-         * @return Type this LinkTo links to
+         * {@inheritDoc}
          */
         public Type getType()
         {
@@ -844,18 +1261,15 @@ public class PrintQuery
         }
 
         /**
-         * @see org.efaps.db.PrintQuery.ISelectPart#join(java.lang.StringBuilder)
-         * @param _fromBldr StringBuilder containing the from select statement
-         * @param _relIndex relation index
-         * @return table index of the joint table
+         * {@inheritDoc}
          */
-        public int join(final StringBuilder _fromBldr, final int _relIndex)
+        public int join(final OneSelect _oneSelect, final StringBuilder _fromBldr, final int _relIndex)
         {
             Integer ret;
             final String tableName = this.classification.getMainTable().getSqlTable();
-            ret = getTableIndex(tableName, _relIndex);
+            ret = _oneSelect.getTableIndex(tableName, _relIndex);
             if (ret == null) {
-                ret = getNewTableIndex(tableName, _relIndex);
+                ret = _oneSelect.getNewTableIndex(tableName, _relIndex);
                 _fromBldr.append(" left join ").append(tableName).append(" T").append(ret).append(" on T").append(
                                 _relIndex).append(".ID=").append("T").append(ret).append(".").append(
                                 this.classification.getLinkAttributeName());
@@ -864,13 +1278,11 @@ public class PrintQuery
         }
 
         /**
-         * @see org.efaps.db.PrintQuery.ISelectPart#getType()
-         * @return the classification
+         * {@inheritDoc}
          */
         public Type getType()
         {
             return this.classification;
         }
-
     }
 }

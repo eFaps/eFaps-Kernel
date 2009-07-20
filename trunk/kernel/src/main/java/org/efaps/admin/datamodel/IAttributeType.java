@@ -70,6 +70,7 @@ public interface IAttributeType
      * it can be determined what to do with the objects from the database. e.g.
      * in case of DateTimeType the values will be cased into a DateTime Object
      * and in case of a PersonLinkType a Person or Role instance will be returned.
+     * This method is called from the {@link org.efaps.db.PrintQuery}.
      *
      * @param _objectList list of objects from the eFaps Database
      * @return Object as needed for eFaps
