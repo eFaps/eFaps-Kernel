@@ -50,6 +50,10 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 
 /**
+ * PrintQuery is a query uses to get the value for one object, specfied by one
+ * instance. The PrintQuery is able to execute various of the partes for the
+ * select from EQL definition.
+ *
  * TODO description!
  * TODO .type
  * TODO .value
@@ -167,27 +171,6 @@ public class PrintQuery
         return this;
     }
 
-    public PrintQuery addAttributeSet(final String _setName) {
-        final Type type = this.instance.getType();
-        final AttributeSet set = AttributeSet.find(type.getName(), _setName);
-        addAttributeSet(set);
-        return this;
-    }
-
-    public PrintQuery addAttributeSet(final AttributeSet _set) {
-        final String key = "linkfrom[" + _set.getName() + "#" + _set.getAttributeName() + "]";
-        final OneSelect oneselect = new OneSelect(key);
-        this.allSelects.add(oneselect);
-        this.attr2OneSelect.put(_set.getAttributeName(), oneselect);
-        oneselect.analyzeSelectStmt();
-        for (final String setAttrName :  _set.getSetAttributes()) {
-            if (!setAttrName.equals(_set.getAttributeName())) {
-                oneselect.getFromSelect().addOneSelect(new OneSelect(_set.getAttribute(setAttrName)));
-            }
-        }
-        oneselect.getFromSelect().getMainOneSelect().setAttribute(_set.getAttribute(_set.getAttributeName()));
-        return this;
-    }
     /**
      * Add an attribute to the PrintQuery. It is used to get editable values
      * from the eFaps DataBase.
@@ -207,16 +190,18 @@ public class PrintQuery
 
     /**
      * Method to get the attribute for an attributename.
-     * @param _name name of the attribute
+     * @param _attributeName name of the attribute
      * @return Attribute
      */
-    public Attribute getAttribute4Attribute(final String _name) {
-        return this.attr2OneSelect.get(_name).getAttribute();
+    public Attribute getAttribute4Attribute(final String _attributeName)
+    {
+        return this.attr2OneSelect.get(_attributeName).getAttribute();
     }
 
     /**
-     * @param attribute
-     * @return
+     * Method to get the instance for an attributename.
+     * @param _attributeName name of the attribute
+     * @return list of instance
      */
     public List<Instance> getInstances4Attribute(final String _attributeName)
     {
@@ -239,9 +224,61 @@ public class PrintQuery
     }
 
     /**
+     * Get the object returned by the given Attribute.
+     *
+     * @param _attribute the object is wanted for
+     * @return object for the select statement
+     * @throws EFapsException on error
+     */
+    public Object getAttribute(final Attribute _attribute)
+            throws EFapsException
+    {
+        return getAttribute(_attribute.getName());
+    }
+
+    /**
+     * Add an AttributeSet to the PrintQuery. It is used to get editable values
+     * from the eFaps DataBase.
+     *
+     * @param _setName    Name of the AttributeSet to add
+     * @return this PrintQuery
+     */
+    public PrintQuery addAttributeSet(final String _setName)
+    {
+        final Type type = this.instance.getType();
+        final AttributeSet set = AttributeSet.find(type.getName(), _setName);
+        addAttributeSet(set);
+        return this;
+    }
+
+    /**
+     * Add an AttributeSet to the PrintQuery. It is used to get editable values
+     * from the eFaps DataBase. The AttributeSet is internally transformed into
+     * an linkfrom query.
+     *
+     * @param _set    AttributeSet to add
+     * @return this PrintQuery
+     */
+    public PrintQuery addAttributeSet(final AttributeSet _set)
+    {
+        final String key = "linkfrom[" + _set.getName() + "#" + _set.getAttributeName() + "]";
+        final OneSelect oneselect = new OneSelect(key);
+        this.allSelects.add(oneselect);
+        this.attr2OneSelect.put(_set.getAttributeName(), oneselect);
+        oneselect.analyzeSelectStmt();
+        for (final String setAttrName :  _set.getSetAttributes()) {
+            if (!setAttrName.equals(_set.getAttributeName())) {
+                oneselect.getFromSelect().addOneSelect(new OneSelect(_set.getAttribute(setAttrName)));
+            }
+        }
+        oneselect.getFromSelect().getMainOneSelect().setAttribute(_set.getAttribute(_set.getAttributeName()));
+        return this;
+    }
+
+    /**
      * Get the object returned by the given name of an AttributeSet.
      *
-     * @param _attributeName name of the attribute the object is wanted for
+     * @param _setName name of the AttributeSet the object is wanted for
      * @return object for the select statement
      * @throws EFapsException on error
      */
@@ -269,19 +306,6 @@ public class PrintQuery
             }
         }
         return ret;
-    }
-
-    /**
-     * Get the object returned by the given Attribute.
-     *
-     * @param _attribute the object is wanted for
-     * @return object for the select statement
-     * @throws EFapsException on error
-     */
-    public Object getAttribute(final Attribute _attribute)
-            throws EFapsException
-    {
-        return getAttribute(_attribute.getName());
     }
 
     /**
@@ -398,14 +422,21 @@ public class PrintQuery
         return oneselect.getObject();
     }
 
-    public Attribute getAttribute4Select(final String _selectStmt) {
+    /**
+     * Method to get the Attribute used for an select.
+     * @param _selectStmt   selectstatement the attribute is wanted for
+     * @return  Attribute for the selectstatement
+     */
+    public Attribute getAttribute4Select(final String _selectStmt)
+    {
         final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectStmt);
         return oneselect.getAttribute();
     }
 
     /**
-     * @param attribute
-     * @return
+     * Method to get the instances used for an select.
+     * @param _selectStmt   selectstatement the attribute is wanted for
+     * @return  Attribute for the selectstatement
      */
     public List<Instance> getInstances4Select(final String _selectStmt)
     {
@@ -413,7 +444,13 @@ public class PrintQuery
         return oneselect.getInstances();
     }
 
-    public boolean isList4Select(final String _selectStmt) {
+    /**
+     * Method to determine it the selectstatement returns more than one value.
+     * @param _selectStmt   selectstatement the attribute is wanted for
+     * @return  Attribute for the selectstatement
+     */
+    public boolean isList4Select(final String _selectStmt)
+    {
         final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectStmt);
         return oneselect.isMulitple();
     }
@@ -493,7 +530,8 @@ public class PrintQuery
      * The instance method executes exact one complete statement and populates
      * the result in the cached result {@link #cachedResult}.
      *
-     * @param _complStmt complete statement instance to execute
+     * @param _complStmt    complete statement instance to execute
+     * @param _oneSelects   lsit of OneSelects the statement is executed for
      * @return true if the query contains values, else false
      * @throws EFapsException on error
      */
@@ -708,21 +746,22 @@ public class PrintQuery
         }
 
         /**
-         * @param _attribute
-         */
-        public void setAttribute(final Attribute _attribute)
-        {
-           this.attribute = _attribute;
-
-        }
-
-        /**
          * @param _attr attribute to be used in this OneSelect
          */
         public OneSelect(final Attribute _attr)
         {
             this.selectStmt = null;
             this.attribute = _attr;
+        }
+
+        /**
+         * Setter method for instance variable {@link #attribute}.
+         * @param _attribute Attribute to set
+         */
+        public void setAttribute(final Attribute _attribute)
+        {
+           this.attribute = _attribute;
+
         }
 
         /**
@@ -756,8 +795,6 @@ public class PrintQuery
         {
             this.attrName = _attrName;
         }
-
-
 
         /**
          * Add a classification name evaluated from an
@@ -961,6 +998,10 @@ public class PrintQuery
             return this.fromSelect;
         }
 
+        /**
+         * Method to determine if this OneSelect does return mor than one value.
+         * @return true if more than one value is returned, else false
+         */
         public boolean isMulitple() {
             boolean ret;
             if (this.attribute == null) {
@@ -971,6 +1012,18 @@ public class PrintQuery
             return ret;
         }
 
+        /**
+         * Get a new table index and add the table to the map of existing table
+         * indexes. The method calls in case that this OneSelect is related
+         * to a FromSelect the method
+         * {@link org.efaps.db.PrintQuery.FromSelect#getNewTableIndex(String, Integer)},
+         * else in PrintQuery the method
+         * {@link org.efaps.db.PrintQuery#getNewTableIndex(String, Integer)}.
+         *
+         * @param _tableName    tablename the index is wanted for
+         * @param _relIndex     relation the table is used in
+         * @return new index for the table
+         */
         private Integer getNewTableIndex(final String _tableName, final Integer _relIndex)
         {
             int ret;
@@ -984,7 +1037,12 @@ public class PrintQuery
 
         /**
          * Method to get an table index from {@link #sqlTable2Index}.
-         *
+         * Get a new table index and add the table to the map of existing table
+         * indexes. The method calls in case that this OneSelect is related
+         * to a FromSelect the method
+         * {@link org.efaps.db.PrintQuery.FromSelect#getTableIndex(String, Integer)},
+         * else in PrintQuery the method
+         * {@link org.efaps.db.PrintQuery#getTableIndex(String, Integer)}
          * @param _tableName tablename the index is wanted for
          * @param _relIndex relation the table is used in
          * @return index of the table or null if not found
@@ -1043,25 +1101,20 @@ public class PrintQuery
         private final List<PrintQuery.OneSelect> oneSelects = new ArrayList<PrintQuery.OneSelect>();
 
         /**
-         * Getter method for instance variable {@link #oneSelects}.
-         *
-         * @return value of instance variable {@link #oneSelects}
-         */
-        public List<PrintQuery.OneSelect> getOneSelects()
-        {
-            return this.oneSelects;
-        }
-
-        /**
          * Mapping of sql tables to table index.
          * @see #tableIndex
          */
         private final Map<String, Integer> sqlTable2Index = new HashMap<String, Integer>();
 
+        /**
+         * Actual index of the table.
+         */
         private int tableIndex;
 
+        /**
+         * Did this query return a result.
+         */
         private boolean hasResult;
-
 
         /**
          * @param _linkFrom linkfrom element of the query
@@ -1090,7 +1143,17 @@ public class PrintQuery
         }
 
         /**
-         * @param _oneSelect
+         * Getter method for instance variable {@link #oneSelects}.
+         *
+         * @return value of instance variable {@link #oneSelects}
+         */
+        public List<PrintQuery.OneSelect> getOneSelects()
+        {
+            return this.oneSelects;
+        }
+
+        /**
+         * @param _oneSelect OneSelect to be added
          */
         public void addOneSelect(final OneSelect _oneSelect)
         {
