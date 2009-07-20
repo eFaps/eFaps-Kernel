@@ -211,29 +211,31 @@ public class PrintQuery
 
     /**
      * Get the object returned by the given name of an attribute.
-     *
-     * @param _attributeName name of the attribute the object is wanted for
+     * @param <T>               class the return value will be casted to
+     * @param _attributeName    name of the attribute the object is wanted for
      * @return object for the select statement
      * @throws EFapsException on error
      */
-    public Object getAttribute(final String _attributeName)
+    @SuppressWarnings("unchecked")
+    public <T> T getAttribute(final String _attributeName)
             throws EFapsException
     {
         final OneSelect oneselect = this.attr2OneSelect.get(_attributeName);
-        return oneselect.getObject();
+        return (T) oneselect.getObject();
     }
 
     /**
      * Get the object returned by the given Attribute.
-     *
-     * @param _attribute the object is wanted for
+     * @param <T>           class the return value will be casted to
+     * @param _attribute    the object is wanted for
      * @return object for the select statement
      * @throws EFapsException on error
      */
-    public Object getAttribute(final Attribute _attribute)
+    @SuppressWarnings("unchecked")
+    public <T> T getAttribute(final Attribute _attribute)
             throws EFapsException
     {
-        return getAttribute(_attribute.getName());
+        return (T) getAttribute(_attribute.getName());
     }
 
     /**
@@ -278,11 +280,13 @@ public class PrintQuery
     /**
      * Get the object returned by the given name of an AttributeSet.
      *
-     * @param _setName name of the AttributeSet the object is wanted for
+     * @param <T>           class the return value will be casted to
+     * @param _setName      name of the AttributeSet the object is wanted for
      * @return object for the select statement
      * @throws EFapsException on error
      */
-    public Object getAttributeSet(final String _setName) throws EFapsException
+    @SuppressWarnings("unchecked")
+    public <T> T getAttributeSet(final String _setName) throws EFapsException
     {
         final OneSelect oneselect = this.attr2OneSelect.get(_setName);
         Map<String, Object> ret = null;
@@ -305,7 +309,7 @@ public class PrintQuery
                 }
             }
         }
-        return ret;
+        return (T) ret;
     }
 
     /**
@@ -326,12 +330,12 @@ public class PrintQuery
 
     /**
      * Get the object returned by the expression belonging to the given key.
-     *
+     * @param <T>           class the return value will be casted to
      * @param _key  key for an expression the object is wanted for
      * @return object for the expression
      * @throws EFapsException allways
      */
-    public Object getExpression(final String _key)
+    public <T> T getExpression(final String _key)
             throws EFapsException
     {
         throw new EFapsException("PrintQuery.getExpression id not yet implemented", null);
@@ -411,15 +415,17 @@ public class PrintQuery
     /**
      * Get the object returned by the given select statement.
      *
-     * @param _selectStmt select statement the object is wanted for
+     * @param <T>           class the return value will be casted to
+     * @param _selectStmt   select statement the object is wanted for
      * @return object for the select statement
      * @throws EFapsException on error
      */
-    public Object getSelect(final String _selectStmt)
-            throws EFapsException
+    @SuppressWarnings("unchecked")
+    public <T> T getSelect(final String _selectStmt)
+        throws EFapsException
     {
         final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectStmt);
-        return oneselect.getObject();
+        return (T) oneselect.getObject();
     }
 
     /**
@@ -553,7 +559,7 @@ public class PrintQuery
 
             while (rs.next()) {
                 for (final OneSelect onesel : _oneSelects) {
-                    onesel.setObject(rs);
+                    onesel.addObject(rs);
                 }
                 ret = true;
             }
@@ -709,13 +715,13 @@ public class PrintQuery
 
         /**
          * List of objects retrieved from the ResultSet returned
-         * from the eFaps database.
+         * from the eFaps database. It represent one row in a result set.
          */
         private final List<Object> objectList = new ArrayList<Object>();
 
         /**
          * List of ids retrieved from the ResultSet returned
-         * from the eFaps database.
+         * from the eFaps database. It represent one row in a result set.
          */
         private final List<Long> idList = new ArrayList<Long>();
 
@@ -765,25 +771,41 @@ public class PrintQuery
         }
 
         /**
-         * Set the Object for this OneSelect.
+         * Add an Object for this OneSelect.
          *
          * @param _rs ResultSet from the eFaps database
          * @throws SQLException on error
          */
-        public void setObject(final ResultSet _rs) throws SQLException
+        public void addObject(final ResultSet _rs) throws SQLException
         {
             final ResultSetMetaData metaData = _rs.getMetaData();
             // store the ids also
             this.idList.add(_rs.getLong(1));
-            for (final Integer colIndex : this.colIndexs) {
-                switch (metaData.getColumnType(colIndex)) {
+            Object object = null;
+            if (this.colIndexs.size() > 1) {
+                final Object[] objArray = new Object[this.colIndexs.size()];
+                int i = 0;
+                for (final Integer colIndex : this.colIndexs) {
+                    switch (metaData.getColumnType(colIndex)) {
+                        case java.sql.Types.TIMESTAMP:
+                            objArray[i] =  _rs.getTimestamp(colIndex);
+                            break;
+                        default:
+                            objArray[i] =  _rs.getObject(colIndex);
+                    }
+                    i++;
+                }
+                object = objArray;
+            } else {
+                switch (metaData.getColumnType(this.colIndexs.get(0))) {
                     case java.sql.Types.TIMESTAMP:
-                        this.objectList.add(_rs.getTimestamp(colIndex));
+                        object = _rs.getTimestamp(this.colIndexs.get(0));
                         break;
                     default:
-                        this.objectList.add(_rs.getObject(colIndex));
+                        object = _rs.getObject(this.colIndexs.get(0));
                 }
             }
+            this.objectList.add(object);
         }
 
         /**

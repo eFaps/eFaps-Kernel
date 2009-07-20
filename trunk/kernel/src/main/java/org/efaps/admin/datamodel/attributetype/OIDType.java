@@ -22,6 +22,7 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.db.query.CachedResult;
@@ -75,13 +76,18 @@ public class OIDType extends StringType
     @Override
     public Object readValue(final List<Object> _objectList)
     {
-        final StringBuilder ret = new StringBuilder();
-        if (_objectList.size() > 1) {
-            ret.append(_objectList.get(0)).append(".").append(_objectList.get(1));
-        } else {
-            ret.append(getAttribute().getParent().getId()).append(".").append(_objectList.get(0));
+        final List<String> ret = new ArrayList<String>();
+        for (final Object object : _objectList) {
+            final StringBuilder oid = new StringBuilder();
+            if (object instanceof Object[]) {
+                final Object[] temp = (Object[]) object;
+                oid.append(temp[0]).append(".").append(temp[1]);
+            } else {
+                oid.append(getAttribute().getParent().getId()).append(".").append(object);
+            }
+            ret.add(oid.toString());
         }
-        return ret.toString();
+        return _objectList.size() > 0 ? (ret.size() > 1 ? ret : ret.get(0)) : null;
     }
 
 
