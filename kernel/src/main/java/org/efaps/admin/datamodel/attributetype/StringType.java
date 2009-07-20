@@ -22,6 +22,7 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.db.query.CachedResult;
@@ -36,20 +37,15 @@ public class StringType extends AbstractType
      * @see #getValue
      * @see #setValue
      */
-    private  String value = null;
+    private final List<String> values = new ArrayList<String>();;
 
     /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
-     * @throws SQLException on error
+     *{@inheritDoc}
      */
     public int update(final Object _object, final PreparedStatement _stmt, final int _index)
                     throws SQLException
     {
-        _stmt.setString(_index,  this.value);
+        _stmt.setString(_index, getValue());
         return 1;
     }
 
@@ -61,28 +57,33 @@ public class StringType extends AbstractType
      */
     public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
     {
-        this.value = (_rs.getString(_indexes.get(0).intValue()));
-        if (this.value != null) {
-            this.value =  this.value.trim();
+        String value = (_rs.getString(_indexes.get(0).intValue()));
+        this.values.add(value);
+        if (value != null) {
+            value = value.trim();
         }
-        return  this.value;
+        return value;
     }
 
     /**
-     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
-     * @param _objectList List of Objects
-     * @return String
+     * {@inheritDoc}
      */
     public Object readValue(final List<Object> _objectList)
     {
-        final StringBuilder ret = new StringBuilder();
-        boolean retNull = true;
-        for (final Object object : _objectList) {
-            retNull = retNull ? object == null : false;
-            ret.append(object == null ? "" : object.toString().trim());
+        Object ret = null;
+        if (_objectList.size() < 1) {
+            ret = null;
+        } else if (_objectList.size() > 1) {
+            final List<String> list = new ArrayList<String>();
+            for (final Object object : _objectList) {
+                list.add(object == null ? "" : object.toString().trim());
+            }
+            ret = list;
+        } else {
+            final Object object = _objectList.get(0);
+            ret = object == null ? "" : object.toString().trim();
         }
-        this.value = retNull ? null : ret.toString();
-        return this.value;
+        return ret;
     }
 
     /**
@@ -94,9 +95,9 @@ public class StringType extends AbstractType
     public void set(final Object[] _value)
     {
         if (_value[0] instanceof String) {
-            this.value = ((String) _value[0]);
+            this.values.add((String) _value[0]);
         } else if (_value[0] != null) {
-            this.value = (_value[0].toString());
+            this.values.add(_value[0].toString());
         }
     }
 
@@ -107,7 +108,7 @@ public class StringType extends AbstractType
      */
     protected String getValue()
     {
-        return this.value;
+        return this.values.size() > 0 ? this.values.get(0) : "";
     }
 
     /**
@@ -117,7 +118,7 @@ public class StringType extends AbstractType
      */
     protected void setValue(final String _value)
     {
-        this.value = _value;
+        this.values.set(0, _value);
     }
 
     /**
@@ -127,6 +128,6 @@ public class StringType extends AbstractType
     @Override
     public String toString()
     {
-        return "" + this.value;
+        return "" + this.values;
     }
 }

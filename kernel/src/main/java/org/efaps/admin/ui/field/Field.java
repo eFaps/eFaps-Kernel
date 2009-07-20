@@ -184,15 +184,7 @@ public class Field extends AbstractUserInterfaceObject
      * @see #setRadioButton
      * @see #isRadioButton
      */
-    private boolean radioButton = false;
-
-    /**
-     * The field is represented by an program value.
-     *
-     * @see #setProgramValue
-     * @see #getProgramValue
-     */
-    private FieldProgramValueInterface programValue = null;
+    private final boolean radioButton = false;
 
     /**
      * The field has an icon..
@@ -258,6 +250,26 @@ public class Field extends AbstractUserInterfaceObject
      */
     private final Map<AbstractUserInterfaceObject.TargetMode, Field.Display> mode2display
                                                  = new HashMap<AbstractUserInterfaceObject.TargetMode, Field.Display>();
+
+    /**
+     * Stores the select that returns the value for this field.
+     */
+    private String select;
+
+    /**
+     * Stores the name of the attrbiute that returns the value for this field.
+     */
+    private String attribute;
+
+    /**
+     * Stores the phrase that returns the value for this field.
+     */
+    private String phrase;
+
+    /**
+     *  Stores the select that returns the value for the alternate OID.
+     */
+    private String selectAlternateOID;
 
     /**
      * Standart-Constructor.
@@ -370,18 +382,6 @@ public class Field extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the setter method for instance variable {@link #expression}.
-     *
-     * @param _expression new value for instance variable {@link #expression}
-     * @see #expression
-     * @see #getExpression
-     */
-    public void setExpression(final String _expression)
-    {
-        this.expression = _expression;
-    }
-
-    /**
      * This is the getter method for instance variable {@link #expression}.
      *
      * @return the value of the instance variable {@link #expression}.
@@ -391,19 +391,6 @@ public class Field extends AbstractUserInterfaceObject
     public String getExpression()
     {
         return this.expression;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #alternateOID}.
-     *
-     * @param _alternateOID new value for instance variable
-     *            {@link #alternateOID}
-     * @see #alternateOID
-     * @see #getAlternateOID
-     */
-    public void setAlternateOID(final String _alternateOID)
-    {
-        this.alternateOID = _alternateOID;
     }
 
     /**
@@ -419,18 +406,6 @@ public class Field extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the setter method for instance variable {@link #createValue}.
-     *
-     * @param _createValue new value for instance variable {@link #createValue}
-     * @see #createValue
-     * @see #getCreateValue
-     */
-    public void setCreateValue(final String _createValue)
-    {
-        this.createValue = _createValue;
-    }
-
-    /**
      * This is the getter method for instance variable {@link #createValue}.
      *
      * @return the value of the instance variable {@link #createValue}.
@@ -442,17 +417,6 @@ public class Field extends AbstractUserInterfaceObject
         return this.createValue;
     }
 
-    /**
-     * This is the setter method for instance variable {@link #label}.
-     *
-     * @param _label new value for instance variable {@link #label}
-     * @see #label
-     * @see #getLabel
-     */
-    public void setLabel(final String _label)
-    {
-        this.label = _label;
-    }
 
     /**
      * This is the getter method for instance variable {@link #label}.
@@ -466,19 +430,7 @@ public class Field extends AbstractUserInterfaceObject
         return this.label;
     }
 
-    /**
-     * This is the setter method for instance variable {@link #rows}.
-     *
-     * @param _rows new value for instance variable {@link #rows}
-     * @see #rows
-     * @see #getRows
-     */
-    public void setRows(final int _rows)
-    {
-        this.rows = _rows;
-    }
-
-    /**
+        /**
      * This is the getter method for instance variable {@link #rows}.
      *
      * @return the value of the instance variable {@link #rows}.
@@ -490,19 +442,7 @@ public class Field extends AbstractUserInterfaceObject
         return this.rows;
     }
 
-    /**
-     * This is the setter method for instance variable {@link #cols}.
-     *
-     * @param _cols new value for instance variable {@link #cols}
-     * @see #cols
-     * @see #getCols
-     */
-    public void setCols(final int _cols)
-    {
-        this.cols = _cols;
-    }
-
-    /**
+       /**
      * This is the getter method for instance variable {@link #cols}.
      *
      * @return the value of the instance variable {@link #cols}.
@@ -512,18 +452,6 @@ public class Field extends AbstractUserInterfaceObject
     public int getCols()
     {
         return this.cols;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #required}.
-     *
-     * @param _required new value for instance variable {@link #required}
-     * @see #required
-     * @see #isRequired
-     */
-    public void setRequired(final boolean _required)
-    {
-        this.required = _required;
     }
 
     /**
@@ -548,18 +476,7 @@ public class Field extends AbstractUserInterfaceObject
         return this.hideLabel;
     }
 
-    /**
-     * This is the setter method for instance variable {@link #hideLabel}.
-     *
-     * @param _hideLabel new value for instance variable {@link #hideLabel}
-     *
-     */
-    public void setHideLabel(final boolean _hideLabel)
-    {
-        this.hideLabel = _hideLabel;
-    }
-
-    /**
+       /**
      * This is the getter method for instance variable {@link #rowSpan}.
      *
      * @return the value of the instance variable {@link #rowSpan}.
@@ -567,28 +484,6 @@ public class Field extends AbstractUserInterfaceObject
     public int getRowSpan()
     {
         return this.rowSpan;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #rowSpan}.
-     *
-     * @param _rowSpan new value for instance variable {@link #rowSpan}
-     */
-    public void setRowSpan(final int _rowSpan)
-    {
-        this.rowSpan = _rowSpan;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #reference}.
-     *
-     * @param _reference new value for instance variable {@link #reference}
-     * @see #reference
-     * @see #getReference
-     */
-    public void setReference(final String _reference)
-    {
-        this.reference = _reference;
     }
 
     /**
@@ -604,18 +499,6 @@ public class Field extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the setter method for instance variable {@link #selIndex}.
-     *
-     * @param _selIndex new value for instance variable {@link #selIndex}
-     * @see #selIndex
-     * @see #getSelIndex
-     */
-    protected void setSelIndex(final int _selIndex)
-    {
-        this.selIndex = _selIndex;
-    }
-
-    /**
      * This is the getter method for instance variable {@link #selIndex}.
      *
      * @return the value of the instance variable {@link #selIndex}.
@@ -625,18 +508,6 @@ public class Field extends AbstractUserInterfaceObject
     public int getSelIndex()
     {
         return this.selIndex;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #radioButton}.
-     *
-     * @param _radioButton new value for instance variable {@link #radioButton}
-     * @see #radioButton
-     * @see #isRadioButton
-     */
-    public void setRadioButton(final boolean _radioButton)
-    {
-        this.radioButton = _radioButton;
     }
 
     /**
@@ -664,55 +535,6 @@ public class Field extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the getter method for instance variable {@link #sortAble}.
-     *
-     * @param _sortable the value of the instance variable {@link #sortAble}.
-     * @see #sortAble
-     * @see #isSortAble
-     */
-    public void setSortAble(final boolean _sortable)
-    {
-        this.sortAble = _sortable;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #programValue}.
-     *
-     * @param _programValue new value for instance variable
-     *            {@link #programValue}
-     * @see #programValue
-     * @see #getProgramValue
-     */
-    public void setProgramValue(final FieldProgramValueInterface _programValue)
-    {
-        this.programValue = _programValue;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #programValue}.
-     *
-     * @return the value of the instance variable {@link #programValue}.
-     * @see #programValue
-     * @see #setProgramValue
-     */
-    public FieldProgramValueInterface getProgramValue()
-    {
-        return this.programValue;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #icon}.
-     *
-     * @param _icon new value for instance variable {@link #icon}
-     * @see #icon
-     * @see #getIcon
-     */
-    public void setIcon(final String _icon)
-    {
-        this.icon = _icon;
-    }
-
-    /**
      * This is the getter method for instance variable {@link #icon}.
      *
      * @return the value of the instance variable {@link #icon}.
@@ -737,18 +559,6 @@ public class Field extends AbstractUserInterfaceObject
     }
 
     /**
-     * This is the setter method for the instance variable {@link #target}.
-     *
-     * @param _target new value for instance variable {@link #target}
-     * @see #target
-     * @see #getTarget
-     */
-    public void setTarget(final Target _target)
-    {
-        this.target = _target;
-    }
-
-    /**
      * This is the setter method for the instance variable {@link #showTypeIcon}
      * .
      *
@@ -761,21 +571,7 @@ public class Field extends AbstractUserInterfaceObject
         return this.showTypeIcon;
     }
 
-    /**
-     * This is the setter method for the instance variable {@link #showTypeIcon}
-     * .
-     *
-     * @param _showTypeIcon new value for instance variable
-     *            {@link #showTypeIcon}
-     * @see #showTypeIcon
-     * @see #getShowTypeIcon
-     */
-    public void setShowTypeIcon(final boolean _showTypeIcon)
-    {
-        this.showTypeIcon = _showTypeIcon;
-    }
-
-    /**
+        /**
      * This is the setter method for the instance variable {@link #classUI}.
      *
      * @return value of instance variable {@link #classUI}
@@ -785,18 +581,6 @@ public class Field extends AbstractUserInterfaceObject
     public UIInterface getClassUI()
     {
         return this.classUI;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #classUI}.
-     *
-     * @param _classUI new value for instance variable {@link #classUI}
-     * @see #classUI
-     * @see #getClassUI
-     */
-    private void setClassUI(final UIInterface _classUI)
-    {
-        this.classUI = _classUI;
     }
 
     /**
@@ -817,7 +601,7 @@ public class Field extends AbstractUserInterfaceObject
      *
      * @param _value the width to set
      */
-    public void setWidth(final String _value)
+    private void setWidth(final String _value)
     {
         String strwidth = _value;
         if (strwidth.endsWith("px")) {
@@ -835,6 +619,46 @@ public class Field extends AbstractUserInterfaceObject
     public boolean isFixedWidth()
     {
         return this.fixedWidth;
+    }
+
+    /**
+     * Getter method for instance variable {@link #select}.
+     *
+     * @return value of instance variable {@link #select}
+     */
+    public String getSelect()
+    {
+        return this.select;
+    }
+
+    /**
+     * Getter method for instance variable {@link #attribute}.
+     *
+     * @return value of instance variable {@link #attribute}
+     */
+    public String getAttribute()
+    {
+        return this.attribute;
+    }
+
+    /**
+     * Getter method for instance variable {@link #phrase}.
+     *
+     * @return value of instance variable {@link #phrase}
+     */
+    public String getPhrase()
+    {
+        return this.phrase;
+    }
+
+    /**
+     * Getter method for instance variable {@link #selectAlternateOID}.
+     *
+     * @return value of instance variable {@link #selectAlternateOID}
+     */
+    public String getSelectAlternateOID()
+    {
+        return this.selectAlternateOID;
     }
 
     /**
@@ -1012,7 +836,7 @@ public class Field extends AbstractUserInterfaceObject
     {
         switch (_linkType) {
             case LINK_ICON:
-                setIcon(RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + _toName));
+                this.icon = RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + _toName);
                 break;
             default:
                 super.setLinkProperty(_linkType, _toId, _toType, _toName);
@@ -1031,10 +855,10 @@ public class Field extends AbstractUserInterfaceObject
     protected void setProperty(final String _name, final String _value) throws CacheReloadException
     {
         if ("AlternateOID".equals(_name)) {
-            setAlternateOID(_value);
+            this.alternateOID = _value;
         } else if ("ClassNameUI".equals(_name)) {
             try {
-                setClassUI((UIInterface) Class.forName(_value).newInstance());
+                this.classUI = (UIInterface) Class.forName(_value).newInstance();
             } catch (final ClassNotFoundException e) {
                 throw new CacheReloadException("could not found class '" + _value + "' for '" + getName() + "'", e);
             } catch (final InstantiationException e) {
@@ -1044,15 +868,23 @@ public class Field extends AbstractUserInterfaceObject
                 throw new CacheReloadException("could not access class '" + _value + "' for '" + getName() + "'", e);
             }
         } else if ("Columns".equals(_name)) {
-            setCols(Integer.parseInt(_value));
+            this.cols = Integer.parseInt(_value);
         } else if ("CreateValue".equals(_name)) {
-            setCreateValue(_value);
+            this.createValue = _value;
         } else if ("Expression".equals(_name)) {
-            setExpression(_value);
+            this.expression = _value;
+        } else if ("SelectAlternateOID".equals(_name)) {
+            this.selectAlternateOID = _value;
+        } else if ("Select".equals(_name)) {
+            this.select = _value;
+        } else if ("Attribute".equals(_name)) {
+            this.attribute = _value;
+        } else if ("Phrase".equals(_name)) {
+            this.phrase = _value;
         } else if ("Width".equals(_name)) {
             setWidth(_value);
         } else if ("SortAble".equals(_name)) {
-            setSortAble(!"false".equals(_value));
+            this.sortAble = !"false".equals(_value);
         } else if ("FilterBase".equals(_name)) {
             this.filterMemoryBased = !"DATABASE".equalsIgnoreCase(_value);
         } else if ("FilterDefault".equals(_name)) {
@@ -1063,13 +895,13 @@ public class Field extends AbstractUserInterfaceObject
         } else if ("FilterRequired".equals(_name)) {
             this.filterRequired  = "TRUE".equalsIgnoreCase(_value);
         } else if ("HideLabel".equals(_name)) {
-            setHideLabel("true".equals(_value));
+            this.hideLabel = "true".equals(_value);
         } else if ("HRef".equals(_name)) {
-            setReference(RequestHandler.replaceMacrosInUrl(_value));
+            this.reference = RequestHandler.replaceMacrosInUrl(_value);
         } else if ("Icon".equals(_name)) {
-            setIcon(RequestHandler.replaceMacrosInUrl(_value));
+            this.icon = RequestHandler.replaceMacrosInUrl(_value);
         } else if ("Label".equals(_name)) {
-            setLabel(_value);
+            this.label = _value;
         } else if ("ModeConnect".equals(_name)) {
             this.mode2display.put(TargetMode.CONNECT, Field.Display.valueOf(_value.toUpperCase()));
         } else if ("ModeCreate".equals(_name)) {
@@ -1082,35 +914,21 @@ public class Field extends AbstractUserInterfaceObject
             this.mode2display.put(TargetMode.SEARCH, Field.Display.valueOf(_value.toUpperCase()));
         } else if ("ModeView".equals(_name)) {
             this.mode2display.put(TargetMode.VIEW, Field.Display.valueOf(_value.toUpperCase()));
-        } else if ("ProgramValue".equals(_name)) {
-            try {
-                final Class<?> programValueClass = Class.forName(_value);
-                setProgramValue((FieldProgramValueInterface) programValueClass.newInstance());
-            } catch (final ClassNotFoundException e) {
-                throw new CacheReloadException("could not found class '" + _value + "' for '" + getName() + "'", e);
-            } catch (final InstantiationException e) {
-                throw new CacheReloadException("could not instantiate class '" + _value + "' for '" + getName() + "'",
-                                e);
-            } catch (final IllegalAccessException e) {
-                throw new CacheReloadException("could not access class '" + _value + "' for '" + getName() + "'", e);
-            }
         } else if ("Required".equals(_name)) {
-            if ("true".equals(_value)) {
-                setRequired(true);
-            }
+            this.required  = "true".equalsIgnoreCase(_value);
         } else if ("Rows".equals(_name)) {
-            setRows(Integer.parseInt(_value));
+            this.rows = Integer.parseInt(_value);
         } else if ("RowSpan".equals(_name)) {
-            setRowSpan(Integer.parseInt(_value));
+            this.rowSpan = Integer.parseInt(_value);
         } else if ("ShowTypeIcon".equals(_name)) {
-            setShowTypeIcon("true".equals(_value));
+            this.showTypeIcon = "true".equalsIgnoreCase(_value);
         } else if ("Target".equals(_name)) {
             if ("content".equals(_value)) {
-                setTarget(Target.CONTENT);
+                this.target = Target.CONTENT;
             } else if ("hidden".equals(_value)) {
-                setTarget(Target.HIDDEN);
+                this.target = Target.HIDDEN;
             } else if ("popup".equals(_value)) {
-                setTarget(Target.POPUP);
+                this.target = Target.POPUP;
             }
         } else {
             super.setProperty(_name, _value);

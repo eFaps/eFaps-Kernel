@@ -101,6 +101,16 @@ public class AttributeSet extends Type
         return getAttribute(this.attributeName).getSqlColNames();
     }
 
+    /**
+     * Getter method for instance variable {@link #attributeName}.
+     *
+     * @return value of instance variable {@link #attributeName}
+     */
+    public String getAttributeName()
+    {
+        return this.attributeName;
+    }
+
     @Override
     protected void addAttribute(final Attribute _attribute)
     {
