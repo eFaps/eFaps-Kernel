@@ -118,7 +118,11 @@ public class StringType extends AbstractType
      */
     protected void setValue(final String _value)
     {
-        this.values.set(0, _value);
+        if (this.values.size() > 1) {
+            this.values.set(0, _value);
+        } else {
+            this.values.add(_value);
+        }
     }
 
     /**

@@ -67,7 +67,7 @@ public class PasswordType extends StringType
      * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
      * @param _object   object
      * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
+     * @param _indexes    index in the SQL statement to update the value
      * @return number of indexes used in the method, if the return value is null an error should be thrown
      * @throws SQLException on error
      */
