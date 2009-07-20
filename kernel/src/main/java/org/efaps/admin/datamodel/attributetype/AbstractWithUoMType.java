@@ -22,6 +22,7 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Dimension;
@@ -135,22 +136,26 @@ public abstract class AbstractWithUoMType extends AbstractType
      */
     public Object readValue(final List<Object> _objectList)
     {
-        final Object object = _objectList.get(0);
-        setUoM(Dimension.getUoM((Long) _objectList.get(1)));
-        final Object[] ret;
-        if (getAttribute().getSqlColNames().size() > 2) {
-            final Object obj = _objectList.get(2);
-            double dbl = 0;
-            if (obj instanceof Number) {
-                dbl = ((Number) obj).doubleValue();
-            } else if (obj != null) {
-                dbl = Double.parseDouble(obj.toString());
+        final List<Object[]> ret = new ArrayList<Object[]>();
+        for (final Object object : _objectList) {
+            final Object[] temp = (Object[]) object;
+            final Object value = readValue(temp[0]);
+            final UoM uom = Dimension.getUoM((Long) temp[1]);
+            if (temp.length > 2) {
+                final Object obj = temp[2];
+                double dbl = 0;
+                if (obj instanceof Number) {
+                    dbl = ((Number) obj).doubleValue();
+                } else if (obj != null) {
+                    dbl = Double.parseDouble(obj.toString());
+                }
+                ret.add(new Object[]{value, uom, dbl});
+            } else {
+                ret.add(new Object[]{value, uom});
             }
-            ret = new Object[]{object, getUoM(), dbl};
-        } else {
-            ret = new Object[]{object, getUoM()};
+
         }
-        return ret;
+        return _objectList.size() > 0 ? (ret.size() > 1 ? ret : ret.get(0)) : null;
     }
 
     /**
