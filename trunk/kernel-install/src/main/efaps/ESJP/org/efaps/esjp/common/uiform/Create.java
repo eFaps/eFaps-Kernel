@@ -97,12 +97,16 @@ public class Create implements EventExecution
 
         final Insert insert = new Insert(command.getTargetCreateType());
         for (final Field field : command.getTargetForm().getFields()) {
-            if (field.getExpression() != null
+            final String attrName = field.getExpression() == null
+                                        ? field.getAttribute()
+                                        : field.getExpression();
+            if (attrName != null
                           && (field.isEditableDisplay(TargetMode.CREATE) || field.isHiddenDisplay(TargetMode.CREATE))) {
                 if (field instanceof FieldSet) {
                     fieldsets.add((FieldSet) field);
                 } else {
-                    final Attribute attr = command.getTargetCreateType().getAttribute(field.getExpression());
+
+                    final Attribute attr = command.getTargetCreateType().getAttribute(attrName);
                     // check if not a fileupload field
                     if (attr != null
                                   && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
@@ -154,11 +158,14 @@ public class Create implements EventExecution
             for (final FieldSet fieldset : _fieldsets) {
                 final String[] yCoords = (String[]) others.get(fieldset.getName() + "_eFapsNew");
                 if (yCoords != null) {
-                    final AttributeSet set = AttributeSet.find(_instance.getType().getName(), fieldset.getExpression());
+                    final String setName = fieldset.getExpression() == null
+                                                ? fieldset.getAttribute()
+                                                : fieldset.getExpression();
+                    final AttributeSet set = AttributeSet.find(_instance.getType().getName(), setName);
 
                     for (final String yCoord : yCoords) {
                         final Insert insert = new Insert(set);
-                        insert.add(set.getAttribute(fieldset.getExpression()), ((Long) _instance.getId()).toString());
+                        insert.add(set.getAttribute(setName), ((Long) _instance.getId()).toString());
                         int xCoord = 0;
                         for (final String attrName : fieldset.getOrder()) {
                             final Attribute child = set.getAttribute(attrName);
@@ -220,9 +227,11 @@ public class Create implements EventExecution
         final AbstractCommand command = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
 
         for (final Field field : command.getTargetForm().getFields()) {
-            if (field.getExpression() == null && field.isEditableDisplay(TargetMode.CREATE)) {
+            final String attrName = field.getExpression() == null
+                                        ? field.getAttribute()
+                                        : field.getExpression();
+            if (attrName == null && field.isEditableDisplay(TargetMode.CREATE)) {
                 final Context.FileParameter fileItem = context.getFileParameters().get(field.getName());
-
                 if (fileItem != null) {
                     final Checkin checkin = new Checkin(_instance);
                     try {
@@ -261,12 +270,16 @@ public class Create implements EventExecution
                 final Insert classInsert = new Insert(classification);
                 classInsert.add(classification.getLinkAttributeName(), ((Long) _instance.getId()).toString());
                 for (final Field field : form.getFields()) {
-                    if (field.getExpression() != null
+                    final String attrName = field.getExpression() == null
+                                                ? field.getAttribute()
+                                                : field.getExpression();
+                    if (attrName != null
                           && (field.isEditableDisplay(TargetMode.CREATE) || field.isHiddenDisplay(TargetMode.CREATE))) {
                         if (field instanceof FieldSet) {
                             fieldsets.add((FieldSet) field);
                         } else {
-                            final Attribute attr = classification.getAttribute(field.getExpression());
+
+                            final Attribute attr = classification.getAttribute(attrName);
                             if (attr != null
                                   && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
                                 if (_parameter.getParameters().containsKey(field.getName())) {

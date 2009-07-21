@@ -81,7 +81,10 @@ public class Edit implements EventExecution
         // check if we have a fileupload field
         if (context.getFileParameters().size() > 0) {
             for (final Field field : command.getTargetForm().getFields()) {
-                if (field.getExpression() == null && field.isEditableDisplay(TargetMode.EDIT)) {
+                final String attrName = field.getExpression() == null
+                                            ? field.getAttribute()
+                                            : field.getExpression();
+                if (attrName == null && field.isEditableDisplay(TargetMode.EDIT)) {
                     final Context.FileParameter fileItem = context.getFileParameters().get(field.getName());
                     if (fileItem != null) {
                         final Checkin checkin = new Checkin(instance);
@@ -125,12 +128,15 @@ public class Edit implements EventExecution
             } else if (field instanceof FieldClassification) {
                 ret = ((FieldClassification) field).getClassificationName();
             } else {
-                if (field.getExpression() != null && field.isEditableDisplay(TargetMode.EDIT)) {
-                    final Attribute attr = _instance.getType().getAttribute(field.getExpression());
+                final String attrName = field.getExpression() == null
+                                            ? field.getAttribute()
+                                            : field.getExpression();
+                if (attrName != null && field.isEditableDisplay(TargetMode.EDIT)) {
+                    final Attribute attr = _instance.getType().getAttribute(attrName);
                     // check if not a fileupload
                     if (attr != null
                                   && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
-                        query.addSelect(field.getExpression());
+                        query.addSelect(attrName);
                         fields.add(field);
                     }
                 }
@@ -143,10 +149,13 @@ public class Edit implements EventExecution
             for (final Field field : fields) {
                 if (context.getParameters().containsKey(field.getName())) {
                     final String newValue = context.getParameter(field.getName());
-                    final Object object = query.get(field.getExpression());
+                    final String attrName = field.getExpression() == null
+                                                ? field.getAttribute()
+                                                : field.getExpression();
+                    final Object object = query.get(attrName);
                     final String oldValue = object != null ? object.toString() : null;
                     if (!newValue.equals(oldValue)) {
-                        final Attribute attr = _instance.getType().getAttribute(field.getExpression());
+                        final Attribute attr = _instance.getType().getAttribute(attrName);
                         if (attr.hasUoM()) {
                             update.add(attr, new String[] { context.getParameter(field.getName()),
                                             context.getParameter(field.getName() + "UoM") });
@@ -179,8 +188,10 @@ public class Edit implements EventExecution
         nf.setMaximumIntegerDigits(2);
 
         for (final FieldSet fieldset : _fieldsets) {
-
-            final AttributeSet set = AttributeSet.find(_instance.getType().getName(), fieldset.getExpression());
+            final String setName = fieldset.getExpression() == null
+                                        ? fieldset.getAttribute()
+                                        : fieldset.getExpression();
+            final AttributeSet set = AttributeSet.find(_instance.getType().getName(), setName);
 
             // first already existing values must be updated, if they were altered
             boolean updateExisting = true;
@@ -238,7 +249,7 @@ public class Edit implements EventExecution
 
                     for (final String ayCoord : yCoords) {
                         final Insert insert = new Insert(set);
-                        insert.add(set.getAttribute(fieldset.getExpression()), ((Long) _instance.getId()).toString());
+                        insert.add(set.getAttribute(setName), ((Long) _instance.getId()).toString());
                         int xCoord = 0;
                         for (final String attrName : fieldset.getOrder()) {
                             final Attribute child = set.getAttribute(attrName);
@@ -309,12 +320,15 @@ public class Edit implements EventExecution
             final List<Field> fields = new ArrayList<Field>();
             final Form form = Form.getTypeForm(subClassType);
             for (final Field field : form.getFields()) {
-                if (field.getExpression() != null && field.isEditableDisplay(TargetMode.EDIT)) {
-                    final Attribute attr = subClassType.getAttribute(field.getExpression());
+                final String attrName = field.getExpression() == null
+                                                ? field.getAttribute()
+                                                : field.getExpression();
+                if (attrName != null && field.isEditableDisplay(TargetMode.EDIT)) {
+                    final Attribute attr = subClassType.getAttribute(attrName);
                     // check if not a fileupload
                     if (attr != null
                                   && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr())) {
-                        subquery.addSelect(field.getExpression());
+                        subquery.addSelect(attrName);
                         fields.add(field);
                     }
                 }
@@ -322,7 +336,10 @@ public class Edit implements EventExecution
             subquery.execute();
             if (subquery.next()) {
                 for (final Field field : fields) {
-                    values.put(field.getName(), subquery.get(field.getExpression()));
+                    final String attrName = field.getExpression() == null
+                                                    ? field.getAttribute()
+                                                    : field.getExpression();
+                    values.put(field.getName(), subquery.get(attrName));
                 }
                 values.put("OID", subquery.get("OID"));
             }
@@ -350,8 +367,11 @@ public class Edit implements EventExecution
                         if (field instanceof FieldSet) {
                             fieldsets.add((FieldSet) field);
                         } else {
-                            if (field.getExpression() != null && field.isEditableDisplay(TargetMode.EDIT)) {
-                                final Attribute attr = classification.getAttribute(field.getExpression());
+                            final String attrName = field.getExpression() == null
+                                                        ? field.getAttribute()
+                                                        : field.getExpression();
+                            if (attrName != null && field.isEditableDisplay(TargetMode.EDIT)) {
+                                final Attribute attr = classification.getAttribute(attrName);
                                 if (attr != null
                                         && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
                                                         .getClassRepr())) {
@@ -379,8 +399,11 @@ public class Edit implements EventExecution
                         if (field instanceof FieldSet) {
                             fieldsets.add((FieldSet) field);
                         } else {
-                            if (field.getExpression() != null && field.isEditableDisplay(TargetMode.EDIT)) {
-                                final Attribute attr = classification.getAttribute(field.getExpression());
+                            final String attrName = field.getExpression() == null
+                                                        ? field.getAttribute()
+                                                        : field.getExpression();
+                            if (attrName != null && field.isEditableDisplay(TargetMode.EDIT)) {
+                                final Attribute attr = classification.getAttribute(attrName);
                                 if (attr != null
                                                 && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
                                                                 .getClassRepr())) {
