@@ -796,7 +796,7 @@ public class PrintQuery
                     i++;
                 }
                 object = objArray;
-            } else {
+            } else if (this.colIndexs.size() > 0) {
                 switch (metaData.getColumnType(this.colIndexs.get(0))) {
                     case java.sql.Types.TIMESTAMP:
                         object = _rs.getTimestamp(this.colIndexs.get(0));
