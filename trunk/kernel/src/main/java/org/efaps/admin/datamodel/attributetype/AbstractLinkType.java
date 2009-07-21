@@ -98,13 +98,15 @@ public abstract class AbstractLinkType extends AbstractType
     public Object readValue(final List<Object> _objectList) throws EFapsException
     {
         Object ret = null;
-        this.value = _objectList.get(0);
         if (_objectList.size() > 0) {
-            final List<Object> list = new ArrayList<Object>();
-            ret = list;
-            list.addAll(_objectList);
-        } else {
-            ret = this.value;
+            this.value = _objectList.get(0);
+            if (_objectList.size() > 1) {
+                final List<Object> list = new ArrayList<Object>();
+                ret = list;
+                list.addAll(_objectList);
+            } else {
+                ret = this.value;
+            }
         }
         return ret;
     }
