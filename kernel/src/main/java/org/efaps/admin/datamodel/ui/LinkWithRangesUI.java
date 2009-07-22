@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
@@ -67,7 +68,9 @@ public class LinkWithRangesUI extends AbstractUI
         if (_fieldValue.getValue() != null) {
             if (attribute.hasEvents(EventType.RANGE_VALUE)) {
 
-                for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
+                for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE,
+                                                                   ParameterValues.UIOBJECT, _fieldValue,
+                                                                   ParameterValues.ACCESSMODE, _mode)) {
                     final TreeMap<?, ?> treemap = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES));
                     for (final Entry<?, ?> entry : treemap.entrySet()) {
                         if (entry.getValue().equals(_fieldValue.getValue().toString())) {
@@ -102,7 +105,9 @@ public class LinkWithRangesUI extends AbstractUI
                 .append("\" value=\"*\"").append("/>").toString();
         } else {
             if (attribute.hasEvents(EventType.RANGE_VALUE)) {
-                for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
+                for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE,
+                                                                   ParameterValues.UIOBJECT, _fieldValue,
+                                                                   ParameterValues.ACCESSMODE, _mode)) {
                     ret.append("<select name=\"").append(_fieldValue.getField().getName()).append("\" size=\"1\">");
                     final Iterator<?> iter = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES)).entrySet().iterator();
 

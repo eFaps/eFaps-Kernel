@@ -25,6 +25,7 @@ import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK;
 import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK_WITH_RANGES;
 import static org.efaps.admin.EFapsClassNames.ATTRTYPE_MODIFIER_LINK;
 import static org.efaps.admin.EFapsClassNames.ATTRTYPE_PERSON_LINK;
+import static org.efaps.admin.EFapsClassNames.ATTRTYPE_STATUS;
 import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESET;
 import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESETATTRIBUTE;
 import static org.efaps.admin.EFapsClassNames.USER_PERSON;
@@ -627,7 +628,8 @@ public class Attribute extends AbstractDataModelObject
                             attr.setParent(type);
                             final UUID uuid = attr.getAttributeType().getUUID();
                             if (uuid.equals(ATTRTYPE_LINK.getUuid())
-                                            || uuid.equals(ATTRTYPE_LINK_WITH_RANGES.getUuid())) {
+                                            || uuid.equals(ATTRTYPE_LINK_WITH_RANGES.getUuid())
+                                            || uuid.equals(ATTRTYPE_STATUS.getUuid())) {
                                 final Type linkType = Type.get(typeLinkId);
                                 attr.setLink(linkType);
                                 linkType.addLink(attr);

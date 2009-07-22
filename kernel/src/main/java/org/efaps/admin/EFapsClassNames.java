@@ -43,6 +43,8 @@ public enum EFapsClassNames
     ATTRTYPE_MODIFIER_LINK("447a7c87-8395-48c4-b2ed-d4e96d46332c"),
     /** Attribute type Multi Line Array. */
     ATTRTYPE_MULTILINEARRAY("adb13c3d-9506-4da2-8d75-b54c76779c6c"),
+    /** Attribute type Status. */
+    ATTRTYPE_STATUS("0161bcdb-45e9-4839-a709-3a1c56f8a76a"),
 
     /** Admin_Common_SystemConfiguration. */
     CONFIG("5fecab1b-f4a8-447d-ad64-cf5965fe5d3b"),
