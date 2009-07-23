@@ -54,5 +54,6 @@ public abstract class AbstractDataModelObject extends AbstractAdminObject
         Type.initialize(AbstractDataModelObject.class);
         Dimension.initialize(AbstractDataModelObject.class);
         Attribute.initialize(AbstractDataModelObject.class);
+        Status.initialize(AbstractDataModelObject.class);
     }
 }

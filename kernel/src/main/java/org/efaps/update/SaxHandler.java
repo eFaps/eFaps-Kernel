@@ -40,6 +40,7 @@ import org.efaps.update.access.AccessTypeUpdate;
 import org.efaps.update.common.SystemConfigurationUpdate;
 import org.efaps.update.datamodel.DimensionUpdate;
 import org.efaps.update.datamodel.SQLTableUpdate;
+import org.efaps.update.datamodel.StatusGroupUpdate;
 import org.efaps.update.datamodel.TypeUpdate;
 import org.efaps.update.db.StoreUpdate;
 import org.efaps.update.integration.WebDAVUpdate;
@@ -153,6 +154,8 @@ public class SaxHandler extends DefaultHandler
             this.elem = new TypeUpdate(this.url);
         } else if ("datamodel-dimension".equals(_qName)) {
             this.elem = new DimensionUpdate(this.url);
+        } else if ("datamodel-statusgroup".equals(_qName)) {
+            this.elem = new StatusGroupUpdate(this.url);
         } else if ("db-store".equals(_qName)) {
             this.elem = new StoreUpdate(this.url);
         } else if ("integration-webdav".equals(_qName)) {

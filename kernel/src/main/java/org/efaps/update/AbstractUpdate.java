@@ -384,7 +384,7 @@ public abstract class AbstractUpdate
      *
      * @see #setLinksInDB
      */
-    static protected class Link
+    protected static class Link
     {
         /** Name of the link. */
         private final String linkName;
@@ -405,24 +405,38 @@ public abstract class AbstractUpdate
         private final String childAttrName;
 
         /**
+         * set of key attributes.
+         */
+        private final Set<String> keyAttributes = new HashSet<String>();
+
+        /**
          * Constructor used to initialize the instance variables.
          *
-         * @param _linkName name of the link itself
-         * @param _parentAttrName name of the parent attribute in the link
-         * @param _childTypeName name of the child type
-         * @param _childAttrName name of the child attribute in the link
+         * @param _linkName name    of the link itself
+         * @param _parentAttrName   name of the parent attribute in the link
+         * @param _childTypeName     name of the child type
+         * @param _childAttrName    name of the child attribute in the link
+         * @param _keyAttributes    list of attributes used to identify the object to be
+         *                          connected default "Name"
          * @see #linkName
          * @see #parentAttrName
          * @see #childTypeName
          * @see #childAttrName
          */
         public Link(final String _linkName, final String _parentAttrName, final String _childTypeName,
-                        final String _childAttrName)
+                    final String _childAttrName, final String... _keyAttributes)
         {
             this.linkName = _linkName;
             this.parentAttrName = _parentAttrName;
             this.childTypeName = _childTypeName;
             this.childAttrName = _childAttrName;
+            for (final String keyAttribute : _keyAttributes) {
+                this.keyAttributes.add(keyAttribute);
+            }
+            // set the default if necessary
+            if (this.keyAttributes.size() < 1) {
+                this.keyAttributes.add("Name");
+            }
         }
 
         /**
@@ -443,6 +457,16 @@ public abstract class AbstractUpdate
         public Type getLinkType()
         {
             return Type.get(this.linkName);
+        }
+
+        /**
+         * Getter method for instance variable {@link #keyAttributes}.
+         *
+         * @return value of instance variable {@link #keyAttributes}
+         */
+        public Set<String> getKeyAttributes()
+        {
+            return this.keyAttributes;
         }
 
         /**
@@ -732,16 +756,21 @@ public abstract class AbstractUpdate
                 query.addSelect("ID");
                 query.addSelect(_linktype.childAttrName + ".ID");
                 query.addSelect(_linktype.childAttrName + ".Type");
-                query.addSelect(_linktype.childAttrName + ".Name");
+                for (final String attrName : _linktype.getKeyAttributes()) {
+                    query.addSelect(_linktype.childAttrName + "." + attrName);
+                }
                 query.executeWithoutAccessCheck();
                 while (query.next()) {
-                    final Type type = (Type) query.get("Type");
+                    final Type tempType = (Type) query.get("Type");
                     final Type childType = (Type) query.get(_linktype.childAttrName + ".Type");
                     // check if this is a correct Link for this LinkType
-                    if (type.isKindOf(_linktype.getLinkType()) && childType.isKindOf(_linktype.getChildType())) {
+                    if (tempType.isKindOf(_linktype.getLinkType()) && childType.isKindOf(_linktype.getChildType())) {
 
-                        final LinkInstance oldLink = new LinkInstance((String) query.get(_linktype.childAttrName
-                                        + ".Name"));
+                        final LinkInstance oldLink = new LinkInstance();
+                        for (final String attrName : _linktype.getKeyAttributes()) {
+                            oldLink.getKeyAttr2Value().put(attrName,
+                                                          (String) query.get(_linktype.childAttrName + "." + attrName));
+                        }
                         final long childId = (Long) query.get(_linktype.childAttrName + ".ID");
                         oldLink.setChildId(childId);
                         oldLink.setOid((String) query.get("OID"));
@@ -754,12 +783,13 @@ public abstract class AbstractUpdate
 
                 // add the new LinkInstances to the List of all Linkinstances
                 for (final LinkInstance onelink : _links) {
-
                     // search the id for the Linked Object
                     query = new SearchQuery();
                     query.setQueryTypes(_linktype.childTypeName);
                     query.setExpandChildTypes(true);
-                    query.addWhereExprEqValue("Name", onelink.getName());
+                    for (final Entry<String, String> entry : onelink.getKeyAttr2Value().entrySet()) {
+                        query.addWhereExprEqValue(entry.getKey(), entry.getValue());
+                    }
                     query.addSelect("ID");
                     query.executeWithoutAccessCheck();
                     if (query.next()) {
@@ -783,7 +813,8 @@ public abstract class AbstractUpdate
                             }
                         }
                     } else {
-                        LOG.error(_linktype.childTypeName + " '" + onelink.getName() + "' not found!");
+                        AbstractUpdate.LOG.error(_linktype.childTypeName + " '" + onelink.getKeyAttr2Value()
+                                                    + "' not found!");
                     }
                     query.close();
                 }
@@ -840,12 +871,9 @@ public abstract class AbstractUpdate
                                 del.executeWithoutAccessCheck();
                             }
                         }
-
                     }
-
                 }
             }
-
         }
 
         /**
