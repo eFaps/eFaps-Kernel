@@ -41,6 +41,13 @@
       <sqltable>Admin_DataModel_StatusAbstractSQLTable</sqltable>
       <sqlcolumn>TYPEID, ID</sqlcolumn>
     </attribute>
+    
+    <attribute>
+      <name>Type</name>
+      <type>Type</type>
+      <sqltable>Admin_DataModel_StatusAbstractSQLTable</sqltable>
+      <sqlcolumn>TYPEID</sqlcolumn>
+    </attribute>
 
     <attribute>
       <name>ID</name>

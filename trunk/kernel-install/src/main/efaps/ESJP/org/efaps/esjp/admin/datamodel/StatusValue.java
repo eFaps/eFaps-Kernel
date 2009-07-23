@@ -23,9 +23,10 @@ package org.efaps.esjp.admin.datamodel;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.Status.StatusGroup;
 import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
@@ -34,7 +35,6 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
-import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
@@ -58,25 +58,20 @@ public class StatusValue implements EventExecution
     {
         final Return ret = new Return();
 
-        final FieldValue fieldValue =  (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+        final FieldValue fieldValue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
         final Type type = fieldValue.getAttribute().getLink();
-        final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(type.getName());
-        if (fieldValue.getTargetMode().equals(TargetMode.VIEW)
-                        || fieldValue.getTargetMode().equals(TargetMode.PRINT)) {
-            query.addWhereExprEqValue("ID", (Long) fieldValue.getValue());
-        }
-        query.addSelect("ID");
-        query.addSelect("Key");
-        query.execute();
 
         final Map<String, String> map = new TreeMap<String, String>();
-        while (query.next()) {
-            final StringBuilder keyStr = new StringBuilder();
-            keyStr.append(type.getName()).append("/Key.Status.").append(query.get("Key"));
-            map.put(DBProperties.getProperty(keyStr.toString()), query.get("ID").toString());
+
+        if (fieldValue.getTargetMode().equals(TargetMode.VIEW) || fieldValue.getTargetMode().equals(TargetMode.PRINT)) {
+            final Status status = Status.get((Long) fieldValue.getValue());
+            map.put(status.getLabel(), ((Long) status.getId()).toString());
+        } else {
+            final StatusGroup group = Status.get(type.getName());
+            for (final Status status : group.values()) {
+                map.put(status.getLabel(), ((Long) status.getId()).toString());
+            }
         }
-        query.close();
         ret.put(ReturnValues.VALUES, map);
         return ret;
     }

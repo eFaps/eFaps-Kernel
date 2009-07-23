@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
+import org.efaps.admin.datamodel.attributetype.StatusType;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
@@ -212,9 +213,33 @@ public class Type extends AbstractDataModelObject
      */
     private long storeId;
 
+    /**
+     * Is the type abstract.
+     */
     private boolean abstractBool;
 
     /**
+     * Stores the attrbiute that contains the status of this type. (if exist)
+     */
+    private Attribute statusAttribute;
+
+    /**
+     * This is the constructor for class Type. Every instance of class Type must
+     * have a name (parameter <i>_name</i>).
+     *
+     * @param _id id of th type
+     * @param _uuid universal unique identifier
+     * @param _name name of the type name of the instance
+     * @throws CacheReloadException on error
+     */
+    protected Type(final long _id, final String _uuid, final String _name)
+        throws CacheReloadException
+    {
+        super(_id, _uuid, _name);
+        addAttribute(new Attribute(0, "Type", "", (SQLTable) null, AttributeType.get("Type"), null, null));
+    }
+
+  /**
      * Getter method for instance variable {@link #abstractBool}.
      *
      * @return value of instance variable {@link #abstractBool}
@@ -235,21 +260,6 @@ public class Type extends AbstractDataModelObject
     }
 
     /**
-     * This is the constructor for class Type. Every instance of class Type must
-     * have a name (parameter <i>_name</i>).
-     *
-     * @param _id id of th type
-     * @param _uuid universal unique identifier
-     * @param _name name of the type name of the instance
-     * @throws CacheReloadException on error
-     */
-    protected Type(final long _id, final String _uuid, final String _name) throws CacheReloadException
-    {
-        super(_id, _uuid, _name);
-        addAttribute(new Attribute(0, "Type", "", (SQLTable) null, AttributeType.get("Type"), null, null));
-    }
-
-  /**
      * Add an attribute to this type and all child types of this type.
      *
      * @param _attribute attribute to add
@@ -257,6 +267,9 @@ public class Type extends AbstractDataModelObject
     protected void addAttribute(final Attribute _attribute)
     {
         _attribute.setParent(this);
+        if (_attribute.getAttributeType().getClassRepr().equals(StatusType.class)) {
+            this.statusAttribute = _attribute;
+        }
         getAttributes().put(_attribute.getName(), _attribute);
         if (_attribute.getTable() != null) {
             getTables().add(_attribute.getTable());
@@ -294,6 +307,25 @@ public class Type extends AbstractDataModelObject
                 child.addLink(_attr);
             }
         }
+    }
+
+    /**
+     * Getter method for instance variable {@link #statusAttribute}.
+     *
+     * @return value of instance variable {@link #statusAttribute}
+     */
+    public Attribute getStatusAttribute()
+    {
+        return this.statusAttribute;
+    }
+
+    /**
+     * Method to evaluate if the status must be checked on an accesscheck.
+     * @return true if {@link #statusAttribute} !=null , else false
+     */
+    public boolean isCheckStatus()
+    {
+        return this.statusAttribute != null;
     }
 
     /**
@@ -364,7 +396,7 @@ public class Type extends AbstractDataModelObject
         return value;
     }
 
-  /**
+    /**
      * Checks, if the current context user has all access defined in the list of
      * access types for the given instance.
      *
@@ -374,7 +406,7 @@ public class Type extends AbstractDataModelObject
      * @return true if user has access, else false
      */
     public boolean hasAccess(final Instance _instance, final AccessType _accessType)
-            throws EFapsException
+        throws EFapsException
     {
         boolean hasAccess = true;
         final List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);
@@ -753,7 +785,7 @@ public class Type extends AbstractDataModelObject
     }
 
     /**
-     * Cahcwe for Types.
+     * Cache for Types.
      */
     private static class TypeCache extends Cache<Type>
     {

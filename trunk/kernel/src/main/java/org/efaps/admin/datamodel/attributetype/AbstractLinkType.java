@@ -43,7 +43,7 @@ public abstract class AbstractLinkType extends AbstractType
     private Object value = null;
 
     /**
-     * @param _value new value to set
+     * {@inheritDoc}
      */
     public void set(final Object[] _value)
     {

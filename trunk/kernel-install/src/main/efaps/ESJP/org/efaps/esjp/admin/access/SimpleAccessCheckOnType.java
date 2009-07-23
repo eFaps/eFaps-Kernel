@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
+import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
@@ -50,115 +51,118 @@ import org.efaps.util.EFapsException;
  * parameters. For the instance object it is checked if the current context user
  * has the access defined in the list of access types.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id:SimpleAccessCheckOnType.java 1563 2007-10-28 14:07:41Z tmo $
  */
 @EFapsUUID("fd1ecee1-a882-4fbe-8b3c-5e5c3ed4d6b7")
 @EFapsRevision("$Rev$")
 public class SimpleAccessCheckOnType implements EventExecution
 {
-  /////////////////////////////////////////////////////////////////////////////
-  // static variables
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleAccessCheckOnType.class);
 
-  /**
-   * Logging instance used in this class.
-   */
-  private static final Logger LOG
-          = LoggerFactory.getLogger(SimpleAccessCheckOnType.class);
+    /**
+     * Check for the instance object if the current context user has the access
+     * defined in the list of access types.
+     *
+     * @param _instance instance to check for access for
+     * @param _accessType accesstyep to check the access for
+     * @return true if access is granted, else false
+     * @throws EFapsException on error
+     */
+    private boolean checkAccess(final Instance _instance, final AccessType _accessType) throws EFapsException
+    {
+        final Context context = Context.getThreadContext();
 
-  /////////////////////////////////////////////////////////////////////////////
-  // instance methods
+        final StringBuilder cmd = new StringBuilder();
+        cmd.append("select count(*) from T_ACCESSSET2USER ");
 
-  /**
-   * Check for the instance object if the current context user has the access
-   * defined in the list of access types.
-   * @param _instance     instance to check for access for
-   * @param _accessType   accesstyep to check the access for
-   * @return  true if access is granted, else false
-   * @throws EFapsException on error
-   */
-  private boolean checkAccess(final Instance _instance,
-                              final AccessType _accessType)
-      throws EFapsException {
-    final Context context = Context.getThreadContext();
-
-    final Type type = _instance.getType();
-    final StringBuilder toTests = new StringBuilder();
-    toTests.append(0);
-    for (final AccessSet accessSet : type.getAccessSets()) {
-      if (accessSet.getAccessTypes().contains(_accessType)) {
-        toTests.append(",").append(accessSet.getId());
-      }
-    }
-
-    final StringBuilder users = new StringBuilder();
-    users.append(context.getPersonId());
-    for (final Role role : context.getPerson().getRoles()) {
-      users.append(",").append(role.getId());
-    }
-    for (final Group group : context.getPerson().getGroups()) {
-      users.append(",").append(group.getId());
-    }
-
-    return executeStatement(context, toTests, users);
-  }
-
-  private boolean executeStatement(final Context _context,
-                                   final StringBuilder _accessSets,
-                                   final StringBuilder _users)
-      throws EFapsException {
-    boolean hasAccess = false;
-
-    final StringBuilder cmd = new StringBuilder();
-    cmd.append("select count(*) from T_ACCESSSET2USER ").append(
-        "where ACCESSSET in (").append(_accessSets).append(") ").append(
-        "and USERABSTRACT in (").append(_users).append(")");
-
-    ConnectionResource con = null;
-    try {
-      con = _context.getConnectionResource();
-
-      Statement stmt = null;
-      try {
-
-        stmt = con.getConnection().createStatement();
-
-        final ResultSet rs = stmt.executeQuery(cmd.toString());
-        if (rs.next()) {
-          hasAccess = (rs.getLong(1) > 0) ? true : false;
+        final Type type = _instance.getType();
+        if (type.isCheckStatus() && !_accessType.equals(AccessTypeEnums.CREATE.getAccessType())) {
+            cmd.append(" join T_ACCESSSET2STATUS on T_ACCESSSET2USER.ACCESSSET = T_ACCESSSET2STATUS.ACCESSSET")
+                .append(" join ").append(type.getMainTable().getSqlTable()).append(" on ")
+                .append(type.getMainTable().getSqlTable()).append(".")
+                .append(type.getStatusAttribute().getSqlColNames().get(0))
+                .append("=T_ACCESSSET2STATUS.ACCESSSTATUS");
         }
-        rs.close();
 
-      } finally {
-        if (stmt != null) {
-          stmt.close();
+        cmd.append(" where T_ACCESSSET2USER.ACCESSSET in (0");
+        for (final AccessSet accessSet : type.getAccessSets()) {
+            if (accessSet.getAccessTypes().contains(_accessType)) {
+                cmd.append(",").append(accessSet.getId());
+            }
         }
-      }
-
-      con.commit();
-
-    } catch (final SQLException e) {
-      LOG.error("sql statement '" + cmd.toString() + "' not executable!", e);
-    } finally {
-      if ((con != null) && con.isOpened()) {
-        con.abort();
-      }
+        cmd.append(") ").append("and T_ACCESSSET2USER.USERABSTRACT in (").append(context.getPersonId());
+        for (final Role role : context.getPerson().getRoles()) {
+            cmd.append(",").append(role.getId());
+        }
+        for (final Group group : context.getPerson().getGroups()) {
+            cmd.append(",").append(group.getId());
+        }
+        cmd.append(")");
+        return executeStatement(context, cmd);
     }
-    return hasAccess;
-  }
 
-  public Return execute(final Parameter _parameter)
-      throws EFapsException {
-    final Instance instance
-                          = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    final AccessType accessType
-                      = (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);
-    final Return ret = new Return();
+    /**
+     * Method that queries against the database.
+     * @param _context      Context
+     * @param _cmd   cmd
+     * @return  true if access granted else false
+     * @throws EFapsException on error
+     */
+    private boolean executeStatement(final Context _context, final StringBuilder _cmd)
+        throws EFapsException
+    {
+        boolean hasAccess = false;
 
-    if (Context.getThreadContext().getPerson() == null
-        || checkAccess(instance, accessType)) {
-      ret.put(ReturnValues.TRUE, true);
+
+        ConnectionResource con = null;
+        try {
+            con = _context.getConnectionResource();
+
+            Statement stmt = null;
+            try {
+
+                stmt = con.getConnection().createStatement();
+
+                final ResultSet rs = stmt.executeQuery(_cmd.toString());
+                if (rs.next()) {
+                    hasAccess = (rs.getLong(1) > 0) ? true : false;
+                }
+                rs.close();
+
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+
+            con.commit();
+
+        } catch (final SQLException e) {
+            SimpleAccessCheckOnType.LOG.error("sql statement '" + _cmd.toString() + "' not executable!", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                con.abort();
+            }
+        }
+        return hasAccess;
     }
-    return ret;
-  }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Return execute(final Parameter _parameter) throws EFapsException
+    {
+        final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+        final AccessType accessType = (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);
+        final Return ret = new Return();
+
+        if (Context.getThreadContext().getPerson() == null || checkAccess(instance, accessType)) {
+            ret.put(ReturnValues.TRUE, true);
+        }
+        return ret;
+    }
 }
