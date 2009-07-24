@@ -64,6 +64,7 @@
     <assigned-role key="Administration">Administration</assigned-role>
     <assigned-role key="Admin_User_ModifyUsers">Admin_User_ModifyUsers</assigned-role>
     <assigned-role key="Common_Main_PwdChg">Common_Main_PwdChg</assigned-role>
+    <assigned-role key="Admin_User_ViewUsers">Admin_User_ViewUsers</assigned-role>
   </definition>
 
 </user-jaassystem>
