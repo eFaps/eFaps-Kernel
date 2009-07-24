@@ -44,7 +44,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * Esjp used to change th epassword for a user.
- * 
+ *
  * @author jmox
  * @version $Id$
  */
@@ -70,7 +70,7 @@ public class Password
 
     /**
      * Method is called to change the password of a user in the efpas database.
-     * 
+     *
      * @param _parameter Parameter as passed from eFaps to esjp
      * @return Return
      * @throws EFapsException on error
@@ -101,7 +101,7 @@ public class Password
     /**
      * Method is called from a command to validate the form. It checks if the
      * new password and the repetition are equal.
-     * 
+     *
      * @param _parameter Parameter as passed from eFaps to esjp
      * @return Return with true if equal
      * @throws EFapsException on error
@@ -123,7 +123,7 @@ public class Password
 
     /**
      * This method is called first to render simple inputfields.
-     * 
+     *
      * @param _parameter Parameter as passed from eFaps to esjp
      * @return Return
      */
@@ -149,7 +149,7 @@ public class Password
 
     /**
      * Executed on a validate event on the attribute.
-     * 
+     *
      * @param _parameter Parameter as passed from eFaps to esjp
      * @return Return
      * @throws EFapsException on error
@@ -157,9 +157,9 @@ public class Password
     public Return validatePwdValue(final Parameter _parameter) throws EFapsException
     {
         final Return ret = new Return();
-        final String newPwd = (String) _parameter.get(ParameterValues.NEW_VALUES);
+        final String[] newPwd = (String[]) _parameter.get(ParameterValues.NEW_VALUES);
         // Admin_User_PwdLengthMin
-        if (newPwd.length() > SystemConfiguration.get(UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"))
+        if (newPwd[0].length() > SystemConfiguration.get(UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"))
                         .getAttributeValueAsInteger("PwdLengthMin")) {
             ret.put(ReturnValues.TRUE, "true");
         } else {
@@ -171,7 +171,7 @@ public class Password
     /**
      * This method is used from Admins which have the Role Common_Main_PwdChg to
      * set a Password for a User.
-     * 
+     *
      * @param _parameter Parameter as passed from eFaps to esjp
      * @return Return
      * @throws EFapsException on error
