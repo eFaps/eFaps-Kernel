@@ -165,8 +165,11 @@ public class QueryEvaluate implements EventExecution
 
             while (query.next()) {
                 final List<Instance> instances = new ArrayList<Instance>(1);
-                instances.add(Instance.get((String) query.get("OID")));
-                list.add(instances);
+                final String oid = (String) query.get("OID");
+                if (oid != null) {
+                    instances.add(Instance.get(oid));
+                    list.add(instances);
+                }
             }
         }
         ret.put(ReturnValues.VALUES, list);
