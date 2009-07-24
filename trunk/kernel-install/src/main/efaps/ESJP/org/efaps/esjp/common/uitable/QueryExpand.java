@@ -19,6 +19,7 @@
  */
 
 package org.efaps.esjp.common.uitable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,28 +38,35 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
-
 /**
- * The ESJP is used to launch an expand-query against the eFaps-Database, wich
- * is afterwards used to fill a webtable<br>
+ * The ESJP is used to launch an expand-query against the eFaps-Database, which
+ * is afterwards used to fill a webtable.<br>
  * <br>
  * <b>Properties:</b><br>
  * <table>
  * <tr>
- * <td><u>Name</u></td>
- * <td><u>Value</u></td>
- * <td><u>Default</u></td>
- * <td><u>mandatory</u></td>
- * <td><u>Description</u></td>
- * </b></tr>
+ * <th>Name</th>
+ * <th>Value</th>
+ * <th>Default</th>
+ * <th>mandatory</th>
+ * <th>Description</th>
+ * </tr>
  * <tr>
  * <td>Expand</td>
- * <td>-</td>
+ * <td>String</td>
  * <td>-</td>
  * <td>yes</td>
  * <td>Expand to be executed</td>
  * </tr>
- * </table><br>
+ * <tr>
+ * <td>AlternateAttribute</td>
+ * <td>String</td>
+ * <td>-</td>
+ * <td>no</td>
+ * <td>alternate attribute the expand will be executed with also.</td>
+ * </tr>
+ * </table>
+ * <br>
  * <b>Example:</b><br>
  * <code>
  * &lt;target&gt;<br>
@@ -68,45 +76,55 @@ import org.efaps.util.EFapsException;
  * &lt;/target&gt;
  * </code>
  *
- * @author tmo
+ * @author The eFasp Team
  * @version $Id:QueryExpand.java 1563 2007-10-28 14:07:41Z tmo $
  */
 @EFapsUUID("41945470-bcc3-4d91-b16b-6357932ead5e")
 @EFapsRevision("$Rev$")
 public class QueryExpand implements EventExecution
 {
-  /**
-   * Logger for this class
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(QueryEvaluate.class);
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(QueryEvaluate.class);
 
-  /**
-   * @param _parameter
-   */
-  public Return execute(final Parameter _parameter) throws EFapsException
-  {
-    final Return ret = new Return();
-    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    /**
+     * {@inheritDoc}
+     */
+    public Return execute(final Parameter _parameter) throws EFapsException
+    {
+        final Return ret = new Return();
+        final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
 
-    final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+        final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
 
-    final String expand = (String) properties.get("Expand");
+        final String expand = (String) properties.get("Expand");
+        final String alternateAttribute = (String) properties.get("AlternateAttribute");
 
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Expand=" + expand);
+        if (QueryExpand.LOG.isDebugEnabled()) {
+            QueryExpand.LOG.debug("Expand=" + expand);
+        }
+
+        final SearchQuery query = new SearchQuery();
+        query.setExpand(instance, expand);
+        query.execute();
+
+        final List<List<Instance>> list = new ArrayList<List<Instance>>();
+        while (query.next()) {
+            list.add(query.getExpandInstances());
+        }
+
+        if (alternateAttribute != null) {
+            final SearchQuery query2 = new SearchQuery();
+            query2.setExpand(instance, expand.substring(0, expand.indexOf("\\") + 1) +  alternateAttribute);
+            query2.execute();
+
+            while (query2.next()) {
+                list.add(query2.getExpandInstances());
+            }
+        }
+        ret.put(ReturnValues.VALUES, list);
+
+        return ret;
     }
-
-    final SearchQuery query = new SearchQuery();
-    query.setExpand(instance, expand);
-    query.execute();
-
-    final List<List<Instance>> list = new ArrayList<List<Instance>>();
-    while (query.next()) {
-      list.add(query.getExpandInstances());
-    }
-
-    ret.put(ReturnValues.VALUES, list);
-
-    return ret;
-  }
 }
