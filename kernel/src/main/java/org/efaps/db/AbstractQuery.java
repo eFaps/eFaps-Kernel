@@ -142,6 +142,8 @@ public abstract class AbstractQuery
      */
     private final Map<Object, SelExpr2Attr> allOIDSelExprMap = new HashMap<Object, SelExpr2Attr>();
 
+    private final Map<String, Boolean> oid2access = new HashMap<String, Boolean>();
+
     // ///////////////////////////////////////////////////////////////////////////
 
     /**
@@ -304,6 +306,7 @@ public abstract class AbstractQuery
     {
         boolean hasAccess = true;
         if (this.checkAccess) {
+
             Instance instance = null;
             String oid = null;
             final SelExpr2Attr selExpr = getAllOIDSelExprMap().get(_key);
@@ -316,7 +319,12 @@ public abstract class AbstractQuery
                 instance = getInstance(this.type);
             }
             if (instance != null) {
-                hasAccess = instance.getType().hasAccess(instance, AccessTypeEnums.SHOW.getAccessType());
+                if (this.oid2access.containsKey(instance.getOid())) {
+                    hasAccess = this.oid2access.get(instance.getOid());
+                } else {
+                    hasAccess = instance.getType().hasAccess(instance, AccessTypeEnums.SHOW.getAccessType());
+                    this.oid2access.put(instance.getOid(), hasAccess);
+                }
             }
         }
         return hasAccess;
