@@ -35,6 +35,8 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.db.Instance;
+import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
 /**
@@ -75,4 +77,31 @@ public class StatusValue implements EventExecution
         ret.put(ReturnValues.VALUES, map);
         return ret;
     }
+
+
+
+    /**
+     * Method to set the Status for an Instance.
+     * @param _parameter parameter as defined by the efaps api
+     * @return empty Return
+     * @throws EFapsException on error
+     */
+    public Return setStatus(final Parameter _parameter)
+            throws EFapsException
+    {
+        final Map<?, ?> map = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+        final String statusName = (String) map.get("Status");
+        final Instance instance = _parameter.getInstance();
+        final Status status = Status.find(instance.getType().getStatusAttribute().getLink().getName(), statusName);
+
+        if (status != null) {
+            final Update update = new Update(instance);
+            update.add(instance.getType().getStatusAttribute(), ((Long) status.getId()).toString());
+            update.execute();
+        }
+
+        final Return ret = new Return();
+        return ret;
+    }
+
 }
