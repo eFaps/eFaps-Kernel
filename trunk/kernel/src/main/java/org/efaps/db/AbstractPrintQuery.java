@@ -486,7 +486,6 @@ public abstract class AbstractPrintQuery
         whereBldr.append(" where T0.ID in (");
         boolean first = true;
         for (final Instance instance : getInstanceList()) {
-
             if (first) {
                 first = false;
             } else {
