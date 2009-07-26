@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -97,6 +98,14 @@ public class OneSelect
     private Attribute attribute;
 
     private AbstractPrintQuery query;
+
+    private Iterator<Object> objectIterator;
+
+    private Iterator<Long> idIterator;
+
+    private Long currentId;
+
+    private Object currentObject;
 
     /**
      * @param _selectStmt selectStatement this OneSelect belongs to
@@ -340,13 +349,22 @@ public class OneSelect
             }
         } else {
             final IAttributeType attrInterf = this.attribute.newInstance();
-            ret = attrInterf.readValue(this.objectList);
+            // if the currentObject is not null it means that the values are
+            // retrieved by iteration through the objectlist
+            if (this.currentObject != null) {
+                final ArrayList<Object> tempList = new ArrayList<Object>();
+                tempList.add(this.currentObject);
+                ret = attrInterf.readValue(tempList);
+            } else {
+                ret = attrInterf.readValue(this.objectList);
+            }
         }
         return ret;
     }
 
     /**
-     * Methdo return the instances this OneSelect has returned.
+     * Method returns the instances this OneSelect has returned.
+     *
      * @return Collection of Insatcne
      */
     public List<Instance> getInstances()
@@ -389,7 +407,7 @@ public class OneSelect
     }
 
     /**
-     * Method to determine if this OneSelect does return mor than one value.
+     * Method to determine if this OneSelect does return more than one value.
      * @return true if more than one value is returned, else false
      */
     public boolean isMulitple()
@@ -444,7 +462,28 @@ public class OneSelect
         if (this.attribute == null && this.fromSelect != null) {
             ret = this.fromSelect.getTableIndex(_tableName, _relIndex);
         } else {
-            ret =this.query.getTableIndex(_tableName, _relIndex);
+            ret = this.query.getTableIndex(_tableName, _relIndex);
+        }
+        return ret;
+    }
+
+    /**
+     * @return
+     *
+     */
+    public boolean next()
+    {
+        boolean ret = false;
+        if (this.objectIterator == null) {
+            this.objectIterator = this.objectList.iterator();
+        }
+        if (this.idIterator == null) {
+            this.idIterator = this.idList.iterator();
+        }
+        if (this.objectIterator.hasNext()) {
+            this.currentObject = this.objectIterator.next();
+            this.currentId = this.idIterator.next();
+            ret = true;
         }
         return ret;
     }
