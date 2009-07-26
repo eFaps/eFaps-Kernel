@@ -20,11 +20,16 @@
 
 package org.efaps.db;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
+import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.sql.OneSelect;
 import org.efaps.util.EFapsException;
@@ -119,6 +124,40 @@ public class MultiPrintQuery extends AbstractPrintQuery
     public List<Instance> getInstanceList()
     {
         return this.instances;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean execute() throws EFapsException
+    {
+        final Map<Type, List<Instance>> types = new HashMap<Type, List<Instance>>();
+        for (final Instance instance : this.instances) {
+            List<Instance> list;
+            if (!types.containsKey(instance.getType())) {
+                list = new ArrayList<Instance>();
+                types.put(instance.getType(), list);
+            } else {
+                list = types.get(instance.getType());
+            }
+            list.add(instance);
+        }
+        //check the access for the given instances
+        final Map<Instance, Boolean> accessmap = new HashMap<Instance, Boolean>();
+        for (final Entry<Type, List<Instance>> entry : types.entrySet()) {
+            accessmap.putAll(entry.getKey().checkAccess(entry.getValue(), AccessTypeEnums.SHOW.getAccessType()));
+        }
+
+        final Iterator<Instance> tempIter = this.instances.iterator();
+        while (tempIter.hasNext()) {
+            final Instance instance = tempIter.next();
+            if (!accessmap.get(instance)) {
+                tempIter.remove();
+            }
+        }
+
+        return executeWithoutAccessCheck();
     }
 
     /**
