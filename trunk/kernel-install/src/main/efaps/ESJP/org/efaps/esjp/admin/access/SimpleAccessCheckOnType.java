@@ -23,6 +23,11 @@ package org.efaps.esjp.admin.access;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,11 +86,11 @@ public class SimpleAccessCheckOnType implements EventExecution
 
         final Type type = _instance.getType();
         if (type.isCheckStatus() && !_accessType.equals(AccessTypeEnums.CREATE.getAccessType())) {
-            cmd.append(" join T_ACCESSSET2STATUS on T_ACCESSSET2USER.ACCESSSET = T_ACCESSSET2STATUS.ACCESSSET")
-                .append(" join ").append(type.getMainTable().getSqlTable()).append(" on ")
-                .append(type.getMainTable().getSqlTable()).append(".")
-                .append(type.getStatusAttribute().getSqlColNames().get(0))
-                .append("=T_ACCESSSET2STATUS.ACCESSSTATUS");
+            cmd.append(" join T_ACCESSSET2STATUS on T_ACCESSSET2USER.ACCESSSET = T_ACCESSSET2STATUS.ACCESSSET").append(
+                            " join ").append(type.getMainTable().getSqlTable()).append(" on ").append(
+                            type.getMainTable().getSqlTable()).append(".").append(
+                            type.getStatusAttribute().getSqlColNames().get(0)).append(
+                            "=T_ACCESSSET2STATUS.ACCESSSTATUS");
         }
 
         cmd.append(" where T_ACCESSSET2USER.ACCESSSET in (0");
@@ -107,16 +112,15 @@ public class SimpleAccessCheckOnType implements EventExecution
 
     /**
      * Method that queries against the database.
-     * @param _context      Context
-     * @param _cmd   cmd
-     * @return  true if access granted else false
+     *
+     * @param _context Context
+     * @param _cmd cmd
+     * @return true if access granted else false
      * @throws EFapsException on error
      */
-    private boolean executeStatement(final Context _context, final StringBuilder _cmd)
-        throws EFapsException
+    private boolean executeStatement(final Context _context, final StringBuilder _cmd) throws EFapsException
     {
         boolean hasAccess = false;
-
 
         ConnectionResource con = null;
         try {
@@ -156,13 +160,94 @@ public class SimpleAccessCheckOnType implements EventExecution
      */
     public Return execute(final Parameter _parameter) throws EFapsException
     {
-        final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
         final AccessType accessType = (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);
-        final Return ret = new Return();
+        final Instance instance = _parameter.getInstance();
 
-        if (Context.getThreadContext().getPerson() == null || checkAccess(instance, accessType)) {
-            ret.put(ReturnValues.TRUE, true);
+        final Return ret = new Return();
+        if (instance != null) {
+            if (Context.getThreadContext().getPerson() == null || checkAccess(instance, accessType)) {
+                ret.put(ReturnValues.TRUE, true);
+            }
+        } else {
+            final List<?> instances = (List<?>) _parameter.get(ParameterValues.OTHERS);
+            ret.put(ReturnValues.VALUES, checkAccess(instances, accessType));
         }
         return ret;
+    }
+
+    private Map<Instance, Boolean> checkAccess(final List<?> _instances, final AccessType _accessType)
+        throws EFapsException
+    {
+        final Map<Instance, Boolean> accessMap = new HashMap<Instance, Boolean>();
+        final Context context = Context.getThreadContext();
+
+        final Type type = ((Instance) _instances.get(0)).getType();
+        if (type.isCheckStatus()) {
+            final StringBuilder cmd = new StringBuilder();
+            cmd.append("select ").append(type.getMainTable().getSqlTable()).append(".ID ")
+                .append(" from T_ACCESSSET2USER ")
+                .append(" join T_ACCESSSET2STATUS on T_ACCESSSET2USER.ACCESSSET = T_ACCESSSET2STATUS.ACCESSSET")
+                .append(" join ").append(type.getMainTable().getSqlTable()).append(" on ")
+                .append(type.getMainTable().getSqlTable()).append(".")
+                .append(type.getStatusAttribute().getSqlColNames().get(0))
+                .append("=T_ACCESSSET2STATUS.ACCESSSTATUS")
+                .append(" where T_ACCESSSET2USER.ACCESSSET in (0");
+            for (final AccessSet accessSet : type.getAccessSets()) {
+                if (accessSet.getAccessTypes().contains(_accessType)) {
+                    cmd.append(",").append(accessSet.getId());
+                }
+            }
+            cmd.append(") ").append("and T_ACCESSSET2USER.USERABSTRACT in (").append(context.getPersonId());
+            for (final Role role : context.getPerson().getRoles()) {
+                cmd.append(",").append(role.getId());
+            }
+            for (final Group group : context.getPerson().getGroups()) {
+                cmd.append(",").append(group.getId());
+            }
+            cmd.append(")");
+            final Set<Long> idList = new HashSet<Long>();
+
+            ConnectionResource con = null;
+            try {
+                con = context.getConnectionResource();
+
+                Statement stmt = null;
+                try {
+
+                    stmt = con.getConnection().createStatement();
+
+                    final ResultSet rs = stmt.executeQuery(cmd.toString());
+
+                    while (rs.next()) {
+                        idList.add(rs.getLong(1));
+                    }
+                    rs.close();
+
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+
+                con.commit();
+
+            } catch (final SQLException e) {
+                SimpleAccessCheckOnType.LOG.error("sql statement '" + cmd.toString() + "' not executable!", e);
+            } finally {
+                if ((con != null) && con.isOpened()) {
+                    con.abort();
+                }
+                for (final Object inst : _instances) {
+                    accessMap.put((Instance) inst, idList.contains(((Instance) inst).getId()));
+                }
+            }
+
+        } else {
+            final boolean access = checkAccess(((Instance) _instances.get(0)), _accessType);
+            for (final Object inst : _instances) {
+                accessMap.put((Instance) inst, access);
+            }
+        }
+        return accessMap;
     }
 }
