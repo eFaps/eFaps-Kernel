@@ -86,11 +86,11 @@ public class SimpleAccessCheckOnType implements EventExecution
 
         final Type type = _instance.getType();
         if (type.isCheckStatus() && !_accessType.equals(AccessTypeEnums.CREATE.getAccessType())) {
-            cmd.append(" join T_ACCESSSET2STATUS on T_ACCESSSET2USER.ACCESSSET = T_ACCESSSET2STATUS.ACCESSSET").append(
-                            " join ").append(type.getMainTable().getSqlTable()).append(" on ").append(
-                            type.getMainTable().getSqlTable()).append(".").append(
-                            type.getStatusAttribute().getSqlColNames().get(0)).append(
-                            "=T_ACCESSSET2STATUS.ACCESSSTATUS");
+            cmd.append(" join T_ACCESSSET2STATUS on T_ACCESSSET2USER.ACCESSSET = T_ACCESSSET2STATUS.ACCESSSET")
+                .append(" join ").append(type.getMainTable().getSqlTable()).append(" on ")
+                .append(type.getMainTable().getSqlTable()).append(".")
+                .append(type.getStatusAttribute().getSqlColNames().get(0))
+                .append("=T_ACCESSSET2STATUS.ACCESSSTATUS");
         }
 
         cmd.append(" where T_ACCESSSET2USER.ACCESSSET in (0");
@@ -175,6 +175,13 @@ public class SimpleAccessCheckOnType implements EventExecution
         return ret;
     }
 
+    /**
+     * Method to check the access for a list of instances.
+     * @param _instances    instances to be checked
+     * @param _accessType   type of access
+     * @return map of access to boolean
+     * @throws EFapsException on error
+     */
     private Map<Instance, Boolean> checkAccess(final List<?> _instances, final AccessType _accessType)
         throws EFapsException
     {
