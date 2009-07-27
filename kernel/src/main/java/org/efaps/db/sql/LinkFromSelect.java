@@ -20,12 +20,16 @@
 
 package org.efaps.db.sql;
 
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.AbstractPrintQuery;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 
 /**
@@ -138,6 +142,48 @@ public class LinkFromSelect extends AbstractPrintQuery
             LOG.debug(selBldr.toString());
         }
         return selBldr;
+    }
+
+    @Override
+    protected boolean executeOneCompleteStmt(final StringBuilder _complStmt, final List<OneSelect> _oneSelects)
+        throws EFapsException
+    {
+        boolean ret = false;
+        ConnectionResource con = null;
+        try {
+            con = Context.getThreadContext().getConnectionResource();
+
+            if (AbstractPrintQuery.LOG.isDebugEnabled()) {
+                AbstractPrintQuery.LOG.debug(_complStmt.toString());
+            }
+
+            final Statement stmt = con.getConnection().createStatement();
+
+            final ResultSet rs = stmt.executeQuery(_complStmt.toString());
+
+            while (rs.next()) {
+                for (final OneSelect onesel : _oneSelects) {
+                    onesel.addObject(rs);
+                }
+                ret = true;
+            }
+
+            rs.close();
+            stmt.close();
+            con.commit();
+        } catch (final EFapsException e) {
+            if (con != null) {
+                con.abort();
+            }
+            throw e;
+        } catch (final Throwable e) {
+            if (con != null) {
+                con.abort();
+            }
+            // TODO: exception eintragen!
+            throw new EFapsException(getClass(), "executeOneCompleteStmt.Throwable");
+        }
+        return ret;
     }
 
     /**

@@ -23,6 +23,7 @@ package org.efaps.db;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.util.EFapsException;
 
@@ -126,6 +127,19 @@ public class PrintQuery extends AbstractPrintQuery
     {
         final List<Instance> ret = new ArrayList<Instance>();
         ret.add(this.instance);
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean execute() throws EFapsException
+    {
+        boolean ret = false;
+        if (getMainType().hasAccess(this.instance, AccessTypeEnums.SHOW.getAccessType())) {
+            ret = executeWithoutAccessCheck();
+        }
         return ret;
     }
 }
