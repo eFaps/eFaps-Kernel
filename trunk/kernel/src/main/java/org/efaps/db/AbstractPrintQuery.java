@@ -182,8 +182,12 @@ public abstract class AbstractPrintQuery
      */
     public abstract List<Instance> getInstanceList();
 
-
+    /**
+     * Method to get the current Instance.
+     * @return current Instance
+     */
     public abstract Instance getCurrentInstance();
+
     /**
      * Add an AttributeSet to the PrintQuery. It is used to get editable values
      * from the eFaps DataBase.
@@ -450,7 +454,11 @@ public abstract class AbstractPrintQuery
     public boolean executeWithoutAccessCheck()
             throws EFapsException
     {
-        final boolean ret =  executeOneCompleteStmt(createSQLStatement(), this.allSelects);
+        boolean ret = false;
+        if (getInstanceList().size() > 0) {
+            ret =  executeOneCompleteStmt(createSQLStatement(), this.allSelects);
+        }
+
         if (ret) {
             for (final OneSelect onesel : this.allSelects) {
                 if (onesel.getFromSelect() != null) {
@@ -476,8 +484,13 @@ public abstract class AbstractPrintQuery
         for (final OneSelect onesel : this.allSelects) {
             onesel.append2SQLFrom(fromBldr);
         }
-
+        // if the maintable has a column for the type it is selected also
         int colIndex = 2;
+        if (getMainType().getMainTable().getSqlColType() != null) {
+            selBldr.append(",T0.").append(getMainType().getMainTable().getSqlColType());
+            colIndex++;
+        }
+
         for (final OneSelect onesel : this.allSelects) {
             colIndex += onesel.append2SQLSelect(selBldr, colIndex);
         }
@@ -513,7 +526,7 @@ public abstract class AbstractPrintQuery
      * @throws EFapsException on error
      */
     protected boolean executeOneCompleteStmt(final StringBuilder _complStmt, final List<OneSelect> _oneSelects)
-            throws EFapsException
+        throws EFapsException
     {
         boolean ret = false;
         ConnectionResource con = null;
@@ -527,8 +540,15 @@ public abstract class AbstractPrintQuery
             final Statement stmt = con.getConnection().createStatement();
 
             final ResultSet rs = stmt.executeQuery(_complStmt.toString());
-
+            getInstanceList().clear();
             while (rs.next()) {
+                final Instance instance;
+                if (getMainType().getMainTable().getSqlColType() != null) {
+                    instance = Instance.get(Type.get(rs.getLong(2)), rs.getLong(1));
+                } else {
+                    instance = Instance.get(getMainType(), rs.getLong(1));
+                }
+                getInstanceList().add(instance);
                 for (final OneSelect onesel : _oneSelects) {
                     onesel.addObject(rs);
                 }
