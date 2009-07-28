@@ -18,31 +18,23 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.db.sql;
-
-import org.efaps.admin.datamodel.Type;
+package org.efaps.db.print.value;
 
 
 /**
- * Interface used for the different Select parts.
+ * TODO comment!
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public interface ISelectPart
+public class UUIDValueSelect extends AbstractValueSelect
 {
     /**
-     * Method to join a table to the given from select statement.
-     * @param _oneselect oneselect this select part must be joined to
-     * @param _fromBldr StringBuilder containing the from select statement
-     * @param _relIndex relation index
-     * @return table index of the joint table
+     * {@inheritDoc}
      */
-    int join(final OneSelect _oneselect, final StringBuilder _fromBldr, final int _relIndex);
-
-    /**
-     * Method to get the Type the part belongs to.
-     * @return type
-     */
-    Type getType();
+    @Override
+    public String getValueType()
+    {
+        return "UUID";
+    }
 }

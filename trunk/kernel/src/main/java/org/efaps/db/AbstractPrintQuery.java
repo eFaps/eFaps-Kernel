@@ -37,8 +37,8 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
-import org.efaps.db.sql.OneSelect;
-import org.efaps.db.sql.Phrase;
+import org.efaps.db.print.OneSelect;
+import org.efaps.db.print.Phrase;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 
@@ -96,7 +96,7 @@ public abstract class AbstractPrintQuery
     public AbstractPrintQuery addAttribute(final Attribute... _attributes)
     {
         for (final Attribute attr : _attributes) {
-            final OneSelect oneselect = new OneSelect(attr);
+            final OneSelect oneselect = new OneSelect(this, attr);
             this.allSelects.add(oneselect);
             this.attr2OneSelect.put(attr.getName(), oneselect);
         }
@@ -194,8 +194,10 @@ public abstract class AbstractPrintQuery
      *
      * @param _setName    Name of the AttributeSet to add
      * @return this PrintQuery
+     * @throws EFapsException  on error
      */
     public AbstractPrintQuery addAttributeSet(final String _setName)
+        throws EFapsException
     {
         final Type type = getMainType();
         final AttributeSet set = AttributeSet.find(type.getName(), _setName);
@@ -210,8 +212,10 @@ public abstract class AbstractPrintQuery
      *
      * @param _set    AttributeSet to add
      * @return this PrintQuery
+     * @throws EFapsException  on error
      */
     public AbstractPrintQuery addAttributeSet(final AttributeSet _set)
+        throws EFapsException
     {
         final String key = "linkfrom[" + _set.getName() + "#" + _set.getAttributeName() + "]";
         final OneSelect oneselect = new OneSelect(this, key);
@@ -220,7 +224,7 @@ public abstract class AbstractPrintQuery
         oneselect.analyzeSelectStmt();
         for (final String setAttrName :  _set.getSetAttributes()) {
             if (!setAttrName.equals(_set.getAttributeName())) {
-                oneselect.getFromSelect().addOneSelect(new OneSelect(_set.getAttribute(setAttrName)));
+                oneselect.getFromSelect().addOneSelect(new OneSelect(this, _set.getAttribute(setAttrName)));
             }
         }
         oneselect.getFromSelect().getMainOneSelect().setAttribute(_set.getAttribute(_set.getAttributeName()));
@@ -267,8 +271,10 @@ public abstract class AbstractPrintQuery
      *
      * @param _attrNames    Name of the Attribute to add
      * @return this PrintQuery
+     * @throws EFapsException on error
      */
     public AbstractPrintQuery addAttribute(final String... _attrNames)
+        throws EFapsException
     {
         final Type type = getMainType();
         for (final String attrName : _attrNames) {
@@ -492,7 +498,9 @@ public abstract class AbstractPrintQuery
         }
 
         for (final OneSelect onesel : this.allSelects) {
-            colIndex += onesel.append2SQLSelect(selBldr, colIndex);
+            if (onesel.getFromSelect() == null) {
+                colIndex += onesel.append2SQLSelect(selBldr, colIndex);
+            }
         }
 
         final StringBuilder whereBldr = new StringBuilder();
@@ -568,7 +576,7 @@ public abstract class AbstractPrintQuery
                 con.abort();
             }
             // TODO: exception eintragen!
-            throw new EFapsException(getClass(), "executeOneCompleteStmt.Throwable");
+            throw new EFapsException(getClass(), "executeOneCompleteStmt.Throwable", e);
         }
         return ret;
     }

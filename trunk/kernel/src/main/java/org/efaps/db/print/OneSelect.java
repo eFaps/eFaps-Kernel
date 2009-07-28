@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.db.sql;
+package org.efaps.db.print;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -30,11 +30,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.IAttributeType;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.AbstractPrintQuery;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
+import org.efaps.db.print.value.AbstractValueSelect;
+import org.efaps.db.print.value.AttributeValueSelect;
+import org.efaps.db.print.value.IDValueSelect;
+import org.efaps.db.print.value.LabelValueSelect;
+import org.efaps.db.print.value.OIDValueSelect;
+import org.efaps.db.print.value.TypeValueSelect;
+import org.efaps.db.print.value.UUIDValueSelect;
 import org.efaps.util.EFapsException;
 
 /**
@@ -56,18 +62,12 @@ public class OneSelect
     /**
      * List of select parts.
      */
-    final List<ISelectPart> selectParts = new ArrayList<ISelectPart>();
+    private final List<ISelectPart> selectParts = new ArrayList<ISelectPart>();
 
     /**
      * FromSelect this OneSelect belong to.
      */
-    LinkFromSelect fromSelect;
-
-    /**
-     * List of column indexes the values have in the ResultSet returned
-     * from the eFaps database.
-     */
-    private final List<Integer> colIndexs = new ArrayList<Integer>();
+    private LinkFromSelect fromSelect;
 
     /**
      * List of objects retrieved from the ResultSet returned
@@ -88,29 +88,35 @@ public class OneSelect
     private int tableIndex;
 
     /**
-     * Name of the attribute.
+     * PrintQuery this ONeSelct belongs to.
      */
-    private String attrName;
+    private final AbstractPrintQuery query;
 
     /**
-     * Attribute.
+     * Iterator for the objects.
      */
-    private Attribute attribute;
-
-    private AbstractPrintQuery query;
-
     private Iterator<Object> objectIterator;
 
+    /**
+     * Iterator for the ids.
+     */
     private Iterator<Long> idIterator;
 
+    /**
+     * current id.
+     */
     private Long currentId;
 
+    /**
+     * Currecnt object.
+     */
     private Object currentObject;
 
+    private AbstractValueSelect valueSelect;
+
     /**
+     * @param _query        PrintQuery this OneSelect belongs to
      * @param _selectStmt selectStatement this OneSelect belongs to
-     * @param _subQuery
-     * @param tableIndex
      */
     public OneSelect(final AbstractPrintQuery _query, final String _selectStmt)
     {
@@ -121,10 +127,21 @@ public class OneSelect
     /**
      * @param _attr attribute to be used in this OneSelect
      */
-    public OneSelect(final Attribute _attr)
+    public OneSelect(final AbstractPrintQuery _query, final Attribute _attr)
     {
+        this.query = _query;
         this.selectStmt = null;
-        this.attribute = _attr;
+        this.valueSelect =  new AttributeValueSelect(_attr);
+    }
+
+    /**
+     * Getter method for instance variable {@link #valueSelect}.
+     *
+     * @return value of instance variable {@link #valueSelect}
+     */
+    public AbstractValueSelect getValueSelect()
+    {
+        return this.valueSelect;
     }
 
     /**
@@ -138,13 +155,22 @@ public class OneSelect
     }
 
     /**
+     * Getter method for instance variable {@link #selectParts}.
+     *
+     * @return value of instance variable {@link #selectParts}
+     */
+    public List<ISelectPart> getSelectParts()
+    {
+        return this.selectParts;
+    }
+
+    /**
      * Setter method for instance variable {@link #attribute}.
      * @param _attribute Attribute to set
      */
     public void setAttribute(final Attribute _attribute)
     {
-       this.attribute = _attribute;
-
+        this.valueSelect = new AttributeValueSelect(_attribute);
     }
 
     /**
@@ -159,10 +185,17 @@ public class OneSelect
         // store the ids also
         this.idList.add(_rs.getLong(1));
         Object object = null;
-        if (this.colIndexs.size() > 1) {
-            final Object[] objArray = new Object[this.colIndexs.size()];
+        AbstractValueSelect tmpValueSelect;
+        if (this.valueSelect ==  null) {
+            tmpValueSelect = this.fromSelect.getMainOneSelect().getValueSelect();
+        } else {
+            tmpValueSelect = this.valueSelect;
+        }
+
+        if (tmpValueSelect.getColIndexs().size() > 1) {
+            final Object[] objArray = new Object[tmpValueSelect.getColIndexs().size()];
             int i = 0;
-            for (final Integer colIndex : this.colIndexs) {
+            for (final Integer colIndex : tmpValueSelect.getColIndexs()) {
                 switch (metaData.getColumnType(colIndex)) {
                     case java.sql.Types.TIMESTAMP:
                         objArray[i] =  _rs.getTimestamp(colIndex);
@@ -173,26 +206,16 @@ public class OneSelect
                 i++;
             }
             object = objArray;
-        } else if (this.colIndexs.size() > 0) {
-            switch (metaData.getColumnType(this.colIndexs.get(0))) {
+        } else if (tmpValueSelect.getColIndexs().size() > 0) {
+            switch (metaData.getColumnType(tmpValueSelect.getColIndexs().get(0))) {
                 case java.sql.Types.TIMESTAMP:
-                    object = _rs.getTimestamp(this.colIndexs.get(0));
+                    object = _rs.getTimestamp(tmpValueSelect.getColIndexs().get(0));
                     break;
                 default:
-                    object = _rs.getObject(this.colIndexs.get(0));
+                    object = _rs.getObject(tmpValueSelect.getColIndexs().get(0));
             }
         }
         this.objectList.add(object);
-    }
-
-    /**
-     * Add an attribute name evaluated from an
-     * <code>attribute[ATTRIBUTENAME]</code> part of an select statement.
-     * @param _attrName name of an attribute
-     */
-    public void addAttributeSelectPart(final String _attrName)
-    {
-        this.attrName = _attrName;
     }
 
     /**
@@ -254,53 +277,44 @@ public class OneSelect
      */
     public int append2SQLSelect(final StringBuilder _fromBldr, final int _colIndex)
     {
-        int ret = 0;
-        //in case that the OneSelect was instantiated for an attribute
-        if (this.selectStmt == null) {
-            for (final String colName : this.attribute.getSqlColNames()) {
-                _fromBldr.append(",T0.").append(colName);
-                this.colIndexs.add(_colIndex + ret);
-                ret++;
-            }
+
+//            if ("id".equals(this.attrName)) {
+//                this.attribute = type.getAttribute("ID");
+//                _fromBldr.append(",T").append(this.tableIndex)
+//                    .append(".").append(type.getMainTable().getSqlColId());
+//                this.colIndexs.add(_colIndex);
+//                ret++;
+//            } else if ("oid".equals(this.attrName)) {
+//                this.attribute = type.getAttribute("OID");
+//                for (final String colName : this.attribute.getSqlColNames()) {
+//                    _fromBldr.append(",T").append(this.tableIndex).append(".").append(colName);
+//                    this.colIndexs.add(_colIndex + ret);
+//                    ret++;
+//                }
+
+        Type type;
+        if (this.selectParts.size() > 0) {
+            type = this.selectParts.get(this.selectParts.size() - 1).getType();
         } else {
-            Type type;
-            // if a previous select exists it is based on the previous select,
-            // else it is based on the basic table
-            if (this.selectParts.size() > 0) {
-                type = this.selectParts.get(this.selectParts.size() - 1).getType();
-            } else {
-                type = this.query.getMainType();
-            }
-            if ("id".equals(this.attrName)) {
-                this.attribute = type.getAttribute("ID");
-                _fromBldr.append(",T").append(this.tableIndex)
-                    .append(".").append(type.getMainTable().getSqlColId());
-                this.colIndexs.add(_colIndex);
-                ret++;
-            } else if ("oid".equals(this.attrName)) {
-                this.attribute = type.getAttribute("OID");
-                for (final String colName : this.attribute.getSqlColNames()) {
-                    _fromBldr.append(",T").append(this.tableIndex).append(".").append(colName);
-                    this.colIndexs.add(_colIndex + ret);
-                    ret++;
-                }
-            } else if (this.attrName != null) {
-                this.attribute = type.getAttribute(this.attrName);
-                for (final String colName : this.attribute.getSqlColNames()) {
-                    _fromBldr.append(",T").append(this.tableIndex).append(".").append(colName);
-                    this.colIndexs.add(_colIndex + ret);
-                    ret++;
-                }
-            }
+            type = this.query.getMainType();
         }
+        int ret;
+        if (this.valueSelect == null) {
+            ret = this.fromSelect.getMainOneSelect().getValueSelect().append2SQLSelect(type, _fromBldr, this.tableIndex,
+                                                                                       _colIndex);
+        } else {
+            ret = this.valueSelect.append2SQLSelect(type, _fromBldr, this.tableIndex, _colIndex);
+        }
+
         return ret;
     }
 
     /**
      * Method to analyse the select statement. Meaning the the different
      * select parts will be added to {@link #selectParts}.
+     * @throws EFapsException on error
      */
-    public void analyzeSelectStmt()
+    public void analyzeSelectStmt() throws EFapsException
     {
         final Pattern pattern = Pattern.compile("(?<=\\[)[0-9a-zA-Z_]*(?=\\])");
         final Pattern linkfomPat = Pattern.compile("(?<=\\[)[0-9a-zA-Z_#:]*(?=\\])");
@@ -321,7 +335,7 @@ public class OneSelect
             } else if (part.startsWith("attribute")) {
                 final Matcher matcher = pattern.matcher(part);
                 if (matcher.find()) {
-                    currentSelect.addAttributeSelectPart(matcher.group());
+                    addValueSelect(new AttributeValueSelect(matcher.group()));
                 }
             } else if (part.startsWith("linkfrom")) {
                 final Matcher matcher = linkfomPat.matcher(part);
@@ -329,9 +343,33 @@ public class OneSelect
                     currentSelect.addLinkFromSelectPart(matcher.group());
                     currentSelect = currentSelect.fromSelect.getMainOneSelect();
                 }
-            } else {
-                currentSelect.addAttributeSelectPart(part);
+            } else if (part.equalsIgnoreCase("oid")) {
+                addValueSelect(new OIDValueSelect());
+            } else if (part.equalsIgnoreCase("type")) {
+                addValueSelect(new TypeValueSelect());
+            } else if (part.equalsIgnoreCase("label")) {
+                addValueSelect(new LabelValueSelect());
+            } else if (part.equalsIgnoreCase("id")) {
+                addValueSelect(new IDValueSelect());
+            } else if (part.equalsIgnoreCase("uuid")) {
+                addValueSelect(new UUIDValueSelect());
             }
+        }
+    }
+
+
+    /**
+     * @param _valueSee
+     * @throws EFapsException
+     */
+    private void addValueSelect(final AbstractValueSelect _valueSelect) throws EFapsException
+    {
+        if (this.valueSelect != null) {
+            this.valueSelect.addChildValueSelect(_valueSelect);
+        } else if (this.fromSelect != null && !(this.query instanceof LinkFromSelect)) {
+            this.fromSelect.getMainOneSelect().addValueSelect(_valueSelect);
+        } else {
+            this.valueSelect = _valueSelect;
         }
     }
 
@@ -343,20 +381,17 @@ public class OneSelect
     public Object getObject() throws EFapsException
     {
         Object ret = null;
-        if (this.attribute == null) {
+        if (this.valueSelect == null) {
             if (this.fromSelect.hasResult()) {
                 ret = this.fromSelect.getMainOneSelect().getObject();
             }
         } else {
-            final IAttributeType attrInterf = this.attribute.newInstance();
             // if the currentObject is not null it means that the values are
             // retrieved by iteration through the objectlist
             if (this.currentObject != null) {
-                final ArrayList<Object> tempList = new ArrayList<Object>();
-                tempList.add(this.currentObject);
-                ret = attrInterf.readValue(tempList);
+                ret = this.valueSelect.getValue(this.currentObject);
             } else {
-                ret = attrInterf.readValue(this.objectList);
+                ret = this.valueSelect.getValue(this.objectList);
             }
         }
         return ret;
@@ -370,11 +405,11 @@ public class OneSelect
     public List<Instance> getInstances()
     {
         final List<Instance> ret = new ArrayList<Instance>();
-        if (this.attribute == null) {
+        if (this.valueSelect == null) {
             ret.addAll(this.fromSelect.getMainOneSelect().getInstances());
         } else {
             for (final Long id : this.idList) {
-                ret.add(Instance.get(this.attribute.getParent(), id.toString()));
+                ret.add(Instance.get(this.valueSelect.getAttribute().getParent(), id.toString()));
             }
         }
         return ret;
@@ -388,10 +423,10 @@ public class OneSelect
     public Attribute getAttribute()
     {
         Attribute ret;
-        if (this.attribute == null) {
+        if (this.valueSelect == null) {
             ret = this.fromSelect.getMainOneSelect().getAttribute();
         } else {
-            ret = this.attribute;
+            ret = this.valueSelect.getAttribute();
         }
         return ret;
     }
@@ -407,13 +442,23 @@ public class OneSelect
     }
 
     /**
+     * Setter method for instance variable {@link #fromSelect}.
+     *
+     * @param _fromSelect value for instance variable {@link #fromSelect}
+     */
+    public void setFromSelect(final LinkFromSelect _fromSelect)
+    {
+        this.fromSelect = _fromSelect;
+    }
+
+    /**
      * Method to determine if this OneSelect does return more than one value.
      * @return true if more than one value is returned, else false
      */
     public boolean isMulitple()
     {
         boolean ret;
-        if (this.attribute == null) {
+        if (this.valueSelect == null) {
             ret = this.fromSelect.getMainOneSelect().isMulitple();
         } else {
             ret = this.objectList.size() > 1;
@@ -436,7 +481,7 @@ public class OneSelect
     Integer getNewTableIndex(final String _tableName, final Integer _relIndex)
     {
         int ret;
-        if (this.attribute == null  && this.fromSelect != null) {
+        if (this.valueSelect == null  && this.fromSelect != null) {
             ret = this.fromSelect.getNewTableIndex(_tableName, _relIndex);
         } else {
             ret = this.query.getNewTableIndex(_tableName, _relIndex);
@@ -459,7 +504,7 @@ public class OneSelect
     Integer getTableIndex(final String _tableName, final int _relIndex)
     {
         Integer ret;
-        if (this.attribute == null && this.fromSelect != null) {
+        if (this.valueSelect == null && this.fromSelect != null) {
             ret = this.fromSelect.getTableIndex(_tableName, _relIndex);
         } else {
             ret = this.query.getTableIndex(_tableName, _relIndex);
