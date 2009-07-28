@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.db.sql;
+package org.efaps.db.print;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,10 +31,8 @@ import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
- *
-     * Class is used as a wraper for a series of OneSelects as part of one
-     * phrase.
-     *
+ * Class is used as a wraper for a series of OneSelects as part of one
+ * phrase.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -75,11 +73,12 @@ public class Phrase
 
     /**
      * Method to get the parsed value for this phrase.
+     * @param _instance Instance the phrase is build on
      * @return  parsed value
      * @throws EFapsException on error
      */
     public String getPhraseValue(final Instance _instance)
-            throws EFapsException
+        throws EFapsException
     {
         final StringBuilder buf = new StringBuilder();
 
@@ -108,5 +107,25 @@ public class Phrase
     public void addSelect(final OneSelect _oneselect)
     {
         this.selectStmt2OneSelect.put(_oneselect.getSelectStmt(), _oneselect);
+    }
+
+    /**
+     * Getter method for instance variable {@link #key}.
+     *
+     * @return value of instance variable {@link #key}
+     */
+    public String getKey()
+    {
+        return this.key;
+    }
+
+    /**
+     * Getter method for instance variable {@link #phraseStmt}.
+     *
+     * @return value of instance variable {@link #phraseStmt}
+     */
+    public String getPhraseStmt()
+    {
+        return this.phraseStmt;
     }
 }

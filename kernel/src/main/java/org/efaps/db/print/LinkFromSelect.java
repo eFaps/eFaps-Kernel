@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.db.sql;
+package org.efaps.db.print;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -68,8 +68,8 @@ public class LinkFromSelect extends AbstractPrintQuery
         this.attrName = linkfrom[1];
         final OneSelect onsel = new OneSelect(this, _linkFrom);
         addOneSelect(onsel);
-        onsel.fromSelect = this;
-        onsel.selectParts.add(new ISelectPart() {
+        onsel.setFromSelect(this);
+        onsel.getSelectParts().add(new ISelectPart() {
 
             public Type getType()
             {
@@ -95,8 +95,10 @@ public class LinkFromSelect extends AbstractPrintQuery
     }
 
     /**
-     * Execute the from select.
+     * Execute the from select for the given instance.
+     * @param _instance instance
      * @throws EFapsException on error
+     * @return true if statement didi return values, else false
      */
     public boolean execute(final Instance _instance) throws EFapsException
     {
@@ -106,7 +108,7 @@ public class LinkFromSelect extends AbstractPrintQuery
 
     /**
      * Method to create on Statement out of the different parts.
-     * @param instance
+     * @param _instance instance
      * @return StringBuilder containing the sql statement
      */
     private StringBuilder createSQLStatement(final Instance _instance)
@@ -144,6 +146,9 @@ public class LinkFromSelect extends AbstractPrintQuery
         return selBldr;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected boolean executeOneCompleteStmt(final StringBuilder _complStmt, final List<OneSelect> _oneSelects)
         throws EFapsException
@@ -205,8 +210,7 @@ public class LinkFromSelect extends AbstractPrintQuery
     }
 
     /**
-     * @see org.efaps.db.AbstractPrintQuery#getCurrentInstance()
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public Instance getCurrentInstance()
@@ -216,8 +220,7 @@ public class LinkFromSelect extends AbstractPrintQuery
     }
 
     /**
-     * @see org.efaps.db.AbstractPrintQuery#getInstanceList()
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public List<Instance> getInstanceList()
@@ -227,8 +230,7 @@ public class LinkFromSelect extends AbstractPrintQuery
     }
 
     /**
-     * @see org.efaps.db.AbstractPrintQuery#getMainType()
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public Type getMainType()

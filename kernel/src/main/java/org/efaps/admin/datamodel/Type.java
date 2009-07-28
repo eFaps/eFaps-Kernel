@@ -424,6 +424,29 @@ public class Type extends AbstractDataModelObject
     }
 
     /**
+     * @param _instances
+     * @param _accessType
+     * @throws EFapsException
+     */
+    public Map<Instance, Boolean> checkAccess(final List<Instance> _instances, final AccessType _accessType)
+        throws EFapsException
+    {
+        final List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);
+        Map<Instance, Boolean> ret = new HashMap<Instance, Boolean>();
+        if (events != null) {
+            final Parameter parameter = new Parameter();
+            parameter.put(ParameterValues.OTHERS, _instances);
+            parameter.put(ParameterValues.ACCESSTYPE, _accessType);
+
+            for (final EventDefinition event : events) {
+                final Return retrn = event.execute(parameter);
+                ret = (Map<Instance, Boolean>) retrn.get(ReturnValues.VALUES);
+            }
+        }
+        return ret;
+    }
+
+    /**
      * A new access set is assigned to this type instance.
      *
      * @param _accessSet new access to assign to this type instance

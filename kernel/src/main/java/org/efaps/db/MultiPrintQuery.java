@@ -31,7 +31,7 @@ import java.util.Map.Entry;
 
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.sql.OneSelect;
+import org.efaps.db.print.OneSelect;
 import org.efaps.util.EFapsException;
 
 /**
