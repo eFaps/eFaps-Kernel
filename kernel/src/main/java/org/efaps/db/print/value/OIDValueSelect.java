@@ -54,6 +54,14 @@ public class OIDValueSelect extends AbstractValueSelect
             getColIndexs().add(_colIndex);
             ret++;
         }
+        // in case that the type has a column for type it must be added
+        if (this.type != null) {
+            if (this.type.getMainTable().getSqlColType() != null) {
+                _fromBldr.append(",T").append(_tableIndex).append(".").append(this.type.getMainTable().getSqlColType());
+                getColIndexs().add(_colIndex + ret);
+                ret++;
+            }
+        }
         return ret;
     }
 
@@ -64,7 +72,12 @@ public class OIDValueSelect extends AbstractValueSelect
     public Object getValue(final Object _object) throws EFapsException
     {
         final StringBuilder bldr = new StringBuilder();
-        bldr.append(this.type.getId()).append(".").append(_object);
+        if (_object instanceof Object[]) {
+            final Object[] object = (Object[]) _object;
+            bldr.append(object[1]).append(".").append(object[0]);
+        } else {
+            bldr.append(this.type.getId()).append(".").append(_object);
+        }
         return bldr.toString();
     }
 
@@ -74,11 +87,9 @@ public class OIDValueSelect extends AbstractValueSelect
     @Override
     public Object getValue(final List<Object> _objectList) throws EFapsException
     {
-        final List<String> ret = new ArrayList<String>();
+        final List<Object> ret = new ArrayList<Object>();
         for (final Object object : _objectList) {
-            final StringBuilder bldr = new StringBuilder();
-            bldr.append(this.type.getId()).append(".").append(object);
-            ret.add(bldr.toString());
+            ret.add(getValue(object));
         }
         return _objectList.size() > 0 ? (ret.size() > 1 ? ret : ret.get(0)) : null;
     }
