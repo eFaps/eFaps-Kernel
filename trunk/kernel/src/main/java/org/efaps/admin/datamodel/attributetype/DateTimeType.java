@@ -23,6 +23,7 @@ package org.efaps.admin.datamodel.attributetype;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -42,45 +43,56 @@ import org.efaps.db.query.CachedResult;
  */
 public class DateTimeType extends AbstractType
 {
-
     /**
-     * @see #getValue
-     * @see #setValue
+     * Value of this DateTimeType.
      */
     private DateTime value = null;
 
-    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    /**
+     * Getter method for instance variable {@link #value}.
+     *
+     * @return value of instance variable {@link #value}
+     */
+    public DateTime getValue()
     {
-        setValue(_rs.getDateTime(_indexes.get(0).intValue()));
-        return getValue();
+        return this.value;
     }
 
     /**
-     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
-     * @param _objectList List of Objects
-     * @return DateTime
-     * TODO throw error if more than one value is given
+     * {@inheritDoc}
+     */
+    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    {
+        this.value = _rs.getDateTime(_indexes.get(0).intValue());
+        return this.value;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public Object readValue(final List<Object> _objectList)
     {
-        DateTime ret = null;
-        final Object obj = _objectList.get(0);
-        if (obj instanceof Timestamp || obj instanceof Date) {
-            // reads the Value from "Admin_Common_DataBaseTimeZone"
-            final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
-                            .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
-            final String timezoneID = kernelConfig.getAttributeValue("DataBaseTimeZone");
-            final ISOChronology chron;
-            if (timezoneID != null) {
-                final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
-                chron = ISOChronology.getInstance(timezone);
-            } else {
-                chron = ISOChronology.getInstanceUTC();
-            }
-            ret = new DateTime(obj, chron);
+        // reads the Value from "Admin_Common_DataBaseTimeZone"
+        final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
+                        .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+        final String timezoneID = kernelConfig.getAttributeValue("DataBaseTimeZone");
+        final ISOChronology chron;
+        if (timezoneID != null) {
+            final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
+            chron = ISOChronology.getInstance(timezone);
+        } else {
+            chron = ISOChronology.getInstanceUTC();
         }
-        this.value = ret;
-        return ret;
+
+        final List<DateTime> ret = new ArrayList<DateTime>();
+        for (final Object object : _objectList) {
+            if (object instanceof Timestamp || object instanceof Date) {
+                ret.add(new DateTime(object, chron));
+            } else {
+                ret.add(new DateTime());
+            }
+        }
+        return _objectList.size() > 0 ? (ret.size() > 1 ? ret : ret.get(0)) : null;
     }
 
     /**
@@ -119,47 +131,20 @@ public class DateTimeType extends AbstractType
     }
 
     /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
-     * @throws SQLException on error
+     * {@inheritDoc}
      */
-    public int update(final Object _object, final PreparedStatement _stmt, final int _index)
-                    throws SQLException
+    public int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException
     {
         _stmt.setTimestamp(_index, new Timestamp(this.value.getMillis()));
         return 1;
     }
 
     /**
-     * This is the setter method for instance variable {@link #value}.
-     *
-     * @param _value new value for instance variable {@link #value}
-     * @see #value
-     * @see #getValue
+     * @return String representation of this class
      */
-    public final void setValue(final DateTime _value)
-    {
-        this.value = _value;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #value}.
-     *
-     * @return the value of the instance variable {@link #value}.
-     * @see #value
-     * @see #setValue
-     */
-    public DateTime getValue()
-    {
-        return this.value;
-    }
-
     @Override
     public String toString()
     {
-        return "" + getValue();
+        return "" + this.value;
     }
 }
