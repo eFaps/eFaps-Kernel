@@ -28,8 +28,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Instance;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -128,8 +130,7 @@ public class AccessSetUpdate extends AbstractUpdate
                 } else if ((_tags.size() == 2) && "key".equals(_tags.get(1))) {
                     final LinkInstance linkinstance = new LinkInstance();
                     linkinstance.getKeyAttr2Value().put("Key", _text);
-                    linkinstance.getKeyAttr2Value().put("Type",
-                                                        ((Long) Type.get(this.currentGroupName).getId()).toString());
+                    linkinstance.getKeyAttr2Value().put("Type", this.currentGroupName);
                     addLink(AccessSetUpdate.LINK2STATUS, linkinstance);
                 }
             } else {
@@ -137,5 +138,22 @@ public class AccessSetUpdate extends AbstractUpdate
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void setLinksInDB(final Instance _instance, final Link _linktype, final Set<LinkInstance> _links)
+            throws EFapsException
+        {
+            if (_links != null) {
+                for (final LinkInstance linkInst : _links) {
+                    if (linkInst.getKeyAttr2Value().containsKey("Type")) {
+                        final String typeName = linkInst.getKeyAttr2Value().get("Type");
+                        linkInst.getKeyAttr2Value().put("Type", ((Long) Type.get(typeName).getId()).toString());
+                    }
+                }
+            }
+            super.setLinksInDB(_instance, _linktype, _links);
+        }
     }
 }
