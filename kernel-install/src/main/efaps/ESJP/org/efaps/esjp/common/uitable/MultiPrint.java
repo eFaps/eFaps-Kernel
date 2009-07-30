@@ -87,12 +87,13 @@ public class MultiPrint
         Type type = null;
         if (types != null) {
             query.setQueryTypes(types);
+            query.setExpandChildTypes(expandChildTypes);
             type = Type.get(types);
         } else if (expand != null) {
             query.setExpand(instance, expand);
             type = Type.get(expand.substring(0, expand.indexOf("\\")));
         }
-        query.setExpandChildTypes(expandChildTypes);
+
 
         final List<Instance> instances = getInstances(_parameter, filter, query, type);
 
@@ -119,7 +120,10 @@ public class MultiPrint
                 final String fieldName = (String) entry.getKey();
                 final Field field = command.getTargetTable().getField(fieldName);
                 if (!field.isFilterPickList()) {
-                    final Attribute attr = type.getAttribute(field.getExpression());
+                    final String attrName = field.getExpression() == null
+                                            ? field.getAttribute()
+                                            : field.getExpression();
+                    final Attribute attr = type.getAttribute(attrName);
                     final UUID attrTypeUUId = attr.getAttributeType().getUUID();
                     final Map<?, ?> inner = (Map<?, ?>) entry.getValue();
                     final String from = (String) inner.get("from");
@@ -144,8 +148,8 @@ public class MultiPrint
                                 dateType.set(new String[] { to });
                                 dateTo = dateType.getValue().plusDays(1);
                             }
-                            query.addWhereExprGreaterValue(field.getExpression(), dateFrom);
-                            query.addWhereExprLessValue(field.getExpression(), dateTo);
+                            query.addWhereExprGreaterValue(attrName, dateFrom);
+                            query.addWhereExprLessValue(attrName, dateTo);
                         }
                     }
                 }

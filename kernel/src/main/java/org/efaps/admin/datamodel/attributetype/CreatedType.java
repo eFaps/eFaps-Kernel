@@ -46,10 +46,4 @@ public class CreatedType extends DateTimeType
         _stmt.append(Context.getDbType().getCurrentTimeStamp());
         return true;
     }
-
-    @Override
-    public String toString()
-    {
-        return "" + getValue();
-    }
 }

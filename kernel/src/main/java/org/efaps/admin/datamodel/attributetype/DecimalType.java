@@ -23,6 +23,7 @@ package org.efaps.admin.datamodel.attributetype;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.db.query.CachedResult;
@@ -34,30 +35,23 @@ import org.efaps.db.query.CachedResult;
 public class DecimalType extends AbstractType
 {
     /**
-     * @see #getValue
-     * @see #setValue
+     * Value of this type.
      */
     private BigDecimal value = new BigDecimal(0);
 
     /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
-     * @throws SQLException on error
+     *{@inheritDoc}
      */
     public int update(final Object _object, final PreparedStatement _stmt, final int _index)
-            throws SQLException
+        throws SQLException
     {
-        _stmt.setBigDecimal(_index, getValue());
+        _stmt.setBigDecimal(_index, this.value);
         return 1;
     }
 
     /**
-     * @todo test that only one value is given for indexes
+     *{@inheritDoc}
      */
-
     public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
     {
 
@@ -67,76 +61,34 @@ public class DecimalType extends AbstractType
     }
 
     /**
-     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
-     * @param _objectList List of Objects
-     * @return Decimal
-     * TODO throw error if more than one value is given
+     *{@inheritDoc}
      */
     public Object readValue(final List<Object> _objectList)
     {
-        BigDecimal ret = null;
-        final Object obj = _objectList.get(0);
-        if (obj instanceof BigDecimal) {
-            ret = (BigDecimal) obj;
-        } else if (obj != null) {
-            ret = new BigDecimal(obj.toString());
+        final List<BigDecimal> ret = new ArrayList<BigDecimal>();
+        for (final Object object : _objectList) {
+            if (object instanceof BigDecimal) {
+                ret.add((BigDecimal) object);
+            } else if (object != null) {
+                ret.add(new BigDecimal(object.toString()));
+            }
         }
-
-        this.value = ret;
-        return ret;
+        return _objectList.size() > 0 ? (ret.size() > 1 ? ret : ret.get(0)) : null;
     }
 
+    /**
+     *{@inheritDoc}
+     */
     public void set(final Object[] _value)
     {
         if (_value != null) {
             if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
-                setValue(new BigDecimal((String) _value[0]));
+                this.value = (new BigDecimal((String) _value[0]));
             } else if (_value[0] instanceof BigDecimal) {
-                setValue((BigDecimal) _value[0]);
+                this.value = ((BigDecimal) _value[0]);
             } else if (_value[0] instanceof Number) {
-                setValue(new BigDecimal(((Number) _value[0]).toString()));
+                this.value = (new BigDecimal(((Number) _value[0]).toString()));
             }
         }
     }
-
-    /**
-     * This is the setter method for instance variable {@link #value}.
-     *
-     * @param _value new value for instance variable {@link #value}
-     * @see #value
-     * @see #getValue
-     */
-    public void setValue(final BigDecimal _value)
-    {
-        this.value = _value;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #value}.
-     *
-     * @return the value of the instance variable {@link #value}.
-     * @see #value
-     * @see #setValue
-     */
-    public BigDecimal getValue()
-    {
-        return this.value;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
-     */
-    public Object get()
-    {
-        return this.value;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "" + getValue();
-    }
-
 }
