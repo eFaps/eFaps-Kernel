@@ -125,7 +125,8 @@ public class OneSelect
     }
 
     /**
-     * @param _attr attribute to be used in this OneSelect
+     * @param _query    AbstractPrintQuery this OneSelect belongs to
+     * @param _attr     attribute to be used in this OneSelect
      */
     public OneSelect(final AbstractPrintQuery _query, final Attribute _attr)
     {
@@ -264,6 +265,23 @@ public class OneSelect
      */
     public void append2SQLFrom(final StringBuilder _fromBldr)
     {
+        // for attributes it must be evaluated if the attribute is inside a child table
+        if (this.valueSelect != null && "attribute".equals(this.valueSelect.getValueType())) {
+            Type type;
+            if (this.selectParts.size() > 0) {
+                type = this.selectParts.get(this.selectParts.size() - 1).getType();
+            } else {
+                type = this.query.getMainType();
+            }
+            Attribute attr = this.valueSelect.getAttribute();
+            if (attr == null) {
+                attr = type.getAttribute(((AttributeValueSelect) this.valueSelect).getAttrName());
+            }
+            if (!attr.getTable().equals(type.getMainTable())) {
+                final ChildTableSelectPart childtable = new ChildTableSelectPart(type, attr.getTable());
+                this.selectParts.add(childtable);
+            }
+        }
         for (final ISelectPart sel : this.selectParts) {
             this.tableIndex = sel.join(this, _fromBldr, this.tableIndex);
         }
@@ -277,21 +295,6 @@ public class OneSelect
      */
     public int append2SQLSelect(final StringBuilder _fromBldr, final int _colIndex)
     {
-
-//            if ("id".equals(this.attrName)) {
-//                this.attribute = type.getAttribute("ID");
-//                _fromBldr.append(",T").append(this.tableIndex)
-//                    .append(".").append(type.getMainTable().getSqlColId());
-//                this.colIndexs.add(_colIndex);
-//                ret++;
-//            } else if ("oid".equals(this.attrName)) {
-//                this.attribute = type.getAttribute("OID");
-//                for (final String colName : this.attribute.getSqlColNames()) {
-//                    _fromBldr.append(",T").append(this.tableIndex).append(".").append(colName);
-//                    this.colIndexs.add(_colIndex + ret);
-//                    ret++;
-//                }
-
         Type type;
         if (this.selectParts.size() > 0) {
             type = this.selectParts.get(this.selectParts.size() - 1).getType();
@@ -359,8 +362,8 @@ public class OneSelect
 
 
     /**
-     * @param _valueSee
-     * @throws EFapsException
+     * @param _valueSelect AbstractValueSelect to add
+     * @throws EFapsException on error
      */
     private void addValueSelect(final AbstractValueSelect _valueSelect) throws EFapsException
     {

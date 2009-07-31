@@ -63,6 +63,16 @@ public class AttributeValueSelect extends AbstractValueSelect
     }
 
     /**
+     * Getter method for instance variable {@link #attrName}.
+     *
+     * @return value of instance variable {@link #attrName}
+     */
+    public String getAttrName()
+    {
+        return this.attrName;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
