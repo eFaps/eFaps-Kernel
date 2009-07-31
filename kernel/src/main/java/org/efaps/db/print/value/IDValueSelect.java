@@ -46,7 +46,7 @@ public class IDValueSelect extends AbstractValueSelect
                                 final int _colIndex)
     {
         int ret = 0;
-        if (!"type".equals(getParent().getValueType())) {
+        if (getParent() == null || !"type".equals(getParent().getValueType())) {
             _fromBldr.append(",T").append(_tableIndex).append(".ID");
             getColIndexs().add(_colIndex);
             ret++;
