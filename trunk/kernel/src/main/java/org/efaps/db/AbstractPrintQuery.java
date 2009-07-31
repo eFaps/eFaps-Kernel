@@ -124,7 +124,8 @@ public abstract class AbstractPrintQuery
      */
     public Attribute getAttribute4Attribute(final String _attributeName)
     {
-        return this.attr2OneSelect.get(_attributeName).getAttribute();
+        final OneSelect oneselect = this.attr2OneSelect.get(_attributeName);
+        return oneselect == null ? null : oneselect.getAttribute();
     }
 
     /**
@@ -135,7 +136,7 @@ public abstract class AbstractPrintQuery
     public List<Instance> getInstances4Attribute(final String _attributeName)
     {
         final OneSelect oneselect = this.attr2OneSelect.get(_attributeName);
-        return oneselect.getInstances();
+        return oneselect == null ? null :oneselect.getInstances();
     }
 
     /**
@@ -150,7 +151,7 @@ public abstract class AbstractPrintQuery
             throws EFapsException
     {
         final OneSelect oneselect = this.attr2OneSelect.get(_attributeName);
-        return (T) oneselect.getObject();
+        return oneselect == null ? null : (T) oneselect.getObject();
     }
 
     /**
@@ -364,7 +365,7 @@ public abstract class AbstractPrintQuery
             throws EFapsException
     {
         final Phrase phrase = this.key2Phrase.get(_key);
-        return phrase.getPhraseValue(getCurrentInstance());
+        return phrase == null ? null :phrase.getPhraseValue(getCurrentInstance());
     }
 
     /**
@@ -404,7 +405,7 @@ public abstract class AbstractPrintQuery
         throws EFapsException
     {
         final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectStmt);
-        return (T) oneselect.getObject();
+        return oneselect == null ? null : (T) oneselect.getObject();
     }
 
     /**
@@ -415,7 +416,7 @@ public abstract class AbstractPrintQuery
     public Attribute getAttribute4Select(final String _selectStmt)
     {
         final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectStmt);
-        return oneselect.getAttribute();
+        return oneselect == null ? null : oneselect.getAttribute();
     }
 
     /**
