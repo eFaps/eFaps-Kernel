@@ -30,6 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.AbstractPrintQuery;
 import org.efaps.db.Instance;
@@ -146,6 +147,16 @@ public class OneSelect
     }
 
     /**
+     * Setter method for instance variable {@link #valueSelect}.
+     *
+     * @param _valueSelect value for instance variable {@link #valueSelect}
+     */
+    public void setValueSelect(final AbstractValueSelect _valueSelect)
+    {
+        this.valueSelect = _valueSelect;
+    }
+
+    /**
      * Getter method for instance variable {@link #selectStmt}.
      *
      * @return value of instance variable {@link #selectStmt}
@@ -249,6 +260,26 @@ public class OneSelect
     }
 
     /**
+     * Add the name of the attribute the link must go to, evaluated from an
+     * <code>attributeSet[ATTRIBUTESETNAME]</code> part of an select statement.
+     * @param _attributeSet   name of the attribute the link must go to
+     */
+    public void addAttributeSetSelectPart(final String _attributeSet)
+    {
+        Type type;
+        // if a previous select exists it is based on the previous select,
+        // else it is based on the basic table
+        if (this.selectParts.size() > 0) {
+            type = this.selectParts.get(this.selectParts.size() - 1).getType();
+        } else {
+            type = this.query.getMainType();
+        }
+        final AttributeSet set = AttributeSet.find(type.getName(), _attributeSet);
+        final String linkFrom = set.getName() + "#" + set.getAttributeName();
+        this.fromSelect = new LinkFromSelect(linkFrom);
+    }
+
+    /**
      * Add the name of the type and attribute the link comes from,
      * evaluated from an <code>linkTo[TYPENAME#ATTRIBUTENAME]</code>
      * part of an select statement.
@@ -335,27 +366,35 @@ public class OneSelect
                 if (matcher.find()) {
                     currentSelect.addLinkToSelectPart(matcher.group());
                 }
+            } else if (part.startsWith("attributeset")) {
+                final Matcher matcher = pattern.matcher(part);
+                if (matcher.find()) {
+                    currentSelect.addValueSelect(new IDValueSelect());
+                    currentSelect.addAttributeSetSelectPart(matcher.group());
+                    currentSelect = currentSelect.fromSelect.getMainOneSelect();
+                }
             } else if (part.startsWith("attribute")) {
                 final Matcher matcher = pattern.matcher(part);
                 if (matcher.find()) {
-                    addValueSelect(new AttributeValueSelect(matcher.group()));
+                    currentSelect.addValueSelect(new AttributeValueSelect(matcher.group()));
                 }
             } else if (part.startsWith("linkfrom")) {
                 final Matcher matcher = linkfomPat.matcher(part);
                 if (matcher.find()) {
+                    currentSelect.addValueSelect(new IDValueSelect());
                     currentSelect.addLinkFromSelectPart(matcher.group());
                     currentSelect = currentSelect.fromSelect.getMainOneSelect();
                 }
             } else if (part.equalsIgnoreCase("oid")) {
-                addValueSelect(new OIDValueSelect());
+                currentSelect.addValueSelect(new OIDValueSelect());
             } else if (part.equalsIgnoreCase("type")) {
-                addValueSelect(new TypeValueSelect());
+                currentSelect.addValueSelect(new TypeValueSelect());
             } else if (part.equalsIgnoreCase("label")) {
-                addValueSelect(new LabelValueSelect());
+                currentSelect.addValueSelect(new LabelValueSelect());
             } else if (part.equalsIgnoreCase("id")) {
-                addValueSelect(new IDValueSelect());
+                currentSelect.addValueSelect(new IDValueSelect());
             } else if (part.equalsIgnoreCase("uuid")) {
-                addValueSelect(new UUIDValueSelect());
+                currentSelect.addValueSelect(new UUIDValueSelect());
             }
         }
     }

@@ -469,7 +469,7 @@ public abstract class AbstractPrintQuery
         if (ret) {
             for (final OneSelect onesel : this.allSelects) {
                 if (onesel.getFromSelect() != null) {
-                    onesel.getFromSelect().execute(getCurrentInstance());
+                    onesel.getFromSelect().execute(onesel);
                 }
             }
         }
@@ -499,7 +499,7 @@ public abstract class AbstractPrintQuery
         }
 
         for (final OneSelect onesel : this.allSelects) {
-            if (onesel.getFromSelect() == null) {
+            if (onesel.getValueSelect() != null) {
                 colIndex += onesel.append2SQLSelect(selBldr, colIndex);
             }
         }

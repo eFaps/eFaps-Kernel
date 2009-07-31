@@ -96,22 +96,23 @@ public class LinkFromSelect extends AbstractPrintQuery
 
     /**
      * Execute the from select for the given instance.
-     * @param _instance instance
+     * @param _onesel instance
      * @throws EFapsException on error
      * @return true if statement didi return values, else false
      */
-    public boolean execute(final Instance _instance) throws EFapsException
+    public boolean execute(final OneSelect _onesel) throws EFapsException
     {
-        this.hasResult = executeOneCompleteStmt(createSQLStatement(_instance), getAllSelects());
+        this.hasResult = executeOneCompleteStmt(createSQLStatement(_onesel), getAllSelects());
         return this.hasResult;
     }
 
     /**
      * Method to create on Statement out of the different parts.
-     * @param _instance instance
+     * @param _parentOnesel instance
      * @return StringBuilder containing the sql statement
+     * @throws EFapsException on error
      */
-    private StringBuilder createSQLStatement(final Instance _instance)
+    private StringBuilder createSQLStatement(final OneSelect _parentOnesel) throws EFapsException
     {
         final Attribute attr = this.type.getAttribute(this.attrName);
         final StringBuilder selBldr = new StringBuilder();
@@ -130,7 +131,8 @@ public class LinkFromSelect extends AbstractPrintQuery
 
         final StringBuilder whereBldr = new StringBuilder();
         whereBldr.append(" where T0.").append(attr.getSqlColNames().get(0)).append("=")
-            .append(_instance.getId());
+            .append(_parentOnesel.getObject());
+        _parentOnesel.setValueSelect(null);
 
         // in a subquery the type must also be set
         if (this.type.getMainTable().getSqlColType() != null) {
