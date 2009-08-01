@@ -72,13 +72,22 @@ public class OIDValueSelect extends AbstractValueSelect
     public Object getValue(final Object _object) throws EFapsException
     {
         final StringBuilder bldr = new StringBuilder();
+        boolean retNull = false;
         if (_object instanceof Object[]) {
             final Object[] object = (Object[]) _object;
-            bldr.append(object[1]).append(".").append(object[0]);
+            if (object[0] == null || object[1] == null) {
+                retNull = true;
+            } else {
+                bldr.append(object[1]).append(".").append(object[0]);
+            }
         } else {
-            bldr.append(this.type.getId()).append(".").append(_object);
+            if (_object == null) {
+                retNull = true;
+            } else {
+                bldr.append(this.type.getId()).append(".").append(_object);
+            }
         }
-        return bldr.toString();
+        return retNull ? null : bldr.toString();
     }
 
     /**
