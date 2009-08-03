@@ -87,8 +87,12 @@ public class Phrase
                 case EXPRESSION:
                     final OneSelect oneselect = this.selectStmt2OneSelect.get(token.getValue());
                     final Object value = oneselect.getObject();
-                    buf.append((new FieldValue(null, oneselect.getAttribute(), value, null))
+                    if (oneselect.getAttribute() != null) {
+                        buf.append((new FieldValue(null, oneselect.getAttribute(), value, null))
                                     .getStringValue(TargetMode.VIEW, _instance, null));
+                    } else {
+                        buf.append(value);
+                    }
                     break;
                 case TEXT:
                     buf.append(token.getValue());

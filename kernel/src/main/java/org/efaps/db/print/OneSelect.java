@@ -430,7 +430,7 @@ public class OneSelect
         } else {
             // if the currentObject is not null it means that the values are
             // retrieved by iteration through the objectlist
-            if (this.currentObject != null) {
+            if (this.currentId != null) {
                 ret = this.valueSelect.getValue(this.currentObject);
             } else {
                 ret = this.valueSelect.getValue(this.objectList);
@@ -520,7 +520,7 @@ public class OneSelect
      * @param _relIndex     relation the table is used in
      * @return new index for the table
      */
-    Integer getNewTableIndex(final String _tableName, final Integer _relIndex)
+    public Integer getNewTableIndex(final String _tableName, final Integer _relIndex)
     {
         int ret;
         if (this.valueSelect == null  && this.fromSelect != null) {
@@ -543,7 +543,7 @@ public class OneSelect
      * @param _relIndex relation the table is used in
      * @return index of the table or null if not found
      */
-    Integer getTableIndex(final String _tableName, final int _relIndex)
+    public Integer getTableIndex(final String _tableName, final int _relIndex)
     {
         Integer ret;
         if (this.valueSelect == null && this.fromSelect != null) {

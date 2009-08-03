@@ -130,8 +130,23 @@ public class LinkFromSelect extends AbstractPrintQuery
         }
 
         final StringBuilder whereBldr = new StringBuilder();
-        whereBldr.append(" where T0.").append(attr.getSqlColNames().get(0)).append("=")
-            .append(_parentOnesel.getObject());
+        whereBldr.append(" where T0.").append(attr.getSqlColNames().get(0)).append(" in (");
+        if (_parentOnesel.isMulitple()) {
+            boolean first = true;
+            final List<?> ids = (List<?>) _parentOnesel.getObject();
+            for (final Object id : ids) {
+                if (first) {
+                    first = false;
+                } else {
+                    whereBldr.append(",");
+                }
+                whereBldr.append(id);
+            }
+        } else {
+            whereBldr.append(_parentOnesel.getObject());
+        }
+
+        whereBldr.append(")");
         _parentOnesel.setValueSelect(null);
 
         // in a subquery the type must also be set
