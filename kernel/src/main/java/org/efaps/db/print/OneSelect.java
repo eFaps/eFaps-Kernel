@@ -308,7 +308,18 @@ public class OneSelect
             if (attr == null) {
                 attr = type.getAttribute(((AttributeValueSelect) this.valueSelect).getAttrName());
             }
-            if (!attr.getTable().equals(type.getMainTable())) {
+            // if the attr is still null that means that the type does not have this attribute, so last
+            // chance to find the attribute is to search in the child types
+            if (attr == null) {
+                for (final Type childType : type.getChildTypes()) {
+                    attr = childType.getAttribute(((AttributeValueSelect) this.valueSelect).getAttrName());
+                    if (attr != null) {
+                        ((AttributeValueSelect) this.valueSelect).setAttribute(attr);
+                        break;
+                    }
+                }
+            }
+            if (attr != null && !attr.getTable().equals(type.getMainTable())) {
                 final ChildTableSelectPart childtable = new ChildTableSelectPart(type, attr.getTable());
                 this.selectParts.add(childtable);
             }
