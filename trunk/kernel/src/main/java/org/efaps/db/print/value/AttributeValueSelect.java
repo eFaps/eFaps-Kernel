@@ -82,6 +82,16 @@ public class AttributeValueSelect extends AbstractValueSelect
     }
 
     /**
+     * Setter method for instance variable {@link #attribute}.
+     *
+     * @param attribute value for instance variable {@link #attribute}
+     */
+    public void setAttribute(final Attribute attribute)
+    {
+        this.attribute = attribute;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
