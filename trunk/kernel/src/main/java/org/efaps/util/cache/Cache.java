@@ -247,7 +247,7 @@ public abstract class Cache<K extends CacheObjectInterface> {
   }
 
   /**
-   * Abstract method to fill this cache with objects.
+   * Method to fill this cache with objects.
    *
    * @param _newCache4Id      Cache for id
    * @param _newCache4Name    Cache for name
