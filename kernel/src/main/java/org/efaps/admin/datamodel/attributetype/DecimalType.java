@@ -73,7 +73,7 @@ public class DecimalType extends AbstractType
                 ret.add(new BigDecimal(object.toString()));
             }
         }
-        return _objectList.size() > 0 ? (ret.size() > 1 ? ret : ret.get(0)) : null;
+        return _objectList.size() > 0 ? (ret.size() > 1 ? ret : (ret.size() > 0 ? ret.get(0) : null)) : null;
     }
 
     /**
