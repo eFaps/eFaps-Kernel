@@ -67,9 +67,9 @@ public class ChildTableSelectPart implements ISelectPart
     {
         Integer ret;
         final String tableName = this.table.getSqlTable();
-        ret = _oneSelect.getTableIndex(tableName, _relIndex);
+        ret = _oneSelect.getTableIndex(tableName, "ID", _relIndex);
         if (ret == null) {
-            ret = _oneSelect.getNewTableIndex(tableName, _relIndex);
+            ret = _oneSelect.getNewTableIndex(tableName, "ID", _relIndex);
             _fromBldr.append(" left join ").append(tableName).append(" T").append(ret)
                 .append(" on T").append(_relIndex).append(".ID").append("=T").append(ret).append(".ID");
         }

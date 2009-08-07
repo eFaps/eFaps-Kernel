@@ -528,16 +528,17 @@ public class OneSelect
      * {@link org.efaps.db.PrintQuery#getNewTableIndex(String, Integer)}.
      *
      * @param _tableName    tablename the index is wanted for
+     * @param _column       name of the column, used for the relation
      * @param _relIndex     relation the table is used in
      * @return new index for the table
      */
-    public Integer getNewTableIndex(final String _tableName, final Integer _relIndex)
+    public Integer getNewTableIndex(final String _tableName, final String _column, final Integer _relIndex)
     {
         int ret;
         if (this.valueSelect == null  && this.fromSelect != null) {
-            ret = this.fromSelect.getNewTableIndex(_tableName, _relIndex);
+            ret = this.fromSelect.getNewTableIndex(_tableName, _column, _relIndex);
         } else {
-            ret = this.query.getNewTableIndex(_tableName, _relIndex);
+            ret = this.query.getNewTableIndex(_tableName, _column, _relIndex);
         }
         return ret;
     }
@@ -551,16 +552,17 @@ public class OneSelect
      * else in PrintQuery the method
      * {@link org.efaps.db.PrintQuery#getTableIndex(String, Integer)}
      * @param _tableName tablename the index is wanted for
+     * @param _column       name of the column, used for the relation
      * @param _relIndex relation the table is used in
      * @return index of the table or null if not found
      */
-    public Integer getTableIndex(final String _tableName, final int _relIndex)
+    public Integer getTableIndex(final String _tableName, final String _column, final int _relIndex)
     {
         Integer ret;
         if (this.valueSelect == null && this.fromSelect != null) {
-            ret = this.fromSelect.getTableIndex(_tableName, _relIndex);
+            ret = this.fromSelect.getTableIndex(_tableName, _column, _relIndex);
         } else {
-            ret = this.query.getTableIndex(_tableName, _relIndex);
+            ret = this.query.getTableIndex(_tableName, _column, _relIndex);
         }
         return ret;
     }

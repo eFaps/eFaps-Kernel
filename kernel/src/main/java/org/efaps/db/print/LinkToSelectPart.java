@@ -60,11 +60,12 @@ public class LinkToSelectPart implements ISelectPart
         final Attribute attr = this.type.getAttribute(this.attrName);
         Integer ret;
         final String tableName = attr.getLink().getMainTable().getSqlTable();
-        ret = _oneSelect.getTableIndex(tableName, _relIndex);
+        final String column = attr.getSqlColNames().get(0);
+        ret = _oneSelect.getTableIndex(tableName, column, _relIndex);
         if (ret == null) {
-            ret = _oneSelect.getNewTableIndex(tableName, _relIndex);
+            ret = _oneSelect.getNewTableIndex(tableName, column, _relIndex);
             _fromBldr.append(" left join ").append(tableName).append(" T").append(ret)
-                .append(" on T").append(_relIndex).append(".").append(attr.getSqlColNames().get(0))
+                .append(" on T").append(_relIndex).append(".").append(column)
                 .append("=T").append(ret).append(".ID");
         }
         return ret;

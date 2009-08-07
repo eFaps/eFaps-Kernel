@@ -586,25 +586,27 @@ public abstract class AbstractPrintQuery
      * Method to get an table index from {@link #sqlTable2Index}.
      *
      * @param _tableName    tablename the index is wanted for
+     * @param _column       name of the column, used for the relation
      * @param _relIndex     relation the table is used in
      * @return  index of the table or null if not found
      */
-    public Integer getTableIndex(final String _tableName, final int _relIndex)
+    public Integer getTableIndex(final String _tableName, final String _column, final int _relIndex)
     {
-        return this.sqlTable2Index.get(_relIndex + "__" + _tableName);
+        return this.sqlTable2Index.get(_relIndex + "__" + _tableName + "__" + _column);
     }
 
     /**
      * Get a new table index and add the table to the map of existing table
      * indexes.
      * @param _tableName    tablename the index is wanted for
+     * @param _column       name of the column, used for the relation
      * @param _relIndex     relation the table is used in
      * @return new index for the table
      */
-    public Integer getNewTableIndex(final String _tableName, final Integer _relIndex)
+    public Integer getNewTableIndex(final String _tableName, final String _column, final Integer _relIndex)
     {
         this.tableIndex++;
-        this.sqlTable2Index.put(_relIndex + "__" + _tableName, this.tableIndex);
+        this.sqlTable2Index.put(_relIndex + "__" + _tableName + "__" + _column, this.tableIndex);
         return this.tableIndex;
     }
 }
