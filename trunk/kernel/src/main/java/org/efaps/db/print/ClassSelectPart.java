@@ -54,12 +54,12 @@ public class ClassSelectPart implements ISelectPart
     {
         Integer ret;
         final String tableName = this.classification.getMainTable().getSqlTable();
-        ret = _oneSelect.getTableIndex(tableName, _relIndex);
+        final String column = this.classification.getLinkAttributeName();
+        ret = _oneSelect.getTableIndex(tableName, column, _relIndex);
         if (ret == null) {
-            ret = _oneSelect.getNewTableIndex(tableName, _relIndex);
+            ret = _oneSelect.getNewTableIndex(tableName, column, _relIndex);
             _fromBldr.append(" left join ").append(tableName).append(" T").append(ret).append(" on T").append(
-                            _relIndex).append(".ID=").append("T").append(ret).append(".").append(
-                            this.classification.getLinkAttributeName());
+                            _relIndex).append(".ID=").append("T").append(ret).append(".").append(column);
         }
         return ret;
     }
