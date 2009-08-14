@@ -23,6 +23,7 @@ package org.efaps.esjp.admin.event;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
@@ -166,13 +167,17 @@ public class ConnectEventToAbstract
         query.addSelect("ID");
         query.execute();
 
+        final Map<String, Long> name2id = new TreeMap<String, Long>();
+        while (query.next()) {
+            name2id.put((String) query.get("Name"), (Long) query.get("ID"));
+        }
         // build drop down list
         final String fieldName = fieldvalue.getField().getName();
         final StringBuilder ret = new StringBuilder();
         ret.append("<select name=\"").append(fieldName).append("\" size=\"1\">");
-        while (query.next()) {
-            final long id = (Long) query.get("ID");
-            final String name = (String) query.get("Name");
+        for (final Entry<String, Long> entry : name2id.entrySet()) {
+            final long id = entry.getValue();
+            final String name =  entry.getKey();
             ret.append("<option value=\"").append(id).append("\"");
             if (id == selectedId) {
                 ret.append(" selected=\"selected\"");
