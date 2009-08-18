@@ -20,6 +20,8 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.util.EFapsException;
 
 /**
@@ -68,6 +70,22 @@ public class NumberUI extends StringUI
             final Integer num = (Integer) _fieldValue.getValue();
             final Integer num2 = (Integer) _fieldValue2.getValue();
             ret = num.compareTo(num2);
+        }
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String validateValue(final String _value, final Attribute _attribute)
+    {
+        String ret = null;
+        try {
+            @SuppressWarnings("unused")
+            final Number test = new Long(_value);
+        } catch (final NumberFormatException e) {
+            ret = DBProperties.getProperty(NumberUI.class.getName() + ".InvalidValue");
         }
         return ret;
     }

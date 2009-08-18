@@ -20,79 +20,71 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import java.io.Serializable;
+import java.math.BigDecimal;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.util.EFapsException;
 
 /**
- * Abstract class for the UIInterface interface implementing for all required
- * methods a default.
+ * Class used to represent any type of decimal for the UI.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractUI implements UIInterface, Serializable
+public class DecimalUI extends StringUI
 {
+
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * {@inheritDoc}
+     * Method to get the Object for use in case of comparison.
+     *
+     * @param _fieldValue Fieldvalue the representation is requested
+     * @return value
+     * @throws EFapsException on error
      */
-    public String getEditHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
-    {
-        return "edit";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String getHiddenHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
-    {
-        return "hidden";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
-    {
-        return "read only";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String getStringValue(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
-    {
-        return getReadOnlyHtml(_fieldValue, _mode);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Object getObject4Compare(final FieldValue _fieldValue) throws EFapsException
     {
-        return null;
+        return _fieldValue.getValue();
     }
 
     /**
-     * {@inheritDoc}
+     * Method to compare the values.
+     *
+     * @param _fieldValue first Value
+     * @param _fieldValue2 second Value
+     * @return 0
      */
+    @Override
     public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2)
     {
-        return 0;
+        int ret = 0;
+        if (_fieldValue.getValue() instanceof BigDecimal && _fieldValue2.getValue() instanceof BigDecimal) {
+            final BigDecimal num = (BigDecimal) _fieldValue.getValue();
+            final BigDecimal num2 = (BigDecimal) _fieldValue2.getValue();
+            ret = num.compareTo(num2);
+        }
+        return ret;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public String validateValue(final String _value, final Attribute _attribute)
     {
-        return null;
+        String ret = null;
+        try {
+            @SuppressWarnings("unused")
+            final BigDecimal test = new BigDecimal(_value);
+        } catch (final NumberFormatException e) {
+            ret = DBProperties.getProperty(DecimalUI.class.getName() + ".InvalidValue");
+        }
+        return ret;
     }
 }
