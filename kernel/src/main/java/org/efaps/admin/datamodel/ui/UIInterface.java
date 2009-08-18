@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.util.EFapsException;
 
@@ -97,4 +98,16 @@ public interface UIInterface
      * @return int
      */
     int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2);
+
+
+    /**
+     * Method is used to validate a string value given from an Userinterface.
+     *
+     * @param _value        value to validate
+     * @param _attribute    Attribute the value is related to
+     * @return if the given value is valid for this type null must be returned,
+     *      else the message that will be shown to the user as a snipplet must
+     *      be returned
+     */
+    String validateValue(final String _value, final Attribute _attribute);
 }

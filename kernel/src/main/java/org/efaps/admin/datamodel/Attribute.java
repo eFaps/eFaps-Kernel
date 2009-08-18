@@ -612,8 +612,7 @@ public class Attribute extends AbstractDataModelObject
                         final String dimensionUUID = rs.getString(11);
                         final Type type = Type.get(typeId);
 
-                        Attribute.LOG.debug("read attribute '" + type.getName() + "/" + name + "' "
-                                            + "(id = " + id + ")");
+                        Attribute.LOG.debug("read attribute '" + type.getName() + "/" + name + "' (id = " + id + ")");
 
                         final Type typeAttr = Type.get(typeAttrId);
 

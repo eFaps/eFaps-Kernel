@@ -20,8 +20,10 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
 import org.efaps.admin.datamodel.Dimension.UoM;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
@@ -141,5 +143,21 @@ public class StringWithUoMUI extends AbstractUI
         final String value = _fieldValue.getValue().toString();
         final String value2 = _fieldValue2.getValue().toString();
         return value.compareTo(value2);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String validateValue(final String _value, final Attribute _attribute)
+    {
+        String ret = null;
+        if (_attribute != null) {
+            if (_value.length() > _attribute.getSize()) {
+                ret = DBProperties.getProperty(StringWithUoMUI.class.getName() + ".InvalidValue")
+                    + " " + _attribute.getSize();
+            }
+        }
+        return ret;
     }
 }
