@@ -152,8 +152,10 @@ public class MultiPrintQuery extends AbstractPrintQuery
         final Iterator<Instance> tempIter = this.instances.iterator();
         while (tempIter.hasNext()) {
             final Instance instance = tempIter.next();
-            if (accessmap.size() > 0 && !accessmap.containsKey(instance)) {
-                tempIter.remove();
+            if (accessmap.size() > 0 ) {
+                if (!accessmap.containsKey(instance) || !accessmap.get(instance)) {
+                    tempIter.remove();
+                }
             }
         }
         return executeWithoutAccessCheck();
