@@ -37,6 +37,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.print.value.AbstractValueSelect;
 import org.efaps.db.print.value.AttributeValueSelect;
+import org.efaps.db.print.value.FormatValueSelect;
 import org.efaps.db.print.value.IDValueSelect;
 import org.efaps.db.print.value.LabelValueSelect;
 import org.efaps.db.print.value.OIDValueSelect;
@@ -361,31 +362,35 @@ public class OneSelect
      */
     public void analyzeSelectStmt() throws EFapsException
     {
-        final Pattern pattern = Pattern.compile("(?<=\\[)[0-9a-zA-Z_]*(?=\\])");
+        final Pattern mainPattern = Pattern.compile("[a-z]+\\[.+?\\]");
+        final Pattern attrPattern = Pattern.compile("(?<=\\[)[0-9a-zA-Z_]*(?=\\])");
         final Pattern linkfomPat = Pattern.compile("(?<=\\[)[0-9a-zA-Z_#:]*(?=\\])");
+        final Pattern formatPat = Pattern.compile("(?<=\\[).*(?=\\])");
 
-        final String[] parts = this.selectStmt.split("\\.");
+        final Matcher mainMatcher = mainPattern.matcher(this.selectStmt);
+
         OneSelect currentSelect = this;
-        for (final String part : parts) {
+        while (mainMatcher.find()) {
+            final String part = mainMatcher.group();
             if (part.startsWith("class")) {
-                final Matcher matcher = pattern.matcher(part);
+                final Matcher matcher = attrPattern.matcher(part);
                 if (matcher.find()) {
                     currentSelect.addClassificationSelectPart(matcher.group());
                 }
             } else if (part.startsWith("linkto")) {
-                final Matcher matcher = pattern.matcher(part);
+                final Matcher matcher = attrPattern.matcher(part);
                 if (matcher.find()) {
                     currentSelect.addLinkToSelectPart(matcher.group());
                 }
             } else if (part.startsWith("attributeset")) {
-                final Matcher matcher = pattern.matcher(part);
+                final Matcher matcher = attrPattern.matcher(part);
                 if (matcher.find()) {
                     currentSelect.addValueSelect(new IDValueSelect());
                     currentSelect.addAttributeSetSelectPart(matcher.group());
                     currentSelect = currentSelect.fromSelect.getMainOneSelect();
                 }
             } else if (part.startsWith("attribute")) {
-                final Matcher matcher = pattern.matcher(part);
+                final Matcher matcher = attrPattern.matcher(part);
                 if (matcher.find()) {
                     currentSelect.addValueSelect(new AttributeValueSelect(matcher.group()));
                 }
@@ -406,6 +411,11 @@ public class OneSelect
                 currentSelect.addValueSelect(new IDValueSelect());
             } else if (part.equalsIgnoreCase("uuid")) {
                 currentSelect.addValueSelect(new UUIDValueSelect());
+            } else if (part.startsWith("format")) {
+                final Matcher matcher = formatPat.matcher(part);
+                if (matcher.find()) {
+                    currentSelect.addValueSelect(new FormatValueSelect(matcher.group()));
+                }
             }
         }
     }

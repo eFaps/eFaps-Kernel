@@ -125,15 +125,24 @@ public abstract class AbstractValueSelect
     }
 
     /**
-     * @see org.efaps.db.print.value.IValueSelect#getValue(java.lang.Object)
-     * @param currentObject
-     * @throws EFapsException
+     * Method to get the value for the current object.
+     *
+     * @param _object  current object
+     * @throws EFapsException on error
+     * @return object
      */
     public Object getValue(final Object _object) throws EFapsException
     {
         return _object;
     }
 
+    /**
+     * Method to get the value for a list of  object.
+     *
+     * @param _objectList  list of objects
+     * @throws EFapsException on error
+     * @return object
+     */
     public Object getValue(final List<Object> _objectList) throws EFapsException
     {
         final List<Object> ret = new ArrayList<Object>();

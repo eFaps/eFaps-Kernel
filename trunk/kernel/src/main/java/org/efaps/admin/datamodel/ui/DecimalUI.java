@@ -23,6 +23,7 @@ package org.efaps.admin.datamodel.ui;
 import java.math.BigDecimal;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.attributetype.DecimalType;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.util.EFapsException;
 
@@ -80,9 +81,8 @@ public class DecimalUI extends StringUI
     {
         String ret = null;
         try {
-            @SuppressWarnings("unused")
-            final BigDecimal test = new BigDecimal(_value);
-        } catch (final NumberFormatException e) {
+            DecimalType.parseLocalized(_value);
+        } catch (final EFapsException e) {
             ret = DBProperties.getProperty(DecimalUI.class.getName() + ".InvalidValue");
         }
         return ret;

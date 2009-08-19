@@ -30,7 +30,7 @@ import org.efaps.admin.dbproperty.DBProperties;
  * @version $Id$
  *
  */
-public class NumberWithUoMUI extends AbstractUI
+public class NumberWithUoMUI extends StringWithUoMUI
 {
 
     /**

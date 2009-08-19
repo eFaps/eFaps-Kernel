@@ -84,11 +84,11 @@ public class AttributeValueSelect extends AbstractValueSelect
     /**
      * Setter method for instance variable {@link #attribute}.
      *
-     * @param attribute value for instance variable {@link #attribute}
+     * @param _attribute value for instance variable {@link #attribute}
      */
-    public void setAttribute(final Attribute attribute)
+    public void setAttribute(final Attribute _attribute)
     {
-        this.attribute = attribute;
+        this.attribute = _attribute;
     }
 
     /**
@@ -97,23 +97,27 @@ public class AttributeValueSelect extends AbstractValueSelect
     @Override
     public Object getValue(final Object _object) throws EFapsException
     {
-        Object ret;
-        final IAttributeType attrInterf = this.attribute.newInstance();
         final ArrayList<Object> tempList = new ArrayList<Object>();
         tempList.add(_object);
-        ret = attrInterf.readValue(tempList);
-        return ret;
+        return getValue(tempList);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Object getValue(final List<Object> _currentObject) throws EFapsException
+    public Object getValue(final List<Object> _objectList) throws EFapsException
     {
-        final Object ret;
+        Object ret;
         final IAttributeType attrInterf = this.attribute.newInstance();
-        ret = attrInterf.readValue(_currentObject);
+        ret = attrInterf.readValue(_objectList);
+
+        if (getChildValueSelect() != null) {
+            if ("format".equals(getChildValueSelect().getValueType())) {
+                final FormatValueSelect format = (FormatValueSelect) getChildValueSelect();
+                ret = format.format(this.attribute, ret);
+            }
+        }
         return ret;
     }
 

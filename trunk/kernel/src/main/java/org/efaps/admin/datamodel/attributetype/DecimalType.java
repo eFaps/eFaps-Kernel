@@ -23,10 +23,14 @@ package org.efaps.admin.datamodel.attributetype;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -79,16 +83,35 @@ public class DecimalType extends AbstractType
     /**
      *{@inheritDoc}
      */
-    public void set(final Object[] _value)
+    public void set(final Object[] _value) throws EFapsException
     {
         if (_value != null) {
             if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
-                this.value = (new BigDecimal((String) _value[0]));
+                this.value = parseLocalized((String) _value[0]);
             } else if (_value[0] instanceof BigDecimal) {
                 this.value = ((BigDecimal) _value[0]);
             } else if (_value[0] instanceof Number) {
                 this.value = (new BigDecimal(((Number) _value[0]).toString()));
             }
+        }
+    }
+
+    /**
+     * Method to parse a localized String to an BigDecimal.
+     *
+     * @param _value value to be parsed
+     * @return  BigDecimal
+     * @throws EFapsException on error
+     */
+    public static BigDecimal parseLocalized(final String _value) throws EFapsException
+    {
+        final DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Context.getThreadContext()
+                        .getLocale());
+        format.setParseBigDecimal(true);
+        try {
+            return (BigDecimal) format.parse(_value);
+        } catch (final ParseException e) {
+            throw new EFapsException(DecimalType.class, "ParseException", e);
         }
     }
 }
