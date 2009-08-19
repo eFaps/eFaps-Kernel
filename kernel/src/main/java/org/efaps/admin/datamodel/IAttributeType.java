@@ -88,11 +88,11 @@ public interface IAttributeType
 
     /**
      * This methods sets the internal value with a string coming from the user
-     * interface. The string is a localised value!
+     * interface. The string is a localized value!
      *
      * @param _values new object value to set
      */
-    void set(final Object[] _values);
+    void set(final Object[] _values) throws EFapsException;
 
     /**
      * The instance method gets the attribute for this attribute type interface.

@@ -25,6 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.efaps.admin.datamodel.Dimension;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -43,12 +44,13 @@ public class DecimalWithUoMType extends AbstractWithUoMType
      * internal value can be set directly with method {@link #setValue}.
      *
      * @param _value new value to set
+     * @throws EFapsException on error
      */
-    public void set(final Object[] _value)
+    public void set(final Object[] _value) throws EFapsException
     {
         if (_value instanceof Object[]) {
             if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
-                this.value = new BigDecimal((String) _value[0]);
+                this.value = DecimalType.parseLocalized((String) _value[0]);
             } else if (_value[0] instanceof BigDecimal) {
                 this.value = (BigDecimal) _value[0];
             } else if (_value[0] instanceof Number) {
@@ -63,11 +65,7 @@ public class DecimalWithUoMType extends AbstractWithUoMType
     }
 
     /**
-     * This is the getter method for instance variable {@link #value}.
-     *
-     * @return the value of the instance variable {@link #value}.
-     * @see #value
-     * @see #setValue
+     *{@inheritDoc}
      */
     @Override
     protected Double getValue()
@@ -76,10 +74,7 @@ public class DecimalWithUoMType extends AbstractWithUoMType
     }
 
     /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractWithUoMType#setValueStmt(java.sql.PreparedStatement, int)
-     * @param _stmt     prepared statement
-     * @param _index    index
-     * @throws SQLException on error
+     *{@inheritDoc}
      */
     @Override
     protected void setValueStmt(final PreparedStatement _stmt, final int _index) throws SQLException
@@ -88,9 +83,7 @@ public class DecimalWithUoMType extends AbstractWithUoMType
     }
 
     /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractWithUoMType#readValue(org.efaps.db.query.CachedResult, int)
-     * @param _object    Object to read
-     * @return the value as Integer
+     * {@inheritDoc}
      */
     @Override
     protected Object readValue(final Object _object)
