@@ -95,4 +95,12 @@ public abstract class AbstractUI implements UIInterface, Serializable
     {
         return null;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object format(final Object _object, final String _pattern) throws EFapsException
+    {
+        return _object;
+    }
 }

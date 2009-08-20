@@ -20,20 +20,12 @@
 
 package org.efaps.db.print.value;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.IAttributeType;
-import org.efaps.admin.datamodel.attributetype.DecimalType;
-import org.efaps.admin.datamodel.attributetype.DecimalWithUoMType;
-import org.efaps.admin.datamodel.attributetype.LongType;
-import org.efaps.db.Context;
+import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.util.EFapsException;
-
-import com.sun.jdi.IntegerType;
 
 /**
  * TODO comment!
@@ -77,29 +69,19 @@ public class FormatValueSelect extends AbstractValueSelect
     public Object format(final Attribute _attribute, final Object _object) throws EFapsException
     {
         Object ret = null;
-
-        final IAttributeType attrType = _attribute.newInstance();
-        DecimalFormat formatter = null;
-        if (attrType instanceof DecimalType || attrType instanceof DecimalWithUoMType) {
-            formatter = (DecimalFormat) DecimalFormat.getInstance(Context.getThreadContext().getLocale());
-        } else if (attrType instanceof IntegerType || attrType instanceof LongType) {
-            formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext().getLocale());
-        }
-
-        if (formatter != null) {
-            formatter.applyPattern(this.pattern);
+        if (_object != null) {
+            final UIInterface ui = _attribute.getAttributeType().getUI();
             if (_object instanceof List<?>) {
-                final List<Object> temp = new ArrayList<Object>();
                 final List<?> objectList = (List<?>) _object;
+                final List<Object> temp = new ArrayList<Object>();
                 for (final Object object : objectList) {
-                    temp.add(formatter.format(object));
+                    temp.add(ui.format(object, this.pattern));
                 }
                 ret = temp;
             } else {
-                ret = formatter.format(_object);
+                ret = ui.format(_object, this.pattern);
             }
         }
         return ret;
     }
-
 }

@@ -110,4 +110,15 @@ public interface UIInterface
      *      be returned
      */
     String validateValue(final String _value, final Attribute _attribute);
+
+
+    /**
+     * Method to format the given Object.
+     *
+     * @param _object   the object to be formated
+     * @param _pattern  pattern to be used by the formatter
+     * @return formated object
+     * @throws EFapsException on error
+     */
+    Object format(final Object _object, final String _pattern) throws EFapsException;
 }
