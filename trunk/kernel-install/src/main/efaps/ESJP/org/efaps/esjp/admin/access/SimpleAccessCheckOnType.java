@@ -107,6 +107,9 @@ public class SimpleAccessCheckOnType implements EventExecution
             cmd.append(",").append(group.getId());
         }
         cmd.append(")");
+        if (type.isCheckStatus() && !_accessType.equals(AccessTypeEnums.CREATE.getAccessType())) {
+            cmd.append(" and ").append(type.getMainTable().getSqlTable()).append(".ID=").append(_instance.getId());
+        }
         return executeStatement(context, cmd);
     }
 
