@@ -157,10 +157,11 @@ public class Password
     public Return validatePwdValue(final Parameter _parameter) throws EFapsException
     {
         final Return ret = new Return();
-        final String[] newPwd = (String[]) _parameter.get(ParameterValues.NEW_VALUES);
+        final Object[] newPwd = (Object[]) _parameter.get(ParameterValues.NEW_VALUES);
         // Admin_User_PwdLengthMin
-        if (newPwd[0].length() > SystemConfiguration.get(UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"))
-                        .getAttributeValueAsInteger("PwdLengthMin")) {
+        if (newPwd[0].toString().length() > SystemConfiguration.get(
+                        UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079")).getAttributeValueAsInteger(
+                        "PwdLengthMin")) {
             ret.put(ReturnValues.TRUE, "true");
         } else {
             ret.put(ReturnValues.VALUES, "Admin_User_PwdChgForm/Password.validatePwdValue.ShortPwd");
