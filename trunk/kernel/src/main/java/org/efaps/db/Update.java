@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +55,10 @@ import org.efaps.util.EFapsException;
  */
 public class Update
 {
-    private final static Status STATUSOK = new Status();
+    /**
+     * Variable to get the Status of this update.
+     */
+    private static final Status STATUSOK = new Status();
 
     /**
      * Logging instance used in this class.
@@ -78,9 +80,15 @@ public class Update
      */
     private final Map<SQLTable, List<IAttributeType>> expr4Tables = new Hashtable<SQLTable, List<IAttributeType>>();
 
+    /**
+     * Mapping of attribute name to attribute type.
+     */
     private final Map<String, IAttributeType> mapAttr2Value = new HashMap<String, IAttributeType>();
 
-    protected final Map<Attribute, Object> values = new HashMap<Attribute, Object>();
+    /**
+     * Mapping of attribute to value.
+     */
+    private final Map<Attribute, Object> values = new HashMap<Attribute, Object>();
 
     /**
      * @param _type     Type to be updated
@@ -176,41 +184,13 @@ public class Update
         return ret;
     }
 
-
-
-    /**
-     * @param _attr     name of the attribute to update
-     * @param _value    attribute value
-     * @throws EFapsException on error
-     * @return Status
-     */
-    public Status add(final String _attr, final DateTime _value) throws EFapsException
-    {
-        final Attribute attr = getInstance().getType().getAttribute(_attr);
-        if (attr == null) {
-            throw new EFapsException(getClass(), "add.UnknownAttributeName");
-        }
-        return add(attr, _value);
-    }
-
-    /**
-     * @param _attr     attribute to update
-     * @param _value    attribute value
-     * @throws EFapsException on error
-     * @return Status
-     */
-    public Status add(final Attribute _attr, final DateTime _value) throws EFapsException
-    {
-        return add(_attr, true, _value);
-    }
-
     /**
      * @param _attr name of attribute to update
      * @param _values attribute value
      * @throws EFapsException on error
      * @return Status
      */
-    public Status add(final String _attr, final String... _values) throws EFapsException
+    public Status add(final String _attr, final Object... _values) throws EFapsException
     {
         final Attribute attr = getInstance().getType().getAttribute(_attr);
         if (attr == null) {
@@ -225,23 +205,9 @@ public class Update
      * @throws EFapsException on error
      * @return Status
      */
-    public Status add(final Attribute _attr, final String... _values) throws EFapsException
+    public Status add(final Attribute _attr, final Object... _values) throws EFapsException
     {
         return add(_attr, true, _values);
-    }
-
-
-    /**
-     * @param _attr             attribute to update
-     * @param _value            new attribute value
-     * @param _triggerRelevant is the attribute treiiger relevant
-     * @throws EFapsException on error
-     * @return Status
-     */
-    public Status add(final Attribute _attr, final boolean _triggerRelevant, final String... _value)
-            throws EFapsException
-    {
-        return add(_attr, _triggerRelevant, (Object[]) _value);
     }
 
     /**
@@ -252,7 +218,7 @@ public class Update
      * @throws EFapsException on error
      */
     protected Status add(final Attribute _attr, final boolean _triggerRelevant, final Object... _value)
-            throws EFapsException
+        throws EFapsException
     {
         Status ret = Update.STATUSOK;
         if (_attr.hasEvents(EventType.VALIDATE)) {
@@ -446,7 +412,7 @@ public class Update
      */
     private PreparedStatement createOneStatement(final ConnectionResource _con, final SQLTable _table,
                                                  final List<IAttributeType> _expressions)
-            throws SQLException, EFapsException
+        throws SQLException, EFapsException
     {
         final List<IAttributeType> updateAttr = new ArrayList<IAttributeType>();
         final StringBuilder cmd = new StringBuilder();
@@ -672,8 +638,8 @@ public class Update
         @Override
         public String toString()
         {
-            return new ToStringBuilder(this).append("AttributeName", getAttribute().getName()).append(" Value",
-                            getValue()).append(" ReturnValue:", getReturnValue()).toString();
+            return new ToStringBuilder(this).append("AttributeName", getAttribute().getName())
+                .append(" Value", getValue()).append(" ReturnValue:", getReturnValue()).toString();
         }
 
     }
