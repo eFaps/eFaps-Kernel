@@ -114,7 +114,7 @@ public class Edit implements EventExecution
      * @throws EFapsException on error
      */
     protected String updateMainElements(final Parameter _parameter, final Form _form, final Instance _instance)
-            throws EFapsException
+        throws EFapsException
     {
         String ret = null;
         final List<FieldSet> fieldsets = new ArrayList<FieldSet>();
@@ -157,7 +157,7 @@ public class Edit implements EventExecution
                     if (!newValue.equals(oldValue)) {
                         final Attribute attr = _instance.getType().getAttribute(attrName);
                         if (attr.hasUoM()) {
-                            update.add(attr, new String[] { context.getParameter(field.getName()),
+                            update.add(attr, new Object[] { context.getParameter(field.getName()),
                                             context.getParameter(field.getName() + "UoM") });
                         } else {
                             update.add(attr, newValue);
@@ -181,7 +181,7 @@ public class Edit implements EventExecution
      */
     protected void updateFieldSets(final Parameter _parameter, final Instance _instance,
                                    final List<FieldSet> _fieldsets)
-            throws EFapsException
+        throws EFapsException
     {
         final NumberFormat nf = NumberFormat.getInstance();
         nf.setMinimumIntegerDigits(2);
@@ -221,7 +221,7 @@ public class Edit implements EventExecution
                             final String newValue = _parameter.getParameterValue(fieldName);
                             if (!newValue.equals(oldValue)) {
                                 if (child.hasUoM()) {
-                                    setupdate.add(child, new String[] { newValue,
+                                    setupdate.add(child, new Object[] { newValue,
                                                                      _parameter.getParameterValue(fieldName + "UoM") });
                                 } else {
                                     setupdate.add(child, newValue);
@@ -257,7 +257,7 @@ public class Edit implements EventExecution
                                             + nf.format(Integer.parseInt(ayCoord)) + nf.format(xCoord);
                             if (_parameter.getParameters().containsKey(fieldName)) {
                                 if (child.hasUoM()) {
-                                    insert.add(child, new String[] { _parameter.getParameterValue(fieldName),
+                                    insert.add(child, new Object[] { _parameter.getParameterValue(fieldName),
                                                     _parameter.getParameterValue(fieldName + "UoM") });
                                 } else {
                                     insert.add(child, _parameter.getParameterValue(fieldName));
@@ -291,14 +291,13 @@ public class Edit implements EventExecution
      */
     protected void updateClassifcation(final Parameter _parameter, final Instance _instance,
                                        final String _classifcationName)
-            throws EFapsException
+        throws EFapsException
     {
 
         final List<?> classifications = (List<?>) _parameter.get(ParameterValues.CLASSIFICATIONS);
         final Classification classType = (Classification) Type.get(_classifcationName);
 
-        final Map<Classification, Map<String, Object>> class2values
-                                                                   = new HashMap<Classification, Map<String, Object>>();
+        final Map<Classification, Map<String, Object>> clas2values = new HashMap<Classification, Map<String, Object>>();
         // get the already existing classifications
         final SearchQuery relQuery = new SearchQuery();
         relQuery.setExpand(_instance, classType.getClassifyRelationType().getName() + "\\"
@@ -311,7 +310,7 @@ public class Edit implements EventExecution
             final Long typeid = (Long) relQuery.get(classType.getRelTypeAttributeName());
             final Classification subClassType = (Classification) Type.get(typeid);
             final Map<String, Object> values = new HashMap<String, Object>();
-            class2values.put(subClassType, values);
+            clas2values.put(subClassType, values);
 
             final SearchQuery subquery = new SearchQuery();
             subquery.setExpand(_instance, subClassType.getName() + "\\" + subClassType.getLinkAttributeName());
@@ -354,7 +353,7 @@ public class Edit implements EventExecution
                 // if the classification does not exist yet the relation must be
                 // created, and the new instance of the classification inserted
                 final Form form = Form.getTypeForm(classification);
-                if (!class2values.containsKey(classification)) {
+                if (!clas2values.containsKey(classification)) {
                     final Insert relInsert = new Insert(classification.getClassifyRelationType());
                     relInsert.add(classification.getRelLinkAttributeName(), ((Long) _instance.getId()).toString());
                     relInsert.add(classification.getRelTypeAttributeName(), ((Long) classification.getId()).toString());
@@ -378,7 +377,7 @@ public class Edit implements EventExecution
                                     if (_parameter.getParameters().containsKey(field.getName())) {
                                         final String value = _parameter.getParameterValue(field.getName());
                                         if (attr.hasUoM()) {
-                                            classInsert.add(attr, new String[] { value,
+                                            classInsert.add(attr, new Object[] { value,
                                                               _parameter.getParameterValue(field.getName() + "UoM") });
                                         } else {
                                             classInsert.add(attr, value);
@@ -391,7 +390,7 @@ public class Edit implements EventExecution
                     classInsert.execute();
                     updateFieldSets(_parameter, classInsert.getInstance(), fieldsets);
                 } else {
-                    final Map<String, Object> values = class2values.get(classification);
+                    final Map<String, Object> values = clas2values.get(classification);
                     final List<FieldSet> fieldsets = new ArrayList<FieldSet>();
                     final Update update = new Update((String) values.get("OID"));
                     boolean execUpdate = false;
@@ -414,7 +413,7 @@ public class Edit implements EventExecution
                                         if (!newValue.equals(oldValue)) {
                                             execUpdate = true;
                                             if (attr.hasUoM()) {
-                                                update.add(attr, new String[] { newValue,
+                                                update.add(attr, new Object[] { newValue,
                                                                _parameter.getParameterValue(field.getName() + "UoM") });
                                             } else {
                                                 update.add(attr, newValue);
@@ -433,11 +432,11 @@ public class Edit implements EventExecution
             }
         }
         // remove the classifications that are not any more wanted
-        for (final Classification clas : class2values.keySet()) {
+        for (final Classification clas : clas2values.keySet()) {
             if (classifications == null || !classifications.contains(clas)) {
-                Delete del = new Delete((String) class2values.get(clas).get("OID"));
+                Delete del = new Delete((String) clas2values.get(clas).get("OID"));
                 del.execute();
-                del = new Delete((String) class2values.get(clas).get("relOID"));
+                del = new Delete((String) clas2values.get(clas).get("relOID"));
                 del.execute();
             }
         }
