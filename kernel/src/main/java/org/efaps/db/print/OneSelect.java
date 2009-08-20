@@ -362,7 +362,7 @@ public class OneSelect
      */
     public void analyzeSelectStmt() throws EFapsException
     {
-        final Pattern mainPattern = Pattern.compile("[a-z]+\\[.+?\\]");
+        final Pattern mainPattern = Pattern.compile("[a-z]+\\[.+?\\]|[a-z]+");
         final Pattern attrPattern = Pattern.compile("(?<=\\[)[0-9a-zA-Z_]*(?=\\])");
         final Pattern linkfomPat = Pattern.compile("(?<=\\[)[0-9a-zA-Z_#:]*(?=\\])");
         final Pattern formatPat = Pattern.compile("(?<=\\[).*(?=\\])");

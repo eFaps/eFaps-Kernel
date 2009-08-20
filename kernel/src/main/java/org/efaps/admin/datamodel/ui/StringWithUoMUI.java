@@ -72,15 +72,10 @@ public class StringWithUoMUI extends AbstractUI
     }
 
     /**
-     * Method to get the Value for editing in an html document.
-     *
-     * @param _fieldValue Fieldvalue the representation is requested
-     * @param _mode target mode
-     * @return value for field
-     *
+     * {@inheritDoc}
      */
     @Override
-    public String getEditHtml(final FieldValue _fieldValue, final TargetMode _mode)
+    public String getEditHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
         final Field field = _fieldValue.getField();
