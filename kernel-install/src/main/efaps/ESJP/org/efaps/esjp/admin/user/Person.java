@@ -93,7 +93,7 @@ public class Person
 
         final String jaassystemid = getJAASSystemID();
         if (jaassystemid != null) {
-            final String[] key  = (String[]) values.get(instance.getType().getAttribute("Name"));
+            final Object[] key  = (Object[]) values.get(instance.getType().getAttribute("Name"));
             final Insert insert = new Insert("Admin_User_JAASKey");
             insert.add("Key", key[0]);
             insert.add("JAASSystemLink", getJAASSystemID());

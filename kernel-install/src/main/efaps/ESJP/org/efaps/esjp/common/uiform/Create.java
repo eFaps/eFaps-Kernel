@@ -114,7 +114,7 @@ public class Create implements EventExecution
                             final String value = _parameter.getParameterValue(field.getName());
                             if (attr.hasUoM()) {
                                 final String uom = _parameter.getParameterValue(field.getName() + "UoM");
-                                insert.add(attr, new String[] { value, uom });
+                                insert.add(attr, new Object[] { value, uom });
                             } else {
                                 insert.add(attr, value);
                             }
@@ -144,7 +144,7 @@ public class Create implements EventExecution
      */
     protected void insertFieldSets(final Parameter _parameter, final Instance _instance,
                                    final List<FieldSet> _fieldsets)
-            throws EFapsException
+        throws EFapsException
     {
         final Map<?, ?> others = (HashMap<?, ?>) _parameter.get(ParameterValues.OTHERS);
         // to find out if new values where added for a field set, first it is checked
@@ -173,7 +173,7 @@ public class Create implements EventExecution
                                             + nf.format(Integer.parseInt(yCoord)) + nf.format(xCoord);
                             if (_parameter.getParameters().containsKey(fieldName)) {
                                 if (child.hasUoM()) {
-                                    insert.add(child, new String[] { _parameter.getParameterValue(fieldName),
+                                    insert.add(child, new Object[] { _parameter.getParameterValue(fieldName),
                                                     _parameter.getParameterValue(fieldName + "UoM") });
                                 } else {
                                     insert.add(child, _parameter.getParameterValue(fieldName));
@@ -286,7 +286,7 @@ public class Create implements EventExecution
                                     final String value = _parameter.getParameterValue(field.getName());
                                     if (attr.hasUoM()) {
                                         final String uom = _parameter.getParameterValue(field.getName() + "UoM");
-                                        classInsert.add(attr, new String[] { value, uom });
+                                        classInsert.add(attr, new Object[] { value, uom });
                                     } else {
                                         classInsert.add(attr, value);
                                     }
