@@ -59,15 +59,11 @@ import org.efaps.util.cache.CacheReloadException;
 /**
  * Class represents the instance of a person/user in eFaps.
  *
- * @author tmo
+ * @author The eFasp Team
  * @version $Id$
  */
 public final class Person extends AbstractUserObject
 {
-
-    // ///////////////////////////////////////////////////////////////////////////
-    // enum definitions
-
     /**
      * Enum for all known and updated attributes from a person. Only this cuold
      * be defined which are in the SQL table T_USERPERSON.
@@ -83,7 +79,9 @@ public final class Person extends AbstractUserObject
         /** Attribute Name for the Timezone of the person. */
         TIMZONE("TIMZONE"),
         /** Attribute Name for the Locale of the person. */
-        LOCALE("LOCALE", true);
+        LOCALE("LOCALE"),
+         /** Attribute Name for the language of the person. */
+        LANGUAGE("LANG", true);
 
         /**
          * The name of the depending SQL column for an attribute in the table.
@@ -154,7 +152,7 @@ public final class Person extends AbstractUserObject
      * @see #updateAttrValue
      * @see #AttrName
      */
-    private final Map<AttrName, String> attrValues = new HashMap<AttrName, String>();
+    private final Map<Person.AttrName, String> attrValues = new HashMap<Person.AttrName, String>();
 
     /**
      * The map is used to store information about updates on attribute values.
@@ -164,7 +162,7 @@ public final class Person extends AbstractUserObject
      * @see #commitAttrValuesInDB
      * @see #AttrName
      */
-    private final Map<AttrName, String> attrUpdated = new HashMap<AttrName, String>();
+    private final Map<Person.AttrName, String> attrUpdated = new HashMap<Person.AttrName, String>();
 
     /**
      * The constructor creates a new instance of class {@link Person} and sets
@@ -281,7 +279,7 @@ public final class Person extends AbstractUserObject
      */
     public String getFirstName()
     {
-        return this.attrValues.get(AttrName.FIRSTNAME);
+        return this.attrValues.get(Person.AttrName.FIRSTNAME);
     }
 
     /**
@@ -289,7 +287,7 @@ public final class Person extends AbstractUserObject
      */
     public String getLastName()
     {
-        return this.attrValues.get(AttrName.LASTNAME);
+        return this.attrValues.get(Person.AttrName.LASTNAME);
     }
 
     /**
@@ -299,8 +297,33 @@ public final class Person extends AbstractUserObject
      */
     public Locale getLocale()
     {
-        return this.attrValues.get(AttrName.LOCALE) != null ? new Locale(this.attrValues.get(AttrName.LOCALE))
-                        : Locale.ENGLISH;
+        final Locale ret;
+        if (this.attrValues.get(Person.AttrName.LOCALE) != null) {
+            final String localeStr = this.attrValues.get(Person.AttrName.LOCALE);
+            final String[] countries = localeStr.split("_");
+            if (countries.length == 2) {
+                ret = new Locale(countries[0], countries[1]);
+            } else if (countries.length == 3) {
+                ret = new Locale(countries[0], countries[1], countries[2]);
+            } else {
+                ret = new Locale(localeStr);
+            }
+        } else {
+            ret = Locale.ENGLISH;
+        }
+        return ret;
+    }
+
+    /**
+     * Method to get the Language of the UserInterface for this Person.
+     * Default is english.
+     * @return iso code of a language
+     */
+    public String getLanguage()
+    {
+        return this.attrValues.get(Person.AttrName.LANGUAGE) != null
+                        ? this.attrValues.get(Person.AttrName.LANGUAGE)
+                        : Locale.ENGLISH.getISO3Language();
     }
 
     /**
@@ -310,8 +333,9 @@ public final class Person extends AbstractUserObject
      */
     public DateTimeZone getTimeZone()
     {
-        return this.attrValues.get(AttrName.TIMZONE) != null ? DateTimeZone
-                        .forID(this.attrValues.get(AttrName.TIMZONE)) : DateTimeZone.UTC;
+        return this.attrValues.get(Person.AttrName.TIMZONE) != null
+                        ? DateTimeZone.forID(this.attrValues.get(Person.AttrName.TIMZONE))
+                        : DateTimeZone.UTC;
     }
 
     /**
@@ -333,7 +357,7 @@ public final class Person extends AbstractUserObject
      */
     public ChronologyType getChronologyType()
     {
-        final String chronoKey = this.attrValues.get(AttrName.CHRONOLOGY);
+        final String chronoKey = this.attrValues.get(Person.AttrName.CHRONOLOGY);
         final ChronologyType chronoType;
         if (chronoKey != null) {
             chronoType = ChronologyType.getByKey(chronoKey);
@@ -426,14 +450,14 @@ public final class Person extends AbstractUserObject
 
                         final int rows = stmt.executeUpdate();
                         if (rows == 0) {
-                            LOG.error("could not update '" + cmd.toString() + "' person with user name '" + getName()
-                                            + "' (id = " + getId() + ")");
+                            Person.LOG.error("could not update '" + cmd.toString() + "' person with user name '"
+                                            + getName() + "' (id = " + getId() + ")");
                             throw new EFapsException(Person.class, "commitAttrValuesInDB.NotUpdated", cmd.toString(),
                                             getName(), getId());
                         }
                         // TODO: update modified date
                     } catch (final SQLException e) {
-                        LOG.error("could not update '" + cmd.toString() + "' person with user name '" + getName()
+                        Person.LOG.error("could not update '" + cmd.toString() + "' person with user name '" + getName()
                                         + "' (id = " + getId() + ")", e);
                         throw new EFapsException(Person.class, "commitAttrValuesInDB.SQLException", e, cmd.toString(),
                                         getName(), getId());
@@ -469,8 +493,6 @@ public final class Person extends AbstractUserObject
     public boolean checkPassword(final String _passwd) throws EFapsException
     {
         boolean ret = false;
-
-        final PreparedStatement stmt = null;
         final SearchQuery query = new SearchQuery();
         query.setObject(Type.get(USER_PERSON), getId());
         query.addSelect("Password");
@@ -548,13 +570,13 @@ public final class Person extends AbstractUserObject
                 stmt = rsrc.getConnection().createStatement();
                 final int rows = stmt.executeUpdate(cmd.toString());
                 if (rows == 0) {
-                    LOG.error("could not execute '" + cmd.toString()
+                    Person.LOG.error("could not execute '" + cmd.toString()
                                     + "' to update last login information for person '" + toString() + "'");
                     throw new EFapsException(getClass(), "updateLastLogin.NotUpdated", cmd.toString(), getName());
                 }
             } catch (final SQLException e) {
-                LOG.error("could not execute '" + cmd.toString() + "' to update last login information for person '"
-                                + toString() + "'", e);
+                Person.LOG.error("could not execute '" + cmd.toString()
+                                + "' to update last login information for person '" + toString() + "'", e);
                 throw new EFapsException(getClass(), "updateLastLogin.SQLException", e, cmd.toString(), getName());
             } finally {
                 try {
@@ -595,14 +617,14 @@ public final class Person extends AbstractUserObject
             update.execute();
             update.close();
         } else {
-            LOG.error("Password could not be set by the Update, due to restrictions " + "e.g. length???");
+            Person.LOG.error("Password could not be set by the Update, due to restrictions " + "e.g. length???");
             throw new EFapsException(getClass(), "TODO");
         }
     }
 
     /**
-     * @return
-     * @throws EFapsException
+     * @return Password
+     * @throws EFapsException on error
      */
     public String getPassword() throws EFapsException
     {
@@ -648,21 +670,21 @@ public final class Person extends AbstractUserObject
                 stmt = rsrc.getConnection().createStatement();
 
                 final StringBuilder cmd = new StringBuilder("select ");
-                for (final AttrName attrName : AttrName.values()) {
+                for (final AttrName attrName : Person.AttrName.values()) {
                     cmd.append(attrName.sqlColumn).append(",");
                 }
                 cmd.append("0 as DUMMY ").append("from V_USERPERSON ").append("where V_USERPERSON.ID=").append(getId());
 
                 final ResultSet resultset = stmt.executeQuery(cmd.toString());
                 if (resultset.next()) {
-                    for (final AttrName attrName : AttrName.values()) {
+                    for (final AttrName attrName : Person.AttrName.values()) {
                         final String tmp = resultset.getString(attrName.sqlColumn);
                         setAttrValue(attrName, tmp == null ? null : tmp.trim());
                     }
                 }
                 resultset.close();
             } catch (final SQLException e) {
-                LOG.error("read attributes for person with SQL statement is not " + "possible", e);
+                Person.LOG.error("read attributes for person with SQL statement is not " + "possible", e);
                 throw new EFapsException(Person.class, "readFromDBAttributes.SQLException", e, getName(), getId());
             } finally {
                 try {
@@ -670,7 +692,7 @@ public final class Person extends AbstractUserObject
                         stmt.close();
                     }
                 } catch (final SQLException e) {
-                    LOG.error("close of SQL statement is not possible", e);
+                    Person.LOG.error("close of SQL statement is not possible", e);
                 }
             }
             rsrc.commit();
@@ -966,13 +988,13 @@ public final class Person extends AbstractUserObject
                 stmt = rsrc.getConnection().createStatement();
                 final int rows = stmt.executeUpdate(cmd.toString());
                 if (rows == 0) {
-                    LOG.error("could not execute '" + cmd.toString()
+                    Person.LOG.error("could not execute '" + cmd.toString()
                                     + "' to update last login information for person '" + toString() + "'");
                     throw new EFapsException(getClass(), "updateLastLogin.NotUpdated", cmd.toString(), getName());
                 }
             } catch (final SQLException e) {
-                LOG.error("could not execute '" + cmd.toString() + "' to update last login information for person '"
-                                + toString() + "'", e);
+                Person.LOG.error("could not execute '" + cmd.toString()
+                                + "' to update last login information for person '" + toString() + "'", e);
                 throw new EFapsException(getClass(), "updateLastLogin.SQLException", e, cmd.toString(), getName());
             } finally {
                 try {
@@ -1018,7 +1040,7 @@ public final class Person extends AbstractUserObject
      */
     public static void initialize()
     {
-        CACHE.initialize(Person.class);
+        Person.CACHE.initialize(Person.class);
     }
 
     /**
@@ -1107,7 +1129,7 @@ public final class Person extends AbstractUserObject
                 }
                 resultset.close();
             } catch (final SQLException e) {
-                LOG.error("search for person with SQL statement '" + _sql + "' is not possible", e);
+                Person.LOG.error("search for person with SQL statement '" + _sql + "' is not possible", e);
                 throw new EFapsException(Person.class, "getFromDB.SQLException", e, _sql);
             } finally {
                 try {
@@ -1115,7 +1137,7 @@ public final class Person extends AbstractUserObject
                         stmt.close();
                     }
                 } catch (final SQLException e) {
-                    LOG.error("close of SQL statement is not possible", e);
+                    Person.LOG.error("close of SQL statement is not possible", e);
                 }
             }
             rsrc.commit();
@@ -1165,8 +1187,8 @@ public final class Person extends AbstractUserObject
                 resultset.close();
 
             } catch (final SQLException e) {
-                LOG.error("search for person for JAAS system '" + _jaasSystem.getName() + "' with key '" + _jaasKey
-                                + "' is not possible", e);
+                Person.LOG.error("search for person for JAAS system '" + _jaasSystem.getName() + "' with key '"
+                                + _jaasKey + "' is not possible", e);
                 throw new EFapsException(Person.class, "getWithJAASKey.SQLException", e, _jaasSystem.getName(),
                                 _jaasKey);
             } finally {
@@ -1198,7 +1220,7 @@ public final class Person extends AbstractUserObject
      * @see #assignToJAASSystem
      */
     public static Person createPerson(final JAASSystem _jaasSystem, final String _jaasKey, final String _userName)
-                    throws EFapsException
+        throws EFapsException
     {
         long persId = 0;
         final Type persType = Type.get(USER_PERSON);
@@ -1237,8 +1259,9 @@ public final class Person extends AbstractUserObject
 
                 int rows = stmt.executeUpdate();
                 if (rows == 0) {
-                    LOG.error("could not execute '" + cmd.toString() + "' for JAAS system '" + _jaasSystem.getName()
-                                    + "' person with key '" + _jaasKey + "' and user name '" + _userName + "'");
+                    Person.LOG.error("could not execute '" + cmd.toString() + "' for JAAS system '"
+                                    + _jaasSystem.getName() + "' person with key '" + _jaasKey
+                                    + "' and user name '" + _userName + "'");
                     throw new EFapsException(Person.class, "createPerson.NotInserted", cmd.toString(), _jaasSystem
                                     .getName(), _jaasKey, _userName);
                 }
@@ -1257,14 +1280,15 @@ public final class Person extends AbstractUserObject
                 stmt = rsrc.getConnection().prepareStatement(cmd.toString());
                 rows = stmt.executeUpdate();
                 if (rows == 0) {
-                    LOG.error("could not execute '" + cmd.toString() + "' for JAAS system '" + _jaasSystem.getName()
+                    Person.LOG.error("could not execute '" + cmd.toString() + "' for JAAS system '"
+                                    + _jaasSystem.getName()
                                     + "' person with key '" + _jaasKey + "' and user name '" + _userName + "'");
                     throw new EFapsException(Person.class, "createPerson.NotInserted", cmd.toString(), _jaasSystem
                                     .getName(), _jaasKey, _userName);
                 }
 
             } catch (final SQLException e) {
-                LOG.error("could not create for JAAS system '" + _jaasSystem.getName() + "' person with key '"
+                Person.LOG.error("could not create for JAAS system '" + _jaasSystem.getName() + "' person with key '"
                                 + _jaasKey + "' and user name '" + _userName + "'", e);
                 throw new EFapsException(Person.class, "createPerson.SQLException", e, _jaasSystem.getName(), _jaasKey,
                                 _userName);
@@ -1297,7 +1321,7 @@ public final class Person extends AbstractUserObject
      */
     public static Cache<Person> getCache()
     {
-        return CACHE;
+        return Person.CACHE;
     }
 
     /**
@@ -1323,7 +1347,7 @@ public final class Person extends AbstractUserObject
                     Context.getThreadContext().setSessionAttribute("PersonCacheId", map);
                 }
             } catch (final EFapsException e) {
-                LOG.error("could not read or set a SessionAttribute for the " + "PersonCacheID", e);
+                Person.LOG.error("could not read or set a SessionAttribute for the " + "PersonCacheID", e);
             }
             return map;
         }
@@ -1345,7 +1369,7 @@ public final class Person extends AbstractUserObject
                     Context.getThreadContext().setSessionAttribute("PersonCacheString", map);
                 }
             } catch (final EFapsException e) {
-                LOG.error("could not read or set a SessionAttribute for the PersonCache", e);
+                Person.LOG.error("could not read or set a SessionAttribute for the PersonCache", e);
             }
             return map;
         }
@@ -1379,7 +1403,7 @@ public final class Person extends AbstractUserObject
                     map.clear();
                 }
             } catch (final EFapsException e) {
-                LOG.error("could not read or set a SessionAttribute for the PersonCache", e);
+                Person.LOG.error("could not read or set a SessionAttribute for the PersonCache", e);
             }
         }
     }
