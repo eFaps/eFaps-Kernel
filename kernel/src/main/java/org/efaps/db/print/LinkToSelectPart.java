@@ -57,15 +57,26 @@ public class LinkToSelectPart implements ISelectPart
      */
     public int join(final OneSelect _oneSelect, final StringBuilder _fromBldr, final int _relIndex)
     {
+        // it must be evaluated if the attribute that is used as the base for the linkto is inside a child table
         final Attribute attr = this.type.getAttribute(this.attrName);
+        Integer relIndex = _relIndex;
+        if (attr != null && !attr.getTable().equals(this.type.getMainTable())) {
+            final String childTableName = attr.getTable().getSqlTable();
+            relIndex = _oneSelect.getTableIndex(childTableName, "ID", _relIndex);
+            if (relIndex == null) {
+                relIndex = _oneSelect.getNewTableIndex(childTableName, "ID", _relIndex);
+                _fromBldr.append(" left join ").append(childTableName).append(" T").append(relIndex)
+                    .append(" on T").append(_relIndex).append(".ID").append("=T").append(relIndex).append(".ID");
+            }
+        }
         Integer ret;
         final String tableName = attr.getLink().getMainTable().getSqlTable();
         final String column = attr.getSqlColNames().get(0);
-        ret = _oneSelect.getTableIndex(tableName, column, _relIndex);
+        ret = _oneSelect.getTableIndex(tableName, column, relIndex);
         if (ret == null) {
-            ret = _oneSelect.getNewTableIndex(tableName, column, _relIndex);
+            ret = _oneSelect.getNewTableIndex(tableName, column, relIndex);
             _fromBldr.append(" left join ").append(tableName).append(" T").append(ret)
-                .append(" on T").append(_relIndex).append(".").append(column)
+                .append(" on T").append(relIndex).append(".").append(column)
                 .append("=T").append(ret).append(".ID");
         }
         return ret;
