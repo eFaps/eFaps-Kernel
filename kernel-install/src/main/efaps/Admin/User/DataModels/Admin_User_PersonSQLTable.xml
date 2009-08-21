@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -44,7 +44,8 @@
       <column name="LASTNAME"   type="STRING_SHORT" length="128" not-null="true"/>
       <column name="TIMZONE"    type="STRING_SHORT" length="128" />
       <column name="CHRONOLOGY" type="STRING_SHORT" length="128" />
-      <column name="LOCALE"     type="INTEGER"/>
+      <column name="LANG"       type="INTEGER"/>
+      <column name="LOCALE"     type="STRING_SHORT" length="128" />
       <column name="PASSWORD"   type="STRING_SHORT" length="128"/>
       <column name="LASTLOGIN"  type="DATETIME"/>
       <column name="LOGINTRY"   type="DATETIME"/>
@@ -68,7 +69,8 @@
                  T_USERPERSON.LASTNAME,
                  T_USERPERSON.TIMZONE,
                  T_USERPERSON.CHRONOLOGY,
-                 T_ADLANG.LANG as LOCALE,
+                 T_ADLANG.LANG,
+                 T_USERPERSON.LOCALE,
                  T_USERPERSON.PASSWORD,
                  T_USERPERSON.LOGINTRY,
                  T_USERPERSON.LOGINTRIES
@@ -76,7 +78,7 @@
              join T_USERPERSON
                on T_USERABSTRACT.ID=T_USERPERSON.ID
              left join T_ADLANG
-               on T_ADLANG.ID=T_USERPERSON.LOCALE  
+               on T_ADLANG.ID=T_USERPERSON.LANG  
       </sql>
     </database>
   </definition>
@@ -92,7 +94,8 @@
       <column name="LASTNAME"   type="STRING_SHORT" length="128" not-null="true"/>
       <column name="TIMZONE"    type="STRING_SHORT" length="128" />
       <column name="CHRONOLOGY" type="STRING_SHORT" length="128" />
-      <column name="LOCALE"     type="INTEGER"/>
+      <column name="LANG"       type="INTEGER"/>
+      <column name="LOCALE"     type="STRING_SHORT" length="128" />
       <column name="PASSWORD"   type="STRING_SHORT" length="128"/>
       <column name="LASTLOGIN"  type="DATETIME"/>
       <column name="LOGINTRY"   type="DATETIME"/>

@@ -35,206 +35,193 @@ import org.efaps.util.EFapsException;
 
 /**
  * This class reads the Properties for eFaps from the connected Database and
- * holds them in a cache to be accesed fast during normal runtime. <br>
+ * holds them in a cache to be accessed fast during normal runtime. <br>
  * The Keys will be read from the database in the order of the Sequence of a
- * Bundle. That gives the possibilty to override the key of a Bundle with the
+ * Bundle. That gives the possibility to override the key of a Bundle with the
  * same key of another Bundle by using a higher Sequence.<br>
- * The value returned for a key is searched first in the localised version, if
- * no Value can be found or no localised version for this language is existing
+ * The value returned for a key is searched first in the localized version, if
+ * no Value can be found or no localized version for this language is existing
  * than the default value will be returned.
  *
- * @author jmox
+ * @author The eFasp Team
  * @version $Id$
  */
-public class DBProperties {
+public class DBProperties
+{
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(DBProperties.class);
 
-  /**
-   * Logger for this class
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(DBProperties.class);
+    /**
+     * Value used to identify the Default inside the Cache.
+     */
+    private static final String DEFAULT = "default";
 
-  /**
-   * value used to identifie the Default inside the Cache
-   */
-  private static final String DEFAULT = "default";
+    /**
+     * Cache for the Properties.
+     */
+    private static final Map<String, Map<String, String>> PROPERTIESCACHE = new HashMap<String, Map<String, String>>();
 
-  /**
-   * Cache for the Properties
-   */
-  private static final Map<String, Map<String, String>> PROPERTIESCACHE =
-      new HashMap<String, Map<String, String>>();
+    /**
+     * Are the Properties initialized?
+     */
+    private static boolean INITIALIZED = false;
 
-  /**
-   * are the Properties initialised?
-   */
-  private static boolean INITIALIZED = false;
-
-  /**
-   * Method to find out if a specified key is existing.<br>
-   * It is only checked in the default.
-   *
-   * @param _key
-   *                Key to search for
-   * @return true if the key exists
-   */
-  public static boolean hasProperty(final String _key) {
-
-    if (!isInitialized()) {
-      initialize();
+    /**
+     * For getting all Properties in a Map.
+     *
+     * @return Map with all Properties
+     */
+    public Map<String, Map<String, String>> getProperties()
+    {
+        return DBProperties.PROPERTIESCACHE;
     }
 
-    return PROPERTIESCACHE.get(DEFAULT).get(_key) != null;
-  }
-
-  /**
-   * Method that returns the value, depending on the language of the Context,
-   * for the given key. <br>
-   * The Search for the key, first searches for a localized Version and if not
-   * found for a Default. If no value can be found, the key will be returned.
-   *
-   * @param _key
-   *                Key to Search for
-   * @return if key exists, the value for the key, otherwise the key
-   */
-  public static String getProperty(final String _key) {
-    if (!isInitialized()) {
-      initialize();
+    /**
+     * Method to find out if a specified key is existing.<br>
+     * It is only checked in the default.
+     *
+     * @param _key Key to search for
+     * @return true if the key exists
+     */
+    public static boolean hasProperty(final String _key)
+    {
+        if (!isInitialized()) {
+            initialize();
+        }
+        return DBProperties.PROPERTIESCACHE.get(DBProperties.DEFAULT).get(_key) != null;
     }
 
-    String language = null;
-
-    try {
-      language = Context.getThreadContext().getLocale().getLanguage();
-    } catch (final EFapsException e) {
-      LOG.error("not able to read the language from the context", e);
-    }
-    return getProperty(_key, language);
-
-  }
-
-  /**
-   * Method that returns the value, depending on the parameter _language, for
-   * the given key. <br>
-   * The Search for the key, first searches for a localized Version and if not
-   * found for a Default. If no value can be found, the key will be returned.
-   *
-   * @param _key
-   *                Key to Search for
-   * @param _language
-   *                language to use
-   * @return if key exists, the value for the key, otherwise the key
-   */
-  public static String getProperty(final String _key, final String _language) {
-    if (!isInitialized()) {
-      initialize();
-    }
-
-    String value = null;
-
-    final Map<String, String> map = PROPERTIESCACHE.get(_language);
-    if (map != null) {
-      value = map.get(_key);
-    }
-
-    if (value == null) {
-      final Map<String, String> defaultProps = PROPERTIESCACHE.get(DEFAULT);
-      if (defaultProps != null) {
-        value = PROPERTIESCACHE.get(DEFAULT).get(_key);
-      }
-    }
-
-    return (value == null) ? "?? - " + _key + " - ??" : value;
-
-  }
-
-  /**
-   * For getting all Properties in a Map
-   *
-   * @return Map with all Properties
-   */
-  public Map<String, Map<String, String>> getProperties() {
-    return PROPERTIESCACHE;
-  }
-
-  /**
-   * Method to initialise the Properties
-   */
-  public static void initialize() {
-
-    synchronized (PROPERTIESCACHE) {
-      PROPERTIESCACHE.clear();
-    }
-
-    final String sqlStmt =
-        " select distinct PROPKEY, DEFAULTV,'"
-            + DEFAULT
-            + "' as LANG, SEQUENCE "
-            + " from T_ADPROP "
-            + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID  "
-            + " order by SEQUENCE";
-
-    initializeCache(sqlStmt);
-
-    final String sqlStmt2 =
-        "select distinct PROPKEY, VALUE, LANG, SEQUENCE from T_ADPROP "
-            + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID "
-            + " inner join T_ADPROPLOC on T_ADPROPLOC.PROPID = T_ADPROP.ID "
-            + " inner join T_ADLANG on T_ADLANG.ID = T_ADPROPLOC.LANGID "
-            + " order by LANG, SEQUENCE";
-
-    initializeCache(sqlStmt2);
-
-  }
-
-  /**
-   * Returns, if the properties are initialised
-   *
-   * @return true if initilised, otherwise false
-   */
-  public static boolean isInitialized() {
-    return INITIALIZED;
-  }
-
-  /**
-   * This method is initialising the cache
-   *
-   * @param _SQLStmt
-   *                SQl-Statment to access the database
-   */
-  private static void initializeCache(final String _sqlstmt) {
-
-    String value;
-    String language = "";
-
-    Map<String, String> map = null;
-    try {
-      final ConnectionResource con =
-          Context.getThreadContext().getConnectionResource();
-      final Statement stmt = con.getConnection().createStatement();
-
-      final ResultSet resultset = stmt.executeQuery(_sqlstmt);
-      while (resultset.next()) {
-        value = resultset.getString(2);
-        if (!language.equals(resultset.getString(3).trim())) {
-          language = resultset.getString(3).trim();
-          map = PROPERTIESCACHE.get(language);
-          if (map == null) {
-            map = new HashMap<String, String>();
-            PROPERTIESCACHE.put(language, map);
-          }
+    /**
+     * Method that returns the value, depending on the language of the Context,
+     * for the given key. <br>
+     * The Search for the key, first searches for a localized Version and if not
+     * found for a Default. If no value can be found, the key will be returned.
+     *
+     * @param _key Key to Search for
+     * @return if key exists, the value for the key, otherwise the key
+     */
+    public static String getProperty(final String _key)
+    {
+        if (!isInitialized()) {
+            initialize();
         }
 
-        map.put(resultset.getString("PROPKEY").trim(), value.trim());
-      }
-      INITIALIZED = true;
-      resultset.close();
-    } catch (final EFapsException e) {
+        String language = null;
 
-      LOG.error("initialiseCache()", e);
-    } catch (final SQLException e) {
+        try {
+            language = Context.getThreadContext().getLanguage();
+        } catch (final EFapsException e) {
+            DBProperties.LOG.error("not able to read the language from the context", e);
+        }
+        return getProperty(_key, language);
 
-      LOG.error("initialiseCache()", e);
     }
 
-  }
+    /**
+     * Method that returns the value, depending on the parameter _language, for
+     * the given key. <br>
+     * The Search for the key, first searches for a localized Version and if not
+     * found for a Default. If no value can be found, the key will be returned.
+     *
+     * @param _key      Key to Search for
+     * @param _language language to use
+     * @return if key exists, the value for the key, otherwise the key
+     */
+    public static String getProperty(final String _key, final String _language)
+    {
+        if (!isInitialized()) {
+            initialize();
+        }
+
+        String value = null;
+
+        final Map<String, String> map = DBProperties.PROPERTIESCACHE.get(_language);
+        if (map != null) {
+            value = map.get(_key);
+        }
+
+        if (value == null) {
+            final Map<String, String> defaultProps = DBProperties.PROPERTIESCACHE.get(DBProperties.DEFAULT);
+            if (defaultProps != null) {
+                value = DBProperties.PROPERTIESCACHE.get(DBProperties.DEFAULT).get(_key);
+            }
+        }
+        return (value == null) ? "?? - " + _key + " - ??" : value;
+    }
+
+    /**
+     * Method to initialize the Properties.
+     */
+    public static void initialize()
+    {
+
+        synchronized (DBProperties.PROPERTIESCACHE) {
+            DBProperties.PROPERTIESCACHE.clear();
+        }
+
+        final String sqlStmt = " select distinct PROPKEY, DEFAULTV,'" + DBProperties.DEFAULT + "' as LANG, SEQUENCE "
+                        + " from T_ADPROP "
+                        + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID  "
+                        + " order by SEQUENCE";
+
+        initializeCache(sqlStmt);
+
+        final String sqlStmt2 = "select distinct PROPKEY, VALUE, LANG, SEQUENCE from T_ADPROP "
+                        + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID "
+                        + " inner join T_ADPROPLOC on T_ADPROPLOC.PROPID = T_ADPROP.ID "
+                        + " inner join T_ADLANG on T_ADLANG.ID = T_ADPROPLOC.LANGID " + " order by LANG, SEQUENCE";
+
+        initializeCache(sqlStmt2);
+
+    }
+
+    /**
+     * Returns, if the properties are initialized.
+     *
+     * @return true if initilised, otherwise false
+     */
+    public static boolean isInitialized()
+    {
+        return DBProperties.INITIALIZED;
+    }
+
+    /**
+     * This method is initializing the cache.
+     *
+     * @param _sqlstmt SQl-Statment to access the database
+     */
+    private static void initializeCache(final String _sqlstmt)
+    {
+
+        String value;
+        String language = "";
+
+        Map<String, String> map = null;
+        try {
+            final ConnectionResource con = Context.getThreadContext().getConnectionResource();
+            final Statement stmt = con.getConnection().createStatement();
+
+            final ResultSet resultset = stmt.executeQuery(_sqlstmt);
+            while (resultset.next()) {
+                value = resultset.getString(2);
+                if (!language.equals(resultset.getString(3).trim())) {
+                    language = resultset.getString(3).trim();
+                    map = DBProperties.PROPERTIESCACHE.get(language);
+                    if (map == null) {
+                        map = new HashMap<String, String>();
+                        DBProperties.PROPERTIESCACHE.put(language, map);
+                    }
+                }
+                map.put(resultset.getString("PROPKEY").trim(), value.trim());
+            }
+            DBProperties.INITIALIZED = true;
+            resultset.close();
+        } catch (final EFapsException e) {
+            DBProperties.LOG.error("initialiseCache()", e);
+        } catch (final SQLException e) {
+            DBProperties.LOG.error("initialiseCache()", e);
+        }
+    }
 }

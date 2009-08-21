@@ -33,14 +33,14 @@
     <name>Admin_User_PersonForm</name>
     <!-- fields -->
     <field name="type">
-      <property name="Expression">Type</property>
+      <property name="Attribute">Type</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="name">
       <property name="Columns">40</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
-      <property name="Expression">Name</property>
+      <property name="Attribute">Name</property>
       <property name="Required">true</property>
       <property name="ModeSearch">EDITABLE</property>
     </field>
@@ -48,7 +48,7 @@
       <property name="Columns">40</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
-      <property name="Expression">UUID</property>
+      <property name="Attribute">UUID</property>
       <property name="Required">false</property>
       <property name="ModeSearch">EDITABLE</property>
     </field>
@@ -56,7 +56,7 @@
       <property name="Columns">20</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
-      <property name="Expression">Revision</property>
+      <property name="Attribute">Revision</property>
       <property name="Required">true</property>
       <property name="ModeSearch">EDITABLE</property>
     </field>
@@ -64,61 +64,61 @@
       <property name="Columns">20</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
-      <property name="Expression">Status</property>
+      <property name="Attribute">Status</property>
       <property name="ModeSearch">EDITABLE</property>
       <property name="Label">Admin_User_Person/Status.Label</property>
     </field>
     <field name="lastlogin">
-      <property name="Expression">LastLogin</property>
+      <property name="Attribute">LastLogin</property>
       <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="createGroup" character="Group">
       <property name="GroupCount">2</property>
     </field>
     <field name="creator">
-      <property name="AlternateOID">Creator.OID</property>
-      <property name="Expression">Creator</property>
+      <property name="SelectAlternateOID">linkto[Creator].oid</property>
+      <property name="Attribute">Creator</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="ModeSearch">EDITABLE</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="created">
-      <property name="Expression">Created</property>
+      <property name="Attribute">Created</property>
       <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="modifyGroup" character="Group">
       <property name="GroupCount">2</property>
     </field>
     <field name="modifier">
-      <property name="AlternateOID">Modifier.OID</property>
-      <property name="Expression">Modifier</property>
+      <property name="SelectAlternateOID">linkto[Modifier].oid</property>
+      <property name="Attribute">Modifier</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="ModeSearch">EDITABLE</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="modified">
-      <property name="Expression">Modified</property>
+      <property name="Attribute">Modified</property>
       <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="LastName">
       <property name="Columns">40</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
-      
-      <property name="Expression">LastName</property>
+      <property name="Attribute">LastName</property>
       <property name="ModeSearch">EDITABLE</property>
+      <property name="Required">true</property>
     </field>
     <field name="FirstName">
       <property name="Columns">40</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
-      
-      <property name="Expression">FirstName</property>
+      <property name="Required">true</property>
+      <property name="Attribute">FirstName</property>
       <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="TimeZone4View">
       <property name="Columns">40</property>
-      <property name="Expression">TimeZone</property>
+      <property name="Attribute">TimeZone</property>
       <trigger program="org.efaps.esjp.admin.access.AccessOnField"
                 method="viewOnly" 
                 name="Admin_User_PersonForm/TimeZone4View"
@@ -129,7 +129,7 @@
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
       <property name="ModeView">NONE</property>
-      <property name="Expression">TimeZone</property>
+      <property name="Attribute">TimeZone</property>
       <trigger program="org.efaps.esjp.admin.user.TimeZoneUI"
                 name="Admin_User_PersonForm/TimeZone4Edit" 
                 event="UI_FIELD_VALUE" />
@@ -140,7 +140,7 @@
     </field>
     <field name="Chronology4View">
       <property name="Columns">40</property>
-      <property name="Expression">Chronology</property>
+      <property name="Attribute">Chronology</property>
       <trigger program="org.efaps.esjp.admin.user.ChronologyUI"
                 method="execute" 
                 name="Admin_User_PersonForm/Chronology4View.UI_FIELD_VALUE"
@@ -154,7 +154,7 @@
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
       <property name="ModeView">NONE</property>
-      <property name="Expression">Chronology</property>
+      <property name="Attribute">Chronology</property>
       <trigger program="org.efaps.esjp.admin.user.ChronologyUI"
                 method="get4Edit" 
                 name="Admin_User_PersonForm/Chronology4Edit"
@@ -164,23 +164,40 @@
                 name="Admin_User_PersonForm/Chronology4Edit.UI_ACCESSCHECK"
                 event="UI_ACCESSCHECK" />
     </field>
-    <field name="Locale">
+    <field name="language">
       <property name="Columns">40</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
-      <property name="Expression">Locale</property>
+      <property name="Attribute">Language</property>
+    </field>
+    <field name="locale">
+      <property name="Columns">3</property>
+      <property name="ModeEdit">NONE</property>
+      <property name="Attribute">Locale</property>
+    </field>
+    <field name="locale4Edit">
+      <property name="Columns">3</property>
+      <property name="ModeCreate">EDITABLE</property>
+      <property name="ModeEdit">EDITABLE</property>
+      <property name="ModePrint">NONE</property>
+      <property name="ModeView">NONE</property>
+      <property name="Attribute">Locale</property>
+      <trigger program="org.efaps.esjp.admin.user.LocaleUI" 
+                method="get4Edit"
+                name="Admin_User_PersonForm.locale4Edit.UI_FIELD_VALUE" event="UI_FIELD_VALUE"/>
     </field>
     <field name="EmailSet" character="Set">
       <property name="Label">Admin_User_Person/EmailSet.Label</property>
       <property name="Columns">40</property>
       <property name="ModeEdit">EDITABLE</property>
-      <property name="Expression">EmailSet</property>
+      <property name="Attribute">EmailSet</property>
       <property name="ModeSearch">EDITABLE</property>
       <property name="Order">Email|Primary</property>
     </field>
     <field name="rolesheader" character="Heading">
       <property name="Level">1</property>
       <property name="Label">Admin_User_Person/Roles.Heading</property>
+      <property name="ModeEdit">NONE</property>
     </field>
     <field name="rolestable" character="Target">
       <table>Admin_User_AbstractTable</table>
@@ -191,6 +208,7 @@
     <field name="jaaskeyheader" character="Heading">
       <property name="Level">1</property>
       <property name="Label">Admin_User_Person/JaasKey.Heading</property>
+      <property name="ModeEdit">NONE</property>
     </field>
     <field name="jaaskeytable" character="Target">
       <table>Admin_User_JAASKeyTable</table>
