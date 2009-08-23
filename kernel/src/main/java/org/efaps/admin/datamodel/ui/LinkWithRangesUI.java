@@ -108,7 +108,8 @@ public class LinkWithRangesUI extends AbstractUI
                 for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE,
                                                                    ParameterValues.UIOBJECT, _fieldValue,
                                                                    ParameterValues.ACCESSMODE, _mode)) {
-                    ret.append("<select name=\"").append(_fieldValue.getField().getName()).append("\" size=\"1\">");
+                    ret.append("<select name=\"").append(_fieldValue.getField().getName()).append("\"")
+                        .append(EFAPSTMPTAG).append("size=\"1\">");
                     final Iterator<?> iter = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES)).entrySet().iterator();
 
                     while (iter.hasNext()) {
