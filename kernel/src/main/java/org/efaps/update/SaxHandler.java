@@ -44,6 +44,7 @@ import org.efaps.update.datamodel.StatusGroupUpdate;
 import org.efaps.update.datamodel.TypeUpdate;
 import org.efaps.update.db.StoreUpdate;
 import org.efaps.update.integration.WebDAVUpdate;
+import org.efaps.update.program.JasperReportUpdate;
 import org.efaps.update.ui.CommandUpdate;
 import org.efaps.update.ui.FormUpdate;
 import org.efaps.update.ui.ImageUpdate;
@@ -55,24 +56,48 @@ import org.efaps.update.user.JAASSystemUpdate;
 import org.efaps.update.user.RoleUpdate;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
 public class SaxHandler extends DefaultHandler
 {
 
+    /**
+     * Tags used in this Handler.
+     */
     private final Stack<String> tag = new Stack<String>();
 
+    /**
+     * Map of attributes for this Handler.
+     */
     private final Map<String, String> attributes = new HashMap<String, String>();
 
+    /**
+     * Has this handler been called.
+     */
     private boolean called = false;
 
-    AbstractUpdate elem = null;
+    /**
+     * Update.
+     */
+    private AbstractUpdate update = null;
 
-    StringBuilder content = null;
+    /**
+     * StringtbUIlder used to hold the content.
+     */
+    private StringBuilder content = null;
 
+    /**
+     * Url of the file that is parsed.
+     */
     private URL url = null;
 
+    /**
+     * @param _url Url of the file to be parsed
+     * @return AbstractUpdate for the file
+     * @throws SAXException on parse exception
+     * @throws IOException on file access error
+     */
     public AbstractUpdate parse(final URL _url) throws SAXException, IOException
     {
         this.url = _url;
@@ -89,31 +114,55 @@ public class SaxHandler extends DefaultHandler
         reader.parse(new InputSource(stream));
         stream.close();
 
-        return this.elem;
+        return this.update;
     }
 
+    /**
+     * Getter method for instance variable {@link #update}.
+     *
+     * @return value of instance variable {@link #update}
+     */
+    public AbstractUpdate getUpdate()
+    {
+        return this.update;
+    }
+
+    /**
+     * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
+     * @param _ch       char
+     * @param _start    start index
+     * @param _length   length
+     * @throws SAXException on error
+     */
     @Override
     public void characters(final char[] _ch, final int _start, final int _length) throws SAXException
     {
 
         if (_length > 0) {
-            final String content = new String(_ch, _start, _length);
+            final String contentTmp = new String(_ch, _start, _length);
             if (!this.called && !this.tag.empty()) {
                 if (this.content == null) {
                     this.content = new StringBuilder();
                 }
-                this.content.append(content);
+                this.content.append(contentTmp);
             }
         }
     }
 
+    /**
+     * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
+     * @param _uri          uri
+     * @param _localName    local name
+     * @param _qName        qualified name
+     * @throws SAXException on error
+     */
     @Override
     public void endElement(final String _uri, final String _localName, final String _qName) throws SAXException
     {
         if (!this.called) {
-            this.elem
-                            .readXML(this.tag, this.attributes, (this.content != null) ? this.content.toString().trim()
-                                            : null);
+            this.update.readXML(this.tag, this.attributes, (this.content != null)
+                                                        ? this.content.toString().trim()
+                                                        : null);
             this.called = true;
             this.content = null;
         }
@@ -123,65 +172,74 @@ public class SaxHandler extends DefaultHandler
         }
     }
 
+    /**
+     * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
+     * @param _uri          uri
+     * @param _localName    local name
+     * @param _qName        qualified Name
+     * @param _attributes   Attributes
+     * @throws SAXException on error
+     */
     @Override
     public void startElement(final String _uri, final String _localName, final String _qName,
-                    final Attributes _attributes) throws SAXException
+                             final Attributes _attributes)
+        throws SAXException
     {
-        if (this.elem != null) {
+        if (this.update != null) {
             if (!this.called && !this.tag.isEmpty()) {
-                this.elem.readXML(this.tag, this.attributes, (this.content != null) ? this.content.toString().trim()
-                                : null);
-
+                this.update.readXML(this.tag, this.attributes, (this.content != null)
+                                                                ? this.content.toString().trim()
+                                                                : null);
             }
             this.called = false;
             this.content = null;
-
             this.tag.push(_qName);
-
             this.attributes.clear();
             for (int i = 0; i < _attributes.getLength(); i++) {
                 this.attributes.put(_attributes.getQName(i), _attributes.getValue(i));
             }
         } else if ("access-set".equals(_qName)) {
-            this.elem = new AccessSetUpdate(this.url);
+            this.update = new AccessSetUpdate(this.url);
         } else if ("access-type".equals(_qName)) {
-            this.elem = new AccessTypeUpdate(this.url);
+            this.update = new AccessTypeUpdate(this.url);
         } else if ("common-systemconfiguration".equals(_qName)) {
-            this.elem = new SystemConfigurationUpdate(this.url);
+            this.update = new SystemConfigurationUpdate(this.url);
         } else if ("datamodel-sqltable".equals(_qName)) {
-            this.elem = new SQLTableUpdate(this.url);
+            this.update = new SQLTableUpdate(this.url);
         } else if ("datamodel-type".equals(_qName)) {
-            this.elem = new TypeUpdate(this.url);
+            this.update = new TypeUpdate(this.url);
         } else if ("datamodel-dimension".equals(_qName)) {
-            this.elem = new DimensionUpdate(this.url);
+            this.update = new DimensionUpdate(this.url);
         } else if ("datamodel-statusgroup".equals(_qName)) {
-            this.elem = new StatusGroupUpdate(this.url);
+            this.update = new StatusGroupUpdate(this.url);
         } else if ("db-store".equals(_qName)) {
-            this.elem = new StoreUpdate(this.url);
+            this.update = new StoreUpdate(this.url);
         } else if ("integration-webdav".equals(_qName)) {
-            this.elem = new WebDAVUpdate(this.url);
+            this.update = new WebDAVUpdate(this.url);
+        } else if ("jasperReport".equals(_qName)) {
+            this.update = new JasperReportUpdate(this.url);
         } else if ("ui-command".equals(_qName)) {
-            this.elem = new CommandUpdate(this.url);
+            this.update = new CommandUpdate(this.url);
         } else if ("ui-form".equals(_qName)) {
-            this.elem = new FormUpdate(this.url);
+            this.update = new FormUpdate(this.url);
         } else if ("ui-image".equals(_qName)) {
-            this.elem = new ImageUpdate(this.url);
+            this.update = new ImageUpdate(this.url);
         } else if ("ui-menu".equals(_qName)) {
-            this.elem = new MenuUpdate(this.url);
+            this.update = new MenuUpdate(this.url);
         } else if ("ui-picker".equals(_qName)) {
-            this.elem = new PickerUpdate(this.url);
+            this.update = new PickerUpdate(this.url);
         } else if ("ui-search".equals(_qName)) {
-            this.elem = new SearchUpdate(this.url);
+            this.update = new SearchUpdate(this.url);
         } else if ("ui-table".equals(_qName)) {
-            this.elem = new TableUpdate(this.url);
+            this.update = new TableUpdate(this.url);
         } else if ("user-jaassystem".equals(_qName)) {
-            this.elem = new JAASSystemUpdate(this.url);
+            this.update = new JAASSystemUpdate(this.url);
         } else if ("user-role".equals(_qName)) {
-            this.elem = new RoleUpdate(this.url);
+            this.update = new RoleUpdate(this.url);
         } else if ("import".equals(_qName)) {
-            this.elem = new TypeUpdate(this.url);
+            this.update = new TypeUpdate(this.url);
         } else if ("dbproperties".equals(_qName)) {
-            this.elem = new TypeUpdate(this.url);
+            this.update = new TypeUpdate(this.url);
         } else {
             throw new SAXException("Unknown XML Tag " + _qName);
         }
