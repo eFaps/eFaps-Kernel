@@ -24,41 +24,39 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.efaps.admin.program.staticsource.JavaScriptImporter;
-import org.efaps.update.LinkInstance;
+import org.efaps.admin.program.jasperreport.JasperReportImporter;
 import org.efaps.util.EFapsException;
 
 /**
- * Class to update a javascript into eFaps.
+ * TODO comment!
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class JavaScriptUpdate extends AbstractSourceUpdate
+public class JasperReportUpdate extends AbstractSourceUpdate
 {
 
     /**
      * Link from JavaScript extending JavaScript.
      */
-    private static final Link LINK2SUPER = new Link("Admin_Program_JavaScript2JavaScript", "From",
-                                                    "Admin_Program_JavaScript", "To");
+    private static final Link LINK2SUPER = new Link("Admin_Program_JasperReport2JasperReport", "From",
+                                                    "Admin_Program_JasperReport", "To");
 
     /**
-     * Set off all links for this JavaScriptUpdate.
+     * Set off all links for this JasperReportUpdate.
      */
     private static final Set<Link> ALLLINKS = new HashSet<Link>();
     static {
-        JavaScriptUpdate.ALLLINKS.add(JavaScriptUpdate.LINK2SUPER);
+        JasperReportUpdate.ALLLINKS.add(JasperReportUpdate.LINK2SUPER);
     }
 
     /**
-     * Constructor.
-     *
      * @param _url URL of the file
+     *
      */
-    protected JavaScriptUpdate(final URL _url)
+    public JasperReportUpdate(final URL _url)
     {
-        super(_url, "Admin_Program_JavaScript", JavaScriptUpdate.ALLLINKS);
+        super(_url, "Admin_Program_JasperReport", JasperReportUpdate.ALLLINKS);
     }
 
     /**
@@ -67,34 +65,33 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
      * @param _url URL to the file
      * @return JavaScriptUpdate
      */
-    public static JavaScriptUpdate readFile(final URL _url)
+    public static JasperReportUpdate readFile(final URL _url)
     {
-        final JavaScriptUpdate ret = new JavaScriptUpdate(_url);
-        final JavaScriptDefinition definition = ret.new JavaScriptDefinition(_url);
+        final JasperReportUpdate ret = new JasperReportUpdate(_url);
+        final JasperReportDefinition definition = ret.new JasperReportDefinition(_url);
         ret.addDefinition(definition);
-
         return ret;
     }
 
     /**
-     * Definition for the JavaScript.
+     * Definition for the JasperReport.
      *
      */
-    public class JavaScriptDefinition extends SourceDefinition
+    public class JasperReportDefinition extends SourceDefinition
     {
 
         /**
-         * Importer for the css.
+         * Importer for the JasperReport.
          */
-        private JavaScriptImporter sourceCode = null;
+        private JasperReportImporter jrxml = null;
 
         /**
          * Construtor.
          *
-         * @param _url URL to the css file
+         * @param _url URL to the JasperReport file
          *
          */
-        public JavaScriptDefinition(final URL _url)
+        public JasperReportDefinition(final URL _url)
         {
             super(_url);
         }
@@ -108,22 +105,23 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
         @Override
         protected void searchInstance() throws EFapsException
         {
-            if (this.sourceCode == null) {
-                this.sourceCode = new JavaScriptImporter(getUrl());
+            if (this.jrxml == null) {
+                this.jrxml = new JasperReportImporter(getUrl());
             }
-            setName(this.sourceCode.getProgramName());
+            setName(this.jrxml.getProgramName());
 
-            if (this.sourceCode.getEFapsUUID() != null) {
-                addValue("UUID", this.sourceCode.getEFapsUUID().toString());
+            if (this.jrxml.getEFapsUUID() != null) {
+                addValue("UUID", this.jrxml.getEFapsUUID().toString());
             }
 
-            if (this.sourceCode.getExtendSource() != null) {
-                addLink(JavaScriptUpdate.LINK2SUPER, new LinkInstance(this.sourceCode.getExtendSource()));
-            }
+//            if (this.jrxml.getExtendSource() != null) {
+//                addLink(JasperReportUpdate.LINK2SUPER, new LinkInstance(this.jrxml.getExtendSource()));
+//            }
 
             if (this.instance == null) {
-                this.instance = this.sourceCode.searchInstance();
+                this.instance = this.jrxml.searchInstance();
             }
         }
     }
+
 }

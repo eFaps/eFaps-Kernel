@@ -177,6 +177,12 @@ public enum EFapsClassNames
     /** Admin_Program_XSL. */
     ADMIN_PROGRAM_XSL("2e40c566-a55c-4b3b-a79b-b786e20f8d1c"),
 
+   /** Admin_Program_JasperReport. */
+    ADMIN_PROGRAM_JASPERREPORT("425eda62-5591-4799-828d-ced6687a138b"),
+    /**Admin_Program_JasperReport2JasperReport. */
+    ADMIN_PROGRAM_JASPERREPORT2JASPERREPORT("c7e32d85-0d21-4891-b107-0700ac757633"),
+    /**Admin_Program_JasperReportCompiled. */
+    ADMIN_PROGRAM_JASPERREPORTCOMPILED("c2ed3807-efc1-497a-b4c4-c0f8ba27beb3"),
     /** Admin_CommonVersion. */
     ADMIN_COMMON_VERSION("1bb051f3-b664-43db-b409-c0c4009f5972"),
     /** Admin_Common_Property. */

@@ -25,106 +25,106 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yahoo.platform.yui.compressor.CssCompressor;
-
+import org.efaps.admin.EFapsClassNames;
 import org.efaps.db.Checkout;
 import org.efaps.util.EFapsException;
+
+import com.yahoo.platform.yui.compressor.CssCompressor;
 
 /**
  * TODO description
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class CSSCompiler extends AbstractSourceCompiler {
+public class CSSCompiler extends AbstractSourceCompiler
+{
 
-  /**
-   * Logging instance used in this class.
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(CSSCompiler.class);
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(CSSCompiler.class);
 
-  /**
-   * UUID of the CSS type.
-   */
-  private static final UUID TYPE_CSS =
-      UUID.fromString("f5a5bcf6-3cc7-4530-a5a0-7808a392381b");
-
-  /**
-   * UUID of the CompiledCSS type.
-   */
-  public static final UUID TYPE_COMPILED =
-      UUID.fromString("0607ea90-b48f-4b76-96f5-67cab19bd7b1");
-
-  private static final UUID TYPE_CSS2CSS =
-      UUID.fromString("9d69ef63-b248-4f50-9130-5f33d64d81f0");
-
-  @Override
-  public UUID getUUID4Type() {
-    return TYPE_CSS;
-  }
-
-  @Override
-  public UUID getUUID4TypeCompiled() {
-    return TYPE_COMPILED;
-  }
-
-  @Override
-  public UUID getUUID4Type2Type() {
-    return TYPE_CSS2CSS;
-  }
-
-  @Override
-  protected String getCompiledString(final String _oid) {
-    String ret = "";
-    try {
-      final Checkout checkout = new Checkout(_oid);
-      final BufferedReader in =
-          new BufferedReader(new InputStreamReader(checkout.execute(), "UTF-8"));
-
-      final CssCompressor compressor = new CssCompressor(in);
-      in.close();
-      checkout.close();
-      final ByteArrayOutputStream byteout = new ByteArrayOutputStream();
-      final OutputStreamWriter out = new OutputStreamWriter(byteout);
-      compressor.compress(out, 2000);
-      out.flush();
-
-      ret = byteout.toString();
-      ret += "\n";
-
-    } catch (final EFapsException e) {
-      LOG.error("error during checkout of Instance with oid:" + _oid, e);
-      e.printStackTrace();
-    } catch (final IOException e) {
-      LOG.error("error during reqding of the Inputstram of Instance with oid:"
-          + _oid, e);
-    }
-    return ret;
-
-  }
-
-  @Override
-  public AbstractSource getNewSource(String _name, String _oid, long _id) {
-    return new OneCSS(_name, _oid, _id);
-  }
-
-  /**
-   * TODO description
-   *
-   * @author jmox
-   * @version $Id$
-   */
-  protected class OneCSS extends AbstractSource {
-
-    public OneCSS(final String _name, final String _oid, final long _id) {
-      super(_name, _oid, _id);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected EFapsClassNames getClassName4Type()
+    {
+        return EFapsClassNames.ADMIN_PROGRAM_CSS;
     }
 
-  }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected EFapsClassNames getClassName4Type2Type()
+    {
+        return EFapsClassNames.ADMIN_PROGRAM_CSS2CSS;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected EFapsClassNames getClassName4TypeCompiled()
+    {
+        return EFapsClassNames.ADMIN_PROGRAM_CSSCOMPILED;
+    }
+
+    @Override
+    protected String getCompiledString(final String _oid)
+    {
+        String ret = "";
+        try {
+            final Checkout checkout = new Checkout(_oid);
+            final BufferedReader in = new BufferedReader(new InputStreamReader(checkout.execute(), "UTF-8"));
+
+            final CssCompressor compressor = new CssCompressor(in);
+            in.close();
+            checkout.close();
+            final ByteArrayOutputStream byteout = new ByteArrayOutputStream();
+            final OutputStreamWriter out = new OutputStreamWriter(byteout);
+            compressor.compress(out, 2000);
+            out.flush();
+
+            ret = byteout.toString();
+            ret += "\n";
+
+        } catch (final EFapsException e) {
+            LOG.error("error during checkout of Instance with oid:" + _oid, e);
+            e.printStackTrace();
+        } catch (final IOException e) {
+            LOG.error("error during reqding of the Inputstram of Instance with oid:" + _oid, e);
+        }
+        return ret;
+
+    }
+
+    @Override
+    public AbstractSource getNewSource(final String _name, final String _oid, final long _id)
+    {
+        return new OneCSS(_name, _oid, _id);
+    }
+
+    /**
+     * TODO description
+     *
+     * @author jmox
+     * @version $Id$
+     */
+    protected class OneCSS extends AbstractSource
+    {
+
+        public OneCSS(final String _name, final String _oid, final long _id)
+        {
+            super(_name, _oid, _id);
+        }
+
+    }
 
 }

@@ -32,6 +32,7 @@ import org.mozilla.javascript.EvaluatorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.db.Checkout;
 import org.efaps.util.EFapsException;
@@ -41,115 +42,112 @@ import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 /**
  * TODO description
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class JavaScriptCompiler extends AbstractSourceCompiler {
+public class JavaScriptCompiler extends AbstractSourceCompiler
+{
 
-  private static final Logger LOG =
-      LoggerFactory.getLogger(JavaScriptCompiler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JavaScriptCompiler.class);
 
-  /**
-   * UUID of the CSS type.
-   */
-  private static final UUID TYPE_JAVASCRIPT =
-      UUID.fromString("1c9ce325-7e4f-401f-aeb8-74e2e0c9e224");
+    @Override
+    protected String getCompiledString(final String _oid)
+    {
+        final Checkout checkout = new Checkout(_oid);
+        BufferedReader in;
+        ByteArrayOutputStream byteout = null;
+        try {
+            in = new BufferedReader(new InputStreamReader(checkout.execute()));
 
-  /**
-   * UUID of the CompiledCSS type.
-   */
-  public static final UUID TYPE_COMPILED =
-      UUID.fromString("5ed4d346-c82e-4f4e-b52e-a4d5afa0e284");
+            final JavaScriptCompressor compressor = new JavaScriptCompressor(in, new ErrorReporter() {
 
-  private static final UUID TYPE_JAVASCRIPT2JAVASCRIPT =
-      UUID.fromString("2d24e861-580c-43ad-a59c-3266021ea190");
+                public void error(final String arg0, final String arg1, final int arg2, final String arg3,
+                                final int arg4)
+                {
+                    LOG.error(arg0);
+                }
 
-  @Override
-  public UUID getUUID4Type() {
-    return TYPE_JAVASCRIPT;
-  }
+                public EvaluatorException runtimeError(final String arg0, final String arg1, final int arg2,
+                                final String arg3, final int arg4)
+                {
+                    return null;
+                }
 
-  @Override
-  public UUID getUUID4TypeCompiled() {
-    return TYPE_COMPILED;
-  }
+                public void warning(final String arg0, final String arg1, final int arg2, final String arg3,
+                                final int arg4)
+                {
+                    // Admin_Program_JavaScriptCompiled_Warn: do we want
+                    // warnings?
+                    final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
+                                    .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+                    if (kernelConfig.getAttributeValueAsBoolean("JavaScriptCompiled_Warn")) {
+                        LOG.warn(arg0);
+                    }
+                }
+            });
 
-  @Override
-  public UUID getUUID4Type2Type() {
-    return TYPE_JAVASCRIPT2JAVASCRIPT;
-  }
-
-  @Override
-  protected String getCompiledString(final String _oid) {
-    final Checkout checkout = new Checkout(_oid);
-    BufferedReader in;
-    ByteArrayOutputStream byteout = null;
-    try {
-      in = new BufferedReader(new InputStreamReader(checkout.execute()));
-
-      final JavaScriptCompressor compressor =
-          new JavaScriptCompressor(in, new ErrorReporter() {
-
-            public void error(final String arg0, final String arg1, final int arg2, final String arg3,
-                              final int arg4) {
-              LOG.error(arg0);
-            }
-
-            public EvaluatorException runtimeError(final String arg0, final String arg1,
-                                                   final int arg2, final String arg3,
-                                                   final int arg4) {
-              return null;
-            }
-
-            public void warning(final String arg0, final String arg1, final int arg2,
-                                final String arg3, final int arg4) {
-              // Admin_Program_JavaScriptCompiled_Warn: do we want warnings?
-              final SystemConfiguration kernelConfig = SystemConfiguration.get(
-                  UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
-              if (kernelConfig.getAttributeValueAsBoolean("JavaScriptCompiled_Warn")) {
-                LOG.warn(arg0);
-              }
-            }
-          });
-
-      in.close();
-      checkout.close();
-      byteout = new ByteArrayOutputStream();
-      final OutputStreamWriter out = new OutputStreamWriter(byteout);
-      compressor.compress(out, 2000, false, true, false, true);
-      out.flush();
-    } catch (final EFapsException e) {
-      LOG.error("error during checkout of Instance with oid:" + _oid, e);
-      e.printStackTrace();
-    } catch (final EvaluatorException e) {
-      LOG.error(
-          "error during the evaluation of the JavaScript of Instance with oid:"
-              + _oid, e);
-    } catch (final IOException e) {
-      LOG.error("error during reqding of the Inputstram of Instance with oid:"
-          + _oid, e);
-    }
-    String ret = byteout.toString();
-    ret += "\n";
-    return ret;
-  }
-
-  @Override
-  public AbstractSource getNewSource(final String _name, final String _oid, final long _id) {
-    return new OneJavaScript(_name, _oid, _id);
-  }
-
-  /**
-   * TODO description
-   *
-   * @author jmox
-   * @version $Id$
-   */
-  protected class OneJavaScript extends AbstractSource {
-
-    public OneJavaScript(final String _name, final String _oid, final long _id) {
-      super(_name, _oid, _id);
+            in.close();
+            checkout.close();
+            byteout = new ByteArrayOutputStream();
+            final OutputStreamWriter out = new OutputStreamWriter(byteout);
+            compressor.compress(out, 2000, false, true, false, true);
+            out.flush();
+        } catch (final EFapsException e) {
+            LOG.error("error during checkout of Instance with oid:" + _oid, e);
+            e.printStackTrace();
+        } catch (final EvaluatorException e) {
+            LOG.error("error during the evaluation of the JavaScript of Instance with oid:" + _oid, e);
+        } catch (final IOException e) {
+            LOG.error("error during reqding of the Inputstram of Instance with oid:" + _oid, e);
+        }
+        String ret = byteout.toString();
+        ret += "\n";
+        return ret;
     }
 
-  }
+    @Override
+    public AbstractSource getNewSource(final String _name, final String _oid, final long _id)
+    {
+        return new OneJavaScript(_name, _oid, _id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected EFapsClassNames getClassName4Type()
+    {
+        return EFapsClassNames.ADMIN_PROGRAM_JAVASCRIPT;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected EFapsClassNames getClassName4Type2Type()
+    {
+        return EFapsClassNames.ADMIN_PROGRAM_JAVASCRIPT2JAVASCRIPT;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected EFapsClassNames getClassName4TypeCompiled()
+    {
+        return EFapsClassNames.ADMIN_PROGRAM_JAVASCRIPTCOMPILED;
+    }
+
+    /**
+     *
+     */
+    protected class OneJavaScript extends AbstractSource
+    {
+
+        public OneJavaScript(final String _name, final String _oid, final long _id)
+        {
+            super(_name, _oid, _id);
+        }
+
+    }
 }
