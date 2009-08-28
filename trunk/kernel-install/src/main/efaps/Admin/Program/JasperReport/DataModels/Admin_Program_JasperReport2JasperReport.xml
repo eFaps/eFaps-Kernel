@@ -16,32 +16,25 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          tmo
+  Author:          jmox
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
 
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<datamodel-type xmlns="http://www.efaps.org/xsd"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>f5b1cc2f-b6aa-47a0-b2ee-9cee2b44c845</uuid>
+  <uuid>c7e32d85-0d21-4891-b107-0700ac757633</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version-expression>(version==latest)</version-expression>
-    <name>Admin_Program_AbstractMyDesk</name>
-    <childs>
-      <child>Admin_Program_JavaMyDesk</child>
-      <child>Admin_Event_Definition_MyDesk</child>
-      <child>Admin_Program_CSSMyDesk</child>
-      <child>Admin_Program_JavaScriptMyDesk</child>
-      <child>Admin_Program_JasperReportMyDesk</child>
-      <child>Admin_Program_XSLMyDesk</child>
-    </childs>
+    <version-expression>(version==6) || (version==latest)</version-expression>
+    <name>Admin_Program_JasperReport2JasperReport</name>
+    <parent>Admin_Program2Program</parent>
   </definition>
 
-</ui-menu>
+</datamodel-type>
