@@ -28,6 +28,7 @@ import java.util.UUID;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.design.JRDesignParameter;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.xml.JRXmlDigester;
@@ -44,19 +45,21 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
+ * Class is used to import a JasperReport into the eFaps DataBase.
  *
  * @author The eFaps Team
  * @version $Id$
  */
 public class JasperReportImporter extends AbstractProgramImporter
 {
-
+    /**
+     * Design of the current report.
+     */
     private JasperDesign jasperDesign;
 
     /**
-     * @param url
-     * @throws EFapsException
+     * @param _url  url to the file to be imported
+     * @throws EFapsException   on error
      */
     public JasperReportImporter(final URL _url) throws EFapsException
     {
@@ -106,8 +109,7 @@ public class JasperReportImporter extends AbstractProgramImporter
     }
 
     /**
-     * @see org.efaps.admin.program.AbstractProgramImporter#evalRevision()
-     * @return
+     * {@inheritDoc}
      */
     @Override
     protected String evalRevision()
@@ -116,14 +118,20 @@ public class JasperReportImporter extends AbstractProgramImporter
     }
 
     /**
-     * @see org.efaps.admin.program.AbstractProgramImporter#evalUUID()
-     * @return
+     * {@inheritDoc}
      */
     @Override
     protected UUID evalUUID()
     {
-        // TODO Auto-generated method stub
-        return null;
+        UUID ret = null;
+        final JRDesignParameter para = (JRDesignParameter) this.jasperDesign.getParametersMap().get("EFAPS_DEFINITION");
+        if (para != null) {
+            final String uuid = para.getPropertiesMap().getProperty("UUID");
+            if (uuid != null) {
+                ret = UUID.fromString(uuid);
+            }
+        }
+        return ret;
     }
 
     /**
@@ -145,5 +153,4 @@ public class JasperReportImporter extends AbstractProgramImporter
         query.close();
         return instance;
     }
-
 }
