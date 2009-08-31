@@ -51,8 +51,9 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
+
 /**
- * TODO comment!
+ * Class serves as the compiler for JasperReports.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -61,7 +62,6 @@ public class JasperReportCompiler extends AbstractSourceCompiler
 {
     /**
      * {@inheritDoc}
-     * @throws EFapsException
      */
     @Override
     public void compile() throws EFapsException
@@ -93,6 +93,12 @@ public class JasperReportCompiler extends AbstractSourceCompiler
 
     }
 
+    /**
+     * Method to compile one JasperReport.
+     * @param _instSource   instance of the source
+     * @param _instCompiled instance of the compiled source
+     * @throws EFapsException on error
+     */
     private void compileJasperReport(final Instance _instSource, final Instance _instCompiled) throws EFapsException
     {
         final Checkout checkout = new Checkout(_instSource);
@@ -136,19 +142,16 @@ public class JasperReportCompiler extends AbstractSourceCompiler
     }
 
     /**
+     * Not needed in this case.
      * @see org.efaps.admin.program.staticsource.AbstractSourceCompiler#getCompiledString(java.lang.String)
-     * @param oid
-     * @return
+     * @param _oid oid
+     * @return null
      */
     @Override
-    protected String getCompiledString(final String oid)
+    protected String getCompiledString(final String _oid)
     {
-        // TODO Auto-generated method stub
         return null;
     }
-
-
-
 
    /**
      * {@inheritDoc}
@@ -191,6 +194,11 @@ public class JasperReportCompiler extends AbstractSourceCompiler
     protected class OneJasperReport extends AbstractSource
     {
 
+        /**
+         * @param _name name
+         * @param _oid  oid
+         * @param _id   id
+         */
         public OneJasperReport(final String _name, final String _oid, final long _id)
         {
             super(_name, _oid, _id);
