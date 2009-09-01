@@ -16,12 +16,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
  Original Author: Mark James (mjames at gmail.com)
- Original Name:   group.png
+ Original Name:   chart_organisation.png
                   link.png
  Original Web:    Silk icon set 1.3
                   [ http://www.famfamfam.com/lab/icons/silk/ ]
@@ -34,14 +34,14 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>a21f1427-3979-4ab6-9183-cd501b8a9d5e</uuid>
+  <uuid>35368d5a-0851-4aa3-8f67-3233c158633f</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_User_Group+Add+Image</name>
-    <file>Admin_User_Group+Add+Image.gif</file>
+    <name>Admin_User_Role+Add+Image</name>
+    <file>Admin_User_Role+Add+Image.gif</file>
   </definition>
 
 </ui-image>
