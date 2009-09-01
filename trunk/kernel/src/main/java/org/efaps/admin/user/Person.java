@@ -129,7 +129,7 @@ public final class Person extends AbstractUserObject
     private static final Cache<Person> CACHE = new PersonCache();
 
     /**
-     * HashSet instance variale to hold all roles for this person.
+     * HashSet instance variable to hold all roles for this person.
      *
      * @see #getRoles
      * @see #add(Role)
@@ -137,12 +137,20 @@ public final class Person extends AbstractUserObject
     private final Set<Role> roles = new HashSet<Role>();
 
     /**
-     * HashSet instance variale to hold all groups for this person.
+     * HashSet instance variable to hold all groups for this person.
      *
      * @see #getGroups
      * @see #add(Group)
      */
     private final Set<Group> groups = new HashSet<Group>();
+
+    /**
+     * HashSet instance variable to hold all groups for this person.
+     *
+     * @see #getCompanies
+     * @see #add(Company)
+     */
+    private final Set<Company> companies = new HashSet<Company>();
 
     /**
      * The map is used to store all attribute values depending on attribute
@@ -238,6 +246,19 @@ public final class Person extends AbstractUserObject
     }
 
     /**
+     * Tests, if the given group is assigned to this person.
+     *
+     * @param _company Company to test
+     * @return <code>true</code> if group is assigned to this person, otherwise
+     *         <code>false</code>
+     */
+    public boolean isAssigned(final Company _company)
+    {
+        return this.companies.contains(_company);
+    }
+
+
+    /**
      * All assigned roles in {@link #roles} and groups in {@link #groups} are
      * removed in the cache from this person instance. This is needed if the
      * person assignments are rebuild (e.g. from a login servlet).
@@ -246,6 +267,7 @@ public final class Person extends AbstractUserObject
     {
         this.roles.clear();
         this.groups.clear();
+        this.companies.clear();
     }
 
     /**
@@ -652,7 +674,10 @@ public final class Person extends AbstractUserObject
         this.roles.addAll(getRolesFromDB());
         this.groups.clear();
         this.groups.addAll(getGroupsFromDB(null));
+        this.companies.clear();
+        this.companies.addAll(getCompaniesFromDB(null));
     }
+
 
     /**
      * All attributes from this person are read from the database.
@@ -702,6 +727,63 @@ public final class Person extends AbstractUserObject
             }
         }
     }
+
+    /**
+     * The method reads directly from the database all stored companies for this
+     * person. The found roles are returned as instance of {@link java.util.Set}
+     * .
+     *
+     * @param _jaasSystem JAAS system for which the roles must get from database
+     *            (if value is null, all roles independed from the related JAAS
+     *            system are returned)
+     * @return set of all found companies for given JAAS system
+     * @throws EFapsException on error
+     */
+    protected Set<Company> getCompaniesFromDB(final JAASSystem _jaasSystem) throws EFapsException
+    {
+        final Set<Company> ret = new HashSet<Company>();
+        ConnectionResource rsrc = null;
+        try {
+            rsrc = Context.getThreadContext().getConnectionResource();
+
+            Statement stmt = null;
+
+            try {
+                final StringBuilder cmd = new StringBuilder();
+                cmd.append("select ").append("USERABSTRACTTO ").append("from V_USERPERSON2COMPANY ")
+                    .append("where USERABSTRACTFROM=").append(getId());
+
+                if (_jaasSystem != null) {
+                    cmd.append(" and JAASSYSID=").append(_jaasSystem.getId());
+                }
+
+                stmt = rsrc.getConnection().createStatement();
+                final ResultSet resultset = stmt.executeQuery(cmd.toString());
+                while (resultset.next()) {
+                    ret.add(Company.get(resultset.getLong(1)));
+                }
+                resultset.close();
+
+            } catch (final SQLException e) {
+                throw new EFapsException(getClass(), "getCompaniesFromDB.SQLException", e, getName());
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                } catch (final SQLException e) {
+                    throw new EFapsException(getClass(), "getCompaniesFromDB.SQLException", e, getName());
+                }
+            }
+            rsrc.commit();
+        } finally {
+            if ((rsrc != null) && rsrc.isOpened()) {
+                rsrc.abort();
+            }
+        }
+        return ret;
+    }
+
 
     /**
      * The method reads directly from the database all stores roles for the this
@@ -1033,6 +1115,16 @@ public final class Person extends AbstractUserObject
     public Set<Group> getGroups()
     {
         return this.groups;
+    }
+
+    /**
+     * Getter method for instance variable {@link #companies}.
+     *
+     * @return value of instance variable {@link #companies}
+     */
+    public Set<Company> getCompanies()
+    {
+        return this.companies;
     }
 
     /**

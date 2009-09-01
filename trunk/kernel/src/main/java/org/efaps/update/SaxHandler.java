@@ -52,6 +52,7 @@ import org.efaps.update.ui.MenuUpdate;
 import org.efaps.update.ui.PickerUpdate;
 import org.efaps.update.ui.SearchUpdate;
 import org.efaps.update.ui.TableUpdate;
+import org.efaps.update.user.CompanyUpdate;
 import org.efaps.update.user.JAASSystemUpdate;
 import org.efaps.update.user.RoleUpdate;
 
@@ -232,6 +233,8 @@ public class SaxHandler extends DefaultHandler
             this.update = new SearchUpdate(this.url);
         } else if ("ui-table".equals(_qName)) {
             this.update = new TableUpdate(this.url);
+        } else if ("user-company".equals(_qName)) {
+            this.update = new CompanyUpdate(this.url);
         } else if ("user-jaassystem".equals(_qName)) {
             this.update = new JAASSystemUpdate(this.url);
         } else if ("user-role".equals(_qName)) {

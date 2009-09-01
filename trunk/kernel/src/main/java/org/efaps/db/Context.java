@@ -48,6 +48,7 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.efaps.admin.user.Company;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.admin.user.UserAttributesSet.UserAttributesDefinition;
@@ -65,6 +66,11 @@ import org.efaps.util.EFapsException;
  */
 public final class Context implements INamingBinds
 {
+    /**
+     * Key used to access the current company from the userattributes.
+     */
+    public static final String CURRENTCOMPANY = "CurrentCompany";
+
     /**
      * Logging instance used in this class.
      */
@@ -139,11 +145,16 @@ public final class Context implements INamingBinds
     private Connection connection = null;
 
     /**
-     * This instance variable represents the user name of the context.
+     * This instance variable represents the user of the context.
      *
      * @see #getPerson
      */
     private Person person = null;
+
+    /**
+     * The current active company.
+     */
+    private Company company = null;
 
     /**
      * The parameters used to open a new thread context are stored in this
@@ -693,6 +704,16 @@ public final class Context implements INamingBinds
     }
 
     /**
+     * Getter method for instance variable {@link #company}.
+     *
+     * @return value of instance variable {@link #company}
+     */
+    public Company getCompany()
+    {
+        return this.company;
+    }
+
+    /**
      * This is the getter method for instance variable {@link #locale}.
      *
      * @return value of instance variable {@link #locale}
@@ -815,7 +836,8 @@ public final class Context implements INamingBinds
      */
     public static Context begin(final String _userName, final Locale _locale,
                                 final Map<String, Object> _sessionAttributes, final Map<String, String[]> _parameters,
-                                final Map<String, FileParameter> _fileParameters) throws EFapsException
+                                final Map<String, FileParameter> _fileParameters)
+        throws EFapsException
     {
         if (Context.THREADCONTEXT.get() != null) {
             throw new EFapsException(Context.class, "begin.Context4ThreadAlreadSet");
@@ -835,7 +857,7 @@ public final class Context implements INamingBinds
             throw new EFapsException(Context.class, "begin.getTransactionSystemException", e);
         }
         final Context context = new Context(transaction, (_locale == null) ? Locale.ENGLISH : _locale,
-                        _sessionAttributes, _parameters, _fileParameters);
+                                            _sessionAttributes, _parameters, _fileParameters);
         Context.THREADCONTEXT.set(context);
 
         if (_userName != null) {
@@ -844,6 +866,21 @@ public final class Context implements INamingBinds
             context.timezone = context.person.getTimeZone();
             context.chronology = context.person.getChronology();
             context.language = context.person.getLanguage();
+            if (_sessionAttributes != null && context.containsUserAttribute(Context.CURRENTCOMPANY)) {
+                final Company comp = Company.get(Long.parseLong(context.getUserAttribute(Context.CURRENTCOMPANY)));
+                if (comp != null && comp.hasChildPerson(context.person)) {
+                    context.company = comp;
+                } else {
+                    context.setUserAttribute(Context.CURRENTCOMPANY, null);
+                }
+            }
+            if (context.company == null && context.person.getCompanies().size() > 0) {
+                for (final Company comp : context.person.getCompanies()) {
+                    context.setUserAttribute(Context.CURRENTCOMPANY, ((Long) comp.getId()).toString());
+                    context.company = comp;
+                    break;
+                }
+            }
         }
         return context;
     }
