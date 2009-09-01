@@ -44,6 +44,8 @@
     <type>Admin_User_Group</type>
     <type>Admin_User_Person</type>
     <type>Admin_User_Role</type>
+    <type>Admin_User_Company</type>
+
     <role>Administration</role>
     <role>Admin_User_ModifyUsers</role>
   </definition>

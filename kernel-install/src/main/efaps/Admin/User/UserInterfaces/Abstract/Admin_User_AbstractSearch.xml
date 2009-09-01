@@ -39,6 +39,7 @@
       <child>Admin_User_PersonSearch</child>
       <child>Admin_User_RoleSearch</child>
       <child>Admin_User_GroupSearch</child>
+      <child>Admin_User_CompanySearch</child>
     </childs>
   </definition>
 
