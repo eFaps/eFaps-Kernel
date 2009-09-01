@@ -34,14 +34,14 @@
     <!-- fields -->
     <field name="type">
       <property name="Expression">Type</property>
-      
+
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="name">
       <property name="Columns">40</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
-      
+
       <property name="Expression">Name</property>
       <property name="Required">true</property>
       <property name="ModeSearch">EDITABLE</property>
@@ -50,16 +50,15 @@
       <property name="Columns">40</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
-      
       <property name="Expression">UUID</property>
-      <property name="Required">false</property>
+      <property name="Required">true</property>
       <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="revision">
       <property name="Columns">20</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
-      
+
       <property name="Expression">Revision</property>
       <property name="Required">true</property>
       <property name="ModeSearch">EDITABLE</property>
@@ -68,7 +67,7 @@
       <property name="Columns">20</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
-      
+
       <property name="Expression">Status</property>
       <property name="Required">true</property>
       <property name="ModeSearch">EDITABLE</property>

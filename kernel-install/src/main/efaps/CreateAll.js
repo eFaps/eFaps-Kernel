@@ -59,7 +59,7 @@ function _eFapsCommonLog(_subject, _text)  {
 
 function _eFapsCommonSQLTableUpdate(_stmt, _text, _table, _array)  {
   _eFapsCommonLog("Update Table '" + _table + "'", _text);
-  
+
   for (var i=0; i<_array.length; i++)  {
     _stmt.execute("alter table " + _table + " add " + _array[i]);
   }
@@ -87,7 +87,7 @@ function _insert(_stmt, _subject, _text, _table, _columns, _values)  {
   cmd += _values + ")";
   _stmt.execute(cmd);
   var rs = _stmt.executeQuery("select max(ID) from " + _table);
-  
+
   if (rs.next())  {
     ret= rs.getString(1);
   }
@@ -100,12 +100,12 @@ function _insert(_stmt, _subject, _text, _table, _columns, _values)  {
  * Following steps are made:
  * <ul>
  *   <li>delete all current existing tables of this database user</li>
- *   <li>create all needed eFaps tables including some rudimentary data model 
+ *   <li>create all needed eFaps tables including some rudimentary data model
  *       definition needed to use eFaps standard import functionality </li>
  *   <li>reset context to load all user and roles</li>
- *   <li>import all other standard data model and user interface configuration 
+ *   <li>import all other standard data model and user interface configuration
  *       items</li>
- *   <li>set first password for person <i>Administrator</i> needed for login 
+ *   <li>set first password for person <i>Administrator</i> needed for login
  *       via web interface</li>
  * </ul>
  *
@@ -147,12 +147,12 @@ function _eFapsCreateInsertSQLTable(_stmt, _text, _uuid, _name, _sqlTable, _sqlC
   var ret = _insert(_stmt, _text, null,
                     "T_CMABSTRACT",
                     "TYPEID,UUID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED",
-                    typeIdSQLTable 
+                    typeIdSQLTable
                         + ", '" + _uuid + "'"
                         + ",'" + _name + "'"
-                        + ",''"     
+                        + ",''"
                         + ", 1"
-                        + "," + CURRENT_TIMESTAMP 
+                        + "," + CURRENT_TIMESTAMP
                         + ",1"
                         + "," + CURRENT_TIMESTAMP);
   _exec(_stmt, null, null,  "insert into T_DMTABLE values  (" + ret + ",'" + _sqlTable + "','" + _sqlColId + "'," + sqlColType + "," + tableMainId + ")");
@@ -170,14 +170,14 @@ function _eFapsCreateInsertType(_stmt, _text, _uuid, _name, _parentType)  {
 
   // get id for given type name in _parentType
   var parentTypeId = "null";
-  if (_parentType != null)  {                                                                                                               
+  if (_parentType != null)  {
     rs = _stmt.executeQuery("select ID from T_CMABSTRACT where NAME='" + _parentType + "'");
     rs.next();
     parentTypeId = rs.getString(1);
     rs.close();
   }
 
-  var ret = _insert(_stmt, _text, null, 
+  var ret = _insert(_stmt, _text, null,
                     "T_CMABSTRACT",
                     "TYPEID,NAME,UUID,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED",
                     typeIdType + ", '" + _name + "','" + _uuid + "','',1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP);
@@ -209,7 +209,7 @@ function _eFapsCreateInsertAttr(_stmt, _tableId, _typeId, _name, _sqlColumn, _at
   var attrTypeId = rs.getString(1);
   rs.close();
 
-  var ret = _insert(_stmt, null, null, 
+  var ret = _insert(_stmt, null, null,
                     "T_CMABSTRACT",
                     "TYPEID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED",
                     typeIdAttr + ", '" + _name + "', '', 1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP);
@@ -290,12 +290,18 @@ function _eFapsCreateUserTablesStep2()  {
 
     text = "Insert Type for 'Admin_User_Group' (only to store ID for type)";
     var typeIdGroup         = _eFapsCreateInsertType(stmt, text, "f5e1e2ff-bfa9-40d9-8340-a259f48d5ad9", "Admin_User_Group", null);
-   
+
+    text = "Insert Type for 'Admin_User_Company' (only to store ID for type)";
+    var typeIdCompany       = _eFapsCreateInsertType(stmt, text, "6a5388e9-7f7f-4bc0-b7a0-3245302faad5", "Admin_User_Company", null);
+
     text = "Insert Type for 'Admin_User_Person2Role' (only to store ID for type)";
     var typeIdPerson2Role   = _eFapsCreateInsertType(stmt, text, "37deb6ae-3e1c-4642-8823-715120386fc3", "Admin_User_Person2Role", null);
 
     text = "Insert Type for 'Admin_User_Person2Group' (only to store ID for type)";
     var typeIdPerson2Group  = _eFapsCreateInsertType(stmt, text, "fec64148-a39b-4f69-bedd-9c3bcfe8e1602", "Admin_User_Person2Group", null);
+
+    text = "Insert Type for 'Admin_User_Person2Company' (only to store ID for type)";
+    var typeIdPerson2Company  = _eFapsCreateInsertType(stmt, text, "a79898fb-966a-44ee-a338-d034e2aad83a", "Admin_User_Person2Company", null);
 
     _exec(stmt, "Table 'T_USERABSTRACT'", "update type id for persons",
       "update T_USERABSTRACT set TYPEID=" + typeIdPerson + " where TYPEID=-10000"
@@ -360,6 +366,17 @@ function _eFapsCreateUserTablesStep2()  {
           "where T_USERABSTRACT.TYPEID="+typeIdGroup
     );
 
+    _exec(stmt, "View 'V_USERCOMPANY'", "view representing all companies",
+            "create view V_USERCOMPANY as "+
+              "select "+
+                  "T_USERABSTRACT.ID,"+
+                  "T_USERABSTRACT.NAME, "+
+                  "T_USERABSTRACT.UUID, " +
+                  "T_USERABSTRACT.STATUS "+
+                "from T_USERABSTRACT "+
+                "where T_USERABSTRACT.TYPEID="+ typeIdCompany
+          );
+
     _exec(stmt, "View 'V_USERGROUPJASSKEY'", "view representing all groups related to the JAAS keys",
       "create view V_USERGROUPJASSKEY as "
         + "select "
@@ -383,6 +400,17 @@ function _eFapsCreateUserTablesStep2()  {
         +   "where T_USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Role
     );
 
+    _exec(stmt, "View 'V_USERPERSON2COMPANY'", "view representing connection between person and company depending on JAAS systems",
+            "create view V_USERPERSON2COMPANY as "
+              + "select "
+              +       "T_USERABSTRACT2ABSTRACT.ID,"
+              +       "T_USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"
+              +       "T_USERABSTRACT2ABSTRACT.USERABSTRACTTO,"
+              +       "T_USERABSTRACT2ABSTRACT.USERJAASSYSTEM as JAASSYSID "
+              +   "from T_USERABSTRACT2ABSTRACT "
+              +   "where T_USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Company
+          );
+
     _exec(stmt, "View 'V_USERPERSON2GROUP'", "view representing connection between person and group depending on JAAS systems",
       "create view V_USERPERSON2GROUP as "
         + "select "
@@ -405,7 +433,7 @@ function _eFapsCreateAttrType(_stmt, _text, _uuid, _name, _classDM, _classUI, _a
   var typeIdType = rs.getString(1);
   rs.close();
 
-  var ret = _insert(_stmt, _text, null, 
+  var ret = _insert(_stmt, _text, null,
                     "T_CMABSTRACT",
                     "TYPEID,NAME,UUID,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED",
                     typeIdType + ", '" + _name + "','" + _uuid + "','',1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP);
@@ -426,7 +454,7 @@ function _eFapsCreateDataModelTablesStep1()  {
   var stmt = conRsrc.getConnection().createStatement();
 
   /////////////////////////////////////////
-  // insert 'attribute type' 
+  // insert 'attribute type'
 
   var text = "Insert Table for 'Admin_DataModel_AttributeType'";
   ATTRTYPESQLTABLEID = _eFapsCreateInsertSQLTable(stmt, text, "30152cda-e5a3-418d-ad1e-ad44be1307c2", "Admin_DataModel_AttributeTypeSQLTable", "T_DMATTRIBUTETYPE", "ID", null, null);
@@ -460,8 +488,10 @@ function _eFapsCreateDataModelTablesStep1()  {
   _eFapsCreateAttrType(stmt, null, 'f1795d01-1567-4cb3-9620-b3cd4e2af932', 'IntegerWithUoM', 'org.efaps.admin.datamodel.attributetype.IntegerWithUoMType', 'org.efaps.admin.datamodel.ui.NumberWithUoMUI',  null, null);
   _eFapsCreateAttrType(stmt, null, 'de1c00bc-b041-49d6-9d85-82de0a6bee0d', 'DecimalWithUoM', 'org.efaps.admin.datamodel.attributetype.DecimalWithUoMType', 'org.efaps.admin.datamodel.ui.DecimalWithUoMUI',  null, null);
   _eFapsCreateAttrType(stmt, null, '0161bcdb-45e9-4839-a709-3a1c56f8a76a', 'Status',         'org.efaps.admin.datamodel.attributetype.StatusType',         'org.efaps.admin.datamodel.ui.LinkWithRangesUI', null, null);
-  
-  
+  _eFapsCreateAttrType(stmt, null, '66c5d239-47d7-4fef-a79b-9dac432ab7ba', 'CompanyLink',    'org.efaps.admin.datamodel.attributetype.CompanyLinkType',    'org.efaps.admin.datamodel.ui.UserUI',           null, 1   );
+
+
+
   _eFapsCreateInsertAttr(stmt, ATTRTYPESQLTABLEID, ATTRTYPETYPEID, 'Classname',     'CLASSNAME',    'String', null);
   _eFapsCreateInsertAttr(stmt, ATTRTYPESQLTABLEID, ATTRTYPETYPEID, 'ClassnameUI',   'CLASSNAMEUI',  'String', null);
   _eFapsCreateInsertAttr(stmt, ATTRTYPESQLTABLEID, ATTRTYPETYPEID, 'AlwaysUpdate',  'ALWAYSUPDATE', 'Boolean', null);
@@ -475,7 +505,7 @@ function _eFapsCreateDataModelTablesStep1()  {
  */
 function _eFapsCreateDataModelTablesStep2()  {
   /////////////////////////////////////////
-  // insert 'sql table' 
+  // insert 'sql table'
   var conRsrc = Context.getThreadContext().getConnectionResource();
   var stmt = conRsrc.getConnection().createStatement();
 
@@ -493,7 +523,7 @@ function _eFapsCreateDataModelTablesStep2()  {
               null, "update T_CMABSTRACT set TYPEID=" + typeIdSQLTable + " where TYPEID=-20000");
 
   /////////////////////////////////////////
-  // insert 'type' 
+  // insert 'type'
 
   text = "Insert Table for 'Admin_DataModel_Type'";
   var sqlTableIdType = _eFapsCreateInsertSQLTable(stmt, text, "8f4df2db-8fda-4f00-9144-9a3e344d0abc", "Admin_DataModel_TypeSQLTable", "T_DMTYPE", "ID", null, "Admin_Common_AbstractSQLTable");
@@ -507,7 +537,7 @@ function _eFapsCreateDataModelTablesStep2()  {
               null, "update T_CMABSTRACT set TYPEID=" + typeIdType + " where TYPEID=-21000");
 
   /////////////////////////////////////////
-  // insert 'attribute' 
+  // insert 'attribute'
 
   text = "Insert Table for 'Admin_DataModel_Attribute'";
   var sqlTableIdAttr = _eFapsCreateInsertSQLTable(stmt, text, "d3a64746-3666-4678-9603-f304bf16bb92", "Admin_DataModel_AttributeSQLTable", "T_DMATTRIBUTE", "ID", null, "Admin_Common_AbstractSQLTable");
@@ -524,15 +554,15 @@ function _eFapsCreateDataModelTablesStep2()  {
   _exec(stmt, "Update type id for attributes",
               null, "update T_CMABSTRACT set TYPEID=" + typeIdAttr + " where TYPEID=-22000");
 
-  
+
   text = "Insert Type for 'Admin_DataModel_AttributeSet'";
   var typeIdAttrSet = _eFapsCreateInsertType(stmt, text, "a23b6c9f-5220-438f-93d0-f4651c3ba455", "Admin_DataModel_AttributeSet", "Admin_DataModel_Attribute");
-  
+
   text = "Insert Type for 'Admin_DataModel_AttributeSetAttribute'";
   var typeIdAttrSetAttr = _eFapsCreateInsertType(stmt, text, "f601ffc5-819c-41a0-8663-3e1b0fb35a9b", "Admin_DataModel_AttributeSetAttribute", "Admin_DataModel_Attribute");
-  
+
   /////////////////////////////////////////
-  // insert 'admin property' 
+  // insert 'admin property'
 
   text = "Insert Table for 'Admin_Common_Property'";
   var sqlTableIdProp = _eFapsCreateInsertSQLTable(stmt, text, "5cf99cd6-06d6-4322-a344-55d206666c9c", "Admin_Common_PropertySQLTable", "T_CMPROPERTY", "ID", null, null);
@@ -590,14 +620,14 @@ function _eFapsInitRunLevel()  {
 
   var id = _insert(stmt, "Insert shell Runlevel", null,
           "T_RUNLEVEL",
-          "RUNLEVEL,UUID", 
+          "RUNLEVEL,UUID",
           "'shell','edfb9537-9d91-4fa0-acb1-cf3f2678a245'");
-  
+
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
           "" + id + ",1, 'org.efaps.admin.common.SystemConfiguration', 'initialize'");
-  
+
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
@@ -617,11 +647,15 @@ function _eFapsInitRunLevel()  {
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",6, 'org.efaps.admin.datamodel.AbstractDataModelObject', 'initialize'");
+          "" + id + ",6, 'org.efaps.admin.user.Company', 'initialize'");
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",7, 'org.efaps.db.store.Store', 'initialize'");
+          "" + id + ",7, 'org.efaps.admin.datamodel.AbstractDataModelObject', 'initialize'");
+  _insert(stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",8, 'org.efaps.db.store.Store', 'initialize'");
 
   conRsrc.commit();
 }
