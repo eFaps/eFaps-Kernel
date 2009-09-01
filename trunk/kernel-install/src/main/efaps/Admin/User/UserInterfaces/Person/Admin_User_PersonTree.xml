@@ -45,6 +45,7 @@
     <childs>
       <child>Admin_User_PersonTree_Roles</child>
       <child>Admin_User_PersonTree_Groups</child>
+      <child>Admin_User_PersonTree_Company</child>
       <child>Admin_User_AbstractTree_JAASKeys</child>
       <child>Admin_User_AbstractTree_Access</child>
       <child>Admin_User_PersonTree_User_Attribute</child>
