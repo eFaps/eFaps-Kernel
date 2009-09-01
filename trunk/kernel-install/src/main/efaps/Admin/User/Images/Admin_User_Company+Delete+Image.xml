@@ -39,8 +39,8 @@
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_User_Role+Delete+Image</name>
-    <file>Admin_User_Role+Delete+Image.gif</file>
+    <name>Admin_User_Company+Delete+Image</name>
+    <file>Admin_User_Company+Delete+Image.gif</file>
   </definition>
 
 </ui-image>

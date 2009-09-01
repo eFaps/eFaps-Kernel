@@ -40,8 +40,8 @@
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_User_Role+Add+Image</name>
-    <file>Admin_User_Role+Add+Image.gif</file>
+    <name>Admin_User_Company+Add+Image</name>
+    <file>Admin_User_Company+Add+Image.gif</file>
   </definition>
 
 </ui-image>
