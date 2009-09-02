@@ -16,31 +16,35 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>87001cc3-c45c-44de-b8f1-776df507f268</uuid>
+  <uuid>f0752418-c2a6-4666-9484-f6c1746b762f</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>MainToolBar</name>
-    <childs>
-      <child>Admin_Common_MyDesk</child>
-      <child>Admin_Common_ReloadCache</child>
-      <child>Common_Main_Preferences</child>
-      <child>Common_Main_SetCompany</child>
-      <child>Common_Main_LogoutToolBar</child>
-    </childs>
+    <name>Common_Main_SetCompany</name>
+    <icon>Admin_User_CompanyImage</icon>
+    <target>
+        <trigger program="org.efaps.esjp.admin.user.Company"
+                method="accessCheck"
+                name="Admin_User_Company_SetCompany.UI_ACCESSCHECK" event="UI_ACCESSCHECK"/>
+    </target>
+    <!-- properties -->
+    <property name="HRef">${ROOTURL}/setcompany</property>
+
+
+
   </definition>
 
-</ui-menu>
+</ui-command>

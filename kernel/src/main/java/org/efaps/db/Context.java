@@ -866,19 +866,21 @@ public final class Context implements INamingBinds
             context.timezone = context.person.getTimeZone();
             context.chronology = context.person.getChronology();
             context.language = context.person.getLanguage();
-            if (_sessionAttributes != null && context.containsUserAttribute(Context.CURRENTCOMPANY)) {
-                final Company comp = Company.get(Long.parseLong(context.getUserAttribute(Context.CURRENTCOMPANY)));
-                if (comp != null && comp.hasChildPerson(context.person)) {
-                    context.company = comp;
-                } else {
-                    context.setUserAttribute(Context.CURRENTCOMPANY, null);
+            if (_sessionAttributes != null) {
+                if (context.containsUserAttribute(Context.CURRENTCOMPANY)) {
+                    final Company comp = Company.get(Long.parseLong(context.getUserAttribute(Context.CURRENTCOMPANY)));
+                    if (comp != null && comp.hasChildPerson(context.person)) {
+                        context.company = comp;
+                    } else {
+                        context.setUserAttribute(Context.CURRENTCOMPANY, "0");
+                    }
                 }
-            }
-            if (context.company == null && context.person.getCompanies().size() > 0) {
-                for (final Company comp : context.person.getCompanies()) {
-                    context.setUserAttribute(Context.CURRENTCOMPANY, ((Long) comp.getId()).toString());
-                    context.company = comp;
-                    break;
+                if (context.company == null && context.person.getCompanies().size() > 0) {
+                    for (final Company comp : context.person.getCompanies()) {
+                        context.setUserAttribute(Context.CURRENTCOMPANY, ((Long) comp.getId()).toString());
+                        context.company = comp;
+                        break;
+                    }
                 }
             }
         }
