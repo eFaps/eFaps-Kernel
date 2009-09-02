@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
+import org.efaps.admin.datamodel.attributetype.CompanyLinkType;
 import org.efaps.admin.datamodel.attributetype.StatusType;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -219,9 +220,14 @@ public class Type extends AbstractDataModelObject
     private boolean abstractBool;
 
     /**
-     * Stores the attrbiute that contains the status of this type. (if exist)
+     * Stores the attribute that contains the status of this type. (if exist)
      */
     private Attribute statusAttribute;
+
+    /**
+     * Stores the attribute that contains the company of this type. (if exist)
+     */
+    private Attribute companyAttribute;
 
     /**
      * This is the constructor for class Type. Every instance of class Type must
@@ -267,8 +273,13 @@ public class Type extends AbstractDataModelObject
     protected void addAttribute(final Attribute _attribute)
     {
         _attribute.setParent(this);
+        //evaluate for status
         if (_attribute.getAttributeType().getClassRepr().equals(StatusType.class)) {
             this.statusAttribute = _attribute;
+        }
+        //evaluate for company
+        if (_attribute.getAttributeType().getClassRepr().equals(CompanyLinkType.class)) {
+            this.companyAttribute = _attribute;
         }
         getAttributes().put(_attribute.getName(), _attribute);
         if (_attribute.getTable() != null) {
@@ -326,6 +337,15 @@ public class Type extends AbstractDataModelObject
     public boolean isCheckStatus()
     {
         return this.statusAttribute != null;
+    }
+
+    /**
+     * Method to evaluate if this type depends on companies.
+     * @return true if {@link #companyAttribute} !=null , else false
+     */
+    public boolean isCompanyDepended()
+    {
+        return this.companyAttribute != null;
     }
 
     /**
@@ -424,10 +444,13 @@ public class Type extends AbstractDataModelObject
     }
 
     /**
-     * @param _instances
-     * @param _accessType
-     * @throws EFapsException
+     * Method to check the access right for a list of instances.
+     * @param _instances    list of instances
+     * @param _accessType   access type
+     * @throws EFapsException   on error
+     * @return Map of instances to boolean
      */
+    @SuppressWarnings("unchecked")
     public Map<Instance, Boolean> checkAccess(final List<Instance> _instances, final AccessType _accessType)
         throws EFapsException
     {
