@@ -67,6 +67,7 @@
       <property name="Attribute">Status</property>
       <property name="ModeSearch">EDITABLE</property>
       <property name="Label">Admin_User_Person/Status.Label</property>
+      <property name="Required">true</property>
     </field>
     <field name="lastlogin">
       <property name="Attribute">LastLogin</property>
@@ -120,7 +121,7 @@
       <property name="Columns">40</property>
       <property name="Attribute">TimeZone</property>
       <trigger program="org.efaps.esjp.admin.access.AccessOnField"
-                method="viewOnly" 
+                method="viewOnly"
                 name="Admin_User_PersonForm/TimeZone4View"
                 event="UI_ACCESSCHECK"></trigger>
     </field>
@@ -131,10 +132,10 @@
       <property name="ModeView">NONE</property>
       <property name="Attribute">TimeZone</property>
       <trigger program="org.efaps.esjp.admin.user.TimeZoneUI"
-                name="Admin_User_PersonForm/TimeZone4Edit" 
+                name="Admin_User_PersonForm/TimeZone4Edit"
                 event="UI_FIELD_VALUE" />
       <trigger program="org.efaps.esjp.admin.access.AccessOnField"
-                method="hideOnSearch" 
+                method="hideOnSearch"
                 name="Admin_User_PersonForm/TimeZone4Edit.UI_ACCESSCHECK"
                 event="UI_ACCESSCHECK" />
     </field>
@@ -142,7 +143,7 @@
       <property name="Columns">40</property>
       <property name="Attribute">Chronology</property>
       <trigger program="org.efaps.esjp.admin.user.ChronologyUI"
-                method="execute" 
+                method="execute"
                 name="Admin_User_PersonForm/Chronology4View.UI_FIELD_VALUE"
                 event="UI_FIELD_VALUE" />
       <trigger program="org.efaps.esjp.admin.access.AccessOnField"
@@ -156,11 +157,11 @@
       <property name="ModeView">NONE</property>
       <property name="Attribute">Chronology</property>
       <trigger program="org.efaps.esjp.admin.user.ChronologyUI"
-                method="get4Edit" 
+                method="get4Edit"
                 name="Admin_User_PersonForm/Chronology4Edit"
                 event="UI_FIELD_VALUE" />
       <trigger program="org.efaps.esjp.admin.access.AccessOnField"
-                method="hideOnSearch" 
+                method="hideOnSearch"
                 name="Admin_User_PersonForm/Chronology4Edit.UI_ACCESSCHECK"
                 event="UI_ACCESSCHECK" />
     </field>
@@ -182,7 +183,7 @@
       <property name="ModePrint">NONE</property>
       <property name="ModeView">NONE</property>
       <property name="Attribute">Locale</property>
-      <trigger program="org.efaps.esjp.admin.user.LocaleUI" 
+      <trigger program="org.efaps.esjp.admin.user.LocaleUI"
                 method="get4Edit"
                 name="Admin_User_PersonForm.locale4Edit.UI_FIELD_VALUE" event="UI_FIELD_VALUE"/>
     </field>
@@ -196,7 +197,7 @@
     </field>
     <field name="rolesheader" character="Heading">
       <property name="Level">1</property>
-      <property name="Label">Admin_User_Person/Roles.Heading</property>
+      <property name="Label">Admin_User_PersonForm.rolesheader.Heading</property>
       <property name="ModeEdit">NONE</property>
     </field>
     <field name="rolestable" character="Target">
@@ -205,9 +206,22 @@
         <property name="Expand">Admin_User_Person2Role\UserFromLink.UserToLink</property>
       </evaluate>
     </field>
+
+    <field name="companieheader" character="Heading">
+      <property name="Level">1</property>
+      <property name="Label">Admin_User_PersonForm.companieheader.Heading</property>
+      <property name="ModeEdit">NONE</property>
+    </field>
+    <field name="companietable" character="Target">
+      <table>Admin_User_AbstractTable</table>
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
+        <property name="Expand">Admin_User_Person2Company\UserLink.CompanyLink</property>
+      </evaluate>
+    </field>
+
     <field name="jaaskeyheader" character="Heading">
       <property name="Level">1</property>
-      <property name="Label">Admin_User_Person/JaasKey.Heading</property>
+      <property name="Label">Admin_User_PersonForm.jaaskeyheader.Heading</property>
       <property name="ModeEdit">NONE</property>
     </field>
     <field name="jaaskeytable" character="Target">
