@@ -34,7 +34,7 @@
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>Admin_User_CompanyMyDesk_Menu_Action_Create</name>
-    <icon>Admin_User_Company+Add+Image</icon>
+    <icon>Admin_User_Company+Create+Image</icon>
     <!-- target definitions -->
     <target>
       <form>Admin_User_AbstractForm</form>
