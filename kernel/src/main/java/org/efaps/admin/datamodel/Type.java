@@ -349,6 +349,16 @@ public class Type extends AbstractDataModelObject
     }
 
     /**
+     * Getter method for instance variable {@link #companyAttribute}.
+     *
+     * @return value of instance variable {@link #companyAttribute}
+     */
+    public Attribute getCompanyAttribute()
+    {
+        return this.companyAttribute;
+    }
+
+    /**
      * Returns for the given parameter <b>_name</b> the attribute.
      *
      * @param _name name of the attribute for this type to return
