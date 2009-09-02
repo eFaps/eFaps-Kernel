@@ -66,7 +66,7 @@ public class CompanyLinkType extends PersonLinkType
     public int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException
     {
         try {
-            _stmt.setLong(_index, Context.getThreadContext().getPerson().getId());
+            _stmt.setLong(_index, Context.getThreadContext().getCompany().getId());
         } catch (final EFapsException e) {
             CompanyLinkType.LOG.error("update(Object, PreparedStatement, List<Integer>)", e);
         }
