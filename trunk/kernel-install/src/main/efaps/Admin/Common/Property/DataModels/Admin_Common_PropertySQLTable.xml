@@ -40,7 +40,7 @@
       <!-- columns -->
       <column name="ABSTRACT"   type="INTEGER"                    not-null="true"/>
       <column name="NAME"       type="STRING_SHORT" length="128"  not-null="true"/>
-      <column name="VALUE"      type="STRING_SHORT" length="128"/>
+      <column name="VALUE"      type="STRING_SHORT" length="256"/>
       <!-- unique keys -->
       <unique name="T_CMPROPERTY_UK_ABNAME" columns="ABSTRACT,NAME"/>
       <!-- foreign keys -->
@@ -57,7 +57,7 @@
       <!-- columns -->
       <column name="ABSTRACT"   type="INTEGER"                    not-null="true"/>
       <column name="NAME"       type="STRING_SHORT" length="128"  not-null="true"/>
-      <column name="VALUE"      type="STRING_SHORT" length="128"/>
+      <column name="VALUE"      type="STRING_SHORT" length="256"/>
       <!-- unique keys -->
       <unique name="T_CMPROPERTY_UK_ABNAME" columns="ABSTRACT,NAME"/>
     </database>
