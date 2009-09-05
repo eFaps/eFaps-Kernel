@@ -33,7 +33,18 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
+ * Class is used to load files from the eFaps Database into an JasperReport.
+ * There are two different Types of files that can be loaded:
+ * <ul>
+ * <li>JasperReports used as subreports</li>
+ * <li>Images (JasperImages)</li>
+ * </ul>
+ * To now if a image or a subreport is wanted a naming convention is used.
+ *  <ul>
+ *    <li>Images must start with "JasperImage."</li>
+ *    <li>JasperReports must start with "JasperReport."</li>
+ *  </ul>
+ *  <b>Caution: The dot is expected!</b>
  *
  * @author The eFaps Team
  * @version $Id$
@@ -51,15 +62,23 @@ public class JasperFileResolver_Base implements FileResolver
     public File resolveFile(final String _jasperFileName)
     {
         File file = null;
-        final SearchQuery query = new SearchQuery();
         try {
-            query.setQueryTypes("Admin_Program_JasperReportCompiled");
-            query.addWhereExprEqValue("Name", _jasperFileName);
+            final SearchQuery query = new SearchQuery();
+            String name = null;
+            if (_jasperFileName.startsWith("JasperImage.")) {
+                name = _jasperFileName.replace("JasperImage.", "");
+                query.setQueryTypes("Admin_Program_JasperImage");
+            } else if (_jasperFileName.startsWith("JasperReport.")) {
+                name = _jasperFileName.replace("JasperReport.", "");
+                query.setQueryTypes("Admin_Program_JasperReportCompiled");
+            }
+            query.addWhereExprEqValue("Name", name);
             query.addSelect("OID");
             query.execute();
             if (query.next()) {
                 final Checkout checkout = new Checkout((String) query.get("OID"));
-                file = File.createTempFile(_jasperFileName, "jasper");
+                checkout.preprocess();
+                file = File.createTempFile(checkout.getFileName(), "jasper");
                 final FileOutputStream out = new FileOutputStream(file);
                 checkout.execute(out);
                 out.close();

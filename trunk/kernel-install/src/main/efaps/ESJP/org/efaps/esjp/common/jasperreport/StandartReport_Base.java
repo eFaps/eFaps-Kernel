@@ -25,11 +25,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.oasis.JROdtExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.efaps.admin.event.EventExecution;
@@ -88,10 +90,14 @@ public class StandartReport_Base implements EventExecution
         try {
             final JasperReport jasperReport = (JasperReport) JRLoader.loadObject(iin);
 
-            final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, new EFapsDataSource(
-                            jasperReport));
+            final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameter,
+                                                                         new EFapsDataSource(jasperReport));
 
             JasperExportManager.exportReportToPdfFile(jasperPrint, "/Users/janmoxter/Documents/Test.pdf");
+            final JROdtExporter exporter = new JROdtExporter();
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+            exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "/Users/janmoxter/Documents/Test.odt");
+            exporter.exportReport();
         } catch (final JRException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

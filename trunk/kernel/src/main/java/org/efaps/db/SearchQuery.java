@@ -69,6 +69,9 @@ public class SearchQuery extends AbstractQuery
             addSelect(true, this.type, this.type, "OID");
             this.types.add(this.type);
             if (_companyDepend && this.type.isCompanyDepended()) {
+                if (Context.getThreadContext().getCompany() == null) {
+                    throw new EFapsException(SearchQuery.class, "noCompany");
+                }
                 addWhereAttrEqValue(this.type.getCompanyAttribute(), Context.getThreadContext().getCompany().getId());
             }
         }

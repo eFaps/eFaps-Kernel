@@ -44,6 +44,7 @@ import org.efaps.update.datamodel.StatusGroupUpdate;
 import org.efaps.update.datamodel.TypeUpdate;
 import org.efaps.update.db.StoreUpdate;
 import org.efaps.update.integration.WebDAVUpdate;
+import org.efaps.update.program.JasperImageUpdate;
 import org.efaps.update.program.JasperReportUpdate;
 import org.efaps.update.ui.CommandUpdate;
 import org.efaps.update.ui.FormUpdate;
@@ -219,6 +220,8 @@ public class SaxHandler extends DefaultHandler
             this.update = new WebDAVUpdate(this.url);
         } else if ("jasperReport".equals(_qName)) {
             this.update = new JasperReportUpdate(this.url);
+        } else if ("jasper-image".equals(_qName)) {
+            this.update = new JasperImageUpdate(this.url);
         } else if ("ui-command".equals(_qName)) {
             this.update = new CommandUpdate(this.url);
         } else if ("ui-form".equals(_qName)) {
