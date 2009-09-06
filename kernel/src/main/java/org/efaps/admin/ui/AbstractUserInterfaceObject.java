@@ -41,6 +41,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.user.AbstractUserObject;
+import org.efaps.admin.user.Company;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -132,7 +133,9 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject
         Statement stmt = null;
         try {
             stmt = Context.getThreadContext().getConnection().createStatement();
-            final ResultSet resultset = stmt.executeQuery("select " + "T_UIACCESS.USERABSTRACT " + "from T_UIACCESS "
+            final ResultSet resultset = stmt.executeQuery("select "
+                            + "T_UIACCESS.USERABSTRACT "
+                            + "from T_UIACCESS "
                             + "where T_UIACCESS.UIABSTRACT=" + getId());
             while (resultset.next()) {
                 final long userId = resultset.getLong(1);
@@ -182,10 +185,28 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject
         if (getAccess().isEmpty()) {
             ret = true;
         } else {
+            // first must be checked for the company
+            boolean company = false;
+            boolean checked = false;
             for (final AbstractUserObject userObject : getAccess()) {
-                if (userObject.isAssigned()) {
-                    ret = true;
-                    break;
+                if (userObject instanceof Company) {
+                    checked = true;
+                    if (userObject.isAssigned()) {
+                        company = true;
+                        break;
+                    }
+                }
+            }
+            // second it must be checked for the others, if no companies had to be checked or
+            // if the check on companies was positiv
+            if ((!company && !checked) || (company && checked)) {
+                for (final AbstractUserObject userObject : getAccess()) {
+                    if (!(userObject instanceof Company)) {
+                        if (userObject.isAssigned()) {
+                            ret = true;
+                            break;
+                        }
+                    }
                 }
             }
         }
