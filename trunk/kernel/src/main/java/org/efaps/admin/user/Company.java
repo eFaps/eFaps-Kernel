@@ -82,6 +82,27 @@ public class Company extends AbstractUserObject
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isAssigned()
+    {
+        boolean ret = false;
+        try {
+            if (Context.getThreadContext().getCompany() != null) {
+                if (Context.getThreadContext().getCompany().getId() == getId()) {
+                    ret = hasChildPerson(Context.getThreadContext().getPerson());
+                }
+            } else {
+                ret = true;
+            }
+        } catch (final EFapsException e) {
+            Company.LOG.error("could not read Company or Person from Context ", e);
+        }
+        return ret;
+    }
+
+    /**
      * Method to initialize the Cache of this CacheObjectInterface.
      */
     public static void initialize()

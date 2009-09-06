@@ -95,7 +95,7 @@ public abstract class AbstractMenu extends AbstractCommand
 
     /**
      * Check, if the user of the context has access to this user interface
-     * object. First, the instance method checks, if some acces configuration
+     * object. First, the instance method checks, if some access configuration
      * exists for this menu instance object. If the user has access for this
      * menu, it is test, if the context user has access to minimum one sub
      * command command / menu. If yes, the user is allowed to access this menu

@@ -54,6 +54,10 @@ public class CommandUpdate extends AbstractUpdate
     /** Link from UI object to group. */
     private static final Link LINK2ACCESSGROUP = new Link("Admin_UI_Access", "UILink", "Admin_User_Group", "UserLink");
 
+    /** Link from UI object to company. */
+    private static final Link LINK2ACCESSCOMPANY = new Link("Admin_UI_Access", "UILink", "Admin_User_Copmany",
+                                                            "UserLink");
+
     /** Link from command to icon. */
     private static final Link LINK2ICON = new Link("Admin_UI_LinkIcon", "From", "Admin_UI_Image", "To");
 
@@ -77,6 +81,7 @@ public class CommandUpdate extends AbstractUpdate
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2ACCESSROLE);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2ACCESSPERSON);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2ACCESSGROUP);
+        CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2ACCESSCOMPANY);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2ICON);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETCMD);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETTABLE);
@@ -147,6 +152,9 @@ public class CommandUpdate extends AbstractUpdate
                     } else if ("group".equals(subValue)) {
                         // Assigns a group for accessing this command.
                         addLink(CommandUpdate.LINK2ACCESSGROUP, new LinkInstance(_text));
+                    } else if ("company".equals(subValue)) {
+                        // Assigns a company for accessing this command.
+                        addLink(CommandUpdate.LINK2ACCESSCOMPANY, new LinkInstance(_text));
                     } else {
                         super.readXML(_tags, _attributes, _text);
                     }
