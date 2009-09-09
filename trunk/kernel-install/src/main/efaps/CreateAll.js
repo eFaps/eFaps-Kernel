@@ -489,6 +489,7 @@ function _eFapsCreateDataModelTablesStep1()  {
   _eFapsCreateAttrType(stmt, null, 'de1c00bc-b041-49d6-9d85-82de0a6bee0d', 'DecimalWithUoM', 'org.efaps.admin.datamodel.attributetype.DecimalWithUoMType', 'org.efaps.admin.datamodel.ui.DecimalWithUoMUI',  null, null);
   _eFapsCreateAttrType(stmt, null, '0161bcdb-45e9-4839-a709-3a1c56f8a76a', 'Status',         'org.efaps.admin.datamodel.attributetype.StatusType',         'org.efaps.admin.datamodel.ui.LinkWithRangesUI', null, null);
   _eFapsCreateAttrType(stmt, null, '66c5d239-47d7-4fef-a79b-9dac432ab7ba', 'CompanyLink',    'org.efaps.admin.datamodel.attributetype.CompanyLinkType',    'org.efaps.admin.datamodel.ui.UserUI',           null, 1   );
+  _eFapsCreateAttrType(stmt, null, '76651147-1108-492e-815f-44bb68856962', 'FormatedString', 'org.efaps.admin.datamodel.attributetype.FormatedStringType', 'org.efaps.admin.datamodel.ui.FormatedStringUI', null, null);
 
 
 
