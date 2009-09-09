@@ -30,12 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.EFapsClassNames;
+import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- * @author tmo
+ * @author The eFaps TEam
  * @version $Id$
  * @todo description
  */
@@ -45,7 +46,7 @@ public class Form extends AbstractCollection
     /**
      * The static variable defines the class name in eFaps.
      */
-    public final static EFapsClassNames EFAPS_CLASSNAME = FORM;
+    public static final EFapsClassNames EFAPS_CLASSNAME = FORM;
 
     /**
      * Logging instance used in this class.
@@ -106,7 +107,7 @@ public class Form extends AbstractCollection
      */
     public static Form get(final long _id)
     {
-        return CACHE.get(_id);
+        return Form.CACHE.get(_id);
     }
 
     /**
@@ -120,7 +121,7 @@ public class Form extends AbstractCollection
      */
     public static Form get(final String _name)
     {
-        return CACHE.get(_name);
+        return Form.CACHE.get(_name);
     }
 
     /**
@@ -149,8 +150,12 @@ public class Form extends AbstractCollection
     public static Form getTypeForm(final Type _type)
     {
         Form ret = Form.TYPE2FORMS.get(_type);
-        if ((ret == null) && (_type.getParentType() != null)) {
-            ret = getTypeForm(_type.getParentType());
+        if ((ret == null)) {
+            if (_type.getParentType() != null) {
+                ret = getTypeForm(_type.getParentType());
+            } else if (_type instanceof Classification && ((Classification) _type).getParentClassification() != null) {
+                ret = getTypeForm(((Classification) _type).getParentClassification());
+            }
         }
         return ret;
     }
@@ -163,7 +168,7 @@ public class Form extends AbstractCollection
      */
     protected static UserInterfaceObjectCache<Form> getCache()
     {
-        return CACHE;
+        return Form.CACHE;
     }
 
     private static class FormCache extends UserInterfaceObjectCache<Form>
