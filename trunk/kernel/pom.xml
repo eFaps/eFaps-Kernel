@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -119,7 +119,7 @@
       <artifactId>commons-lang</artifactId>
       <version>2.4</version>
     </dependency>
-    
+
         <!-- easy XML reader -->
     <dependency>
       <groupId>commons-digester</groupId>
@@ -136,7 +136,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-    
+
     <!-- For interpreting expressions (e.g. of xml definitions) -->
     <dependency>
       <groupId>commons-jexl</groupId>
@@ -150,7 +150,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-    
+
     <!-- Transaction Manager -->
     <dependency>
       <groupId>geronimo-spec</groupId>
@@ -170,16 +170,16 @@
         </exclusion>
       </exclusions>
     </dependency>
-    
+
    <!--
       Java program compiler.
       The commons logging must be excluded because eFaps uses slf4j logger.
       The commons-io must be excluded because of old used version (and included
       separately).
-      
+
       http://jakarta.apache.org/commons/jci/
-      
-      The classes are used to compile classes. Which one is used depends on 
+
+      The classes are used to compile classes. Which one is used depends on
       configuration via a String.
     -->
     <dependency>
@@ -272,12 +272,12 @@
         </exclusion>
       </exclusions>
     </dependency>
-    
+
     <!--
       File system used for checkin / checkout on external resources. The
       commons logging must be excluded because eFaps uses slf4j logger.
-      
-      http://commons.apache.org/vfs/ 
+
+      http://commons.apache.org/vfs/
     -->
     <dependency>
       <groupId>commons-vfs</groupId>
@@ -294,8 +294,8 @@
         </exclusion>
       </exclusions>
     </dependency>
-    
-    
+
+
     <!-- Joda Time is used to have a quality replacement for Java date and time
     classes -->
     <dependency>
@@ -303,21 +303,21 @@
       <artifactId>joda-time</artifactId>
       <version>1.6</version>
     </dependency>
-    
+
     <!-- the yuicompressor is used to compress javascript and css files -->
     <dependency>
       <groupId>com.yahoo.platform.yui</groupId>
       <artifactId>yuicompressor</artifactId>
       <version>2.3.6</version>
     </dependency>
-    
+
      <!-- JasperReport as a flexible reporting tool -->
     <dependency>
       <groupId>jasperreports</groupId>
       <artifactId>jasperreports</artifactId>
-      <version>3.5.2</version>
+      <version>3.5.3</version>
     </dependency>
-    
+
   </dependencies>
 
 </project>
