@@ -22,6 +22,7 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.db.query.CachedResult;
@@ -61,24 +62,33 @@ public class IntegerType extends AbstractType
     }
 
     /**
-     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
-     * @param _objectList List of Objects
-     * @return DateTime
-     * TODO throw error if more than one value is given
+     * {@inheritDoc}
      */
     public Object readValue(final List<Object> _objectList)
     {
-        Integer ret = null;
-        Object obj = _objectList.get(0);
-        if (obj instanceof List<?>) {
-            obj = ((List<?>) obj).get(0);
+        Object ret = null;
+        if (_objectList.size() < 1) {
+            ret = null;
+        } else if (_objectList.size() > 1) {
+            final List<Integer> list = new ArrayList<Integer>();
+            for (final Object object : _objectList) {
+                if (object instanceof Number) {
+                    ret = ((Number) object).intValue();
+                } else if (object != null) {
+                    ret = Integer.parseInt(object.toString());
+                }
+                list.add((Integer) (object == null ? new Integer(0) : object));
+            }
+            ret = list;
+        } else {
+            final Object object = _objectList.get(0);
+            if (object instanceof Number) {
+                ret = ((Number) object).intValue();
+            } else if (object != null) {
+                ret = Integer.parseInt(object.toString());
+            }
+            ret = object == null ? 0 : object;
         }
-        if (obj instanceof Number) {
-            ret = ((Number) obj).intValue();
-        } else if (obj != null) {
-            ret = Integer.parseInt(obj.toString());
-        }
-        this.value = ret == null ? 0 : ret;
         return ret;
     }
 
