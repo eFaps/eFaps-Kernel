@@ -43,7 +43,7 @@ public class StringType extends AbstractType
      *{@inheritDoc}
      */
     public int update(final Object _object, final PreparedStatement _stmt, final int _index)
-                    throws SQLException
+        throws SQLException
     {
         _stmt.setString(_index, getValue());
         return 1;

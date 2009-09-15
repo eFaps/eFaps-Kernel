@@ -22,6 +22,7 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.db.query.CachedResult;
@@ -65,24 +66,33 @@ public class LongType extends AbstractType
     }
 
     /**
-     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
-     * @param _objectList List of Objects
-     * @return DateTime
-     * TODO throw error if more than one value is given
+     * {@inheritDoc}
      */
     public Object readValue(final List<Object> _objectList)
     {
-        Long ret = null;
-        Object obj = _objectList.get(0);
-        if (obj instanceof List<?>) {
-            obj = ((List<?>) obj).get(0);
+        Object ret = null;
+        if (_objectList.size() < 1) {
+            ret = null;
+        } else if (_objectList.size() > 1) {
+            final List<Long> list = new ArrayList<Long>();
+            for (final Object object : _objectList) {
+                if (object instanceof Number) {
+                    ret = ((Number) object).longValue();
+                } else if (object != null) {
+                    ret = Long.parseLong(object.toString());
+                }
+                list.add((Long) (object == null ? new Long(0) : object));
+            }
+            ret = list;
+        } else {
+            final Object object = _objectList.get(0);
+            if (object instanceof Number) {
+                ret = ((Number) object).longValue();
+            } else if (object != null) {
+                ret = Long.parseLong(object.toString());
+            }
+            ret = object == null ? 0 : object;
         }
-        if (obj instanceof Number) {
-            ret = ((Number) obj).longValue();
-        } else if (obj != null) {
-            ret = Long.parseLong(obj.toString());
-        }
-        this.value = ret == null ? 0 : ret;
         return ret;
     }
 
