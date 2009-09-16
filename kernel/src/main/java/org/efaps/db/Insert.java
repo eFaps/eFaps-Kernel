@@ -44,33 +44,26 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
- * @todo description
  */
 public class Insert extends Update
 {
-
-    // ///////////////////////////////////////////////////////////////////////////
-    // static variables
 
     /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(Insert.class);
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // constructors
-
     /**
      * @param _type type of instance to insert
      * @see #addCreateUpdateAttributes
      * @see #addTables
+     * @throws EFapsException on error
      */
     public Insert(final Type _type) throws EFapsException
     {
         super(_type, null);
-
         addCreateUpdateAttributes();
         addTables();
     }
@@ -78,14 +71,13 @@ public class Insert extends Update
     /**
      * @param _type type of instance to insert
      * @see #Insert(Type)
+     * @throws EFapsException on error
      */
     public Insert(final String _type) throws EFapsException
     {
         this(Type.get(_type));
     }
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // instance methods
 
     /**
      * Add all tables of the type to the expressions, because for the type an
@@ -115,11 +107,15 @@ public class Insert extends Update
             if (attrType.isCreateUpdate()) {
                 add(attr, false, (Object) null);
             }
+            if (attr.getDefaultValue() != null) {
+                add(attr, false, attr.getDefaultValue());
+            }
         }
     }
 
     /**
-   */
+     * {@inheritDoc}
+     */
     @Override
     public void execute() throws EFapsException
     {
@@ -133,7 +129,7 @@ public class Insert extends Update
     }
 
     /**
-     * Executes the insert without checking the access rights (but with
+     * Executes the insert without checking the access rights. (but with
      * triggers):
      * <ol>
      * <li>executes the pre insert trigger (if exists)</li>
@@ -178,19 +174,17 @@ public class Insert extends Update
 
             final SQLTable mainTable = getType().getMainTable();
 
-            final long id = executeOneStatement(context, con, mainTable, getExpr4Tables().get(mainTable), 0);
+            final long id = executeOneStatement(con, mainTable, getExpr4Tables().get(mainTable), 0);
 
             setInstance(Instance.get(getInstance().getType(), id));
 
-            for (final Entry<SQLTable, List< IAttributeType>> entry : getExpr4Tables().entrySet()) {
+            for (final Entry<SQLTable, List<IAttributeType>> entry : getExpr4Tables().entrySet()) {
                 final SQLTable table = entry.getKey();
                 if ((table != mainTable) && !table.isReadOnly()) {
-                    executeOneStatement(context, con, table, entry.getValue(), id);
+                    executeOneStatement(con, table, entry.getValue(), id);
                 }
             }
-
             con.commit();
-
         } catch (final EFapsException e) {
             if (con != null) {
                 con.abort();
@@ -211,16 +205,17 @@ public class Insert extends Update
      * used, otherwise method {@link org.efaps.db.databases#getNewId} is used to
      * retrieve a new id value.
      *
-     * @param _context context for this request
-     * @param _con connection resource
-     * @param _table sql table used to insert
-     * @param _expressions
-     * @param _id new created id
+     * @param _con      connection resource
+     * @param _table    sql table used to insert
+     * @param _expressions expressions
+     * @param _id       new created id
      * @return new created id if parameter <i>_id</i> is set to <code>0</code>
      * @see #createOneStatement
+     * @throws EFapsException on error
      */
-    private long executeOneStatement(final Context _context, final ConnectionResource _con, final SQLTable _table,
-                    final List<IAttributeType> _expressions, final long _id) throws EFapsException
+    private long executeOneStatement(final ConnectionResource _con, final SQLTable _table,
+                                     final List<IAttributeType> _expressions, final long _id)
+        throws EFapsException
     {
 
         long ret = _id;
@@ -257,12 +252,17 @@ public class Insert extends Update
     }
 
     /**
-     * @param _id new created id, if null, the table is an autoincrement SQL
+     * @param _con     ConnectionResource
+     * @param _table    SQLTable
+     * @param _expressions List
+     *  @param _id new created id, if null, the table is an autoincrement SQL
      *            table and the id is not set
-     * @return new created prepared statement
+     *@return new created prepared statement
+     * @throws SQLException on error
      */
     private PreparedStatement createOneStatement(final ConnectionResource _con, final SQLTable _table,
-                    final List<IAttributeType> _expressions, final long _id) throws SQLException
+                                                final List<IAttributeType> _expressions, final long _id)
+        throws SQLException
     {
 
         final List<IAttributeType> updateAttr = new ArrayList<IAttributeType>();
@@ -301,8 +301,8 @@ public class Insert extends Update
         }
         cmd.append("").append(val).append(")");
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(cmd.toString());
+        if (Insert.LOG.isDebugEnabled()) {
+            Insert.LOG.debug(cmd.toString());
         }
 
         PreparedStatement stmt;
@@ -318,8 +318,8 @@ public class Insert extends Update
         int index = 1;
         for (final IAttributeType attrType : updateAttr) {
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug(attrType.toString());
+            if (Insert.LOG.isDebugEnabled()) {
+                Insert.LOG.debug(attrType.toString());
             }
 
             index += attrType.update(null, stmt, index);
