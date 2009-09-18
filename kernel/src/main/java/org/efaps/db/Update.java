@@ -238,13 +238,20 @@ public class Update
             getExpr4Tables().put(_attr.getTable(), expressions);
         }
 
-        final IAttributeType attrType = _attr.newInstance();
-        attrType.setAttribute(_attr);
-        attrType.set(_value);
-
-        expressions.add(attrType);
-
-        this.mapAttr2Value.put(_attr.getName(), attrType);
+        // if the attribute was added allready overwrite it
+        if (this.mapAttr2Value.containsKey(_attr.getName())) {
+            for (final IAttributeType iattr : expressions) {
+                if (iattr.getAttribute().getName().equals(_attr.getName())) {
+                    iattr.set(_value);
+                }
+            }
+        } else {
+            final IAttributeType attrType = _attr.newInstance();
+            attrType.setAttribute(_attr);
+            attrType.set(_value);
+            expressions.add(attrType);
+            this.mapAttr2Value.put(_attr.getName(), attrType);
+        }
 
         if (_triggerRelevant) {
             this.values.put(_attr, _value);

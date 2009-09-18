@@ -93,7 +93,8 @@ public class Insert extends Update
     }
 
     /**
-     * Add all attributes of the type which must be always updated.
+     * Add all attributes of the type which must be always updated and the
+     * default values.
      *
      * @throws EFapsException from called method
      */
@@ -174,7 +175,8 @@ public class Insert extends Update
 
             final SQLTable mainTable = getType().getMainTable();
 
-            final long id = executeOneStatement(con, mainTable, getExpr4Tables().get(mainTable), 0);
+            final List<IAttributeType> expressions = getExpr4Tables().get(mainTable);
+            final long id = executeOneStatement(con, mainTable, expressions, 0);
 
             setInstance(Instance.get(getInstance().getType(), id));
 
