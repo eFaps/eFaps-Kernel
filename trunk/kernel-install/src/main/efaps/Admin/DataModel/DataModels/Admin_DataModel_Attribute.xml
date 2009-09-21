@@ -38,7 +38,7 @@
     <!-- attributes -->
     <attribute>
       <name>SQLColumn</name>
-      <type>String</type>
+      <type> String</type>
       <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
       <sqlcolumn>SQLCOLUMN</sqlcolumn>
     </attribute>

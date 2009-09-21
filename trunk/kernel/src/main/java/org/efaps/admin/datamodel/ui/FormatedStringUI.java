@@ -81,10 +81,12 @@ public class FormatedStringUI extends AbstractUI
         return ret.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getEditHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
     {
         return (String) (_fieldValue.getValue() == null ? "" : _fieldValue.getValue());
     }
-
 }

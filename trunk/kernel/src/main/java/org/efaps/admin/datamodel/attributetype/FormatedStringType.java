@@ -23,12 +23,30 @@ package org.efaps.admin.datamodel.attributetype;
 /**
  * This class is used for string that contains a formated string. Meaning
  * that the string not only contains value, but also formating information.
- * This makes this class e.g. not efectivly searchable with parameters.
+ * This makes this class e.g. not effectively searchable with parameters.
  *
  * @author The eFaps Team
  * @version $Id$
  */
 public class FormatedStringType extends StringType
 {
-
+    /**
+     * Method is overwritten to replace the "&lt;br /&gt;" created from the webapp
+     * with &quot;&lt;br&gt;&quot; due to the reason that the JasperReport can not
+     * interpreted this tag correctly.
+     *
+     * @see org.efaps.admin.datamodel.attributetype.StringType#set(java.lang.Object[])
+     * @param _value    Value to be set
+     */
+    @Override
+    public void set(final Object[] _value)
+    {
+        if (_value[0] instanceof String) {
+            final String tmp = (String) _value[0];
+            setValue(tmp.replaceAll("<br />", "<br>"));
+        } else if (_value[0] != null) {
+            final String tmp = _value[0].toString();
+            setValue(tmp.replaceAll("<br />", "<br>"));
+        }
+    }
 }
