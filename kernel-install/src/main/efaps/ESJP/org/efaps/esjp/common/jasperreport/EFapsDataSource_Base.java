@@ -29,6 +29,8 @@ import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperReport;
 
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.attributetype.FormatedStringType;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
@@ -65,11 +67,13 @@ abstract class EFapsDataSource_Base implements JRDataSource
     public EFapsDataSource_Base(final JasperReport _jasperReport) throws EFapsException
     {
         String typeName = null;
+        boolean expand = false;
         for (final JRParameter para : _jasperReport.getMainDataset().getParameters()) {
             if ("EFAPS_DEFINITION".equals(para.getName())) {
                 if (para.hasProperties()) {
                     typeName  = para.getPropertiesMap().getProperty("Type");
                     this.subReport = "true".equalsIgnoreCase(para.getPropertiesMap().getProperty("hasSubReport"));
+                    expand = "true".equalsIgnoreCase(para.getPropertiesMap().getProperty("expandChildTypes"));
                 }
             }
         }
@@ -78,6 +82,7 @@ abstract class EFapsDataSource_Base implements JRDataSource
             final List<Instance> instances = new ArrayList<Instance>();
             final SearchQuery query = new SearchQuery();
             query.setQueryTypes(typeName);
+            query.setExpandChildTypes(expand);
             query.addSelect("OID");
             query.execute();
             while (query.next()) {
@@ -110,6 +115,10 @@ abstract class EFapsDataSource_Base implements JRDataSource
         if (select != null) {
             try {
                 ret = this.print.getSelect(select);
+                final Attribute attr = this.print.getAttribute4Select(select);
+                if (attr != null && attr.getAttributeType().getClassRepr().equals(FormatedStringType.class)) {
+                    ret = HtmlMarkupConverter.getConvertedString((String) ret);
+                }
             } catch (final EFapsException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
