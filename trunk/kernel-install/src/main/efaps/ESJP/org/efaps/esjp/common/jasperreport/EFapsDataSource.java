@@ -20,11 +20,9 @@
 
 package org.efaps.esjp.common.jasperreport;
 
-import net.sf.jasperreports.engine.JasperReport;
-
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
-import org.efaps.util.EFapsException;
+
 
 
 /**
@@ -39,13 +37,5 @@ import org.efaps.util.EFapsException;
 @EFapsRevision("$Rev$")
 public class EFapsDataSource extends EFapsDataSource_Base
 {
-    /**
-     * Constructor.
-     * @param _jasperReport JasperReport
-     * @throws EFapsException on error
-     */
-    public EFapsDataSource(final JasperReport _jasperReport) throws EFapsException
-    {
-        super(_jasperReport);
-    }
+
 }
