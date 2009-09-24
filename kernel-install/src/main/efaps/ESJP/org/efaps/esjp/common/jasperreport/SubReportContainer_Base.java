@@ -73,7 +73,9 @@ abstract class SubReportContainer_Base extends HashMap<String, JRDataSource>
                 final Checkout checkout = new Checkout(instance);
                 final InputStream iin = checkout.execute();
                 final JasperReport jasperReport = (JasperReport) JRLoader.loadObject(iin);
-                ret = new EFapsDataSource(jasperReport);
+                final EFapsDataSource datasource = new EFapsDataSource();
+                datasource.init(jasperReport);
+                ret = datasource;
                 super.put((String) _key, ret);
             } catch (final JRException e) {
                 // TODO Auto-generated catch block

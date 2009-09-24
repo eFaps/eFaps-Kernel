@@ -61,10 +61,11 @@ abstract class EFapsDataSource_Base implements JRDataSource
     private boolean subReport;
 
     /**
-     * @param _jasperReport JasperReport
+     * Method to initialize this datasource.
+     * @param _jasperReport jasperreport this datasource belongs to
      * @throws EFapsException on error
      */
-    public EFapsDataSource_Base(final JasperReport _jasperReport) throws EFapsException
+    public void init(final JasperReport _jasperReport) throws EFapsException
     {
         String typeName = null;
         boolean expand = false;

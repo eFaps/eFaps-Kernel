@@ -21,9 +21,12 @@
 package org.efaps.esjp.common.jasperreport;
 
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRParameter;
@@ -31,7 +34,9 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.JRRtfExporter;
 import net.sf.jasperreports.engine.export.oasis.JROdtExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.efaps.admin.event.EventExecution;
@@ -69,6 +74,7 @@ public class StandartReport_Base implements EventExecution
         final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
 
         final String name = (String) properties.get("JasperReport");
+        final String dataSourceClass = (String) properties.get("DataSourceClass");
 
         final HashMap<String, Object> parameter = new HashMap<String, Object>();
         parameter.put(JRParameter.REPORT_FILE_RESOLVER, new JasperFileResolver());
@@ -89,16 +95,61 @@ public class StandartReport_Base implements EventExecution
         final InputStream iin = checkout.execute();
         try {
             final JasperReport jasperReport = (JasperReport) JRLoader.loadObject(iin);
-
-            final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameter,
-                                                                         new EFapsDataSource(jasperReport));
+            JRDataSource dataSource;
+            if (dataSourceClass != null) {
+                final Class<?> clazz = Class.forName(dataSourceClass);
+                final Method method = clazz.getMethod("init", new Class[] { JasperReport.class });
+                dataSource = (JRDataSource) clazz.newInstance();
+                method.invoke(dataSource, jasperReport);
+            } else {
+                dataSource = new EFapsDataSource();
+                ((EFapsDataSource_Base) dataSource).init(jasperReport);
+            }
+            final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, dataSource);
 
             JasperExportManager.exportReportToPdfFile(jasperPrint, "/Users/janmoxter/Documents/Test.pdf");
             final JROdtExporter exporter = new JROdtExporter();
             exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
             exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "/Users/janmoxter/Documents/Test.odt");
             exporter.exportReport();
+
+//            final JROdtFrameExporter exporter2 = new JROdtFrameExporter();
+//            exporter2.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+//            exporter2.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "/Users/janmoxter/Documents/Test2.odt");
+//            exporter2.exportReport();
+
+            final JRRtfExporter exporter3 = new JRRtfExporter();
+            exporter3.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+            exporter3.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "/Users/janmoxter/Documents/Test3.odt");
+            exporter3.exportReport();
+
+            final JRDocxExporter export4 = new JRDocxExporter();
+            export4.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+            export4.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "/Users/janmoxter/Documents/Test4.docx");
+            export4.exportReport();
+
         } catch (final JRException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final SecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final InvocationTargetException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
