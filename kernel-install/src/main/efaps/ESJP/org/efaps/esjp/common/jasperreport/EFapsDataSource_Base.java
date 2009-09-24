@@ -61,6 +61,26 @@ abstract class EFapsDataSource_Base implements JRDataSource
     private boolean subReport;
 
     /**
+     * Getter method for instance variable {@link #print}.
+     *
+     * @return value of instance variable {@link #print}
+     */
+    public MultiPrintQuery getPrint()
+    {
+        return this.print;
+    }
+
+    /**
+     * Setter method for instance variable {@link #print}.
+     *
+     * @param _print value for instance variable {@link #print}
+     */
+    public void setPrint(final MultiPrintQuery _print)
+    {
+        this.print = _print;
+    }
+
+    /**
      * Method to initialize this datasource.
      * @param _jasperReport jasperreport this datasource belongs to
      * @throws EFapsException on error
