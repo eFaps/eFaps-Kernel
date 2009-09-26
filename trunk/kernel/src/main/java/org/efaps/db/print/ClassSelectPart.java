@@ -54,7 +54,8 @@ public class ClassSelectPart implements ISelectPart
     {
         Integer ret;
         final String tableName = this.classification.getMainTable().getSqlTable();
-        final String column = this.classification.getLinkAttributeName();
+        final String column = this.classification.getAttribute(this.classification.getLinkAttributeName())
+                        .getSqlColNames().get(0);
         ret = _oneSelect.getTableIndex(tableName, column, _relIndex);
         if (ret == null) {
             ret = _oneSelect.getNewTableIndex(tableName, column, _relIndex);
