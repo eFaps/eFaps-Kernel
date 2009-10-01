@@ -20,6 +20,9 @@
 
 package org.efaps.esjp.common.jasperreport;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -35,6 +38,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRRtfExporter;
+import net.sf.jasperreports.engine.export.oasis.JROdsExporter;
 import net.sf.jasperreports.engine.export.oasis.JROdtExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
@@ -43,6 +47,7 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Checkout;
@@ -71,6 +76,7 @@ public class StandartReport_Base implements EventExecution
      */
     public Return execute(final Parameter _parameter) throws EFapsException
     {
+        final Return ret = new Return();
         final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
 
         final String name = (String) properties.get("JasperReport");
@@ -98,35 +104,58 @@ public class StandartReport_Base implements EventExecution
             JRDataSource dataSource;
             if (dataSourceClass != null) {
                 final Class<?> clazz = Class.forName(dataSourceClass);
-                final Method method = clazz.getMethod("init", new Class[] { JasperReport.class });
+                final Method method = clazz.getMethod("init", new Class[] { JasperReport.class, Parameter.class });
                 dataSource = (JRDataSource) clazz.newInstance();
-                method.invoke(dataSource, jasperReport);
+                method.invoke(dataSource, jasperReport, _parameter);
             } else {
                 dataSource = new EFapsDataSource();
-                ((EFapsDataSource_Base) dataSource).init(jasperReport);
+                ((EFapsDataSource_Base) dataSource).init(jasperReport, _parameter);
             }
             final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, dataSource);
 
-            JasperExportManager.exportReportToPdfFile(jasperPrint, "/Users/janmoxter/Documents/Test.pdf");
-            final JROdtExporter exporter = new JROdtExporter();
-            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-            exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "/Users/janmoxter/Documents/Test.odt");
-            exporter.exportReport();
+            final String mime = (String) properties.get("Mime");
+            File file = null;
+            if ("pdf".equalsIgnoreCase(mime) || mime == null) {
+                file = File.createTempFile("PDF", ".pdf");
+                final FileOutputStream os = new FileOutputStream(file);
+                JasperExportManager.exportReportToPdfStream(jasperPrint, os);
+                os.close();
+            } else if ("odt".equalsIgnoreCase(mime)) {
+                file = File.createTempFile("ODT", ".odt");
+                final FileOutputStream os = new FileOutputStream(file);
+                final JROdtExporter exporter = new JROdtExporter();
+                exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+                exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
+                exporter.exportReport();
+                os.close();
+            } else if ("ods".equalsIgnoreCase(mime)) {
+                file = File.createTempFile("ODT", ".odt");
+                final FileOutputStream os = new FileOutputStream(file);
+                final JROdsExporter exporter = new JROdsExporter();
+                exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+                exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
+                exporter.exportReport();
+                os.close();
+            } else if ("rtf".equalsIgnoreCase(mime)) {
+                file = File.createTempFile("ODT", ".odt");
+                final FileOutputStream os = new FileOutputStream(file);
+                final JRRtfExporter exporter = new JRRtfExporter();
+                exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+                exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
+                exporter.exportReport();
+                os.close();
+            } else if ("docx".equalsIgnoreCase(mime)) {
+                file = File.createTempFile("ODT", ".odt");
+                final FileOutputStream os = new FileOutputStream(file);
+                final JRDocxExporter exporter = new JRDocxExporter();
+                exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+                exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
+                exporter.exportReport();
+                os.close();
+            }
 
-//            final JROdtFrameExporter exporter2 = new JROdtFrameExporter();
-//            exporter2.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-//            exporter2.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "/Users/janmoxter/Documents/Test2.odt");
-//            exporter2.exportReport();
-
-            final JRRtfExporter exporter3 = new JRRtfExporter();
-            exporter3.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-            exporter3.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "/Users/janmoxter/Documents/Test3.odt");
-            exporter3.exportReport();
-
-            final JRDocxExporter export4 = new JRDocxExporter();
-            export4.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-            export4.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "/Users/janmoxter/Documents/Test4.docx");
-            export4.exportReport();
+            ret.put(ReturnValues.VALUES, file);
+            ret.put(ReturnValues.TRUE, true);
 
         } catch (final JRException e) {
             // TODO Auto-generated catch block
@@ -152,8 +181,11 @@ public class StandartReport_Base implements EventExecution
         } catch (final InvocationTargetException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (final IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        return new Return();
+        return ret;
     }
 }
 
