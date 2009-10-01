@@ -31,6 +31,7 @@ import net.sf.jasperreports.engine.JasperReport;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.FormatedStringType;
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
@@ -83,43 +84,57 @@ abstract class EFapsDataSource_Base implements JRDataSource
     /**
      * Method to initialize this datasource.
      * @param _jasperReport jasperreport this datasource belongs to
+     * @param _parameter    Parameter as passed to an esjp by eFaps
      * @throws EFapsException on error
      */
-    public void init(final JasperReport _jasperReport) throws EFapsException
+    public void init(final JasperReport _jasperReport, final Parameter _parameter) throws EFapsException
     {
         String typeName = null;
-        boolean expand = false;
+        String expand = null;
+        boolean expandChild = false;
         for (final JRParameter para : _jasperReport.getMainDataset().getParameters()) {
             if ("EFAPS_DEFINITION".equals(para.getName())) {
                 if (para.hasProperties()) {
                     typeName  = para.getPropertiesMap().getProperty("Type");
+                    expand  = para.getPropertiesMap().getProperty("Expand");
                     this.subReport = "true".equalsIgnoreCase(para.getPropertiesMap().getProperty("hasSubReport"));
-                    expand = "true".equalsIgnoreCase(para.getPropertiesMap().getProperty("expandChildTypes"));
+                    expandChild = "true".equalsIgnoreCase(para.getPropertiesMap().getProperty("expandChildTypes"));
+
                 }
             }
         }
-
+        final List<Instance> instances = new ArrayList<Instance>();
         if (typeName != null) {
-            final List<Instance> instances = new ArrayList<Instance>();
             final SearchQuery query = new SearchQuery();
             query.setQueryTypes(typeName);
-            query.setExpandChildTypes(expand);
+            query.setExpandChildTypes(expandChild);
             query.addSelect("OID");
             query.execute();
             while (query.next()) {
                 instances.add(Instance.get((String) query.get("OID")));
             }
             query.close();
-            if (instances.size() > 0) {
-                this.print = new MultiPrintQuery(instances);
-                for (final JRField field : _jasperReport.getMainDataset().getFields()) {
-                    final String select = field.getPropertiesMap().getProperty("Select");
-                    if (select != null) {
-                        this.print.addSelect(select);
-                    }
-                }
-                this.print.execute();
+
+        } else  if (expand != null) {
+            final SearchQuery query = new SearchQuery();
+            query.setExpand(_parameter.getInstance(), expand);
+            query.setExpandChildTypes(expandChild);
+            query.addSelect("OID");
+            query.execute();
+            while (query.next()) {
+                instances.add(Instance.get((String) query.get("OID")));
             }
+            query.close();
+        }
+        if (instances.size() > 0) {
+            this.print = new MultiPrintQuery(instances);
+            for (final JRField field : _jasperReport.getMainDataset().getFields()) {
+                final String select = field.getPropertiesMap().getProperty("Select");
+                if (select != null) {
+                    this.print.addSelect(select);
+                }
+            }
+            this.print.execute();
         }
     }
 
