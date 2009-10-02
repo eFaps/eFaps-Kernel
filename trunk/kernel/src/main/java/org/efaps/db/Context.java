@@ -217,6 +217,12 @@ public final class Context implements INamingBinds
     private String language;
 
     /**
+     * If used in a webapp the context path of the webapp can be stored here,
+     * so that it is accessible for e.g. esjps.
+     */
+    private String path;
+
+    /**
      * Private Constructor.
      *
      * @see #begin(String, Locale, Map, Map, Map)
@@ -442,6 +448,26 @@ public final class Context implements INamingBinds
             }
         }
         return value;
+    }
+
+    /**
+     * Getter method for instance variable {@link #path}.
+     *
+     * @return value of instance variable {@link #path}
+     */
+    public String getPath()
+    {
+        return this.path;
+    }
+
+    /**
+     * Setter method for instance variable {@link #path}.
+     *
+     * @param _path value for instance variable {@link #path}
+     */
+    public void setPath(final String _path)
+    {
+        this.path = _path;
     }
 
     /**
