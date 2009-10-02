@@ -29,7 +29,9 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
 
 /**
  * The ESJP could be used to show an image in a field.
@@ -114,8 +116,9 @@ public class ImageField
      * Render a field with an image.
      * @param _parameter parameter as defined by the eFaps esjp API
      * @return Return containing a snipplet
+     * @throws EFapsException on error
      */
-    public Return getViewFieldValueUI(final Parameter _parameter)
+    public Return getViewFieldValueUI(final Parameter _parameter) throws EFapsException
     {
         final Instance instance = _parameter.getCallInstance();
         final FieldValue fieldValue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
@@ -139,9 +142,10 @@ public class ImageField
 
         ret.append("\" ")
             .append("id=\"").append(fieldValue.getField().getName()).append(fieldValue.getField().getId()).append("\" ")
-            .append("onClick=\"window.open(").append("'/eFaps/servlet/checkout?oid=").append(instance.getOid())
-            .append("','_blank');\" ")
-            .append("src=\"/eFaps/servlet/checkout?oid=").append(instance.getOid()).append("\" ").append("/>");
+            .append("onClick=\"window.open('").append(Context.getThreadContext().getPath())
+            .append("/servlet/checkout?oid=").append(instance.getOid()).append("','_blank');\" ")
+            .append("src=\"").append(Context.getThreadContext().getPath()).append("/servlet/checkout?oid=")
+            .append(instance.getOid()).append("\" ").append("/>");
 
         final Return retVal = new Return();
         retVal.put(ReturnValues.SNIPLETT, ret);
