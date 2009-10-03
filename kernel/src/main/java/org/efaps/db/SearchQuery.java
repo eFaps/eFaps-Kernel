@@ -34,6 +34,7 @@ import org.efaps.db.query.WhereClauseAttributeEqualValue;
 import org.efaps.db.query.WhereClauseAttributeGreaterValue;
 import org.efaps.db.query.WhereClauseAttributeLessValue;
 import org.efaps.db.query.WhereClauseAttributeMatchValue;
+import org.efaps.db.query.WhereClauseAttributeNotEqualValue;
 import org.efaps.util.EFapsException;
 
 /**
@@ -164,11 +165,28 @@ public class SearchQuery extends AbstractQuery
         }
     }
 
+    public void addWhereExprNotEqValue(final String _expr, final String _value) throws EFapsException
+    {
+        final Attribute attr = this.type.getAttribute(_expr);
+        if (attr == null) {
+            LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
+            throw new EFapsException(getClass(), "addWhereExprEqValue", "UnknownExpression", _expr, this.type.getName());
+        }
+        getMainWhereClauses().add(new WhereClauseAttributeNotEqualValue(this, attr, _value));
+    }
+
+    /**
+     * @param _expr
+     * @param _value
+     */
+    public void addWhereExprNotEqValue(final String _expr, final long _value) throws EFapsException
+    {
+        addWhereExprNotEqValue(_expr, "" + _value);
+    }
+
    /**
-     * @param _context eFaps context for this request
      * @param _expr expression to compare for equal
      * @param _value value to compare for equal
-     * @todo exception property
      */
     public void addWhereExprEqValue(final String _expr, final String _value) throws EFapsException
     {
