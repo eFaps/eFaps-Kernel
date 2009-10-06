@@ -123,7 +123,7 @@ public class Classification extends Type
      * @throws CacheReloadException on error
      */
     protected Classification(final long _id, final String _uuid, final String _name)
-            throws CacheReloadException
+        throws CacheReloadException
     {
         super(_id, _uuid, _name);
     }
@@ -237,6 +237,16 @@ public class Classification extends Type
             ret = this.relTypeAttributeName;
         }
         return ret;
+    }
+
+    /**
+     * Is this Classification the root Classification.
+     * (Meaning that it does not have a parent).
+     * @return true if root classification
+     */
+    public boolean isRoot()
+    {
+        return this.parent == null;
     }
 
     /**

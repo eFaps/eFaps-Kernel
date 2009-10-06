@@ -103,7 +103,12 @@ public abstract class AbstractPrintQuery
         return this;
     }
 
-    protected void addOneSelect(final OneSelect _oneSelect) {
+    /**
+     * Add a oneselect to this print query.
+     * @param _oneSelect select to be added
+     */
+    protected void addOneSelect(final OneSelect _oneSelect)
+    {
         this.allSelects.add(_oneSelect);
     }
 
@@ -136,7 +141,7 @@ public abstract class AbstractPrintQuery
     public List<Instance> getInstances4Attribute(final String _attributeName)
     {
         final OneSelect oneselect = this.attr2OneSelect.get(_attributeName);
-        return oneselect == null ? null :oneselect.getInstances();
+        return oneselect == null ? null : oneselect.getInstances();
     }
 
     /**
@@ -147,8 +152,7 @@ public abstract class AbstractPrintQuery
      * @throws EFapsException on error
      */
     @SuppressWarnings("unchecked")
-    public <T> T getAttribute(final String _attributeName)
-            throws EFapsException
+    public <T> T getAttribute(final String _attributeName) throws EFapsException
     {
         final OneSelect oneselect = this.attr2OneSelect.get(_attributeName);
         return oneselect == null ? null : (T) oneselect.getObject();
@@ -162,8 +166,7 @@ public abstract class AbstractPrintQuery
      * @throws EFapsException on error
      */
     @SuppressWarnings("unchecked")
-    public <T> T getAttribute(final Attribute _attribute)
-            throws EFapsException
+    public <T> T getAttribute(final Attribute _attribute) throws EFapsException
     {
         return (T) getAttribute(_attribute.getName());
     }
@@ -300,10 +303,9 @@ public abstract class AbstractPrintQuery
      * @param _key          key to the expression
      * @param _expression   expression to add
      * @return this PrintQuery
-     * @throws EFapsException   allways!!
+     * @throws EFapsException   always!!
      */
-    public AbstractPrintQuery addExpression(final String _key, final String _expression)
-            throws EFapsException
+    public AbstractPrintQuery addExpression(final String _key, final String _expression) throws EFapsException
     {
         throw new EFapsException("PrintQuery.addExpression id not yet implemented", null);
     }
@@ -313,10 +315,9 @@ public abstract class AbstractPrintQuery
      * @param <T>           class the return value will be casted to
      * @param _key  key for an expression the object is wanted for
      * @return object for the expression
-     * @throws EFapsException allways
+     * @throws EFapsException always
      */
-    public <T> T getExpression(final String _key)
-            throws EFapsException
+    public <T> T getExpression(final String _key) throws EFapsException
     {
         throw new EFapsException("PrintQuery.getExpression id not yet implemented", null);
     }
@@ -332,8 +333,7 @@ public abstract class AbstractPrintQuery
      * @throws EFapsException on error
      * @return this PrintQuery
      */
-    public AbstractPrintQuery addPhrase(final String _key, final String _phraseStmt)
-            throws EFapsException
+    public AbstractPrintQuery addPhrase(final String _key, final String _phraseStmt) throws EFapsException
     {
         ValueList list = null;
 
@@ -361,11 +361,10 @@ public abstract class AbstractPrintQuery
      * @return  String representation of the phrase
      * @throws EFapsException on error
      */
-    public String getPhrase(final String _key)
-            throws EFapsException
+    public String getPhrase(final String _key) throws EFapsException
     {
         final Phrase phrase = this.key2Phrase.get(_key);
-        return phrase == null ? null :phrase.getPhraseValue(getCurrentInstance());
+        return phrase == null ? null : phrase.getPhraseValue(getCurrentInstance());
     }
 
     /**
@@ -380,8 +379,7 @@ public abstract class AbstractPrintQuery
      * @return this PrintQuery
      * @throws EFapsException   on error
      */
-    public AbstractPrintQuery addSelect(final String... _selectStmts)
-            throws EFapsException
+    public AbstractPrintQuery addSelect(final String... _selectStmts) throws EFapsException
     {
         for (final String selectStmt : _selectStmts) {
             final OneSelect oneselect = new OneSelect(this, selectStmt);
@@ -458,8 +456,7 @@ public abstract class AbstractPrintQuery
      * @return true if the query contains values, else false
      * @throws EFapsException on error
      */
-    public boolean executeWithoutAccessCheck()
-            throws EFapsException
+    public boolean executeWithoutAccessCheck() throws EFapsException
     {
         boolean ret = false;
         if (getInstanceList().size() > 0) {
