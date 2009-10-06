@@ -37,6 +37,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.print.value.AbstractValueSelect;
 import org.efaps.db.print.value.AttributeValueSelect;
+import org.efaps.db.print.value.ClassificationValueSelect;
 import org.efaps.db.print.value.FormatValueSelect;
 import org.efaps.db.print.value.IDValueSelect;
 import org.efaps.db.print.value.LabelValueSelect;
@@ -114,6 +115,9 @@ public class OneSelect
      */
     private Object currentObject;
 
+    /**
+     * Valueselect of this oneselect.
+     */
     private AbstractValueSelect valueSelect;
 
     /**
@@ -372,7 +376,7 @@ public class OneSelect
         OneSelect currentSelect = this;
         while (mainMatcher.find()) {
             final String part = mainMatcher.group();
-            if (part.startsWith("class")) {
+            if (part.startsWith("class[")) {
                 final Matcher matcher = attrPattern.matcher(part);
                 if (matcher.find()) {
                     currentSelect.addClassificationSelectPart(matcher.group());
@@ -411,6 +415,8 @@ public class OneSelect
                 currentSelect.addValueSelect(new IDValueSelect());
             } else if (part.equalsIgnoreCase("uuid")) {
                 currentSelect.addValueSelect(new UUIDValueSelect());
+            } else if (part.equalsIgnoreCase("class")) {
+                currentSelect.addValueSelect(new ClassificationValueSelect(this.query.getInstanceList()));
             } else if (part.startsWith("format")) {
                 final Matcher matcher = formatPat.matcher(part);
                 if (matcher.find()) {

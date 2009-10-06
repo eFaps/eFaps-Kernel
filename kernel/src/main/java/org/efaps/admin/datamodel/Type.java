@@ -131,21 +131,16 @@ public class Type extends AbstractDataModelObject
     private Type parentType = null;
 
     /**
-     * Instance variable for the id of parent type from which this type is
-     * derived. Also the parent ids from the parent is stored.
-     *
-     * @see #getParentTypeId
-     * @see #setParentTypeId
-     */
-
-    /**
      * Instance variable for all child types derived from this type.
      *
      * @see #getChildTypes
      */
     private final Set<Type> childTypes = new HashSet<Type>();
 
-
+    /**
+     * Classifications which are classifying this type.
+     */
+    private final Set<Classification> classifiedByTypes = new HashSet<Classification>();
 
         /**
      * The instance variables stores all attributes for this type object.
@@ -617,6 +612,25 @@ public class Type extends AbstractDataModelObject
     }
 
     /**
+     * Add a root Classification to this type.
+     *
+     * @param _classification classifixation that classifies this type
+     */
+    private void addClassifiedByType(final Classification _classification)
+    {
+        this.classifiedByTypes.add(_classification);
+    }
+    /**
+     * Getter method for instance variable {@link #classifiedByTypes}.
+     *
+     * @return value of instance variable {@link #classifiedByTypes}
+     */
+    public Set<Classification> getClassifiedByTypes()
+    {
+        return this.classifiedByTypes;
+    }
+
+    /**
      * This is the getter method for instance variable {@link #childTypes}.
      *
      * @return value of instance variable {@link #childTypes}
@@ -766,6 +780,14 @@ public class Type extends AbstractDataModelObject
             type.readFromDB4Properties();
             type.readFromDB4Links();
         }
+
+        for (final Type type : Type.CACHE.getCache4Id().values()) {
+            if (type instanceof Classification) {
+                if (((Classification) type).isRoot()) {
+                    ((Classification) type).getClassifiesType().addClassifiedByType((Classification) type);
+                }
+            }
+        }
     }
 
     /**
@@ -857,14 +879,12 @@ public class Type extends AbstractDataModelObject
         @Override
         protected void readCache(final Map<Long, Type> _cache4Id, final Map<String, Type> _cache4Name,
                                  final Map<UUID, Type> _cache4UUID)
-                throws CacheReloadException
+            throws CacheReloadException
         {
             ConnectionResource con = null;
             try {
                 // to store parent informations
                 final Map<Long, Long> parents = new HashMap<Long, Long>();
-                // to store all read types
-                final Set<Type> allTypes = new HashSet<Type>();
 
                 con = Context.getThreadContext().getConnectionResource();
 
@@ -903,8 +923,6 @@ public class Type extends AbstractDataModelObject
                         _cache4Name.put(type.getName(), type);
                         _cache4UUID.put(type.getUUID(), type);
 
-                        allTypes.add(type);
-
                         if (parentTypeId != 0) {
                             parents.put(id, parentTypeId);
                         }
@@ -915,6 +933,8 @@ public class Type extends AbstractDataModelObject
                         stmt.close();
                     }
                 }
+                con.commit();
+
                 // initialize parents
                 for (final Map.Entry<Long, Long> entry : parents.entrySet()) {
                     final Type child = _cache4Id.get(entry.getKey());
@@ -931,7 +951,7 @@ public class Type extends AbstractDataModelObject
                         parent.addChildType(child);
                     }
                 }
-                con.commit();
+
             } catch (final SQLException e) {
                 throw new CacheReloadException("could not read types", e);
             } catch (final EFapsException e) {
