@@ -50,6 +50,7 @@
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="key">
+      <property name="AlternateOID">Key.OID</property>
       <property name="Expression">Key</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_User_JAASKey/Key.Label</property>
