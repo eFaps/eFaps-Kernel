@@ -38,6 +38,8 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRRtfExporter;
+import net.sf.jasperreports.engine.export.JRTextExporter;
+import net.sf.jasperreports.engine.export.JRTextExporterParameter;
 import net.sf.jasperreports.engine.export.oasis.JROdsExporter;
 import net.sf.jasperreports.engine.export.oasis.JROdtExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
@@ -86,7 +88,7 @@ public class StandartReport_Base implements EventExecution
         parameter.put(JRParameter.REPORT_FILE_RESOLVER, new JasperFileResolver());
         parameter.put(JRParameter.REPORT_LOCALE, Context.getThreadContext().getLocale());
         parameter.put(JRParameter.REPORT_RESOURCE_BUNDLE, new EFapsResourceBundle());
-        parameter.put("EFAPS_SUBREPORT", new SubReportContainer());
+        parameter.put("EFAPS_SUBREPORT", new SubReportContainer(_parameter));
 
         final SearchQuery query = new SearchQuery();
         query.setQueryTypes("Admin_Program_JasperReportCompiled");
@@ -109,7 +111,7 @@ public class StandartReport_Base implements EventExecution
                 method.invoke(dataSource, jasperReport, _parameter);
             } else {
                 dataSource = new EFapsDataSource();
-                ((EFapsDataSource_Base) dataSource).init(jasperReport, _parameter);
+                ((EFapsDataSource) dataSource).init(jasperReport, _parameter);
             }
             final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, dataSource);
 
@@ -129,7 +131,7 @@ public class StandartReport_Base implements EventExecution
                 exporter.exportReport();
                 os.close();
             } else if ("ods".equalsIgnoreCase(mime)) {
-                file = File.createTempFile("ODT", ".odt");
+                file = File.createTempFile("ODS", ".ods");
                 final FileOutputStream os = new FileOutputStream(file);
                 final JROdsExporter exporter = new JROdsExporter();
                 exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
@@ -137,7 +139,7 @@ public class StandartReport_Base implements EventExecution
                 exporter.exportReport();
                 os.close();
             } else if ("rtf".equalsIgnoreCase(mime)) {
-                file = File.createTempFile("ODT", ".odt");
+                file = File.createTempFile("RTF", ".rtf");
                 final FileOutputStream os = new FileOutputStream(file);
                 final JRRtfExporter exporter = new JRRtfExporter();
                 exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
@@ -145,11 +147,21 @@ public class StandartReport_Base implements EventExecution
                 exporter.exportReport();
                 os.close();
             } else if ("docx".equalsIgnoreCase(mime)) {
-                file = File.createTempFile("ODT", ".odt");
+                file = File.createTempFile("DOCX", ".docx");
                 final FileOutputStream os = new FileOutputStream(file);
                 final JRDocxExporter exporter = new JRDocxExporter();
                 exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
                 exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
+                exporter.exportReport();
+                os.close();
+            } else if ("txt".equalsIgnoreCase(mime)) {
+                file = File.createTempFile("TXT", ".txt");
+                final FileOutputStream os = new FileOutputStream(file);
+                final JRTextExporter exporter = new JRTextExporter();
+                exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+                exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
+                exporter.setParameter(JRTextExporterParameter.CHARACTER_HEIGHT , new Integer(10));
+                exporter.setParameter(JRTextExporterParameter.CHARACTER_WIDTH , new Integer(6));
                 exporter.exportReport();
                 os.close();
             }

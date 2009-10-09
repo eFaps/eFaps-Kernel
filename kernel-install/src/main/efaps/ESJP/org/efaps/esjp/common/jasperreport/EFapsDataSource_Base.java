@@ -92,6 +92,7 @@ abstract class EFapsDataSource_Base implements JRDataSource
         String typeName = null;
         String expand = null;
         boolean expandChild = false;
+        boolean useInstance = false;
         for (final JRParameter para : _jasperReport.getMainDataset().getParameters()) {
             if ("EFAPS_DEFINITION".equals(para.getName())) {
                 if (para.hasProperties()) {
@@ -99,7 +100,7 @@ abstract class EFapsDataSource_Base implements JRDataSource
                     expand  = para.getPropertiesMap().getProperty("Expand");
                     this.subReport = "true".equalsIgnoreCase(para.getPropertiesMap().getProperty("hasSubReport"));
                     expandChild = "true".equalsIgnoreCase(para.getPropertiesMap().getProperty("expandChildTypes"));
-
+                    useInstance = "true".equalsIgnoreCase(para.getPropertiesMap().getProperty("Instance"));
                 }
             }
         }
@@ -125,6 +126,8 @@ abstract class EFapsDataSource_Base implements JRDataSource
                 instances.add(Instance.get((String) query.get("OID")));
             }
             query.close();
+        } else if (useInstance) {
+            instances.add(_parameter.getInstance());
         }
         if (instances.size() > 0) {
             this.print = new MultiPrintQuery(instances);

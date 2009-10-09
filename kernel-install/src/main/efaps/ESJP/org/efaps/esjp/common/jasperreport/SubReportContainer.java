@@ -20,6 +20,7 @@
 
 package org.efaps.esjp.common.jasperreport;
 
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 
@@ -36,8 +37,17 @@ import org.efaps.admin.program.esjp.EFapsUUID;
 public class SubReportContainer extends SubReportContainer_Base
 {
     /**
-    *
+    * Needed for serialization.
     */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Constructor.
+     * @param _parameter Parameter
+     */
+    public SubReportContainer(final Parameter _parameter)
+    {
+        super(_parameter);
+    }
 
 }

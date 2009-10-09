@@ -28,6 +28,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
 
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Checkout;
@@ -46,9 +47,23 @@ import org.efaps.util.EFapsException;
 abstract class SubReportContainer_Base extends HashMap<String, JRDataSource>
 {
     /**
-     *
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Parameter for this esjp.
+     */
+    private final Parameter parameter;
+
+    /**
+     * Constructor.
+     * @param _parameter Parameter
+     */
+    public SubReportContainer_Base(final Parameter _parameter)
+    {
+        this.parameter = _parameter;
+    }
 
     /**
      * @see java.util.HashMap#get(java.lang.Object)
@@ -74,7 +89,7 @@ abstract class SubReportContainer_Base extends HashMap<String, JRDataSource>
                 final InputStream iin = checkout.execute();
                 final JasperReport jasperReport = (JasperReport) JRLoader.loadObject(iin);
                 final EFapsDataSource datasource = new EFapsDataSource();
-                datasource.init(jasperReport, null);
+                datasource.init(jasperReport, this.parameter);
                 ret = datasource;
                 super.put((String) _key, ret);
             } catch (final JRException e) {
