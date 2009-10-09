@@ -20,8 +20,11 @@
 
 package org.efaps.admin.program.jasperreport;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.UUID;
 
@@ -40,6 +43,8 @@ import org.xml.sax.SAXException;
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.AbstractProgramImporter;
+import org.efaps.db.Checkin;
+import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -64,6 +69,57 @@ public class JasperReportImporter extends AbstractProgramImporter
     public JasperReportImporter(final URL _url) throws EFapsException
     {
         super(_url);
+    }
+
+    /**
+     * Import an JasperReport into the eFaps DataBase.
+     * @throws EFapsException on error
+     */
+    public void execute() throws EFapsException
+    {
+        Instance instance = searchInstance();
+        if (instance == null) {
+            instance = createInstance();
+        }
+        updateDB(instance);
+    }
+
+    /**
+     * Stores the read source code in eFaps. This is done with a checkin.
+     *
+     * @param _instance instance (object id) of Java program
+     * @throws EFapsException if Java code in eFaps could not updated or the
+     *             source code could not encoded
+     */
+    protected void updateDB(final Instance _instance) throws EFapsException
+    {
+        try {
+            final File f = new File(getUrl().toURI());
+            final Checkin checkin = new Checkin(_instance);
+            checkin.executeWithoutAccessCheck(getProgramName(), new FileInputStream(f), ((Long) f.length()).intValue());
+        } catch (final IOException e) {
+            throw new EFapsException(getClass(), "updateDB.IOException", e);
+        } catch (final URISyntaxException e) {
+            throw new EFapsException(getClass(), "updateDB.URISyntaxException", e);
+        }
+    }
+
+    /**
+     * Creates an instance of an ESJP in eFaps for given name.
+     *
+     * @return new created instance
+     * @throws EFapsException on error
+     */
+    protected Instance createInstance() throws EFapsException
+    {
+        final Type esjpType = Type.get(EFapsClassNames.ADMIN_PROGRAM_JASPERREPORT);
+        final Insert insert = new Insert(esjpType);
+        insert.add("Name", getProgramName());
+        if (getEFapsUUID() != null) {
+            insert.add("UUID", getEFapsUUID().toString());
+        }
+        insert.execute();
+        return insert.getInstance();
     }
 
     /**
