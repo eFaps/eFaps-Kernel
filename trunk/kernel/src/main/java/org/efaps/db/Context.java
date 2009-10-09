@@ -108,9 +108,12 @@ public final class Context implements INamingBinds
 
     /**
      * Each thread has his own context object. The value is automatically
-     * assigned from the filter class.
+     * assigned from the filter class. This allows to have a different Context
+     * for every Users which is connect to the WebApp Server. For the case
+     * that a thread creates a child threat the context is inherited to this
+     * new thread. This is needed e.g. in JasperReport for SubReports.
      */
-    private static ThreadLocal<Context> THREADCONTEXT = new ThreadLocal<Context>();
+    private static InheritableThreadLocal<Context> THREADCONTEXT = new InheritableThreadLocal<Context>();
 
     /**
      * The instance variable stores all open instances of
