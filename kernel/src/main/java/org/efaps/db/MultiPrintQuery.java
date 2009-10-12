@@ -71,31 +71,50 @@ public class MultiPrintQuery extends AbstractPrintQuery
         throws EFapsException
     {
         this.instances = _instances;
-        final Set<Type> types = new HashSet<Type>();
-        for (final Instance instance : _instances) {
-            if (!types.contains(instance.getType())) {
-                types.add(instance.getType());
+        if (this.instances.size() > 0) {
+            final Set<Type> types = new HashSet<Type>();
+            for (final Instance instance : _instances) {
+                if (!types.contains(instance.getType())) {
+                    types.add(instance.getType());
+                }
             }
-        }
-        // if only one type is given the main type is this type
-        // if more than one type is given they must have the same parent
-        // type, if not it will not work
-        if (types.size() == 1) {
-            this.mainType = _instances.get(0).getType();
+            // if only one type is given the main type is this type
+            // if more than one type is given they must have the same parent
+            // type, if not it will not work. The next common parent is used.
+            if (types.size() == 1) {
+                this.mainType = _instances.get(0).getType();
+            } else {
+                final List<List<Type>> typeLists = new ArrayList<List<Type>>();
+                for (final Type type : types) {
+                    final List<Type> parents = new ArrayList<Type>();
+                    Type currentType = type;
+                    while (currentType.getParentType() != null) {
+                        currentType = currentType.getParentType();
+                        parents.add(currentType);
+                    }
+                    typeLists.add(parents);
+                }
+
+                Type tempType = null;
+                final List<Type> compList = typeLists.get(0);
+                typeLists.remove(0);
+                for (final Type comp : compList) {
+                    boolean found = true;
+                    for (final List<Type> typeList : typeLists) {
+                        if (!typeList.contains(comp)) {
+                            found = false;
+                            break;
+                        }
+                    }
+                    if (found) {
+                        tempType = comp;
+                        break;
+                    }
+                }
+                this.mainType = tempType;
+            }
         } else {
-            Type tempType = null;
-            for (final Type type : types) {
-                Type currentType = type;
-                while (currentType.getParentType() != null) {
-                    currentType = currentType.getParentType();
-                }
-                if (tempType == null) {
-                    tempType = currentType;
-                } else if (!tempType.equals(currentType)) {
-                    // TODO throw error??
-                }
-            }
-            this.mainType = tempType;
+            this.mainType = null;
         }
     }
 
