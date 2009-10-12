@@ -51,7 +51,7 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("4733dd43-2ef3-4572-a1e9-c820567e9a36")
 @EFapsRevision("$Rev$")
-public class JasperFileResolver_Base implements FileResolver
+public abstract class JasperFileResolver_Base implements FileResolver
 {
 
     /**

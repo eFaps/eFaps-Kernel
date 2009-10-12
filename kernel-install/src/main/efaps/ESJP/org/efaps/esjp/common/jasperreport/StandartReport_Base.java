@@ -67,7 +67,7 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("c3a1f5f8-b263-4ad4-b144-db68437074cc")
 @EFapsRevision("$Rev$")
-public class StandartReport_Base implements EventExecution
+public abstract class StandartReport_Base implements EventExecution
 {
 
     /**
