@@ -62,6 +62,9 @@ import org.efaps.util.EFapsException;
 /**
  * TODO comment!
  *
+ * "Mime" as property in the calling command, or "mime" as parameter from a form.
+ * Command overrules!
+ *
  * @author The eFaps Team
  * @version $Id$
  */
@@ -115,8 +118,10 @@ public abstract class StandartReport_Base implements EventExecution
             }
             final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, dataSource);
 
-            final String mime = (String) properties.get("Mime");
-
+            String mime = (String) properties.get("Mime");
+            if (mime == null) {
+                mime = _parameter.getParameterValue("mime");
+            }
             ret.put(ReturnValues.VALUES, getFile(jasperPrint, mime));
             ret.put(ReturnValues.TRUE, true);
 
@@ -152,57 +157,57 @@ public abstract class StandartReport_Base implements EventExecution
     }
 
     /**
-     * Method to get the File
-     * @param jasperPrint jasperprint the file will be created for
-     * @param mime          mimetype of the file, default pdf
+     * Method to get the File.
+     * @param _jasperPrint jasperprint the file will be created for
+     * @param _mime          mimetype of the file, default pdf
      * @return  File
      * @throws IOException on error
      * @throws JRException on error
      */
-    protected File getFile(final JasperPrint jasperPrint, final String mime) throws IOException, JRException {
+    protected File getFile(final JasperPrint _jasperPrint, final String _mime) throws IOException, JRException {
         File file = null;
-        if ("pdf".equalsIgnoreCase(mime) || mime == null) {
+        if ("pdf".equalsIgnoreCase(_mime) || _mime == null) {
             file = File.createTempFile("PDF", ".pdf");
             final FileOutputStream os = new FileOutputStream(file);
-            JasperExportManager.exportReportToPdfStream(jasperPrint, os);
+            JasperExportManager.exportReportToPdfStream(_jasperPrint, os);
             os.close();
-        } else if ("odt".equalsIgnoreCase(mime)) {
+        } else if ("odt".equalsIgnoreCase(_mime)) {
             file = File.createTempFile("ODT", ".odt");
             final FileOutputStream os = new FileOutputStream(file);
             final JROdtExporter exporter = new JROdtExporter();
-            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, _jasperPrint);
             exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
             exporter.exportReport();
             os.close();
-        } else if ("ods".equalsIgnoreCase(mime)) {
+        } else if ("ods".equalsIgnoreCase(_mime)) {
             file = File.createTempFile("ODS", ".ods");
             final FileOutputStream os = new FileOutputStream(file);
             final JROdsExporter exporter = new JROdsExporter();
-            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, _jasperPrint);
             exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
             exporter.exportReport();
             os.close();
-        } else if ("rtf".equalsIgnoreCase(mime)) {
+        } else if ("rtf".equalsIgnoreCase(_mime)) {
             file = File.createTempFile("RTF", ".rtf");
             final FileOutputStream os = new FileOutputStream(file);
             final JRRtfExporter exporter = new JRRtfExporter();
-            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, _jasperPrint);
             exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
             exporter.exportReport();
             os.close();
-        } else if ("docx".equalsIgnoreCase(mime)) {
+        } else if ("docx".equalsIgnoreCase(_mime)) {
             file = File.createTempFile("DOCX", ".docx");
             final FileOutputStream os = new FileOutputStream(file);
             final JRDocxExporter exporter = new JRDocxExporter();
-            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, _jasperPrint);
             exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
             exporter.exportReport();
             os.close();
-        } else if ("txt".equalsIgnoreCase(mime)) {
+        } else if ("txt".equalsIgnoreCase(_mime)) {
             file = File.createTempFile("TXT", ".txt");
             final FileOutputStream os = new FileOutputStream(file);
             final JRTextExporter exporter = new JRTextExporter();
-            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, _jasperPrint);
             exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
             exporter.setParameter(JRTextExporterParameter.CHARACTER_HEIGHT , new Integer(10));
             exporter.setParameter(JRTextExporterParameter.CHARACTER_WIDTH , new Integer(6));
