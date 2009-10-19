@@ -30,7 +30,7 @@
   <uuid>faf1aacc-bb36-44b3-b9fa-6737b187f0f0</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
-  <description>Table is used to show the children of a menu. The table is not 
+  <description>Table is used to show the children of a menu. The table is not
     sortable, so that the children will be shown in the same order, as they will
     rendered in the webinterface.
   </description>
@@ -69,9 +69,9 @@
       <property name="Label">Admin_UI_Menu_Childs/sortid.Label</property>
       <property name="Width">1</property>
       <property name="SortAble">false</property>
-      <property name="ClassNameUI">org.efaps.admin.datamodel.ui.StringUI</property>
-      <trigger program="org.efaps.esjp.admin.ui.MenuChilds" 
-               name="Admin_UI_Menu_Childs/sortid" 
+      <property name="ClassNameUI">org.efaps.admin.datamodel.ui.NumberUI</property>
+      <trigger program="org.efaps.esjp.admin.ui.MenuChilds"
+               name="Admin_UI_Menu_Childs/sortid"
                event="UI_FIELD_VALUE"/>
     </field>
     <field name="buttonOpenInNewWindow">
