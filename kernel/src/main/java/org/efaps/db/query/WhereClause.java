@@ -20,11 +20,19 @@
 
 package org.efaps.db.query;
 
+import org.efaps.util.EFapsException;
+
 /**
- *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public abstract class WhereClause  {
-  abstract public void appendWhereClause(CompleteStatement _completeStatement, int _orderIndex);
+public interface WhereClause
+{
+    /**
+     * Append the special part to the where clause.
+     * @param _completeStatement complete statement
+     * @param _orderIndex        index
+     * @throws EFapsException on error while accessing the context
+     */
+    void appendWhereClause(final CompleteStatement _completeStatement, int _orderIndex) throws EFapsException;
 }

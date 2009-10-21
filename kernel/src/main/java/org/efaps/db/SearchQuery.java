@@ -50,18 +50,55 @@ public class SearchQuery extends AbstractQuery
     private static final Logger LOG = LoggerFactory.getLogger(SearchQuery.class);
 
     /**
+     * Must the query be case sensitive. Default "yes".
+     */
+    private boolean ignoreCase = false;
+
+    /**
      *
      */
     public SearchQuery()
     {
     }
 
+    /**
+     * Getter method for instance variable {@link #ignoreCase}.
+     *
+     * @return value of instance variable {@link #ignoreCase}
+     */
+    public boolean isIgnoreCase()
+    {
+        return this.ignoreCase;
+    }
 
+    /**
+     * Setter method for instance variable {@link #ignoreCase}.
+     *
+     * @param _ignoreCase value for instance variable {@link #ignoreCase}
+     */
+    public void setIgnoreCase(final boolean _ignoreCase)
+    {
+        this.ignoreCase = _ignoreCase;
+    }
+
+
+    /**
+     * Set the type for the query.
+     * @param _types    type to be used
+     * @throws EFapsException on error
+     */
     public void setQueryTypes(final String _types) throws EFapsException
     {
         setQueryTypes(_types, true);
     }
 
+    /**
+     * Set the type for the query.
+     * @param _types            type to be used
+     * @param _companyDepend    if <code>true</code> the company will be
+     *                          included if necessary automatically
+     * @throws EFapsException on error
+     */
     public void setQueryTypes(final String _types, final boolean _companyDepend) throws EFapsException
     {
         if (_types != null) {
@@ -78,11 +115,13 @@ public class SearchQuery extends AbstractQuery
         }
     }
 
-
-
     /**
-   *
-   */
+     *  Set the object for this query.
+     *  @param _instance Instance
+     *  @throws EFapsException on error
+     *  @deprecated use PrintQuery!
+     */
+    @Deprecated
     public void setObject(final Instance _instance) throws EFapsException
     {
         final Type type = _instance.getType();
@@ -93,16 +132,27 @@ public class SearchQuery extends AbstractQuery
     }
 
     /**
+     * Set the object for this query.
+     * @param _oid  oid of the Instance
+     * @throws EFapsException on error
      * @see #setObject(Instance)
+     * @deprecated use PrintQuery!
      */
+    @Deprecated
     public void setObject(final String _oid) throws EFapsException
     {
         setObject(Instance.get(_oid));
     }
 
     /**
+     * Set the object for this query.
+     * @param _type     type for the Instance
+     * @param _id       id for the Instance
+     * @throws EFapsException on error
      * @see #setObject(Instance)
+     * @deprecated use PrintQuery!
      */
+    @Deprecated
     public void setObject(final Type _type, final long _id) throws EFapsException
     {
         setObject(Instance.get(_type, _id));
@@ -137,8 +187,8 @@ public class SearchQuery extends AbstractQuery
                 attr = type.getAttribute(one);
             }
             if (attr == null) {
-                LOG.error("Could not found attribute or link with name " + "'" + one + "' for type '" + type.getName()
-                                + "'");
+                SearchQuery.LOG.error("Could not found attribute or link with name " + "'" + one + "' for type '"
+                                + type.getName() + "'");
                 throw new EFapsException(getClass(), "setExpand.AttributeOrLinkNotFound", one, type.getName());
             }
             if (type.isKindOf(attr.getLink())) {
@@ -165,54 +215,70 @@ public class SearchQuery extends AbstractQuery
         }
     }
 
+    /**
+     * @param _expr     expression to compare for not equal
+     * @param _value    value to compare for equal
+     * @throws EFapsException if Attribute is not found
+     */
     public void addWhereExprNotEqValue(final String _expr, final String _value) throws EFapsException
     {
         final Attribute attr = this.type.getAttribute(_expr);
         if (attr == null) {
-            LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
-            throw new EFapsException(getClass(), "addWhereExprEqValue", "UnknownExpression", _expr, this.type.getName());
+            SearchQuery.LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
+            throw new EFapsException(getClass(), "addWhereExprEqValue", "UnknownExpression", _expr,
+                                     this.type.getName());
         }
         getMainWhereClauses().add(new WhereClauseAttributeNotEqualValue(this, attr, _value));
     }
 
     /**
-     * @param _expr
-     * @param _value
+     * @param _expr     expression to compare for not equal
+     * @param _value    value to compare for equal
+     * @throws EFapsException if Attribute is not found
      */
     public void addWhereExprNotEqValue(final String _expr, final long _value) throws EFapsException
     {
         addWhereExprNotEqValue(_expr, "" + _value);
     }
 
-   /**
-     * @param _expr expression to compare for equal
-     * @param _value value to compare for equal
+    /**
+     * @param _expr     expression to compare for not equal
+     * @param _value    value to compare for equal
+     * @throws EFapsException if Attribute is not found
      */
     public void addWhereExprEqValue(final String _expr, final String _value) throws EFapsException
     {
         final Attribute attr = this.type.getAttribute(_expr);
         if (attr == null) {
-            LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
-            throw new EFapsException(getClass(), "addWhereExprEqValue", "UnknownExpression", _expr, this.type.getName());
+            SearchQuery.LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
+            throw new EFapsException(getClass(), "addWhereExprEqValue", "UnknownExpression", _expr,
+                            this.type.getName());
         }
         getMainWhereClauses().add(new WhereClauseAttributeEqualValue(this, attr, _value));
     }
 
     /**
-     * @param _expr
-     * @param _value
+     * @param _expr     expression to compare for not equal
+     * @param _value    value to compare for equal
+     * @throws EFapsException if Attribute is not found
      */
     public void addWhereExprEqValue(final String _expr, final long _value) throws EFapsException
     {
         addWhereExprEqValue(_expr, "" + _value);
     }
 
+    /**
+     * @param _expr     expression to compare for not equal
+     * @param _dateTime DateTime to compare for equal
+     * @throws EFapsException if Attribute is not found
+     */
     public void addWhereExprEqValue(final String _expr, final ReadableDateTime _dateTime) throws EFapsException
     {
         final Attribute attr = this.type.getAttribute(_expr);
         if (attr == null) {
-            LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
-            throw new EFapsException(getClass(), "addWhereExprEqValue", "UnknownExpression", _expr, this.type.getName());
+            SearchQuery.LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
+            throw new EFapsException(getClass(), "addWhereExprEqValue", "UnknownExpression", _expr,
+                            this.type.getName());
         }
         getMainWhereClauses().add(
                         new WhereClauseAttributeEqualValue(this, attr, _dateTime.toDateTime().toString(
@@ -220,15 +286,15 @@ public class SearchQuery extends AbstractQuery
     }
 
     /**
-     * @param _context eFaps context for this request
-     * @param _expr expression to compare for equal
-     * @param _value value to compare for equal
+     * @param _expr     expression to compare for not equal
+     * @param _value    value to compare for equal
+     * @throws EFapsException if Attribute is not found
      */
     public void addWhereExprMatchValue(final String _expr, final String _value) throws EFapsException
     {
         final Attribute attr = this.type.getAttribute(_expr);
         if (attr == null) {
-            LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
+            SearchQuery.LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
             throw new EFapsException(getClass(), "addWhereExprMatchValue", "UnknownExpression", _expr, this.type
                             .getName());
         }
@@ -236,26 +302,32 @@ public class SearchQuery extends AbstractQuery
     }
 
     /**
-     * @param _expr expression to compare for greater
-     * @param _value value to compare for equal
+     * @param _expr     expression to compare for greater
+     * @param _value    value to compare for equal
+     * @throws EFapsException if Attribute is not found
      */
     public void addWhereExprGreaterValue(final String _expr, final String _value) throws EFapsException
     {
         final Attribute attr = this.type.getAttribute(_expr);
         if (attr == null) {
-            LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
+            SearchQuery.LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
             throw new EFapsException(getClass(), "addWhereExprGreaterValue", "UnknownExpression", _expr, this.type
                             .getName());
         }
         getMainWhereClauses().add(new WhereClauseAttributeGreaterValue(this, attr, _value));
     }
 
+    /**
+     * @param _expr     expression to compare for not equal
+     * @param _dateTime DateTime to compare for equal
+     * @throws EFapsException if Attribute is not found
+     */
     public void addWhereExprGreaterValue(final String _expr, final ReadableDateTime _dateTime) throws EFapsException
     {
         final Attribute attr = this.type.getAttribute(_expr);
         // TODO check if Attribute is DateTimeType
         if (attr == null) {
-            LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
+            SearchQuery.LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
             throw new EFapsException(getClass(), "addWhereExprGreaterValue", "UnknownExpression", _expr, this.type
                             .getName());
         }
@@ -267,12 +339,13 @@ public class SearchQuery extends AbstractQuery
     /**
      * @param _expr expression to compare for less
      * @param _value value to compare for equal
+     * @throws EFapsException if Attribute is not found
      */
     public void addWhereExprLessValue(final String _expr, final String _value) throws EFapsException
     {
         final Attribute attr = this.type.getAttribute(_expr);
         if (attr == null) {
-            LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
+            SearchQuery.LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
             throw new EFapsException(getClass(), "addWhereExprLessValue", "UnknownExpression", _expr, this.type
                             .getName());
         }
@@ -280,14 +353,15 @@ public class SearchQuery extends AbstractQuery
     }
 
     /**
-     * @param _expr expression to compare for less
-     * @param _value value to compare for equal
+     * @param _expr         expression to compare for less
+     * @param _dateTime     DateTime to compare for equal
+     * @throws EFapsException if Attribute is not found
      */
     public void addWhereExprLessValue(final String _expr, final ReadableDateTime _dateTime) throws EFapsException
     {
         final Attribute attr = this.type.getAttribute(_expr);
         if (attr == null) {
-            LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
+            SearchQuery.LOG.debug("unknown expression '" + _expr + "' for type " + "'" + this.type.getName() + "'");
             throw new EFapsException(getClass(), "addWhereExprLessValue", "UnknownExpression", _expr, this.type
                             .getName());
         }
@@ -297,8 +371,9 @@ public class SearchQuery extends AbstractQuery
     }
 
     /**
-     * @param _attr
-     * @param _value
+     * @param _attr     Attribute to be compared to
+     * @param _value    value to be compared
+     * @throws EFapsException if Attribute is not found
      */
     public void addWhereAttrEqValue(final Attribute _attr, final String _value) throws EFapsException
     {
@@ -306,8 +381,9 @@ public class SearchQuery extends AbstractQuery
     }
 
     /**
-     * @param _attr
-     * @param _value
+     * @param _attr     Attribute to be compared to
+     * @param _value    value to be compared
+     * @throws EFapsException if Attribute is not found
      */
     public void addWhereAttrEqValue(final Attribute _attr, final long _value) throws EFapsException
     {
@@ -315,8 +391,9 @@ public class SearchQuery extends AbstractQuery
     }
 
     /**
-     * @param _attr1
-     * @param _attr2
+     * @param _attr1        Attribute to be compared to
+     * @param _attr2        Attribute to be compared
+     * @throws EFapsException if Attribute is not found
      */
     public void addWhereAttrEqAttr(final Attribute _attr1, final Attribute _attr2) throws EFapsException
     {

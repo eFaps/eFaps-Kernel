@@ -54,16 +54,11 @@ import org.efaps.util.EFapsException;
 public abstract class AbstractQuery
 {
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // static variables
-
     /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(AbstractQuery.class);
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // instance variables
 
     private boolean checkAccess = false;
 
@@ -176,9 +171,6 @@ public abstract class AbstractQuery
          * (Exception e) { throw e; } finally { setStatement(null); } }
          */
     }
-
-    // ///////////////////////////////////////////////////////////////////////////
-    // add for selecting something
 
     /**
      * The method adds an expression to the selectstatement.
@@ -429,8 +421,7 @@ public abstract class AbstractQuery
 
                 joinElement.setIncSelIndex(incSelIndex);
                 // warum diese Ueberpruefung? weil der join jeweils die spalte
-                // mit der
-                // id zum vergleichen rauschmeisst!!
+                // mit der id zum vergleichen rauschmeisst!!
                 if (incSelIndex == 0) {
                     incSelIndex += joinElement.getSelectExpressions().size();
                 } else {
@@ -444,8 +435,7 @@ public abstract class AbstractQuery
                 for (final SelectType selectType : getSelectTypesOrder()) {
                     if (selectType.isNullAllowed()) {
                         completeStatement.appendUnion();
-                        joinElement
-                                        .appendStatement(completeStatement, selectType.getOrderIndex(),
+                        joinElement.appendStatement(completeStatement, selectType.getOrderIndex(),
                                                         isExpandChildTypes());
                     }
                 }
@@ -646,12 +636,6 @@ public abstract class AbstractQuery
         return this.allOIDSelExprMap;
     }
 
-    // ###########################################################################
-    // ###########################################################################
-    // ###########################################################################
-    // ###########################################################################
-    // ###########################################################################
-
     /**
      * The class is used to make one join select.
      */
@@ -667,7 +651,7 @@ public abstract class AbstractQuery
         }
 
         protected void appendStatement(final CompleteStatement _completeStatement, final int _orderIndex,
-                        final boolean _childTypes)
+                        final boolean _childTypes) throws EFapsException
         {
             _completeStatement.append("select distinct ");
             appendSelectExpressions(_completeStatement, _orderIndex);
@@ -718,7 +702,7 @@ public abstract class AbstractQuery
         }
 
         private void appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex,
-                        final boolean _childTypes)
+                        final boolean _childTypes) throws EFapsException
         {
             final Iterator<SelectType> typeIter = getSelectTypes().iterator();
             while (typeIter.hasNext()) {

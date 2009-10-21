@@ -23,92 +23,146 @@ package org.efaps.db.query;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.DateTimeType;
 import org.efaps.db.AbstractQuery;
+import org.efaps.db.Context;
+import org.efaps.db.SearchQuery;
+import org.efaps.util.EFapsException;
 
 /**
  * The class represents an equal where clause between two attributes.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-abstract class WhereClauseAttributeCompareValueAbstract extends WhereClause  {
+public abstract class WhereClauseAttributeCompareValueAbstract implements WhereClause
+{
 
-  private final Attribute attr;
+    /**
+     * Attribute the whereclause belongs to.
+     */
+    private final Attribute attr;
 
-  private final String value;
+    /**
+     * Value to be compared.
+     */
+    private final String value;
 
-  private final AbstractQuery.SelectType selType;
+    /**
+     * Type of the select.
+     */
+    private final AbstractQuery.SelectType selType;
 
-  public WhereClauseAttributeCompareValueAbstract(final AbstractQuery _query,
-      final Attribute _attr, final String _value)  {
+    /**
+     * Query this whereclause belongs to.
+     */
+    private final AbstractQuery query;
 
-    this.attr = _attr;
-    this.value = _value;
-    this.selType = _query.getSelectType(getAttr().getParent());
-    getSelType().add4Where(getAttr());
-  }
+    /**
+     * Constructor.
+     *
+     * @param _query    query for this whereclause
+     * @param _attr     attribute for this whereclause
+     * @param _value    value used for this whereclause
+     */
+    public WhereClauseAttributeCompareValueAbstract(final AbstractQuery _query, final Attribute _attr,
+                    final String _value)
+    {
+        this.attr = _attr;
+        this.value = _value;
+        this.selType = _query.getSelectType(getAttr().getParent());
+        this.query = _query;
+        getSelType().add4Where(getAttr());
 
-  /**
-   * @todo compare does not work if an attribute has more than one sql column!!
-   * @todo bugfixing for Apache derby!!! (because ID is hardcoded as number value...) see TODO comment
-   */
-  protected void appendWhereClause(final CompleteStatement _completeStatement,
-      final int _orderIndex, final String _operator)  {
-
-    if (_orderIndex<0 || getSelType().getOrderIndex()<_orderIndex)  {
-
-      final String sqlColName = getAttr().getSqlColNames().get(0);
-
-      _completeStatement.appendWhereAnd();
-      _completeStatement
-          .appendWhere(getAttr().getTable().getSqlTable())
-          .appendWhere(getSelType().getTypeIndex())
-          .appendWhere(".")
-          .appendWhere(sqlColName)
-          .appendWhere(_operator);
-
-// TODO: bug-fixing wg. cloudescape
-if (getAttr().getLink()!=null || getAttr().getName().equals("ID"))  {
-     _completeStatement.appendWhere(getValue()).appendWhere("");
-} else  {
-  // in case of DateTimeType the value must be cast to a timestamp
-  if (this.attr.getAttributeType().getClassRepr().equals(DateTimeType.class)) {
-    _completeStatement.appendWhere(" timestamp ");
-  }
-
-     _completeStatement.appendWhere("'").appendWhere(getValue()).appendWhere("'");
-}
     }
-  }
 
-  ///////////////////////////////////////////////////////////////////////////
+    /**
+     * @TODO compare does not work if an attribute has more than one sql
+     *       column!!
+     * @param _completeStatement    the CompleteStatement the whereclause will be
+     *                              appended to
+     * @param _orderIndex           index in the clause
+     * @param _operator             operator to be used
+     * @throws EFapsException on error
+     */
+    protected void appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex,
+                                     final String _operator)
+        throws EFapsException
+    {
 
-  /**
-   * This is the getter method for instance variable {@link #attr}.
-   *
-   * @return value of instance variable {@link #attr}
-   * @see #attr
-   */
-  protected Attribute getAttr()   {
-    return this.attr;
-  }
+        if (_orderIndex < 0 || getSelType().getOrderIndex() < _orderIndex) {
+            boolean caseSensitive = false;
+            if (((SearchQuery) getQuery()).isIgnoreCase()) {
+                caseSensitive = true;
+            }
+            final String sqlColName = getAttr().getSqlColNames().get(0);
 
-  /**
-   * This is the getter method for instance variable {@link #value}.
-   *
-   * @return value of instance variable {@link #value}
-   * @see #value
-   */
-  protected String getValue()   {
-    return this.value;
-  }
+            _completeStatement.appendWhereAnd();
+            if (caseSensitive) {
+                _completeStatement.appendWhere("UPPER(");
+            }
+            _completeStatement.appendWhere(getAttr().getTable().getSqlTable()).appendWhere(getSelType().getTypeIndex())
+                            .appendWhere(".").appendWhere(sqlColName);
+            if (caseSensitive) {
+                _completeStatement.appendWhere(")");
+            }
 
-  /**
-   * This is the getter method for instance variable {@link #selType}.
-   *
-   * @return value of instance variable {@link #selType}
-   * @see #selType
-   */
-  protected AbstractQuery.SelectType getSelType()   {
-    return this.selType;
-  }
+            _completeStatement.appendWhere(_operator);
+
+            // TODO: bug-fixing wg. cloudescape
+            if (getAttr().getLink() != null || getAttr().getName().equals("ID")) {
+                _completeStatement.appendWhere(getValue()).appendWhere("");
+            } else {
+                // in case of DateTimeType the value must be cast to a timestamp
+                if (this.attr.getAttributeType().getClassRepr().equals(DateTimeType.class)) {
+                    _completeStatement.appendWhere(" timestamp ");
+                }
+                _completeStatement.appendWhere("'").appendWhere(getValue()).appendWhere("'");
+            }
+        }
+    }
+
+    /**
+     * This is the getter method for instance variable {@link #attr}.
+     *
+     * @return value of instance variable {@link #attr}
+     * @see #attr
+     */
+    protected Attribute getAttr()
+    {
+        return this.attr;
+    }
+
+    /**
+     * This is the getter method for instance variable {@link #value}.
+     *
+     * @return value of instance variable {@link #value}
+     * @throws EFapsException on error while retrieving local from context
+     * @see #value
+     */
+    protected String getValue() throws EFapsException
+    {
+        return ((SearchQuery) getQuery()).isIgnoreCase()
+                ? this.value.toUpperCase(Context.getThreadContext().getLocale())
+                : this.value;
+    }
+
+    /**
+     * This is the getter method for instance variable {@link #selType}.
+     *
+     * @return value of instance variable {@link #selType}
+     * @see #selType
+     */
+    protected AbstractQuery.SelectType getSelType()
+    {
+        return this.selType;
+    }
+
+    /**
+     * Getter method for instance variable {@link #query}.
+     *
+     * @return value of instance variable {@link #query}
+     */
+    protected AbstractQuery getQuery()
+    {
+        return this.query;
+    }
 }

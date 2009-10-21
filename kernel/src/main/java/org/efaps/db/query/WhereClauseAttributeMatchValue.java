@@ -22,49 +22,63 @@ package org.efaps.db.query;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.AbstractQuery;
+import org.efaps.db.SearchQuery;
+import org.efaps.util.EFapsException;
 
 /**
- * The class represents an match where clause between an attributes and a
- * value.
+ * The class represents an match where clause between an attributes and a value.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class WhereClauseAttributeMatchValue
-    extends WhereClauseAttributeCompareValueAbstract  {
-
-  public WhereClauseAttributeMatchValue(final AbstractQuery _query, final Attribute _attr, final String _value)  {
-    super(_query, _attr, _value);
-  }
-
-  /**
-   * @todo compare does not work if an attribute has more than one sql column!!
-   * @todo bugfixing for Apache derby!!! (because ID is hardcoded as number value...) see TODO comment
-   */
-  public void appendWhereClause(final CompleteStatement _completeStatement,
-      final int _orderIndex)  {
-
-    if (_orderIndex<0 || getSelType().getOrderIndex()<_orderIndex)  {
-
-String sqlColName = getAttr().getSqlColNames().get(0);
-
-      _completeStatement.appendWhereAnd();
-      _completeStatement
-          .appendWhere(getAttr().getTable().getSqlTable())
-          .appendWhere(getSelType().getTypeIndex())
-          .appendWhere(".")
-          .appendWhere(sqlColName);
-
-      if (getValue().indexOf('*')>=0)  {
-        _completeStatement.appendWhere(" like '").appendWhere(getValue().replace('*','%')).appendWhere("'");
-      } else  {
-// TODO: bug-fixing wg. cloudescape
-if (getAttr().getLink()!=null || getAttr().getName().equals("ID"))  {
-        _completeStatement.appendWhere("=").appendWhere(getValue()).appendWhere("");
-} else  {
-        _completeStatement.appendWhere("='").appendWhere(getValue()).appendWhere("'");
-}
-      }
+public class WhereClauseAttributeMatchValue extends WhereClauseAttributeCompareValueAbstract
+{
+    /**
+     * Constructor.
+     *
+     * @param _query    query for this whereclause
+     * @param _attr     attribute for this whereclause
+     * @param _value    value used for this whereclause
+     */
+    public WhereClauseAttributeMatchValue(final AbstractQuery _query, final Attribute _attr, final String _value)
+    {
+        super(_query, _attr, _value);
     }
-  }
+
+    /**
+     * {@inheritDoc}
+     * @throws EFapsException
+     */
+    public void appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex)
+        throws EFapsException
+    {
+
+        if (_orderIndex < 0 || getSelType().getOrderIndex() < _orderIndex) {
+            boolean caseSensitive = false;
+            if (((SearchQuery) getQuery()).isIgnoreCase()) {
+                caseSensitive = true;
+            }
+            final String sqlColName = getAttr().getSqlColNames().get(0);
+
+            _completeStatement.appendWhereAnd();
+            if (caseSensitive) {
+                _completeStatement.appendWhere("UPPER(");
+            }
+            _completeStatement.appendWhere(getAttr().getTable().getSqlTable()).appendWhere(getSelType().getTypeIndex())
+                            .appendWhere(".").appendWhere(sqlColName);
+            if (caseSensitive) {
+                _completeStatement.appendWhere(")");
+            }
+            if (getValue().indexOf('*') >= 0) {
+                _completeStatement.appendWhere(" like '").appendWhere(getValue().replace('*', '%')).appendWhere("'");
+            } else {
+                // TODO: bug-fixing wg. cloudescape
+                if (getAttr().getLink() != null || getAttr().getName().equals("ID")) {
+                    _completeStatement.appendWhere("=").appendWhere(getValue()).appendWhere("");
+                } else {
+                    _completeStatement.appendWhere("='").appendWhere(getValue()).appendWhere("'");
+                }
+            }
+        }
+    }
 }

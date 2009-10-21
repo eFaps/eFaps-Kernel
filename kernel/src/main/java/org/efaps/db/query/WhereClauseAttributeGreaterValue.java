@@ -22,28 +22,36 @@ package org.efaps.db.query;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.AbstractQuery;
+import org.efaps.util.EFapsException;
 
 /**
  * The class represents an greater where clause between an attributes and a
  * value.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class WhereClauseAttributeGreaterValue
-    extends WhereClauseAttributeCompareValueAbstract  {
+public class WhereClauseAttributeGreaterValue extends WhereClauseAttributeCompareValueAbstract
+{
+    /**
+     * Constructor.
+     *
+     * @param _query    query for this whereclause
+     * @param _attr     attribute for this whereclause
+     * @param _value    value used for this whereclause
+     */
+    public WhereClauseAttributeGreaterValue(final AbstractQuery _query, final Attribute _attr, final String _value)
+    {
+        super(_query, _attr, _value);
+    }
 
-  public WhereClauseAttributeGreaterValue(final AbstractQuery _query, final Attribute _attr, final String _value)  {
-    super(_query, _attr, _value);
-  }
+    /**
+     * {@inheritDoc}
+     */
+    public void appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex)
+        throws EFapsException
+    {
 
-  /**
-   * @todo compare does not work if an attribute has more than one sql column!!
-   * @todo bugfixing for Apache derby!!! (because ID is hardcoded as number value...) see TODO comment
-   */
-  public void appendWhereClause(final CompleteStatement _completeStatement,
-      final int _orderIndex)  {
-
-    super.appendWhereClause(_completeStatement, _orderIndex, ">");
-  }
+        super.appendWhereClause(_completeStatement, _orderIndex, ">");
+    }
 }
