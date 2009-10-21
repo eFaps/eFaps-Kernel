@@ -65,7 +65,8 @@ public class StatusValue implements EventExecution
 
         final Map<String, String> map = new TreeMap<String, String>();
 
-        if (fieldValue.getTargetMode().equals(TargetMode.VIEW) || fieldValue.getTargetMode().equals(TargetMode.PRINT)) {
+        if (fieldValue.getTargetMode().equals(TargetMode.VIEW) || fieldValue.getTargetMode().equals(TargetMode.PRINT)
+                         || fieldValue.getTargetMode().equals(TargetMode.UNKNOWN)) {
             final Status status = Status.get((Long) fieldValue.getValue());
             map.put(status.getLabel(), ((Long) status.getId()).toString());
         } else {
@@ -87,7 +88,7 @@ public class StatusValue implements EventExecution
      * @throws EFapsException on error
      */
     public Return setStatus(final Parameter _parameter)
-            throws EFapsException
+        throws EFapsException
     {
         final Map<?, ?> map = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
         final String statusName = (String) map.get("Status");
