@@ -91,7 +91,7 @@ public abstract class StandartReport_Base implements EventExecution
         parameter.put(JRParameter.REPORT_FILE_RESOLVER, new JasperFileResolver());
         parameter.put(JRParameter.REPORT_LOCALE, Context.getThreadContext().getLocale());
         parameter.put(JRParameter.REPORT_RESOURCE_BUNDLE, new EFapsResourceBundle());
-        parameter.put("EFAPS_SUBREPORT", new SubReportContainer(_parameter));
+        parameter.put("EFAPS_SUBREPORT", new SubReportContainer(_parameter, dataSourceClass));
 
         final SearchQuery query = new SearchQuery();
         query.setQueryTypes("Admin_Program_JasperReportCompiled");
