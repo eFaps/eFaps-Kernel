@@ -21,6 +21,8 @@
 package org.efaps.esjp.common.jasperreport;
 
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 
 import net.sf.jasperreports.engine.JRDataSource;
@@ -57,12 +59,20 @@ abstract class SubReportContainer_Base extends HashMap<String, JRDataSource>
     private final Parameter parameter;
 
     /**
+     * Name of a datasource that will be used for the subreports,
+     * if null the default will be used.
+     */
+    private final String dataSourceClass;
+
+    /**
      * Constructor.
      * @param _parameter Parameter
+     * @param _dataSourceClass name of a datasoucrceclass that will be used
      */
-    public SubReportContainer_Base(final Parameter _parameter)
+    public SubReportContainer_Base(final Parameter _parameter, final String _dataSourceClass)
     {
         this.parameter = _parameter;
+        this.dataSourceClass = _dataSourceClass;
     }
 
     /**
@@ -88,14 +98,44 @@ abstract class SubReportContainer_Base extends HashMap<String, JRDataSource>
                 final Checkout checkout = new Checkout(instance);
                 final InputStream iin = checkout.execute();
                 final JasperReport jasperReport = (JasperReport) JRLoader.loadObject(iin);
-                final EFapsDataSource datasource = new EFapsDataSource();
-                datasource.init(jasperReport, this.parameter);
-                ret = datasource;
+
+                JRDataSource dataSource;
+                if (this.dataSourceClass != null) {
+                    final Class<?> clazz = Class.forName(this.dataSourceClass);
+                    final Method method = clazz.getMethod("init", new Class[] { JasperReport.class, Parameter.class });
+                    dataSource = (JRDataSource) clazz.newInstance();
+                    method.invoke(dataSource, jasperReport, this.parameter);
+                } else {
+                    dataSource = new EFapsDataSource();
+                    ((EFapsDataSource) dataSource).init(jasperReport, this.parameter);
+                }
+                ret = dataSource;
                 super.put((String) _key, ret);
             } catch (final JRException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (final EFapsException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (final ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (final SecurityException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (final NoSuchMethodException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (final InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (final IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (final IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (final InvocationTargetException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }

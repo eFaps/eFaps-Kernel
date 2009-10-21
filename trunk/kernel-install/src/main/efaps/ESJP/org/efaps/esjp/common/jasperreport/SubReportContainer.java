@@ -43,11 +43,12 @@ public class SubReportContainer extends SubReportContainer_Base
 
     /**
      * Constructor.
-     * @param _parameter Parameter
+     * @param _parameter        Parameters for an esjp
+     * @param _dataSourceClass  name of a datasourclass if not the default must be used
      */
-    public SubReportContainer(final Parameter _parameter)
+    public SubReportContainer(final Parameter _parameter, final String _dataSourceClass)
     {
-        super(_parameter);
+        super(_parameter, _dataSourceClass);
     }
 
 }

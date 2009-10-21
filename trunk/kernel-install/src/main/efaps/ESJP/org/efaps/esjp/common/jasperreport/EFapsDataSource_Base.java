@@ -62,26 +62,6 @@ abstract class EFapsDataSource_Base implements JRDataSource
     private boolean subReport;
 
     /**
-     * Getter method for instance variable {@link #print}.
-     *
-     * @return value of instance variable {@link #print}
-     */
-    public MultiPrintQuery getPrint()
-    {
-        return this.print;
-    }
-
-    /**
-     * Setter method for instance variable {@link #print}.
-     *
-     * @param _print value for instance variable {@link #print}
-     */
-    public void setPrint(final MultiPrintQuery _print)
-    {
-        this.print = _print;
-    }
-
-    /**
      * Method to initialize this datasource.
      * @param _jasperReport jasperreport this datasource belongs to
      * @param _parameter    Parameter as passed to an esjp by eFaps
@@ -139,6 +119,46 @@ abstract class EFapsDataSource_Base implements JRDataSource
             }
             this.print.execute();
         }
+    }
+
+    /**
+     * Getter method for instance variable {@link #subReport}.
+     *
+     * @return value of instance variable {@link #subReport}
+     */
+    public boolean isSubReport()
+    {
+        return this.subReport;
+    }
+
+    /**
+     * Setter method for instance variable {@link #subReport}.
+     *
+     * @param _subReport value for instance variable {@link #subReport}
+     */
+    public void setSubReport(final boolean _subReport)
+    {
+        this.subReport = _subReport;
+    }
+
+    /**
+     * Getter method for instance variable {@link #print}.
+     *
+     * @return value of instance variable {@link #print}
+     */
+    public MultiPrintQuery getPrint()
+    {
+        return this.print;
+    }
+
+    /**
+     * Setter method for instance variable {@link #print}.
+     *
+     * @param _print value for instance variable {@link #print}
+     */
+    public void setPrint(final MultiPrintQuery _print)
+    {
+        this.print = _print;
     }
 
     /**
