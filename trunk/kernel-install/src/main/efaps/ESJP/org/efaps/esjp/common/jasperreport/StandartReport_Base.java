@@ -72,6 +72,10 @@ import org.efaps.util.EFapsException;
 @EFapsRevision("$Rev$")
 public abstract class StandartReport_Base implements EventExecution
 {
+    /**
+     * Parameter map that will be passed to the jasper FillManager.
+     */
+    private final HashMap<String, Object> jrParameters = new HashMap<String, Object>();
 
     /**
      * @see org.efaps.admin.event.EventExecution#execute(org.efaps.admin.event.Parameter)
@@ -87,11 +91,10 @@ public abstract class StandartReport_Base implements EventExecution
         final String name = (String) properties.get("JasperReport");
         final String dataSourceClass = (String) properties.get("DataSourceClass");
 
-        final HashMap<String, Object> parameter = new HashMap<String, Object>();
-        parameter.put(JRParameter.REPORT_FILE_RESOLVER, new JasperFileResolver());
-        parameter.put(JRParameter.REPORT_LOCALE, Context.getThreadContext().getLocale());
-        parameter.put(JRParameter.REPORT_RESOURCE_BUNDLE, new EFapsResourceBundle());
-        parameter.put("EFAPS_SUBREPORT", new SubReportContainer(_parameter, dataSourceClass));
+        this.jrParameters.put(JRParameter.REPORT_FILE_RESOLVER, new JasperFileResolver());
+        this.jrParameters.put(JRParameter.REPORT_LOCALE, Context.getThreadContext().getLocale());
+        this.jrParameters.put(JRParameter.REPORT_RESOURCE_BUNDLE, new EFapsResourceBundle());
+        this.jrParameters.put("EFAPS_SUBREPORT", new SubReportContainer(_parameter, dataSourceClass));
 
         final SearchQuery query = new SearchQuery();
         query.setQueryTypes("Admin_Program_JasperReportCompiled");
@@ -116,7 +119,7 @@ public abstract class StandartReport_Base implements EventExecution
                 dataSource = new EFapsDataSource();
                 ((EFapsDataSource) dataSource).init(jasperReport, _parameter);
             }
-            final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, dataSource);
+            final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, this.jrParameters, dataSource);
 
             String mime = (String) properties.get("Mime");
             if (mime == null) {
@@ -164,7 +167,8 @@ public abstract class StandartReport_Base implements EventExecution
      * @throws IOException on error
      * @throws JRException on error
      */
-    protected File getFile(final JasperPrint _jasperPrint, final String _mime) throws IOException, JRException {
+    protected File getFile(final JasperPrint _jasperPrint, final String _mime) throws IOException, JRException
+    {
         File file = null;
         if ("pdf".equalsIgnoreCase(_mime) || _mime == null) {
             file = File.createTempFile("PDF", ".pdf");
@@ -215,6 +219,16 @@ public abstract class StandartReport_Base implements EventExecution
             os.close();
         }
         return file;
+    }
+
+    /**
+     * Getter method for instance variable {@link #jrParameters}.
+     *
+     * @return value of instance variable {@link #jrParameters}
+     */
+    public HashMap<String, Object> getJrParameters()
+    {
+        return this.jrParameters;
     }
 }
 
