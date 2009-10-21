@@ -34,7 +34,7 @@
   <!-- Link from Access Sets to Access Types object -->
 
   <definition>
-    <version-expression>(version==4) || (version==latest)</version-expression>
+    <version-expression>(version==2) || (version==latest)</version-expression>
     <name>Admin_Access_AccessSet2StatusSQLTable</name>
     <database>
       <table-name>T_ACCESSSET2STATUS</table-name>

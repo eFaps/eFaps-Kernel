@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmox
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -34,18 +34,8 @@
   <!-- SQL Table to hold the Languages -->
 
   <definition>
-    <version-expression>(version==4) || (version==latest)</version-expression>
+    <version-expression>(version==1) || (version==2) || (version==latest)</version-expression>
     <name>Admin_LanguageSQLTable</name>
-    <database>
-      <table-name>T_ADLANG</table-name>
-      <!-- columns -->
-      <column name="LANG" type="STRING_SHORT" not-null="true" length="3"/>
-    </database>
-  </definition>
-
-  <!-- base data model -->
-  <definition>
-    <version-expression>(version==1)</version-expression>
     <database>
       <table-name>T_ADLANG</table-name>
       <!-- columns -->

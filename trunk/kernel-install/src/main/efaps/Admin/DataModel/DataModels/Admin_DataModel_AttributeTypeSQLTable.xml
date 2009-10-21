@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -31,9 +31,9 @@
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
-  <!-- attribute types -->
+  <!--  create base SQL tables -->
   <definition>
-    <version-expression>(version==4) || (version==latest)</version-expression>
+    <version-expression>(version==1) || (version==2) || (version==latest)</version-expression>
     <name>Admin_DataModel_AttributeTypeSQLTable</name>
     <database>
       <table-name>T_DMATTRIBUTETYPE</table-name>
@@ -43,16 +43,9 @@
       <column name="CLASSNAMEUI"    type="STRING_SHORT" length="128"    not-null="true"/>
       <column name="ALWAYSUPDATE"   type="INTEGER"/>
       <column name="CREATEUPDATE"   type="INTEGER"/>
-    </database>
-  </definition>
-
-  <!-- create view representing all types -->
-  <definition>
-    <version-expression>(version==2)</version-expression>
-    <database>
-      <table-name>T_DMATTRIBUTETYPE</table-name>
+      <!-- view used from the eFaps kernel -->
       <sql>
-        create view V_DMATTRIBUTETYPE as
+        create or replace view V_DMATTRIBUTETYPE as
             select
                 T_CMABSTRACT.ID,
                 T_CMABSTRACT.UUID,
@@ -64,20 +57,6 @@
             from T_DMATTRIBUTETYPE,T_CMABSTRACT
             where T_CMABSTRACT.ID=T_DMATTRIBUTETYPE.ID
       </sql>
-    </database>
-  </definition>
-
-  <!--  create base SQL tables -->
-  <definition>
-    <version-expression>(version==1)</version-expression>
-    <database>
-      <table-name>T_DMATTRIBUTETYPE</table-name>
-      <parent-table>T_CMABSTRACT</parent-table>
-      <!-- columns -->
-      <column name="CLASSNAME"      type="STRING_SHORT" length="128"    not-null="true"/>
-      <column name="CLASSNAMEUI"    type="STRING_SHORT" length="128"    not-null="true"/>
-      <column name="ALWAYSUPDATE"   type="INTEGER"/>
-      <column name="CREATEUPDATE"   type="INTEGER"/>
     </database>
   </definition>
 

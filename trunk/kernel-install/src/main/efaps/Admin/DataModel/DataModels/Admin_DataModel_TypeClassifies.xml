@@ -36,7 +36,7 @@
   </description>
 
   <definition>
-    <version-expression>(version==6) || (version==latest)</version-expression>
+    <version-expression>(version==3) || (version==latest)</version-expression>
     <name>Admin_DataModel_TypeClassifies</name>
     <parent>Admin_UI_Abstract2Abstract</parent>
     <!-- attributes -->

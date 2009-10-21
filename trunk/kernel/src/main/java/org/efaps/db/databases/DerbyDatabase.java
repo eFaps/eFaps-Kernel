@@ -26,47 +26,44 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.efaps.db.databases.information.TableInformation;
 
 /**
  * The class implements Apache Derby specific methods for data base access.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class DerbyDatabase extends AbstractDatabase  {
+public class DerbyDatabase
+    extends AbstractDatabase<DerbyDatabase>
+{
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(DerbyDatabase.class);
 
-  //////////////////////////////////////////////////////////////////////////////
-  // static variables
-
-  /**
-   * Logging instance used in this class.
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(DerbyDatabase.class);
-
-  /**
-   * SQL Select statement for all foreign keys and constraints.
-   *
-   * @see #deleteAll
-   */
-  private static final String SELECT_ALL_KEYS
-          = "select t.TABLENAME, c.CONSTRAINTNAME "
+    /**
+     * SQL Select statement for all foreign keys and constraints.
+     *
+     * @see #deleteAll(Connection)
+     */
+    private static final String SELECT_ALL_KEYS
+        = "select t.TABLENAME, c.CONSTRAINTNAME "
               + "from SYS.SYSSCHEMAS s, SYS.SYSTABLES t, SYS.SYSCONSTRAINTS c "
               + "where s.AUTHORIZATIONID<>'DBA' "
                     + "and s.SCHEMAID=t.SCHEMAID "
                     + "and t.TABLEID=c.TABLEID "
                     + "and c.TYPE='F'";
 
-  /**
-   * SQL Select statement for all views.
-   *
-   * @see #deleteAll
-   */
-  private static final String SELECT_ALL_VIEWS
-          = "select t.TABLENAME "
+    /**
+     * SQL Select statement for all views.
+     *
+     * @see #deleteAll(Connection)
+     */
+    private static final String SELECT_ALL_VIEWS
+        = "select t.TABLENAME "
               + "from SYS.SYSSCHEMAS s, SYS.SYSTABLES t "
               + "where s.AUTHORIZATIONID<>'DBA' "
                     + "and s.SCHEMAID=t.SCHEMAID "
@@ -81,7 +78,7 @@ public class DerbyDatabase extends AbstractDatabase  {
           = "select t.TABLENAME "
               + "from SYS.SYSSCHEMAS s, SYS.SYSTABLES t "
               + "where s.AUTHORIZATIONID<>'DBA' "
-                    +"and s.SCHEMAID=t.SCHEMAID "
+                    + "and s.SCHEMAID=t.SCHEMAID "
                     + "and t.TABLETYPE='T'";
 
 
@@ -193,42 +190,68 @@ public class DerbyDatabase extends AbstractDatabase  {
    *
    * @throws SQLException if the table could not be created
    */
-  @Override
-  public void createTable(final Connection _con, final String _table,
-          final String _parentTable) throws SQLException  {
+    @Override()
+    public DerbyDatabase createTable(final Connection _con,
+                                     final String _table/*,
+                                     final String _parentTable*/)
+        throws SQLException
+    {
+        final Statement stmt = _con.createStatement();
 
-    final Statement stmt = _con.createStatement();
+        try  {
 
-    try  {
+            // create table itself
+            final StringBuilder cmd = new StringBuilder()
+                .append("create table ").append(_table).append(" (")
+                .append("  ID bigint not null");
+/* TODO
+            // auto increment
+            if (_parentTable == null)  {
+                cmd.append(" generated always as identity (start with 1, increment by 1)");
+            }
+*/
+            cmd.append(",")
+                .append("  constraint ").append(_table).append("_UK_ID unique(ID)");
+/* TODO
+            // foreign key to parent sql table
+            if (_parentTable != null)  {
+                cmd.append(",")
+                    .append("constraint ").append(_table).append("_FK_ID ")
+                    .append("  foreign key(ID) ")
+                    .append("  references ").append(_parentTable).append("(ID)");
+            }
+*/
+            cmd.append(")");
+            stmt.executeUpdate(cmd.toString());
+        } finally  {
+            stmt.close();
+        }
 
-      // create table itself
-      final StringBuilder cmd = new StringBuilder();
-      cmd.append("create table ").append(_table).append(" (")
-         .append("  ID bigint not null");
-
-      // autoincrement
-      if (_parentTable == null)  {
-        cmd.append(" generated always as identity (start with 1, increment by 1)");
-      }
-
-      cmd.append(",")
-         .append("  constraint ").append(_table).append("_UK_ID unique(ID)");
-
-      // foreign key to parent sql table
-      if (_parentTable != null)  {
-        cmd.append(",")
-           .append("constraint ").append(_table).append("_FK_ID ")
-           .append("  foreign key(ID) ")
-           .append("  references ").append(_parentTable).append("(ID)");
-      }
-
-      cmd.append(")");
-      stmt.executeUpdate(cmd.toString());
-
-    } finally  {
-      stmt.close();
+        return this;
     }
-  }
+
+    /**
+     * TODO: implement
+     */
+    @Override()
+    public DerbyDatabase defineTableParent(final Connection _con,
+                                           final String _table,
+                                           final String _parentTable)
+        throws SQLException
+    {
+        throw new Error("not implemented");
+    }
+
+    /**
+     * TODO: implement
+     */
+    @Override()
+    public DerbyDatabase defineTableAutoIncrement(final Connection _con,
+                                                  final String _table)
+        throws SQLException
+    {
+        throw new Error("not implemented");
+    }
 
   /**
    * Adds a column to a SQL table. The method overrides the original method,

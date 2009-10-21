@@ -31,116 +31,186 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.UpdateLifecycle;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmox
+ * Handles the import / update of system configurations for eFaps read from a
+ * XML configuration item file.
+ *
+ * @author The eFaps Team
  * @version $Id$
  */
-public class SystemConfigurationUpdate extends AbstractUpdate {
-  /**
-   *
-   * @param _url        URL of the file
-   */
-  public SystemConfigurationUpdate(final URL _url) {
-    super(_url, "Admin_Common_SystemConfiguration");
-  }
-
-  /**
-   * Creates new instance of class {@link Definition}.
-   *
-   * @return new definition instance
-   * @see Definition
-   */
-  @Override
-  protected AbstractDefinition newDefinition() {
-    return new Definition();
-  }
-  public class AttributeDefinition extends AbstractDefinition {
-
-    private String key;
-    private String value;
-    private String description;
-
-    @Override
-    protected void readXML(final List<String> _tags,
-                           final Map<String, String> _attributes,
-                           final String _text) {
-      final String value = _tags.get(0);
-      if ("key".equals(value)) {
-        this.key = _text;
-      } else if ("value".equals(value)) {
-          this.value = _text;
-      } else if ("description".equals(value)) {
-          this.description = _text;
-      } else {
-        super.readXML(_tags, _attributes, _text);
-      }
+public class SystemConfigurationUpdate
+    extends AbstractUpdate
+{
+    /**
+     * Default constructor to initialize this system configuration update
+     * instance for given <code>_url</code>.
+     *
+     * @param _url        URL of the file
+     */
+    public SystemConfigurationUpdate(final URL _url)
+    {
+        super(_url, "Admin_Common_SystemConfiguration");
     }
 
     /**
-     * @param instance
-     * @throws EFapsException
+     * Creates new instance of class {@link Definition}.
+     *
+     * @return new definition instance
+     * @see Definition
      */
-    public void updateInDB(final Instance _instance) throws EFapsException {
-      //create/update the attributSet
-      final SearchQuery query = new SearchQuery();
-      query.setQueryTypes("Admin_Common_SystemConfigurationAttribute");
-      query.addWhereExprEqValue("Key", this.key);
-      query.addWhereExprEqValue("AbstractLink", _instance.getId());
-      query.addSelect("OID");
-      query.executeWithoutAccessCheck();
-      Update update = null;
-      if (query.next()) {
-        update = new Update((String) query.get("OID"));
-      } else {
-        update = new Insert("Admin_Common_SystemConfigurationAttribute");
-        update.add("AbstractLink", "" + _instance.getId());
-        update.add("Key", this.key);
-      }
-      query.close();
-
-      update.add("Value", this.value);
-      update.add("Description", this.description);
-
-      update.executeWithoutAccessCheck();
-
+    @Override()
+    protected AbstractDefinition newDefinition()
+    {
+        return new Definition();
     }
-  }
 
+    /**
+     * Handles the definition of one version for an attribute definition
+     * defined within XML configuration item file.
+     */
+    public class AttributeDefinition
+        extends AbstractDefinition
+    {
+        /**
+         * Key of a property attribute.
+         */
+        private String key;
 
-  public class Definition extends AbstractDefinition {
+        /**
+         * Value of a property attribute.
+         */
+        private String value;
 
-    private AttributeDefinition curAttr;
-    private final List<AttributeDefinition> attributes
-                                        = new ArrayList<AttributeDefinition>();
-    @Override
-    protected void readXML(final List<String> _tags,
-                           final Map<String, String> _attributes,
-                           final String _text) {
-      final String value = _tags.get(0);
-      if ("attribute".equals(value)) {
-        if (_tags.size() == 1)  {
-          this.curAttr = new AttributeDefinition();
-          this.attributes.add(this.curAttr);
-        } else  {
-          this.curAttr.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
+        /**
+         * Description of a property attribute.
+         */
+        private String description;
+
+        /**
+         *
+         * @param _tags         current path as list of single tags
+         * @param _attributes   attributes for current path
+         * @param _text         content for current path
+         */
+        @Override()
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
+        {
+            final String tmpValue = _tags.get(0);
+            if ("key".equals(tmpValue)) {
+                this.key = _text;
+            } else if ("value".equals(tmpValue)) {
+                this.value = _text;
+            } else if ("description".equals(tmpValue)) {
+                this.description = _text;
+            } else {
+                super.readXML(_tags, _attributes, _text);
+            }
         }
-      } else  {
-        super.readXML(_tags, _attributes, _text);
-      }
+
+        /**
+         * @param _instance     instance to update
+         * @throws EFapsException if update failed
+         */
+        public void updateInDB(final Instance _instance)
+            throws EFapsException
+        {
+            //create/update the attributSet
+            final SearchQuery query = new SearchQuery();
+            query.setQueryTypes("Admin_Common_SystemConfigurationAttribute");
+            query.addWhereExprEqValue("Key", this.key);
+            query.addWhereExprEqValue("AbstractLink", _instance.getId());
+            query.addSelect("OID");
+            query.executeWithoutAccessCheck();
+            Update update = null;
+            if (query.next()) {
+                update = new Update((String) query.get("OID"));
+            } else {
+                update = new Insert("Admin_Common_SystemConfigurationAttribute");
+                update.add("AbstractLink", "" + _instance.getId());
+                update.add("Key", this.key);
+            }
+            query.close();
+
+            update.add("Value", this.value);
+            update.add("Description", this.description);
+
+            update.executeWithoutAccessCheck();
+        }
     }
 
-    @Override
-    public void updateInDB(final Set<Link> _allLinkTypes)
-        throws EFapsException {
+    /**
+     * Handles the definition of one version for an system configuration
+     * defined within XML configuration item file.
+     */
+    public class Definition
+        extends AbstractDefinition
+    {
+        /**
+         * Current parsed attribute definition.
+         *
+         * @see #readXML(List, Map, String)
+         */
+        private AttributeDefinition curAttr;
 
-      super.updateInDB(_allLinkTypes);
+        /**
+         * List of all read attribute definition.
+         *
+         * @see #readXML(List, Map, String)
+         */
+        private final List<SystemConfigurationUpdate.AttributeDefinition> attributes
+            = new ArrayList<SystemConfigurationUpdate.AttributeDefinition>();
 
-      for (final AttributeDefinition attr : this.attributes) {
-        attr.updateInDB(this.instance);
-      }
+        /**
+         *
+         * @param _tags         current path as list of single tags
+         * @param _attributes   attributes for current path
+         * @param _text         content for current path
+         */
+        @Override()
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
+        {
+            final String value = _tags.get(0);
+            if ("attribute".equals(value)) {
+                if (_tags.size() == 1)  {
+                    this.curAttr = new AttributeDefinition();
+                    this.attributes.add(this.curAttr);
+                } else  {
+                    this.curAttr.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
+                }
+            } else  {
+                super.readXML(_tags, _attributes, _text);
+            }
+        }
+
+        /**
+         * If the current life cycle <code>step</code> is
+         * {@link UpdateLifecycle.EFAPS_UPDATE EFAPS_UPDATE}, the
+         * {@link #attributes} are updated.
+         *
+         * @param _step             current life cycle update step
+         * @param _allLinkTypes     all link types to update
+         * @throws EFapsException if update failed
+         * @see #attributes
+         */
+        @Override()
+        public void updateInDB(final UpdateLifecycle _step,
+                               final Set<Link> _allLinkTypes)
+            throws EFapsException
+        {
+            super.updateInDB(_step, _allLinkTypes);
+
+            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+                for (final AttributeDefinition attr : this.attributes) {
+                    attr.updateInDB(this.instance);
+                }
+            }
+        }
     }
-
-  }
 }

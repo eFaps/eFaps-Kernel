@@ -44,7 +44,7 @@
 
   <!-- define type (is already defined) -->
   <definition>
-    <version-expression>(version==6)</version-expression>
+    <version-expression>(version==3)</version-expression>
     <name>Admin_User_Company</name>
     <parent>Admin_User_Abstract</parent>
   </definition>

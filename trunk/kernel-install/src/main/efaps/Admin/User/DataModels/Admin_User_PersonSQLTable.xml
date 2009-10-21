@@ -31,9 +31,9 @@
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
-  <!-- Person object -->
+  <!-- create person SQL tables -->
   <definition>
-    <version-expression>(version==4) || (version==latest)</version-expression>
+    <version-expression>(version==1) || (version==2) || (version==latest)</version-expression>
     <name>Admin_User_PersonSQLTable</name>
     <parent>Admin_User_AbstractSQLTable</parent>
     <database>
@@ -50,17 +50,9 @@
       <column name="LASTLOGIN"  type="DATETIME"/>
       <column name="LOGINTRY"   type="DATETIME"/>
       <column name="LOGINTRIES" type="INTEGER"/>
-    </database>
-  </definition>
-
-  <!-- define view-->
-  <definition>
-    <version-expression>(version==2)</version-expression>
-    <database>
-      <!-- create view representing all persons -->
-      <table-name>T_USERPERSON</table-name>
+      <!-- create view representing all persons (used as API) -->
       <sql>
-        create view V_USERPERSON as
+        create or replace view V_USERPERSON as
            select
                  T_USERABSTRACT.ID,
                  T_USERABSTRACT.NAME,
@@ -78,28 +70,8 @@
              join T_USERPERSON
                on T_USERABSTRACT.ID=T_USERPERSON.ID
              left join T_ADLANG
-               on T_ADLANG.ID=T_USERPERSON.LANG  
+               on T_ADLANG.ID=T_USERPERSON.LANG
       </sql>
-    </database>
-  </definition>
-
-  <!-- create base data model -->
-  <definition>
-    <version-expression>(version==1)</version-expression>
-    <database>
-      <table-name>T_USERPERSON</table-name>
-      <parent-table>T_USERABSTRACT</parent-table>
-      <!-- columns -->
-      <column name="FIRSTNAME"  type="STRING_SHORT" length="128" not-null="true"/>
-      <column name="LASTNAME"   type="STRING_SHORT" length="128" not-null="true"/>
-      <column name="TIMZONE"    type="STRING_SHORT" length="128" />
-      <column name="CHRONOLOGY" type="STRING_SHORT" length="128" />
-      <column name="LANG"       type="INTEGER"/>
-      <column name="LOCALE"     type="STRING_SHORT" length="128" />
-      <column name="PASSWORD"   type="STRING_SHORT" length="128"/>
-      <column name="LASTLOGIN"  type="DATETIME"/>
-      <column name="LOGINTRY"   type="DATETIME"/>
-      <column name="LOGINTRIES" type="INTEGER"/>
      </database>
   </definition>
 

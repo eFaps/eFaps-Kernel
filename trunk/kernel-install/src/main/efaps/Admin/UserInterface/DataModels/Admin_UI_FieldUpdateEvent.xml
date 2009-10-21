@@ -43,7 +43,7 @@
   </definition>
 
   <definition>
-    <version-expression>(version==6)</version-expression>
+    <version-expression>(version==3)</version-expression>
     <name>Admin_UI_FieldUpdateEvent</name>
     <parent>Admin_Event_Definition</parent>
   </definition>

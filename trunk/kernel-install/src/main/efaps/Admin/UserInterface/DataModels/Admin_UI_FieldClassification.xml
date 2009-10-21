@@ -17,9 +17,9 @@
   limitations under the License.
 
   Author:          The eFaps Team
-  Revision:        $Rev: 2146 $
-  Last Changed:    $Date: 2009-01-28 17:14:46 -0500 (Wed, 28 Jan 2009) $
-  Last Changed By: $Author: jmox $
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
 
 -->
 
@@ -29,7 +29,7 @@
 
   <uuid>f4ad729b-f96a-4057-865f-ad910114e695</uuid>
   <file-application>eFaps-Kernel</file-application>
-  <file-revision>$Rev: 2146 $</file-revision>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
@@ -41,7 +41,7 @@
   </definition>
 
   <definition>
-    <version-expression>(version==6)</version-expression>
+    <version-expression>(version==3)</version-expression>
     <name>Admin_UI_FieldClassification</name>
     <parent>Admin_UI_Field</parent>
   </definition>

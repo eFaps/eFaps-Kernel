@@ -21,9 +21,6 @@
 package org.efaps.update.datamodel;
 
 
-import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_LENGTH;
-import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_NAME;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,9 +29,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
@@ -45,19 +39,23 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
+import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.event.Event;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_LENGTH;
+import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_NAME;
 /**
- * This Class is responsible for the Update of Type in the Database.<br>
- * It reads with <code>org.apache.commons.digester</code> a XML-File to create
- * the different Classes and invokes the Methods to Update a Type
+ * Handles the import / update of types for eFaps read from a XML configuration
+ * item file.
  *
  * @author The eFaps Team
  * @version $Id$
  */
 public class TypeUpdate extends AbstractUpdate
 {
-
     /**
      * Logging instance used to give logging information of this class.
      */
@@ -97,7 +95,9 @@ public class TypeUpdate extends AbstractUpdate
         TypeUpdate.ALLLINKS.add(TypeUpdate.LINK2CLASSIFYREL);
     }
 
-     /**
+    /**
+     * Default constructor to initialize this type instance for given
+     * <code>_url</code>.
      *
      * @param _url URL of the file
      */
@@ -479,11 +479,11 @@ public class TypeUpdate extends AbstractUpdate
         private String parentType;
 
         /**
-         * @param _tags         tags
-         * @param _attributes   attributes
-         * @param _text         text
+         * @param _tags         current path as list of single tags
+         * @param _attributes   attributes for current path
+         * @param _text         content for current path
          */
-        @Override
+        @Override()
         public void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
         {
             final String value = _tags.get(0);
@@ -717,38 +717,42 @@ public class TypeUpdate extends AbstractUpdate
          * @see #parentType
          * @see #attributes
          */
-        @Override
-        public void updateInDB(final Set<Link> _allLinkTypes)
-                throws EFapsException
+        @Override()
+        public void updateInDB(final UpdateLifecycle _step,
+                               final Set<Link> _allLinkTypes)
+            throws EFapsException
         {
-            // set the id of the parent type (if defined)
-            if ((this.parentType != null) && (this.parentType.length() > 0)) {
-                final SearchQuery query = new SearchQuery();
-                query.setQueryTypes("Admin_DataModel_Type");
-                query.addWhereExprEqValue("Name", this.parentType);
-                query.addSelect("OID");
-                query.executeWithoutAccessCheck();
-                if (query.next()) {
-                    final Instance instance = Instance.get((String) query.get("OID"));
-                    addValue("ParentType", "" + instance.getId());
+            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+                // set the id of the parent type (if defined)
+                if ((this.parentType != null) && (this.parentType.length() > 0)) {
+                    final SearchQuery query = new SearchQuery();
+                    query.setQueryTypes("Admin_DataModel_Type");
+                    query.addWhereExprEqValue("Name", this.parentType);
+                    query.addSelect("OID");
+                    query.executeWithoutAccessCheck();
+                    if (query.next()) {
+                        final Instance instance = Instance.get((String) query.get("OID"));
+                        addValue("ParentType", "" + instance.getId());
+                    } else {
+                        addValue("ParentType", null);
+                    }
+                    query.close();
                 } else {
                     addValue("ParentType", null);
                 }
-                query.close();
-            } else {
-                addValue("ParentType", null);
             }
 
-            super.updateInDB(_allLinkTypes);
+            super.updateInDB(_step, _allLinkTypes);
 
-            for (final AttributeDefinition attr : this.attributes) {
-                attr.updateInDB(this.instance, getValue("Name"), 0);
+            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+                for (final AttributeDefinition attr : this.attributes) {
+                    attr.updateInDB(this.instance, getValue("Name"), 0);
+                }
+
+                for (final AttributeSetDefinition attrSet : this.attributeSets) {
+                    attrSet.updateInDB(this.instance, getValue("Name"));
+                }
             }
-
-            for (final AttributeSetDefinition attrSet : this.attributeSets) {
-                attrSet.updateInDB(this.instance, getValue("Name"));
-            }
-
         }
 
 
@@ -759,9 +763,11 @@ public class TypeUpdate extends AbstractUpdate
          * @param _links        links
          * @throws EFapsException on error
          */
-        @Override
-        protected void setLinksInDB(final Instance _instance, final Link _linktype, final Set<LinkInstance> _links)
-                throws EFapsException
+        @Override()
+        protected void setLinksInDB(final Instance _instance,
+                                    final Link _linktype,
+                                    final Set<LinkInstance> _links)
+            throws EFapsException
         {
             // TODO Auto-generated method stub
             super.setLinksInDB(_instance, _linktype, _links);

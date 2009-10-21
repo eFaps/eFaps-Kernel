@@ -35,9 +35,6 @@ import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -46,31 +43,26 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.event.Event;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This class is the major class for importing or updating of types, commands
- * and so on in eFaps.<br/>
- * For every kind of Object in eFaps a own class extends this AbstractUpdate. In
- * this classes the xml-Files is read and with the digester converted in
- * Objects. After reading all Objects of one XML-File the Objects are inserted
- * coresponding to the Version.
+ * <p>This class is the major class for importing or updating of types,
+ * commands and so on in eFaps.<p/>
+ * <p>For every kind of Object in eFaps a own class extends this
+ * AbstractUpdate. In this classes the XML-Files is read and with the digester
+ * converted in Objects. After reading all Objects of one XML-File the Objects
+ * are inserted corresponding to the Version.</p>
  *
- * @author tmo
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 public abstract class AbstractUpdate
 {
-    // ///////////////////////////////////////////////////////////////////////////
-    // static variables
-
     /**
      * Logging instance used to give logging information of this class.
      */
-    public final static Logger LOG = LoggerFactory.getLogger(AbstractUpdate.class);
-
-    // ///////////////////////////////////////////////////////////////////////////
-    // instance variables
+    public static final Logger LOG = LoggerFactory.getLogger(AbstractUpdate.class);
 
     /**
      * The URL of the xml file is stored in this instance variable.
@@ -114,29 +106,35 @@ public abstract class AbstractUpdate
      */
     private final List<AbstractDefinition> definitions = new ArrayList<AbstractDefinition>();
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // constructors
-
     /**
-   *
-   */
-    protected AbstractUpdate(final URL _url, final String _dataModelTypeName)
+     * Default constructor with no defined possible links for given
+     * <code>_dataModelTypeName</code>.
+     *
+     * @param _url                  URL of the update file
+     * @param _dataModelTypeName    name of the data model type to update
+     */
+    protected AbstractUpdate(final URL _url,
+                             final String _dataModelTypeName)
     {
         this(_url, _dataModelTypeName, null);
     }
 
     /**
-   *
-   */
-    protected AbstractUpdate(final URL _url, final String _dataModelTypeName, final Set<Link> _allLinkTypes)
+     * Default constructor with defined possible links
+     * <code>_allLinkTypes</code> for given <code>_dataModelTypeName</code>.
+     *
+     * @param _url                  URL of the update file
+     * @param _dataModelTypeName    name of the data model type to update
+     * @param _allLinkTypes         all possible type link
+     */
+    protected AbstractUpdate(final URL _url,
+                             final String _dataModelTypeName,
+                             final Set<Link> _allLinkTypes)
     {
         this.url = _url;
         this.dataModelTypeName = _dataModelTypeName;
         this.allLinkTypes = _allLinkTypes;
     }
-
-    // ///////////////////////////////////////////////////////////////////////////
-    // instance methods
 
     /**
      * Read event for given tags path with attributes and text.
@@ -204,50 +202,28 @@ public abstract class AbstractUpdate
      * The new created object is stored as instance information in
      * {@link #instance}.
      *
-     * @param _jexlContext context used to evaluate JEXL expressions
+     * @param _jexlContext  context used to evaluate JEXL expressions
+     * @param _step         current step of the update life cycle
      * @throws EFapsException from called update methods
      */
-    public void updateInDB(final JexlContext _jexlContext) throws EFapsException
+    public void updateInDB(final JexlContext _jexlContext,
+                           final UpdateLifecycle _step)
+        throws EFapsException
     {
         try {
             for (final AbstractDefinition def : this.definitions) {
                 if (def.isValidVersion(_jexlContext)) {
-                    if ((this.url != null) && LOG.isDebugEnabled()) {
-                        LOG.debug("Executing '" + this.url.toString() + "'");
+                    if ((this.url != null) && AbstractUpdate.LOG.isDebugEnabled()) {
+                        AbstractUpdate.LOG.debug("Executing '" + this.url.toString() + "'");
                     }
-                    def.updateInDB(this.allLinkTypes);
+                    def.updateInDB(_step, this.allLinkTypes);
                 }
             }
         } catch (final EFapsException e) {
-            LOG.error("updateInDB", e);
+            AbstractUpdate.LOG.error("updateInDB", e);
             throw e;
         }
     }
-
-    /**
-     *
-     * @param _jexlContext context used to evaluate JEXL expressions
-     * @throws EFapsException from called create methods
-     */
-    public void createInDB(final JexlContext _jexlContext) throws EFapsException
-    {
-        try {
-            for (final AbstractDefinition def : this.definitions) {
-                if (def.isValidVersion(_jexlContext)) {
-                    if ((this.url != null) && LOG.isDebugEnabled()) {
-                        LOG.debug("Executing '" + this.url.toString() + "'");
-                    }
-                    def.createInDB();
-                }
-            }
-        } catch (final EFapsException e) {
-            LOG.error("createInDB", e);
-            throw e;
-        }
-    }
-
-    // ///////////////////////////////////////////////////////////////////////////
-    // getter and setter methods
 
     /**
      * This is the getter method for the instance variable {@link #url}.
@@ -260,6 +236,9 @@ public abstract class AbstractUpdate
     }
 
     /**
+     * Defines the new {@link #uuid UUID} of the updated object.
+     *
+     * @param _uuid     new UUID for the object to update
      * @see #uuid
      */
     protected void setUUID(final String _uuid)
@@ -374,9 +353,6 @@ public abstract class AbstractUpdate
                         .append("fileRevision", this.fileRevision).append("definitions", this.definitions).toString();
     }
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // static classes
-
     /**
      * The class is used to define the links with all information needed to
      * update the link information between the object to update and the related
@@ -486,21 +462,24 @@ public abstract class AbstractUpdate
 
     /**
      * Some links has a order in the database. This means that the connections
-     * must be made in the order they are defined in the xml update file.
+     * must be made in the order they are defined in the XML update file.
      */
-    static protected class OrderedLink extends Link
+    protected static class OrderedLink
+        extends AbstractUpdate.Link
     {
 
-        public OrderedLink(final String _linkName, final String _parentAttrName, final String _childTypeName,
-                        final String _childAttrName)
+        public OrderedLink(final String _linkName,
+                           final String _parentAttrName,
+                           final String _childTypeName,
+                           final String _childAttrName)
         {
             super(_linkName, _parentAttrName, _childTypeName, _childAttrName);
         }
     }
 
     /**
-   *
-   */
+     *
+     */
     protected abstract class AbstractDefinition
     {
         /**
@@ -512,8 +491,12 @@ public abstract class AbstractUpdate
         private String expression = null;
 
         /**
-         * this instance variable stores the type of Definition (default:
-         * "replace") possible values: "replace", "update"
+         * This instance variable stores the type of Definition (default:
+         * "replace"). Possible values are:
+         * <ul>
+         * <li>"replace"</li>
+         * <li>"update"</li>
+         * </ul>
          *
          * @see #getType()
          * @see #setType(String)
@@ -529,16 +512,17 @@ public abstract class AbstractUpdate
         private final Map<String, String> values = new HashMap<String, String>();
 
         /**
-         * Property value depending on the property name for this definition
+         * Property value depending on the property name for this definition.
          *
          * @see #addProperty.
          */
         private final Map<String, String> properties = new HashMap<String, String>();
 
         /**
-     *
-     */
-        private final Map<Link, Set<LinkInstance>> links = new HashMap<Link, Set<LinkInstance>>();
+         *
+         */
+        private final Map<AbstractUpdate.Link, Set<LinkInstance>> links
+            = new HashMap<AbstractUpdate.Link, Set<LinkInstance>>();
 
         protected final List<Event> events = new ArrayList<Event>();
 
@@ -578,7 +562,9 @@ public abstract class AbstractUpdate
             this.searchAttrName = _searchAttrName;
         }
 
-        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
         {
             final String value = _tags.get(0);
             if ("name".equals(value)) {
@@ -603,7 +589,8 @@ public abstract class AbstractUpdate
          *             could not be evaluated
          * @see #expression
          */
-        public boolean isValidVersion(final JexlContext _jexlContext) throws EFapsException
+        public boolean isValidVersion(final JexlContext _jexlContext)
+            throws EFapsException
         {
             boolean exec;
             try {
@@ -615,7 +602,11 @@ public abstract class AbstractUpdate
                     exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
                 }
             } catch (final Exception e) {
-                throw new EFapsException(getClass(), "isValidVersion.JEXLExpressionNotEvaluatable", e, this.expression);
+                throw new EFapsException(getClass(),
+                                         "isValidVersion.JEXLExpressionNotEvaluatable",
+                                         e,
+                                         AbstractUpdate.this.url.getFile() ,
+                                         this.expression);
             }
             return exec;
         }
@@ -633,8 +624,10 @@ public abstract class AbstractUpdate
          *      search is only done if the value is <code>null</code>)
          * @see #searchAttrName name of the attribute which them the search is
          *      done
+         * @throws EFapsException if search for the instance failed
          */
-        protected void searchInstance() throws EFapsException
+        protected void searchInstance()
+            throws EFapsException
         {
             if (this.instance == null) {
                 final SearchQuery query = new SearchQuery();
@@ -653,74 +646,82 @@ public abstract class AbstractUpdate
             }
         }
 
-        public void createInDB() throws EFapsException
-        {
-            searchInstance();
-
-            // if no instance exists, a new insert must be done
-            if (this.instance == null) {
-                final Insert insert = new Insert(AbstractUpdate.this.dataModelTypeName);
-                insert.add("UUID", AbstractUpdate.this.uuid);
-                createInDB(insert);
-            }
-        }
-
-        protected void createInDB(final Insert _insert) throws EFapsException
+        protected void createInDB(final Insert _insert)
+            throws EFapsException
         {
             if (_insert.getInstance().getType().getAttribute("Revision") != null) {
                 _insert.add("Revision", AbstractUpdate.this.fileRevision);
             }
             final String name = this.values.get("Name");
             _insert.add("Name", (name == null) ? "-" : name);
-            // if (LOG.isInfoEnabled() && (name != null)) {
-            LOG.info("    Insert " + _insert.getInstance().getType().getName() + " '" + name + "'");
-            // }
+            if (AbstractUpdate.LOG.isInfoEnabled())  {
+                AbstractUpdate.LOG.info("    Insert " + _insert.getInstance().getType().getName() + " '" + name + "'");
+            }
             _insert.executeWithoutAccessCheck();
             this.instance = _insert.getInstance();
         }
 
         /**
-         * @param _allLinkTypes
+         * @param _step             current update step
+         * @param _allLinkTypes     set of all type of links
+         * @throws EFapsException if update failed
          */
-        protected void updateInDB(final Set<Link> _allLinkTypes) throws EFapsException
+        protected void updateInDB(final UpdateLifecycle _step,
+                                  final Set<AbstractUpdate.Link> _allLinkTypes)
+            throws EFapsException
         {
-            final String name = this.values.get("Name");
-            final Update update = new Update(this.instance);
-            if (this.instance.getType().getAttribute("Revision") != null) {
-                update.add("Revision", AbstractUpdate.this.fileRevision);
-            }
-            for (final Map.Entry<String, String> entry : this.values.entrySet()) {
-                update.add(entry.getKey(), entry.getValue());
-            }
-            if (LOG.isInfoEnabled() && (name != null)) {
-                LOG.info("    Update " + this.instance.getType().getName() + " '" + name + "'");
-            }
-            update.executeWithoutAccessCheck();
+            if (_step == UpdateLifecycle.EFAPS_CREATE)  {
+                this.searchInstance();
 
-            if (_allLinkTypes != null) {
-                for (final Link linkType : _allLinkTypes) {
-                    setLinksInDB(this.instance, linkType, this.links.get(linkType));
+                // if no instance exists, a new insert must be done
+                if (this.instance == null) {
+                    final Insert insert = new Insert(AbstractUpdate.this.dataModelTypeName);
+                    insert.add("UUID", AbstractUpdate.this.uuid);
+                    this.createInDB(insert);
                 }
-            }
-            setPropertiesInDb(this.instance, this.properties);
 
-            for (final Event event : this.events) {
-                final Instance newInstance = event.updateInDB(this.instance, getValue("Name"));
-                setPropertiesInDb(newInstance, event.getProperties());
+            } else if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+
+                final String name = this.values.get("Name");
+                final Update update = new Update(this.instance);
+                if (this.instance.getType().getAttribute("Revision") != null) {
+                    update.add("Revision", AbstractUpdate.this.fileRevision);
+                }
+                for (final Map.Entry<String, String> entry : this.values.entrySet()) {
+                    update.add(entry.getKey(), entry.getValue());
+                }
+                if (AbstractUpdate.LOG.isInfoEnabled() && (name != null)) {
+                    AbstractUpdate.LOG.info("    Update " + this.instance.getType().getName() + " '" + name + "'");
+                }
+                update.executeWithoutAccessCheck();
+
+                if (_allLinkTypes != null) {
+                    for (final Link linkType : _allLinkTypes) {
+                        setLinksInDB(this.instance, linkType, this.links.get(linkType));
+                    }
+                }
+                setPropertiesInDb(this.instance, this.properties);
+
+                for (final Event event : this.events) {
+                    final Instance newInstance = event.updateInDB(this.instance, getValue("Name"));
+                    setPropertiesInDb(newInstance, event.getProperties());
+                }
             }
         }
 
         /**
          * Remove all links from given object (defined by the instance).
          *
-         * @param _instance instance for which all links must be removed
-         * @param _linkType type of link which must be removed
+         * @param _instance     instance for which all links must be removed
+         * @param _linkType     type of link which must be removed
          * @throws EFapsException if existing links could not be removed
-         *             (deleted)
+         *                        (deleted)
          * @see #setLinksInDB used to remove all links for given instance with a
          *      zero length set of link instances
          */
-        protected void removeLinksInDB(final Instance _instance, final Link _linkType) throws EFapsException
+        protected void removeLinksInDB(final Instance _instance,
+                                       final Link _linkType)
+            throws EFapsException
         {
             setLinksInDB(_instance, _linkType, new HashSet<LinkInstance>());
         }
@@ -729,14 +730,16 @@ public abstract class AbstractUpdate
          * Sets the links from this object to the given list of objects (with
          * the object name) in the eFaps database.
          *
-         * @param _instance instance for which the links must be defined
-         * @param _linktype type of the link to be updated
-         * @param _links all links of the type _linktype which will be connected
-         *            to this instance
+         * @param _instance     instance for which the links must be defined
+         * @param _linktype     type of the link to be updated
+         * @param _links        all links of the type _linktype which will be
+         *                      connected to this instance
          * @throws EFapsException if links could not be defined
          */
-        protected void setLinksInDB(final Instance _instance, final Link _linktype, final Set<LinkInstance> _links)
-                        throws EFapsException
+        protected void setLinksInDB(final Instance _instance,
+                                    final Link _linktype,
+                                    final Set<LinkInstance> _links)
+            throws EFapsException
         {
 
             final Map<Long, LinkInstance> existing = new HashMap<Long, LinkInstance>();
@@ -887,8 +890,9 @@ public abstract class AbstractUpdate
          *       and and new create is needed)
          * @todo description
          */
-        protected void setPropertiesInDb(final Instance _instance, final Map<String, String> _properties)
-                        throws EFapsException
+        protected void setPropertiesInDb(final Instance _instance,
+                                         final Map<String, String> _properties)
+            throws EFapsException
         {
 
             if (_instance.getType().isKindOf(Type.get("Admin_Abstract"))) {
@@ -918,11 +922,12 @@ public abstract class AbstractUpdate
         }
 
         /**
-         * @param _link link type
-         * @param _name name of the object which is linked to
-         * @param _values values in the link itself (or null)
+         * @param _link             link type
+         * @param _linkinstance     name of the object which is linked to
+         *                          and values in the link itself (or null)
          */
-        protected void addLink(final Link _link, final LinkInstance _linkinstance)
+        protected void addLink(final Link _link,
+                               final LinkInstance _linkinstance)
         {
             Set<LinkInstance> oneLink = this.links.get(_link);
             if (oneLink == null) {
@@ -952,7 +957,7 @@ public abstract class AbstractUpdate
         }
 
         /**
-         * @param _name name of the attribtue
+         * @param _name name of the attribute
          * @return value of the set attribute value in this definition
          * @see #values
          */
@@ -966,7 +971,7 @@ public abstract class AbstractUpdate
          */
         protected void setName(final String _name)
         {
-            addValue("Name", _name);
+            this.addValue("Name", _name);
         }
 
         /**
@@ -983,9 +988,10 @@ public abstract class AbstractUpdate
         }
 
         /**
-         * add a <code>Trigger</code> to this definition
+         * Adds a trigger <code>_event</code> to this definition.
          *
-         * @param _event
+         * @param _event    trigger event to add
+         * @see #events
          */
         protected void addEvent(final Event _event)
         {
