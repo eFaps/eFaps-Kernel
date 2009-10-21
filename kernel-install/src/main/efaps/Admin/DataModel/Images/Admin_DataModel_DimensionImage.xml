@@ -20,29 +20,29 @@
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
+ Original Author: Eclipse Project
+ Original Name:   dimension_16x16.gif
+ Original Web:    Eclipse
+                  [ http://www.eclipse.org/ ]
+ Original License:Eclipse Public License 1.0
+                  [ http://www.eclipse.org/org/documents/epl-v10.html ]
 
 -->
 
-<ui-command xmlns="http://www.efaps.org/xsd"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-image xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>c8c2f8fc-22a1-4890-b884-0757032f2496</uuid>
+  <uuid>e4b97cee-355e-43f1-8e28-42e77d30aae1</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_DataModel_DimensionTree_Menu_Action_Edit</name>
-    <icon>Admin_DataModel_Dimension+Edit+Image</icon>
-    <!-- target definitions -->
-    <target>
-      <form>Admin_DataModel_DimensionForm</form>
-      <execute program="org.efaps.esjp.common.uiform.Edit"/>
-    </target>
-    <!-- properties -->
-    <property name="Target">modal</property>
-    <property name="TargetMode">edit</property>
+    <name>Admin_DataModel_DimensionImage</name>
+    <file>Admin_DataModel_DimensionImage.gif</file>
+    <!-- is type icon for -->
+    <type>Admin_DataModel_Dimension</type>
   </definition>
 
-</ui-command>
+</ui-image>

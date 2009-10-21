@@ -34,6 +34,7 @@
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>Admin_DataModel_DimensionMyDesk_Menu_Action_Delete</name>
+    <icon>Admin_DataModel_Dimension+Delete+Image</icon>
     <!-- target definitions -->
     <target>
       <execute program="org.efaps.esjp.common.uitable.CommonDelete"/>
