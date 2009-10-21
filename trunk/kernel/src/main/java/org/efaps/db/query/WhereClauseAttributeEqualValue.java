@@ -22,28 +22,36 @@ package org.efaps.db.query;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.AbstractQuery;
+import org.efaps.util.EFapsException;
 
 /**
- * The class represents an equal where clause between an attributes and a
+ * The class represents an equal where clause between an attribute and a
  * value.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class WhereClauseAttributeEqualValue
-    extends WhereClauseAttributeCompareValueAbstract  {
+public class WhereClauseAttributeEqualValue extends WhereClauseAttributeCompareValueAbstract
+{
+    /**
+     * Constructor.
+     *
+     * @param _query    query for this whereclause
+     * @param _attr     attribute for this whereclause
+     * @param _value    value used for this whereclause
+     */
+    public WhereClauseAttributeEqualValue(final AbstractQuery _query, final Attribute _attr, final String _value)
+    {
+        super(_query, _attr, _value);
+    }
 
-  public WhereClauseAttributeEqualValue(final AbstractQuery _query, final Attribute _attr, final String _value)  {
-    super(_query, _attr, _value);
-  }
-
-  /**
-   * @todo compare does not work if an attribute has more than one sql column!!
-   * @todo bugfixing for Apache derby!!! (because ID is hardcoded as number value...) see TODO comment
-   */
-  public void appendWhereClause(final CompleteStatement _completeStatement,
-      final int _orderIndex)  {
-
-    super.appendWhereClause(_completeStatement, _orderIndex, "=");
-  }
+    /**
+     * {@inheritDoc}
+     *
+     */
+    public void appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex)
+        throws EFapsException
+    {
+        super.appendWhereClause(_completeStatement, _orderIndex, "=");
+    }
 }

@@ -22,9 +22,11 @@ package org.efaps.db.query;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.AbstractQuery;
+import org.efaps.util.EFapsException;
 
 /**
- * The class represents an equal where clause between an attributes and a value.
+ * The class represents an not equal where clause between an attribute and a
+ * value.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -45,8 +47,8 @@ public class WhereClauseAttributeNotEqualValue extends WhereClauseAttributeCompa
     /**
      * {@inheritDoc}
      */
-    @Override
     public void appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex)
+        throws EFapsException
     {
         super.appendWhereClause(_completeStatement, _orderIndex, "!=");
     }
