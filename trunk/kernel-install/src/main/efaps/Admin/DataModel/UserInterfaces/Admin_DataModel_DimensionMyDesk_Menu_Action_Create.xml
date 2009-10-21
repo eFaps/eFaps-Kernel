@@ -34,6 +34,7 @@
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>Admin_DataModel_DimensionMyDesk_Menu_Action_Create</name>
+    <icon>Admin_DataModel_Dimension+Create+Image</icon>
     <!-- target definitions -->
     <target>
       <form>Admin_DataModel_DimensionForm</form>
