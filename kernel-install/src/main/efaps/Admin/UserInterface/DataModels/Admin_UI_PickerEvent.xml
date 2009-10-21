@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmox
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -43,7 +43,7 @@
   </definition>
 
   <definition>
-    <version-expression>(version==6)</version-expression>
+    <version-expression>(version==3)</version-expression>
     <name>Admin_UI_PickerEvent</name>
     <parent>Admin_Event_Definition</parent>
   </definition>

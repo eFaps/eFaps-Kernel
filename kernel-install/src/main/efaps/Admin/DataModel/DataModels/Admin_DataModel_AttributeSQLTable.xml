@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -33,7 +33,7 @@
 
   <!-- attributes of types -->
   <definition>
-    <version-expression>(version==4) || (version==latest)</version-expression>
+    <version-expression>(version==2) || (version==latest)</version-expression>
     <name>Admin_DataModel_AttributeSQLTable</name>
     <parent>Admin_Common_AbstractSQLTable</parent>
     <database>
@@ -53,16 +53,9 @@
       <foreign name="DMATTR_FK_DMTYPE"      key="DMTYPE"            reference="T_DMTYPE(ID)"/>
       <foreign name="DMATTR_FK_DMATTRTP"    key="DMATTRIBUTETYPE"   reference="T_DMATTRIBUTETYPE(ID)"/>
       <foreign name="DMATTR_FK_DMTPLINK"    key="DMTYPELINK"        reference="T_DMTYPE(ID)"/>
-    </database>
-  </definition>
-
-  <!-- create view representing all attributes -->
-  <definition>
-    <version-expression>(version==2)</version-expression>
-    <database>
-      <table-name>T_DMATTRIBUTE</table-name>
+      <!-- create view representing all attributes -->
       <sql>
-        create view V_ADMINATTRIBUTE as
+        create or replace view V_ADMINATTRIBUTE as
           select
                 T_CMABSTRACT.ID,
                 T_CMABSTRACT.NAME,
@@ -96,6 +89,24 @@
       <column name="SQLCOLUMN"          type="STRING_SHORT" length="50"     not-null="true"/>
       <column name="DEFAULTVAL"         type="STRING_SHORT" length="240" />
       <column name="DIMENSION"         type="STRING_SHORT" length="128"/>
+      <!-- create view representing all attributes -->
+      <sql>
+        create or replace view V_ADMINATTRIBUTE as
+          select
+                T_CMABSTRACT.ID,
+                T_CMABSTRACT.NAME,
+                T_CMABSTRACT.TYPEID,
+                T_DMATTRIBUTE.DMTABLE,
+                T_DMATTRIBUTE.DMTYPE,
+                T_DMATTRIBUTE.DMATTRIBUTETYPE,
+                T_DMATTRIBUTE.DMTYPELINK,
+                T_DMATTRIBUTE.PARENTSET,
+                T_DMATTRIBUTE.SQLCOLUMN,
+                T_DMATTRIBUTE.DEFAULTVAL,
+                T_DMATTRIBUTE.DIMENSION
+            from T_DMATTRIBUTE,T_CMABSTRACT
+            where T_CMABSTRACT.ID=T_DMATTRIBUTE.ID
+      </sql>
      </database>
   </definition>
 

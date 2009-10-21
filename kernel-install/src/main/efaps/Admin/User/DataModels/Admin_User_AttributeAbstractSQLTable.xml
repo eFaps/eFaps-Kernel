@@ -16,7 +16,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          jmox
+  Author:          The eFaps Team
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -32,7 +32,7 @@
   <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version-expression>(version==4) || (version==latest)</version-expression>
+    <version-expression>(version==2) || (version==latest)</version-expression>
     <name>Admin_User_AttributeAbstractSQLTable</name>
     <typeid-column>TYPEID</typeid-column>
     <database>

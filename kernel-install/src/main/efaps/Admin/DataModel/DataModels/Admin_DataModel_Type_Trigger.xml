@@ -45,7 +45,7 @@
   </definition>
 
   <definition>
-    <version-expression>(version==6)</version-expression>
+    <version-expression>(version==3)</version-expression>
     <name>Admin_DataModel_Type_Trigger</name>
     <parent>Admin_Event_Definition</parent>
     <purpose abstract="true" />

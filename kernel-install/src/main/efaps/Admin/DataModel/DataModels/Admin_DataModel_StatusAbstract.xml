@@ -32,7 +32,7 @@
   
   <definition>
   
-    <version-expression>(version==6) || (version==latest)</version-expression>
+    <version-expression>(version==3) || (version==latest)</version-expression>
     <name>Admin_DataModel_StatusAbstract</name>
     
     <attribute>

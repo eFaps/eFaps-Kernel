@@ -20,7 +20,6 @@
 
 package org.efaps.update.datamodel;
 
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,19 +31,22 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
-import org.efaps.update.datamodel.TypeUpdate.TypeDefinition;
+import org.efaps.update.UpdateLifecycle;
 import org.efaps.util.EFapsException;
 
 /**
+ * Handles the import / update of dimensions for eFaps read from a XML
+ * configuration item file.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class DimensionUpdate extends AbstractUpdate
+public class DimensionUpdate
+    extends AbstractUpdate
 {
-
-
-     /**
+    /**
+     * Default constructor to initialize this dimension update instance for
+     * given <code>_url</code>.
      *
      * @param _url URL of the file
      */
@@ -54,21 +56,23 @@ public class DimensionUpdate extends AbstractUpdate
     }
 
     /**
-     * Creates new instance of class {@link TypeDefinition}.
+     * Creates new instance of class {@link DimensionUpdate}.
      *
      * @return new definition instance
-     * @see TypeDefinition
+     * @see DimensionUpdate
      */
-    @Override
+    @Override()
     protected AbstractDefinition newDefinition()
     {
         return new DimensionDefinition();
     }
 
     /**
-     * The class defines an attribute of a type.
+     * Handles the related unit of measure definition for one version of a
+     * dimension.
      */
-    public class UoMDefinition extends AbstractDefinition
+    public class UoMDefinition
+        extends AbstractDefinition
     {
 
         /**
@@ -88,12 +92,14 @@ public class DimensionUpdate extends AbstractUpdate
 
         /**
          * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List, java.util.Map, java.lang.String)
-         * @param _tags         list of the tags
-         * @param _attributes   attributes
-         * @param _text         text
+         * @param _tags         current path as list of single tags
+         * @param _attributes   attributes for current path
+         * @param _text         content for current path
          */
-        @Override
-        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        @Override()
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
         {
             final String value = _tags.get(0);
             if ("numerator".equals(value)) {
@@ -116,7 +122,7 @@ public class DimensionUpdate extends AbstractUpdate
          * @throws EFapsException on error
          */
         protected void updateInDB(final Instance _instance)
-                throws EFapsException
+            throws EFapsException
         {
             final SearchQuery query = new SearchQuery();
             query.setExpand(_instance, "Admin_DataModel_UoM\\Dimension");
@@ -150,11 +156,12 @@ public class DimensionUpdate extends AbstractUpdate
         }
     }
 
-
     /**
-     * Class for the definition of the type.
+     * Handles the definition of one version for a dimension defined within XML
+     * configuration item file.
      */
-    public class DimensionDefinition extends AbstractDefinition
+    public class DimensionDefinition
+        extends AbstractDefinition
     {
         /**
          * All attributes of the type are stored in this list.
@@ -176,15 +183,16 @@ public class DimensionUpdate extends AbstractUpdate
          */
         private String description;
 
-
         /**
+         * @param _tags         current path as list of single tags
+         * @param _attributes   attributes for current path
+         * @param _text         content for current path
          * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List, java.util.Map, java.lang.String)
-         * @param _tags         tags
-         * @param _attributes   attributes
-         * @param _text         text
          */
-        @Override
-        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        @Override()
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
         {
             final String value = _tags.get(0);
             if ("description".equals(value)) {
@@ -208,8 +216,9 @@ public class DimensionUpdate extends AbstractUpdate
          * @param _insert insert to be executed
          * @throws EFapsException on error
          */
-        @Override
-        protected void createInDB(final Insert _insert) throws EFapsException
+        @Override()
+        protected void createInDB(final Insert _insert)
+            throws EFapsException
         {
             final String name = super.getValue("Name");
             _insert.add("Name", (name == null) ? "-" : name);
@@ -225,22 +234,28 @@ public class DimensionUpdate extends AbstractUpdate
          * defined, the parent type id is set to <code>null</code>). After the
          * type is updated (or inserted if needed), all attributes must be
          * updated.
+         *
+         * @param _step         current step of the update life cycle
          * @param _allLinkTypes set of all links
          * @throws EFapsException on error
-         *
          * @see #parentType
          * @see #uoms
          */
-        @Override
-        public void updateInDB(final Set<Link> _allLinkTypes)
-                throws EFapsException
+        @Override()
+        public void updateInDB(final UpdateLifecycle _step,
+                               final Set<Link> _allLinkTypes)
+            throws EFapsException
         {
-            addValue("Description", this.description);
+            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+                this.addValue("Description", this.description);
+            }
 
-            super.updateInDB(_allLinkTypes);
+            super.updateInDB(_step, _allLinkTypes);
 
-            for (final UoMDefinition uom : this.uoms) {
-                uom.updateInDB(this.instance);
+            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+                for (final UoMDefinition uom : this.uoms) {
+                    uom.updateInDB(this.instance);
+                }
             }
         }
     }

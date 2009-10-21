@@ -30,10 +30,12 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.UpdateLifecycle;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
+ * Handles the import / update of status groups for eFaps read from a XML
+ * configuration item file.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -41,6 +43,9 @@ import org.efaps.util.EFapsException;
 public class StatusGroupUpdate extends AbstractUpdate
 {
     /**
+     * Default constructor to initialize this status group instance for given
+     * <code>_url</code>.
+     *
      * @param _url url to the file
      */
     public StatusGroupUpdate(final URL _url)
@@ -102,7 +107,13 @@ public class StatusGroupUpdate extends AbstractUpdate
         private StatusDefintion currentStatus;
         private final Set<StatusDefintion> stati = new HashSet<StatusDefintion>();
 
-        @Override
+        /**
+         *
+         * @param _tags         current path as list of single tags
+         * @param _attributes   attributes for current path
+         * @param _text         content for current path
+         */
+        @Override()
         protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
         {
             final String value = _tags.get(0);
@@ -133,31 +144,36 @@ public class StatusGroupUpdate extends AbstractUpdate
          * @see #attributes
          */
         @Override
-        public void updateInDB(final Set<Link> _allLinkTypes)
+        public void updateInDB(final UpdateLifecycle _step,
+                               final Set<Link> _allLinkTypes)
             throws EFapsException
         {
-            // set the id of the parent type (if defined)
-            if ((this.parentType != null) && (this.parentType.length() > 0)) {
-                final SearchQuery query = new SearchQuery();
-                query.setQueryTypes("Admin_DataModel_Type");
-                query.addWhereExprEqValue("Name", this.parentType);
-                query.addSelect("OID");
-                query.executeWithoutAccessCheck();
-                if (query.next()) {
-                    final Instance instance = Instance.get((String) query.get("OID"));
-                    addValue("ParentType", "" + instance.getId());
+            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+                // set the id of the parent type (if defined)
+                if ((this.parentType != null) && (this.parentType.length() > 0)) {
+                    final SearchQuery query = new SearchQuery();
+                    query.setQueryTypes("Admin_DataModel_Type");
+                    query.addWhereExprEqValue("Name", this.parentType);
+                    query.addSelect("OID");
+                    query.executeWithoutAccessCheck();
+                    if (query.next()) {
+                        final Instance instance = Instance.get((String) query.get("OID"));
+                        addValue("ParentType", "" + instance.getId());
+                    } else {
+                        addValue("ParentType", null);
+                    }
+                    query.close();
                 } else {
                     addValue("ParentType", null);
                 }
-                query.close();
-            } else {
-                addValue("ParentType", null);
             }
 
-            super.updateInDB(_allLinkTypes);
+            super.updateInDB(_step, _allLinkTypes);
 
-            for (final StatusDefintion status : this.stati) {
-                status.updateInDB(getValue("Name"));
+            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+                for (final StatusDefintion status : this.stati) {
+                    status.updateInDB(getValue("Name"));
+                }
             }
         }
     }

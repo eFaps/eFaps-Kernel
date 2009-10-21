@@ -35,9 +35,9 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  *
  */
-public class PostgreSQLDatabase extends AbstractDatabase
+public class PostgreSQLDatabase
+    extends AbstractDatabase<PostgreSQLDatabase>
 {
-
     /**
      * Logging instance used in this class.
      */
@@ -63,32 +63,31 @@ public class PostgreSQLDatabase extends AbstractDatabase
      * @see org.efaps.db.databases.AbstractDatabase#getCurrentTimeStamp()
      * @return "current_timestamp"
      */
-    @Override
+    @Override()
     public String getCurrentTimeStamp()
     {
         return "current_timestamp";
     }
 
   /**
-     * This is the PostgreSQL specific implementation of an all deletion.
+     * <p>This is the PostgreSQL specific implementation of an all deletion.
      * Following order is used to remove all eFaps specific information:
      * <ul>
      * <li>remove all views of the user</li>
      * <li>remove all tables of the user</li>
-     * </ul>
-     * <p>
-     * The table are dropped with cascade, so all depending sequences etc. are
-     * also dropped automatically.
-     * </p>
-     * Attention! If application specific tables, views or constraints are
-     * defined, this database objects are also removed!
+     * <li>remove all sequences of the user</li>
+     * </ul></p>
+     * <p>The table are dropped with cascade, so all depending sequences etc.
+     * are also dropped automatically. </p>
+     * <p>Attention! If application specific tables, views or constraints are
+     * defined, this database objects are also removed!</p>
      *
      * @param _con sql connection
      * @throws SQLException on error while executing sql statements
      */
-    @Override
+    @Override()
     public void deleteAll(final Connection _con)
-            throws SQLException
+        throws SQLException
     {
 
         final Statement stmtSel = _con.createStatement();
@@ -141,58 +140,103 @@ public class PostgreSQLDatabase extends AbstractDatabase
     }
 
     /**
-     * For the PostgreSQL database, an eFaps sql table is created in this steps.
+     * For the PostgreSQL database, an eFaps SQL table is created in this steps.
      * <ul>
-     * <li>sql table itself with column <code>ID</code> and unique key on the
+     * <li>SQL table itself with column <code>ID</code> and unique key on the
      * column is created</li>
-     * <li>if the table is an autoincrement table (parent table is
-     * <code>null</code>, the column <code>ID</code> is set as autoincrement
+     * <li>if the table is an auto increment table (parent table is
+     * <code>null</code>, the column <code>ID</code> is set as auto increment
      * column</li>
      * <li>if no parent table is defined, the foreign key to the parent table is
      * automatically set</li>
      * </ul>
      *
      * @see org.efaps.db.databases.AbstractDatabase#createTable(java.sql.Connection, java.lang.String, java.lang.String)
-     * @param _con          Connection to be used for the sql statements
+     * @param _con          Connection to be used for the SQL statements
      * @param _table        name for the table
-     * @param _parentTable  name of a parenttable, null if no exists
+     * @return this PostgreSQL DB definition instance
      * @throws SQLException if the table could not be created
      */
-    @Override
-    public void createTable(final Connection _con, final String _table, final String _parentTable)
-            throws SQLException
+    @Override()
+    public PostgreSQLDatabase createTable(final Connection _con,
+                                          final String _table)
+        throws SQLException
     {
         final Statement stmt = _con.createStatement();
-
         try {
-            // create table itself
-            final StringBuilder cmd = new StringBuilder();
-            cmd.append("create table ").append(_table).append(" (");
-
-            // autoincrement
-            if (_parentTable == null) {
-                cmd.append("ID bigserial");
-            } else {
-                cmd.append("ID bigint");
-            }
-
-            cmd.append(",").append("constraint ").append(_table).append("_PK_ID primary key (ID)");
-
-            // foreign key to parent sql table
-            if (_parentTable != null) {
-                cmd.append(",").append("constraint ").append(_table).append("_FK_ID ").append("foreign key (ID) ")
-                                .append("references ").append(_parentTable).append(" (ID)");
-            }
-            cmd.append(") without OIDS;");
-
-            stmt.executeUpdate(cmd.toString());
+            stmt.executeUpdate(new StringBuilder()
+                .append("create table ").append(_table).append(" (")
+                    .append("ID bigint")
+                    .append(",").append("constraint ").append(_table).append("_PK_ID primary key (ID)")
+                .append(") without OIDS;")
+                .toString());
         } finally {
             stmt.close();
         }
+
+        return this;
     }
 
     /**
-     * A new id for given column of a sql table is returned (with sequences!).
+     * @param _parentTable  name of a parent table
+     */
+    @Override()
+    public PostgreSQLDatabase defineTableParent(final Connection _con,
+                                                final String _table,
+                                                final String _parentTable)
+        throws SQLException
+    {
+        final StringBuilder cmd = new StringBuilder()
+            .append("alter table ").append(_table).append(" ")
+            .append("add constraint ").append(_table).append("_FK_ID foreign key (ID) ")
+            .append("references ").append(_parentTable).append(" (ID)");
+
+        if (PostgreSQLDatabase.LOG.isDebugEnabled())  {
+            PostgreSQLDatabase.LOG.info("    ..SQL> " + cmd.toString());
+        }
+
+        final Statement stmt = _con.createStatement();
+        try {
+            stmt.execute(cmd.toString());
+        } finally  {
+            stmt.close();
+        }
+        return this;
+    }
+
+    @Override()
+    public PostgreSQLDatabase defineTableAutoIncrement(final Connection _con,
+                                                       final String _table)
+        throws SQLException
+    {
+        final Statement stmt = _con.createStatement();
+        try {
+            // create sequence
+            stmt.execute(new StringBuilder()
+                .append("create sequence ").append(_table).append("_id_seq")
+                .toString());
+            // define for ID column the auto increment value
+            stmt.execute(new StringBuilder()
+                .append("alter table ").append(_table)
+                .append(" alter column id set default nextval('")
+                .append(_table).append("_id_seq')")
+                .toString());
+            // sequence owned by table
+            stmt.execute(new StringBuilder()
+                .append("alter sequence ").append(_table).append("_id_seq owned by ")
+                .append(_table).append(".id")
+                .toString());
+        } finally {
+            stmt.close();
+        }
+        return this;
+    }
+
+    /**
+     * A new id for given column of a SQL table is returned (with sequences!).
+     * The method must be implemented because the JDBC driver from PostgreSQL
+     * does not support that the generated ID of a new table row is returned
+     * while the row is inserted.
      *
      * @param _con      sql connection
      * @param _table    sql table for which a new id must returned
@@ -200,9 +244,11 @@ public class PostgreSQLDatabase extends AbstractDatabase
      * @throws SQLException if a new id could not be retrieved
      * @return new id for the sequence
      */
-    @Override
-    public long getNewId(final Connection _con, final String _table, final String _column)
-            throws SQLException
+    @Override()
+    public long getNewId(final Connection _con,
+                         final String _table,
+                         final String _column)
+        throws SQLException
     {
 
         long ret = 0;
@@ -227,7 +273,7 @@ public class PostgreSQLDatabase extends AbstractDatabase
     /**
      * @return always <i>true</i> because supported by PostgreSQL database
      */
-    @Override
+    @Override()
     public boolean supportsBinaryInputStream()
     {
         return true;

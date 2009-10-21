@@ -20,14 +20,6 @@
 
 package org.efaps.update.ui;
 
-import static org.efaps.admin.EFapsClassNames.FIELD;
-import static org.efaps.admin.EFapsClassNames.FIELDCLASSIFICATION;
-import static org.efaps.admin.EFapsClassNames.FIELDCOMMAND;
-import static org.efaps.admin.EFapsClassNames.FIELDGROUP;
-import static org.efaps.admin.EFapsClassNames.FIELDHEADING;
-import static org.efaps.admin.EFapsClassNames.FIELDSET;
-import static org.efaps.admin.EFapsClassNames.FIELDTABLE;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Delete;
@@ -44,9 +35,18 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.event.Event;
 import org.efaps.util.EFapsException;
+
+import static org.efaps.admin.EFapsClassNames.FIELD;
+import static org.efaps.admin.EFapsClassNames.FIELDCLASSIFICATION;
+import static org.efaps.admin.EFapsClassNames.FIELDCOMMAND;
+import static org.efaps.admin.EFapsClassNames.FIELDGROUP;
+import static org.efaps.admin.EFapsClassNames.FIELDHEADING;
+import static org.efaps.admin.EFapsClassNames.FIELDSET;
+import static org.efaps.admin.EFapsClassNames.FIELDTABLE;
 
 /**
  * This class imports/updates a Form or a Table using the
@@ -219,17 +219,20 @@ public abstract class AbstractCollectionUpdate extends AbstractUpdate
          * Updates / creates the instance in the database. Only the fields are
          * also updated for collection defined through this definition.
          *
-         * @param _allLinkTypes set of all type of links
-         * @param _allLinkTypes
+         * @param _step             current update step
+         * @param _allLinkTypes     set of all type of links
          * @throws EFapsException on error
          * @see #setFieldsInDB
          */
-        @Override
-        public void updateInDB(final Set<Link> _allLinkTypes)
-                throws EFapsException
+        @Override()
+        public void updateInDB(final UpdateLifecycle _step,
+                               final Set<Link> _allLinkTypes)
+            throws EFapsException
         {
-            super.updateInDB(_allLinkTypes);
-            setFieldsInDB();
+            super.updateInDB(_step, _allLinkTypes);
+            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+                this.setFieldsInDB();
+            }
         }
 
         /**
@@ -330,7 +333,7 @@ public abstract class AbstractCollectionUpdate extends AbstractUpdate
          *
          * @return string representation of this definition of a column
          */
-        @Override
+        @Override()
         public String toString()
         {
             return new ToStringBuilder(this).appendSuper(super.toString()).append("fields", this.fields).toString();

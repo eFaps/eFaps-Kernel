@@ -16,7 +16,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          tmo
+  Author:          The eFaps Team
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -33,7 +33,7 @@
 
   <!-- Common Version Table -->
   <definition>
-    <version-expression>(version==4) || (version==latest)</version-expression>
+    <version-expression>(version==1) || (version==2) || (version==latest)</version-expression>
     <name>Admin_Common_VersionSQLTable</name>
     <database>
       <table-name>T_CMVERSION</table-name>
@@ -46,39 +46,14 @@
       <column name="MODIFIED" type="DATETIME"                  not-null="true" />
       <!-- unique keys -->
       <unique name="COMVER_UK_NAMEREV" columns="NAME,REVISION" />
-    </database>
-  </definition>
-
-  <!-- make the views for the SQL table -->
-  <definition>
-    <version-expression>(version==2)</version-expression>
-    <database>
       <!-- view representing all versions -->
-      <table-name>T_CMVERSION</table-name>
       <sql>
-        create view V_COMMONVERSION
+        create or replace view V_COMMONVERSION
              as select NAME,
                        max(REVISION) as VERSION
                   from T_CMVERSION
                   group by NAME
       </sql>
-    </database>
-  </definition>
-
-  <!-- create the SQL Table -->
-  <definition>
-    <version-expression>(version==1)</version-expression>
-    <database>
-      <table-name>T_CMVERSION</table-name>
-      <!-- columns -->
-      <column name="NAME"     type="STRING_SHORT" length="128" not-null="true" />
-      <column name="REVISION" type="INTEGER"                   not-null="true" />
-      <column name="CREATOR"  type="INTEGER"                   not-null="true" />
-      <column name="CREATED"  type="DATETIME"                  not-null="true" />
-      <column name="MODIFIER" type="INTEGER"                   not-null="true" />
-      <column name="MODIFIED" type="DATETIME"                  not-null="true" />
-      <!-- constraints -->
-      <unique name="COMVER_UK_NAMEREV" columns="NAME,REVISION" />
     </database>
   </definition>
 

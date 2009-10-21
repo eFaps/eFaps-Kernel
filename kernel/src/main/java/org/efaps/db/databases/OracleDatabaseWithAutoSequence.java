@@ -22,97 +22,97 @@ package org.efaps.db.databases;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * The database driver is used for Oracle databases starting with version 9i.
- * The differnce to {@link OracleDatabase} is, that this class supports auto
+ * The difference to {@link OracleDatabase} is, that this class supports auto
  * generated keys.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class OracleDatabaseWithAutoSequence extends OracleDatabase  {
+public class OracleDatabaseWithAutoSequence
+    extends OracleDatabase
+{
+    /**
+     * For the database from vendor Oracle, an eFaps SQL table with
+     * auto increment is created in this steps:
+     * <ul>
+     * <li>SQL table itself with column <code>ID</code> and unique key on the
+     *     column is created</li>
+     * <li>sequence with same name of table and suffix <code>_SEQ</code> is
+     *     created</li>
+     * <li>trigger with same name of table and suffix <code>_TRG</code> is
+     *     created. The trigger sets automatically the column <code>ID</code>
+     *     with the next value of the sequence</li>
+     * </ul>
+     * An eFaps SQL table without auto increment, but with parent table is
+     * created in this steps:
+     * <ul>
+     * <li>SQL table itself with column <code>ID</code> and unique key on the
+     *     column is created</li>
+     * <li>the foreign key to the parent table is automatically set</li>
+     * </ul>
+     * The creation of the table itself is done by calling the inherited method
+     * {@link OracleDatabase#createTable}
+     *
+     * @param _con            SQL connection
+     * @param _table          name of the table to create
+     * @param _parentTable    name of the parent table
+     * @return this vendor specific DB definition
+     * @throws SQLException if trigger could not be created
+     * @see OracleDatabase#createTable(Connection, String, String)
+     */
+/* TODO
+    @Override()
+    public OracleDatabaseWithAutoSequence createTable(final Connection _con,
+                                                      final String _table,
+                                                      final String _parentTable)
+        throws SQLException
+    {
+        super.createTable(_con, _table, _parentTable);
 
-  /////////////////////////////////////////////////////////////////////////////
-  // constructor / desctructors
+        if (_parentTable == null)  {
+            final Statement stmt = _con.createStatement();
 
-  public OracleDatabaseWithAutoSequence()  {
-    super();
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance methods
-
-  /**
-   * For the database from vendor Oracle, an eFaps sql table with autoincrement
-   * is created in this steps:
-   * <ul>
-   * <li>sql table itself with column <code>ID</code> and unique key on the
-   *     column is created</li>
-   * <li>sequence with same name of table and suffix <code>_SEQ</code> is
-   *     created</li>
-   * <li>trigger with same name of table and suffix <code>_TRG</code> is
-   *     created. The trigger sets automatically the column <code>ID</code>
-   *     with the next value of the sequence</li>
-   * </ul>
-   * An eFaps sql table without autoincrement, but with parent table is created
-   * in this steps:
-   * <ul>
-   * <li>sql table itself with column <code>ID</code> and unique key on the
-   *     column is created</li>
-   * <li>the foreign key to the parent table is automatically set</li>
-   * </ul>
-   * The creation of the table itself is done by calling the inherited method
-   * {@link OracleDatabase#createTable}
-   *
-   * @param _con        sql connection
-   * @param _table      name of the table to create
-   * @param _parenTable name of the parent table
-   * @throws SQLException if trigger could not be created
-   * @see OracleDatabase#createTable
-   */
-  public void createTable(final Connection _con, final String _table,
-          final String _parentTable) throws SQLException  {
-
-    super.createTable(_con, _table, _parentTable);
-    
-    if (_parentTable == null)  {
-      Statement stmt = _con.createStatement();
-
-      try  {
-        // create trigger for autoincrement
-        StringBuilder cmd = new StringBuilder();
-        cmd.append("create trigger ").append(_table).append("_TRG")
-           .append("  before insert on ").append(_table)
-           .append("  for each row ")
-           .append("begin")
-           .append("  select ").append(_table).append("_SEQ.nextval ")
-           .append("      into :new.ID from dual;")
-           .append("end;");
-        stmt.executeUpdate(cmd.toString());
-      } finally  {
-        stmt.close();
-      }
+            try  {
+                // create trigger for auto increment
+                final StringBuilder cmd = new StringBuilder()
+                    .append("create trigger ").append(_table).append("_TRG")
+                    .append("  before insert on ").append(_table)
+                    .append("  for each row ")
+                    .append("begin")
+                    .append("  select ").append(_table).append("_SEQ.nextval ")
+                    .append("      into :new.ID from dual;")
+                    .append("end;");
+                stmt.executeUpdate(cmd.toString());
+            } finally  {
+                stmt.close();
+            }
+        }
+        return this;
     }
-  }
+*/
+    /**
+     * This implementation of the vendor specific database driver implements
+     * the auto generated keys. So always <i>true</i> is returned.
+     *
+     * @return always <i>true</i> because supported by Oracle database
+     */
+    @Override()
+    public boolean supportsGetGeneratedKeys()
+    {
+        return true;
+    }
 
-  /**
-   * This implementation of the vendor specific database driver implements the
-   * auto generated keys. So always <i>true</i> is returned.
-   *
-   * @return always <i>true</i> because supported by Oracle database
-   */
-  public boolean supportsGetGeneratedKeys()  {
-    return true;
-  }
-
-  /**
-   * @return always <i>true</i> because supported by Derby database
-   */
-  public boolean supportsMultiGeneratedKeys()  {
-    return true;
-  }
+    /**
+     * @return always <i>true</i> because supported by Oracle database
+     */
+    @Override()
+    public boolean supportsMultiGeneratedKeys()
+    {
+        return true;
+    }
 
   /**
    * This method normally returns for given table and column a new id. Because
@@ -122,13 +122,18 @@ public class OracleDatabaseWithAutoSequence extends OracleDatabase  {
    * @param _con          sql connection
    * @param _table        sql table for which a new id must returned
    * @param _column       sql table column for which a new id must returned
+   * @return nothing, because SQLException is always thrown
    * @throws SQLException always, because this database driver supports auto
    *                      generating keys
    */
-  public long getNewId(final Connection _con, final String _table,
-          final String _column)  throws SQLException  {
-    throw new SQLException("The database driver uses auto generated keys and "
-                           + "a new id could not returned without making "
-                           + "a new insert.");
-  }
+    @Override()
+    public long getNewId(final Connection _con,
+                         final String _table,
+                         final String _column)
+        throws SQLException
+    {
+        throw new SQLException("The database driver uses auto generated keys and "
+                               + "a new id could not returned without making "
+                               + "a new insert.");
+    }
 }

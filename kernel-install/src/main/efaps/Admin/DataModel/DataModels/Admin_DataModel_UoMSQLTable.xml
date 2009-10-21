@@ -17,34 +17,22 @@
  limitations under the License.
 
  Author:          The eFaps Team
- Revision:        $Rev: 2558 $
- Last Changed:    $Date: 2009-06-04 12:03:35 -0500 (Thu, 04 Jun 2009) $
- Last Changed By: $Author: jan.moxter $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
-<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" 
-                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+<datamodel-sqltable  xmlns="http://www.efaps.org/xsd"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                      xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>433a7d6a-a31c-44e4-ae14-1777dbcb1159</uuid>
   <file-application>eFaps-Kernel</file-application>
-  <file-revision>$Rev: 2558 $</file-revision>
-  
+  <file-revision>$Rev$</file-revision>
+
   <definition>
-    <version-expression>(version==6) || (version==latest)</version-expression>
+    <version-expression>(version==1) || (version==2) || (version==latest)</version-expression>
     <name>Admin_DataModel_UoMSQLTable</name>
-    <database>
-      <table-name>T_DMUOM</table-name>
-      <!-- columns -->
-      <column name="DIMID"         type="INTEGER"      not-null="true"/>
-      <column name="NAME"          type="STRING_SHORT" not-null="true" length="155"/>
-      <column name="NUMERATOR"     type="INTEGER"      not-null="true"/>
-      <column name="DENOMINATOR"   type="INTEGER"      not-null="true"/>
-     </database>
-  </definition>
-  
-  <definition>
-    <version-expression>(version==1)</version-expression>
     <database>
       <table-name>T_DMUOM</table-name>
       <!-- columns -->

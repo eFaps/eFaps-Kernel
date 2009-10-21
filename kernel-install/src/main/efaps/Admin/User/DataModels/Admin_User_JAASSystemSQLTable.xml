@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -33,7 +33,7 @@
 
   <!-- JAAS systems -->
   <definition>
-    <version-expression>(version==4) || (version==latest)</version-expression>
+    <version-expression>(version==2) || (version==latest)</version-expression>
     <name>Admin_User_JAASSystemSQLTable</name>
     <database>
       <table-name>T_USERJAASSYSTEM</table-name>
@@ -61,17 +61,9 @@
        <!-- foreign keys -->
       <foreign name="USERJAASSYS_FK_CRTR"   key="CREATOR"       reference="T_USERPERSON(ID)"/>
       <foreign name="USERJAASSYS_FK_MDFR"   key="MODIFIER"      reference="T_USERPERSON(ID)"/>
-    </database>
-  </definition>
-
-  <!-- define constraints and needed views -->
-  <definition>
-    <version-expression>(version==2)</version-expression>
-    <database>
-      <!-- create view representing all JAAS systems -->
-       <table-name>T_USERJAASSYSTEM</table-name>
-       <sql>
-        create view V_USERJAASSYSTEM as
+       <!--  view used as API -->
+      <sql>
+        create or replace view V_USERJAASSYSTEM as
            select
                ID,
                NAME,
@@ -87,7 +79,7 @@
                METHODGROUPKEY
            from T_USERJAASSYSTEM
       </sql>
-      </database>
+    </database>
   </definition>
 
   <!-- create base data model -->
@@ -116,6 +108,24 @@
       <!-- unique keys -->
       <unique name="USERJAASSYS_UK_NAME"    columns="NAME"/>
       <unique name="USERJAASSYS_UK_UUID"    columns="UUID"/>
+      <!--  view used as API -->
+      <sql>
+        create or replace view V_USERJAASSYSTEM as
+           select
+               ID,
+               NAME,
+               CLASSNAMEPERSON,
+               CLASSNAMEROLE,
+               CLASSNAMEGROUP,
+               METHODPERSONKEY,
+               METHODPERSONNAME,
+               METHODPERSONFIRSTNAME,
+               METHODPERSONLASTNAME,
+               METHODPERSONEMAIL,
+               METHODROLEKEY,
+               METHODGROUPKEY
+           from T_USERJAASSYSTEM
+      </sql>
      </database>
   </definition>
 

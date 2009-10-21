@@ -16,7 +16,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          tmo
+  Author:          The eFaps Team
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -30,45 +30,44 @@
   <application>eFaps-Kernel</application>
 
   <version number="1" reloadCache="false" login="false">
-    <description>Create base SQL tables.</description>
-  </version>
-
-  <version number="2" reloadCache="false" login="false">
-    <description>Create views depending on the base SQL tables.</description>
-  </version>
-
-  <version number="3" reloadCache="false" login="false">
+    <lifecyle>
+        <ignore step="EFAPS_CREATE"/>
+        <ignore step="EFAPS_UPDATE"/>
+    </lifecyle>
+    <description>Create base SQL tables and views.</description>
     <script name="org/efaps/installations/eFaps-Kernel/CreateAll.js" function="eFapsCreateAll()" />
   </version>
 
-  <version number="4" reloadCache="true">
+  <version number="2" reloadCache="true">
     <description>Install SQL Tables.</description>
   </version>
 
-  <version number="6" reloadCache="true">
+  <version number="3" reloadCache="true">
     <description>Install complete Data Model</description>
   </version>
 
-  <version number="7" reloadCache="true">
+  <version number="4" reloadCache="true">
     <description>Install Access Types, Access Sets and Users. Install all Stores. Update types containing stores. </description>
   </version>
 
-  <version number="8" reloadCache="false" login="false">
+  <version number="5" reloadCache="false" login="false">
     <description>Update Password of Administrator and Activate Administrator and Administration Role.</description>
     <script>
-      importClass(Packages.org.efaps.admin.datamodel.Type); importClass(Packages.org.efaps.db.Context); importClass(Packages.org.efaps.db.Update);
+      importClass(Packages.org.efaps.admin.datamodel.Type);
+      importClass(Packages.org.efaps.db.Context);
+      importClass(Packages.org.efaps.db.Update);
 
       var c = Context.begin(EFAPS_USERNAME);
 
-      EFAPS_LOGGER.info("    Update '" + EFAPS_USERNAME + "' Password"); 
+      EFAPS_LOGGER.info("    Update '" + EFAPS_USERNAME + "' Password");
       c.getPerson().setPassword(EFAPS_PASSWORD);
 
-      EFAPS_LOGGER.info("    Activate Person '" + EFAPS_USERNAME + "'"); 
+      EFAPS_LOGGER.info("    Activate Person '" + EFAPS_USERNAME + "'");
       var update = new Update(Type.get("Admin_User_Abstract"), "1");
-      update.add("Status","true"); 
+      update.add("Status","true");
       update.executeWithoutAccessCheck();
-      
-      EFAPS_LOGGER.info("    Setting default TimeZone, Chronology and Locale for  Person '" + EFAPS_USERNAME + "'"); 
+
+      EFAPS_LOGGER.info("    Setting default TimeZone, Chronology and Locale for  Person '" + EFAPS_USERNAME + "'");
       var update2 = new Update(Type.get("Admin_User_Person"), "1");
       update2.add("TimeZone","UTC");
       update2.add("Language","1");
@@ -76,13 +75,15 @@
       update2.add("Locale","en_US");
       update2.executeWithoutAccessCheck();
 
-      EFAPS_LOGGER.info("    Activate Role 'Administration'"); var update = new Update(Type.get("Admin_User_Abstract"), "2"); update.add("Status","true");
+      EFAPS_LOGGER.info("    Activate Role 'Administration'");
+      var update = new Update(Type.get("Admin_User_Abstract"), "2");
+      update.add("Status","true");
       update.executeWithoutAccessCheck();
 
       Context.commit();
     </script>
   </version>
-  <version number="9" reloadCache="true" compile="true" />
 
+  <version number="6" reloadCache="true" compile="true" />
 
 </install>

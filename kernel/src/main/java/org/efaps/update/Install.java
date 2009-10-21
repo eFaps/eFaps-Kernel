@@ -20,10 +20,6 @@
 
 package org.efaps.update;
 
-import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -32,39 +28,60 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.xml.sax.SAXException;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
-import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.importer.DataImport;
+import org.efaps.update.datamodel.SQLTableUpdate;
 import org.efaps.update.dbproperty.DBPropertiesUpdate;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
 
 /**
  * TODO description.
  *
- * @author The eFasp Team
- *
+ * @author The eFaps Team
  * @version $Id$
  */
 public class Install
 {
+    /**
+     * Logging instance used to give logging information of this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(SQLTableUpdate.class);
+
+    /**
+     * All life cycle steps within an installation / update in the correct
+     * order.
+     */
+    private static final List<UpdateLifecycle> LIFECYCLES = new ArrayList<UpdateLifecycle>();
+    static  {
+        Install.LIFECYCLES.add(UpdateLifecycle.SQL_CREATE_TABLE);
+        Install.LIFECYCLES.add(UpdateLifecycle.SQL_UPDATE_ID);
+        Install.LIFECYCLES.add(UpdateLifecycle.SQL_UPDATE_TABLE);
+        Install.LIFECYCLES.add(UpdateLifecycle.SQL_RUN_SCRIPT);
+        Install.LIFECYCLES.add(UpdateLifecycle.EFAPS_CREATE);
+        Install.LIFECYCLES.add(UpdateLifecycle.EFAPS_UPDATE);
+    }
+
     /**
      * List of all import classes. The order is also used for the import order.
      *
      * @see #importData()
      */
     private final Map<Class<? extends ImportInterface>, FileType> importClasses
-                                                = new LinkedHashMap<Class<? extends ImportInterface>, FileType>();
+        = new LinkedHashMap<Class<? extends ImportInterface>, FileType>();
     {
-        if (this.importClasses.size() == 0) {
+        if (this.importClasses.isEmpty())  {
             this.importClasses.put(DataImport.class, FileType.XML);
             this.importClasses.put(DBPropertiesUpdate.class, FileType.XML);
         }
@@ -92,32 +109,38 @@ public class Install
      * @see #install
      */
     private final Map<Class<? extends AbstractUpdate>, List<AbstractUpdate>> cache
-                                            = new HashMap<Class<? extends AbstractUpdate>, List<AbstractUpdate>>();
+        = new HashMap<Class<? extends AbstractUpdate>, List<AbstractUpdate>>();
 
     /**
      * Installs the XML update scripts of the schema definitions for this
      * version defined in {@link #number}. The install itself is done for given
      * version normally in one big transaction. If the database does not support
      * to big transactions (method
-     * {@link AbstractDatabase#supportsBigTransactions}, each modification of
-     * one update is commited within small single transactions.
+     * {@link org.efaps.db.databases.AbstractDatabase#supportsBigTransactions()},
+     * each modification of one update is committed within small single
+     * transactions.
      *
-     * @param _number number to install
-     * @param _latestNumber latest version number to install (e..g. defined in
-     *            the version.xml file)
-     * @see AbstractDatabase#supportsBigTransactions is used to get information
-     *      about the support of very big transactions from the database
+     * @param _number           number to install
+     * @param _latestNumber     latest version number to install (e..g. defined
+     *                          in the version.xml file)
+     * @param _ignoredSteps     set of ignored life cycle steps which are not
+     *                          executed
      * @throws EFapsException on error
+     * @see org.efaps.db.databases.AbstractDatabase#supportsBigTransactions()
      */
     @SuppressWarnings("unchecked")
-    public void install(final Long _number, final Long _latestNumber) throws EFapsException
+    public void install(final Long _number,
+                        final Long _latestNumber,
+                        final Set<UpdateLifecycle> _ignoredSteps)
+        throws EFapsException
     {
         final boolean bigTrans = Context.getDbType().supportsBigTransactions();
-        final String user = (org.efaps.db.Context.getThreadContext().getPerson() != null) ? org.efaps.db.Context
-                        .getThreadContext().getPerson().getName() : null;
+        final String user = (Context.getThreadContext().getPerson() != null)
+                            ? Context.getThreadContext().getPerson().getName()
+                            : null;
 
         // initialize cache
-        initialise();
+        this.initialise();
 
         // initialize JexlContext (used to evaluate version)
         final JexlContext jexlContext = JexlHelper.createContext();
@@ -128,24 +151,22 @@ public class Install
             jexlContext.getVars().put("latest", _latestNumber);
         }
 
-        // create all objects
-        for (final Map.Entry<Class<? extends AbstractUpdate>, List<AbstractUpdate>> entry : this.cache.entrySet()) {
-            for (final AbstractUpdate update : entry.getValue()) {
-                update.createInDB(jexlContext);
-                if (!bigTrans) {
-                    Context.commit();
-                    Context.begin(user);
+        // loop through all life cycle steps
+        for (final UpdateLifecycle step : Install.LIFECYCLES)  {
+            if (!_ignoredSteps.contains(step))   {
+                if (Install.LOG.isInfoEnabled())  {
+                    Install.LOG.info("..Running Lifecycle step " + step);
                 }
-            }
-        }
+                for (final Map.Entry<Class<? extends AbstractUpdate>, List<AbstractUpdate>> entry
+                        : this.cache.entrySet()) {
 
-        // and update them
-        for (final Map.Entry<Class<? extends AbstractUpdate>, List<AbstractUpdate>> entry : this.cache.entrySet()) {
-            for (final AbstractUpdate update : entry.getValue()) {
-                update.updateInDB(jexlContext);
-                if (!bigTrans) {
-                    Context.commit();
-                    Context.begin(user);
+                    for (final AbstractUpdate update : entry.getValue()) {
+                        update.updateInDB(jexlContext, step);
+                        if (!bigTrans) {
+                            Context.commit();
+                            Context.begin(user);
+                        }
+                    }
                 }
             }
         }
@@ -163,48 +184,36 @@ public class Install
     public void updateLatest() throws EFapsException
     {
         final boolean bigTrans = Context.getDbType().supportsBigTransactions();
-        final String user = (org.efaps.db.Context.getThreadContext().getPerson() != null) ? org.efaps.db.Context
-                        .getThreadContext().getPerson().getName() : null;
+        final String user = (Context.getThreadContext().getPerson() != null)
+                            ? Context.getThreadContext().getPerson().getName()
+                            : null;
 
         // initialize cache
-        initialise();
+        this.initialise();
 
         // get for all applications the latest version
-        final Map<String, Long> versions = getLatestVersions();
+        final Map<String, Long> versions = this.getLatestVersions();
 
-        // create all objects
-        for (final Map.Entry<Class<? extends AbstractUpdate>, List<AbstractUpdate>> entry : this.cache.entrySet()) {
-            for (final AbstractUpdate update : entry.getValue()) {
-                final Long latestVersion = versions.get(update.getFileApplication());
-                // initialize JexlContext (used to evaluate version)
-                final JexlContext jexlContext = JexlHelper.createContext();
-                if (latestVersion != null) {
-                    jexlContext.getVars().put("version", latestVersion);
-                    jexlContext.getVars().put("latest", latestVersion);
-                }
-                // and create
-                update.createInDB(jexlContext);
-                if (!bigTrans) {
-                    Context.commit();
-                    Context.begin(user);
-                }
+        // loop through all life cycle steps
+        for (final UpdateLifecycle step : Install.LIFECYCLES)  {
+            if (Install.LOG.isInfoEnabled())  {
+                Install.LOG.info("..Running Lifecycle step " + step);
             }
-        }
-
-        // and update them
-        for (final Map.Entry<Class<? extends AbstractUpdate>, List<AbstractUpdate>> entry : this.cache.entrySet()) {
-            for (final AbstractUpdate update : entry.getValue()) {
-                final Long latestVersion = versions.get(update.getFileApplication());
-                // initialize JexlContext (used to evaluate version)
-                final JexlContext jexlContext = JexlHelper.createContext();
-                if (latestVersion != null) {
-                    jexlContext.getVars().put("version", latestVersion);
-                    jexlContext.getVars().put("latest", latestVersion);
-                }
-                update.updateInDB(jexlContext);
-                if (!bigTrans) {
-                    Context.commit();
-                    Context.begin(user);
+            for (final Map.Entry<Class<? extends AbstractUpdate>, List<AbstractUpdate>> entry : this.cache.entrySet()) {
+                for (final AbstractUpdate update : entry.getValue()) {
+                    final Long latestVersion = versions.get(update.getFileApplication());
+                    // initialize JexlContext (used to evaluate version)
+                    final JexlContext jexlContext = JexlHelper.createContext();
+                    if (latestVersion != null) {
+                        jexlContext.getVars().put("version", latestVersion);
+                        jexlContext.getVars().put("latest", latestVersion);
+                    }
+                    // and create
+                    update.updateInDB(jexlContext, step);
+                    if (!bigTrans) {
+                        Context.commit();
+                        Context.begin(user);
+                    }
                 }
             }
         }
@@ -242,10 +251,6 @@ public class Install
     /**
      * Reads all XML update files and parses them.
      *
-     * @throws SAXException
-     * @throws IOException
-     * @throws IOException
-     * @throws FileNotFoundException
      * @see #initialised
      * @throws EFapsException on error
      */
@@ -350,7 +355,8 @@ public class Install
      * @see #addFile(URL, FileType) method called to add the URL after convert
      *      the string representation of the type to a file type instance
      */
-    public void addFile(final URL _url, final String _type)
+    public void addFile(final URL _url,
+                        final String _type)
     {
         addFile(_url, FileType.getFileTypeByType(_type));
     }
@@ -362,7 +368,8 @@ public class Install
      * @param _url URL of the file to add
      * @param _fileType file type of the file to add
      */
-    public void addFile(final URL _url, final FileType _fileType)
+    public void addFile(final URL _url,
+                        final FileType _fileType)
     {
         this.files.add(new InstallFile(_url, _fileType));
         this.initialised = false;
@@ -383,10 +390,12 @@ public class Install
      *
      * @return string representation of this Application
      */
-    @Override
+    @Override()
     public String toString()
     {
-        return new ToStringBuilder(this).append("urls", this.files).toString();
+        return new ToStringBuilder(this)
+            .append("urls", this.files)
+            .toString();
     }
 
     /**
@@ -395,7 +404,7 @@ public class Install
     private class InstallFile
     {
         /**
-         * Url to the file.
+         * URL to the file.
          */
         private final URL url;
 
@@ -408,7 +417,8 @@ public class Install
          * @param _url      Url to the file
          * @param _type     Type of the file.
          */
-        public InstallFile(final URL _url, final FileType _type)
+        public InstallFile(final URL _url,
+                           final FileType _type)
         {
             this.url = _url;
             this.type = _type;

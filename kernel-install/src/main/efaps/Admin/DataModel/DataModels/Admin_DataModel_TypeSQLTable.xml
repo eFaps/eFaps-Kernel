@@ -33,7 +33,7 @@
 
   <!-- type definition -->
   <definition>
-    <version-expression>(version==4) || (version==latest)</version-expression>
+    <version-expression>(version==2) || (version==latest)</version-expression>
     <name>Admin_DataModel_TypeSQLTable</name>
     <parent>Admin_Common_AbstractSQLTable</parent>
     <database>
@@ -47,14 +47,18 @@
     </database>
   </definition>
 
-  <!-- define constraints / views -->
+  <!-- create base data model -->
   <definition>
-    <version-expression>(version==2)</version-expression>
+    <version-expression>(version==1)</version-expression>
     <database>
       <table-name>T_DMTYPE</table-name>
+      <parent-table>T_CMABSTRACT</parent-table>
+      <!-- columns -->
+      <column name="PARENTDMTYPE"  type="INTEGER"/>
+      <column name="SQLCACHEEXPR"  type="STRING_SHORT"  length="50"/>
       <!-- create view  representing all types -->
       <sql>
-        create view V_ADMINTYPE as
+        create or replace view V_ADMINTYPE as
             select
                 T_CMABSTRACT.ID,
                 T_CMABSTRACT.UUID,
@@ -66,18 +70,6 @@
             join T_CMABSTRACT
               on T_CMABSTRACT.ID = T_DMTYPE.ID
       </sql>
-    </database>
-  </definition>
-
-  <!-- create base data model -->
-  <definition>
-    <version-expression>(version==1)</version-expression>
-    <database>
-      <table-name>T_DMTYPE</table-name>
-      <parent-table>T_CMABSTRACT</parent-table>
-      <!-- columns -->
-      <column name="PARENTDMTYPE"  type="INTEGER"/>
-      <column name="SQLCACHEEXPR"  type="STRING_SHORT"  length="50"/>
     </database>
   </definition>
 

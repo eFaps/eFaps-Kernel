@@ -28,23 +28,29 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
 import org.efaps.db.Checkin;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.UpdateLifecycle;
 import org.efaps.util.EFapsException;
 
 /**
- * This clas is used to import JAsperImages.
+ * Handles the import / update of Jasper Images for eFaps read from a XML
+ * configuration item file  (for the meta data) and the image itself as binary
+ * file.
+ *
  * @author The eFasp Team\
  * @version $Id$
  */
 public class JasperImageUpdate extends AbstractUpdate
 {
-
-    /** Name of the root path used to initialize the path for the image. */
+    /**
+     * Name of the root path used to initialize the path for the image.
+     * */
     private final String root;
 
     /**
+     * Default constructor to initialize this Jasper report image update
+     * instance for given <code>_url</code>.
      *
      * @param _url URL of the file
      */
@@ -62,18 +68,18 @@ public class JasperImageUpdate extends AbstractUpdate
      * @return new definition instance
      * @see JasperImageDefinition
      */
-    @Override
+    @Override()
     protected AbstractDefinition newDefinition()
     {
         return new JasperImageDefinition();
     }
 
-
     /**
      * Definition for a Jasper Image.
      *
      */
-    private class JasperImageDefinition extends AbstractDefinition
+    private class JasperImageDefinition
+        extends AbstractDefinition
     {
         /** Name of the Image file (including the path) to import. */
         private String file = null;
@@ -81,8 +87,10 @@ public class JasperImageUpdate extends AbstractUpdate
         /**
          * {@inheritDoc}
          */
-        @Override
-        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        @Override()
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
         {
             final String value = _tags.get(0);
             if ("file".equals(value)) {
@@ -95,13 +103,14 @@ public class JasperImageUpdate extends AbstractUpdate
         /**
          * {@inheritDoc}
          */
-        @Override
-        protected void updateInDB(final Set<Link> _allLinkTypes) throws EFapsException
+        @Override()
+        protected void updateInDB(final UpdateLifecycle _step,
+                                  final Set<Link> _allLinkTypes)
+            throws EFapsException
         {
+            super.updateInDB(_step, _allLinkTypes);
 
-            super.updateInDB(_allLinkTypes);
-
-            if (this.file != null) {
+            if ((_step == UpdateLifecycle.EFAPS_UPDATE) && (this.file != null))  {
                 try {
                     final InputStream in = new URL(JasperImageUpdate.this.root + this.file).openStream();
                     final Checkin checkin = new Checkin(this.instance);

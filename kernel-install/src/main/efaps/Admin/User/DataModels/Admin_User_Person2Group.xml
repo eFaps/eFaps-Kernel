@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -33,7 +33,7 @@
 
   <!-- define type (is already defined) -->
   <definition>
-    <version-expression>(version==6) || (version==latest)</version-expression>
+    <version-expression>(version==3) || (version==latest)</version-expression>
     <name>Admin_User_Person2Group</name>
     <parent>Admin_User_Abstract2Abstract</parent>
     <!-- attributes -->

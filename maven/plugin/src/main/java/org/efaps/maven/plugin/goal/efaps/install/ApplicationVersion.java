@@ -20,29 +20,31 @@
 
 package org.efaps.maven.plugin.goal.efaps.install;
 
-import static org.mozilla.javascript.Context.enter;
-import static org.mozilla.javascript.Context.javaToJS;
-import static org.mozilla.javascript.ScriptableObject.putProperty;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.mozilla.javascript.ImporterTopLevel;
-import org.mozilla.javascript.Scriptable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.program.esjp.Compiler;
 import org.efaps.admin.program.staticsource.AbstractSourceCompiler;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.update.Install;
+import org.efaps.update.UpdateLifecycle;
 import org.efaps.util.EFapsException;
+import org.mozilla.javascript.ImporterTopLevel;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.mozilla.javascript.Context.enter;
+import static org.mozilla.javascript.Context.javaToJS;
 
 /**
  *
@@ -50,7 +52,8 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-public class ApplicationVersion implements Comparable /* < ApplicationVersion > */<Object>
+public class ApplicationVersion
+    implements Comparable /* < ApplicationVersion > */<Object>
 {
     /**
      * Logging instance used to give logging information of this class.
@@ -107,11 +110,18 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
 
     /**
      * Description of this version.
+     *
+     * @see #appendDescription(String)
+     * @see #getDescription()
      */
     private final StringBuilder description = new StringBuilder();
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // instance methods
+    /**
+     * Set of ignored life cycle steps.
+     *
+     * @see #addIgnoredStep(String)
+     */
+    private final Set<UpdateLifecycle> ignoredSteps = new HashSet<UpdateLifecycle>();
 
     /**
      * Installs the XML update scripts of the schema definitions for this
@@ -123,8 +133,11 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
      * @param _userName name of logged in user
      * @param _password password of logged in user
      */
-    public void install(final Install _install, final long _latestVersionNumber, final String _userName,
-                    final String _password) throws EFapsException, Exception
+    public void install(final Install _install,
+                        final long _latestVersionNumber,
+                        final String _userName,
+                        final String _password)
+        throws EFapsException, Exception
     {
         // reload cache if needed
         if (this.reloadCacheNeeded) {
@@ -134,14 +147,14 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
             Context.rollback();
         }
 
-        // start transaction (with username if needed)
+        // start transaction (with user name if needed)
         if (this.loginNeeded) {
             Context.begin(_userName);
         } else {
             Context.begin();
         }
 
-        _install.install(this.number, _latestVersionNumber);
+        _install.install(this.number, _latestVersionNumber, this.ignoredSteps);
 
         // commit transaction
         Context.commit();
@@ -216,6 +229,17 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
     }
 
     /**
+     * Appends a step which is ignored within the installation of this version.
+     *
+     * @param _step ignored step
+     * @see #ignoredSteps
+     */
+    public void addIgnoredStep(final String _step)
+    {
+        this.ignoredSteps.add(UpdateLifecycle.valueOf(_step.toUpperCase()));
+    }
+
+    /**
      * Compares this application version with the specified application version.<br/>
      * The method compares the version number of the application version. To do
      * this, the method {@link java.lang.Long#compareTo} is called.
@@ -270,7 +294,8 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
     /**
      * This is the setter method for instance variable {@link #loginNeeded}.
      *
-     * @param _compile new value for instance variable {@link #loginNeeded}
+     * @param _loginNeeded      <i>true</i> means that a login is needed for
+     *                          this version
      * @see #loginNeeded
      */
     public void setLoginNeeded(final boolean _loginNeeded)
@@ -282,8 +307,8 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
      * This is the setter method for instance variable
      * {@link #reloadCacheNeeded}.
      *
-     * @param _compile new value for instance variable
-     *            {@link #reloadCacheNeeded}
+     * @param _reloadCacheNeeded    <i>true</i> means that the cache must be
+     *                              reloaded
      * @see #reloadCacheNeeded
      */
     public void setReloadCacheNeeded(final boolean _reloadCacheNeeded)
@@ -295,8 +320,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
      * This is the setter method for instance variable
      * {@link #classpathElements}.
      *
-     * @param _compile new value for instance variable
-     *            {@link #classpathElements}
+     * @param _classpathElements    list of class path elements
      * @see #classpathElements
      */
     public void setClasspathElements(final List<String> _classpathElements)
@@ -312,41 +336,43 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
     @Override
     public String toString()
     {
-        return new ToStringBuilder(this).append("number", this.number).toString();
+        return new ToStringBuilder(this)
+            .append("number", this.number)
+            .toString();
     }
-
-    // ///////////////////////////////////////////////////////////////////////////
 
     /**
      * Class used to store information of needed called scripts within an
      * application version.
      */
-    private class Script
+    private final class Script
     {
 
         /**
          * Script code to execute.
          */
-        final String code;
+        private final String code;
 
         /**
          * File name of the script (within the class path).
          */
-        final String fileName;
+        private final String fileName;
 
         /**
          * Name of called function.
          */
-        final String function;
+        private final String function;
 
         /**
          * Constructor to initialize a script.
          *
-         * @param _code script code
-         * @param _fileName script file name
-         * @param _function called function name
+         * @param _code         script code
+         * @param _fileName     script file name
+         * @param _function     called function name
          */
-        private Script(final String _code, final String _fileName, final String _function)
+        private Script(final String _code,
+                       final String _fileName,
+                       final String _function)
         {
             this.code = (_code == null) || ("".equals(_code.trim())) ? null : _code.trim();
             this.fileName = _fileName;
@@ -360,27 +386,31 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
          * @param _password password of logged in user
          * @throws IOException
          */
-        public void execute(final String _userName, final String _password) throws IOException
+        public void execute(final String _userName,
+                final String _password)
+            throws IOException
         {
 
             // create new javascript context
             final org.mozilla.javascript.Context javaScriptContext = enter();
 
-            final Scriptable scope = new ImporterTopLevel(javaScriptContext);;
+            final Scriptable scope = new ImporterTopLevel(javaScriptContext);
 
             // define the context javascript property
-            putProperty(scope, "javaScriptContext", javaScriptContext);
+            ScriptableObject.putProperty(scope, "javaScriptContext", javaScriptContext);
 
             // define the scope javascript property
-            putProperty(scope, "javaScriptScope", scope);
+            ScriptableObject.putProperty(scope, "javaScriptScope", scope);
 
-            putProperty(scope, "EFAPS_LOGGER", javaToJS(LOG, scope));
-            putProperty(scope, "EFAPS_USERNAME", javaToJS(_userName, scope));
-            putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
+            ScriptableObject.putProperty(scope, "EFAPS_LOGGER", javaToJS(ApplicationVersion.LOG, scope));
+            ScriptableObject.putProperty(scope, "EFAPS_USERNAME", javaToJS(_userName, scope));
+            ScriptableObject.putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
 
             // evaluate java script file (if defined)
             if (this.fileName != null) {
-                LOG.info("Execute script file '" + this.fileName + "'");
+                if (ApplicationVersion.LOG.isInfoEnabled())  {
+                    ApplicationVersion.LOG.info("Execute script file '" + this.fileName + "'");
+                }
                 final Reader in = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(this.fileName));
                 javaScriptContext.evaluateReader(scope, in, this.fileName, 1, null);
                 in.close();
@@ -392,9 +422,11 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
                                 "Executing script code of version " + ApplicationVersion.this.number, 1, null);
             }
 
-            // evalute script defined through the reader
+            // evaluate script defined through the reader
             if (this.function != null) {
-                LOG.info("Execute script function '" + this.function + "'");
+                if (ApplicationVersion.LOG.isInfoEnabled())  {
+                    ApplicationVersion.LOG.info("Execute script function '" + this.function + "'");
+                }
                 javaScriptContext.evaluateReader(scope, new StringReader(this.function), this.function, 1, null);
             }
         }

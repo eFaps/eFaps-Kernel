@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -34,7 +34,7 @@
   <!-- sql table names for the data model -->
 
   <definition>
-    <version-expression>(version==4) || (version==latest)</version-expression>
+    <version-expression>(version==2) || (version==latest)</version-expression>
     <name>Admin_DataModel_SQLTableSQLTable</name>
     <parent>Admin_Common_AbstractSQLTable</parent>
     <database>
@@ -52,27 +52,6 @@
     </database>
   </definition>
 
-  <!-- create view representing all sql tables -->
-  <definition>
-    <version-expression>(version==2)</version-expression>
-    <database>
-      <table-name>T_DMTABLE</table-name>
-      <sql>
-        create view V_ADMINSQLTABLE as
-          select
-                T_CMABSTRACT.ID,
-                T_CMABSTRACT.UUID,
-                T_CMABSTRACT.NAME,
-                T_DMTABLE.SQLTABLE,
-                T_DMTABLE.SQLCOLUMNID,
-                T_DMTABLE.SQLCOLUMNTYPE,
-                T_DMTABLE.DMTABLEMAIN
-            from T_DMTABLE,T_CMABSTRACT
-            where T_CMABSTRACT.ID=T_DMTABLE.ID
-      </sql>
-    </database>
-  </definition>
-
   <!-- create base SQL tables -->
   <definition>
     <version-expression>(version==1)</version-expression>
@@ -86,6 +65,20 @@
       <column name="DMTABLEMAIN"    type="INTEGER"/>
       <!-- constraints -->
       <unique name="T_DMTABLE_UK_SQLTBLE" columns="SQLTABLE"/>
+      <!-- create view representing all SQL tables -->
+      <sql>
+        create or replace view V_ADMINSQLTABLE as
+          select
+                T_CMABSTRACT.ID,
+                T_CMABSTRACT.UUID,
+                T_CMABSTRACT.NAME,
+                T_DMTABLE.SQLTABLE,
+                T_DMTABLE.SQLCOLUMNID,
+                T_DMTABLE.SQLCOLUMNTYPE,
+                T_DMTABLE.DMTABLEMAIN
+            from T_DMTABLE,T_CMABSTRACT
+            where T_CMABSTRACT.ID=T_DMTABLE.ID
+      </sql>
      </database>
   </definition>
 

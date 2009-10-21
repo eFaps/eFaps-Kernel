@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -41,7 +41,7 @@
   </definition>
   
   <definition>
-    <version-expression>(version==6)</version-expression>
+    <version-expression>(version==3)</version-expression>
     <name>Admin_DataModel_Type_Trigger_InsertPost</name>
     <parent>Admin_DataModel_Type_Trigger</parent>
   </definition>

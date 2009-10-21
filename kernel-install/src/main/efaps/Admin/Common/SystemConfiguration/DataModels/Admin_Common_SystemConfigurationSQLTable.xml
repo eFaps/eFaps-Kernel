@@ -16,7 +16,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          jmox
+  Author:          The eFaps Team
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -33,7 +33,7 @@
 
   <!-- Common Properties -->
   <definition>
-    <version-expression>(version==4) || (version==latest)</version-expression>
+    <version-expression>(version==2) || (version==latest)</version-expression>
     <name>Admin_Common_SystemConfigurationSQLTable</name>
     <typeid-column>TYPEID</typeid-column>
     <database>
@@ -52,22 +52,16 @@
       <foreign name="T_CMSYSCONF_FK_ABSTRACT" key="ABSTRACTID"    reference="T_CMABSTRACT(ID)"/>
       <foreign name="T_CMSYSCONF_FK_CRTR"     key="CREATOR"       reference="T_USERPERSON(ID)"/>
       <foreign name="T_CMSYSCONF_FK_MDFR"     key="MODIFIER"      reference="T_USERPERSON(ID)"/>
-    </database>
-  </definition>
-  
-  <definition>
-    <version-expression>(version==2)</version-expression>
-    <database>
-      <table-name>T_CMSYSCONF</table-name>
+      <!-- used as simple API -->
       <sql>
-        create view V_CMSYSCONF as
-        select T_CMABSTRACT.ID as CONFIGID, 
+        create or replace view V_CMSYSCONF as
+        select T_CMABSTRACT.ID as CONFIGID,
                T_CMABSTRACT.NAME as CONFIGNAME,
-               T_CMABSTRACT.UUID as CONFIGUUID, 
-               T_CMSYSCONF.KEY, 
+               T_CMABSTRACT.UUID as CONFIGUUID,
+               T_CMSYSCONF.KEY,
                T_CMSYSCONF.VALUE,
                t3.UUID
-          from T_CMSYSCONF 
+          from T_CMSYSCONF
           join T_CMABSTRACT on T_CMSYSCONF.ABSTRACTID = T_CMABSTRACT.ID
           join T_CMABSTRACT t3 on T_CMSYSCONF.TYPEID = t3.ID
           order by CONFIGID
@@ -75,7 +69,6 @@
     </database>
   </definition>
 
-  
   <!-- create base data model -->
   <definition>
     <version-expression>(version==1)</version-expression>
@@ -91,6 +84,20 @@
       <column name="CREATED"    type="DATETIME"                     not-null="true"/>
       <column name="MODIFIER"   type="INTEGER"                      not-null="true"/>
       <column name="MODIFIED"   type="DATETIME"                     not-null="true"/>
+      <!-- used as simple API -->
+      <sql>
+        create or replace view V_CMSYSCONF as
+        select T_CMABSTRACT.ID as CONFIGID,
+               T_CMABSTRACT.NAME as CONFIGNAME,
+               T_CMABSTRACT.UUID as CONFIGUUID,
+               T_CMSYSCONF.KEY,
+               T_CMSYSCONF.VALUE,
+               t3.UUID
+          from T_CMSYSCONF
+          join T_CMABSTRACT on T_CMSYSCONF.ABSTRACTID = T_CMABSTRACT.ID
+          join T_CMABSTRACT t3 on T_CMSYSCONF.TYPEID = t3.ID
+          order by CONFIGID
+      </sql>
     </database>
   </definition>
 

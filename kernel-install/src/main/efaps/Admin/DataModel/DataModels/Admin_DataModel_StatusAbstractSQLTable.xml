@@ -23,28 +23,16 @@
 
 -->
 
-<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" 
-                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+<datamodel-sqltable  xmlns="http://www.efaps.org/xsd"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                      xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>61fc542f-ddb6-4e6c-b07a-db2fb49a12bf</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
-  
+
   <definition>
-    <version-expression>(version==6) || (version==latest)</version-expression>
+    <version-expression>(version==1) || (version==2) || (version==latest)</version-expression>
     <name>Admin_DataModel_StatusAbstractSQLTable</name>
-    <typeid-column>TYPEID</typeid-column>
-    <database>
-      <table-name>T_DMSTATUS</table-name>
-      <!-- columns -->
-      <column name="TYPEID"     type="INTEGER"          not-null="true"/>
-      <column name="KEY"        type="STRING_SHORT"     not-null="true"     length="60"/>
-      <column name="DESCR"      type="STRING_SHORT"     not-null="true"     length="255" />
-     </database>
-  </definition>
-  
-  <definition>
-    <version-expression>(version==1)</version-expression>
     <database>
       <table-name>T_DMSTATUS</table-name>
       <!-- columns -->
