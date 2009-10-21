@@ -187,7 +187,7 @@ public final class StartupDatabaseConnection implements INamingBinds
             if (tm == null) {
                 throw new StartupException("could not initaliase database type");
             } else {
-                tm.setTransactionTimeout(900);
+                tm.setTransactionTimeout(90);
                 Util.bind(_compCtx, "env/" + RESOURCE_TRANSMANAG, tm);
             }
         } catch (final ClassNotFoundException e) {
