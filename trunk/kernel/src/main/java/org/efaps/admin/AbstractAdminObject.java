@@ -167,15 +167,16 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
             evenList = new ArrayList<EventDefinition>();
             this.events.put(_eventtype, evenList);
         }
-        int pos = 0;
-        for (final EventDefinition cur : evenList) {
-            if (_eventdef.getIndexPos() > cur.getIndexPos()) {
-                break;
+        if (!evenList.contains(_eventdef)) {
+            int pos = 0;
+            for (final EventDefinition cur : evenList) {
+                if (_eventdef.getIndexPos() > cur.getIndexPos()) {
+                    break;
+                }
+                pos++;
             }
-            pos++;
+            evenList.add(pos, _eventdef);
         }
-        evenList.add(pos, _eventdef);
-
     }
 
     /**
