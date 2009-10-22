@@ -33,6 +33,7 @@
   <definition>
     <version-expression>(version==1) || (version==2) || (version==latest)</version-expression>
     <name>Admin_DataModel_StatusAbstractSQLTable</name>
+    <typeid-column>TYPEID</typeid-column>
     <database>
       <table-name>T_DMSTATUS</table-name>
       <!-- columns -->
