@@ -20,8 +20,11 @@
 
 package org.efaps.init;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -44,7 +47,8 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public final class StartupDatabaseConnection implements INamingBinds
+public final class StartupDatabaseConnection
+    implements INamingBinds
 {
     /**
      * Logging instance used to give logging information of this class.
@@ -60,24 +64,52 @@ public final class StartupDatabaseConnection implements INamingBinds
 
     /**
      * Initialize the database information set for given parameter values.
+     *
+     * @param _classDBType      class name of the database type
+     * @param _classDSFactory   class name of the SQL data source factory
+     * @param _propConnection   string with properties for the JDBC connection
+     * @param _classTM          class name of the transaction manager
+     * @throws StartupException if the database connection or transaction
+     *             manager could not be initialized
+     * @see #startup(String, String, Map, String)
+     * @see #convertToMap(String)
+     */
+    public static void startup(final String _classDBType,
+                               final String _classDSFactory,
+                               final String _propConnection,
+                               final String _classTM)
+        throws StartupException
+    {
+        StartupDatabaseConnection.startup(_classDBType,
+                                          _classDSFactory,
+                                          StartupDatabaseConnection.convertToMap(_propConnection),
+                                          _classTM);
+    }
+
+    /**
+     * Initialize the database information set for given parameter values.
      * <ul>
      * <li>configure the database type</li>
-     * <li>initialize the SQL datasource (JDBC connection to the database)</li>
+     * <li>initialize the SQL data source (JDBC connection to the database)
+     *     </li>
      * <li>initialize transaction manager</li>
      * </ul>
      *
-     * @param _classDBType class name of the database type
-     * @param _classDSFactory class name of the SQL data source factory
-     * @param _propConnection map of properties for the JDBC connection
-     * @param _classTM class name of the transaction manager
+     * @param _classDBType      class name of the database type
+     * @param _classDSFactory   class name of the SQL data source factory
+     * @param _propConnection   map of properties for the JDBC connection
+     * @param _classTM          class name of the transaction manager
      * @throws StartupException if the database connection or transaction
-     *             manager could not be initialized
+     *                          manager could not be initialized
      * @see #configureDBType(Context, String)
      * @see #configureDataSource(Context, String, Map)
      * @see #configureTransactionManager(Context, String)
      */
-    public static void startup(final String _classDBType, final String _classDSFactory,
-                    final Map<String, String> _propConnection, final String _classTM) throws StartupException
+    public static void startup(final String _classDBType,
+                               final String _classDSFactory,
+                               final Map<String, String> _propConnection,
+                               final String _classTM)
+        throws StartupException
     {
         if (StartupDatabaseConnection.LOG.isInfoEnabled()) {
             StartupDatabaseConnection.LOG.info("Initialise Database Connection");
@@ -107,8 +139,10 @@ public final class StartupDatabaseConnection implements INamingBinds
      * @param _propConnection map of properties for the JDBC connection
      * @throws StartupException on error
      */
-    protected static void configureDataSource(final Context _compCtx, final String _classDSFactory,
-                    final Map<String, String> _propConnection) throws StartupException
+    protected static void configureDataSource(final Context _compCtx,
+                                              final String _classDSFactory,
+                                              final Map<String, String> _propConnection)
+        throws StartupException
     {
         final Reference ref = new Reference(DataSource.class.getName(), _classDSFactory, null);
         for (final Entry<String, String> entry : _propConnection.entrySet()) {
@@ -144,15 +178,17 @@ public final class StartupDatabaseConnection implements INamingBinds
      * {@link #RESOURCE_DBTYPE}. The initialized class must be extended from
      * class {@link AbstractDatabse}.
      *
-     * @param _compCtx Java root naming context
-     * @param _classDBType class name of the database type
+     * @param _compCtx      Java root naming context
+     * @param _classDBType  class name of the database type
      * @throws StartupException if the database type class could not be found,
      *             initialized, accessed or bind to the context
      */
-    protected static void configureDBType(final Context _compCtx, final String _classDBType) throws StartupException
+    protected static void configureDBType(final Context _compCtx,
+                                          final String _classDBType)
+        throws StartupException
     {
         try {
-            final AbstractDatabase dbType = (AbstractDatabase) (Class.forName(_classDBType)).newInstance();
+            final AbstractDatabase<?> dbType = (AbstractDatabase<?>) (Class.forName(_classDBType)).newInstance();
             if (dbType == null) {
                 throw new StartupException("could not initaliase database type '" + _classDBType + "'");
             } else {
@@ -174,12 +210,13 @@ public final class StartupDatabaseConnection implements INamingBinds
      * {@link #RESOURCE_TRANSMANAG}. The initialized class must implement
      * interface {@link TransactionManager}.
      *
-     * @param _compCtx Java root naming context
-     * @param _classTM class name of the transaction manager
+     * @param _compCtx  Java root naming context
+     * @param _classTM  class name of the transaction manager
      * @throws StartupException if the transaction manager class could not be
      *             found, initialized, accessed or bind to the context
      */
-    protected static void configureTransactionManager(final Context _compCtx, final String _classTM)
+    protected static void configureTransactionManager(final Context _compCtx,
+                                                      final String _classTM)
         throws StartupException
     {
         try {
@@ -201,5 +238,40 @@ public final class StartupDatabaseConnection implements INamingBinds
         } catch (final SystemException e) {
             throw new StartupException("could not set transaction timeout for class '" + _classTM + "'", e);
         }
+    }
+
+    /**
+     * Separates all key / value pairs of given text string.<br/>
+     * Evaluation algorithm:<br/>
+     * Separates the text by all found commas (only if in front of the comma is
+     * no back slash). This are the key / value pairs. A key / value pair is
+     * separated by the first equal ('=') sign.
+     *
+     * @param _text   text string to convert to a key / value map
+     * @return Map of strings with all found key / value pairs
+     */
+    protected static Map<String, String> convertToMap(final String _text)
+    {
+        final Map<String, String> properties = new HashMap<String, String>();
+
+        // separated all key / value pairs
+        final Pattern pattern = Pattern.compile("(([^\\\\,])|(\\\\,)|(\\\\))*");
+        final Matcher matcher = pattern.matcher(_text);
+
+        while (matcher.find())  {
+            final String group = matcher.group().trim();
+            if (group.length() > 0)  {
+                // separated key from value
+                final int index = group.indexOf('=');
+                final String key = (index > 0)
+                                   ? group.substring(0, index).trim()
+                                   : group.trim();
+                final String value = (index > 0)
+                                     ? group.substring(index + 1).trim()
+                                     : "";
+                properties.put(key, value);
+            }
+        }
+        return properties;
     }
 }
