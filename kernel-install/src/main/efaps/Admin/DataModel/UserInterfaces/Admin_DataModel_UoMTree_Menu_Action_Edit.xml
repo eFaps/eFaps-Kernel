@@ -34,6 +34,7 @@
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>Admin_DataModel_UoMTree_Menu_Action_Edit</name>
+    <icon>Admin_DataModel_UoM+Edit+Image</icon>
     <!-- target definitions -->
     <target>
       <form>Admin_DataModel_UoMForm</form>

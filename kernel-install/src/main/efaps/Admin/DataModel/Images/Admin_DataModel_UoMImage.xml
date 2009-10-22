@@ -20,31 +20,29 @@
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
+ Original Author: Mark James (mjames at gmail.com)
+ Original Name:   text_letter_omega.png
+ Original Web:    Silk icon set 1.3
+                  [ http://www.famfamfam.com/lab/icons/silk/ ]
+ Original License:Creative Commons Attribution 2.5 License
+                  [ http://creativecommons.org/licenses/by/2.5/ ]
 
 -->
 
-<ui-command xmlns="http://www.efaps.org/xsd"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-image xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>6dd16e90-b74e-4a24-96ca-41c5634f306f</uuid>
+  <uuid>a0187fb1-8fcd-43a7-959a-a86eeabdc483</uuid>
   <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
-    <name>Admin_DataModel_DimensionTree_UoMs_Action_AddUoM</name>
-    <icon>Admin_DataModel_UoM+Add+Image</icon>
-    <!-- target definitions -->
-    <target>
-      <form>Admin_DataModel_UoMForm</form>
-      <execute program="org.efaps.esjp.common.uiform.Create"/>
-    </target>
-    <!-- properties -->
-    <property name="Target">modal</property>
-    <property name="TargetConnectAttribute">Admin_DataModel_UoM/Dimension</property>
-    <property name="TargetCreateType">Admin_DataModel_UoM</property>
-    <property name="TargetMode">create</property>
+    <name>Admin_DataModel_UoMImage</name>
+    <file>Admin_DataModel_UoMImage.gif</file>
+    <!-- is type icon for -->
+    <type>Admin_DataModel_UoM</type>
   </definition>
 
-</ui-command>
+</ui-image>
