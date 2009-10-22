@@ -36,6 +36,11 @@ import org.efaps.util.EFapsException;
 /**
  * Handles the import / update of status groups for eFaps read from a XML
  * configuration item file.
+ * Remark:
+ * The StatusGroupDefinition is actual just a normal Admin_DataModel_Type and
+ * the stati belonging to it are instances of this Type. That leads to the
+ * problem that if a StatusGroupUpdate is executed in one version the
+ * cache for the Types must be reloaded.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -62,14 +67,23 @@ public class StatusGroupUpdate extends AbstractUpdate
         return new StatusGroupDefinition();
     }
 
+    /**
+     * Definition of one status.
+     */
     public class StatusDefintion
     {
-
+        /**
+         * Key of this status.
+         */
         private final String key;
+
+        /**
+         * Description for this status.
+         */
         private String description;
 
         /**
-         * @param _key
+         * @param _key key
          */
         public StatusDefintion(final String _key)
         {
@@ -77,7 +91,7 @@ public class StatusGroupUpdate extends AbstractUpdate
         }
 
         /**
-         * @param _description
+         * @param _description description
          */
         public void setDescription(final String _description)
         {
@@ -85,8 +99,8 @@ public class StatusGroupUpdate extends AbstractUpdate
         }
 
         /**
-         * @param _typeName
-         * @throws EFapsException
+         * @param _typeName name of the type
+         * @throws EFapsException on error during insert
          */
         public void updateInDB(final String _typeName) throws EFapsException
         {
@@ -103,9 +117,20 @@ public class StatusGroupUpdate extends AbstractUpdate
      */
     public class StatusGroupDefinition extends AbstractDefinition
     {
+        /**
+         * Name of the parent type.
+         */
         private String parentType;
+
+        /**
+         * current definition.
+         */
         private StatusDefintion currentStatus;
-        private final Set<StatusDefintion> stati = new HashSet<StatusDefintion>();
+
+        /**
+         * Set of all definitions.
+         */
+        private final Set<StatusGroupUpdate.StatusDefintion> stati = new HashSet<StatusGroupUpdate.StatusDefintion>();
 
         /**
          *
@@ -137,6 +162,7 @@ public class StatusGroupUpdate extends AbstractUpdate
          * defined, the parent type id is set to <code>null</code>). After the
          * type is updated (or inserted if needed), all statis must be updated.
          *
+         * @param _step         current step in the Update Lifecycle
          * @param _allLinkTypes set of all links
          * @throws EFapsException on error
          *
