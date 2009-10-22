@@ -33,7 +33,7 @@ import org.efaps.util.EFapsException;
 /**
  * Class provides methods in relation to fields.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 @EFapsUUID("801f350c-3cdf-4a60-b4ee-19b8a63ec867")

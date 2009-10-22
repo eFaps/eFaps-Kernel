@@ -42,7 +42,7 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id:QuerySearch.java 1563 2007-10-28 14:07:41Z tmo $
  * @todo description
  */

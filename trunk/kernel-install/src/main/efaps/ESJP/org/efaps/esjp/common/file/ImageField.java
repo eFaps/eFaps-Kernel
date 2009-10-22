@@ -105,7 +105,7 @@ import org.efaps.util.EFapsException;
  * </pre>
  *
  *
- * @author The eFasp TEam
+ * @author The eFaps Team
  * @version $Id$
  */
 @EFapsUUID("09afa252-3548-4987-870a-616186351690")

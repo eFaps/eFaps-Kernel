@@ -41,7 +41,7 @@ import org.efaps.util.EFapsException;
  * Because an expand is made to show the web table, the oid with the index 1 in
  * the list of oids is used to delete.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
 @EFapsUUID("b8d99ead-ceb1-4ee8-bf6f-d1022cc4485f")

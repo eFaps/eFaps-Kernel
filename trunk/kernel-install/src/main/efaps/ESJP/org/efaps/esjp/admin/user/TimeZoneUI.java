@@ -41,7 +41,7 @@ import org.efaps.util.EFapsException;
 /**
  * ESJP is used to get the value, and to render the fields for timezone.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 @EFapsUUID("122112fd-9bd8-4855-8948-6837272195eb")

@@ -36,7 +36,7 @@ import org.efaps.util.EFapsException;
  * This Class is a Java eFaps Program which is stored inside the eFaps-Database.
  * It is executed on user interaction through a trigger on a Command.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id:ReloadCache.java 1563 2007-10-28 14:07:41Z tmo $
  * @todo use EFapsException
  */

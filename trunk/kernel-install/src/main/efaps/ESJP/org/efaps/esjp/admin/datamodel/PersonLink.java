@@ -39,7 +39,7 @@ import org.efaps.util.EFapsException;
 /**
  * TODO comment!
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 @EFapsUUID("cd9958cf-f8f4-4013-955e-f426e6139c65")

@@ -37,7 +37,7 @@ import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  * @todo description
  */

@@ -36,7 +36,7 @@ import org.efaps.util.EFapsException;
  * Class contains some method need to create a Person and to connect the person
  * to a role.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 @EFapsUUID("1b777261-6da1-4003-87e4-2937e44ff269")

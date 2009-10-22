@@ -45,7 +45,7 @@ import org.efaps.util.EFapsException;
 /**
  * Esjp used to change th epassword for a user.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 @EFapsUUID("ff1b1140-3da0-491f-8bf4-c42f71ea4343")
