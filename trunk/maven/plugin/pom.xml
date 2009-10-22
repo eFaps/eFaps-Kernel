@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          The eFaps Team
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -64,7 +64,7 @@
           <source>1.5</source>
           <target>1.5</target>
         </configuration>
-           
+
       </plugin>
 
       <plugin>
@@ -81,8 +81,8 @@
         </dependencies>
         <executions>
           <execution>
-          <!-- 
-            due to Java5 annotations, which can only be read after compilation, 
+          <!--
+            due to Java5 annotations, which can only be read after compilation,
             the maven-plugin-plugin must be executed a second time after compilation
           -->
             <id>extract-after-compile</id>
@@ -136,25 +136,22 @@
       <artifactId>maven-plugin-api</artifactId>
       <version>${dependency.version.maven-plugin-api}</version>
     </dependency>
-    
+
     <!-- used as javax.naming.* implementation -->
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
-      <version>${dependency.version.jetty}</version>
-      <scope>compile</scope>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-jndi</artifactId>
+      <version>7.0.0.v20091005</version>
     </dependency>
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
+      <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-util</artifactId>
-      <version>${dependency.version.jetty}</version>
-      <scope>compile</scope>
+      <version>7.0.0.v20091005</version>
     </dependency>
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty-naming</artifactId>
-      <version>${dependency.version.jetty}</version>
-      <scope>compile</scope>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <version>7.0.0.v20091005</version>
     </dependency>
 
     <!-- needed to get directory scanner working -->
@@ -194,7 +191,7 @@
       <artifactId>commons-io</artifactId>
       <version>1.4</version>
     </dependency>
-    
+
     <!-- java transaction manager -->
     <dependency>
       <groupId>jotm</groupId>
@@ -228,7 +225,7 @@
       <artifactId>connector</artifactId>
       <version>1.0</version>
     </dependency>
-    
+
   </dependencies>
 
   <!-- Repositories needes for the javax... dependencys -->
