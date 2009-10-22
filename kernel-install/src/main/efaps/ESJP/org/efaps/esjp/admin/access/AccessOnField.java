@@ -34,7 +34,7 @@ import org.efaps.util.EFapsException;
  * Class is used as an esjp to give access on a field. It contains methods that
  * allows to hide fields when necessary.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 @EFapsUUID("216703cb-15e7-423e-9d71-46497b63e374")

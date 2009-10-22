@@ -37,7 +37,7 @@ import org.efaps.util.EFapsException;
 /**
  * ESJP is used to get the value, and to render the fields for chronology.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 @EFapsUUID("d24a6606-95ac-427d-9689-31182dd71cd8")

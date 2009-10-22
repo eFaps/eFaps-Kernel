@@ -33,7 +33,7 @@ import org.efaps.util.EFapsException;
 /**
  * Class provides trigger functionalities for deletion or events.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 @EFapsUUID("fb9bddcb-0f39-4b55-88aa-891b91a2ee5b")

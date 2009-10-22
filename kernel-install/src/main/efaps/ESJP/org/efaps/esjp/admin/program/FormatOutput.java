@@ -38,7 +38,7 @@ import org.efaps.util.EFapsException;
 /**
  * Class is used to render a css into a readable html.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 @EFapsUUID("27dcb0e6-bd78-4442-a9d6-05f491a2900f")
