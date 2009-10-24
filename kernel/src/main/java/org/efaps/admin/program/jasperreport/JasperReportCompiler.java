@@ -20,8 +20,6 @@
 
 package org.efaps.admin.program.jasperreport;
 
-
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -60,6 +58,21 @@ import org.efaps.util.EFapsException;
  */
 public class JasperReportCompiler extends AbstractSourceCompiler
 {
+    /**
+     * Stores the list of classpath needed to compile (if needed).
+     */
+    private final List<String> classPathElements;
+
+    /**
+     * Constructor setting the classpath elements.
+     * @param _classPathElements elemnts for the classpath
+     */
+    public JasperReportCompiler(final List<String> _classPathElements)
+    {
+        this.classPathElements = _classPathElements;
+    }
+
+
     /**
      * {@inheritDoc}
      */
@@ -105,6 +118,15 @@ public class JasperReportCompiler extends AbstractSourceCompiler
         checkout.preprocess();
         final InputStream source = checkout.execute();
         JRProperties.setProperty(JRProperties.COMPILER_XML_VALIDATION, false);
+        //make the classPath
+        final String sep = System.getProperty("os.name").startsWith("Windows") ? ";" : ":";
+        final StringBuilder classPath = new StringBuilder();
+        for (final String classPathElement : this.classPathElements) {
+            classPath.append(classPathElement).append(sep);
+        }
+        JRProperties.setProperty(JRProperties.COMPILER_CLASSPATH, classPath.toString());
+        JRProperties.setProperty("net.sf.jasperreports.compiler.groovy",
+                                 "org.efaps.admin.program.jasperreport.JasperGroovyCompiler");
 
         try {
             final JRXmlDigester digester = JRXmlDigesterFactory.createDigester();
@@ -193,7 +215,6 @@ public class JasperReportCompiler extends AbstractSourceCompiler
      */
     protected class OneJasperReport extends AbstractSource
     {
-
         /**
          * @param _name name
          * @param _oid  oid
@@ -203,7 +224,5 @@ public class JasperReportCompiler extends AbstractSourceCompiler
         {
             super(_name, _oid, _id);
         }
-
     }
-
 }

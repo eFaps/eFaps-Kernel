@@ -36,10 +36,11 @@ import javax.sql.DataSource;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
-import org.efaps.db.databases.AbstractDatabase;
-import org.efaps.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.efaps.db.databases.AbstractDatabase;
+import org.efaps.util.DateTimeUtil;
 
 /**
  * Initialize the database connection for an eFaps instance.
@@ -224,7 +225,7 @@ public final class StartupDatabaseConnection
             if (tm == null) {
                 throw new StartupException("could not initaliase database type");
             } else {
-                tm.setTransactionTimeout(90);
+                tm.setTransactionTimeout(900);
                 Util.bind(_compCtx, "env/" + RESOURCE_TRANSMANAG, tm);
             }
         } catch (final ClassNotFoundException e) {

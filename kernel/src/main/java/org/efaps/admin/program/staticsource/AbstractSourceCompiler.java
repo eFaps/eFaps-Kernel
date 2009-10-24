@@ -57,14 +57,14 @@ public abstract class AbstractSourceCompiler
     /**
      * Static Method that executes the method compile for the SubClasses
      * CSSCompiler and JavaScriptCompiler.
-     *
+     * @param _classPathElements elements on the classpath
      * @throws EFapsException on error
      */
-    public static void compileAll() throws EFapsException
+    public static void compileAll(final List<String> _classPathElements) throws EFapsException
     {
         (new CSSCompiler()).compile();
         (new JavaScriptCompiler()).compile();
-        (new JasperReportCompiler()).compile();
+        (new JasperReportCompiler(_classPathElements)).compile();
     }
 
     /**
