@@ -20,6 +20,9 @@
 
 package org.efaps.maven.plugin.goal.efaps.install;
 
+import static org.mozilla.javascript.Context.enter;
+import static org.mozilla.javascript.Context.javaToJS;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -30,6 +33,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.mozilla.javascript.ImporterTopLevel;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.program.esjp.Compiler;
 import org.efaps.admin.program.staticsource.AbstractSourceCompiler;
 import org.efaps.admin.runlevel.RunLevel;
@@ -37,14 +46,6 @@ import org.efaps.db.Context;
 import org.efaps.update.Install;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.util.EFapsException;
-import org.mozilla.javascript.ImporterTopLevel;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.mozilla.javascript.Context.enter;
-import static org.mozilla.javascript.Context.javaToJS;
 
 /**
  *
@@ -187,7 +188,7 @@ public class ApplicationVersion
 
         Context.begin(_userName);
         (new Compiler(this.classpathElements)).compile();
-        AbstractSourceCompiler.compileAll();
+        AbstractSourceCompiler.compileAll(this.classpathElements);
         Context.commit();
     }
 
