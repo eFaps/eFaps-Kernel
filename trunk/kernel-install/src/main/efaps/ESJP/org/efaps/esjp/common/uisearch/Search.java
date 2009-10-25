@@ -81,10 +81,10 @@ public class Search implements EventExecution
         for (final Field field : command.getTargetForm().getFields()) {
             final String value = context.getParameter(field.getName());
             if ((value != null) && (value.length() > 0) && (!value.equals("*"))) {
-                query.addWhereExprMatchValue(field.getExpression(), value);
+                query.addWhereExprMatchValue(field.getExpression() == null
+                                            ? field.getAttribute() : field.getExpression(), value);
             }
         }
-
         query.addSelect("OID");
         query.execute();
 
@@ -93,7 +93,6 @@ public class Search implements EventExecution
             instances.add(Instance.get((String) query.get("OID")));
         }
         ret.put(ReturnValues.VALUES, instances);
-
         return ret;
     }
 }
