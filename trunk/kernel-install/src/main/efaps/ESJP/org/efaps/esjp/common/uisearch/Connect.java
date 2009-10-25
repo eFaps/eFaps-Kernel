@@ -36,38 +36,37 @@ import org.efaps.util.EFapsException;
 /**
  * @author The eFaps Team
  * @version $Id$
- * @todo description
  */
 @EFapsUUID("9993f975-855d-4d19-865a-c509bf410149")
 @EFapsRevision("$Rev$")
 public class Connect implements EventExecution
 {
+    /**
+     * @param _parameter Parameter as passed from the eFaps API
+     * @return new Return
+     * @throws EFapsException on error
+     */
+    public Return execute(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+        final Instance parent = (Instance) _parameter.get(ParameterValues.INSTANCE);
+        final Map<?, ?> others = (HashMap<?, ?>) _parameter.get(ParameterValues.OTHERS);
 
-  /**
-   * @param _parameter
-   */
-  public Return execute(final Parameter _parameter) throws EFapsException
-  {
-    final Return ret = new Return();
-    final Map<?, ?> properties =
-        (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-    final Instance parent = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    final Map<?, ?> others = (HashMap<?, ?>) _parameter.get(ParameterValues.OTHERS);
+        final String[] childOids = (String[]) others.get("selectedRow");
+        if (childOids != null) {
+            final String type = (String) properties.get("ConnectType");
+            final String childAttr = (String) properties.get("ConnectChildAttribute");
+            final String parentAttr = (String) properties.get("ConnectParentAttribute");
 
-    final String[] childOids = (String[]) others.get("selectedRow");
-
-    final String type = (String) properties.get("ConnectType");
-    final String childAttr = (String) properties.get("ConnectChildAttribute");
-    final String parentAttr = (String) properties.get("ConnectParentAttribute");
-
-    for (final String childOid : childOids) {
-      final Instance child = Instance.get(childOid);
-      final Insert insert = new Insert(type);
-      insert.add(parentAttr, "" + parent.getId());
-      insert.add(childAttr, "" + child.getId());
-      insert.execute();
+            for (final String childOid : childOids) {
+                final Instance child = Instance.get(childOid);
+                final Insert insert = new Insert(type);
+                insert.add(parentAttr, "" + parent.getId());
+                insert.add(childAttr, "" + child.getId());
+                insert.execute();
+            }
+        }
+        return new Return();
     }
-
-    return ret;
-  }
 }
