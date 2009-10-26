@@ -90,7 +90,7 @@ public class Phrase
                     if (oneselect.getAttribute() != null) {
                         buf.append((new FieldValue(null, oneselect.getAttribute(), value, null))
                                     .getStringValue(TargetMode.VIEW, _instance, null));
-                    } else {
+                    } else if (value != null) {
                         buf.append(value);
                     }
                     break;
