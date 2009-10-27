@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
 
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +116,7 @@ public class MultiPrint
         boolean exec = true;
         if (filter != null && filter.size() > 0) {
             final AbstractCommand command = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
-
+            // filtering
             for (final Entry<?, ?> entry : filter.entrySet()) {
                 final String fieldName = (String) entry.getKey();
                 final Field field = command.getTargetTable().getField(fieldName);
@@ -136,12 +137,26 @@ public class MultiPrint
                         if (UUID.fromString("68ce3aa6-e3e8-40bb-b48f-2a67948c2e7e").equals(attrTypeUUId)
                                       || UUID.fromString("e764db0f-70f2-4cd4-b2fe-d23d3da72f78").equals(attrTypeUUId)) {
                             final DateTimeType dateType = new DateTimeType();
-                            final DateTime dateFrom;
-                            final DateTime dateTo;
-                            if ((from == null || to == null) && "today".equalsIgnoreCase(field.getFilterDefault())) {
-                                dateType.set(new DateTime[] { new DateTime() });
-                                dateFrom = dateType.getValue().toDateMidnight().toDateTime().minusSeconds(1);
-                                dateTo = dateFrom.plusDays(1).plusSeconds(1);
+                            DateTime dateFrom = null;
+                            DateTime dateTo = null;
+                            if (from == null || to == null) {
+                                if ("today".equalsIgnoreCase(field.getFilterDefault())) {
+                                    dateType.set(new DateTime[] { new DateTime() });
+                                    dateFrom = dateType.getValue().toDateMidnight().toDateTime().minusSeconds(1);
+                                    dateTo = dateFrom.plusDays(1).plusSeconds(1);
+                                } else if ("week".equalsIgnoreCase(field.getFilterDefault())) {
+                                    dateType.set(new DateTime[] { new DateTime() });
+                                    DateMidnight tmp = dateType.getValue().toDateMidnight();
+                                    tmp = tmp.minusDays(tmp.getDayOfWeek() - 1);
+                                    dateFrom = tmp.toDateTime().minusSeconds(1);
+                                    dateTo = tmp.toDateTime().plusWeeks(1);
+                                } else if ("month".equalsIgnoreCase(field.getFilterDefault())) {
+                                    dateType.set(new DateTime[] { new DateTime() });
+                                    DateMidnight tmp = dateType.getValue().toDateMidnight();
+                                    tmp = tmp.minusDays(tmp.getDayOfMonth() - 1);
+                                    dateFrom = tmp.toDateTime().minusSeconds(1);
+                                    dateTo = tmp.toDateTime().plusMonths(1);
+                                }
                             } else {
                                 dateType.set(new String[] { from });
                                 dateFrom = dateType.getValue().minusSeconds(1);
