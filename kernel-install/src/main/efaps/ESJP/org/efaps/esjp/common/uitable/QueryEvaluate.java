@@ -82,12 +82,13 @@ import org.efaps.util.EFapsException;
  * &nbsp;&nbsp;&nbsp;&nbsp;&lt;property name="ExpandChildTypes"&gt;true&lt;/property&gt;<br>
  * &nbsp;&nbsp;&lt;/evaluate&gt;<br>
  * &lt;/target&gt;</code>
- *
+ * @deprecated use MulitPrint esjp
  * @author The eFaps Team
  * @version $Id:QueryEvaluate.java 1563 2007-10-28 14:07:41Z tmo $
  */
 @EFapsUUID("bbe633db-b098-46d0-8dd8-84af34e7ff8c")
 @EFapsRevision("$Rev$")
+@Deprecated
 public class QueryEvaluate implements EventExecution
 {
     /**
@@ -98,6 +99,7 @@ public class QueryEvaluate implements EventExecution
     /**
      * @param _parameter Parameter
      * @throws EFapsException on error
+     * @return List with List of Instances
      */
     public Return execute(final Parameter _parameter) throws EFapsException
     {

@@ -75,12 +75,13 @@ import org.efaps.util.EFapsException;
  * &nbsp;&nbsp;&lt;/evaluate&gt;<br>
  * &lt;/target&gt;
  * </code>
- *
+ * @deprecated use MulitPrint esjp
  * @author The eFaps Team
  * @version $Id:QueryExpand.java 1563 2007-10-28 14:07:41Z tmo $
  */
 @EFapsUUID("41945470-bcc3-4d91-b16b-6357932ead5e")
 @EFapsRevision("$Rev$")
+@Deprecated
 public class QueryExpand implements EventExecution
 {
     /**
