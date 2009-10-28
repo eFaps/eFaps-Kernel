@@ -60,8 +60,15 @@
       <sqltable>Admin_Common_DBPropertiesLocalSQLTable</sqltable>
       <sqlcolumn>PROPID</sqlcolumn>
     </attribute>
+    <attribute>
+      <name>LanguageID</name>
+      <type>LinkWithRanges</type>
+      <typelink>Admin_Language</typelink>
+      <sqltable>Admin_Common_DBPropertiesLocalSQLTable</sqltable>
+      <sqlcolumn>LANGID</sqlcolumn>
+    </attribute>
   </definition>
-  
+
   <definition>
     <version-expression>(version==latest)</version-expression>
     <name>Admin_Common_DBPropertiesLocal</name>
@@ -97,13 +104,13 @@
       <typelink>Admin_Language</typelink>
       <sqltable>Admin_Common_DBPropertiesLocalSQLTable</sqltable>
       <sqlcolumn>LANGID</sqlcolumn>
-      <trigger program="org.efaps.esjp.admin.datamodel.RangesValue" 
-               name="Admin_Common_DBPropertiesLocal.LanguageRange" 
+      <trigger program="org.efaps.esjp.admin.datamodel.RangesValue"
+               name="Admin_Common_DBPropertiesLocal.LanguageRange"
                event="RANGE_VALUE">
         <property name="Value">Language</property>
         <property name="Type">Admin_Language</property>
       </trigger>
     </attribute>
   </definition>
-    
+
 </datamodel-type>

@@ -50,19 +50,34 @@ public enum UpdateLifecycle
     SQL_RUN_SCRIPT(4),
 
     /**
+     * The Types for the Status Groups are created.
+     */
+    STATUSGROUP_CREATE(5),
+
+    /**
+     * The Status Groups are updated (e.g. Parent-Child relation).
+     */
+    STATUSGROUP_UPDATE(6),
+
+    /**
+     * The Stati for the Status Groups are created.
+     */
+    STATUS_CREATE(7),
+
+    /**
      * eFaps data model is created.
      */
-    EFAPS_CREATE(5),
+    EFAPS_CREATE(8),
 
     /**
      * eFaps data model is updated.
      */
-    EFAPS_UPDATE(6),
+    EFAPS_UPDATE(9),
 
     /**
      * DBProperties are updated.
      */
-    DBPROPERTIES_UPDATE(7);
+    DBPROPERTIES_UPDATE(10);
 
     /**
      * Number representing the order of this UpdateLifecycle.
