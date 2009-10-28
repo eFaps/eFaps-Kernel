@@ -33,6 +33,7 @@
     <lifecyle>
         <ignore step="EFAPS_CREATE"/>
         <ignore step="EFAPS_UPDATE"/>
+        <ignore step="DBPROPERTIES_UPDATE"/>
     </lifecyle>
     <description>Create base SQL tables and views.</description>
     <script name="org/efaps/installations/eFaps-Kernel/CreateAll.js" function="eFapsCreateAll()" />
@@ -40,14 +41,23 @@
 
   <version number="2" reloadCache="true">
     <description>Install SQL Tables.</description>
+    <lifecyle>
+        <ignore step="DBPROPERTIES_UPDATE"/>
+    </lifecyle>
   </version>
 
   <version number="3" reloadCache="true">
     <description>Install complete Data Model</description>
+    <lifecyle>
+        <ignore step="DBPROPERTIES_UPDATE"/>
+    </lifecyle>
   </version>
 
   <version number="4" reloadCache="true">
     <description>Install Access Types, Access Sets and Users. Install all Stores. Update types containing stores. </description>
+    <lifecyle>
+        <ignore step="DBPROPERTIES_UPDATE"/>
+    </lifecyle>
   </version>
 
   <version number="5" reloadCache="false" login="false">
@@ -82,8 +92,11 @@
 
       Context.commit();
     </script>
+    <lifecyle>
+        <ignore step="DBPROPERTIES_UPDATE"/>
+    </lifecyle>
   </version>
 
-  <version number="6" reloadCache="true" compile="true" />
+  <version number="6" compile="true" />
 
 </install>

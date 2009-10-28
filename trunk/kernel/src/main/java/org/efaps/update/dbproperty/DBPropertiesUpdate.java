@@ -130,11 +130,9 @@ public class DBPropertiesUpdate implements IUpdate
     /**
      * find out the Id of the language used for this properties.
      * @param _language Language
-     * @param _force    if true, the language will be created if not
-     *                  existing already
      * @return ID of the Language
      */
-    private String getLanguageId(final String _language, final boolean _force)
+    private String getLanguageId(final String _language)
     {
         String ret = null;
         final SearchQuery query = new SearchQuery();
@@ -295,7 +293,7 @@ public class DBPropertiesUpdate implements IUpdate
             query.setQueryTypes(DBPropertiesUpdate.TYPE_PROPERTIES_LOCAL);
             query.addSelect("OID");
             query.addWhereExprEqValue("PropertyID", _propertyid);
-            query.addWhereExprEqValue("LanguageID", getLanguageId(_language, false));
+            query.addWhereExprEqValue("LanguageID", getLanguageId(_language));
             query.executeWithoutAccessCheck();
             if (query.next()) {
                 ret = (String) query.get("OID");
@@ -322,7 +320,7 @@ public class DBPropertiesUpdate implements IUpdate
             final Insert insert = new Insert(DBPropertiesUpdate.TYPE_PROPERTIES_LOCAL);
             insert.add("Value", _value);
             insert.add("PropertyID", _propertyid);
-            insert.add("LanguageID", getLanguageId(_language, true));
+            insert.add("LanguageID", getLanguageId(_language));
             insert.executeWithoutAccessCheck();
             insert.close();
 
@@ -488,7 +486,7 @@ public class DBPropertiesUpdate implements IUpdate
             try {
                 for (final Resource resource : this.resources) {
                     if ("Properties".equals(resource.type)) {
-                        if ("".equals(resource.language)) {
+                        if (resource.language == null || resource.language.length() < 1) {
                             importFromProperties(new URL(this.root + resource.filename));
                         } else {
                             importFromProperties(new URL(this.root + resource.filename), resource.language);

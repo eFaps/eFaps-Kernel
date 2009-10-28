@@ -26,9 +26,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.Dimension;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.util.EFapsException;
@@ -104,11 +108,20 @@ public class StatusGroupUpdate extends AbstractUpdate
          */
         public void updateInDB(final String _typeName) throws EFapsException
         {
-            //TODO remove or update of existing!! In that way they are always added!!
-            final Insert insert = new Insert(_typeName);
-            insert.add("Key", this.key);
-            insert.add("Description", this.description);
-            insert.executeWithoutAccessCheck();
+            final SearchQuery query = new SearchQuery();
+            query.setQueryTypes(_typeName);
+            query.addWhereExprEqValue("Key", this.key);
+            query.executeWithoutAccessCheck();
+            query.addSelect("OID");
+            final Update update;
+            if (query.next()) {
+                update = new Update(Instance.get((String) query.get("OID")));
+            } else {
+                update = new Insert(_typeName);
+            }
+            update.add("Key", this.key);
+            update.add("Description", this.description);
+            update.executeWithoutAccessCheck();
         }
     }
 
@@ -174,7 +187,11 @@ public class StatusGroupUpdate extends AbstractUpdate
                                final Set<Link> _allLinkTypes)
             throws EFapsException
         {
-            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+            if (_step == UpdateLifecycle.STATUSGROUP_CREATE)  {
+                super.updateInDB(UpdateLifecycle.EFAPS_CREATE, _allLinkTypes);
+            }
+
+            if (_step == UpdateLifecycle.STATUSGROUP_UPDATE)  {
                 // set the id of the parent type (if defined)
                 if ((this.parentType != null) && (this.parentType.length() > 0)) {
                     final SearchQuery query = new SearchQuery();
@@ -192,11 +209,17 @@ public class StatusGroupUpdate extends AbstractUpdate
                 } else {
                     addValue("ParentType", null);
                 }
+                super.updateInDB(UpdateLifecycle.EFAPS_UPDATE, _allLinkTypes);
             }
 
-            super.updateInDB(_step, _allLinkTypes);
-
-            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+            if (_step == UpdateLifecycle.STATUS_CREATE)  {
+                // before the Stati can be created it must be checked if the type (StatusGroup)
+                // is already cached.
+                if (Type.get(getValue("Name")) == null) {
+                    Type.initialize(StatusGroupUpdate.class);
+                    Dimension.initialize(StatusGroupUpdate.class);
+                    Attribute.initialize(StatusGroupUpdate.class);
+                }
                 for (final StatusDefintion status : this.stati) {
                     status.updateInDB(getValue("Name"));
                 }

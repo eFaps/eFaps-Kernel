@@ -124,7 +124,7 @@ public class Install
 
         // loop through all life cycle steps
         for (final UpdateLifecycle step : getUpdateLifecycles())  {
-            if (!_ignoredSteps.contains(step))   {
+            if (!_ignoredSteps.contains(step)) {
                 if (Install.LOG.isInfoEnabled())  {
                     Install.LOG.info("..Running Lifecycle step " + step);
                 }
@@ -139,6 +139,8 @@ public class Install
                         }
                     }
                 }
+            } else if (Install.LOG.isInfoEnabled())  {
+                Install.LOG.info("..Skipped Lifecycle step " + step);
             }
         }
     }
