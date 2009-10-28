@@ -97,6 +97,25 @@
     </lifecyle>
   </version>
 
-  <version number="6" compile="true" />
+  <version number="6" compile="true" >
+    <description>Import Data</description>
+     <script>
+      importClass(Packages.org.efaps.importer.DataImport);
+      importClass(Packages.java.io.File);
+      importClass(Packages.org.efaps.db.Context);
+      jsPackage = Packages.org.mozilla.javascript;
+      Context.begin(EFAPS_USERNAME);
+      url = jsPackage.Context.currentContext.currentContext.getClass().getClassLoader().getResource("org/efaps/installations/eFaps-Kernel/Data/IMPORT_Language.xml");
+      imp = DataImport.readFile(url);
+      imp.updateInDB();
+      url = jsPackage.Context.currentContext.currentContext.getClass().getClassLoader().getResource("org/efaps/installations/eFaps-Kernel/Data/IMPORT_PersonToRole.xml");
+      imp = DataImport.readFile(url);
+      imp.updateInDB();
+      url = jsPackage.Context.currentContext.currentContext.getClass().getClassLoader().getResource("org/efaps/installations/eFaps-Kernel/Data/IMPORT_Webapp_RunLevel.xml");
+      imp = DataImport.readFile(url);
+      imp.updateInDB();
+      Context.commit();
+    </script>
+  </version>
 
 </install>
