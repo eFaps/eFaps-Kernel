@@ -20,31 +20,30 @@
 
 package org.efaps.update;
 
+import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.efaps.admin.datamodel.Type;
-import org.efaps.db.Context;
-import org.efaps.db.SearchQuery;
-import org.efaps.importer.DataImport;
-import org.efaps.update.datamodel.SQLTableUpdate;
-import org.efaps.update.dbproperty.DBPropertiesUpdate;
-import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Context;
+import org.efaps.db.SearchQuery;
+import org.efaps.update.datamodel.SQLTableUpdate;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO description.
@@ -58,34 +57,6 @@ public class Install
      * Logging instance used to give logging information of this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(SQLTableUpdate.class);
-
-    /**
-     * All life cycle steps within an installation / update in the correct
-     * order.
-     */
-    private static final List<UpdateLifecycle> LIFECYCLES = new ArrayList<UpdateLifecycle>();
-    static  {
-        Install.LIFECYCLES.add(UpdateLifecycle.SQL_CREATE_TABLE);
-        Install.LIFECYCLES.add(UpdateLifecycle.SQL_UPDATE_ID);
-        Install.LIFECYCLES.add(UpdateLifecycle.SQL_UPDATE_TABLE);
-        Install.LIFECYCLES.add(UpdateLifecycle.SQL_RUN_SCRIPT);
-        Install.LIFECYCLES.add(UpdateLifecycle.EFAPS_CREATE);
-        Install.LIFECYCLES.add(UpdateLifecycle.EFAPS_UPDATE);
-    }
-
-    /**
-     * List of all import classes. The order is also used for the import order.
-     *
-     * @see #importData()
-     */
-    private final Map<Class<? extends ImportInterface>, FileType> importClasses
-        = new LinkedHashMap<Class<? extends ImportInterface>, FileType>();
-    {
-        if (this.importClasses.isEmpty())  {
-            this.importClasses.put(DataImport.class, FileType.XML);
-            this.importClasses.put(DBPropertiesUpdate.class, FileType.XML);
-        }
-    }
 
     /**
      * All defined file urls which are updated.
@@ -108,8 +79,8 @@ public class Install
      * @see #initialise
      * @see #install
      */
-    private final Map<Class<? extends AbstractUpdate>, List<AbstractUpdate>> cache
-        = new HashMap<Class<? extends AbstractUpdate>, List<AbstractUpdate>>();
+    private final Map<Class<? extends IUpdate>, List<IUpdate>> cache
+        = new HashMap<Class<? extends IUpdate>, List<IUpdate>>();
 
     /**
      * Installs the XML update scripts of the schema definitions for this
@@ -140,7 +111,7 @@ public class Install
                             : null;
 
         // initialize cache
-        this.initialise();
+        initialise();
 
         // initialize JexlContext (used to evaluate version)
         final JexlContext jexlContext = JexlHelper.createContext();
@@ -152,15 +123,15 @@ public class Install
         }
 
         // loop through all life cycle steps
-        for (final UpdateLifecycle step : Install.LIFECYCLES)  {
+        for (final UpdateLifecycle step : getUpdateLifecycles())  {
             if (!_ignoredSteps.contains(step))   {
                 if (Install.LOG.isInfoEnabled())  {
                     Install.LOG.info("..Running Lifecycle step " + step);
                 }
-                for (final Map.Entry<Class<? extends AbstractUpdate>, List<AbstractUpdate>> entry
+                for (final Map.Entry<Class<? extends IUpdate>, List<IUpdate>> entry
                         : this.cache.entrySet()) {
 
-                    for (final AbstractUpdate update : entry.getValue()) {
+                    for (final IUpdate update : entry.getValue()) {
                         update.updateInDB(jexlContext, step);
                         if (!bigTrans) {
                             Context.commit();
@@ -173,6 +144,28 @@ public class Install
     }
 
     /**
+     * Method to get all UpdateLifecycle in an ordered List.
+     * @return ordered List of all UpdateLifecycle
+     */
+    private List<UpdateLifecycle> getUpdateLifecycles()
+    {
+        final List<UpdateLifecycle> ret = new ArrayList<UpdateLifecycle>();
+        for (final UpdateLifecycle cycle : UpdateLifecycle.values()) {
+            ret.add(cycle);
+        }
+        Collections.sort(ret, new Comparator<UpdateLifecycle>() {
+
+            public int compare(final UpdateLifecycle _cycle1,
+                               final UpdateLifecycle _cycle2)
+            {
+                return _cycle1.getOrder().compareTo(_cycle2.getOrder());
+            }
+        });
+
+        return ret;
+    }
+
+    /**
      * All installation files are updated. For each file, the installation and
      * latest version is evaluated depending from all installed version and the
      * defined application in the XML update file. The installation version is
@@ -181,26 +174,27 @@ public class Install
      * @throws EFapsException if update failed
      */
     @SuppressWarnings("unchecked")
-    public void updateLatest() throws EFapsException
+    public void updateLatest()
+        throws EFapsException
     {
         final boolean bigTrans = Context.getDbType().supportsBigTransactions();
         final String user = (Context.getThreadContext().getPerson() != null)
-                            ? Context.getThreadContext().getPerson().getName()
-                            : null;
+                                ? Context.getThreadContext().getPerson().getName() : null;
 
         // initialize cache
-        this.initialise();
+        initialise();
 
         // get for all applications the latest version
-        final Map<String, Long> versions = this.getLatestVersions();
+        final Map<String, Long> versions = getLatestVersions();
 
         // loop through all life cycle steps
-        for (final UpdateLifecycle step : Install.LIFECYCLES)  {
-            if (Install.LOG.isInfoEnabled())  {
+        for (final UpdateLifecycle step : getUpdateLifecycles()) {
+            if (Install.LOG.isInfoEnabled()) {
                 Install.LOG.info("..Running Lifecycle step " + step);
             }
-            for (final Map.Entry<Class<? extends AbstractUpdate>, List<AbstractUpdate>> entry : this.cache.entrySet()) {
-                for (final AbstractUpdate update : entry.getValue()) {
+            for (final Map.Entry<Class<? extends IUpdate>, List<IUpdate>> entry
+                            : this.cache.entrySet()) {
+                for (final IUpdate update : entry.getValue()) {
                     final Long latestVersion = versions.get(update.getFileApplication());
                     // initialize JexlContext (used to evaluate version)
                     final JexlContext jexlContext = JexlHelper.createContext();
@@ -268,11 +262,11 @@ public class Install
                         if (file.getType() == fileType) {
                             try {
                                 final SaxHandler handler = new SaxHandler();
-                                final AbstractUpdate elem = handler.parse(file.getUrl());
+                                final IUpdate elem = handler.parse(file.getUrl());
 
-                                List<AbstractUpdate> list = this.cache.get(elem.getClass());
+                                List<IUpdate> list = this.cache.get(elem.getClass());
                                 if (list == null) {
-                                    list = new ArrayList<AbstractUpdate>();
+                                    list = new ArrayList<IUpdate>();
                                     this.cache.put(elem.getClass(), list);
                                 }
                                 list.add(handler.getUpdate());
@@ -285,7 +279,7 @@ public class Install
                 } else {
                     for (final Class<? extends AbstractUpdate> updateClass : fileType.clazzes) {
 
-                        final List<AbstractUpdate> list = new ArrayList<AbstractUpdate>();
+                        final List<IUpdate> list = new ArrayList<IUpdate>();
                         this.cache.put(updateClass, list);
 
                         Method method = null;
@@ -318,26 +312,6 @@ public class Install
                                 }
                             }
                         }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Method to import the date.
-     * @throws Exception on error
-     */
-    public void importData() throws Exception
-    {
-        for (final Entry<Class<? extends ImportInterface>, FileType> entry : this.importClasses.entrySet()) {
-            final Method method = entry.getKey().getMethod("readFile", URL.class);
-
-            for (final InstallFile file : this.files) {
-                if (file.getType() == entry.getValue()) {
-                    final Object obj = method.invoke(null, file.getUrl());
-                    if (obj != null) {
-                        ((ImportInterface) obj).updateInDB();
                     }
                 }
             }
@@ -443,19 +417,5 @@ public class Install
         {
             return this.type;
         }
-    }
-
-    /**
-     * This interface is used in {@link #org.efaps.update.Install.importData()}.
-     *
-     * @see #importClasses
-     */
-    public interface ImportInterface
-    {
-        /**
-         * Method executes the actual update of the database.
-         * @throws EFapsException on error
-         */
-        void updateInDB() throws EFapsException;
     }
 }

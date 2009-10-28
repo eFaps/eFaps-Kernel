@@ -30,8 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import org.efaps.update.Install.ImportInterface;
-
 /**
  * Class which contains the method to launch the import of Data into a efaps
  * connected Database.
@@ -39,7 +37,7 @@ import org.efaps.update.Install.ImportInterface;
  * @author jmox
  * @version $Id$
  */
-public class DataImport implements ImportInterface {
+public class DataImport  {
 
   // ///////////////////////////////////////////////////////////////////////////
   // static variables

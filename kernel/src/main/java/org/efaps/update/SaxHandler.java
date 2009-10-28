@@ -43,6 +43,7 @@ import org.efaps.update.datamodel.SQLTableUpdate;
 import org.efaps.update.datamodel.StatusGroupUpdate;
 import org.efaps.update.datamodel.TypeUpdate;
 import org.efaps.update.db.StoreUpdate;
+import org.efaps.update.dbproperty.DBPropertiesUpdate;
 import org.efaps.update.integration.WebDAVUpdate;
 import org.efaps.update.program.JasperImageUpdate;
 import org.efaps.update.program.JasperReportUpdate;
@@ -82,7 +83,7 @@ public class SaxHandler extends DefaultHandler
     /**
      * Update.
      */
-    private AbstractUpdate update = null;
+    private IUpdate update = null;
 
     /**
      * StringtbUIlder used to hold the content.
@@ -100,7 +101,7 @@ public class SaxHandler extends DefaultHandler
      * @throws SAXException on parse exception
      * @throws IOException on file access error
      */
-    public AbstractUpdate parse(final URL _url) throws SAXException, IOException
+    public IUpdate parse(final URL _url) throws SAXException, IOException
     {
         this.url = _url;
 
@@ -124,7 +125,7 @@ public class SaxHandler extends DefaultHandler
      *
      * @return value of instance variable {@link #update}
      */
-    public AbstractUpdate getUpdate()
+    public IUpdate getUpdate()
     {
         return this.update;
     }
@@ -245,7 +246,7 @@ public class SaxHandler extends DefaultHandler
         } else if ("import".equals(_qName)) {
             this.update = new TypeUpdate(this.url);
         } else if ("dbproperties".equals(_qName)) {
-            this.update = new TypeUpdate(this.url);
+            this.update = new DBPropertiesUpdate(this.url);
         } else {
             throw new SAXException("Unknown XML Tag " + _qName);
         }

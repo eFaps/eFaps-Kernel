@@ -35,6 +35,9 @@ import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -43,8 +46,6 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.event.Event;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>This class is the major class for importing or updating of types,
@@ -57,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractUpdate
+public abstract class AbstractUpdate implements IUpdate
 {
     /**
      * Logging instance used to give logging information of this class.
@@ -671,13 +672,13 @@ public abstract class AbstractUpdate
             throws EFapsException
         {
             if (_step == UpdateLifecycle.EFAPS_CREATE)  {
-                this.searchInstance();
+                searchInstance();
 
                 // if no instance exists, a new insert must be done
                 if (this.instance == null) {
                     final Insert insert = new Insert(AbstractUpdate.this.dataModelTypeName);
                     insert.add("UUID", AbstractUpdate.this.uuid);
-                    this.createInDB(insert);
+                    createInDB(insert);
                 }
 
             } else if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
@@ -971,7 +972,7 @@ public abstract class AbstractUpdate
          */
         protected void setName(final String _name)
         {
-            this.addValue("Name", _name);
+            addValue("Name", _name);
         }
 
         /**
