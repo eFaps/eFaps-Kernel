@@ -70,6 +70,9 @@ public final class StartupDatabaseConnection
      * @param _classDSFactory   class name of the SQL data source factory
      * @param _propConnection   string with properties for the JDBC connection
      * @param _classTM          class name of the transaction manager
+     * @param _timeout          timeout for the transaction manager in seconds,
+     *                          if null the default from the transaction manager
+     *                          will be used
      * @throws StartupException if the database connection or transaction
      *             manager could not be initialized
      * @see #startup(String, String, Map, String)
@@ -78,13 +81,15 @@ public final class StartupDatabaseConnection
     public static void startup(final String _classDBType,
                                final String _classDSFactory,
                                final String _propConnection,
-                               final String _classTM)
+                               final String _classTM,
+                               final Integer _timeout)
         throws StartupException
     {
         StartupDatabaseConnection.startup(_classDBType,
                                           _classDSFactory,
                                           StartupDatabaseConnection.convertToMap(_propConnection),
-                                          _classTM);
+                                          _classTM,
+                                          _timeout);
     }
 
     /**
@@ -100,6 +105,9 @@ public final class StartupDatabaseConnection
      * @param _classDSFactory   class name of the SQL data source factory
      * @param _propConnection   map of properties for the JDBC connection
      * @param _classTM          class name of the transaction manager
+     * @param _timeout          timeout for the transaction manager in seconds,
+     *                          if null the default from the transaction manager
+     *                          will be used
      * @throws StartupException if the database connection or transaction
      *                          manager could not be initialized
      * @see #configureDBType(Context, String)
@@ -109,7 +117,8 @@ public final class StartupDatabaseConnection
     public static void startup(final String _classDBType,
                                final String _classDSFactory,
                                final Map<String, String> _propConnection,
-                               final String _classTM)
+                               final String _classTM,
+                               final Integer _timeout)
         throws StartupException
     {
         if (StartupDatabaseConnection.LOG.isInfoEnabled()) {
@@ -126,7 +135,7 @@ public final class StartupDatabaseConnection
 
         configureDBType(compCtx, _classDBType);
         configureDataSource(compCtx, _classDSFactory, _propConnection);
-        configureTransactionManager(compCtx, _classTM);
+        configureTransactionManager(compCtx, _classTM, _timeout);
     }
 
     /**
@@ -213,11 +222,14 @@ public final class StartupDatabaseConnection
      *
      * @param _compCtx  Java root naming context
      * @param _classTM  class name of the transaction manager
+     * @param _timeout  timeout for the transaction manager in seconds, if null the
+     *                  default from the transaction manager will be used
      * @throws StartupException if the transaction manager class could not be
      *             found, initialized, accessed or bind to the context
      */
     protected static void configureTransactionManager(final Context _compCtx,
-                                                      final String _classTM)
+                                                      final String _classTM,
+                                                      final Integer _timeout)
         throws StartupException
     {
         try {
@@ -225,7 +237,9 @@ public final class StartupDatabaseConnection
             if (tm == null) {
                 throw new StartupException("could not initaliase database type");
             } else {
-                tm.setTransactionTimeout(900);
+                if (_timeout != null) {
+                    tm.setTransactionTimeout(900);
+                }
                 Util.bind(_compCtx, "env/" + RESOURCE_TRANSMANAG, tm);
             }
         } catch (final ClassNotFoundException e) {
