@@ -149,6 +149,7 @@ public class Application
 
             for (final ApplicationVersion applVers : appl.getVersions()) {
                 applVers.setClasspathElements(_classpathElements);
+                applVers.setApplication(appl);
                 appl.setMaxVersion(applVers.getNumber());
             }
         } catch (final IOException e) {

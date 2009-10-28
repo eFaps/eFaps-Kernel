@@ -124,6 +124,8 @@ public class ApplicationVersion
      */
     private final Set<UpdateLifecycle> ignoredSteps = new HashSet<UpdateLifecycle>();
 
+    private Application application;
+
     /**
      * Installs the XML update scripts of the schema definitions for this
      * version defined in {@link #number}.
@@ -406,6 +408,7 @@ public class ApplicationVersion
             ScriptableObject.putProperty(scope, "EFAPS_LOGGER", javaToJS(ApplicationVersion.LOG, scope));
             ScriptableObject.putProperty(scope, "EFAPS_USERNAME", javaToJS(_userName, scope));
             ScriptableObject.putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
+            ScriptableObject.putProperty(scope, "EFAPS_DIR", javaToJS(ApplicationVersion.this.application.getEFapsDir(), scope));
 
             // evaluate java script file (if defined)
             if (this.fileName != null) {
@@ -431,5 +434,13 @@ public class ApplicationVersion
                 javaScriptContext.evaluateReader(scope, new StringReader(this.function), this.function, 1, null);
             }
         }
+    }
+
+    /**
+     * @param _appl
+     */
+    public void setApplication(final Application _appl)
+    {
+        this.application = _appl;
     }
 }
