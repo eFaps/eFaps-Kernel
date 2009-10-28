@@ -20,6 +20,8 @@
 
 package org.efaps.maven.plugin.goal.efaps.install;
 
+import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -31,16 +33,16 @@ import java.util.TreeSet;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
+import org.efaps.db.SearchQuery;
 import org.efaps.update.Install;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
 
 /**
  * @author The eFaps Team
@@ -206,15 +208,12 @@ public class Application
                     }
                 }
                 version.install(this.install, getLastVersion().getNumber(), _userName, _password);
-                this.storeVersion(_userName, version.getNumber());
+                storeVersion(_userName, version.getNumber());
 
                 if (Application.LOG.isInfoEnabled()) {
                     Application.LOG.info("Finished installation of version " + version.getNumber());
                 }
             }
-        }
-        if (Application.LOG.isInfoEnabled()) {
-            Application.LOG.info("Importing Data... for application '" + this.application + "'");
         }
 
         Context.begin(_userName);
@@ -224,7 +223,6 @@ public class Application
             Context.rollback();
             Context.begin(_userName);
         }
-        this.install.importData();
         Context.commit();
     }
 
@@ -303,12 +301,19 @@ public class Application
             }
             this.notStoredVersions.clear();
 
-            // store current version
-            final Insert insert = new Insert(versionType.getName());
-            insert.add("Name", this.application);
-            insert.add("Revision", "" + _version);
-            insert.execute();
-
+            final SearchQuery query = new SearchQuery();
+            query.setQueryTypes(versionType.getName());
+            query.addWhereExprEqValue("Name", this.application);
+            query.addWhereExprEqValue("Revision", _version);
+            query.addSelect("OID");
+            query.execute();
+            if (!query.next()) {
+                // store current version
+                final Insert insert = new Insert(versionType.getName());
+                insert.add("Name", this.application);
+                insert.add("Revision", "" + _version);
+                insert.execute();
+            }
             Context.commit();
         } else {
             // if version could not be stored, cache the version information
@@ -360,7 +365,7 @@ public class Application
     public void addClassPathFile(final String _classPathFile,
                                  final String _type)
     {
-        this.addURL(getClass().getClassLoader().getResource(_classPathFile), _type);
+        addURL(getClass().getClassLoader().getResource(_classPathFile), _type);
     }
 
     /**

@@ -31,31 +31,59 @@ public enum UpdateLifecycle
     /**
      * SQL tables are created.
      */
-    SQL_CREATE_TABLE,
+    SQL_CREATE_TABLE(1),
 
     /**
      * The ID of the SQL tables are correct defined (auto increment or as
      * foreign key to another SQL table).
      */
-    SQL_UPDATE_ID,
+    SQL_UPDATE_ID(2),
 
     /**
      * SQL tables are updated (with columns, foreign keys etc.).
      */
-    SQL_UPDATE_TABLE,
+    SQL_UPDATE_TABLE(3),
 
     /**
      * Embedded SQL scripts are executed.
      */
-    SQL_RUN_SCRIPT,
+    SQL_RUN_SCRIPT(4),
 
     /**
      * eFaps data model is created.
      */
-    EFAPS_CREATE,
+    EFAPS_CREATE(5),
 
     /**
      * eFaps data model is updated.
      */
-    EFAPS_UPDATE;
+    EFAPS_UPDATE(6),
+
+    /**
+     * DBProperties are updated.
+     */
+    DBPROPERTIES_UPDATE(7);
+
+    /**
+     * Number representing the order of this UpdateLifecycle.
+     */
+    private final int order;
+
+    /**
+     * @param _order value for the order
+     */
+    UpdateLifecycle(final int _order)
+    {
+        this.order = _order;
+    }
+
+    /**
+     * Getter method for instance variable {@link #order}.
+     *
+     * @return value of instance variable {@link #order}
+     */
+    public Integer getOrder()
+    {
+        return this.order;
+    }
 }
