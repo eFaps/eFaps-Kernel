@@ -24,7 +24,6 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.DateTimeType;
 import org.efaps.db.AbstractQuery;
 import org.efaps.db.Context;
-import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
@@ -57,6 +56,11 @@ public abstract class WhereClauseAttributeCompareValueAbstract implements WhereC
     private final AbstractQuery query;
 
     /**
+     * Must the clause ignore case.
+     */
+    private boolean ignoreCase;
+
+    /**
      * Constructor.
      *
      * @param _query    query for this whereclause
@@ -82,26 +86,24 @@ public abstract class WhereClauseAttributeCompareValueAbstract implements WhereC
      * @param _orderIndex           index in the clause
      * @param _operator             operator to be used
      * @throws EFapsException on error
+     * @return this
      */
-    protected void appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex,
+    protected WhereClause appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex,
                                      final String _operator)
         throws EFapsException
     {
 
         if (_orderIndex < 0 || getSelType().getOrderIndex() < _orderIndex) {
-            boolean caseSensitive = false;
-            if (((SearchQuery) getQuery()).isIgnoreCase()) {
-                caseSensitive = true;
-            }
+
             final String sqlColName = getAttr().getSqlColNames().get(0);
 
             _completeStatement.appendWhereAnd();
-            if (caseSensitive) {
+            if (isIgnoreCase()) {
                 _completeStatement.appendWhere("UPPER(");
             }
             _completeStatement.appendWhere(getAttr().getTable().getSqlTable()).appendWhere(getSelType().getTypeIndex())
                             .appendWhere(".").appendWhere(sqlColName);
-            if (caseSensitive) {
+            if (isIgnoreCase()) {
                 _completeStatement.appendWhere(")");
             }
 
@@ -118,6 +120,7 @@ public abstract class WhereClauseAttributeCompareValueAbstract implements WhereC
                 _completeStatement.appendWhere("'").appendWhere(getValue()).appendWhere("'");
             }
         }
+        return this;
     }
 
     /**
@@ -140,7 +143,7 @@ public abstract class WhereClauseAttributeCompareValueAbstract implements WhereC
      */
     protected String getValue() throws EFapsException
     {
-        return ((SearchQuery) getQuery()).isIgnoreCase()
+        return isIgnoreCase()
                 ? this.value.toUpperCase(Context.getThreadContext().getLocale())
                 : this.value;
     }
@@ -165,4 +168,21 @@ public abstract class WhereClauseAttributeCompareValueAbstract implements WhereC
     {
         return this.query;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setIgnoreCase(final boolean _ignoreCase)
+    {
+        this.ignoreCase = _ignoreCase;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isIgnoreCase()
+    {
+        return this.ignoreCase;
+    }
+
 }

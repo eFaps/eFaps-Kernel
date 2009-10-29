@@ -33,6 +33,19 @@ public interface WhereClause
      * @param _completeStatement complete statement
      * @param _orderIndex        index
      * @throws EFapsException on error while accessing the context
+     * @return this
      */
-    void appendWhereClause(final CompleteStatement _completeStatement, int _orderIndex) throws EFapsException;
+    WhereClause appendWhereClause(final CompleteStatement _completeStatement, int _orderIndex) throws EFapsException;
+
+    /**
+     * Is the where clause set to ignore case.
+     * @return true if ignore case, else false
+     */
+    boolean isIgnoreCase();
+
+    /**
+     * Set the where clause to ignore case.
+     * @param _ignoreCase value to set
+     */
+    void setIgnoreCase(boolean _ignoreCase);
 }

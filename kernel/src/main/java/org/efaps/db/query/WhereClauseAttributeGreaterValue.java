@@ -48,10 +48,9 @@ public class WhereClauseAttributeGreaterValue extends WhereClauseAttributeCompar
     /**
      * {@inheritDoc}
      */
-    public void appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex)
+    public WhereClause appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex)
         throws EFapsException
     {
-
-        super.appendWhereClause(_completeStatement, _orderIndex, ">");
+        return super.appendWhereClause(_completeStatement, _orderIndex, ">");
     }
 }
