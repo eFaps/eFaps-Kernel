@@ -111,8 +111,8 @@ public class StatusGroupUpdate extends AbstractUpdate
             final SearchQuery query = new SearchQuery();
             query.setQueryTypes(_typeName);
             query.addWhereExprEqValue("Key", this.key);
-            query.executeWithoutAccessCheck();
             query.addSelect("OID");
+            query.executeWithoutAccessCheck();
             final Update update;
             if (query.next()) {
                 update = new Update(Instance.get((String) query.get("OID")));
