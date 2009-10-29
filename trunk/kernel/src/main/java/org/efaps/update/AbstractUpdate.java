@@ -772,8 +772,14 @@ public abstract class AbstractUpdate implements IUpdate
 
                         final LinkInstance oldLink = new LinkInstance();
                         for (final String attrName : _linktype.getKeyAttributes()) {
-                            oldLink.getKeyAttr2Value().put(attrName,
-                                                          (String) query.get(_linktype.childAttrName + "." + attrName));
+                            final Object ob = query.get(_linktype.childAttrName + "." + attrName);
+                            String tmp;
+                            if (ob instanceof Type) {
+                                tmp = ((Long) ((Type) ob).getId()).toString();
+                            } else {
+                                tmp = (String) ob;
+                            }
+                            oldLink.getKeyAttr2Value().put(attrName, tmp);
                         }
                         final long childId = (Long) query.get(_linktype.childAttrName + ".ID");
                         oldLink.setChildId(childId);

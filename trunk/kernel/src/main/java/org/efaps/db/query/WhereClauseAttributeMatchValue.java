@@ -22,7 +22,6 @@ package org.efaps.db.query;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.AbstractQuery;
-import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
@@ -49,24 +48,21 @@ public class WhereClauseAttributeMatchValue extends WhereClauseAttributeCompareV
      * {@inheritDoc}
      * @throws EFapsException
      */
-    public void appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex)
+    public WhereClause appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex)
         throws EFapsException
     {
 
         if (_orderIndex < 0 || getSelType().getOrderIndex() < _orderIndex) {
-            boolean caseSensitive = false;
-            if (((SearchQuery) getQuery()).isIgnoreCase()) {
-                caseSensitive = true;
-            }
+
             final String sqlColName = getAttr().getSqlColNames().get(0);
 
             _completeStatement.appendWhereAnd();
-            if (caseSensitive) {
+            if (isIgnoreCase()) {
                 _completeStatement.appendWhere("UPPER(");
             }
             _completeStatement.appendWhere(getAttr().getTable().getSqlTable()).appendWhere(getSelType().getTypeIndex())
                             .appendWhere(".").appendWhere(sqlColName);
-            if (caseSensitive) {
+            if (isIgnoreCase()) {
                 _completeStatement.appendWhere(")");
             }
             if (getValue().indexOf('*') >= 0) {
@@ -80,5 +76,6 @@ public class WhereClauseAttributeMatchValue extends WhereClauseAttributeCompareV
                 }
             }
         }
+        return this;
     }
 }

@@ -53,7 +53,7 @@ public class WhereClauseAttrEqAttr implements WhereClause
      * @todo compare does not work if an attribute has more than one sql
      *       column!!
      */
-    public void appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex)
+    public WhereClause appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex)
     {
         if (_orderIndex < 0
                         || (getSelectType1().getOrderIndex() < _orderIndex && getSelectType2().getOrderIndex() < _orderIndex)) {
@@ -92,6 +92,7 @@ public class WhereClauseAttrEqAttr implements WhereClause
             _completeStatement.appendWhere(sqlColName2);
             _completeStatement.appendWhere(" is null");
         }
+        return this;
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -196,5 +197,21 @@ public class WhereClauseAttrEqAttr implements WhereClause
     private void setSelectType2(final AbstractQuery.SelectType _selectType2)
     {
         this.selectType2 = _selectType2;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isIgnoreCase()
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setIgnoreCase(final boolean _ignoreCase)
+    {
+
     }
 }
