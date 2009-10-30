@@ -238,7 +238,10 @@ public final class StartupDatabaseConnection
                 throw new StartupException("could not initaliase database type");
             } else {
                 if (_timeout != null) {
-                    tm.setTransactionTimeout(900);
+                    tm.setTransactionTimeout(_timeout);
+                    Util.bind(_compCtx, "env/" + RESOURCE_TRANSMANAGTIMEOUT, _timeout);
+                } else {
+                    Util.bind(_compCtx, "env/" + RESOURCE_TRANSMANAGTIMEOUT, 0);
                 }
                 Util.bind(_compCtx, "env/" + RESOURCE_TRANSMANAG, tm);
             }

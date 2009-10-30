@@ -23,25 +23,29 @@ package org.efaps.init;
 /**
  * The interface is used to define the names of the bindings.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
 public interface INamingBinds
 {
-  /**
-   * The static variable holds the resource name for the JDBC database
-   * connection.
-   */
-  public static final String RESOURCE_DATASOURCE   = "eFaps/jdbc";
+    /**
+     * The static variable holds the resource name for the JDBC database
+     * connection.
+     */
+    String RESOURCE_DATASOURCE = "eFaps/jdbc";
 
-  /**
-   * The static variable holds the resource name for the database type.
-   */
-  public static final String RESOURCE_DBTYPE = "eFaps/dbType";
+    /**
+     * The static variable holds the resource name for the database type.
+     */
+    String RESOURCE_DBTYPE = "eFaps/dbType";
 
-  /**
-   * Resource name of the transaction manager.
-   */
-  public static final String RESOURCE_TRANSMANAG = "eFaps/transactionManager";
+    /**
+     * Resource name of the transaction manager.
+     */
+    String RESOURCE_TRANSMANAG = "eFaps/transactionManager";
 
+    /**
+     * Resource name of the transaction manager.
+     */
+    String RESOURCE_TRANSMANAGTIMEOUT = "eFaps/transactionManagerTimeout";
 }
