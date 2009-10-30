@@ -39,12 +39,7 @@ public class BooleanType extends AbstractType
     private boolean value = false;
 
     /**
-     * @see org.efaps.admin.datamodel.IAttributeType#update(java.lang.Object, java.sql.PreparedStatement, int)
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
-     * @throws SQLException on error
+     * {@inheritDoc}
      */
     public int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException
     {
@@ -65,10 +60,7 @@ public class BooleanType extends AbstractType
     }
 
     /**
-     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
-     * @param _objectList List of Objects
-     * @return Boolean
-     * TODO throw error if more than one value is given
+     * {@inheritDoc}
      */
     public Object readValue(final List<Object> _objectList)
     {
@@ -84,13 +76,14 @@ public class BooleanType extends AbstractType
                 ret = false;
             }
         }
-        this.value = ret;
+        if (ret != null) {
+            this.value = ret;
+        }
         return ret;
     }
 
     /**
-     * @param _context context for this request
-     * @param _value new value to set
+     * {@inheritDoc}
      */
     public void set(final Object[] _value)
     {
