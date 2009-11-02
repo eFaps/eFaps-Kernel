@@ -57,5 +57,11 @@
       <attribute name="Class">org.efaps.admin.event.EventDefinition</attribute>
       <attribute name="Method">initialize</attribute>
     </object>
+    <object type="Admin_RunLevel_Definition">
+      <parentattribute name="RunLevelID" />
+      <attribute name="Priority">4</attribute>
+      <attribute name="Class">org.efaps.admin.common.NumberGenerator</attribute>
+      <attribute name="Method">initialize</attribute>
+    </object>
   </object>
 </import>

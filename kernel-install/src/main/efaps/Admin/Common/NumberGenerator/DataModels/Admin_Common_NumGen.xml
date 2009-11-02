@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003 - 2009 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          The eFaps Team
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-type xmlns="http://www.efaps.org/xsd"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+    <uuid>95386cf8-bdd4-40cd-9b59-d791cad795a1</uuid>
+    <file-application>eFaps-Kernel</file-application>
+    <file-revision>$Rev$</file-revision>
+    <definition>
+        <version-expression>(version==3) || (version==latest)</version-expression>
+        <name>Admin_Common_NumGen</name>
+        <!-- attributes -->
+        <attribute>
+            <name>OID</name>
+            <type>OID</type>
+            <sqltable>Admin_Common_AbstractSQLTable</sqltable>
+            <sqlcolumn>ID</sqlcolumn>
+        </attribute>
+        <attribute>
+            <name>ID</name>
+            <type>Integer</type>
+            <sqltable>Admin_Common_AbstractSQLTable</sqltable>
+            <sqlcolumn>ID</sqlcolumn>
+        </attribute>
+        <attribute>
+            <name>Name</name>
+            <type>String</type>
+            <sqltable>Admin_Common_AbstractSQLTable</sqltable>
+            <sqlcolumn>NAME</sqlcolumn>
+        </attribute>
+        <attribute>
+            <name>UUID</name>
+            <type>String</type>
+            <sqltable>Admin_Common_AbstractSQLTable</sqltable>
+            <sqlcolumn>UUID</sqlcolumn>
+        </attribute>
+        <attribute>
+            <name>Revision</name>
+            <type>String</type>
+            <sqltable>Admin_Common_AbstractSQLTable</sqltable>
+            <sqlcolumn>REVISION</sqlcolumn>
+        </attribute>
+        <attribute>
+            <name>Format</name>
+            <type>String</type>
+            <sqltable>Admin_Common_NumGenSQLTable</sqltable>
+            <sqlcolumn>FORMAT</sqlcolumn>
+        </attribute>
+        <attribute>
+            <name>Creator</name>
+            <type>CreatorLink</type>
+            <sqltable>Admin_Common_AbstractSQLTable</sqltable>
+            <sqlcolumn>CREATOR</sqlcolumn>
+        </attribute>
+        <attribute>
+            <name>Created</name>
+            <type>Created</type>
+            <sqltable>Admin_Common_AbstractSQLTable</sqltable>
+            <sqlcolumn>CREATED</sqlcolumn>
+        </attribute>
+        <attribute>
+            <name>Modifier</name>
+            <type>ModifierLink</type>
+            <sqltable>Admin_Common_AbstractSQLTable</sqltable>
+            <sqlcolumn>MODIFIER</sqlcolumn>
+        </attribute>
+        <attribute>
+            <name>Modified</name>
+            <type>Modified</type>
+            <sqltable>Admin_Common_AbstractSQLTable</sqltable>
+            <sqlcolumn>MODIFIED</sqlcolumn>
+        </attribute>
+    </definition>
+</datamodel-type>

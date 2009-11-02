@@ -26,9 +26,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.efaps.db.databases.information.TableInformation;
 
 /**
  * The class implements Apache Derby specific methods for data base access.
@@ -352,6 +353,38 @@ public class DerbyDatabase
   }
 
   /**
+   * {@inheritDoc}
+   */
+    @Override
+    public DerbyDatabase createSequence(final Connection _con,
+                                        final String _name,
+                                        final String _startValue)
+    {
+        throw new Error("not implemented");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean existsSequence(final Connection _con,
+                                  final String _name)
+    {
+        throw new Error("not implemented");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long nextSequence(final Connection _con,
+                             final String _name)
+        throws SQLException
+    {
+        throw new Error("not implemented");
+    }
+
+/**
    * The class overwrites the original {@link TableInformation} class because
    * the JDBC meta data methods could not be used to get information about
    * unique key.

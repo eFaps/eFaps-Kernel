@@ -22,6 +22,7 @@ package org.efaps.db.databases;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -277,5 +278,73 @@ public class PostgreSQLDatabase
     public boolean supportsBinaryInputStream()
     {
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PostgreSQLDatabase createSequence(final Connection _con,
+                                             final String _name,
+                                             final String _startValue)
+        throws SQLException
+    {
+        final StringBuilder cmd = new StringBuilder();
+        cmd.append(" create sequence ").append(_name)
+            .append(" increment 1 ")
+            .append(" minvalue 1 ")
+            .append(" maxvalue 9223372036854775807 ")
+            .append(" start ").append(_startValue)
+            .append(" cache 1;");
+
+        PreparedStatement stmt = null;
+        stmt = _con.prepareStatement(cmd.toString());
+        stmt.execute();
+        stmt.close();
+        _con.commit();
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @throws SQLException
+     */
+    @Override
+    public boolean existsSequence(final Connection _con,
+                                  final String _name)
+        throws SQLException
+    {
+        boolean ret = false;
+        final StringBuilder cmd = new StringBuilder();
+        cmd.append("select relname from pg_class where relkind = 'S' and relname = '")
+            .append(_name).append("'");
+        final PreparedStatement stmt = _con.prepareStatement(cmd.toString());
+        final ResultSet resultset = stmt.executeQuery();
+        if (resultset.next()) {
+            ret = true;
+        }
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long nextSequence(final Connection _con,
+                             final String _name)
+        throws SQLException
+    {
+        Long num = null;
+        final StringBuilder cmd = new StringBuilder();
+        cmd.append(" select nextval('" + _name + "') ");
+        final PreparedStatement stmt = _con.prepareStatement(cmd.toString());
+        final ResultSet resultset = stmt.executeQuery();
+        if (resultset.next()) {
+            num = resultset.getLong(1);
+        }
+        resultset.close();
+        stmt.close();
+        _con.commit();
+        return num != null ? num : 0;
     }
 }

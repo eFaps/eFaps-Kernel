@@ -105,7 +105,12 @@ public final class Context implements INamingBinds
             Context.DBTYPE = (AbstractDatabase) envCtx.lookup(RESOURCE_DBTYPE);
             Context.DATASOURCE = (DataSource) envCtx.lookup(RESOURCE_DATASOURCE);
             Context.TRANSMANAG = (TransactionManager) envCtx.lookup(RESOURCE_TRANSMANAG);
-            Context.TRANSMANAGTIMEOUT = (Integer) envCtx.lookup(RESOURCE_TRANSMANAGTIMEOUT);
+            try {
+                Context.TRANSMANAGTIMEOUT = (Integer) envCtx.lookup(RESOURCE_TRANSMANAGTIMEOUT);
+            } catch (final NamingException e) {
+                // this is actual no error, so nothing is presented
+                Context.TRANSMANAGTIMEOUT = 0;
+            }
         } catch (final NamingException e) {
             e.printStackTrace();
             throw new Error(e);

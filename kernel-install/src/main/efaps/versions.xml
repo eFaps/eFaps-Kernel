@@ -36,7 +36,7 @@
         <ignore step="DBPROPERTIES_UPDATE"/>
     </lifecyle>
     <description>Create base SQL tables and views.</description>
-    <script name="org/efaps/installations/eFaps-Kernel/CreateAll.js" function="eFapsCreateAll()" />
+    <script type="rhino" name="org/efaps/installations/eFaps-Kernel/CreateAll.js" function="eFapsCreateAll()" />
   </version>
 
   <version number="2" reloadCache="true">
@@ -62,7 +62,7 @@
 
   <version number="5" reloadCache="false" login="false">
     <description>Update Password of Administrator and Activate Administrator and Administration Role.</description>
-    <script>
+    <script type="rhino" >
       importClass(Packages.org.efaps.admin.datamodel.Type);
       importClass(Packages.org.efaps.db.Context);
       importClass(Packages.org.efaps.db.Update);
@@ -99,7 +99,7 @@
 
   <version number="6" compile="true" >
     <description>Import Data</description>
-     <script>
+     <script type="rhino" >
       importClass(Packages.org.efaps.importer.DataImport);
       importClass(Packages.java.io.File);
       importClass(Packages.org.efaps.db.Context);

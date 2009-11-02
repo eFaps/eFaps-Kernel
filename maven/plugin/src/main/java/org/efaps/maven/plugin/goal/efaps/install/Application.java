@@ -139,10 +139,11 @@ public class Application
             digester.addCallMethod("install/version/lifecyle/ignore", "addIgnoredStep", 1);
             digester.addCallParam("install/version/lifecyle/ignore", 0, "step");
 
-            digester.addCallMethod("install/version/script", "addScript", 3);
+            digester.addCallMethod("install/version/script", "addScript", 4);
             digester.addCallParam("install/version/script", 0);
-            digester.addCallParam("install/version/script", 1, "name");
-            digester.addCallParam("install/version/script", 2, "function");
+            digester.addCallParam("install/version/script", 1, "type");
+            digester.addCallParam("install/version/script", 2, "name");
+            digester.addCallParam("install/version/script", 3, "function");
 
             appl = (Application) digester.parse(_url);
             appl.setEFapsDir(_efapsdir);
@@ -386,7 +387,8 @@ public class Application
      * @return value of instance variable {@link #application}
      * @see #application
      */
-    public String getApplication() {
+    public String getApplication()
+    {
         return this.application;
     }
 
