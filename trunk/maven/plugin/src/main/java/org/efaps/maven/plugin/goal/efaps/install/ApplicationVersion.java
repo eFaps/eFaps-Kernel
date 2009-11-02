@@ -124,6 +124,9 @@ public class ApplicationVersion
      */
     private final Set<UpdateLifecycle> ignoredSteps = new HashSet<UpdateLifecycle>();
 
+    /**
+     * Application this version belongs to.
+     */
     private Application application;
 
     /**
@@ -197,13 +200,17 @@ public class ApplicationVersion
     /**
      * Adds a new Script to this version.
      *
-     * @param _code code of script to execute
-     * @param _name file name of the script
+     * @param _code     code of script to execute
+     * @param _type     type of the code, groovy, rhino
+     * @param _name     file name of the script
      * @param _function name of function which is called
      */
-    public void addScript(final String _code, final String _name, final String _function)
+    public void addScript(final String _code,
+                          final String _type,
+                          final String _name,
+                          final String _function)
     {
-        this.scripts.add(new Script(_code, _name, _function));
+        this.scripts.add(new Script(_code, _type, _name, _function));
     }
 
     /**
@@ -217,6 +224,14 @@ public class ApplicationVersion
         if (_desc != null) {
             this.description.append(_desc.trim()).append("\n");
         }
+    }
+
+    /**
+     * @param _appl Application
+     */
+    public void setApplication(final Application _appl)
+    {
+        this.application = _appl;
     }
 
     /**
@@ -367,17 +382,25 @@ public class ApplicationVersion
         private final String function;
 
         /**
+         * Type of the code.
+         */
+        private final String type;
+
+        /**
          * Constructor to initialize a script.
          *
          * @param _code         script code
+         * @param _type         type of the code, groovy, rhino
          * @param _fileName     script file name
          * @param _function     called function name
          */
         private Script(final String _code,
+                       final String _type,
                        final String _fileName,
                        final String _function)
         {
             this.code = (_code == null) || ("".equals(_code.trim())) ? null : _code.trim();
+            this.type = _type;
             this.fileName = _fileName;
             this.function = _function;
         }
@@ -390,57 +413,59 @@ public class ApplicationVersion
          * @throws IOException
          */
         public void execute(final String _userName,
-                final String _password)
+                            final String _password)
             throws IOException
         {
+            if ("rhino".equalsIgnoreCase(this.type)) {
+                // create new javascript context
+                final org.mozilla.javascript.Context javaScriptContext = enter();
 
-            // create new javascript context
-            final org.mozilla.javascript.Context javaScriptContext = enter();
+                final Scriptable scope = new ImporterTopLevel(javaScriptContext);
 
-            final Scriptable scope = new ImporterTopLevel(javaScriptContext);
+                // define the context javascript property
+                ScriptableObject.putProperty(scope, "javaScriptContext", javaScriptContext);
 
-            // define the context javascript property
-            ScriptableObject.putProperty(scope, "javaScriptContext", javaScriptContext);
+                // define the scope javascript property
+                ScriptableObject.putProperty(scope, "javaScriptScope", scope);
 
-            // define the scope javascript property
-            ScriptableObject.putProperty(scope, "javaScriptScope", scope);
+                ScriptableObject.putProperty(scope, "EFAPS_LOGGER", javaToJS(ApplicationVersion.LOG, scope));
+                ScriptableObject.putProperty(scope, "EFAPS_USERNAME", javaToJS(_userName, scope));
+                ScriptableObject.putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
+                ScriptableObject.putProperty(scope, "EFAPS_DIR", javaToJS(ApplicationVersion.this.application
+                                .getEFapsDir(), scope));
 
-            ScriptableObject.putProperty(scope, "EFAPS_LOGGER", javaToJS(ApplicationVersion.LOG, scope));
-            ScriptableObject.putProperty(scope, "EFAPS_USERNAME", javaToJS(_userName, scope));
-            ScriptableObject.putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
-            ScriptableObject.putProperty(scope, "EFAPS_DIR", javaToJS(ApplicationVersion.this.application.getEFapsDir(), scope));
-
-            // evaluate java script file (if defined)
-            if (this.fileName != null) {
-                if (ApplicationVersion.LOG.isInfoEnabled())  {
-                    ApplicationVersion.LOG.info("Execute script file '" + this.fileName + "'");
+                // evaluate java script file (if defined)
+                if (this.fileName != null) {
+                    if (ApplicationVersion.LOG.isInfoEnabled())  {
+                        ApplicationVersion.LOG.info("Execute script file '" + this.fileName + "'");
+                    }
+                    final Reader in = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(this.fileName));
+                    javaScriptContext.evaluateReader(scope, in, this.fileName, 1, null);
+                    in.close();
                 }
-                final Reader in = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(this.fileName));
-                javaScriptContext.evaluateReader(scope, in, this.fileName, 1, null);
-                in.close();
-            }
 
-            // evaluate script code (if defined)
-            if (this.code != null) {
-                javaScriptContext.evaluateReader(scope, new StringReader(this.code),
-                                "Executing script code of version " + ApplicationVersion.this.number, 1, null);
-            }
-
-            // evaluate script defined through the reader
-            if (this.function != null) {
-                if (ApplicationVersion.LOG.isInfoEnabled())  {
-                    ApplicationVersion.LOG.info("Execute script function '" + this.function + "'");
+                // evaluate script code (if defined)
+                if (this.code != null) {
+                    javaScriptContext.evaluateReader(scope, new StringReader(this.code),
+                                    "Executing script code of version " + ApplicationVersion.this.number, 1, null);
                 }
-                javaScriptContext.evaluateReader(scope, new StringReader(this.function), this.function, 1, null);
+
+                // evaluate script defined through the reader
+                if (this.function != null) {
+                    if (ApplicationVersion.LOG.isInfoEnabled())  {
+                        ApplicationVersion.LOG.info("Execute script function '" + this.function + "'");
+                    }
+                    javaScriptContext.evaluateReader(scope, new StringReader(this.function), this.function, 1, null);
+                }
+            } else if ("groovy".equalsIgnoreCase(this.type)) {
+//                final ClassLoader parent = getClass().getClassLoader();
+//                final GroovyClassLoader loader = new GroovyClassLoader(parent);
+//                if (this.code != null) {
+//                    loader.parseClass(this.code);
+//GroovyObject go = (GroovyObject)clazz.newInstance();
+                //go.invokeMethod(”myMethod”, new Object[]{param1, param2});
+//                }
             }
         }
-    }
-
-    /**
-     * @param _appl
-     */
-    public void setApplication(final Application _appl)
-    {
-        this.application = _appl;
     }
 }

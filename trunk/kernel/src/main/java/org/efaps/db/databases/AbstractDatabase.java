@@ -30,9 +30,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.efaps.db.databases.information.TableInformation;
 
 /**
  * Abstract definition of database specific information and methods like alter
@@ -283,6 +284,43 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
     {
         return new TableInformation(_con, _tableName);
     }
+
+
+    /**
+     * Method to create a new Sequence in this DataBase.
+     * @param _con          SQL connection
+     * @param _name         name of the sequence
+     * @param _startValue   start value for the sequence
+     * @return this instance
+     * @throws SQLException on error
+     */
+    public abstract DB createSequence(final Connection _con,
+                                      final String _name,
+                                      final String _startValue)
+        throws SQLException;
+
+    /**
+     * Method to check for an existing Sequence in this Database.
+     * @param _con          SQL connection
+     * @param _name         name of the sequence
+     * @return true if exists, else false
+     * @throws SQLException on error
+     */
+    public abstract boolean existsSequence(final Connection _con,
+                                           final String _name)
+        throws SQLException;
+
+    /**
+     * Method to get the next value from a given sequence in this Database.
+     * @param _con          SQL connection
+     * @param _name         name of the sequence
+     * @return next value in sequence
+     * @throws SQLException on error
+     */
+    public abstract long nextSequence(final Connection _con,
+                                      final String _name)
+        throws SQLException;
+
 
     /**
      * A new SQL table with unique column <code>ID</code> is created.
@@ -601,6 +639,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @throws InstantiationException   if DB class could not be instantiated
      * @throws IllegalAccessException   if DB class could not be accessed
      */
+    @SuppressWarnings("unchecked")
     public static AbstractDatabase findByClassName(final String _dbClassName)
         throws ClassNotFoundException, InstantiationException, IllegalAccessException
     {

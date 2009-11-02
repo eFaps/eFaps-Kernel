@@ -53,14 +53,14 @@ public class OracleDatabase
     public OracleDatabase()
     {
         super();
-        this.addMapping(ColumnType.INTEGER,      "number",     "null", "number");
-        this.addMapping(ColumnType.REAL,         "number",     "null", "number");
-        this.addMapping(ColumnType.STRING_SHORT, "nvarchar2",  "null", "nvarchar2");
-        this.addMapping(ColumnType.STRING_LONG,  "nvarchar2",  "null", "nvarchar2");
-        this.addMapping(ColumnType.DATETIME,     "timestamp",  "null", "timestamp");
-        this.addMapping(ColumnType.BLOB,         "blob",       "null", "blob");
-        this.addMapping(ColumnType.CLOB,         "nclob",      "null", "nclob");
-        this.addMapping(ColumnType.BOOLEAN,      "number",     "null", "number");
+        addMapping(ColumnType.INTEGER,      "number",     "null", "number");
+        addMapping(ColumnType.REAL,         "number",     "null", "number");
+        addMapping(ColumnType.STRING_SHORT, "nvarchar2",  "null", "nvarchar2");
+        addMapping(ColumnType.STRING_LONG,  "nvarchar2",  "null", "nvarchar2");
+        addMapping(ColumnType.DATETIME,     "timestamp",  "null", "timestamp");
+        addMapping(ColumnType.BLOB,         "blob",       "null", "blob");
+        addMapping(ColumnType.CLOB,         "nclob",      "null", "nclob");
+        addMapping(ColumnType.BOOLEAN,      "number",     "null", "number");
     }
 
     @Override()
@@ -183,7 +183,7 @@ public class OracleDatabase
         try  {
 
             // create table itself
-            StringBuilder cmd = new StringBuilder()
+            final StringBuilder cmd = new StringBuilder()
                 .append("create table ").append(_table).append(" (")
                 .append("  ID number not null,")
                 .append("  constraint ").append(_table).append("_UK_ID unique(ID)");
@@ -273,5 +273,38 @@ public class OracleDatabase
             stmt.close();
         }
         return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public OracleDatabase createSequence(final Connection _con,
+                                         final String _name,
+                                         final String _startValue)
+        throws SQLException
+    {
+        throw new Error("not implemented");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean existsSequence(final Connection _con,
+                                  final String _name)
+    {
+        throw new Error("not implemented");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long nextSequence(final Connection _con,
+                             final String _name)
+        throws SQLException
+    {
+        throw new Error("not implemented");
     }
 }

@@ -37,6 +37,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import org.efaps.update.access.AccessSetUpdate;
 import org.efaps.update.access.AccessTypeUpdate;
+import org.efaps.update.common.NumberGeneratorUpdate;
 import org.efaps.update.common.SystemConfigurationUpdate;
 import org.efaps.update.datamodel.DimensionUpdate;
 import org.efaps.update.datamodel.SQLTableUpdate;
@@ -223,6 +224,8 @@ public class SaxHandler extends DefaultHandler
             this.update = new JasperReportUpdate(this.url);
         } else if ("jasper-image".equals(_qName)) {
             this.update = new JasperImageUpdate(this.url);
+        } else if ("numbergenerator".equals(_qName)) {
+            this.update = new NumberGeneratorUpdate(this.url);
         } else if ("ui-command".equals(_qName)) {
             this.update = new CommandUpdate(this.url);
         } else if ("ui-form".equals(_qName)) {
