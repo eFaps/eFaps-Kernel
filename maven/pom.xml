@@ -56,7 +56,6 @@
   ************************************************************************* -->
   <modules>
     <module>plugin</module>
-    <module>derby</module>
   </modules>
 
   <!-- The existing maven-plugin-plugin will fail if no mojos are found during
