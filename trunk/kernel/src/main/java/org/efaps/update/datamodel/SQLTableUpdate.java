@@ -460,16 +460,14 @@ public class SQLTableUpdate
             throws EFapsException
         {
             if (_step == UpdateLifecycle.SQL_CREATE_TABLE)  {
-                if (this.view) {
-                    createSQLView();
-                } else {
+                if (!this.view) {
                     createSQLTable();
                 }
                 super.updateInDB(_step, _allLinkTypes);
-            } else if (_step == UpdateLifecycle.SQL_UPDATE_ID)  {
+            } else if (_step == UpdateLifecycle.SQL_UPDATE_ID && !this.view)  {
                 updateColIdSQLTable();
                 super.updateInDB(_step, _allLinkTypes);
-            } else if (_step == UpdateLifecycle.SQL_UPDATE_TABLE)  {
+            } else if (_step == UpdateLifecycle.SQL_UPDATE_TABLE && !this.view)  {
                 updateSQLTable();
                 super.updateInDB(_step, _allLinkTypes);
             } else if (_step == UpdateLifecycle.SQL_RUN_SCRIPT)  {
@@ -539,50 +537,6 @@ public class SQLTableUpdate
                 }
             }
         }
-
-        /**
-         * If the SQL view does not exists in the database, create the SQL view.
-         *
-         * @throws EFapsException if create of the SQL view failed
-         * @see #updateInDB(UpdateLifecycle, Set)
-         */
-        protected void createSQLView()
-            throws EFapsException
-        {
-            final Context context = Context.getThreadContext();
-            ConnectionResource con = null;
-            final String viewName = getValue("SQLTable");
-            try {
-                con = context.getConnectionResource();
-
-                if (!Context.getDbType().existsTable(con.getConnection(), viewName)
-                        && !Context.getDbType().existsView(con.getConnection(), viewName))  {
-                    if (SQLTableUpdate.LOG.isInfoEnabled()) {
-                        SQLTableUpdate.LOG.info("    Create DB SQL view '" + viewName + "'"
-                                    + ((this.parentSQLTableName != null)
-                                        ? " (parent " + this.parentSQLTableName + ")" : ""));
-                    }
-
-                    Context.getDbType().createView(con.getConnection(), viewName);
-                    SQLTableUpdate.this.created = true;
-                }
-                con.commit();
-
-            } catch (final EFapsException e) {
-                SQLTableUpdate.LOG.error("SQLTableUpdate.createSQLTable.EFapsException", e);
-                if (con != null) {
-                    con.abort();
-                }
-                throw e;
-            } catch (final Throwable e) {
-                SQLTableUpdate.LOG.error("SQLTableUpdate.createSQLTable.Throwable", e);
-                if (con != null) {
-                    con.abort();
-                }
-                throw new EFapsException(getClass(), "createSQLTable.Throwable", e);
-            }
-        }
-
 
         /**
          * If the SQL table does not exists in the database, create the SQL table.
