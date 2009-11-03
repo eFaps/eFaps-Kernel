@@ -384,6 +384,17 @@ public class DerbyDatabase
         throw new Error("not implemented");
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DerbyDatabase createView(final Connection _con,
+                                    final String _table)
+        throws SQLException
+    {
+        throw new Error("not implemented");
+    }
+
 /**
    * The class overwrites the original {@link TableInformation} class because
    * the JDBC meta data methods could not be used to get information about

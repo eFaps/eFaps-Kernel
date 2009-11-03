@@ -287,6 +287,18 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
 
 
     /**
+     * A new SQL view w is created.
+     *
+     * @param _con          SQL connection
+     * @param _table        name of the view to create
+     * @return this instance
+     * @throws SQLException if the create of the table failed
+     */
+    public abstract DB createView(final Connection _con,
+                                  final String _table)
+        throws SQLException;
+
+    /**
      * Method to create a new Sequence in this DataBase.
      * @param _con          SQL connection
      * @param _name         name of the sequence
@@ -333,6 +345,8 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
     public abstract DB createTable(final Connection _con,
                                    final String _table)
         throws SQLException;
+
+
 
     /**
      * For a new created SQL table the column <code>ID</code> is update with a

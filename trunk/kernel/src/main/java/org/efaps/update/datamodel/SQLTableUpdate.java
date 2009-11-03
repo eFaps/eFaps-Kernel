@@ -28,6 +28,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -41,8 +44,6 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handles the import / update of SQL tables for eFaps read from a XML
@@ -341,6 +342,11 @@ public class SQLTableUpdate
         private final List<SQLTableUpdate.CheckKey> checkKeys = new ArrayList<SQLTableUpdate.CheckKey>();
 
         /**
+         * Is this table a view.
+         */
+        private boolean view;
+
+        /**
          *
          * @param _tags         current path as list of single tags
          * @param _attributes   attributes for current path
@@ -383,8 +389,12 @@ public class SQLTableUpdate
                     } else if ("sql".equals(subValue))  {
                         this.sqls.add(_text);
                     } else if ("table-name".equals(subValue))  {
-                        this.addValue("SQLTable", _text);
-                        this.addValue("SQLColumnID", "ID");
+                        addValue("SQLTable", _text);
+                        addValue("SQLColumnID", "ID");
+                    } else if ("view-name".equals(subValue))  {
+                        addValue("SQLTable", _text);
+                        addValue("SQLColumnID", "ID");
+                        this.view = true;
                     } else if ("unique".equals(subValue))  {
                         this.uniqueKeys.add(new UniqueKey(_attributes.get("name"),
                                                           _attributes.get("columns")));
@@ -395,7 +405,7 @@ public class SQLTableUpdate
                     this.parent = _text;
                 }
             } else if ("typeid-column".equals(value))  {
-                this.addValue("SQLColumnType", _text);
+                addValue("SQLColumnType", _text);
             } else  {
                 super.readXML(_tags, _attributes, _text);
             }
@@ -450,16 +460,20 @@ public class SQLTableUpdate
             throws EFapsException
         {
             if (_step == UpdateLifecycle.SQL_CREATE_TABLE)  {
-                this.createSQLTable();
+                if (this.view) {
+                    createSQLView();
+                } else {
+                    createSQLTable();
+                }
                 super.updateInDB(_step, _allLinkTypes);
             } else if (_step == UpdateLifecycle.SQL_UPDATE_ID)  {
-                this.updateColIdSQLTable();
+                updateColIdSQLTable();
                 super.updateInDB(_step, _allLinkTypes);
             } else if (_step == UpdateLifecycle.SQL_UPDATE_TABLE)  {
-                this.updateSQLTable();
+                updateSQLTable();
                 super.updateInDB(_step, _allLinkTypes);
             } else if (_step == UpdateLifecycle.SQL_RUN_SCRIPT)  {
-                this.executeSQLs();
+                executeSQLs();
                 super.updateInDB(_step, _allLinkTypes);
             } else if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
                 if (getValue("Name") != null) {
@@ -495,7 +509,7 @@ public class SQLTableUpdate
         {
             if (!this.sqls.isEmpty()) {
                 if (SQLTableUpdate.LOG.isInfoEnabled())  {
-                    SQLTableUpdate.LOG.info("    Execute Script for DB SQL '" + this.getValue("SQLTable") + "'");
+                    SQLTableUpdate.LOG.info("    Execute Script for DB SQL '" + getValue("SQLTable") + "'");
                 }
 
                 final Context context = Context.getThreadContext();
@@ -527,6 +541,50 @@ public class SQLTableUpdate
         }
 
         /**
+         * If the SQL view does not exists in the database, create the SQL view.
+         *
+         * @throws EFapsException if create of the SQL view failed
+         * @see #updateInDB(UpdateLifecycle, Set)
+         */
+        protected void createSQLView()
+            throws EFapsException
+        {
+            final Context context = Context.getThreadContext();
+            ConnectionResource con = null;
+            final String viewName = getValue("SQLTable");
+            try {
+                con = context.getConnectionResource();
+
+                if (!Context.getDbType().existsTable(con.getConnection(), viewName)
+                        && !Context.getDbType().existsView(con.getConnection(), viewName))  {
+                    if (SQLTableUpdate.LOG.isInfoEnabled()) {
+                        SQLTableUpdate.LOG.info("    Create DB SQL view '" + viewName + "'"
+                                    + ((this.parentSQLTableName != null)
+                                        ? " (parent " + this.parentSQLTableName + ")" : ""));
+                    }
+
+                    Context.getDbType().createView(con.getConnection(), viewName);
+                    SQLTableUpdate.this.created = true;
+                }
+                con.commit();
+
+            } catch (final EFapsException e) {
+                SQLTableUpdate.LOG.error("SQLTableUpdate.createSQLTable.EFapsException", e);
+                if (con != null) {
+                    con.abort();
+                }
+                throw e;
+            } catch (final Throwable e) {
+                SQLTableUpdate.LOG.error("SQLTableUpdate.createSQLTable.Throwable", e);
+                if (con != null) {
+                    con.abort();
+                }
+                throw new EFapsException(getClass(), "createSQLTable.Throwable", e);
+            }
+        }
+
+
+        /**
          * If the SQL table does not exists in the database, create the SQL table.
          *
          * @throws EFapsException if create of the SQL tables failed
@@ -537,7 +595,7 @@ public class SQLTableUpdate
         {
             final Context context = Context.getThreadContext();
             ConnectionResource con = null;
-            final String tableName = this.getValue("SQLTable");
+            final String tableName = getValue("SQLTable");
             try {
                 con = context.getConnectionResource();
 

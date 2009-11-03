@@ -179,7 +179,7 @@ public class PostgreSQLDatabase
     }
 
     /**
-     * @param _parentTable  name of a parent table
+     * {@inheritDoc}
      */
     @Override()
     public PostgreSQLDatabase defineTableParent(final Connection _con,
@@ -205,6 +205,9 @@ public class PostgreSQLDatabase
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override()
     public PostgreSQLDatabase defineTableAutoIncrement(final Connection _con,
                                                        final String _table)
@@ -346,5 +349,23 @@ public class PostgreSQLDatabase
         stmt.close();
         _con.commit();
         return num != null ? num : 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PostgreSQLDatabase createView(final Connection _con,
+                                         final String _view)
+        throws SQLException
+    {
+        final Statement stmt = _con.createStatement();
+        try {
+            stmt.executeUpdate(new StringBuilder().append("create view ").append(_view).append(" as select 1")
+                            .toString());
+        } finally {
+            stmt.close();
+        }
+        return this;
     }
 }
