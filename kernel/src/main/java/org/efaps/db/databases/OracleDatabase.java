@@ -307,4 +307,15 @@ public class OracleDatabase
     {
         throw new Error("not implemented");
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public OracleDatabase createView(final Connection _con,
+                                    final String _table)
+        throws SQLException
+    {
+        throw new Error("not implemented");
+    }
 }
