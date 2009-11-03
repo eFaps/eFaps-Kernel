@@ -23,6 +23,9 @@ package org.efaps.maven.plugin.goal.efaps.install;
 import static org.mozilla.javascript.Context.enter;
 import static org.mozilla.javascript.Context.javaToJS;
 
+import groovy.lang.Binding;
+import groovy.lang.GroovyClassLoader;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -210,7 +213,15 @@ public class ApplicationVersion
                           final String _name,
                           final String _function)
     {
-        this.scripts.add(new Script(_code, _type, _name, _function));
+        Script script = null;
+        if ("rhino".equalsIgnoreCase(_type)) {
+            script = new RhinoScript(_code, _name, _function);
+        } else if ("groovy".equalsIgnoreCase(_type)) {
+            script = new GroovyScript(_code, _name, _function);
+        }
+        if (script != null) {
+            this.scripts.add(script);
+        }
     }
 
     /**
@@ -363,7 +374,7 @@ public class ApplicationVersion
      * Class used to store information of needed called scripts within an
      * application version.
      */
-    private final class Script
+    private abstract class Script
     {
 
         /**
@@ -382,25 +393,17 @@ public class ApplicationVersion
         private final String function;
 
         /**
-         * Type of the code.
-         */
-        private final String type;
-
-        /**
          * Constructor to initialize a script.
          *
          * @param _code         script code
-         * @param _type         type of the code, groovy, rhino
          * @param _fileName     script file name
          * @param _function     called function name
          */
         private Script(final String _code,
-                       final String _type,
                        final String _fileName,
                        final String _function)
         {
             this.code = (_code == null) || ("".equals(_code.trim())) ? null : _code.trim();
-            this.type = _type;
             this.fileName = _fileName;
             this.function = _function;
         }
@@ -410,62 +413,169 @@ public class ApplicationVersion
          *
          * @param _userName name of logged in user
          * @param _password password of logged in user
-         * @throws IOException
+         * @throws IOException on error
          */
+        public abstract void execute(final String _userName,
+                                     final String _password)
+            throws IOException;
+
+
+        /**
+         * Getter method for instance variable {@link #code}.
+         *
+         * @return value of instance variable {@link #code}
+         */
+        public String getCode()
+        {
+            return this.code;
+        }
+
+        /**
+         * Getter method for instance variable {@link #fileName}.
+         *
+         * @return value of instance variable {@link #fileName}
+         */
+        public String getFileName()
+        {
+            return this.fileName;
+        }
+
+        /**
+         * Getter method for instance variable {@link #function}.
+         *
+         * @return value of instance variable {@link #function}
+         */
+        public String getFunction()
+        {
+            return this.function;
+        }
+    }
+
+    /**
+     *Script fpor groovy.
+     */
+    private final class GroovyScript extends ApplicationVersion.Script
+    {
+        /**
+         * Constructor.
+         * @param _code         code
+         * @param _fileName     filename
+         * @param _function     function
+         */
+        private GroovyScript(final String _code,
+                             final String _fileName,
+                             final String _function)
+        {
+            super(_code, _fileName, _function);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public void execute(final String _userName,
                             final String _password)
             throws IOException
         {
-            if ("rhino".equalsIgnoreCase(this.type)) {
-                // create new javascript context
-                final org.mozilla.javascript.Context javaScriptContext = enter();
+            final ClassLoader parent = getClass().getClassLoader();
+            final GroovyClassLoader loader = new GroovyClassLoader(parent);
+            if (getCode() != null) {
+                final Class clazz = loader.parseClass(getCode());
+                groovy.lang.Script go;
+                try {
+                    go = (groovy.lang.Script) clazz.newInstance();
 
-                final Scriptable scope = new ImporterTopLevel(javaScriptContext);
+                    final Binding binding = new Binding();
+                    binding.setVariable("EFAPS_LOGGER", ApplicationVersion.LOG);
+                    binding.setVariable("EFAPS_USERNAME", _userName);
+                    binding.setVariable("EFAPS_PASSWORD", _userName);
+                    binding.setVariable("EFAPS_DIR", ApplicationVersion.this.application.getEFapsDir());
+                    go.setBinding(binding);
 
-                // define the context javascript property
-                ScriptableObject.putProperty(scope, "javaScriptContext", javaScriptContext);
+                    final Object[] args = {};
+                    go.invokeMethod("run", args);
 
-                // define the scope javascript property
-                ScriptableObject.putProperty(scope, "javaScriptScope", scope);
-
-                ScriptableObject.putProperty(scope, "EFAPS_LOGGER", javaToJS(ApplicationVersion.LOG, scope));
-                ScriptableObject.putProperty(scope, "EFAPS_USERNAME", javaToJS(_userName, scope));
-                ScriptableObject.putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
-                ScriptableObject.putProperty(scope, "EFAPS_DIR", javaToJS(ApplicationVersion.this.application
-                                .getEFapsDir(), scope));
-
-                // evaluate java script file (if defined)
-                if (this.fileName != null) {
-                    if (ApplicationVersion.LOG.isInfoEnabled())  {
-                        ApplicationVersion.LOG.info("Execute script file '" + this.fileName + "'");
-                    }
-                    final Reader in = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(this.fileName));
-                    javaScriptContext.evaluateReader(scope, in, this.fileName, 1, null);
-                    in.close();
+                } catch (final InstantiationException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (final IllegalAccessException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-
-                // evaluate script code (if defined)
-                if (this.code != null) {
-                    javaScriptContext.evaluateReader(scope, new StringReader(this.code),
-                                    "Executing script code of version " + ApplicationVersion.this.number, 1, null);
-                }
-
-                // evaluate script defined through the reader
-                if (this.function != null) {
-                    if (ApplicationVersion.LOG.isInfoEnabled())  {
-                        ApplicationVersion.LOG.info("Execute script function '" + this.function + "'");
-                    }
-                    javaScriptContext.evaluateReader(scope, new StringReader(this.function), this.function, 1, null);
-                }
-            } else if ("groovy".equalsIgnoreCase(this.type)) {
-//                final ClassLoader parent = getClass().getClassLoader();
-//                final GroovyClassLoader loader = new GroovyClassLoader(parent);
-//                if (this.code != null) {
-//                    loader.parseClass(this.code);
-//GroovyObject go = (GroovyObject)clazz.newInstance();
-                //go.invokeMethod(”myMethod”, new Object[]{param1, param2});
-//                }
             }
         }
+    }
+
+
+    /**
+     * Script for mozilla rhino.
+     */
+    private final class RhinoScript extends ApplicationVersion.Script
+    {
+
+        /**
+         * Constructor.
+         * @param _code         code
+         * @param _fileName     filename
+         * @param _function     function
+         */
+        private RhinoScript(final String _code,
+                             final String _fileName,
+                             final String _function)
+        {
+            super(_code, _fileName, _function);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void execute(final String _userName,
+                            final String _password)
+            throws IOException
+        {
+
+            // create new javascript context
+            final org.mozilla.javascript.Context javaScriptContext = enter();
+
+            final Scriptable scope = new ImporterTopLevel(javaScriptContext);
+
+            // define the context javascript property
+            ScriptableObject.putProperty(scope, "javaScriptContext", javaScriptContext);
+
+            // define the scope javascript property
+            ScriptableObject.putProperty(scope, "javaScriptScope", scope);
+
+            ScriptableObject.putProperty(scope, "EFAPS_LOGGER", javaToJS(ApplicationVersion.LOG, scope));
+            ScriptableObject.putProperty(scope, "EFAPS_USERNAME", javaToJS(_userName, scope));
+            ScriptableObject.putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
+            ScriptableObject.putProperty(scope, "EFAPS_DIR", javaToJS(ApplicationVersion.this.application
+                            .getEFapsDir(), scope));
+
+            // evaluate java script file (if defined)
+            if (getFileName() != null) {
+                if (ApplicationVersion.LOG.isInfoEnabled())  {
+                    ApplicationVersion.LOG.info("Execute script file '" + getFileName() + "'");
+                }
+                final Reader in = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(getFileName()));
+                javaScriptContext.evaluateReader(scope, in, getFileName(), 1, null);
+                in.close();
+            }
+
+            // evaluate script code (if defined)
+            if (getCode() != null) {
+                javaScriptContext.evaluateReader(scope, new StringReader(getCode()),
+                                "Executing script code of version " + ApplicationVersion.this.number, 1, null);
+            }
+
+            // evaluate script defined through the reader
+            if (getFunction() != null) {
+                if (ApplicationVersion.LOG.isInfoEnabled())  {
+                    ApplicationVersion.LOG.info("Execute script function '" + getFunction() + "'");
+                }
+                javaScriptContext.evaluateReader(scope, new StringReader(getFunction()), getFunction(), 1, null);
+            }
+        }
+
     }
 }
