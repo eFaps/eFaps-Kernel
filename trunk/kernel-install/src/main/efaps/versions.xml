@@ -24,45 +24,42 @@
 -->
 
 <install xmlns="http://www.efaps.org/xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-
-  <application>eFaps-Kernel</application>
-
-  <version number="1" reloadCache="false" login="false">
-    <lifecyle>
-        <ignore step="EFAPS_CREATE"/>
-        <ignore step="EFAPS_UPDATE"/>
-        <ignore step="DBPROPERTIES_UPDATE"/>
-    </lifecyle>
-    <description>Create base SQL tables and views.</description>
-    <script type="rhino" name="org/efaps/installations/eFaps-Kernel/CreateAll.js" function="eFapsCreateAll()" />
-  </version>
-
-  <version number="2" reloadCache="true">
-    <description>Install SQL Tables.</description>
-    <lifecyle>
-        <ignore step="DBPROPERTIES_UPDATE"/>
-    </lifecyle>
-  </version>
-
-  <version number="3" reloadCache="true">
-    <description>Install complete Data Model</description>
-    <lifecyle>
-        <ignore step="DBPROPERTIES_UPDATE"/>
-    </lifecyle>
-  </version>
-
-  <version number="4" reloadCache="true">
-    <description>Install Access Types, Access Sets and Users. Install all Stores. Update types containing stores. </description>
-    <lifecyle>
-        <ignore step="DBPROPERTIES_UPDATE"/>
-    </lifecyle>
-  </version>
-
-  <version number="5" reloadCache="false" login="false">
-    <description>Update Password of Administrator and Activate Administrator and Administration Role.</description>
-    <script type="rhino" >
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+    <application>eFaps-Kernel</application>
+    <version number="1" reloadCache="false" login="false">
+        <description>Create base SQL tables and views.</description>
+        <lifecyle>
+            <ignore step="EFAPS_CREATE" />
+            <ignore step="EFAPS_UPDATE" />
+            <ignore step="DBPROPERTIES_UPDATE" />
+        </lifecyle>
+        <script type="rhino" name="org/efaps/installations/eFaps-Kernel/CreateAll.js" function="eFapsCreateAll()" />
+    </version>
+    <version number="2" reloadCache="true">
+        <description>Install SQL Tables.</description>
+        <lifecyle>
+            <ignore step="DBPROPERTIES_UPDATE" />
+        </lifecyle>
+    </version>
+    <version number="3" reloadCache="true">
+        <description>Install complete Data Model</description>
+        <lifecyle>
+            <ignore step="DBPROPERTIES_UPDATE" />
+        </lifecyle>
+    </version>
+    <version number="4" reloadCache="true">
+        <description>Install Access Types, Access Sets and Users. Install all Stores. Update types containing stores. </description>
+        <lifecyle>
+            <ignore step="DBPROPERTIES_UPDATE" />
+        </lifecyle>
+    </version>
+    <version number="5" reloadCache="false" login="false">
+        <description>Update Password of Administrator and Activate Administrator and Administration Role.</description>
+        <lifecyle>
+            <ignore step="DBPROPERTIES_UPDATE" />
+        </lifecyle>
+        <script type="rhino">
       importClass(Packages.org.efaps.admin.datamodel.Type);
       importClass(Packages.org.efaps.db.Context);
       importClass(Packages.org.efaps.db.Update);
@@ -91,15 +88,11 @@
       update.executeWithoutAccessCheck();
 
       Context.commit();
-    </script>
-    <lifecyle>
-        <ignore step="DBPROPERTIES_UPDATE"/>
-    </lifecyle>
-  </version>
-
-  <version number="6" compile="true" >
-    <description>Import Data</description>
-     <script type="rhino" >
+        </script>
+    </version>
+    <version number="6" compile="true">
+        <description>Import Data</description>
+        <script type="rhino">
       importClass(Packages.org.efaps.importer.DataImport);
       importClass(Packages.java.io.File);
       importClass(Packages.org.efaps.db.Context);
@@ -116,6 +109,5 @@
       imp.updateInDB();
       Context.commit();
     </script>
-  </version>
-
+    </version>
 </install>
