@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.program.esjp.Compiler;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.program.staticsource.AbstractSourceCompiler;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
@@ -54,7 +55,7 @@ import org.efaps.util.EFapsException;
  *
  * @author The eFaps Team
  * @version $Id$
- * @todo description
+ * @TODO in case of a script: it must be possible to deactivate the context
  */
 public class ApplicationVersion
     implements Comparable /* < ApplicationVersion > */<Object>
@@ -417,7 +418,7 @@ public class ApplicationVersion
          */
         public abstract void execute(final String _userName,
                                      final String _password)
-            throws IOException;
+            throws EFapsException;
 
 
         /**
@@ -471,16 +472,20 @@ public class ApplicationVersion
 
         /**
          * {@inheritDoc}
+         * @throws EFapsException
+         * @TODO it must be able to deactivate the CONTEXT
          */
         @Override
         public void execute(final String _userName,
                             final String _password)
-            throws IOException
+            throws EFapsException
         {
+            Context.begin(_userName);
             final ClassLoader parent = getClass().getClassLoader();
-            final GroovyClassLoader loader = new GroovyClassLoader(parent);
+            final EFapsClassLoader efapsClassLoader = new EFapsClassLoader(parent);
+            final GroovyClassLoader loader = new GroovyClassLoader(efapsClassLoader);
             if (getCode() != null) {
-                final Class clazz = loader.parseClass(getCode());
+                final Class<?> clazz = loader.parseClass(getCode());
                 groovy.lang.Script go;
                 try {
                     go = (groovy.lang.Script) clazz.newInstance();
@@ -496,13 +501,12 @@ public class ApplicationVersion
                     go.invokeMethod("run", args);
 
                 } catch (final InstantiationException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    throw new EFapsException("InstantiationException in Groovy", e);
                 } catch (final IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    throw new EFapsException("IllegalAccessException in Groovy", e);
                 }
             }
+            Context.commit();
         }
     }
 
@@ -532,7 +536,7 @@ public class ApplicationVersion
         @Override
         public void execute(final String _userName,
                             final String _password)
-            throws IOException
+            throws EFapsException
         {
 
             // create new javascript context
@@ -551,29 +555,33 @@ public class ApplicationVersion
             ScriptableObject.putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
             ScriptableObject.putProperty(scope, "EFAPS_DIR", javaToJS(ApplicationVersion.this.application
                             .getEFapsDir(), scope));
-
-            // evaluate java script file (if defined)
-            if (getFileName() != null) {
-                if (ApplicationVersion.LOG.isInfoEnabled())  {
-                    ApplicationVersion.LOG.info("Execute script file '" + getFileName() + "'");
+            try {
+                // evaluate java script file (if defined)
+                if (getFileName() != null) {
+                    if (ApplicationVersion.LOG.isInfoEnabled()) {
+                        ApplicationVersion.LOG.info("Execute script file '" + getFileName() + "'");
+                    }
+                    final Reader in = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(
+                                    getFileName()));
+                    javaScriptContext.evaluateReader(scope, in, getFileName(), 1, null);
+                    in.close();
                 }
-                final Reader in = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(getFileName()));
-                javaScriptContext.evaluateReader(scope, in, getFileName(), 1, null);
-                in.close();
-            }
 
-            // evaluate script code (if defined)
-            if (getCode() != null) {
-                javaScriptContext.evaluateReader(scope, new StringReader(getCode()),
-                                "Executing script code of version " + ApplicationVersion.this.number, 1, null);
-            }
-
-            // evaluate script defined through the reader
-            if (getFunction() != null) {
-                if (ApplicationVersion.LOG.isInfoEnabled())  {
-                    ApplicationVersion.LOG.info("Execute script function '" + getFunction() + "'");
+                // evaluate script code (if defined)
+                if (getCode() != null) {
+                    javaScriptContext.evaluateReader(scope, new StringReader(getCode()),
+                                    "Executing script code of version " + ApplicationVersion.this.number, 1, null);
                 }
-                javaScriptContext.evaluateReader(scope, new StringReader(getFunction()), getFunction(), 1, null);
+
+                // evaluate script defined through the reader
+                if (getFunction() != null) {
+                    if (ApplicationVersion.LOG.isInfoEnabled()) {
+                        ApplicationVersion.LOG.info("Execute script function '" + getFunction() + "'");
+                    }
+                    javaScriptContext.evaluateReader(scope, new StringReader(getFunction()), getFunction(), 1, null);
+                }
+            } catch (final IOException e) {
+                throw new EFapsException("IOException in RhinoScript", e);
             }
         }
 
