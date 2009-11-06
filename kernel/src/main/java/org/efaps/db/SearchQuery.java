@@ -21,6 +21,7 @@
 package org.efaps.db;
 
 import java.util.StringTokenizer;
+import java.util.UUID;
 
 import org.joda.time.ReadableDateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -59,25 +60,38 @@ public class SearchQuery extends AbstractQuery
 
     /**
      * Set the type for the query.
-     * @param _types    type to be used
+     * @param _uuid    UUID of the type to be used
      * @throws EFapsException on error
+     * @return this SearchQuery
      */
-    public void setQueryTypes(final String _types) throws EFapsException
+    public SearchQuery setQueryTypes(final UUID _uuid) throws EFapsException
     {
-        setQueryTypes(_types, true);
+        return setQueryTypes(Type.get(_uuid), true);
     }
 
     /**
      * Set the type for the query.
-     * @param _types            type to be used
+     * @param _types    type to be used
+     * @throws EFapsException on error
+     * @return this SearchQuery
+     */
+    public SearchQuery setQueryTypes(final String _types) throws EFapsException
+    {
+        return setQueryTypes(Type.get(_types), true);
+    }
+
+    /**
+     * Set the type for the query.
+     * @param _type            type to be used
      * @param _companyDepend    if <code>true</code> the company will be
      *                          included if necessary automatically
      * @throws EFapsException on error
+     * @return this SearchQuery
      */
-    public void setQueryTypes(final String _types, final boolean _companyDepend) throws EFapsException
+    public SearchQuery setQueryTypes(final Type _type, final boolean _companyDepend) throws EFapsException
     {
-        if (_types != null) {
-            this.type = Type.get(_types);
+        if (_type != null) {
+            this.type = _type;
             setExpandChildTypes(false);
             addSelect(true, this.type, this.type, "OID");
             this.types.add(this.type);
@@ -88,6 +102,7 @@ public class SearchQuery extends AbstractQuery
                 addWhereAttrEqValue(this.type.getCompanyAttribute(), Context.getThreadContext().getCompany().getId());
             }
         }
+        return this;
     }
 
     /**
