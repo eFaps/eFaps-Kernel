@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
@@ -78,7 +79,15 @@ public class Insert extends Update
         this(Type.get(_type));
     }
 
-
+    /**
+     * @param _uuid _uuid of the type to be inserted
+     * @see #Insert(Type)
+     * @throws EFapsException on error
+     */
+    public Insert(final UUID _uuid) throws EFapsException
+    {
+        this(Type.get(_uuid));
+    }
     /**
      * Add all tables of the type to the expressions, because for the type an
      * insert must be made for all tables!!!
