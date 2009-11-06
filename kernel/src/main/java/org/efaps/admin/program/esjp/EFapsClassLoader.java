@@ -65,13 +65,18 @@ public class EFapsClassLoader extends ClassLoader
      * @see java.lang.ClassLoader#findClass(java.lang.String)
      * @param _name name of the class
      * @return Class
+     * @throws ClassNotFoundException if class was not found
      */
     @Override
     public Class<?> findClass(final String _name)
+        throws ClassNotFoundException
     {
         byte[] b = getLoadedClasse(_name);
         if (b == null) {
             b = loadClassData(_name);
+        }
+        if (b == null) {
+            throw new ClassNotFoundException(_name);
         }
         return defineClass(_name, b, 0, b.length);
     }
