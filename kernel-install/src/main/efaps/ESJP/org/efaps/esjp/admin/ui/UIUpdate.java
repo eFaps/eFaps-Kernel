@@ -52,7 +52,7 @@ public class UIUpdate
      *
      * @param _uuidAdd      UUID of the command or menu to add
      * @param _uuidMenu     UUID of the menu the command or menu will be added to
-     * @param _pos          position in the menu
+     * @param _pos          position in the menu, to ignore this "-1" can be used
      * @throws EFapsException on error
      */
     public void add2Menu(final String _uuidAdd,
@@ -88,30 +88,31 @@ public class UIUpdate
                     insert.add("FromMenu", menuInst.getId());
                     insert.add("ToCommand", addInst.getId());
                     insert.execute();
-
-                    // sort the instances so that the new one is add the given position
-                    final SearchQuery sortQuery = new SearchQuery();
-                    sortQuery.setExpand(menuInst, "Admin_UI_Menu2Command\\FromMenu");
-                    sortQuery.addSelect("ID");
-                    sortQuery.addSelect("ToCommand");
-                    sortQuery.execute();
-                    final Map<Long, Long> pos2cmds = new TreeMap<Long, Long>();
-                    while (sortQuery.next()) {
-                        pos2cmds.put((Long) sortQuery.get("ID"), (Long) sortQuery.get("ToCommand"));
-                    }
-                    final List<Long> target = new ArrayList<Long>();
-                    for (final Entry<Long, Long> entry : pos2cmds.entrySet()) {
-                        if (addInst.getId() == entry.getValue()) {
-                            target.add(_pos, entry.getValue());
-                        } else {
-                            target.add(entry.getValue());
+                    if (_pos > -1) {
+                        // sort the instances so that the new one is add the given position
+                        final SearchQuery sortQuery = new SearchQuery();
+                        sortQuery.setExpand(menuInst, "Admin_UI_Menu2Command\\FromMenu");
+                        sortQuery.addSelect("ID");
+                        sortQuery.addSelect("ToCommand");
+                        sortQuery.execute();
+                        final Map<Long, Long> pos2cmds = new TreeMap<Long, Long>();
+                        while (sortQuery.next()) {
+                            pos2cmds.put((Long) sortQuery.get("ID"), (Long) sortQuery.get("ToCommand"));
                         }
-                    }
-                    final Iterator<Long> iter = target.iterator();
-                    for (final Entry<Long, Long> entry : pos2cmds.entrySet()) {
-                        final Update update = new Update("Admin_UI_Menu2Command", entry.getKey().toString());
-                        update.add("ToCommand", iter.next());
-                        update.execute();
+                        final List<Long> target = new ArrayList<Long>();
+                        for (final Entry<Long, Long> entry : pos2cmds.entrySet()) {
+                            if (addInst.getId() == entry.getValue()) {
+                                target.add(_pos, entry.getValue());
+                            } else {
+                                target.add(entry.getValue());
+                            }
+                        }
+                        final Iterator<Long> iter = target.iterator();
+                        for (final Entry<Long, Long> entry : pos2cmds.entrySet()) {
+                            final Update update = new Update("Admin_UI_Menu2Command", entry.getKey().toString());
+                            update.add("ToCommand", iter.next());
+                            update.execute();
+                        }
                     }
                 }
             } else {
