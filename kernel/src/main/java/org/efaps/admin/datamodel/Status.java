@@ -216,6 +216,18 @@ public final class Status implements CacheObjectInterface
 
     /**
      * Method to get a Status from the cache.
+     *
+     * @param _uuid     uuid of the StatusGroup
+     * @param _key      key of the Status
+     * @return Status
+     */
+    public static Status find(final UUID _uuid, final String _key)
+    {
+        return Status.GROUPCACHE.get(Type.get(_uuid).getName()).get(_key);
+    }
+
+    /**
+     * Method to get a Status from the cache.
      * @param _id id of the status wanted.
      * @return Status
      */
@@ -251,7 +263,7 @@ public final class Status implements CacheObjectInterface
         private final Type type;
 
         /**
-         * @param type type to set
+         * @param _type type to set
          */
         public StatusGroup(final Type _type)
         {
