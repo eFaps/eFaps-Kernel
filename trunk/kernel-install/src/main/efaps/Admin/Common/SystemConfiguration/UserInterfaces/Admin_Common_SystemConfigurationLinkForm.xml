@@ -44,7 +44,7 @@
       <property name="ModeSearch">EDITABLE</property>
     </field>
     <field name="value">
-      <property name="Columns">80</property>
+      <property name="Columns">70</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Value</property>
@@ -53,7 +53,7 @@
     </field>
     <field name="description">
       <property name="Rows">5</property>
-      <property name="Columns">80</property>
+      <property name="Columns">70</property>
       <property name="ModeCreate">EDITABLE</property>
       <property name="ModeEdit">EDITABLE</property>
       <property name="Expression">Description</property>

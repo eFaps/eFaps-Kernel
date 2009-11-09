@@ -40,7 +40,7 @@
       <form>Admin_Common_SystemConfigurationLinkForm</form>
     </target>
     <!-- type tree for -->
-    <type>Admin_Common_SystemConfigurationAttribute</type>
+    <type>Admin_Common_SystemConfigurationLink</type>
     <!-- properties -->
     <property name="Target">content</property>
     <property name="TargetMode">view</property>
