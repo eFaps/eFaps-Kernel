@@ -645,7 +645,7 @@ public class Attribute extends AbstractDataModelObject
                             if (typeAttr.getUUID().equals(DATAMODEL_ATTRIBUTESETATTRIBUTE.getUuid())) {
                                 attribute2setId.put(attr, parentSetId);
                             } else {
-                                type.addAttribute(attr);
+                                type.addAttribute(attr, false);
                             }
                             _newCache4Id.put(attr.getId(), attr);
                             _newCache4Name.put(attr.getParent().getName() + "/" + attr.getName(), attr);
@@ -658,7 +658,7 @@ public class Attribute extends AbstractDataModelObject
                     for (final Entry<Attribute, Long> entry : attribute2setId.entrySet()) {
                         final AttributeSet parentset = id2Set.get(entry.getValue());
                         final Attribute childAttr = entry.getKey();
-                        parentset.addAttribute(childAttr);
+                        parentset.addAttribute(childAttr, false);
                         childAttr.setParentSet(parentset);
                     }
                 } finally {
