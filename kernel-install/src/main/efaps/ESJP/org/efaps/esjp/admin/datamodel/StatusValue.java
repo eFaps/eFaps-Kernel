@@ -61,7 +61,7 @@ public class StatusValue implements EventExecution
         final Return ret = new Return();
 
         final FieldValue fieldValue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
-        final Type type = fieldValue.getAttribute().getLink();
+        final Type type = fieldValue.getInstance().getType().getStatusAttribute().getLink();
 
         final Map<String, String> map = new TreeMap<String, String>();
 
