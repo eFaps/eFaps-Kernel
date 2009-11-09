@@ -237,7 +237,7 @@ public class Type extends AbstractDataModelObject
         throws CacheReloadException
     {
         super(_id, _uuid, _name);
-        addAttribute(new Attribute(0, "Type", "", (SQLTable) null, AttributeType.get("Type"), null, null));
+        addAttribute(new Attribute(0, "Type", "", (SQLTable) null, AttributeType.get("Type"), null, null), false);
     }
 
   /**
@@ -263,13 +263,14 @@ public class Type extends AbstractDataModelObject
     /**
      * Add an attribute to this type and all child types of this type.
      *
-     * @param _attribute attribute to add
+     * @param _attribute    attribute to add
+     * @param _inherited    is the attribute inherited or form this type
      */
-    protected void addAttribute(final Attribute _attribute)
+    protected void addAttribute(final Attribute _attribute, final boolean _inherited)
     {
         _attribute.setParent(this);
-        //evaluate for status
-        if (_attribute.getAttributeType().getClassRepr().equals(StatusType.class)) {
+        //evaluate for status, an inherited attribute will not overwrite the original attribute
+        if (_attribute.getAttributeType().getClassRepr().equals(StatusType.class) && !_inherited) {
             this.statusAttribute = _attribute;
         }
         //evaluate for company
@@ -290,7 +291,7 @@ public class Type extends AbstractDataModelObject
         }
         for (final Type child : getChildTypes()) {
             if (child.getParentType().getId() == getId()) {
-                child.addAttribute(_attribute.copy());
+                child.addAttribute(_attribute.copy(), true);
             }
         }
     }

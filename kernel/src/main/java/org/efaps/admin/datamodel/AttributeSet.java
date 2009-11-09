@@ -30,28 +30,45 @@ import org.efaps.util.cache.CacheReloadException;
 /**
  * TODO comment
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 public class AttributeSet extends Type
 {
 
+    /**
+     * Type of the attribute.
+     */
     private final AttributeType attributeType;
 
+    /**
+     * Name of the attribute.
+     */
     private final String attributeName;
 
+    /**
+     * attributes of this set.
+     */
     private final Set<String> setAttributes = new HashSet<String>();
 
+
     /**
-     * @param _id
-     * @param _uuid
-     * @param _name
-     * @param typeLinkId
-     * @param attributeType
-     * @throws CacheReloadException
+     * @param _id               id of this set
+     * @param _type             type of his set
+     * @param _name             name of this set
+     * @param _attributeType    type of the attribute
+     * @param _sqlColNames      name of the sql column
+     * @param _tableId          id of the table
+     * @param _typeLinkId       id of the type link
+     * @throws CacheReloadException on error
      */
-    protected AttributeSet(final long _id, final Type _type, final String _name, final AttributeType _attributeType,
-                    final String _sqlColNames, final long _tableId, final long _typeLinkId) throws CacheReloadException
+    protected AttributeSet(final long _id,
+                           final Type _type,
+                           final String _name,
+                           final AttributeType _attributeType,
+                           final String _sqlColNames,
+                           final long _tableId,
+                           final long _typeLinkId) throws CacheReloadException
     {
         super(_id, null, evaluateName(_type.getName(), _name));
 
@@ -65,7 +82,7 @@ public class AttributeSet extends Type
         final Attribute attr = new Attribute(_id, _name, _sqlColNames, SQLTable.get(_tableId), AttributeType
                         .get("Link"), null, null);
         attr.setParent(this);
-        addAttribute(attr);
+        addAttribute(attr, false);
 
         attr.setLink(_type);
         _type.addLink(attr);
@@ -76,14 +93,23 @@ public class AttributeSet extends Type
             parent.addChildType(this);
             getAttributes().putAll(parent.getAttributes());
         }
-
     }
 
+    /**
+     * Getter method for instance variable {@link #attributeType}.
+     *
+     * @return value of instance variable {@link #attributeType}
+     */
     public AttributeType getAttributeType()
     {
         return this.attributeType;
     }
 
+    /**
+     * Method to get the attribute instance.
+     * @return IMultipleAttributeType
+     * @throws EFapsException on error
+     */
     public IMultipleAttributeType getAttributeTypeInstance() throws EFapsException
     {
         final IMultipleAttributeType ret = (IMultipleAttributeType) this.attributeType.newInstance();
@@ -111,23 +137,36 @@ public class AttributeSet extends Type
         return this.attributeName;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected void addAttribute(final Attribute _attribute)
+    protected void addAttribute(final Attribute _attribute, final boolean _inherited)
     {
-        super.addAttribute(_attribute);
+        super.addAttribute(_attribute, _inherited);
         // in the superconstructur this method is called, so the set might not
-        // be
-        // initialised
+        // be initialised
         if (this.setAttributes != null) {
             this.setAttributes.add(_attribute.getName());
         }
     }
 
+    /**
+     * Getter method for instance variable {@link #setAttributes}.
+     *
+     * @return value of instance variable {@link #setAttributes}
+     */
     public Set<String> getSetAttributes()
     {
         return this.setAttributes;
     }
 
+    /**
+     * Evaluate the name. (Build the name as the set is cached).
+     * @param _typeName name of the type
+     * @param _name     name of the attribute
+     * @return  String
+     */
     public static String evaluateName(final String _typeName, final String _name)
     {
         final StringBuilder ret = new StringBuilder();
@@ -135,16 +174,22 @@ public class AttributeSet extends Type
         return ret.toString();
     }
 
+    /**
+     * Method to get the type from the cache.
+     * @param _typeName name of the type
+     * @param _name name of the attribute
+     * @return  AttributeSet
+     */
     public static AttributeSet get(final String _typeName, final String _name)
     {
         return (AttributeSet) Type.get(evaluateName(_typeName, _name));
     }
 
     /**
-     * @param name
-     * @param expression
-     * @return
-     * @throws CacheReloadException
+     * Method to get the type from the cache. Searches if not found in the type hirachy.
+     * @param _typeName  name of the type
+     * @param _name     name of the attribute
+     * @return AttributeSet
      */
     public static AttributeSet find(final String _typeName, final String _name)
     {
@@ -156,5 +201,4 @@ public class AttributeSet extends Type
         }
         return ret;
     }
-
 }
