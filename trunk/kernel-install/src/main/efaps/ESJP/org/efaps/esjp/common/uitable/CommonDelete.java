@@ -48,35 +48,34 @@ import org.efaps.util.EFapsException;
 @EFapsRevision("$Rev$")
 public class CommonDelete implements EventExecution
 {
-  /**
-   * All selected oids are split by the pipe (<code>|</code> - meaning the
-   * oids on the way to the row oid, like an expand) and deletes - depending on
-   * the delete index - this oid.
-   *
-   * @param _parameter
-   *                parameters from the submitted web table
-   * @throws EFapsException
-   *                 if a delete of the selected oids is not possible
-   */
-  public Return execute(final Parameter _parameter) throws EFapsException
-  {
-    final String[] allOids = (String[]) _parameter.get(ParameterValues.OTHERS);
-    final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+    /**
+     * All selected oids are split by the pipe (<code>|</code> - meaning the
+     * oids on the way to the row oid, like an expand) and deletes - depending
+     * on the delete index - this oid.
+     *
+     * @param _parameter parameters from the submitted web table
+     * @throws EFapsException if a delete of the selected oids is not possible
+     * @return new Return()
+     */
+    public Return execute(final Parameter _parameter)
+        throws EFapsException
+    {
+        final String[] allOids = (String[]) _parameter.get(ParameterValues.OTHERS);
+        final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
 
-    if (allOids != null) {
+        if (allOids != null) {
 
-      int delIdx = 0;
-      final String delIdxStr = (String) properties.get("DeleteIndex");
-      if ((delIdxStr != null) && (delIdxStr.length() > 0)) {
-        delIdx = Integer.parseInt(delIdxStr);
-      }
+            int delIdx = 0;
+            final String delIdxStr = (String) properties.get("DeleteIndex");
+            if ((delIdxStr != null) && (delIdxStr.length() > 0)) {
+                delIdx = Integer.parseInt(delIdxStr);
+            }
 
-      for (final String rowOids : allOids) {
-        final String[] colOids = rowOids.split("\\|");
-        (new Delete(colOids[delIdx])).execute();
-      }
+            for (final String rowOids : allOids) {
+                final String[] colOids = rowOids.split("\\|");
+                (new Delete(colOids[delIdx])).execute();
+            }
+        }
+        return new Return();
     }
-
-    return null;
-  }
 }
