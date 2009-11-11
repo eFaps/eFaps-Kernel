@@ -22,6 +22,7 @@ package org.efaps.db.print;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -121,7 +122,7 @@ public class LinkFromSelect extends AbstractPrintQuery
         final StringBuilder fromBldr = new StringBuilder();
         fromBldr.append(" from ").append(this.type.getMainTable().getSqlTable()).append(" T0");
 
-        // on a from  select only on table is the base
+        // on a from  select only one table is the base
         getAllSelects().get(0).append2SQLFrom(fromBldr);
 
         int colIndex = 3;
@@ -151,8 +152,21 @@ public class LinkFromSelect extends AbstractPrintQuery
 
         // in a subquery the type must also be set
         if (this.type.getMainTable().getSqlColType() != null) {
-            whereBldr.append(" and T0.").append(this.type.getMainTable().getSqlColType()).append("=")
-            .append(this.type.getId());
+            whereBldr.append(" and T0.").append(this.type.getMainTable().getSqlColType()).append(" in (");
+            boolean first = true;
+            if (this.type.isAbstract()) {
+                for (final Type atype : getAllChildTypes(this.type)) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        whereBldr.append(",");
+                    }
+                    whereBldr.append(atype.getId());
+                }
+            } else {
+                whereBldr.append(this.type.getId());
+            }
+            whereBldr.append(") ");
         }
 
         selBldr.append(fromBldr).append(whereBldr);
@@ -161,6 +175,21 @@ public class LinkFromSelect extends AbstractPrintQuery
             LOG.debug(selBldr.toString());
         }
         return selBldr;
+    }
+
+    /**
+     * Recursive method to get all child types for a type.
+     * @param _parent parent type
+     * @return list of all child types
+     */
+    private List<Type> getAllChildTypes(final Type _parent)
+    {
+        final List<Type> ret = new ArrayList<Type>();
+        for (final Type child : _parent.getChildTypes()) {
+            ret.addAll(getAllChildTypes(child));
+            ret.add(child);
+        }
+        return ret;
     }
 
     /**
