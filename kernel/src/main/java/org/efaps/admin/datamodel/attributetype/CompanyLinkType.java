@@ -63,10 +63,18 @@ public class CompanyLinkType extends PersonLinkType
      * {@inheritDoc}
      */
     @Override
-    public int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException
+    public int update(final Object _object,
+                      final PreparedStatement _stmt,
+                      final int _index)
+        throws SQLException
     {
         try {
-            _stmt.setLong(_index, Context.getThreadContext().getCompany().getId());
+            //if a value was explicitly set the value is used, else the company id from the context
+            if (getValue() != null && getValue() instanceof Long) {
+                _stmt.setLong(_index, (Long) getValue());
+            } else {
+                _stmt.setLong(_index, Context.getThreadContext().getCompany().getId());
+            }
         } catch (final EFapsException e) {
             CompanyLinkType.LOG.error("update(Object, PreparedStatement, List<Integer>)", e);
         }
