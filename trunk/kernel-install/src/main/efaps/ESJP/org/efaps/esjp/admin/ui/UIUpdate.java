@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -122,6 +123,51 @@ public class UIUpdate
         } else {
             //TODO add Exception to properties
             throw new EFapsException(UIUpdate.class, "missingCmdMenu2Add", _uuidAdd);
+        }
+    }
+
+    /**
+     * Method is used to disconnect a command or menu from a menu.
+     * This esjp is only used from the install scripts. The caches
+     * are not used so that the kernel runlevel is enough to execute
+     * this method.
+     * @param _uuidRemove   uuid of the command,menu to be disconnected
+     * @param _uuidMenu     uuid of the menu the <code>_uuidRemove</code> will
+     *                      be removed from
+     * @throws EFapsException on error
+     */
+    public void removeFromMenu(final String _uuidRemove,
+                               final String _uuidMenu)
+        throws EFapsException
+    {
+        // get the command to be removed
+        final SearchQuery remQuery = new SearchQuery();
+        remQuery.setQueryTypes("Admin_UI_Command");
+        remQuery.setExpandChildTypes(true);
+        remQuery.addWhereExprEqValue("UUID", _uuidRemove);
+        remQuery.addSelect("ID");
+        remQuery.execute();
+        if (remQuery.next()) {
+            final Long remId = (Long) remQuery.get("ID");
+            final SearchQuery menuQuery = new SearchQuery();
+            menuQuery.setQueryTypes("Admin_UI_Command");
+            menuQuery.setExpandChildTypes(true);
+            menuQuery.addWhereExprEqValue("UUID", _uuidMenu);
+            menuQuery.addSelect("ID");
+            menuQuery.execute();
+            if (menuQuery.next()) {
+                final Long menuId = (Long) menuQuery.get("ID");
+                final SearchQuery query = new SearchQuery();
+                query.setQueryTypes("Admin_UI_Menu2Command");
+                query.addWhereExprEqValue("FromMenu", menuId);
+                query.addWhereExprEqValue("ToCommand", remId);
+                query.addSelect("OID");
+                query.execute();
+                if (query.next()) {
+                    final Delete del = new Delete(Instance.get((String) query.get("OID")));
+                    del.execute();
+                }
+            }
         }
     }
 }
