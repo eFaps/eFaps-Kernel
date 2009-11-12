@@ -60,21 +60,21 @@ public class Person
 
         final String[] childOids = _parameter.getParameterValues("selectedRow");
 
-        final String type = (String) properties.get("ConnectType");
-        final String childAttr = (String) properties.get("ConnectChildAttribute");
-        final String parentAttr = (String) properties.get("ConnectParentAttribute");
+        if (childOids != null) {
+            final String type = (String) properties.get("ConnectType");
+            final String childAttr = (String) properties.get("ConnectChildAttribute");
+            final String parentAttr = (String) properties.get("ConnectParentAttribute");
 
-        for (final String childOid : childOids) {
-            final Instance child = Instance.get(childOid);
-            final Insert insert = new Insert(type);
-            insert.add(parentAttr, "" + parent.getId());
-            insert.add(childAttr, "" + child.getId());
-            insert.add("UserJAASSystem", "" + getJAASSystemID());
-            insert.execute();
+            for (final String childOid : childOids) {
+                final Instance child = Instance.get(childOid);
+                final Insert insert = new Insert(type);
+                insert.add(parentAttr, "" + parent.getId());
+                insert.add(childAttr, "" + child.getId());
+                insert.add("UserJAASSystem", "" + getJAASSystemID());
+                insert.execute();
+            }
         }
-
         return new Return();
-
     }
 
     /**
