@@ -25,11 +25,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.efaps.update.program.CSSUpdate;
-import org.efaps.update.program.JasperReportUpdate;
-import org.efaps.update.program.JavaScriptUpdate;
-import org.efaps.update.program.JavaUpdate;
-import org.efaps.update.program.XSLUpdate;
+import org.efaps.update.schema.program.CSSUpdate;
+import org.efaps.update.schema.program.JasperReportUpdate;
+import org.efaps.update.schema.program.JavaScriptUpdate;
+import org.efaps.update.schema.program.JavaUpdate;
+import org.efaps.update.schema.program.XSLUpdate;
 
 /**
  * @author tmo

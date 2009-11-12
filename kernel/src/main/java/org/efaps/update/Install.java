@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
-import org.efaps.update.datamodel.SQLTableUpdate;
+import org.efaps.update.schema.datamodel.SQLTableUpdate;
 import org.efaps.util.EFapsException;
 
 /**
