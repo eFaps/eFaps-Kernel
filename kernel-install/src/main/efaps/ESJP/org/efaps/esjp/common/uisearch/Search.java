@@ -90,7 +90,10 @@ public class Search implements EventExecution
 
         final List<Instance> instances = new ArrayList<Instance>();
         while (query.next()) {
-            instances.add(Instance.get((String) query.get("OID")));
+            final String oid = (String) query.get("OID");
+            if (oid != null) {
+                instances.add(Instance.get(oid));
+            }
         }
         ret.put(ReturnValues.VALUES, instances);
         return ret;
