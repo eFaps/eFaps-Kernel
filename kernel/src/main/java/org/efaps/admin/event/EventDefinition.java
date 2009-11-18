@@ -26,8 +26,10 @@ import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESETATTRIBUTE;
 import static org.efaps.admin.EFapsClassNames.DATAMODEL_TYPE;
 import static org.efaps.admin.EFapsClassNames.EVENT_DEFINITION;
 import static org.efaps.admin.EFapsClassNames.FIELD;
+import static org.efaps.admin.EFapsClassNames.FIELDCLASSIFICATION;
 import static org.efaps.admin.EFapsClassNames.FIELDCOMMAND;
 import static org.efaps.admin.EFapsClassNames.FIELDGROUP;
+import static org.efaps.admin.EFapsClassNames.FIELDHEADING;
 import static org.efaps.admin.EFapsClassNames.FIELDTABLE;
 import static org.efaps.admin.EFapsClassNames.MENU;
 import static org.efaps.admin.EFapsClassNames.PICKER;
@@ -299,8 +301,8 @@ public final class EventDefinition extends AbstractAdminObject implements EventE
                 command.addEvent(triggerEvent,
                                  new EventDefinition(eventId, eventName, eventPos, resName, method, eventOID));
 
-            } else if (eFapsClass == FIELD || eFapsClass == FIELDCOMMAND || eFapsClass == FIELDGROUP) {
-
+            } else if (eFapsClass == FIELD || eFapsClass == FIELDCOMMAND || eFapsClass == FIELDGROUP
+                            || eFapsClass == FIELDHEADING ||  eFapsClass == FIELDCLASSIFICATION) {
                 final Field field = Field.get(abstractID);
 
                 if (EventDefinition.LOG.isDebugEnabled()) {
