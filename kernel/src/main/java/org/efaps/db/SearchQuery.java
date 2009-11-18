@@ -79,7 +79,7 @@ public class SearchQuery extends AbstractQuery
      */
     public SearchQuery setQueryTypes(final UUID _uuid, final boolean _companyDepend) throws EFapsException
     {
-        return setQueryTypes(Type.get(_uuid), true);
+        return setQueryTypes(Type.get(_uuid), _companyDepend);
     }
 
     /**
