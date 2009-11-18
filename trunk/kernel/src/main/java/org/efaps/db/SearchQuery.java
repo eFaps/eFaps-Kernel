@@ -66,6 +66,19 @@ public class SearchQuery extends AbstractQuery
      */
     public SearchQuery setQueryTypes(final UUID _uuid) throws EFapsException
     {
+        return setQueryTypes(_uuid, true);
+    }
+
+    /**
+     * Set the type for the query.
+     * @param _uuid    UUID of the type to be used
+     * @param _companyDepend    if <code>true</code> the company will be
+     *                          included if necessary automatically
+     * @throws EFapsException on error
+     * @return this SearchQuery
+     */
+    public SearchQuery setQueryTypes(final UUID _uuid, final boolean _companyDepend) throws EFapsException
+    {
         return setQueryTypes(Type.get(_uuid), true);
     }
 
