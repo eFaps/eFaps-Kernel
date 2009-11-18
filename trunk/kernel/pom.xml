@@ -326,6 +326,11 @@
         <artifactId>groovy-all</artifactId>
         <version>1.5.8</version>
     </dependency>
+    <dependency>
+        <groupId>ar.com.fdvs</groupId>
+        <artifactId>DynamicJasper</artifactId>
+        <version>3.0.9</version>
+    </dependency>
   </dependencies>
 
 </project>
