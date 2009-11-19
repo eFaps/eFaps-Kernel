@@ -136,6 +136,13 @@ public class Field extends AbstractUserInterfaceObject
     private String filterDefault;
 
     /**
+     * String containing the attributes to be used for the filter.
+     * It may contain up to two attributes separated by a comma.
+     * This allows to filter by an attribute and display a phrase.
+     */
+    private String filterAttributes;
+
+    /**
      * Is a field multi line? If yes, the value must be higher than the default
      * value <i>1</i>. The value is only used for a create or a modify form.
      *
@@ -379,6 +386,16 @@ public class Field extends AbstractUserInterfaceObject
     public String getFilterDefault()
     {
         return this.filterDefault;
+    }
+
+    /**
+     * Getter method for instance variable {@link #filterAttributes}.
+     *
+     * @return value of instance variable {@link #filterAttributes}
+     */
+    public String getFilterAttributes()
+    {
+        return this.filterAttributes;
     }
 
     /**
@@ -894,6 +911,8 @@ public class Field extends AbstractUserInterfaceObject
             this.filterPickList = !"FREETEXT".equalsIgnoreCase(_value);
         } else if ("FilterRequired".equals(_name)) {
             this.filterRequired  = "TRUE".equalsIgnoreCase(_value);
+        } else if ("FilterAttributes".equals(_name)) {
+            this.filterAttributes = _value;
         } else if ("HideLabel".equals(_name)) {
             this.hideLabel = "true".equals(_value);
         } else if ("HRef".equals(_name)) {
