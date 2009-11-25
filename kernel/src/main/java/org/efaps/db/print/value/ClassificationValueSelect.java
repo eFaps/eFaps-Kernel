@@ -127,16 +127,18 @@ public class ClassificationValueSelect extends OIDValueSelect
     {
         final Set<Classification> noadd = new HashSet<Classification>();
         final Set<Classification> add = new HashSet<Classification>();
-        for (final Long id : _classIds) {
-            Classification clazz =  (Classification) Classification.get(id);
-            if (!noadd.contains(clazz)) {
-                add.add(clazz);
-                while (clazz.getParentClassification() != null) {
-                    clazz = (Classification) clazz.getParentClassification();
-                    if (add.contains(clazz)) {
-                        add.remove(clazz);
+        if (_classIds != null) {
+            for (final Long id : _classIds) {
+                Classification clazz =  (Classification) Classification.get(id);
+                if (!noadd.contains(clazz)) {
+                    add.add(clazz);
+                    while (clazz.getParentClassification() != null) {
+                        clazz = (Classification) clazz.getParentClassification();
+                        if (add.contains(clazz)) {
+                            add.remove(clazz);
+                        }
+                        noadd.add(clazz);
                     }
-                    noadd.add(clazz);
                 }
             }
         }
@@ -166,7 +168,14 @@ public class ClassificationValueSelect extends OIDValueSelect
         for (final Entry<Type, List<Instance>> entry : type2instance.entrySet()) {
             final StringBuilder selBldr = new StringBuilder();
             boolean union = false;
-            for (final Classification clazz : entry.getKey().getClassifiedByTypes()) {
+            final Set<Classification> classTypes = new HashSet<Classification>();
+            Type curr = entry.getKey();
+            while (curr.getParentType() != null) {
+                classTypes.addAll(curr.getClassifiedByTypes());
+                curr = curr.getParentType();
+            }
+            classTypes.addAll(curr.getClassifiedByTypes());
+            for (final Classification clazz : classTypes) {
                 final Attribute typeAttr = clazz.getClassifyRelationType()
                                 .getAttribute(clazz.getRelTypeAttributeName());
                 final Attribute linkAttr = clazz.getClassifyRelationType()
@@ -195,7 +204,9 @@ public class ClassificationValueSelect extends OIDValueSelect
                         .append("=").append(clazz.getClassifyRelationType().getId());
                 }
             }
-            executeOneCompleteStmt(selBldr, entry.getValue());
+            if (classTypes.size() > 0) {
+                executeOneCompleteStmt(selBldr, entry.getValue());
+            }
         }
     }
 
