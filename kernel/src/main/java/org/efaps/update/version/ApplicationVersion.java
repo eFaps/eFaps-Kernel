@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -508,15 +509,18 @@ public class ApplicationVersion
             ScriptableObject.putProperty(scope, "EFAPS_LOGGER", javaToJS(ApplicationVersion.LOG, scope));
             ScriptableObject.putProperty(scope, "EFAPS_USERNAME", javaToJS(_userName, scope));
             ScriptableObject.putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
-            ScriptableObject.putProperty(scope, "EFAPS_ROOTURL", javaToJS(ApplicationVersion.this.application.getRootUrl(), scope));
+            ScriptableObject.putProperty(scope,
+                                         "EFAPS_ROOTURL",
+                                         javaToJS(ApplicationVersion.this.application.getRootUrl(), scope));
             try {
                 // evaluate java script file (if defined)
                 if (getFileName() != null) {
                     if (ApplicationVersion.LOG.isInfoEnabled()) {
                         ApplicationVersion.LOG.info("Execute script file '" + getFileName() + "'");
                     }
-                    final Reader in = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(
-                                    getFileName()));
+                    final Reader in = new InputStreamReader(
+                            new URL(ApplicationVersion.this.application.getRootUrl(),
+                                              this.getFileName()).openStream());
                     javaScriptContext.evaluateReader(scope, in, getFileName(), 1, null);
                     in.close();
                 }
