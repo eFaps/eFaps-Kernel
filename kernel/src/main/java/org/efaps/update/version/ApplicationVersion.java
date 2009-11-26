@@ -18,10 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven.plugin.goal.efaps.install;
-
-import static org.mozilla.javascript.Context.enter;
-import static org.mozilla.javascript.Context.javaToJS;
+package org.efaps.update.version;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
@@ -36,29 +33,29 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.db.Context;
+import org.efaps.update.Install;
+import org.efaps.update.UpdateLifecycle;
+import org.efaps.util.EFapsException;
 import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.efaps.admin.program.esjp.Compiler;
-import org.efaps.admin.program.esjp.EFapsClassLoader;
-import org.efaps.admin.program.staticsource.AbstractSourceCompiler;
-import org.efaps.admin.runlevel.RunLevel;
-import org.efaps.db.Context;
-import org.efaps.update.Install;
-import org.efaps.update.UpdateLifecycle;
-import org.efaps.util.EFapsException;
+import static org.mozilla.javascript.Context.enter;
+import static org.mozilla.javascript.Context.javaToJS;
 
 /**
+ * Defines one version of the application to install.
  *
  * @author The eFaps Team
  * @version $Id$
  * @TODO in case of a script: it must be possible to deactivate the context
  */
 public class ApplicationVersion
-    implements Comparable /* < ApplicationVersion > */<Object>
+    implements Comparable<ApplicationVersion>
 {
     /**
      * Logging instance used to give logging information of this class.
@@ -77,7 +74,7 @@ public class ApplicationVersion
      * Store the information weather a compile must be done after installing
      * this version.
      *
-     * @see #setCompile
+     * @see #setCompile(boolean)
      */
     private boolean compile = false;
 
@@ -86,7 +83,7 @@ public class ApplicationVersion
      * started, a login with given user is made. The default value is
      * <i>true</i>.
      *
-     * @see #setLoginNeeded
+     * @see #setLoginNeeded(boolean)
      */
     private boolean loginNeeded = true;
 
@@ -100,16 +97,9 @@ public class ApplicationVersion
     private boolean reloadCacheNeeded = true;
 
     /**
-     * Project class path.
-     *
-     * @see #setClasspathElements
-     */
-    private List<String> classpathElements = null;
-
-    /**
      * List of all scripts for this version.
      *
-     * @see #addScript
+     * @see #addScript(String, String, String, String)
      */
     private final List<Script> scripts = new ArrayList<Script>();
 
@@ -151,10 +141,7 @@ public class ApplicationVersion
     {
         // reload cache if needed
         if (this.reloadCacheNeeded) {
-            Context.begin();
-            RunLevel.init("shell");
-            RunLevel.execute();
-            Context.rollback();
+            this.application.reloadCache();
         }
 
         // start transaction (with user name if needed)
@@ -176,29 +163,8 @@ public class ApplicationVersion
 
         // Compile esjp's in the database (if the compile flag is set).
         if (this.compile) {
-            compileAll(_userName);
+            this.application.compileAll(_userName);
         }
-
-    }
-
-    /**
-     * Compiles the ESJP's and all Cascade Styles Sheets within eFaps.
-     *
-     * @param _userName name of logged in user for which the compile is done
-     *            (could be also <code>null</code>)
-     * @throws EFapsException if compiled failed
-     */
-    public void compileAll(final String _userName) throws EFapsException
-    {
-        Context.begin(_userName);
-        RunLevel.init("shell");
-        RunLevel.execute();
-        Context.rollback();
-
-        Context.begin(_userName);
-        (new Compiler(this.classpathElements)).compile();
-        AbstractSourceCompiler.compileAll(this.classpathElements);
-        Context.commit();
     }
 
     /**
@@ -281,9 +247,9 @@ public class ApplicationVersion
      * @see java.lang.Long#compareTo
      * @see java.lang.Comparable#compareTo
      */
-    public int compareTo(final Object _compareTo)
+    public int compareTo(final ApplicationVersion _compareTo)
     {
-        return new Long(this.number).compareTo(((ApplicationVersion) _compareTo).number);
+        return new Long(this.number).compareTo((_compareTo).number);
     }
 
     /**
@@ -347,23 +313,11 @@ public class ApplicationVersion
     }
 
     /**
-     * This is the setter method for instance variable
-     * {@link #classpathElements}.
-     *
-     * @param _classpathElements    list of class path elements
-     * @see #classpathElements
-     */
-    public void setClasspathElements(final List<String> _classpathElements)
-    {
-        this.classpathElements = _classpathElements;
-    }
-
-    /**
      * Returns a string representation with values of all instance variables.
      *
      * @return string representation of this Application
      */
-    @Override
+    @Override()
     public String toString()
     {
         return new ToStringBuilder(this)
@@ -414,7 +368,7 @@ public class ApplicationVersion
          *
          * @param _userName name of logged in user
          * @param _password password of logged in user
-         * @throws IOException on error
+         * @throws EFapsException on error
          */
         public abstract void execute(final String _userName,
                                      final String _password)
@@ -455,7 +409,8 @@ public class ApplicationVersion
     /**
      *Script fpor groovy.
      */
-    private final class GroovyScript extends ApplicationVersion.Script
+    private final class GroovyScript
+        extends ApplicationVersion.Script
     {
         /**
          * Constructor.
@@ -475,7 +430,7 @@ public class ApplicationVersion
          * @throws EFapsException
          * @TODO it must be able to deactivate the CONTEXT
          */
-        @Override
+        @Override()
         public void execute(final String _userName,
                             final String _password)
             throws EFapsException
@@ -494,7 +449,7 @@ public class ApplicationVersion
                     binding.setVariable("EFAPS_LOGGER", ApplicationVersion.LOG);
                     binding.setVariable("EFAPS_USERNAME", _userName);
                     binding.setVariable("EFAPS_PASSWORD", _userName);
-                    binding.setVariable("EFAPS_DIR", ApplicationVersion.this.application.getEFapsDir());
+                    binding.setVariable("EFAPS_ROOTURL", ApplicationVersion.this.application.getRootUrl());
                     go.setBinding(binding);
 
                     final Object[] args = {};
@@ -533,7 +488,7 @@ public class ApplicationVersion
         /**
          * {@inheritDoc}
          */
-        @Override
+        @Override()
         public void execute(final String _userName,
                             final String _password)
             throws EFapsException
@@ -553,8 +508,7 @@ public class ApplicationVersion
             ScriptableObject.putProperty(scope, "EFAPS_LOGGER", javaToJS(ApplicationVersion.LOG, scope));
             ScriptableObject.putProperty(scope, "EFAPS_USERNAME", javaToJS(_userName, scope));
             ScriptableObject.putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
-            ScriptableObject.putProperty(scope, "EFAPS_DIR", javaToJS(ApplicationVersion.this.application
-                            .getEFapsDir(), scope));
+            ScriptableObject.putProperty(scope, "EFAPS_ROOTURL", javaToJS(ApplicationVersion.this.application.getRootUrl(), scope));
             try {
                 // evaluate java script file (if defined)
                 if (getFileName() != null) {

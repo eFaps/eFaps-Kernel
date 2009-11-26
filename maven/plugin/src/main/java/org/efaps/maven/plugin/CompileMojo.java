@@ -20,42 +20,32 @@
 
 package org.efaps.maven.plugin;
 
-import org.apache.maven.plugin.MojoExecutionException;
-
-import org.efaps.maven.plugin.goal.efaps.install.ApplicationVersion;
 import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
-import org.efaps.util.EFapsException;
+import org.efaps.update.util.InstallationException;
+import org.efaps.update.version.Application;
 
 /**
  * Compiles all ESPJ's and Cascade Style Sheets within eFaps.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
 @Goal(name = "compile",
-    requiresDependencyResolutionScope = "compile")
-public final class CompileMojo extends EFapsAbstractMojo {
+      requiresDependencyResolutionScope = "compile")
+public final class CompileMojo
+    extends EFapsAbstractMojo
+{
+    /**
+     * Executes the compile goal.
+     */
+    public void execute()
+    {
+        this.init();
 
-  /////////////////////////////////////////////////////////////////////////////
-  // instance methods
-
-  /**
-   * Executes the esjp goal.
-   */
-  public void execute() throws MojoExecutionException {
-    init();
-
-    try {
-      reloadCache();
-
-      final ApplicationVersion applVers = new ApplicationVersion();
-      applVers.setClasspathElements(getClasspathElements());
-      applVers.compileAll(getUserName());
-
-    } catch (final EFapsException e) {
-      getLog().error(e);
-    } catch (final Exception e) {
-      getLog().error(e);
+        try {
+            Application.compileAll(this.getUserName(), this.getClasspathElements());
+        } catch (final InstallationException e) {
+            this.getLog().error(e);
+        }
     }
-  }
 }

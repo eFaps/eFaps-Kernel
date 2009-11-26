@@ -331,6 +331,13 @@
         <artifactId>DynamicJasper</artifactId>
         <version>3.0.9</version>
     </dependency>
+
+    <!--  ivy dependency management -->
+    <dependency>
+        <groupId>org.apache.ivy</groupId>
+        <artifactId>ivy</artifactId>
+        <version>2.1.0</version>
+    </dependency>
   </dependencies>
 
 </project>

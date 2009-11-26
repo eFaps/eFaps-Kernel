@@ -20,44 +20,40 @@
 
 package org.efaps.maven.plugin.install;
 
-import java.util.List;
-
 import org.apache.maven.plugin.MojoExecutionException;
-
-import org.efaps.maven.plugin.goal.efaps.install.Application;
 import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
+import org.efaps.update.version.Application;
 
 /**
  * TODO description
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
 @Goal(name = "install",
       requiresDependencyResolutionScope = "compile")
-public final class InstallMojo extends AbstractEFapsInstallMojo
+public final class InstallMojo
+    extends AbstractEFapsInstallMojo
 {
-  /**
-   * Executes the kernel install goal.
-   *
-   * @throws MojoExecutionException if a defined application could not be found
-   *                                or the installation scripts could not be
-   *                                executed
-   * @todo descriptionâ
-   */
-  public void execute() throws MojoExecutionException
-  {
-    init();
-    try {
-      final List<Application> appls = getApplicationsFromClassPath();
-
-      // install applications
-      for (final Application appl : appls) {
-        appl.install(getUserName(), getPassWord());
-      }
-    } catch (final Exception e) {
-      throw new MojoExecutionException("Could not execute Installation script",
-          e);
+    /**
+     * Executes the kernel install goal.
+     *
+     * @throws MojoExecutionException if a defined application could not be
+     *                                found or the installation scripts could
+     *                                not be executed
+     * @todo descriptionâ
+     */
+    public void execute()
+        throws MojoExecutionException
+    {
+        this.init();
+        try {
+            final Application appl = Application.getApplicationFromClassPath(this.getApplications(),
+                                                                             this.getClasspathElements());
+            // install application
+            appl.install(getUserName(), getPassWord());
+        } catch (final Exception e) {
+            throw new MojoExecutionException("Could not execute Installation script", e);
+        }
     }
-  }
 }

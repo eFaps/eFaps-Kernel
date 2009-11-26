@@ -20,29 +20,23 @@
 package org.efaps.maven.plugin.install;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.tools.ant.DirectoryScanner;
-
 import org.efaps.maven.plugin.EFapsAbstractMojo;
-import org.efaps.maven.plugin.goal.efaps.install.Application;
 import org.efaps.maven_java5.org.apache.maven.tools.plugin.Parameter;
 import org.efaps.update.FileType;
 
 /**
- * @author The eFasp Team
+ * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo
+public abstract class AbstractEFapsInstallMojo
+    extends EFapsAbstractMojo
 {
     /**
      * Default Mapping of a a file extension to a Type for import and update.
@@ -118,68 +112,6 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo
     private String applications;
 
     /**
-     * <code>null</code> is returned, of the version file could not be opened
-     * and read.
-     *
-     * @return application instance with all version information
-     * @todo description
-     */
-    protected Application getApplicationFromSource()
-    {
-        Application appl = null;
-        try {
-            appl = Application.getApplication(this.versionFile.toURL(), getClasspathElements(), getEFapsDir());
-
-            for (final String fileName : getFiles()) {
-                final String type = getTypeMapping().get(fileName.substring(fileName.lastIndexOf(".") + 1));
-                appl.addURL(new File(this.eFapsDir, fileName).toURL(), type);
-            }
-        } catch (final IOException e) {
-            getLog().error("Could not open / read version file " + "'" + this.versionFile + "'");
-        } catch (final Exception e) {
-            getLog().error(e);
-        }
-        return appl;
-    }
-
-    /**
-     * Method to get the applications from the class path.
-     * @return List of applications
-     * @throws MojoExecutionException on error
-     */
-    protected List<Application> getApplicationsFromClassPath() throws MojoExecutionException
-    {
-        final List<Application> ret = new ArrayList<Application>();
-        final ClassLoader cl = getClass().getClassLoader();
-
-        // get install application (read from all install xml files)
-        final Map<String, Application> appls = new HashMap<String, Application>();
-        try {
-            final Enumeration<URL> urlEnum = cl.getResources("META-INF/efaps/install.xml");
-            while (urlEnum.hasMoreElements()) {
-                final Application appl = Application.getApplication(urlEnum.nextElement(), getClasspathElements(),
-                                getEFapsDir());
-                appls.put(appl.getApplication(), appl);
-            }
-        } catch (final IOException e) {
-            throw new MojoExecutionException("Could not access the install.xml file "
-                            + "(in path META-INF/efaps/ path of each eFaps install jar).", e);
-        }
-
-        // test if all defined applications could be found
-        final String[] applicationNames = this.applications.split(",");
-        for (final String applName : applicationNames) {
-            if (!appls.containsKey(applName)) {
-                throw new MojoExecutionException("Could not found defined " + "application '" + applName
-                                + "'. Installation not possible!");
-            }
-            ret.add(appls.get(applName));
-        }
-
-        return ret;
-    }
-
-    /**
      * Uses the {@link #includes} and {@link #excludes} together with the root
      * directory {@link #eFapsDir} to get all related and matched files.
      *
@@ -210,6 +142,17 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo
         ds.scan();
 
         return ds.getIncludedFiles();
+    }
+
+    /**
+     * Returns the {@link #applications} to install / update.
+     *
+     * @return applications
+     * @see #applications
+     */
+    protected String getApplications()
+    {
+        return this.applications;
     }
 
     /**
