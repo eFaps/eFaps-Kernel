@@ -113,7 +113,7 @@
             SearchQuery query2 = new SearchQuery();
             query2.setQueryTypes("Admin_User_Person2Role");
             query2.addWhereExprEqValue("UserFromLink",   Context.getThreadContext().getPerson().getId());
-            query2.addWhereExprEqValue("UserToLink",     Role.getRole("Common_Main_PwdChg").getId());
+            query2.addWhereExprEqValue("UserToLink",     Role.get("Common_Main_PwdChg").getId());
             query2.addWhereExprEqValue("UserJAASSystem", JAASSystem.getJAASSystem("eFaps").getId());
             query2.addSelect("OID");
             query2.execute();
