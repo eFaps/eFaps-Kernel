@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
 
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.logging.Log;
-
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.init.StartupDatabaseConnection;
@@ -39,46 +38,12 @@ import org.efaps.util.EFapsException;
 
 /**
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public abstract class EFapsAbstractMojo implements Mojo
+public abstract class EFapsAbstractMojo
+    implements Mojo
 {
-    /**
-     * Key name holding all store names in the store configuration.
-     *
-     * @see #initStores
-     */
-    private static final String KEY_STORENAMES = "stores";
-
-    /**
-     * Extension of the key for name of the javax naming for one store.
-     *
-     * @see #initStores
-     */
-    private static final String KEY_STORE_NAMING = ".naming";
-
-    /**
-     * Extension of the key for the base name (path) for one store.
-     *
-     * @see #initStores
-     */
-    private static final String KEY_STORE_BASENAME = ".basename";
-
-    /**
-     * Extension of the key for the provider class name for one store.
-     *
-     * @see #initStores
-     */
-    private static final String KEY_STORE_PROVIDER = ".provider";
-
-    /**
-     * Regular expression used to split all store names.
-     *
-     * @see #initStores
-     */
-    private static final String REGEXP_SPLIT_STORENAMES = "\\|";
-
     /**
      * The apache maven logger is stored in this instance variable.
      *
@@ -128,14 +93,6 @@ public abstract class EFapsAbstractMojo implements Mojo
     private String type;
 
     /**
-     * All property configurations defining the store configurations.
-     *
-     * @see #initStores
-     */
-    @Parameter(expression = "${org.efaps.stores}", required = false)
-    private String stores;
-
-    /**
      * Value for the timeout of the transaction.
      */
     @Parameter(expression = "${org.efaps.transaction.timeout}", required = false)
@@ -144,7 +101,9 @@ public abstract class EFapsAbstractMojo implements Mojo
     /**
      *Name of the class for the transaction manager..
      */
-    @Parameter(expression = "${org.efaps.transaction.manager}", required = true)
+    @Parameter(expression = "${org.efaps.transaction.manager}",
+               required = true,
+               defaultValue = "org.objectweb.jotm.Current")
     private String transactionManager;
 
     /**
@@ -153,7 +112,7 @@ public abstract class EFapsAbstractMojo implements Mojo
     @Parameter(expression = "${project.compileClasspathElements}", required = true, readonly = true)
     private List<String> classpathElements;
 
-     protected EFapsAbstractMojo()
+    protected EFapsAbstractMojo()
     {
     }
 

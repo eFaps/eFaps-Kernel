@@ -59,55 +59,80 @@
         <lifecyle>
             <ignore step="DBPROPERTIES_UPDATE" />
         </lifecyle>
-        <script type="rhino">
-      importClass(Packages.org.efaps.admin.datamodel.Type);
-      importClass(Packages.org.efaps.db.Context);
-      importClass(Packages.org.efaps.db.Update);
+        <script type="groovy">
+            import org.efaps.admin.datamodel.Type;
+            import org.efaps.db.Context;
+            import org.efaps.db.Update;
 
-      var c = Context.begin(EFAPS_USERNAME);
+            EFAPS_LOGGER.info("    Update '" + EFAPS_USERNAME + "' Password");
+            Context.getThreadContext().getPerson().setPassword(EFAPS_PASSWORD);
 
-      EFAPS_LOGGER.info("    Update '" + EFAPS_USERNAME + "' Password");
-      c.getPerson().setPassword(EFAPS_PASSWORD);
+            EFAPS_LOGGER.info("    Activate Person '" + EFAPS_USERNAME + "'");
+            Update update1 = new Update(Type.get("Admin_User_Abstract"), "1");
+            update1.add("Status","true");
+            update1.executeWithoutAccessCheck();
 
-      EFAPS_LOGGER.info("    Activate Person '" + EFAPS_USERNAME + "'");
-      var update = new Update(Type.get("Admin_User_Abstract"), "1");
-      update.add("Status","true");
-      update.executeWithoutAccessCheck();
+            EFAPS_LOGGER.info("    Setting default TimeZone, Chronology and Locale for  Person '" + EFAPS_USERNAME + "'");
+            Update update2 = new Update(Type.get("Admin_User_Person"), "1");
+            update2.add("TimeZone","UTC");
+            update2.add("Language","1");
+            update2.add("Chronology","ISO8601");
+            update2.add("Locale","en_US");
+            update2.executeWithoutAccessCheck();
 
-      EFAPS_LOGGER.info("    Setting default TimeZone, Chronology and Locale for  Person '" + EFAPS_USERNAME + "'");
-      var update2 = new Update(Type.get("Admin_User_Person"), "1");
-      update2.add("TimeZone","UTC");
-      update2.add("Language","1");
-      update2.add("Chronology","ISO8601");
-      update2.add("Locale","en_US");
-      update2.executeWithoutAccessCheck();
-
-      EFAPS_LOGGER.info("    Activate Role 'Administration'");
-      var update = new Update(Type.get("Admin_User_Abstract"), "2");
-      update.add("Status","true");
-      update.executeWithoutAccessCheck();
-
-      Context.commit();
+            EFAPS_LOGGER.info("    Activate Role 'Administration'");
+            Update update3 = new Update(Type.get("Admin_User_Abstract"), "2");
+            update3.add("Status","true");
+            update3.executeWithoutAccessCheck();
         </script>
     </version>
     <version number="6" compile="true">
         <description>Import Data</description>
-        <script type="rhino">
-      importClass(Packages.org.efaps.importer.DataImport);
-      importClass(Packages.java.io.File);
-      importClass(Packages.org.efaps.db.Context);
-      jsPackage = Packages.org.mozilla.javascript;
-      Context.begin(EFAPS_USERNAME);
-      url = jsPackage.Context.currentContext.currentContext.getClass().getClassLoader().getResource("org/efaps/installations/eFaps-Kernel/Data/IMPORT_Language.xml");
-      imp = DataImport.readFile(url);
-      imp.updateInDB();
-      url = jsPackage.Context.currentContext.currentContext.getClass().getClassLoader().getResource("org/efaps/installations/eFaps-Kernel/Data/IMPORT_PersonToRole.xml");
-      imp = DataImport.readFile(url);
-      imp.updateInDB();
-      url = jsPackage.Context.currentContext.currentContext.getClass().getClassLoader().getResource("org/efaps/installations/eFaps-Kernel/Data/IMPORT_Webapp_RunLevel.xml");
-      imp = DataImport.readFile(url);
-      imp.updateInDB();
-      Context.commit();
+        <script type="groovy">
+            import java.io.File;
+            import org.efaps.admin.user.JAASSystem;
+            import org.efaps.admin.user.Role;
+            import org.efaps.importer.DataImport;
+            import org.efaps.db.Context;
+            import org.efaps.db.SearchQuery;
+
+            // import languages (if not already exists...)
+            EFAPS_LOGGER.info("    Check if Languages must be imported");
+            SearchQuery query1 = new SearchQuery();
+            query1.setQueryTypes("Admin_Language");
+            query1.addWhereExprEqValue("Language", "en");
+            query1.addSelect("OID");
+            query1.execute();
+            if (!query1.next()) {
+                DataImport.readFile(new URL(EFAPS_ROOTURL, "org/efaps/installations/eFaps-Kernel/Data/IMPORT_Language.xml"))
+                          .updateInDB();
+            }
+
+            // import person 2 role (if not already exists...)
+            EFAPS_LOGGER.info("    Check if Person 2 Role must be imported");
+            SearchQuery query2 = new SearchQuery();
+            query2.setQueryTypes("Admin_User_Person2Role");
+            query2.addWhereExprEqValue("UserFromLink",   Context.getThreadContext().getPerson().getId());
+            query2.addWhereExprEqValue("UserToLink",     Role.getRole("Common_Main_PwdChg").getId());
+            query2.addWhereExprEqValue("UserJAASSystem", JAASSystem.getJAASSystem("eFaps").getId());
+            query2.addSelect("OID");
+            query2.execute();
+            if (!query2.next()) {
+                DataImport.readFile(new URL(EFAPS_ROOTURL, "org/efaps/installations/eFaps-Kernel/Data/IMPORT_PersonToRole.xml"))
+                          .updateInDB();
+            }
+
+            // import run level for the web application (if not already exists...)
+            EFAPS_LOGGER.info("    Check if Run Level webapp must be imported");
+            SearchQuery query3 = new SearchQuery();
+            query3.setQueryTypes("Admin_RunLevel_RunLevel");
+            query3.addWhereExprEqValue("UUID", "590ba27b-26eb-4bdf-ac30-1e1704c5f557");
+            query3.addSelect("OID");
+            query3.execute();
+            if (!query3.next()) {
+                DataImport.readFile(new URL(EFAPS_ROOTURL, "org/efaps/installations/eFaps-Kernel/Data/IMPORT_Webapp_RunLevel.xml"))
+                          .updateInDB();
+            }
     </script>
     </version>
 </install>

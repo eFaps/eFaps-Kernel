@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,20 +43,20 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.tools.ant.DirectoryScanner;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Parameter;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
-import org.efaps.maven_java5.org.apache.maven.tools.plugin.Parameter;
-
-
 /**
  * @author The eFaps Team
  */
-@Goal(name = "generate-installation", requiresDependencyResolutionScope = "compile")
-public class GenerateInstallationMojo extends AbstractEFapsInstallMojo
+@Goal(name = "generate-installation",
+      requiresDependencyResolutionScope = "compile")
+public class GenerateInstallationMojo
+    extends AbstractEFapsInstallMojo
 {
     /**
      * Tag name of the application.
@@ -143,15 +142,15 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo
      * Generates the installation XML file and copies all eFaps definition
      * installation files.
      *
-     * @see #generateInstallFile(Collection)
-     * @see #copyFiles(String, Collection)
+     * @see #generateInstallFile()
+     * @see #copyFiles(String)
      * @throws MojoExecutionException on error
      * @throws MojoFailureException on error
      */
-    public void execute() throws MojoExecutionException, MojoFailureException
+    public void execute()
+        throws MojoExecutionException, MojoFailureException
     {
-        final String rootPackageTmp = generateInstallFile();
-        copyFiles(rootPackageTmp);
+        this.copyFiles(this.generateInstallFile());
     }
 
     /**
@@ -174,7 +173,8 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo
      * @see #targetInstallFile name and path of the installation XML file in the
      *      target directory
      */
-    protected String generateInstallFile() throws MojoExecutionException, MojoFailureException
+    protected String generateInstallFile()
+        throws MojoExecutionException, MojoFailureException
     {
         try {
             final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -193,7 +193,7 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo
             for (int idx = 0; idx < subNodeList.getLength(); idx++) {
                 final Node subNode = subNodeList.item(idx);
                 if ((Node.ELEMENT_NODE == subNode.getNodeType())
-                                && GenerateInstallationMojo.TAG_APPLICATION.equals(subNode.getNodeName())) {
+                        && GenerateInstallationMojo.TAG_APPLICATION.equals(subNode.getNodeName())) {
                     final Node subSubNode = subNode.getFirstChild();
                     if (Node.TEXT_NODE == subSubNode.getNodeType()) {
                         application = subSubNode.getNodeValue();
@@ -224,7 +224,7 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo
 
                 final Attr typeAttr = doc.createAttribute("type");
 
-                final String type = getTypeMapping().get(fileName.substring(fileName.lastIndexOf(".") + 1));
+                final String type = this.getTypeMapping().get(fileName.substring(fileName.lastIndexOf(".") + 1));
                 if (type == null) {
                     typeAttr.setValue("unknown");
                 } else {
@@ -280,11 +280,12 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo
      * @see #targetDirectory to get target directory
      * @see #getCopyFiles() get all files to copy
      */
-    protected void copyFiles(final String _rootPackage) throws MojoExecutionException
+    protected void copyFiles(final String _rootPackage)
+        throws MojoExecutionException
     {
         try {
-            for (final String fileName : getCopyFiles()) {
-                final File srcFile = new File(getEFapsDir(), fileName);
+            for (final String fileName : this.getCopyFiles()) {
+                final File srcFile = new File(this.getEFapsDir(), fileName);
                 final File dstFile = new File(this.targetDirectory, _rootPackage + fileName);
                 FileUtils.copyFile(srcFile, dstFile, true);
             }

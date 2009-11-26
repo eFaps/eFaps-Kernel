@@ -27,14 +27,14 @@ import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
 import org.efaps.update.version.Application;
 
 /**
- * Installs an eFaps application.
+ * Updates an eFaps application.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-@Goal(name = "source-install",
+@Goal(name = "source-update",
       requiresDependencyResolutionScope = "compile")
-public final class SourceInstallMojo
+public final class SourceUpdateMojo
     extends AbstractEFapsInstallMojo
 {
     /**
@@ -68,7 +68,7 @@ public final class SourceInstallMojo
 
             // install applications
             if (appl != null) {
-                appl.install(this.getUserName(), this.getPassWord());
+                appl.updateLastVersion(this.getUserName(), this.getPassWord());
             }
         } catch (final Exception e) {
             throw new MojoExecutionException("Could not execute SourceInstall script", e);
