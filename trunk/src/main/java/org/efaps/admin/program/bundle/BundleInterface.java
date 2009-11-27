@@ -28,17 +28,16 @@ import org.efaps.util.EFapsException;
 /**
  * TODO description
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public interface BundleInterface {
+public interface BundleInterface
+{
+    InputStream getInputStream(final boolean _gziped) throws EFapsException;
 
-  public InputStream getInputStream(boolean _gziped) throws EFapsException;
+    String getContentType();
 
-  public String getContentType();
+    long getCreationTime();
 
-  public long getCreationTime();
-
-  public void setKey(final String _key, final List<String> _oids);
-
+    void setKey(final String _key, final List<String> _oids);
 }
