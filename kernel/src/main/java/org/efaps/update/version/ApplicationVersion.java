@@ -20,6 +20,9 @@
 
 package org.efaps.update.version;
 
+import static org.mozilla.javascript.Context.enter;
+import static org.mozilla.javascript.Context.javaToJS;
+
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 
@@ -27,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,19 +38,17 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.efaps.admin.program.esjp.EFapsClassLoader;
-import org.efaps.db.Context;
-import org.efaps.update.Install;
-import org.efaps.update.UpdateLifecycle;
-import org.efaps.util.EFapsException;
 import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.mozilla.javascript.Context.enter;
-import static org.mozilla.javascript.Context.javaToJS;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.db.Context;
+import org.efaps.update.Install;
+import org.efaps.update.UpdateLifecycle;
+import org.efaps.util.EFapsException;
 
 /**
  * Defines one version of the application to install.
@@ -133,12 +135,13 @@ public class ApplicationVersion
      *            version.xml file)
      * @param _userName name of logged in user
      * @param _password password of logged in user
+     * @throws Exception on error
      */
     public void install(final Install _install,
                         final long _latestVersionNumber,
                         final String _userName,
                         final String _password)
-        throws EFapsException, Exception
+        throws Exception
     {
         // reload cache if needed
         if (this.reloadCacheNeeded) {
@@ -450,7 +453,14 @@ public class ApplicationVersion
                     binding.setVariable("EFAPS_LOGGER", ApplicationVersion.LOG);
                     binding.setVariable("EFAPS_USERNAME", _userName);
                     binding.setVariable("EFAPS_PASSWORD", _userName);
-                    binding.setVariable("EFAPS_ROOTURL", ApplicationVersion.this.application.getRootUrl());
+                    final URL url;
+                    if (ApplicationVersion.this.application.getRootPackageName() == null) {
+                        url = ApplicationVersion.this.application.getRootUrl();
+                    } else {
+                        url = new URL(ApplicationVersion.this.application.getRootUrl(),
+                                      ApplicationVersion.this.application.getRootPackageName());
+                    }
+                    binding.setVariable("EFAPS_ROOTURL", url);
                     go.setBinding(binding);
 
                     final Object[] args = {};
@@ -460,6 +470,8 @@ public class ApplicationVersion
                     throw new EFapsException("InstantiationException in Groovy", e);
                 } catch (final IllegalAccessException e) {
                     throw new EFapsException("IllegalAccessException in Groovy", e);
+                } catch (final MalformedURLException e) {
+                    throw new EFapsException("MalformedURLException in Groovy", e);
                 }
             }
             Context.commit();
@@ -494,25 +506,32 @@ public class ApplicationVersion
                             final String _password)
             throws EFapsException
         {
-
-            // create new javascript context
-            final org.mozilla.javascript.Context javaScriptContext = enter();
-
-            final Scriptable scope = new ImporterTopLevel(javaScriptContext);
-
-            // define the context javascript property
-            ScriptableObject.putProperty(scope, "javaScriptContext", javaScriptContext);
-
-            // define the scope javascript property
-            ScriptableObject.putProperty(scope, "javaScriptScope", scope);
-
-            ScriptableObject.putProperty(scope, "EFAPS_LOGGER", javaToJS(ApplicationVersion.LOG, scope));
-            ScriptableObject.putProperty(scope, "EFAPS_USERNAME", javaToJS(_userName, scope));
-            ScriptableObject.putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
-            ScriptableObject.putProperty(scope,
-                                         "EFAPS_ROOTURL",
-                                         javaToJS(ApplicationVersion.this.application.getRootUrl(), scope));
             try {
+                // create new javascript context
+                final org.mozilla.javascript.Context javaScriptContext = enter();
+
+                final Scriptable scope = new ImporterTopLevel(javaScriptContext);
+
+                // define the context javascript property
+                ScriptableObject.putProperty(scope, "javaScriptContext", javaScriptContext);
+
+                // define the scope javascript property
+                ScriptableObject.putProperty(scope, "javaScriptScope", scope);
+
+                ScriptableObject.putProperty(scope, "EFAPS_LOGGER", javaToJS(ApplicationVersion.LOG, scope));
+                ScriptableObject.putProperty(scope, "EFAPS_USERNAME", javaToJS(_userName, scope));
+                ScriptableObject.putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
+                final URL url;
+                if (ApplicationVersion.this.application.getRootPackageName() == null) {
+                    url = ApplicationVersion.this.application.getRootUrl();
+                } else {
+                    url = new URL(ApplicationVersion.this.application.getRootUrl(),
+                                  ApplicationVersion.this.application.getRootPackageName());
+                }
+                ScriptableObject.putProperty(scope,
+                                             "EFAPS_ROOTURL",
+                                             javaToJS(url, scope));
+
                 // evaluate java script file (if defined)
                 if (getFileName() != null) {
                     if (ApplicationVersion.LOG.isInfoEnabled()) {
@@ -520,7 +539,7 @@ public class ApplicationVersion
                     }
                     final Reader in = new InputStreamReader(
                             new URL(ApplicationVersion.this.application.getRootUrl(),
-                                              this.getFileName()).openStream());
+                                              getFileName()).openStream());
                     javaScriptContext.evaluateReader(scope, in, getFileName(), 1, null);
                     in.close();
                 }

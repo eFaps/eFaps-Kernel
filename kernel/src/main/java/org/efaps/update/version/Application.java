@@ -20,6 +20,8 @@
 
 package org.efaps.update.version;
 
+import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -38,6 +40,10 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.Rule;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.tools.ant.DirectoryScanner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.Attributes;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.esjp.Compiler;
 import org.efaps.admin.program.staticsource.AbstractSourceCompiler;
@@ -49,11 +55,6 @@ import org.efaps.update.FileType;
 import org.efaps.update.Install;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
-
-import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
 
 /**
  * @author The eFaps Team
@@ -163,6 +164,11 @@ public final class Application
     private final URL rootUrl;
 
     /**
+     * Stores the name of the rootPackage.
+     */
+    private String rootPackageName;
+
+    /**
      * Initializes the {@link #rootUrl root URL} of this application.
      *
      * @param _rootUrl              root URL of the source
@@ -224,6 +230,9 @@ public final class Application
 
             digester.addCallMethod("install/application", "setApplication", 1);
             digester.addCallParam("install/application", 0);
+
+            digester.addCallMethod("install/rootPackage", "setRootPackageName", 1);
+            digester.addCallParam("install/rootPackage", 0, "name");
 
             digester.addCallMethod("install/dependencies/dependency", "defineDependency", 4,
                     new Class[]{String.class, String.class, String.class, Integer.class});
@@ -453,7 +462,7 @@ public final class Application
     public void compileAll(final String _userName)
         throws InstallationException
     {
-        this.reloadCache();
+        reloadCache();
 
         try {
             Context.begin(_userName);
@@ -507,7 +516,7 @@ public final class Application
         }
 
         // reload cache (if possible)
-        this.reloadCache();
+        reloadCache();
 
         // load latest installed versions
         final Map<String, Long> latestVersions;
@@ -540,11 +549,11 @@ public final class Application
                 }
                 try  {
 // TODO: correct exception handling in the installation
-                    version.install(this.install, this.getLastVersion().getNumber(), _userName, _password);
+                    version.install(this.install, getLastVersion().getNumber(), _userName, _password);
                 } catch (final Exception e)  {
                     throw new InstallationException("Installation failed", e);
                 }
-                this.storeVersion(_userName, version.getNumber());
+                storeVersion(_userName, version.getNumber());
 
                 if (Application.LOG.isInfoEnabled()) {
                     Application.LOG.info("Finished installation of version " + version.getNumber());
@@ -553,7 +562,7 @@ public final class Application
         }
 
         // reload cache (if possible)
-        this.reloadCache();
+        reloadCache();
     }
 
     /**
@@ -568,7 +577,7 @@ public final class Application
         throws EFapsException, Exception
     {
         // reload cache (if possible)
-        this.reloadCache();
+        reloadCache();
 
         // load installed versions
         Context.begin();
@@ -576,7 +585,7 @@ public final class Application
         Context.rollback();
         final long latestVersion = latestVersions.get(this.application);
 
-        final ApplicationVersion version = this.getLastVersion();
+        final ApplicationVersion version = getLastVersion();
         if (version.getNumber() == latestVersion)  {
             if (Application.LOG.isInfoEnabled()) {
                 Application.LOG.info("Update version "
@@ -742,7 +751,7 @@ public final class Application
                                  final String _type)
         throws MalformedURLException
     {
-        this.addURL(new URL(this.rootUrl, _classPathFile), _type);
+        addURL(new URL(this.rootUrl, _classPathFile), _type);
     }
 
     /**
@@ -818,6 +827,26 @@ public final class Application
     public Long getMaxVersion()
     {
         return this.maxVersion;
+    }
+
+    /**
+     * Setter method for instance variable {@link #rootPackageName}.
+     *
+     * @param _rootPackageName value for instance variable {@link #rootPackageName}
+     */
+    public void setRootPackageName(final String _rootPackageName)
+    {
+        this.rootPackageName = _rootPackageName;
+    }
+
+    /**
+     * Getter method for instance variable {@link #rootPackageName}.
+     *
+     * @return value of instance variable {@link #rootPackageName}
+     */
+    public String getRootPackageName()
+    {
+        return this.rootPackageName;
     }
 
     /**

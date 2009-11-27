@@ -104,7 +104,7 @@
             query1.addSelect("OID");
             query1.execute();
             if (!query1.next()) {
-                DataImport.readFile(new URL(EFAPS_ROOTURL, "org/efaps/installations/eFaps-Kernel/Data/IMPORT_Language.xml"))
+                DataImport.readFile(new URL(EFAPS_ROOTURL, "Data/IMPORT_Language.xml"))
                           .updateInDB();
             }
 
@@ -118,7 +118,7 @@
             query2.addSelect("OID");
             query2.execute();
             if (!query2.next()) {
-                DataImport.readFile(new URL(EFAPS_ROOTURL, "org/efaps/installations/eFaps-Kernel/Data/IMPORT_PersonToRole.xml"))
+                DataImport.readFile(new URL(EFAPS_ROOTURL, "Data/IMPORT_PersonToRole.xml"))
                           .updateInDB();
             }
 
@@ -130,7 +130,7 @@
             query3.addSelect("OID");
             query3.execute();
             if (!query3.next()) {
-                DataImport.readFile(new URL(EFAPS_ROOTURL, "org/efaps/installations/eFaps-Kernel/Data/IMPORT_Webapp_RunLevel.xml"))
+                DataImport.readFile(new URL(EFAPS_ROOTURL, "Data/IMPORT_Webapp_RunLevel.xml"))
                           .updateInDB();
             }
     </script>
