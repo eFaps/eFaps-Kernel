@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 2142 $
- * Last Changed:    $Date: 2009-01-28 16:51:50 -0500 (Wed, 28 Jan 2009) $
- * Last Changed By: $Author: jmox $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.db.store;
@@ -43,6 +43,9 @@ import org.efaps.util.EFapsException;
 /**
  * The class implements the {@link javax.transaction.XAResource} interface for
  * Blobs.<br/> For each file id a new JDBC store resource must be created.
+ *
+ * @author The eFaps Team
+ * @version $Id$
  */
 public class JDBCStoreResource extends AbstractStoreResource {
 

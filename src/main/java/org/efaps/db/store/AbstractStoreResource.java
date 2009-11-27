@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 2142 $
- * Last Changed:    $Date: 2009-01-28 16:51:50 -0500 (Wed, 28 Jan 2009) $
- * Last Changed By: $Author: jmox $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.db.store;
@@ -47,7 +47,7 @@ import org.efaps.util.EFapsException;
  * For each file id a new VFS store resource must be created.
  *
  * @author tmo
- * @version $Id: StoreResource.java 2142 2009-01-28 21:51:50Z jmox $
+ * @version $Id$
  */
 public abstract class AbstractStoreResource extends AbstractResource
     implements Resource {
