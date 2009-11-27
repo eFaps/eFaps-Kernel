@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  
+
   Copyright 2003 - 2009 The eFaps Team
-  
+
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-  
+
   Author:          tmo
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
-  
+
 -->
 
 <project
@@ -53,12 +53,12 @@
   <inceptionYear>2002</inceptionYear>
   <description>
     eFaps is a framework used to map objects with or without attached files to
-    a relational database and optional file systems (only for attaches files). 
-    Configurable access control can be provided down to object and attribute 
-    level depending on implementation and use case. Depending on requirements, 
-    events (like triggers) allow to implement business logic and to separate 
+    a relational database and optional file systems (only for attaches files).
+    Configurable access control can be provided down to object and attribute
+    level depending on implementation and use case. Depending on requirements,
+    events (like triggers) allow to implement business logic and to separate
     business logic from user interface.
-    The framework includes integrations (e.g. webdav, full text search) and a 
+    The framework includes integrations (e.g. webdav, full text search) and a
     web application as 'simple' configurable user interface. Some best
     practises, example web application modules (e.g. team work module) support
     administrators and implementers using this framework.
@@ -132,7 +132,6 @@
   <modules>
     <module>kernel</module>
     <module>maven</module>
-    <module>kernel-install</module>
   </modules>
 
   <!-- ************************************************************************
@@ -156,7 +155,7 @@
       <version>8.3-603.jdbc3</version>
     </dependency>
   </dependencies>
-  
+
   <reporting>
     <plugins>
       <plugin>
@@ -164,7 +163,7 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration/>
       </plugin>
-      <!-- 
+      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
@@ -184,8 +183,8 @@
               <report>summary</report>
               <report>dependencies</report>
               <report>project-team</report>
-           <!--   <report>mailing-list</report>--> 
-             <!-- <report>cim</report> --> 
+           <!--   <report>mailing-list</report>-->
+             <!-- <report>cim</report> -->
               <report>issue-tracking</report>
               <report>license</report>
               <report>scm</report>
@@ -194,7 +193,7 @@
         </reportSets>
       </plugin>
     </plugins>
-    
+
   </reporting>
   <distributionManagement>
     <site>
@@ -202,7 +201,7 @@
       <url>scp://shell.berlios.de/home/groups/efaps/htdocs/</url>
     </site>
   </distributionManagement>
-  
+
   <repositories>
     <repository>
       <id>eFaps-Snapshot</id>
