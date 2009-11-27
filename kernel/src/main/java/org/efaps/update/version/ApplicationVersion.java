@@ -20,9 +20,6 @@
 
 package org.efaps.update.version;
 
-import static org.mozilla.javascript.Context.enter;
-import static org.mozilla.javascript.Context.javaToJS;
-
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 
@@ -38,17 +35,20 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.db.Context;
+import org.efaps.update.Install;
+import org.efaps.update.UpdateLifecycle;
+import org.efaps.update.util.InstallationException;
+import org.efaps.util.EFapsException;
 import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.efaps.admin.program.esjp.EFapsClassLoader;
-import org.efaps.db.Context;
-import org.efaps.update.Install;
-import org.efaps.update.UpdateLifecycle;
-import org.efaps.util.EFapsException;
+import static org.mozilla.javascript.Context.enter;
+import static org.mozilla.javascript.Context.javaToJS;
 
 /**
  * Defines one version of the application to install.
@@ -317,6 +317,33 @@ public class ApplicationVersion
     }
 
     /**
+     * Returns the complete root URL so that resources in the installation
+     * package could be fetched. If an installation from the source directory
+     * is done, the {@link Application#getRootUrl() root URL}Êis directly
+     * returned, in the case that an installation is done from a JAR container
+     * the {@link Application#getRootUrl() root URL} is appended with the name
+     * of the {@link Application#getRootPackageName() root package name}.
+     *
+     * @return complete root URL
+     * @throws InstallationException if complete root URL could not be prepared
+     */
+    protected URL getCompleteRootUrl()
+        throws InstallationException
+    {
+        try {
+            final URL url;
+            if (this.application.getRootPackageName() == null) {
+                url = this.application.getRootUrl();
+            } else {
+                url = new URL(this.application.getRootUrl(), this.application.getRootPackageName());
+            }
+            return url;
+        } catch (final MalformedURLException e)  {
+            throw new InstallationException("Root url could not be prepared", e);
+        }
+    }
+
+    /**
      * Returns a string representation with values of all instance variables.
      *
      * @return string representation of this Application
@@ -372,12 +399,11 @@ public class ApplicationVersion
          *
          * @param _userName name of logged in user
          * @param _password password of logged in user
-         * @throws EFapsException on error
+         * @throws InstallationException on error
          */
         public abstract void execute(final String _userName,
                                      final String _password)
-            throws EFapsException;
-
+            throws InstallationException;
 
         /**
          * Getter method for instance variable {@link #code}.
@@ -411,7 +437,7 @@ public class ApplicationVersion
     }
 
     /**
-     *Script fpor groovy.
+     *Script for groovy.
      */
     private final class GroovyScript
         extends ApplicationVersion.Script
@@ -437,56 +463,67 @@ public class ApplicationVersion
         @Override()
         public void execute(final String _userName,
                             final String _password)
-            throws EFapsException
+            throws InstallationException
         {
-            Context.begin(_userName);
-            final ClassLoader parent = getClass().getClassLoader();
-            final EFapsClassLoader efapsClassLoader = new EFapsClassLoader(parent);
-            final GroovyClassLoader loader = new GroovyClassLoader(efapsClassLoader);
-            if (getCode() != null) {
-                final Class<?> clazz = loader.parseClass(getCode());
-                groovy.lang.Script go;
+            boolean commit = false;
+            try {
                 try {
-                    go = (groovy.lang.Script) clazz.newInstance();
+                    Context.begin(_userName);
+                } catch (final EFapsException e) {
+                    throw new InstallationException("Tranaction could not be started", e);
+                }
+                final ClassLoader parent = getClass().getClassLoader();
+                final EFapsClassLoader efapsClassLoader = new EFapsClassLoader(parent);
+                final GroovyClassLoader loader = new GroovyClassLoader(efapsClassLoader);
+                if (getCode() != null) {
+                    final Class<?> clazz = loader.parseClass(getCode());
+                    groovy.lang.Script go;
+                    try {
+                        go = (groovy.lang.Script) clazz.newInstance();
 
-                    final Binding binding = new Binding();
-                    binding.setVariable("EFAPS_LOGGER", ApplicationVersion.LOG);
-                    binding.setVariable("EFAPS_USERNAME", _userName);
-                    binding.setVariable("EFAPS_PASSWORD", _userName);
-                    final URL url;
-                    if (ApplicationVersion.this.application.getRootPackageName() == null) {
-                        url = ApplicationVersion.this.application.getRootUrl();
-                    } else {
-                        url = new URL(ApplicationVersion.this.application.getRootUrl(),
-                                      ApplicationVersion.this.application.getRootPackageName());
+                        final Binding binding = new Binding();
+                        binding.setVariable("EFAPS_LOGGER", ApplicationVersion.LOG);
+                        binding.setVariable("EFAPS_USERNAME", _userName);
+                        binding.setVariable("EFAPS_PASSWORD", _userName);
+                        binding.setVariable("EFAPS_ROOTURL", ApplicationVersion.this.getCompleteRootUrl());
+                        go.setBinding(binding);
+
+                        final Object[] args = {};
+                        go.invokeMethod("run", args);
+
+                    } catch (final InstantiationException e) {
+                        throw new InstallationException("InstantiationException in Groovy", e);
+                    } catch (final IllegalAccessException e) {
+                        throw new InstallationException("IllegalAccessException in Groovy", e);
                     }
-                    binding.setVariable("EFAPS_ROOTURL", url);
-                    go.setBinding(binding);
-
-                    final Object[] args = {};
-                    go.invokeMethod("run", args);
-
-                } catch (final InstantiationException e) {
-                    throw new EFapsException("InstantiationException in Groovy", e);
-                } catch (final IllegalAccessException e) {
-                    throw new EFapsException("IllegalAccessException in Groovy", e);
-                } catch (final MalformedURLException e) {
-                    throw new EFapsException("MalformedURLException in Groovy", e);
+                }
+                try  {
+                    Context.commit();
+                } catch (final EFapsException e) {
+                    throw new InstallationException("Tranaction could not be commited", e);
+                }
+                commit = true;
+            } finally {
+                if (!commit)  {
+                    try {
+                        Context.rollback();
+                    } catch (final EFapsException e) {
+                        throw new InstallationException("Tranaction could not be aborted", e);
+                    }
                 }
             }
-            Context.commit();
         }
     }
 
-
     /**
-     * Script for mozilla rhino.
+     * Script for mozilla rhino (Javascript).
      */
-    private final class RhinoScript extends ApplicationVersion.Script
+    private final class RhinoScript
+        extends ApplicationVersion.Script
     {
-
         /**
          * Constructor.
+         *
          * @param _code         code
          * @param _fileName     filename
          * @param _function     function
@@ -504,7 +541,7 @@ public class ApplicationVersion
         @Override()
         public void execute(final String _userName,
                             final String _password)
-            throws EFapsException
+            throws InstallationException
         {
             try {
                 // create new javascript context
@@ -521,25 +558,17 @@ public class ApplicationVersion
                 ScriptableObject.putProperty(scope, "EFAPS_LOGGER", javaToJS(ApplicationVersion.LOG, scope));
                 ScriptableObject.putProperty(scope, "EFAPS_USERNAME", javaToJS(_userName, scope));
                 ScriptableObject.putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
-                final URL url;
-                if (ApplicationVersion.this.application.getRootPackageName() == null) {
-                    url = ApplicationVersion.this.application.getRootUrl();
-                } else {
-                    url = new URL(ApplicationVersion.this.application.getRootUrl(),
-                                  ApplicationVersion.this.application.getRootPackageName());
-                }
                 ScriptableObject.putProperty(scope,
                                              "EFAPS_ROOTURL",
-                                             javaToJS(url, scope));
+                                             javaToJS(ApplicationVersion.this.getCompleteRootUrl(), scope));
 
                 // evaluate java script file (if defined)
-                if (getFileName() != null) {
+                if (this.getFileName() != null) {
                     if (ApplicationVersion.LOG.isInfoEnabled()) {
                         ApplicationVersion.LOG.info("Execute script file '" + getFileName() + "'");
                     }
                     final Reader in = new InputStreamReader(
-                            new URL(ApplicationVersion.this.application.getRootUrl(),
-                                              getFileName()).openStream());
+                            new URL(ApplicationVersion.this.getCompleteRootUrl(), getFileName()).openStream());
                     javaScriptContext.evaluateReader(scope, in, getFileName(), 1, null);
                     in.close();
                 }
@@ -558,9 +587,8 @@ public class ApplicationVersion
                     javaScriptContext.evaluateReader(scope, new StringReader(getFunction()), getFunction(), 1, null);
                 }
             } catch (final IOException e) {
-                throw new EFapsException("IOException in RhinoScript", e);
+                throw new InstallationException("IOException in RhinoScript", e);
             }
         }
-
     }
 }
