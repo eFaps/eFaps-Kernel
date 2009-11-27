@@ -43,12 +43,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.tools.ant.DirectoryScanner;
-import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
-import org.efaps.maven_java5.org.apache.maven.tools.plugin.Parameter;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Goal;
+import org.efaps.maven_java5.org.apache.maven.tools.plugin.Parameter;
 
 /**
  * @author The eFaps Team
@@ -150,7 +151,7 @@ public class GenerateInstallationMojo
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
-        this.copyFiles(this.generateInstallFile());
+        copyFiles(generateInstallFile());
     }
 
     /**
@@ -211,6 +212,12 @@ public class GenerateInstallationMojo
             // prepare root package name
             final String rootPackageTmp = this.rootPackage.replaceAll("/*$", "").replaceAll("^/*", "")
                 + "/" + application + "/";
+            // store the root package name in to the file
+            final Node rootPackageName = doc.createElement("rootPackage");
+            installNode.appendChild(rootPackageName);
+            final Attr packAttr = doc.createAttribute("name");
+            packAttr.setValue(rootPackageTmp);
+            rootPackageName.getAttributes().setNamedItem(packAttr);
 
             // create files node and append to install node
             final Node files = doc.createElement("files");
@@ -224,7 +231,7 @@ public class GenerateInstallationMojo
 
                 final Attr typeAttr = doc.createAttribute("type");
 
-                final String type = this.getTypeMapping().get(fileName.substring(fileName.lastIndexOf(".") + 1));
+                final String type = getTypeMapping().get(fileName.substring(fileName.lastIndexOf(".") + 1));
                 if (type == null) {
                     typeAttr.setValue("unknown");
                 } else {
@@ -284,8 +291,8 @@ public class GenerateInstallationMojo
         throws MojoExecutionException
     {
         try {
-            for (final String fileName : this.getCopyFiles()) {
-                final File srcFile = new File(this.getEFapsDir(), fileName);
+            for (final String fileName : getCopyFiles()) {
+                final File srcFile = new File(getEFapsDir(), fileName);
                 final File dstFile = new File(this.targetDirectory, _rootPackage + fileName);
                 FileUtils.copyFile(srcFile, dstFile, true);
             }
