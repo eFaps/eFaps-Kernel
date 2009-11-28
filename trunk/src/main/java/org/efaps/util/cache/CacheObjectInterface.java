@@ -23,16 +23,31 @@ package org.efaps.util.cache;
 import java.util.UUID;
 
 /**
+ * Common interface of cached object.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
- * @todo description
  */
-public interface CacheObjectInterface  {
+public interface CacheObjectInterface
+{
+    /**
+     * Returns the name of the cached object.
+     *
+     * @return name of the cached object
+     */
+    String getName();
 
-  String getName();
+    /**
+     * Returns the UUID of the cached object.
+     *
+     * @return UUID of the cached object
+     */
+    UUID getUUID();
 
-  UUID getUUID();
-
-  long getId();
+    /**
+     * Returns the id of the cached object.
+     *
+     * @return id of the cached object
+     */
+    long getId();
 }
