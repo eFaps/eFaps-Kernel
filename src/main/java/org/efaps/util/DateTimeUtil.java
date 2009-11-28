@@ -26,39 +26,41 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.UUID;
 
+import org.efaps.admin.common.SystemConfiguration;
+import org.efaps.db.Context;
+import org.efaps.db.transaction.ConnectionResource;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.efaps.admin.common.SystemConfiguration;
-import org.efaps.db.Context;
-import org.efaps.db.transaction.ConnectionResource;
-
 /**
+ * Date and time utility class to handle the time zone from the eFaps
+ * correctly.
+ *
  * @author The eFaps Team
  * @version $Id$
  */
 public final class DateTimeUtil
 {
-
     /**
      * Logging instance used to give logging information of this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(DateTimeUtil.class);
 
     /**
-     *
+     * Private constructor so that no instance of this utility class could be
+     * created.
      */
     private DateTimeUtil()
     {
     }
 
     /**
-     * static method to get the current timestamp from the eFaps-Database.
+     * Static method to get the current time stamp from the eFaps database.
      *
-     * @return Timestamp containing the current Time of the eFaps-DataBase
+     * @return time stamp containing the current time of the eFaps database
      * @throws EFapsException on error
      */
     public static Timestamp getCurrentTimeFromDB() throws EFapsException
@@ -81,18 +83,19 @@ public final class DateTimeUtil
     }
 
     /**
-     * The given DateTime will be normalized to ISO Calender with TimeZone from
-     * SystemAttribute Admin_Common_DataBaseTimeZone. In case that the
-     * SystemAttribute is missing UTC will be used.
+     * The given DateTime will be normalized to ISO calendar with time zone
+     * from {@link SystemConfiguration system configuration}
+     * &quot;Admin_Common_DataBaseTimeZone&quot;. In case that the
+     * system configuration is missing &quot;UTC&quot; will be used.
      *
-     * @param _date date to normalize
+     * @param _date     date to normalize
      * @return DateTime normalized for the database
      */
     public static DateTime normalize(final DateTime _date)
     {
         // reads the Value from "Admin_Common_DataBaseTimeZone"
-        final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
-                        .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+        final SystemConfiguration kernelConfig = SystemConfiguration.get(
+                UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
         final String timezoneID = kernelConfig.getAttributeValue("DataBaseTimeZone");
         final ISOChronology chron;
         if (timezoneID != null) {
