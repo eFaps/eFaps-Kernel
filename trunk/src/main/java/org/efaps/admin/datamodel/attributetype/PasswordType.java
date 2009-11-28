@@ -20,7 +20,6 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -39,6 +38,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,7 +146,7 @@ public class PasswordType extends StringType
                 if (_decrypt) {
                     cipher.init(Cipher.DECRYPT_MODE, pbeKey, pbeParamSpec);
                     // Decode base64 to get bytes
-                    final byte[] dec = new sun.misc.BASE64Decoder().decodeBuffer(_password);
+                    final byte[] dec = Base64.decodeBase64(_password);
                     // Decrypt
                     final byte[] ciphertext = cipher.doFinal(dec);
 
@@ -158,7 +158,7 @@ public class PasswordType extends StringType
                     // Encrypt the cleartext
                     final byte[] ciphertext = cipher.doFinal(pwdText);
 
-                    ret = new sun.misc.BASE64Encoder().encode(ciphertext);
+                    ret = Base64.encodeBase64String(ciphertext);
                 }
                 // TODO rework errorhandling
             } catch (final NoSuchAlgorithmException e) {
@@ -176,8 +176,6 @@ public class PasswordType extends StringType
             } catch (final BadPaddingException e) {
                 LOG.error("Encryption/Decryption failed!", e);
             } catch (final UnsupportedEncodingException e) {
-                LOG.error("Encryption/Decryption failed!", e);
-            } catch (final IOException e) {
                 LOG.error("Encryption/Decryption failed!", e);
             }
         }
