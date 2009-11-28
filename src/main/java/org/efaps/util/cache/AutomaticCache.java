@@ -25,58 +25,58 @@ import java.util.UUID;
 /**
  * Cache that is initialized automatically on the first access to it.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  * @param <K> CacheObjectInterface
  */
 public abstract class AutomaticCache<K extends CacheObjectInterface>
-    extends Cache<K> {
-
-  /**
-   * Returns for given key id the cached object from the cache4Id cache. If the
-   * cache is NOT initialized, null
-   * @see #cache4Id
-   * @param _id Id the CacheObject is wanted for
-   * @return CacheObject
-   *
-   */
-  @Override
-  public K get(final long _id)  {
-    if (!hasEntries()) {
-      initialize(AutomaticCache.class);
+    extends Cache<K>
+{
+    /**
+     * Returns for given key id the cached object from the cache4Id cache. If
+     * the cache is NOT initialized <code>null</code> is returned.
+     *
+     * @param _id   id of searched cached object
+     * @return cached object
+     */
+    @Override()
+    public K get(final long _id)
+    {
+        if (!hasEntries()) {
+            initialize(AutomaticCache.class);
+        }
+        return getCache4Id().get(new Long(_id));
     }
-    return getCache4Id().get(new Long(_id));
-  }
 
-  /**
-   * Returns for given key id the cached object from the cache4Id cache. If the
-   * cache is NOT initialized, the cache is initialize
-   * @see #cache4Id
-   * @param _name Name the CacheObject is wanted for
-   * @return CacheObject
-   *
-   */
-  @Override
-  public K get(final String _name)  {
-    if (!hasEntries()) {
-      initialize(AutomaticCache.class);
+    /**
+     * Returns for given key id the cached object from the cache4Id cache. If
+     * the cache is NOT initialized, the cache will be initialized.
+     *
+     * @param _name     name of searched cached object
+     * @return cached object
+     */
+    @Override()
+    public K get(final String _name)
+    {
+        if (!hasEntries()) {
+            initialize(AutomaticCache.class);
+        }
+        return getCache4Name().get(_name);
     }
-    return getCache4Name().get(_name);
-  }
 
- /**
-   * Returns for given key id the cached object from the cache4Id cache. If the
-   * cache is NOT initialized, the cache is initialize
-   *
-   * @param _uuid UUID the CacheObject is wanted for
-   * @return CacheObject
-   *
-   */
-  @Override
-  public K get(final UUID _uuid) {
-    if (!hasEntries()) {
-      initialize(AutomaticCache.class);
+    /**
+     * Returns for given key id the cached object from the cache4Id cache. If
+     * the cache is NOT initialized, the cache will be initialized.
+     *
+     * @param _uuid     UUID of searched cached object
+     * @return cached object
+     */
+    @Override()
+    public K get(final UUID _uuid)
+    {
+        if (!hasEntries()) {
+            initialize(AutomaticCache.class);
+        }
+        return getCache4UUID().get(_uuid);
     }
-    return getCache4UUID().get(_uuid);
-  }
 }
