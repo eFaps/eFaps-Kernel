@@ -20,9 +20,6 @@
 
 package org.efaps.admin.common;
 
-import static org.efaps.admin.EFapsClassNames.CONFIG_ATTR;
-import static org.efaps.admin.EFapsClassNames.CONFIG_LINK;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -30,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.efaps.admin.EFapsClassNames;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
@@ -39,218 +37,265 @@ import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- * TODO description.
+ * The class handles the caching for system configurations with their
+ * attributes and links.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class SystemConfiguration implements CacheObjectInterface {
+public final class SystemConfiguration
+    implements CacheObjectInterface
+{
+    /**
+     * This static Variable contains the SQL statement used to retrieve the
+     * SystemAttributes from the eFaps database.
+     */
+    private static final String SQL_SELECT
+        = " select CONFIGID, CONFIGNAME, CONFIGUUID, KEY, VALUE, UUID "
+                + "from V_CMSYSCONF";
 
-  /**
-   * this static Variable contains the SQL-Statment used to retrieve the
-   * SystemAttributes from the efps-Database.
-   */
-  private static final String SQL_SELECT =
-      " select CONFIGID, CONFIGNAME, CONFIGUUID, KEY, VALUE, UUID "
-     + "from V_CMSYSCONF";
+    /**
+     * Caches all instances of {@link SystemConfiguration}.
+     */
+    private static SystemConfigurationCache CACHE = new SystemConfigurationCache();
 
-  /**
-   * Stores all instances of SytemAttribute.
-   */
-  private static SystemConfigurationCache CACHE = new SystemConfigurationCache();
+    /**
+     * The instance variable stores the id of this SystemAttribute.
+     *
+     * @see #getId()
+     */
+    private final long id;
 
-  /**
-   * The instance variable stores the id of this SystemAttribute.
-   *
-   * @see #getId()
-   */
-  private final long id;
+    /**
+     * The instance variable stores the UUID of this SystemAttribute.
+     *
+     * @see #getUUID()
+     */
+    private final UUID uuid;
 
-  /**
-   * The instance variable stores the UUID of this SystemAttribute.
-   *
-   * @see #getUUID()
-   */
-  private final UUID uuid;
+    /**
+     * The instance variable stores the Name of this SystemAttribute.
+     *
+     * @see #getName()
+     */
+    private final String name;
 
-  /**
-   * The instance variable stores the Name of this SystemAttribute.
-   *
-   * @see #getName()
-   */
-  private final String name;
+    /**
+     * Map with all attributes for this system configuration.
+     */
+    private final Map<String, String> attributes = new HashMap<String, String>();
 
-  private final Map<String,String> attributes = new HashMap<String,String>();
+    /**
+     * Map with all links for this system configuration.
+     */
+    private final Map<String, String> links = new HashMap<String, String>();
 
-  private final Map<String,String> links = new HashMap<String,String>();
-  /**
-   * Constructor setting instance variables.
-   *
-   * @param _id     id of the SystemConfiguration
-   * @param _uuid   uuid of the SystemConfiguration
-   * @param _name   name of the SystemConfiguration
-   *
-   */
-  protected SystemConfiguration(final long _id, final String _name,
-                                final String _uuid) {
-    this.id = _id;
-    this.uuid = UUID.fromString(_uuid);
-    this.name = _name;
-  }
-
-  /**
-   * @param _key
-   * @param _value
-   */
-  private void addAttribute(final String _key, final String _value) {
-    this.attributes.put(_key, _value);
-  }
-
-  /**
-   * @param _key
-   * @param _value
-   */
-  private void addLink(final String _key, final String _value) {
-    this.links.put(_key, _value);
-  }
-
-  /**
-   * Returns for given parameter <i>_id</i> the instance of class
-   * {@link #SytemAttribute()}.
-   * @param _id  id of the SystemConfiguration
-   * @return instance of class {@link #SytemAttribute()}
-   * @throws CacheReloadException
-   */
-  public static SystemConfiguration get(final long _id) {
-    return CACHE.get(_id);
-  }
-
-  /**
-   * Returns for given parameter <i>_name</i> the instance of class
-   * {@link #SytemAttribute()}.
-   * @param _name  name of the Systemattribute
-   * @return instance of class {@link #SytemAttribute()}
-   * @throws CacheReloadException
-   */
-  public static SystemConfiguration get(final String _name) {
-    return CACHE.get(_name);
-  }
-
-  /**
-   * Returns for given parameter <i>_uuid</i> the instance of class
-   * {@link #SytemAttribute()}.
-   *
-   * @param _uuid  uuid of the SystemConfiguration
-   * @return instance of class {@link #SytemAttribute()}
-   * @throws CacheReloadException
-   */
-  public static SystemConfiguration get(final UUID _uuid) {
-    return CACHE.get(_uuid);
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #id}.
-   *
-   * @return value of instance variable {@link #id}
-   */
-  public final long getId() {
-    return this.id;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #uuid}.
-   *
-   * @return value of instance variable {@link #uuid}
-   */
-  public final UUID getUUID() {
-    return this.uuid;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #name}.
-   *
-   * @return value of instance variable {@link #name}
-   */
-  public final String getName() {
-    return this.name;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #value}.
-   *
-   * @return value of instance variable {@link #value}
-   */
-  public final Instance getLink(final String _key) {
-    return Instance.get(this.links.get(_key));
-  }
-
-  public final String getAttributeValue(final String _key) {
-    return this.attributes.get(_key);
-  }
-
-  public final boolean getAttributeValueAsBoolean(final String _key) {
-    return Boolean.parseBoolean(this.attributes.containsKey(_key)
-                                ? this.attributes.get(_key)
-                                : "false");
-  }
-
-  public final int getAttributeValueAsInteger(final String _key) {
-    return Integer.parseInt(this.attributes.containsKey(_key)
-                            ? this.attributes.get(_key)
-                            : "0");
-  }
-
-  /**
-   * Method to initialize the Cache of this CacheObjectInterface.
-   */
-  public static void initialize() {
-    CACHE.initialize(SystemConfiguration.class);
-  }
-
-  private static class SystemConfigurationCache extends Cache<SystemConfiguration> {
-
-    @Override
-    protected void readCache(final Map<Long, SystemConfiguration> _newCache4Id,
-                             final Map<String, SystemConfiguration> _newCache4Name,
-                             final Map<UUID, SystemConfiguration> _newCache4UUID)
-        throws CacheReloadException {
-      try {
-
-        final ConnectionResource con =
-            Context.getThreadContext().getConnectionResource();
-        final Statement stmt = con.getConnection().createStatement();
-        final ResultSet resultset = stmt.executeQuery(SQL_SELECT);
-        long id = 0;
-        SystemConfiguration config = null;
-        while (resultset.next()) {
-          final long configId = resultset.getLong(1);
-          final String configName = resultset.getString(2).trim();
-          final String configUUID = resultset.getString(3).trim();
-          final String key = resultset.getString(4).trim();
-          final String value = resultset.getString(5).trim();
-          final String uuid = resultset.getString(6).trim();
-          if (id != configId) {
-            id = configId;
-            config = new SystemConfiguration(configId,
-                                             configName,
-                                             configUUID);
-            _newCache4Id.put(config.getId(), config);
-            _newCache4Name.put(config.getName(), config);
-            _newCache4UUID.put(config.getUUID(), config);
-          }
-          final UUID uuidTmp = UUID.fromString(uuid);
-          if (uuidTmp.equals(CONFIG_ATTR.getUuid())) {
-            config.addAttribute(key, value);
-          } else if (uuidTmp.equals(CONFIG_LINK.getUuid())) {
-            config.addLink(key, value);
-          }
-        }
-      } catch (final EFapsException e) {
-        throw new CacheReloadException("could not read SystemConfiguration", e);
-      } catch (final SQLException e) {
-        throw new CacheReloadException("could not read SystemConfiguration", e);
-      }
-
+    /**
+     * Constructor setting instance variables.
+     *
+     * @param _id     id of the SystemConfiguration
+     * @param _uuid   uuid of the SystemConfiguration
+     * @param _name   name of the SystemConfiguration
+     */
+    private SystemConfiguration(final long _id,
+                                final String _name,
+                                final String _uuid)
+    {
+        this.id = _id;
+        this.uuid = UUID.fromString(_uuid);
+        this.name = _name;
     }
-  }
+
+    /**
+     * Returns for given parameter <i>_id</i> the instance of class
+     * {@link SystemConfiguration}.
+     *
+     * @param _id  id of the system configuration
+     * @return instance of class {@link SystemConfiguration}
+     * @throws CacheReloadException
+     */
+    public static SystemConfiguration get(final long _id)
+    {
+        return SystemConfiguration.CACHE.get(_id);
+    }
+
+    /**
+     * Returns for given parameter <i>_name</i> the instance of class
+     * {@link SystemConfiguration}.
+     *
+     * @param _name  name of the system configuration
+     * @return instance of class {@link SystemConfiguration}
+     * @throws CacheReloadException
+     */
+    public static SystemConfiguration get(final String _name)
+    {
+        return SystemConfiguration.CACHE.get(_name);
+    }
+
+    /**
+     * Returns for given parameter <i>_uuid</i> the instance of class
+     * {@link SystemConfiguration}.
+     *
+     * @param _uuid  uuid of the system configuration
+     * @return instance of class {@link SystemConfiguration}
+     * @throws CacheReloadException
+     */
+    public static SystemConfiguration get(final UUID _uuid)
+    {
+        return SystemConfiguration.CACHE.get(_uuid);
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #id}.
+     *
+     * @return value of instance variable {@link #id}
+     */
+    public long getId()
+    {
+        return this.id;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #uuid}.
+     *
+     * @return value of instance variable {@link #uuid}
+     */
+    public UUID getUUID()
+    {
+        return this.uuid;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #name}.
+     *
+     * @return value of instance variable {@link #name}
+     */
+    public String getName()
+    {
+        return this.name;
+    }
+
+    /**
+     * Returns for given <code>_key</code> the related link. If no link is
+     * found <code>null</code> is returned.
+     *
+     * @param _key      key of searched link
+     * @return found link; if not found <code>null</code>
+     * @see #links
+     */
+    public Instance getLink(final String _key)
+    {
+        return Instance.get(this.links.get(_key));
+    }
+
+    /**
+     * Returns for given <code>_key</code> the related attribute value. If no
+     * attribute value is found <code>null</code> is returned.
+     *
+     * @param _key      key of searched attribute
+     * @return found attribute value; if not found <code>null</code>
+     * @see #attributes
+     */
+    public String getAttributeValue(final String _key)
+    {
+        return this.attributes.get(_key);
+    }
+
+    /**
+     * Returns for given <code>_key</code> the related boolean attribute value.
+     * If no attribute value is found <i>false</i> is returned.
+     *
+     * @param _key      key of searched attribute
+     * @return found boolean attribute value; if not found <i>false</i>
+     * @see #attributes
+     */
+    public boolean getAttributeValueAsBoolean(final String _key)
+    {
+        return this.attributes.containsKey(_key)
+               ? Boolean.parseBoolean(this.attributes.get(_key))
+               : false;
+    }
+
+    /**
+     * Returns for given <code>_key</code> the related integer attribute value.
+     * If no attribute is found <code>0</code> is returned.
+     *
+     * @param _key      key of searched attribute
+     * @return found integer attribute value; if not found <code>0</code>
+     * @see #attributes
+     */
+    public int getAttributeValueAsInteger(final String _key)
+    {
+        return this.attributes.containsKey(_key)
+               ? Integer.parseInt(this.attributes.get(_key))
+               : 0;
+    }
+
+    /**
+     * Method to initialize the {@link #CACHE cache} for the system
+     * configurations.
+     */
+    public static void initialize()
+    {
+        SystemConfiguration.CACHE.initialize(SystemConfiguration.class);
+    }
+
+    /**
+     * Cache for all system configurations.
+     */
+    private static class SystemConfigurationCache
+        extends Cache<SystemConfiguration>
+    {
+        /**
+         * Reads all system configurations with their attributes and links and
+         * stores them in the given mapping caches.
+         *
+         * @param _newCache4Id      cache for the mapping between id and system
+         *                          configuration
+         * @param _newCache4Name    cache for the mapping between name and
+         *                          system configuration
+         * @param _newCache4UUID    cache for the mapping between UUID and
+         *                          system configuration
+         * @throws CacheReloadException if cache could not be reloaded
+         */
+        @Override()
+        protected void readCache(final Map<Long, SystemConfiguration> _newCache4Id,
+                                 final Map<String, SystemConfiguration> _newCache4Name,
+                                 final Map<UUID, SystemConfiguration> _newCache4UUID)
+            throws CacheReloadException
+        {
+            try {
+                final ConnectionResource con = Context.getThreadContext().getConnectionResource();
+                final Statement stmt = con.getConnection().createStatement();
+                final ResultSet resultset = stmt.executeQuery(SystemConfiguration.SQL_SELECT);
+                long id = 0;
+                SystemConfiguration config = null;
+                while (resultset.next()) {
+                    final long configId = resultset.getLong(1);
+                    final String configName = resultset.getString(2).trim();
+                    final String configUUID = resultset.getString(3).trim();
+                    final String key = resultset.getString(4).trim();
+                    final String value = resultset.getString(5).trim();
+                    final String uuid = resultset.getString(6).trim();
+                    if (id != configId) {
+                        id = configId;
+                        config = new SystemConfiguration(configId, configName, configUUID);
+                        _newCache4Id.put(config.getId(), config);
+                        _newCache4Name.put(config.getName(), config);
+                        _newCache4UUID.put(config.getUUID(), config);
+                    }
+                    final UUID uuidTmp = UUID.fromString(uuid);
+                    if (uuidTmp.equals(EFapsClassNames.CONFIG_ATTR.getUuid())) {
+                        config.attributes.put(key, value);
+                    } else if (uuidTmp.equals(EFapsClassNames.CONFIG_LINK.getUuid())) {
+                        config.links.put(key, value);
+                    }
+                }
+            } catch (final EFapsException e) {
+                throw new CacheReloadException("could not read SystemConfiguration", e);
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read SystemConfiguration", e);
+            }
+        }
+    }
 }
