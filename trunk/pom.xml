@@ -35,7 +35,6 @@
     <groupId>org.efaps</groupId>
     <artifactId>efaps-kernel</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <inceptionYear>2002</inceptionYear>
     <description>
         eFaps is a framework used to map objects with or without attached files to
         a relational database and optional file systems (only for attaches files).
@@ -49,83 +48,181 @@
         administrators and implementers using this framework.
     </description>
     <name>eFaps</name>
-    <url>http://www.efaps.org</url>
+    <url>http://maven-efaps-plugin.efaps.org</url>
+    <licenses>
+        <license>
+            <name>Apache 2.0 License</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
     <developers>
         <developer>
-            <id>tmo</id>
+            <id>tim.moxter</id>
             <name>Tim Moxter</name>
-            <email>tmo at users.berlios.de</email>
+            <email>tim.moxter(ad)efaps.org</email>
             <url>www.efaps.org</url>
-            <organization>eFaps</organization>
-            <organizationUrl />
-            <roles>
-                <role>Architect</role>
-                <role>Release Manager</role>
-            </roles>
+            <organization>moxter.net Ltd. &amp; Co.KG</organization>
+            <organizationUrl>http://www.moxter.net/de/</organizationUrl>
             <timezone>+1</timezone>
             <properties />
         </developer>
         <developer>
-            <id>jmox</id>
+            <id>jan.moxter</id>
             <name>Jan Moxter</name>
-            <email>jmox at users.berlios.de</email>
+            <email>jan.moxter(ad)efaps.org</email>
             <url>www.efaps.org</url>
             <organization>moxter.net S.A.C, Peru</organization>
-            <organizationUrl />
-            <roles>
-                <role>Architect</role>
-            </roles>
+            <organizationUrl>http://www.moxter.net/pe/</organizationUrl>
             <timezone>-5</timezone>
             <properties />
         </developer>
     </developers>
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution />
-            <comments />
-        </license>
-    </licenses>
-    <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/trunk/</connection>
-        <developerConnection>scm:svn:https://developername@efaps.googlecode.com/svn/trunk/</developerConnection>
-        <url>http://efaps.googlecode.com/svn/trunk/</url>
-    </scm>
+    <inceptionYear>2009</inceptionYear>
     <organization>
-        <name>eFaps</name>
-        <url>http://www.efaps.org/</url>
+        <name>The eFaps Team</name>
+        <url>http://www.efaps.org</url>
     </organization>
+
+    <!-- Environment Settings -->
+    <issueManagement>
+        <system>eFaps Issues on Google Code</system>
+        <url>http://issues.efaps.org</url>
+    </issueManagement>
+
+    <!-- SubVersion Repository -->
+    <scm>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-Kernel</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-Kernel</developerConnection>
+        <url>http://efaps.googlecode.com/svn/eFaps-Kernel</url>
+    </scm>
+
+    <!-- Distribution Repository -->
+    <distributionManagement>
+        <site>
+            <id>efaps</id>
+            <name>Maven eFaps Plug-In Site</name>
+            <url>svn:https://eFaps.googlecode.com/svn/site/eFaps-Kernel</url>
+        </site>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>efaps</id>
+            <name>eFaps Repository Released</name>
+            <url>svn:https://efaps.googlecode.com/svn/repo/released</url>
+        </repository>
+        <snapshotRepository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>efaps</id>
+            <name>eFaps Repository Snapshot</name>
+            <url>svn:https://efaps.googlecode.com/svn/repo/snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <!-- correct encoding -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <!-- ************************************************************************
-  * Project itself
-  ************************************************************************* -->
+    * Reporting
+    ************************************************************************* -->
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>index</report>
+                            <report>summary</report>
+                            <report>dependencies</report>
+                            <report>project-team</report>
+                            <!--   <report>mailing-list</report>-->
+                            <!-- <report>cim</report> -->
+                            <report>issue-tracking</report>
+                            <report>license</report>
+                            <report>scm</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <!-- JavaCC reporting -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>javacc-maven-plugin</artifactId>
+            </plugin>
+            <!-- java doc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration />
+            </plugin>
+            <!-- source code -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <configuration>
+                    <linkJavadoc>false</linkJavadoc>
+                    <javadocDir>apidocs</javadocDir>
+                </configuration>
+            </plugin>
+            <!-- checkstyle -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <configLocation>${basedir}/src/checkstyle/efaps_checks.xml</configLocation>
+                </configuration>
+            </plugin>
+            <!-- PMD report -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <configuration>
+                    <linkXref>true</linkXref>
+                    <sourceEncoding>utf-8</sourceEncoding>
+                    <targetJdk>1.5</targetJdk>
+                </configuration>
+            </plugin>
+            <!--  findbugs report -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <configuration/>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <!-- ************************************************************************
+    * Project itself
+    ************************************************************************* -->
     <build>
         <plugins>
             <!--
-        Compiler Settings:
-        - Java 1.5 is needed!
-      -->
+                Compiler Settings:
+                - Java 1.6 is needed!
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                    <!--compileSourceRoots>${project.compileSourceRoots}</compileSourceRoots-->
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
             </plugin>
 
             <!--
-        JavaCC Settings:
-        - Target package must be set
-        - goal 'javacc' must be called in phase 'process-resources'
-      -->
+                JavaCC Settings:
+                - Target package must be set
+                - goal 'javacc' must be called in phase 'process-resources'
+            -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>process-resources</phase>
                         <goals>
                             <goal>javacc</goal>
                         </goals>
@@ -134,9 +231,9 @@
             </plugin>
 
             <!--
-        Resources settings:
-        - no psd images, only js, gif and properties
-      -->
+                Resources settings:
+                - no psd images, only js, gif and properties
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -156,9 +253,10 @@
     ************************************************************************+ -->
     <dependencies>
 
-        <!-- For Logging Purpose
-      http://www.slf4j.org
-    -->
+        <!--
+            For Logging Purpose
+            http://www.slf4j.org
+        -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -233,9 +331,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <!--
-            Java program compiler. The commons logging must be excluded because eFaps uses slf4j logger. The commons-io must be excluded because of old used version (and included separately).
-            http://jakarta.apache.org/commons/jci/ The classes are used to compile classes. Which one is used depends on configuration via a String.
+            Java program compiler.
+            The commons logging must be excluded because eFaps uses slf4j
+            logger. The commons-io must be excluded because of old used version
+            (and included separately).
+            http://jakarta.apache.org/commons/jci/
+            The classes are used to compile classes. Which one is used depends
+            on configuration via a String.
         -->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -338,11 +442,11 @@
             <version>1.4</version>
         </dependency>
         <!--
-      File system used for checkin / checkout on external resources. The
-      commons logging must be excluded because eFaps uses slf4j logger.
+            File system used for checkin / checkout on external resources. The
+            commons logging must be excluded because eFaps uses slf4j logger.
 
-      http://commons.apache.org/vfs/
-    -->
+            http://commons.apache.org/vfs/
+        -->
         <dependency>
             <groupId>commons-vfs</groupId>
             <artifactId>commons-vfs</artifactId>
@@ -360,8 +464,10 @@
         </dependency>
 
 
-        <!-- Joda Time is used to have a quality replacement for Java date and time
-    classes -->
+        <!--
+            Joda Time is used to have a quality replacement for Java date and
+            time classes
+        -->
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
@@ -420,60 +526,4 @@
             <version>2.1.0</version>
         </dependency>
     </dependencies>
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration />
-            </plugin>
-            <!--
-                <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-jxr-plugin</artifactId> <configuration> <linkJavadoc>true</linkJavadoc> <javadocDir>apidocs</javadocDir>
-                </configuration> </plugin>
-            -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>index</report>
-                            <report>summary</report>
-                            <report>dependencies</report>
-                            <report>project-team</report>
-                            <!--   <report>mailing-list</report>-->
-                            <!-- <report>cim</report> -->
-                            <report>issue-tracking</report>
-                            <report>license</report>
-                            <report>scm</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-        </plugins>
-    </reporting>
-    <distributionManagement>
-        <site>
-            <id>eFaps-WebPage</id>
-            <url>scp://shell.berlios.de/home/groups/efaps/htdocs/</url>
-        </site>
-    </distributionManagement>
-
-    <!-- correct encoding -->
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-    <repositories>
-        <repository>
-            <id>eFaps-Snapshot</id>
-            <name>eFaps Snapshot Repository</name>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <url>http://efaps.googlecode.com/svn/repo/snapshot</url>
-        </repository>
-    </repositories>
 </project>
