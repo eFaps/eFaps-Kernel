@@ -20,9 +20,17 @@
 
 package org.efaps.admin.program.esjp;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.efaps.admin.EFapsClassNames;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Checkout;
+import org.efaps.db.Instance;
+import org.efaps.db.SearchQuery;
+import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +41,8 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public class EFapsClassLoader extends ClassLoader
+public class EFapsClassLoader
+    extends ClassLoader
 {
     /**
      * Logger for this class.
@@ -51,6 +60,11 @@ public class EFapsClassLoader extends ClassLoader
     private static final Map<String, byte[]> LOADEDCLASSES = new HashMap<String, byte[]>();
 
     /**
+     * Type instance of compile EJSP program.
+     */
+    private final Type classType;
+
+    /**
      * Constructor setting the Parent of the EFapsClassLoader in ClassLoader.
      *
      * @param _parentClassLoader the Parent of the this EFapsClassLoader
@@ -58,8 +72,8 @@ public class EFapsClassLoader extends ClassLoader
     public EFapsClassLoader(final ClassLoader _parentClassLoader)
     {
         super(_parentClassLoader);
+        this.classType = Type.get(EFapsClassNames.ADMIN_PROGRAM_JAVACLASS);
     }
-
 
     /**
      * @see java.lang.ClassLoader#findClass(java.lang.String)
@@ -67,7 +81,7 @@ public class EFapsClassLoader extends ClassLoader
      * @return Class
      * @throws ClassNotFoundException if class was not found
      */
-    @Override
+    @Override()
     public Class<?> findClass(final String _name)
         throws ClassNotFoundException
     {
@@ -93,12 +107,50 @@ public class EFapsClassLoader extends ClassLoader
         if (EFapsClassLoader.LOG.isDebugEnabled()) {
             EFapsClassLoader.LOG.debug("Loading Class '" + _resourceName + "' from Database");
         }
-        final byte[] x = new EFapsResourceStore(new Compiler()).read(_resourceName);
+        final byte[] x = this.read(_resourceName);
 
         if (x != null && EFapsClassLoader.HOLDCLASSESINCACHE) {
             EFapsClassLoader.LOADEDCLASSES.put(_resourceName, x);
         }
         return x;
+    }
+
+    /**
+     * The compiled class is received from the eFaps database (checked out)
+     * using the name <code>_resourceName</code>.
+     *
+     * @param _resourceName     name of the resource to be received (ESJP class
+     *                          name)
+     * @return byte array containing the compiled ESJP class
+     */
+    public byte[] read(final String _resourceName)
+    {
+        byte[] ret = null;
+
+        if (EFapsClassLoader.LOG.isDebugEnabled()) {
+            EFapsClassLoader.LOG.debug("read '" + _resourceName + "'");
+        }
+        final SearchQuery query = new SearchQuery();
+        try {
+            query.setQueryTypes(this.classType.getName());
+            query.addSelect("ID");
+            query.addWhereExprEqValue("Name", _resourceName);
+            query.executeWithoutAccessCheck();
+            if (query.next()) {
+                final Long id = (Long) query.get("ID");
+                final Checkout checkout = new Checkout(Instance.get(this.classType, id));
+                final InputStream is = checkout.executeWithoutAccessCheck();
+
+                ret = new byte[is.available()];
+                is.read(ret);
+                is.close();
+            }
+        } catch (final EFapsException e) {
+            EFapsClassLoader.LOG.error("could not access the Database for reading '" + _resourceName + "'", e);
+        } catch (final IOException e) {
+            EFapsClassLoader.LOG.error("could not read the Javaclass '" + _resourceName + "'", e);
+        }
+        return ret;
     }
 
     /**
