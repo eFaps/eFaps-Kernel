@@ -35,9 +35,6 @@ import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -46,6 +43,8 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.event.Event;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>This class is the major class for importing or updating of types,
@@ -617,7 +616,7 @@ public abstract class AbstractUpdate implements IUpdate
          * is defined in {@link #searchAttrName}, the search is done with this
          * given attribute. If no attribute name is defined (value is
          * <code>null</code>, the method searches for given UUID. The result is
-         * stored in {@link #instance}Ê(or set to null, if not found).<br/>
+         * stored in {@link #instance} (or set to null, if not found).<br/>
          * The search is only done, if no instance is defined (meaning if
          * {@link #instance} has no value).
          *
