@@ -1,4 +1,5 @@
 /*
+
  * Copyright 2003 - 2009 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,73 +41,145 @@ import org.efaps.util.EFapsException;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
 /**
- * TODO description
+ * Compiler for JavaScript. Compiling actually means that the JavaScripts are
+ * compressed to be smaller. e.g. removing of comments, linebreaks etc.
+ * The compression can be deactivated by setting the boolean attribute
+ * "JavaScript_deactivate_Compression"  in the
+ * kernel SystemConfiguration to "true".
  *
  * @author The eFaps Team
  * @version $Id$
  */
 public class JavaScriptCompiler extends AbstractSourceCompiler
 {
-
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(JavaScriptCompiler.class);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String getCompiledString(final String _oid)
     {
+        final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
+                        .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+        final StringBuilder ret = new StringBuilder();
         final Checkout checkout = new Checkout(_oid);
-        BufferedReader in;
-        ByteArrayOutputStream byteout = null;
         try {
-            in = new BufferedReader(new InputStreamReader(checkout.execute()));
-
-            final JavaScriptCompressor compressor = new JavaScriptCompressor(in, new ErrorReporter() {
-
-                public void error(final String arg0, final String arg1, final int arg2, final String arg3,
-                                final int arg4)
-                {
-                    LOG.error(arg0);
+            final BufferedReader in = new BufferedReader(new InputStreamReader(checkout.execute(), "UTF-8"));
+            if (JavaScriptCompiler.LOG.isDebugEnabled()) {
+                final BufferedReader in2 = new BufferedReader(new InputStreamReader(checkout.execute(), "UTF-8"));
+                final StringBuilder bldr = new StringBuilder();
+                String line = "";
+                while (line != null) {
+                    line = in2.readLine();
+                    bldr.append(line != null ? line : "").append("\n");
                 }
-
-                public EvaluatorException runtimeError(final String arg0, final String arg1, final int arg2,
-                                final String arg3, final int arg4)
-                {
-                    return null;
+                JavaScriptCompiler.LOG.debug(bldr.toString());
+                in2.close();
+            }
+            if (kernelConfig.getAttributeValueAsBoolean("JavaScript_deactivate_Compression")) {
+                String line = "";
+                while (line != null) {
+                    line = in.readLine();
+                    ret.append(line != null ? line : "").append("\n");
                 }
+            } else {
+                final JavaScriptCompressor compressor = new JavaScriptCompressor(in, new ErrorReporter() {
 
-                public void warning(final String arg0, final String arg1, final int arg2, final String arg3,
-                                final int arg4)
-                {
-                    // Admin_Program_JavaScriptCompiled_Warn: do we want
-                    // warnings?
-                    final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
-                                    .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
-                    if (kernelConfig.getAttributeValueAsBoolean("JavaScriptCompiled_Warn")) {
-                        LOG.warn(arg0);
+                    /**
+                     * @see org.mozilla.javascript.ErrorReporter#error(java.lang.String, java.lang.String, int, java.lang.String, int)
+                     * @param _error error to be written to the log
+                     * @param _arg1 not used
+                     * @param _arg2 not used
+                     * @param _arg3 not used
+                     * @param _arg4 not used
+                     */
+                    public void error(final String _error,
+                                      final String _arg1,
+                                      final int _arg2,
+                                      final String _arg3,
+                                      final int _arg4)
+                    {
+                        JavaScriptCompiler.LOG.error(_error);
                     }
-                }
-            });
 
-            in.close();
-            checkout.close();
-            byteout = new ByteArrayOutputStream();
-            final OutputStreamWriter out = new OutputStreamWriter(byteout);
-            compressor.compress(out, 2000, false, true, false, true);
-            out.flush();
+                    /**
+                     * @see org.mozilla.javascript.ErrorReporter#runtimeError(java.lang.String, java.lang.String, int, java.lang.String, int)
+                     * @param _arg0 not used
+                     * @param _arg1 not used
+                     * @param _arg2 not used
+                     * @param _arg3 not used
+                     * @param _arg4 not used
+                     * @return null not used
+                     */
+                    public EvaluatorException runtimeError(final String _arg0,
+                                                           final String _arg1,
+                                                           final int _arg2,
+                                                           final String _arg3,
+                                                           final int _arg4)
+                    {
+                        return null;
+                    }
+
+                    /**
+                     * @see org.mozilla.javascript.ErrorReporter#warning(java.lang.String, java.lang.String, int, java.lang.String, int)
+                     * @param _warning  warning to be shown
+                     * @param _arg1     arg1 not used
+                     * @param _arg2     arg2 not used
+                     * @param _arg3     arg3 not used
+                     * @param _arg4     arg4 not used
+                     */
+                    public void warning(final String _warning,
+                                        final String _arg1,
+                                        final int _arg2,
+                                        final String _arg3,
+                                        final int _arg4)
+                    {
+                        // Admin_Program_JavaScriptCompiled_Warn: do we want
+                        // warnings?
+                        final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
+                                        .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+                        if (kernelConfig.getAttributeValueAsBoolean("JavaScriptCompiled_Warn")) {
+                            JavaScriptCompiler.LOG.warn(_warning);
+                        }
+                    }
+                });
+
+                in.close();
+                checkout.close();
+                final ByteArrayOutputStream byteout = new ByteArrayOutputStream();
+                final OutputStreamWriter out = new OutputStreamWriter(byteout);
+
+                compressor.compress(out, 140, false, true, true, true);
+                out.flush();
+                ret.append(byteout.toString());
+            }
         } catch (final EFapsException e) {
-            LOG.error("error during checkout of Instance with oid:" + _oid, e);
+            JavaScriptCompiler.LOG.error("error during checkout of Instance with oid:" + _oid, e);
             e.printStackTrace();
         } catch (final EvaluatorException e) {
-            LOG.error("error during the evaluation of the JavaScript of Instance with oid:" + _oid, e);
+            JavaScriptCompiler.LOG.error("error during the evaluation of the JavaScript of "
+                            + "Instance with oid:" + _oid, e);
         } catch (final IOException e) {
-            LOG.error("error during reqding of the Inputstram of Instance with oid:" + _oid, e);
+            JavaScriptCompiler.LOG.error("error during reqding of the Inputstram of Instance with oid:" + _oid, e);
         }
-        String ret = byteout.toString();
-        ret += "\n";
-        return ret;
+        ret.append("\n");
+        if (JavaScriptCompiler.LOG.isDebugEnabled()) {
+            JavaScriptCompiler.LOG.debug(ret.toString());
+        }
+        return ret.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public AbstractSource getNewSource(final String _name, final String _oid, final long _id)
+    public AbstractSource getNewSource(final String _name,
+                                       final String _oid,
+                                       final long _id)
     {
         return new OneJavaScript(_name, _oid, _id);
     }
@@ -139,15 +212,20 @@ public class JavaScriptCompiler extends AbstractSourceCompiler
     }
 
     /**
-     *
+     * Class to store a javascript during compelation.
      */
     protected class OneJavaScript extends AbstractSource
     {
-
-        public OneJavaScript(final String _name, final String _oid, final long _id)
+        /**
+         * @param _name     Name of the JavaScript
+         * @param _oid      oid of the JavaScript
+         * @param _id       id of the JavaScript
+         */
+        public OneJavaScript(final String _name,
+                             final String _oid,
+                             final long _id)
         {
             super(_name, _oid, _id);
         }
-
     }
 }
