@@ -23,8 +23,9 @@ package org.efaps.update.schema.program;
 import java.net.URL;
 import java.util.Set;
 
-import org.efaps.admin.program.esjp.ESJPImporter;
+import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
+import org.efaps.update.schema.program.esjp.ESJPImporter;
 import org.efaps.util.EFapsException;
 
 /**
@@ -71,7 +72,7 @@ public class JavaUpdate
         extends SourceDefinition
     {
         /**
-         * Importer for the esjp.
+         * Importer for the ESJP.
          */
         private ESJPImporter javaCode = null;
 
@@ -113,7 +114,7 @@ public class JavaUpdate
 
         /**
          * The method overwrites the method from the super class, because a
-         * checkin of the Java source code is needed after the update in the
+         * check in of the Java source code is needed after the update in the
          * database.
          *
          * @param _step             current update step
@@ -126,6 +127,10 @@ public class JavaUpdate
             throws EFapsException
         {
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+                if (AbstractUpdate.LOG.isInfoEnabled() && (this.javaCode.getProgramName() != null)) {
+                    AbstractUpdate.LOG.info("    Update " + this.instance.getType().getName() + " '"
+                            + this.javaCode.getProgramName() + "'");
+                }
                 this.javaCode.updateDB(this.instance);
             } else  {
                 super.updateInDB(_step, _allLinkTypes);

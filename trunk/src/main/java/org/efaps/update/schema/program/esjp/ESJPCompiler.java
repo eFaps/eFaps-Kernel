@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.program.esjp;
+package org.efaps.update.schema.program.esjp;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -46,7 +46,6 @@ import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
-import javax.tools.JavaFileObject.Kind;
 
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
@@ -56,6 +55,7 @@ import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,15 +67,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author The eFaps Team
  * @version $Id$
- * @todo exception handling in the resource reader
- *
  */
-public class Compiler
+public class ESJPCompiler
 {
     /**
      * Logging instance used in this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(Compiler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ESJPCompiler.class);
 
     /**
      * Type instance of Java program.
@@ -90,24 +88,26 @@ public class Compiler
     /**
      * Mapping between ESJP name and the related ESJP source object.
      *
-     * @see #readJavaPrograms()
+     * @see #readESJPPrograms()
      */
-    private final Map<String, ESJPSourceObject> file2id  = new HashMap<String, ESJPSourceObject>();
+    private final Map<String, SourceObject> name2Source  = new HashMap<String, SourceObject>();
 
     /**
      * Mapping between already existing compiled ESJP class name and the
      * related eFaps id in the database.
      *
-     * @see #readJavaClasses()
+     * @see #readESJPClasses()
      */
     private final Map<String, Long> class2id = new HashMap<String, Long>();
 
     /**
      * Mapping between the class name and the related ESJP class which must be
      * stored.
+     *
+     * @see StoreObject
      */
-    private final Map<String, Compiler.ESJPStoreObject> classFiles
-        = new HashMap<String, Compiler.ESJPStoreObject>();
+    private final Map<String, ESJPCompiler.StoreObject> classFiles
+        = new HashMap<String, ESJPCompiler.StoreObject>();
 
     /**
      * Stores the list of class path needed to compile (if needed).
@@ -122,7 +122,7 @@ public class Compiler
      * @see #esjpType
      * @see #classType
      */
-    public Compiler(final List<String> _classPathElements)
+    public ESJPCompiler(final List<String> _classPathElements)
     {
         this.esjpType = Type.get(EFapsClassNames.ADMIN_PROGRAM_JAVA);
         this.classType = Type.get(EFapsClassNames.ADMIN_PROGRAM_JAVACLASS);
@@ -130,38 +130,38 @@ public class Compiler
     }
 
   /**
-   * All stored Java programs in eFaps are compiled. Sun's javac is used for the
-   * compilitation. All old not needed comiled Java classes are automatically
+   * All stored ESJP programs in eFaps are compiled. The system Java compiler
+   * defined from the {@link ToolProvider tool provider} is used for the
+   * compiler. All old not needed compiled Java classes are automatically
    * removed. The compiler error and warning are logged (errors are using
    * error-level, warnings are using info-level).
    *
-   * @see #readJavaPrograms
-   * @see #readJavaClasses
+   * @throws InstallationException if the compile failed
    */
     public void compile()
-        throws EFapsException
+        throws InstallationException
     {
-        readJavaPrograms();
-        readJavaClasses();
+        readESJPPrograms();
+        readESJPClasses();
 
         final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
 
         if (compiler == null)  {
-            Compiler.LOG.error("no compiler found for compiler !");
+            ESJPCompiler.LOG.error("no compiler found for compiler !");
         } else  {
             // output of used compiler
-            if (Compiler.LOG.isInfoEnabled()) {
-                Compiler.LOG.info("    Using compiler " + compiler.toString());
+            if (ESJPCompiler.LOG.isInfoEnabled()) {
+                ESJPCompiler.LOG.info("    Using compiler " + compiler.toString());
             }
 
             // options for the compiler
             final List<String> optionList = new ArrayList<String>();
 
             // set classpath!
-            // (the list of programs to compile is given to the javac as argument
-            // array, so the classpath could be set in front of the programs to
-            // compile)
+            // (the list of programs to compile is given to the javac as
+            // argument array, so the class path could be set in front of the
+            // programs to compile)
             if (this.classPathElements != null)  {
                 // different class path separators depending on the OS
                 final String sep = System.getProperty("os.name").startsWith("Windows") ? ";" : ":";
@@ -177,19 +177,19 @@ public class Compiler
             }
 
             // logging of compiling classes
-            if (Compiler.LOG.isInfoEnabled()) {
-                for (final ESJPSourceObject obj : this.file2id.values()) {
-                    Compiler.LOG.info("    Compiling " + obj.javaName);
+            if (ESJPCompiler.LOG.isInfoEnabled()) {
+                for (final SourceObject obj : this.name2Source.values()) {
+                    ESJPCompiler.LOG.info("    Compiling ESJP '" + obj.javaName + "'");
                 }
             }
 
-            final ESJPFileManager fm = new ESJPFileManager(compiler.getStandardFileManager(null, null, null));
+            final FileManager fm = new FileManager(compiler.getStandardFileManager(null, null, null));
             final boolean noErrors = compiler.getTask(new ErrorWriter(),
                                                       fm,
                                                       null,
                                                       optionList,
                                                       null,
-                                                      this.file2id.values())
+                                                      this.name2Source.values())
                                              .call();
 
             if (!noErrors)  {
@@ -197,74 +197,89 @@ public class Compiler
             }
 
             // store all compiled ESJP's
-            for (final Compiler.ESJPStoreObject obj : this.classFiles.values())  {
+            for (final ESJPCompiler.StoreObject obj : this.classFiles.values())  {
                 obj.write();
             }
 
             // delete not needed compiled ESJP classes
             for (final Long id : this.class2id.values()) {
-                (new Delete(this.classType, id)).executeWithoutAccessCheck();
+                try {
+                    (new Delete(this.classType, id)).executeWithoutAccessCheck();
+                } catch (final EFapsException e)  {
+                    throw new InstallationException("Could not delete ESJP class with id " + id, e);
+                }
             }
         }
     }
 
     /**
-     * All Java programs in the eFaps database are read and stored in the
-     * mapping {@link #file2id} for further using.
+     * All EJSP programs in the eFaps database are read and stored in the
+     * mapping {@link #name2Source} for further using.
      *
-     * @see #file2id
-     * @throws EFapsException if ESJP Java programs could not be read
+     * @see #name2Source
+     * @throws InstallationException if ESJP Java programs could not be read
      */
-    protected void readJavaPrograms()
-        throws EFapsException
+    protected void readESJPPrograms()
+        throws InstallationException
     {
-        final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(this.esjpType.getName());
-        query.addSelect("ID");
-        query.addSelect("Name");
-        query.executeWithoutAccessCheck();
-        while (query.next()) {
-            final String name = (String) query.get("Name");
-            final Long id = (Long) query.get("ID");
-            final File file = new File(File.separator,
-                                       name.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + ".java");
-            try {
-                this.file2id.put(name, new ESJPSourceObject(name, file, id));
-            } catch (URISyntaxException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        try  {
+            final SearchQuery query = new SearchQuery();
+            query.setQueryTypes(this.esjpType.getName());
+            query.addSelect("ID");
+            query.addSelect("Name");
+            query.executeWithoutAccessCheck();
+            while (query.next()) {
+                final String name = (String) query.get("Name");
+                final Long id = (Long) query.get("ID");
+
+                final File file = new File(File.separator,
+                                           name.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
+                                                   + JavaFileObject.Kind.SOURCE.extension);
+                final URI uri;
+                try {
+                    uri = new URI("efaps", null, file.getAbsolutePath(), null, null);
+                } catch (final URISyntaxException e) {
+                    throw new InstallationException("Could not create an URI for " + file, e);
+                }
+                this.name2Source.put(name, new SourceObject(uri, name, id));
             }
+        } catch (final EFapsException e) {
+            throw new InstallationException("Could not fetch the information about installed ESJP's", e);
         }
     }
 
     /**
      * All stored compiled ESJP's classes in the eFaps database are stored in
      * the mapping {@link @class2id}. If a ESJP's program is compiled and
-     * stored with {@link ESJPStoreObject#write()}, the class is removed.
+     * stored with {@link StoreObject#write()}, the class is removed.
      * After the compile, {@link #compile()} removed all stored classes which
      * are not needed anymore.
      *
-     * @throws EFapsException if read of the Java classes failed
+     * @throws InstallationException if read of the ESJP classes failed
      * @see #class2id
      */
-    protected void readJavaClasses()
-        throws EFapsException
+    protected void readESJPClasses()
+        throws InstallationException
     {
-        final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(this.classType.getName());
-        query.addSelect("ID");
-        query.addSelect("Name");
-        query.executeWithoutAccessCheck();
-        while (query.next()) {
-            final String name = (String) query.get("Name");
-            final Long id = (Long) query.get("ID");
-            this.class2id.put(name, id);
+        try  {
+            final SearchQuery query = new SearchQuery();
+            query.setQueryTypes(this.classType.getName());
+            query.addSelect("ID");
+            query.addSelect("Name");
+            query.executeWithoutAccessCheck();
+            while (query.next()) {
+                final String name = (String) query.get("Name");
+                final Long id = (Long) query.get("ID");
+                this.class2id.put(name, id);
+            }
+        } catch (final EFapsException e) {
+            throw new InstallationException("Could not fetch the information about compiled ESJP's", e);
         }
     }
 
     /**
      * Error writer to show all errors to the
-     * {@link Compiler#LOG compiler logger}.
+     * {@link ESJPCompiler#LOG compiler logger}.
      */
     private final class ErrorWriter
         extends Writer
@@ -300,7 +315,7 @@ public class Compiler
             final String msg = new StringBuilder().append(_cbuf, _off, _len).toString().trim();
             if (!"".equals(msg))  {
                 for (final String line : msg.split("\n"))  {
-                    Compiler.LOG.error(line);
+                    ESJPCompiler.LOG.error(line);
                 }
             }
         }
@@ -310,7 +325,7 @@ public class Compiler
     /**
      * ESJP file manager to handle the compiled ESJP classes.
      */
-    private final class ESJPFileManager
+    private final class FileManager
         extends ForwardingJavaFileManager<StandardJavaFileManager>
     {
         /**
@@ -318,7 +333,7 @@ public class Compiler
          *
          * @param _sfm      original Java file manager to forward
          */
-        public ESJPFileManager(final StandardJavaFileManager _sfm)
+        public FileManager(final StandardJavaFileManager _sfm)
         {
             super(_sfm);
         }
@@ -342,14 +357,25 @@ public class Compiler
             return null;
         }
 
+        /**
+         * Returns the related Java file object used from the Java compiler to
+         * store the compiled ESJP.
+         *
+         * @param _location     location (not used)
+         * @param _className    name of the ESJP class
+         * @param _kind         kind of the source (not used)
+         * @param _fileObject   file object to update (used to get the URI)
+         * @return Java file object for ESJP used to store the compiled class
+         * @see ESJPCompiler
+         */
         @Override()
         public JavaFileObject getJavaFileForOutput(final Location _location,
                                                    final String _className,
-                                                   final Kind _kind,
-                                                   final FileObject _fileobject)
+                                                   final JavaFileObject.Kind _kind,
+                                                   final FileObject _fileObject)
         {
-            final Compiler.ESJPStoreObject ret = new Compiler.ESJPStoreObject(_fileobject.toUri(), _className);
-            Compiler.this.classFiles.put(_className, ret);
+            final ESJPCompiler.StoreObject ret = new ESJPCompiler.StoreObject(_fileObject.toUri(), _className);
+            ESJPCompiler.this.classFiles.put(_className, ret);
             return ret;
         }
 
@@ -368,23 +394,58 @@ public class Compiler
             return StandardLocation.SOURCE_PATH.getName().equals(_location.getName()) || super.hasLocation(_location);
         }
 
+        /**
+         * If the <code>_location</code> is the source path a dummy binary name
+         * for the ESJP class is returned. The dummy binary name is the name of
+         * the <code>_javaFileObject</code> and the extension for
+         * {@link JavaFileObject.Kind#CLASS Java classes}. If the
+         * <code>_location</code> is not the source path, the binary name from
+         * the forwarded
+         * {@link StandardJavaFileManager standard Java file manager} is
+         * returned.
+         *
+         * @param _location         location
+         * @param _javaFileObject   java file object
+         * @return name of the binary object for the ESJP or from forwarded
+         *         {@link StandardJavaFileManager standard Java file manager}
+         */
         @Override()
         public String inferBinaryName(final JavaFileManager.Location _location,
-                                      final JavaFileObject _javafileobject)
+                                      final JavaFileObject _javaFileObject)
         {
             final String ret;
             if (StandardLocation.SOURCE_PATH.getName().equals(_location.getName()))  {
                 ret = new StringBuilder()
-                        .append(_javafileobject.getName())
+                        .append(_javaFileObject.getName())
                         .append(JavaFileObject.Kind.CLASS.extension)
                         .toString();
             } else  {
-                ret = super.inferBinaryName(_location, _javafileobject);
+                ret = super.inferBinaryName(_location, _javaFileObject);
             }
             return ret;
         }
 
-        @Override
+        /**
+         * <p>If the <code>_location</code> is the source path and the
+         * <code>_kinds</code> includes sources an investigation in the cached
+         * {@link ESJPCompiler#name2Source ESJP programs} is done and the list of
+         * ESJP's for given <code>_packageName</code> is returned.</p>
+         * <p>In all other case the list of found Java programs from the
+         * forwarded {@link StandardJavaFileManager standard Java file manager}
+         * is returned.</p>
+         *
+         * @param _location     location which must be investigated
+         * @param _packageName  name of searched package
+         * @param _kinds        kinds of file object
+         * @param _recurse      must be searched recursive including sub
+         *                      packages (ignored, because not used)
+         * @return list of found ESJP programs for given
+         *         <code>_packageName</code> or if not from source path the
+         *         list of Java classes from forwarded standard Java file
+         *         manager
+         * @throws IOException from forwarded standard Java file manager
+         */
+        @Override()
         public Iterable<JavaFileObject> list(final Location _location,
                                              final String _packageName,
                                              final Set<JavaFileObject.Kind> _kinds,
@@ -396,9 +457,12 @@ public class Compiler
                     && _kinds.contains(JavaFileObject.Kind.SOURCE))  {
                 final List<JavaFileObject> pckObjs = new ArrayList<JavaFileObject>();
                 final int pckLength = _packageName.length();
-                for (final Map.Entry<String, Compiler.ESJPSourceObject> entry : Compiler.this.file2id.entrySet())  {
+                for (final Map.Entry<String, ESJPCompiler.SourceObject> entry
+                        : ESJPCompiler.this.name2Source.entrySet())  {
+
                     if (entry.getKey().startsWith(_packageName)
                             && (entry.getKey().substring(pckLength + 1).indexOf('.') < 0))  {
+
                         pckObjs.add(entry.getValue());
                     }
                 }
@@ -410,7 +474,11 @@ public class Compiler
         }
     }
 
-    public class ESJPSourceObject
+    /**
+     * Holds the information about the ESJP source program which must be
+     * compiled (and from which the source code is fetched).
+     */
+    private final class SourceObject
         extends SimpleJavaFileObject
     {
         /**
@@ -423,46 +491,37 @@ public class Compiler
          */
         private final long id;
 
-        private ESJPSourceObject(final String _javaName,
-                                 final File _file,
-                                 final long _id)
-            throws URISyntaxException
+        /**
+         * Initializes the source object.
+         *
+         * @param _uri          URI of the ESJP
+         * @param _javaName     Java name of the ESJP
+         * @param _id           id used from eFaps within database
+         */
+        private SourceObject(final URI _uri,
+                             final String _javaName,
+                             final long _id)
         {
-            super(new URI("efaps", null, _file.getAbsolutePath(), null, null),
-                  JavaFileObject.Kind.SOURCE);
+            super(_uri, JavaFileObject.Kind.SOURCE);
             this.javaName = _javaName;
             this.id = _id;
         }
 
         /**
-         * Returns the Java name of this ESJP source object.
+         * Returns the char sequence of the ESJP source code.
          *
-         * @return Java name
-         * @see #javaName
+         * @param _ignoreEncodingErrors     ignore encoding error (not used)
+         * @return source code from the ESJP
+         * @throws IOException if source could not be read from the eFaps
+         *                     database
          */
-        public String getJavaName()
-        {
-            return this.javaName;
-        }
-
-        /**
-         * Returns the eFaps id of the ESJP source object.
-         *
-         * @return id of the ESJP source object
-         * @see #id
-         */
-        public long getId()
-        {
-            return this.id;
-        }
-
         @Override()
-        public CharSequence getCharContent(final boolean _arg0)
+        public CharSequence getCharContent(final boolean _ignoreEncodingErrors)
             throws IOException
         {
             final StringBuilder ret = new StringBuilder();
             try {
-                final Checkout checkout = new Checkout(Instance.get(Compiler.this.esjpType, this.id));
+                final Checkout checkout = new Checkout(Instance.get(ESJPCompiler.this.esjpType, this.id));
                 final InputStream is = checkout.executeWithoutAccessCheck();
                 final byte[] bytes = new byte[is.available()];
                 is.read(bytes);
@@ -478,7 +537,7 @@ public class Compiler
     /**
      * The class is used to store the result of a Java compilation.
      */
-    private final class ESJPStoreObject
+    private final class StoreObject
         extends SimpleJavaFileObject
     {
         /**
@@ -494,20 +553,24 @@ public class Compiler
         private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         /**
+         * Initializes this store object.
          *
          * @param _uri          URI of the class to store
          * @param _className    name of the class to store
          */
-        private ESJPStoreObject(final URI _uri,
-                                final String _className)
+        private StoreObject(final URI _uri,
+                            final String _className)
         {
             super(_uri, JavaFileObject.Kind.CLASS);
             this.className = _className;
         }
 
         /**
+         * Returns this {@link #out} which is used as buffer for the compiled
+         * ESJP {@link #className}.
          *
          * @return {@link #out} as output stream
+         * @see #out
          */
         @Override()
         public OutputStream openOutputStream()
@@ -524,26 +587,26 @@ public class Compiler
          */
         public void write()
         {
-            if (Compiler.LOG.isDebugEnabled()) {
-                Compiler.LOG.debug("write '" + this.className + "'");
+            if (ESJPCompiler.LOG.isDebugEnabled()) {
+                ESJPCompiler.LOG.debug("write '" + this.className + "'");
             }
             try {
-                final Long id = Compiler.this.class2id.get(this.className);
+                final Long id = ESJPCompiler.this.class2id.get(this.className);
                 Instance instance;
                 if (id == null) {
                     final String parent = this.className.replaceAll(".class$", "").replaceAll("\\$.*", "");
 
-                    final Compiler.ESJPSourceObject parentId = Compiler.this.file2id.get(parent);
+                    final ESJPCompiler.SourceObject parentId = ESJPCompiler.this.name2Source.get(parent);
 
-                    final Insert insert = new Insert(Compiler.this.classType);
+                    final Insert insert = new Insert(ESJPCompiler.this.classType);
                     insert.add("Name", this.className);
-                    insert.add("ProgramLink", "" + parentId.getId());
+                    insert.add("ProgramLink", "" + parentId.id);
                     insert.executeWithoutAccessCheck();
                     instance = insert.getInstance();
                     insert.close();
                 } else {
-                    instance = Instance.get(Compiler.this.classType, id);
-                    Compiler.this.class2id.remove(this.className);
+                    instance = Instance.get(ESJPCompiler.this.classType, id);
+                    ESJPCompiler.this.class2id.remove(this.className);
                 }
 
                 final Checkin checkin = new Checkin(instance);
@@ -551,7 +614,7 @@ public class Compiler
                                                   new ByteArrayInputStream(this.out.toByteArray()),
                                                   this.out.toByteArray().length);
             } catch (final Exception e) {
-                Compiler.LOG.error("unable to write to eFaps ESJP class '" + this.className + "'", e);
+                ESJPCompiler.LOG.error("unable to write to eFaps ESJP class '" + this.className + "'", e);
             }
         }
     }
