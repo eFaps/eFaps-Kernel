@@ -20,8 +20,6 @@
 
 package org.efaps.update;
 
-import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -36,14 +34,15 @@ import java.util.Set;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.schema.datamodel.SQLTableUpdate;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
 
 /**
  * TODO description.
@@ -128,9 +127,7 @@ public class Install
                 if (Install.LOG.isInfoEnabled())  {
                     Install.LOG.info("..Running Lifecycle step " + step);
                 }
-                for (final Map.Entry<Class<? extends IUpdate>, List<IUpdate>> entry
-                        : this.cache.entrySet()) {
-
+                for (final Map.Entry<Class<? extends IUpdate>, List<IUpdate>> entry : this.cache.entrySet()) {
                     for (final IUpdate update : entry.getValue()) {
                         update.updateInDB(jexlContext, step);
                         if (!bigTrans) {

@@ -20,8 +20,6 @@
 
 package org.efaps.update.version;
 
-import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -40,12 +38,7 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.Rule;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.tools.ant.DirectoryScanner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
-
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.program.esjp.Compiler;
 import org.efaps.admin.program.staticsource.AbstractSourceCompiler;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
@@ -53,8 +46,14 @@ import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.FileType;
 import org.efaps.update.Install;
+import org.efaps.update.schema.program.esjp.ESJPCompiler;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.Attributes;
+
+import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
 
 /**
  * @author The eFaps Team
@@ -462,11 +461,15 @@ public final class Application
     public void compileAll(final String _userName)
         throws InstallationException
     {
+        if (Application.LOG.isInfoEnabled())  {
+            Application.LOG.info("..Compiling");
+        }
+
         reloadCache();
 
         try {
             Context.begin(_userName);
-            (new Compiler(this.classpathElements)).compile();
+            (new ESJPCompiler(this.classpathElements)).compile();
             AbstractSourceCompiler.compileAll(this.classpathElements);
             Context.commit();
         } catch (final EFapsException e)  {
