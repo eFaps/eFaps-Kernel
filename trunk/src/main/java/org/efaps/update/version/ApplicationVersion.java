@@ -319,7 +319,7 @@ public class ApplicationVersion
     /**
      * Returns the complete root URL so that resources in the installation
      * package could be fetched. If an installation from the source directory
-     * is done, the {@link Application#getRootUrl() root URL}Êis directly
+     * is done, the {@link Application#getRootUrl() root URL} is directly
      * returned, in the case that an installation is done from a JAR container
      * the {@link Application#getRootUrl() root URL} is appended with the name
      * of the {@link Application#getRootPackageName() root package name}.
