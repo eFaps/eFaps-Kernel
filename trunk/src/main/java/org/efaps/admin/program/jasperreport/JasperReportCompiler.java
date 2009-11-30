@@ -117,7 +117,6 @@ public class JasperReportCompiler extends AbstractSourceCompiler
         final Checkout checkout = new Checkout(_instSource);
         checkout.preprocess();
         final InputStream source = checkout.execute();
-        JRProperties.setProperty(JRProperties.COMPILER_XML_VALIDATION, false);
         //make the classPath
         final String sep = System.getProperty("os.name").startsWith("Windows") ? ";" : ":";
         final StringBuilder classPath = new StringBuilder();
@@ -133,10 +132,6 @@ public class JasperReportCompiler extends AbstractSourceCompiler
 
             final JRXmlLoader loader = new JRXmlLoader(digester);
 
-            // this property is set with files that can not be loaded, if a
-            // different file loader is used
-            // but the validation is deactivated so they are not necessary
-            digester.getParser().setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource", new Object[] {});
             final JasperDesign jasperDesign = loader.loadXML(source);
 
             final File file = File.createTempFile(jasperDesign.getName(), "jasper");
