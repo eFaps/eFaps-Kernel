@@ -33,7 +33,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.design.JRDesignParameter;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.xml.JRXmlDigester;
 import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
@@ -128,7 +127,6 @@ public class JasperReportImporter extends AbstractProgramImporter
     @Override
     protected void readCode() throws EFapsException
     {
-        JRProperties.setProperty(JRProperties.COMPILER_XML_VALIDATION, false);
         try {
             final JRXmlDigester digester = JRXmlDigesterFactory.createDigester();
 
@@ -136,9 +134,6 @@ public class JasperReportImporter extends AbstractProgramImporter
 
             final InputStream input = getUrl().openStream();
 
-            // this property is set with files that can not be loaded, if a different file loader is used
-           // but the validation is deactivated so they are not necessary
-            digester.getParser().setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource", new Object[] {});
             this.jasperDesign = loader.loadXML(input);
         } catch (final IOException e) {
             // TODO Auto-generated catch block
