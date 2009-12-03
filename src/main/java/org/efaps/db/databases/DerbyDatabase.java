@@ -388,6 +388,19 @@ public class DerbyDatabase
      * {@inheritDoc}
      */
     @Override
+    public DerbyDatabase setSequence(final Connection _con,
+                                     final String _name,
+                                     final String _value)
+        throws SQLException
+    {
+        // TODO Auto-generated method stub
+        throw new Error("not implemented");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public DerbyDatabase createView(final Connection _con,
                                     final String _table)
         throws SQLException

@@ -103,7 +103,10 @@ public final class NumberGenerator implements CacheObjectInterface
      * @param _uuid     UUID of this NumberGenerator.
      * @param _format   format of this NumberGenerator.
      */
-    private NumberGenerator(final long _id, final String _name, final String _uuid, final String _format)
+    private NumberGenerator(final long _id,
+                            final String _name,
+                            final String _uuid,
+                            final String _format)
     {
         this.id = _id;
         this.name = _name;
@@ -127,7 +130,8 @@ public final class NumberGenerator implements CacheObjectInterface
      * @return next value for this sequence
      * @throws EFapsException on error
      */
-    public String getNextVal() throws EFapsException
+    public String getNextVal()
+        throws EFapsException
     {
         long ret = 0;
         try {
@@ -147,7 +151,8 @@ public final class NumberGenerator implements CacheObjectInterface
      * @return next value for this sequence
      * @throws EFapsException on error
      */
-    public Long getNextValAsLong() throws EFapsException
+    public Long getNextValAsLong()
+        throws EFapsException
     {
         long ret = 0;
         try {
@@ -158,6 +163,25 @@ public final class NumberGenerator implements CacheObjectInterface
         }
         return ret;
     }
+
+    /**
+     * Set the value for the numberGenerator. The next call of
+     * {@link #getNextVal()} or {@link #getNextVal()} normally will
+     * return the value + 1.
+     * @param _value value for the sequence
+     * @throws EFapsException on error
+     */
+    public void setVal(final String _value)
+        throws EFapsException
+    {
+        try {
+            Context.getDbType().setSequence(Context.getThreadContext().getConnection(), getDBName(), _value);
+        } catch (final SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * {@inheritDoc}
@@ -188,7 +212,8 @@ public final class NumberGenerator implements CacheObjectInterface
      *
      * @throws CacheReloadException on error
      */
-    public static void initialize() throws CacheReloadException
+    public static void initialize()
+        throws CacheReloadException
     {
         NumberGenerator.initialize(NumberGenerator.class);
     }
@@ -199,7 +224,8 @@ public final class NumberGenerator implements CacheObjectInterface
      * @param _class class that called the method
      * @throws CacheReloadException on error
      */
-    public static void initialize(final Class<?> _class) throws CacheReloadException
+    public static void initialize(final Class<?> _class)
+        throws CacheReloadException
     {
         NumberGenerator.CACHE.initialize(_class);
     }

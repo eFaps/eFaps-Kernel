@@ -333,6 +333,20 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
                                       final String _name)
         throws SQLException;
 
+    /**
+     * Method to set the value for a Sequence. The next time the value for
+     * sequence will be called using {@link #nextSequence(Connection, String)}
+     * it will return <code>value + 1</code>.
+     * @param _con          SQL connection
+     * @param _name         name of the sequence
+     * @param _value        value for the sequence
+     * @return this instance
+     * @throws SQLException on error
+     */
+    public abstract DB setSequence(final Connection _con,
+                                     final String _name,
+                                     final String _value)
+        throws SQLException;
 
     /**
      * A new SQL table with unique column <code>ID</code> is created.
