@@ -47,6 +47,9 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
@@ -57,8 +60,6 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The class is used to compile all checked in ESJP programs. Because the
@@ -134,18 +135,31 @@ public class ESJPCompiler
    * defined from the {@link ToolProvider tool provider} is used for the
    * compiler. All old not needed compiled Java classes are automatically
    * removed. The compiler error and warning are logged (errors are using
-   * error-level, warnings are using info-level).
+   * error-level, warnings are using info-level).<br>
+   * Debug:<br>
+   * <ul>
+   * <li><code>null</code>: By default, only line number and source file information is generated.</li>
+   * <li><code>"none"</code>: Do not generate any debugging information</li>
+   * <li>Generate only some kinds of debugging information, specified by a comma separated
+   * list of keywords. Valid keywords are:
+   * <ul>
+   * <li><code>"source"</code>: Source file debugging information</li>
+   * <li><code>"lines"</code>: Line number debugging information</li>
+   * <li><code>"vars"</code>: Local variable debugging information</li>
+   * </ul>
+   * </li>
+   * </ul>
    *
+   * @param _debug  String for the debug option
    * @throws InstallationException if the compile failed
    */
-    public void compile()
+    public void compile(final String _debug)
         throws InstallationException
     {
         readESJPPrograms();
         readESJPClasses();
 
         final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-
 
         if (compiler == null)  {
             ESJPCompiler.LOG.error("no compiler found for compiler !");
@@ -174,6 +188,13 @@ public class ESJPCompiler
             } else  {
                 // set compiler's class path to be same as the runtime's
                 optionList.addAll(Arrays.asList("-classpath", System.getProperty("java.class.path")));
+            }
+            //Set the source file encoding name, such as EUCJIS/SJIS. If -encoding is not specified,
+            //the platform default converter is used.
+            optionList.addAll(Arrays.asList("-encoding", "UTF-8"));
+
+            if (_debug != null) {
+                optionList.addAll(Arrays.asList("-g", _debug));
             }
 
             // logging of compiling classes
