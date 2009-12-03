@@ -355,6 +355,23 @@ public class PostgreSQLDatabase
      * {@inheritDoc}
      */
     @Override
+    public PostgreSQLDatabase setSequence(final Connection _con,
+                                          final String _name,
+                                          final String _value)
+        throws SQLException
+    {
+        final StringBuilder cmd = new StringBuilder();
+        cmd.append("select setval('")
+            .append(_name).append("',").append(_value).append(")");
+        final PreparedStatement stmt = _con.prepareStatement(cmd.toString());
+        stmt.executeQuery();
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public PostgreSQLDatabase createView(final Connection _con,
                                          final String _view)
         throws SQLException

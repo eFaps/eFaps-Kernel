@@ -312,6 +312,18 @@ public class OracleDatabase
      * {@inheritDoc}
      */
     @Override
+    public OracleDatabase setSequence(final Connection _con,
+                                      final String _name,
+                                      final String _value)
+        throws SQLException
+    {
+        throw new Error("not implemented");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public OracleDatabase createView(final Connection _con,
                                     final String _table)
         throws SQLException
