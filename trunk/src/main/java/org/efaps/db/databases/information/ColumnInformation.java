@@ -23,143 +23,155 @@ package org.efaps.db.databases.information;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase.ColumnType;
 
 /**
  * Stores information about one column within a table.
  *
- * @author tmo
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class ColumnInformation {
-  /**
-   * Name of column in upper case.
-   *
-   * @see #getName
-   */
-  private final String name;
+public class ColumnInformation
+{
+    /**
+     * Name of column in upper case.
+     *
+     * @see #getName()
+     */
+    private final String name;
 
-  /**
-   * Set of all possible column types.
-   */
-  private final Set<ColumnType> types;
+    /**
+     * Set of all possible column types.
+     */
+    private final Set<ColumnType> types;
 
-  /**
-   * Size of the column (for string). Precision of the column (for decimal).
-   *
-   * @see #size
-   */
-  private final int size;
+    /**
+     * Size of the column (for string). Precision of the column (for decimal).
+     *
+     * @see #getSize()
+     */
+    private final int size;
 
-  /**
-   * Could the column have a null value?
-   *
-   * @see #isNullable
-   */
-  private final boolean isNullable;
+    /**
+     * Could the column have a null value?
+     *
+     * @see #isNullable
+     */
+    private final boolean isNullable;
 
-  private final int scale;
+    /**
+     * Scale of the column.
+     *
+     * @see #getScale()
+     */
+    private final int scale;
 
-  /**
-   * Constructor to initialize all instance variables.
-   *
-   * @param _name       name of column
-   * @param _types      set of column types
-   * @param _size       size/precision of column
-   * @param _scale      sclae of the column
-   * @param _isNullable is the column nullable
-   */
-  protected ColumnInformation(final String _name,
-                              final Set<ColumnType> _types,
-                              final int _size,
-                              final int _scale,
-                              final boolean _isNullable) {
-    this.name = _name.toUpperCase();
-    this.types = _types;
-    this.size = _size;
-    this.scale = _scale;
-    this.isNullable = _isNullable;
-  }
-
-  /**
-   * Returns for the first found column type in {@link #types} the related SQL
-   * select statement for null values.
-   *
-   * @return null value select statement
-   * @see #types
-   */
-  public String getNullValueSelect() {
-    String ret = null;
-    for (final ColumnType colType : this.types)  {
-      ret = Context.getDbType().getNullValueSelect(colType);
-      break;
+    /**
+     * Constructor to initialize all instance variables.
+     *
+     * @param _name       name of column
+     * @param _types      set of column types
+     * @param _size       size/precision of column
+     * @param _scale      sclae of the column
+     * @param _isNullable is the column nullable
+     */
+    protected ColumnInformation(final String _name,
+                                final Set<ColumnType> _types,
+                                final int _size,
+                                final int _scale,
+                                final boolean _isNullable)
+    {
+        this.name = _name.toUpperCase();
+        this.types = _types;
+        this.size = _size;
+        this.scale = _scale;
+        this.isNullable = _isNullable;
     }
-    return ret;
-  }
 
-  /**
-   * This is the getter method for instance variable {@link #name}. The method
-   * returns the name of the SQL column always in upper case.
-   *
-   * @return value of instance variable {@link #name}
-   * @see #name
-   */
-  public String getName() {
-    return this.name;
-  }
+    /**
+     * Returns for the first found column type in {@link #types} the related
+     * SQL select statement for null values.
+     *
+     * @return null value select statement
+     * @see #types
+     */
+    public String getNullValueSelect()
+    {
+        String ret = null;
+        for (final ColumnType colType : this.types)  {
+            ret = Context.getDbType().getNullValueSelect(colType);
+            break;
+        }
+        return ret;
+    }
 
-  /**
-   * This is the getter method for instance variable {@link #size}. The method
-   * returns the column size for this column (used for string column types
-   * defined for eFaps column types {@link ColumnType#STRING_LONG} and
-   * {@link ColumnType#STRING_SHORT}). Or the precision/size of this column
-   * (used for decimal column types {@link ColumnType#DECIMAL})
-   *
-   * @return value of instance variable {@link #size}
-   * @see #size
-   */
-  public int getSize() {
-    return this.size;
-  }
+    /**
+     * This is the getter method for instance variable {@link #name}. The
+     * method returns the name of the SQL column always in upper case.
+     *
+     * @return value of instance variable {@link #name}
+     * @see #name
+     */
+    public String getName()
+    {
+        return this.name;
+    }
 
-  /**
-   * Getter method for instance variable {@link #scale}. The method
-   * returns the scale of this column.
-   * (used for decimal column types {@link ColumnType#DECIMAL})
-   *
-   * @return value of instance variable {@link #scale}
-   */
-  public int getScale() {
-    return this.scale;
-  }
+    /**
+     * This is the getter method for instance variable {@link #size}. The
+     * method returns the column size for this column (used for string column
+     * types defined for eFaps column types {@link ColumnType#STRING_LONG} and
+     * {@link ColumnType#STRING_SHORT}). Or the precision/size of this column
+     * (used for decimal column types {@link ColumnType#DECIMAL})
+     *
+     * @return value of instance variable {@link #size}
+     * @see #size
+     */
+    public int getSize()
+    {
+        return this.size;
+    }
 
-  /**
-   * This is the getter method for instance variable {@link #isNullable}. The
-   * method returns true, if a null value for this column is allowed.
-   *
-   * @return value of instance variable {@link #isNullable}
-   * @see #isNullable
-   */
-  public boolean isNullable() {
-    return this.isNullable;
-  }
+    /**
+     * Getter method for instance variable {@link #scale}. The method
+     * returns the scale of this column.
+     * The information is used for decimal column types
+     * {@link ColumnType#DECIMAL}.
+     *
+     * @return value of instance variable {@link #scale}
+     */
+    public int getScale()
+    {
+        return this.scale;
+    }
 
-  /**
-   * Returns string representation of this class instance. The information
-   * includes {@link #name}, {@link #types}, {@link #size} and
-   * {@link #isNullable}.
-   * @return String representatio of this class
-   */
-  @Override
-  public String toString() {
-    return new ToStringBuilder(this)
-            .append("name", this.name)
-            .append("types", this.types)
-            .append("size", this.size)
-            .append("isNullable", this.isNullable)
-            .toString();
-  }
+    /**
+     * This is the getter method for instance variable {@link #isNullable}. The
+     * method returns true, if a null value for this column is allowed.
+     *
+     * @return value of instance variable {@link #isNullable}
+     * @see #isNullable
+     */
+    public boolean isNullable()
+    {
+        return this.isNullable;
+    }
+
+    /**
+     * Returns string representation of this class instance. The information
+     * includes {@link #name}, {@link #types}, {@link #size} and
+     * {@link #isNullable}.
+     * @return String representation of this class
+     */
+    @Override()
+    public String toString()
+    {
+        return new ToStringBuilder(this)
+                .append("name", this.name)
+                .append("types", this.types)
+                .append("size", this.size)
+                .append("isNullable", this.isNullable)
+                .toString();
+    }
 }

@@ -28,9 +28,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -44,6 +41,8 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles the import / update of SQL tables for eFaps read from a XML
@@ -646,8 +645,8 @@ public class SQLTableUpdate
             try {
                 con = context.getConnectionResource();
 
-                final TableInformation tableInfo = Context.getDbType().getTableInformation(con.getConnection(),
-                                                                                           tableName);
+                final TableInformation tableInfo = Context.getDbType().getRealTableInformation(con.getConnection(),
+                                                                                               tableName);
 
                 for (final Column column : this.columns)  {
                     final ColumnInformation colInfo = tableInfo.getColInfo(column.name);

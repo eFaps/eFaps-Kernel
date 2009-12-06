@@ -41,13 +41,14 @@ import org.efaps.util.cache.CacheReloadException;
  * This is the class for the table description. The table description holds
  * information in which table attributes are stored.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public final class SQLTable extends AbstractDataModelObject
+public final class SQLTable
+    extends AbstractDataModelObject
 {
     /**
-     * This is the sql select statement to select all SQL tables from the
+     * This is the SQL select statement to select all SQL tables from the
      * database.
      */
     private static final String SQL_SELECT = "select ID,"
@@ -101,24 +102,24 @@ public final class SQLTable extends AbstractDataModelObject
      * insert (e.g. the id in the table with a main table has a foreign key to
      * the id of the main table).
      *
-     * @see #getMainTable
-     * @see #setMainTable
+     * @see #getMainTable()
      */
     private SQLTable mainTable = null;
 
     /**
      * The instance variable stores all types which stores information in this
      * table.
+     *
+     * @see #getTypes()
      */
     private final Set<Type> types = new HashSet<Type>();
 
     /**
-     * The instance variables is set to <i>true</i> if this table is only a read
-     * only sql table. This means, that no insert and no update on this table is
-     * allowed and made.
+     * The instance variables is set to <i>true</i> if this table is only a
+     * read only SQL table. This means, that no insert and no update on this
+     * table is allowed and made.
      *
-     * @see #isReadOnly
-     * @see #setReadOnly
+     * @see #isReadOnly()
      */
     private boolean readOnly = false;
 
@@ -149,17 +150,18 @@ public final class SQLTable extends AbstractDataModelObject
         this.sqlTable = _sqlTable.trim();
         this.sqlColId = _sqlColId.trim();
         this.sqlColType = (_sqlColType != null) ? _sqlColType.trim() : null;
-        this.tableInformation = Context.getDbType().getTableInformation(_con, this.sqlTable);
+        this.tableInformation = Context.getDbType().getCachedTableInformation(this.sqlTable);
     }
 
     /**
      * The instance method adds a new type to the type list.
+     *
      * @param _type TYpe to add
      * @see #types
      */
     protected void add(final Type _type)
     {
-        getTypes().add(_type);
+        this.types.add(_type);
     }
 
     /**
@@ -169,7 +171,7 @@ public final class SQLTable extends AbstractDataModelObject
      * @param _value value of the property
      * @throws CacheReloadException on error
      */
-    @Override
+    @Override()
     protected void setProperty(final String _name,
                                final String _value)
         throws CacheReloadException
@@ -318,15 +320,15 @@ public final class SQLTable extends AbstractDataModelObject
     }
 
     /**
-     * Cache fot SQLTable.
+     * Cache for SQLTable.
      */
-    private static class SQLTableCache extends Cache<SQLTable>
+    private static class SQLTableCache
+        extends Cache<SQLTable>
     {
-
         /**
          * {@inheritDoc}
          */
-        @Override
+        @Override()
         protected void readCache(final Map<Long, SQLTable> _cache4Id,
                                  final Map<String, SQLTable> _cache4Name,
                                  final Map<UUID, SQLTable> _cache4UUID)
@@ -345,8 +347,13 @@ public final class SQLTable extends AbstractDataModelObject
                     final ResultSet rs = stmt.executeQuery(SQLTable.SQL_SELECT);
                     while (rs.next()) {
                         final long id = rs.getLong(1);
-                        final SQLTable table = new SQLTable(con.getConnection(), id, rs.getString(2), rs.getString(3),
-                                        rs.getString(4), rs.getString(5), rs.getString(6));
+                        final SQLTable table = new SQLTable(con.getConnection(),
+                                                            id,
+                                                            rs.getString(2),
+                                                            rs.getString(3),
+                                                            rs.getString(4),
+                                                            rs.getString(5),
+                                                            rs.getString(6));
                         _cache4Id.put(table.getId(), table);
                         _cache4Name.put(table.getName(), table);
                         _cache4UUID.put(table.getUUID(), table);
