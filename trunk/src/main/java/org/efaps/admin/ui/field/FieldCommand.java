@@ -24,68 +24,107 @@ import org.efaps.util.cache.CacheReloadException;
 
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class FieldCommand extends Field {
+public class FieldCommand
+    extends Field
+{
+    /**
+     * Must the button rendered?
+     */
+    private boolean renderButton;
 
-  private boolean renderButton;
-  private boolean append;
-  private String targetField;
+    /**
+     * Must the field appended?
+     */
+    private boolean append;
 
-  public FieldCommand(final long _id, final String _uuid, final String _name) {
-    super(_id, _uuid, _name);
-  }
+    /**
+     * Target field.
+     */
+    private String targetField;
 
-  /**
-   * Returns for given parameter <i>_id</i> the instance of class {@link Field}.
-   *
-   * @param _id
-   *                id to search in the cache
-   * @return instance of class {@link Field}
-   */
-  public static FieldCommand get(final long _id) {
-    return (FieldCommand) Field.get(_id);
-  }
-
-  @Override
-  protected void setProperty(final String _name, final String _value)
-      throws CacheReloadException {
-    if ("CmdRenderButton".equals(_name)) {
-      this.renderButton = !("false".equalsIgnoreCase(_value));
-    } else if ("CmdAppend".equals(_name)) {
-      this.append = "true".equalsIgnoreCase(_value);
-    } else if ("CmdTargetField".equals(_name)) {
-      this.targetField = _value;
-    } else {
-      super.setProperty(_name, _value);
+    /**
+     *
+     * @param _id       id of the field
+     * @param _uuid     UUID of the field
+     * @param _name     name of the field
+     */
+    public FieldCommand(final long _id,
+                        final String _uuid,
+                        final String _name)
+    {
+        super(_id, _uuid, _name);
     }
-  }
 
-  /**
-   * Getter method for instance variable {@link #renderButton}.
-   *
-   * @return value of instance variable {@link #renderButton}
-   */
-  public boolean isRenderButton() {
-    return this.renderButton;
-  }
+    /**
+     * Returns for given parameter <i>_id</i> the instance of class
+     * {@link Field}.
+     *
+     * @param _id       id to search in the cache
+     * @return instance of class {@link Field}
+     */
+    public static FieldCommand get(final long _id)
+    {
+        return (FieldCommand) Field.get(_id);
+    }
 
-  /**
-   * Getter method for instance variable {@link #append}.
-   *
-   * @return value of instance variable {@link #append}
-   */
-  public boolean isAppend() {
-    return this.append;
-  }
+    /**
+     * Sets the property for this field command. This includes
+     * <ul>
+     * <li>{@link #renderButton}</li>
+     * <li>{@link #append}</li>
+     * <li>{@link #targetField}</li>
+     * </ul>
+     *
+     * @param _name     name / key of the property
+     * @param _value    value of the property
+     * @throws CacheReloadException from called super property method
+     */
+    @Override()
+    protected void setProperty(final String _name,
+                               final String _value)
+        throws CacheReloadException
+    {
+        if ("CmdRenderButton".equals(_name)) {
+            this.renderButton = !("false".equalsIgnoreCase(_value));
+        } else if ("CmdAppend".equals(_name)) {
+            this.append = "true".equalsIgnoreCase(_value);
+        } else if ("CmdTargetField".equals(_name)) {
+            this.targetField = _value;
+        } else {
+            super.setProperty(_name, _value);
+        }
+    }
 
-  /**
-   * Getter method for instance variable {@link #targetField}.
-   *
-   * @return value of instance variable {@link #targetField}
-   */
-  public String getTargetField() {
-    return this.targetField;
-  }
+    /**
+     * Getter method for instance variable {@link #renderButton}.
+     *
+     * @return value of instance variable {@link #renderButton}
+     */
+    public boolean isRenderButton()
+    {
+        return this.renderButton;
+    }
+
+    /**
+     * Getter method for instance variable {@link #append}.
+     *
+     * @return value of instance variable {@link #append}
+     */
+    public boolean isAppend()
+    {
+        return this.append;
+    }
+
+    /**
+     * Getter method for instance variable {@link #targetField}.
+     *
+     * @return value of instance variable {@link #targetField}
+     */
+    public String getTargetField()
+    {
+        return this.targetField;
+    }
 }

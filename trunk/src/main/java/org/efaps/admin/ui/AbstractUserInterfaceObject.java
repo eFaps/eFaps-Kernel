@@ -58,10 +58,10 @@ import org.efaps.util.cache.CacheReloadException;
  * and the Triggers for the <code>UserInterfaceObjects</code> are handled.
  *
  * @author The eFaps Team
- * @version $Id: AbstractUserInterfaceObject.java 2609 2009-06-10 22:56:38Z
- *          jan.moxter $
+ * @version $Id$
  */
-public abstract class AbstractUserInterfaceObject extends AbstractAdminObject
+public abstract class AbstractUserInterfaceObject
+    extends AbstractAdminObject
 {
     /**
      * This enum id used to define the different Modes a Target of a Command can
@@ -322,7 +322,7 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject
         /**
          * {@inheritDoc}
          */
-        @Override
+        @Override()
         protected void readCache(final Map<Long, UIObj> _cache4Id, final Map<String, UIObj> _cache4Name,
                         final Map<UUID, UIObj> _cache4UUID) throws CacheReloadException
         {

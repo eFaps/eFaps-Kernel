@@ -23,61 +23,65 @@ package org.efaps.admin.ui.field;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class FieldGroup extends Field {
+public class FieldGroup
+    extends Field
+{
+    /**
+     * Group Count if in a row / columnd must be shown more than one value. The
+     * default value is <code>-1</code> meaning no group count is set.
+     *
+     * @see #setGroupCount
+     * @see #getGroupCount
+     */
+    private int groupCount = -1;
 
-  /**
-   * Group Count if in a row / columnd must be shown more than one value. The
-   * default value is <code>-1</code> meaning no group count is set.
-   *
-   * @see #setGroupCount
-   * @see #getGroupCount
-   */
-  private int groupCount = -1;
-
-  public FieldGroup(final long _id, final String _uuid, final String _name) {
-    super(_id, _uuid, _name);
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #groupCount}.
-   *
-   * @return value of instance variable {@link #groupCount}
-   * @see #groupCount
-   * @see #setGroupCount
-   */
-  public int getGroupCount() {
-    return this.groupCount;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #groupCount}.
-   *
-   * @param _groupCount
-   *                new value for instance variable {@link #groupCount}
-   * @see #groupCount
-   * @see #getGroupCount
-   */
-  public void setGroupCount(final int _groupCount) {
-    this.groupCount = _groupCount;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.efaps.admin.ui.field.Field#setProperty(java.lang.String,
-   *      java.lang.String)
-   */
-  @Override
-  protected void setProperty(String _name, String _value)
-                                                         throws CacheReloadException {
-    if ("GroupCount".equals(_name)) {
-      setGroupCount(Integer.parseInt(_value));
-    } else {
-      super.setProperty(_name, _value);
+    /**
+     *
+     * @param _id       id of the field group
+     * @param _uuid     UUID of the field group
+     * @param _name     name of the field group
+     */
+    public FieldGroup(final long _id,
+                      final String _uuid,
+                      final String _name)
+    {
+        super(_id, _uuid, _name);
     }
-  }
 
+    /**
+     * This is the setter method for the instance variable {@link #groupCount}.
+     *
+     * @return value of instance variable {@link #groupCount}
+     * @see #groupCount
+     * @see #setGroupCount
+     */
+    public int getGroupCount()
+    {
+        return this.groupCount;
+    }
+
+    /**
+     * Sets the property for this field group. This includes
+     * <ul>
+     * <li>{@link #groupCount}</li>
+     * </ul>
+     *
+     * @param _name     name / key of the property
+     * @param _value    value of the property
+     * @throws CacheReloadException from called super property method
+     */
+    @Override()
+    protected void setProperty(final String _name,
+                               final String _value)
+        throws CacheReloadException
+    {
+        if ("GroupCount".equals(_name)) {
+            this.groupCount = Integer.parseInt(_value);
+        } else {
+            super.setProperty(_name, _value);
+        }
+    }
 }

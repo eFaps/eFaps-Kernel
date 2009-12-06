@@ -23,31 +23,44 @@ package org.efaps.admin.ui.field;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
- *
  */
-public class FieldHeading extends Field
+public class FieldHeading
+    extends Field
 {
-
     /**
-     * instance variable to store the level of the Heading.
+     * Stores the level of the heading.
      */
     private int level = 1;
 
-    public FieldHeading(final long _id, final String _uuid, final String _name)
+    /**
+     *
+     * @param _id       id of the field heading
+     * @param _uuid     UUID of the field heading
+     * @param _name     name of the field heading
+     */
+    public FieldHeading(final long _id,
+                        final String _uuid,
+                        final String _name)
     {
         super(_id, _uuid, _name);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Sets the property for this field set. This includes
+     * <ul>
+     * <li>{@link #level}</li>
+     * </ul>
      *
-     * @see org.efaps.admin.ui.field.Field#setProperty(java.lang.String,
-     * java.lang.String)
+     * @param _name     name / key of the property
+     * @param _value    value of the property
+     * @throws CacheReloadException from called super property method
      */
-    @Override
-    protected void setProperty(final String _name, final String _value) throws CacheReloadException
+    @Override()
+    protected void setProperty(final String _name,
+                               final String _value)
+        throws CacheReloadException
     {
         if ("Level".equals(_name)) {
             this.level = Integer.parseInt(_value);
@@ -65,5 +78,4 @@ public class FieldHeading extends Field
     {
         return this.level;
     }
-
 }
