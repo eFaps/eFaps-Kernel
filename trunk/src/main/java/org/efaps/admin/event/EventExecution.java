@@ -23,25 +23,23 @@ package org.efaps.admin.event;
 import org.efaps.util.EFapsException;
 
 /**
- * This interface is for the Programs loaded dynamically from the efapsdatabase
- * with the efapsClassLoader. To be invoked the Classes loaded with the
- * efapsclassloader must use this interfacs!
+ * This interface is for the Programs loaded dynamically from the eFaps
+ * database with the eFaps class loader. To be invoked the Classes loaded with
+ * the eFaps class loader must use this interface!
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  *
  */
-public interface EventExecution {
-
-  /**
-   * This method is calles from efaps to invoke the class
-   *
-   * @param _context
-   *          Context of the
-   * @param _instance
-   * @param _map
-   *          Map with values from the trigger
-   * @throws EFapsException
-   */
-  public Return execute(final Parameter _parameter) throws EFapsException;
+public interface EventExecution
+{
+    /**
+     * This method is called from eFaps to invoke the class.
+     *
+     * @param _parameter    parameters
+     * @return returned values from the executed event
+     * @throws EFapsException if execute failed
+     */
+    Return execute(final Parameter _parameter)
+        throws EFapsException;
 }

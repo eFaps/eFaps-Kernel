@@ -30,31 +30,44 @@ import org.efaps.util.EFapsException;
 /**
  * The interface describes the needed methods for using a file store.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public interface IAttributeDefinitionStore  {
+public interface IAttributeDefinitionStore
+{
+    /**
+     * @param _context  eFaps context for this request
+     * @param _instance eFaps instance itself for which the file is checked out
+     * @param _fileName name of the file to check in
+     * @param _in       file represented by input stream
+     * @throws EFapsException if check in failed
+     */
+    void checkin(final Context _context,
+                 final Instance _instance,
+                 final String _fileName,
+                 final InputStream _in)
+        throws EFapsException;
 
-  /**
-   * @param _context  eFaps context for this request
-   * @oaram _instance eFaps instance itself for which the file is checked out
-   * @param _fileName name of the file to checkin
-   * @param _in       file represented by input stream
-   */
-  public void checkin(final Context _context, Instance _instance, final String fileName, final InputStream _in) throws EFapsException;
+    /**
+     * Returns the file name for the file representing.
+     *
+     * @param _context  eFaps context for this request
+     * @param _instance eFaps instance itself for which the file is checked out
+     * @return found file name
+     * @throws EFapsException if fetching of the file name failed
+     */
+    String getFileName(final Context _context,
+                       final Instance _instance)
+        throws EFapsException;
 
-  /**
-   * Returns the file name for the file representing
-   *
-   * @param _context  eFaps context for this request
-   * @oaram _instance eFaps instance itself for which the file is checked out
-   */
-  public String getFileName(final Context _context, Instance _instance) throws EFapsException;
-
-  /**
-   * @param _context  eFaps context for this request
-   * @oaram _instance eFaps instance itself for which the file is checked out
-   * @param _out      output stream to write the file in
-   */
-  public void checkout(final Context _context, Instance _instance, final OutputStream _out) throws EFapsException;
+    /**
+     * @param _context  eFaps context for this request
+     * @param _instance eFaps instance itself for which the file is checked out
+     * @param _out      output stream to write the file in
+     * @throws EFapsException if check out failed
+     */
+    void checkout(final Context _context,
+                  final Instance _instance,
+                  final OutputStream _out)
+        throws EFapsException;
 }

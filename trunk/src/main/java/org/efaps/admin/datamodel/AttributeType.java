@@ -27,76 +27,72 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  * @todo description
  */
-public class AttributeType extends AbstractDataModelObject
+public class AttributeType
+    extends AbstractDataModelObject
 {
-
     /**
      * Logging instance used in this class.
      */
-    private final static Logger LOG = LoggerFactory.getLogger(AttributeType.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AttributeType.class);
 
     /**
-     * This is the sql select statement to select all attribute types from the
+     * This is the SQL select statement to select all attribute types from the
      * database.
      */
-    private final static String SQL_SELECT = "select " + "ID," + "NAME," + "UUID," + "CLASSNAME," + "CLASSNAMEUI,"
-                    + "ALWAYSUPDATE," + "CREATEUPDATE " + "from V_DMATTRIBUTETYPE";
+    private static final String SQL_SELECT = "select ID,NAME,UUID,CLASSNAME,CLASSNAMEUI,"
+                    + "ALWAYSUPDATE,CREATEUPDATE from V_DMATTRIBUTETYPE";
 
     /**
      * Stores all instances of class {@link AttributeType}.
      *
-     * @see #getCache
+     * @see #initialize()
+     * @see #get(long)
+     * @see #get(String)
      */
-    static private AttributeTypeCache CACHE = new AttributeTypeCache();
-
-    // ///////////////////////////////////////////////////////////////////////////
+    private static AttributeTypeCache CACHE = new AttributeTypeCache();
 
     /**
      * The instance variable store the class representation for the attribute
      * type. With the class representation, a new instance of the value can be
      * created.
      *
-     * @see #getClassRepr
-     * @see #setClassRepr(Class)
+     * @see #getClassRepr()
      * @see #setClassRepr(String)
      */
     private Class<?> classRepr = null;
 
     /**
-     * The instance variable stores the instance for the ui interface.
+     * The instance variable stores the instance for the user interface.
      */
     private UIInterface ui = null;
 
     /**
-     * The instance variable store the behavour, if an update is made. If the
+     * The instance variable store the behavior, if an update is made. If the
      * value is set to <i>true</i>, the attribute must be always updated.
      *
-     * @see #getAlwaysUpdate
-     * @see #setAlwaysUpdate
+     * @see #isAlwaysUpdate()
      */
     private boolean alwaysUpdate = false;
 
     /**
-     * The instance variable store the behavour, if an insert is made. If the
+     * The instance variable store the behavior, if an insert is made. If the
      * value is set to <i>true</i>, the attribute must be updated for an insert.
      *
-     * @see #getCreateUpdate
-     * @see #setCreateUpdate
+     * @see #isCreateUpdate()
      */
     private boolean createUpdate = false;
 
@@ -118,13 +114,16 @@ public class AttributeType extends AbstractDataModelObject
      *
      *
      * @return new instance of the class representation
+     * @throws EFapsException if instance for {@link #classRepr} could not be
+     *                        initiated
      * @see #classRepr
      */
-    public IAttributeType newInstance() throws EFapsException
+    public IAttributeType newInstance()
+        throws EFapsException
     {
         IAttributeType ret = null;
         try {
-            ret = (IAttributeType) getClassRepr().newInstance();
+            ret = (IAttributeType) this.classRepr.newInstance();
         } catch (final InstantiationException e) {
             throw new EFapsException(getClass(), "newInstance.InstantiationException", e);
         } catch (final IllegalAccessException e) {
@@ -139,18 +138,23 @@ public class AttributeType extends AbstractDataModelObject
      * instance variable {@link #classRepr}.
      *
      * @param _classRepr class name of the class representation
+     * @throws ClassNotFoundException if class <code>_classRepr</code> could
+     *                                not be found
      * @see #classRepr
      * @see #setClassRepr(Class)
      */
-    private void setClassRepr(final String _classRepr) throws ClassNotFoundException
+    private void setClassRepr(final String _classRepr)
+        throws ClassNotFoundException
     {
-        setClassRepr(Class.forName(_classRepr));
+        this.classRepr = Class.forName(_classRepr);
     }
 
     /**
-   *
-   */
-    private void setUI(final String _className) throws EFapsException
+     * @param _className    name of the user interface class
+     * @throws EFapsException if class could not be found or not instantiated
+     */
+    private void setUI(final String _className)
+        throws EFapsException
     {
         try {
             setUI((UIInterface) Class.forName(_className).newInstance());
@@ -175,18 +179,6 @@ public class AttributeType extends AbstractDataModelObject
     public Class<?> getClassRepr()
     {
         return this.classRepr;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #classRepr}.
-     *
-     * @param _classRepr new value for instance variable {@link #classRepr}
-     * @see #classRepr
-     * @see #getClassRepr
-     */
-    private void setClassRepr(final Class<?> _classRepr)
-    {
-        this.classRepr = _classRepr;
     }
 
     /**
@@ -226,19 +218,6 @@ public class AttributeType extends AbstractDataModelObject
     }
 
     /**
-     * This is the setter method for instance variable {@link #alwaysUpdate}.
-     *
-     * @param _alwaysUpdate new value for instance variable
-     *            {@link #alwaysUpdate}
-     * @see #alwaysUpdate
-     * @see #getAlwaysUpdate
-     */
-    private void setAlwaysUpdate(final boolean _alwaysUpdate)
-    {
-        this.alwaysUpdate = _alwaysUpdate;
-    }
-
-    /**
      * This is the getter method for instance variable {@link #createUpdate}.
      *
      * @return value of instance variable {@link #createUpdate}
@@ -251,26 +230,23 @@ public class AttributeType extends AbstractDataModelObject
     }
 
     /**
-     * This is the setter method for instance variable {@link #createUpdate}.
-     *
-     * @param _createUpdate new value for instance variable
-     *            {@link #createUpdate}
-     * @see #createUpdate
-     * @see #getCreateUpdate
+     * @return string representation of this attribute type
      */
-    private void setCreateUpdate(final boolean _createUpdate)
-    {
-        this.createUpdate = _createUpdate;
-    }
-
-
-    @Override
+    @Override()
     public String toString()
     {
-        return new ToStringBuilder(this).appendSuper(super.toString()).append("classRepr", getClassRepr()).append(
-                        "alwaysUpdate", isAlwaysUpdate()).append("createUpdate", isCreateUpdate()).toString();
+        return new ToStringBuilder(this)
+            .appendSuper(super.toString())
+            .append("classRepr", this.classRepr)
+            .append("alwaysUpdate", this.alwaysUpdate)
+            .append("createUpdate", this.createUpdate)
+            .toString();
     }
 
+    /**
+     *
+     * @param _class    attribute type class
+     */
     public static void initialize(final Class<?> _class)
     {
         AttributeType.CACHE.initialize(_class);
@@ -290,11 +266,9 @@ public class AttributeType extends AbstractDataModelObject
      *
      * @param _id id to search in the cache
      * @return instance of class {@link AttributeType}
-     * @throws CacheReloadException
-     * @see #getCache
-     * @see #read
+     * @see #CACHE
      */
-    public static AttributeType get(final long _id) throws CacheReloadException
+    public static AttributeType get(final long _id)
     {
         return AttributeType.CACHE.get(_id);
     }
@@ -305,21 +279,34 @@ public class AttributeType extends AbstractDataModelObject
      *
      * @param _name name to search in the cache
      * @return instance of class {@link AttributeType}
-     * @throws CacheReloadException
-     * @see #getCache
-     * @see #read
+     * @see #CACHE
      */
-    public static AttributeType get(final String _name) throws CacheReloadException
+    public static AttributeType get(final String _name)
     {
         return AttributeType.CACHE.get(_name);
     }
 
-    private static class AttributeTypeCache extends Cache<AttributeType>
+    /**
+     * Cache class for attribute types.
+     *
+     * @see AttributeType#CACHE
+     */
+    private static class AttributeTypeCache
+        extends Cache<AttributeType>
     {
-
-        @Override
+        /**
+         * @param _cache4Id     map depending on the id and the attribute type
+         *                      instance which will be used as cache
+         * @param _cache4Name   map depending on the name and the attribute
+         *                      type instance which will be used as cache
+         * @param _cache4UUID   map depending on the UUID and the attribute
+         *                      type instance which will be used as cache
+         * @throws CacheReloadException if cache could not be reloaded
+         */
+        @Override()
         protected void readCache(final Map<Long, AttributeType> _cache4Id,
-                        final Map<String, AttributeType> _cache4Name, final Map<UUID, AttributeType> _cache4UUID)
+                                 final Map<String, AttributeType> _cache4Name,
+                                 final Map<UUID, AttributeType> _cache4UUID)
             throws CacheReloadException
         {
             ConnectionResource con = null;
@@ -345,10 +332,10 @@ public class AttributeType extends AbstractDataModelObject
                         attrType.setClassRepr(rs.getString(4).trim());
                         attrType.setUI(rs.getString(5).trim());
                         if (rs.getInt(6) != 0) {
-                            attrType.setAlwaysUpdate(true);
+                            attrType.alwaysUpdate = true;
                         }
                         if (rs.getInt(7) != 0) {
-                            attrType.setCreateUpdate(true);
+                            attrType.createUpdate = true;
                         }
                         _cache4Id.put(attrType.getId(), attrType);
                         _cache4Name.put(attrType.getName(), attrType);

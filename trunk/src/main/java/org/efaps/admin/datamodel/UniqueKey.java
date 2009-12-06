@@ -28,46 +28,46 @@ import java.util.StringTokenizer;
  * The class stores the unique keys of a type instance object. One unique
  * key can have one or more attribute.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class UniqueKey  {
+public class UniqueKey
+{
+    /**
+     * The collection instance variables holds all attributes for this unique
+     * key.
+     *
+     * @see #getAttributes()
+     */
+    private final Collection<Attribute> attributes = new HashSet<Attribute>();
 
-  /**
-   * The constructor creates a new list of attributes which are an unique
-   * key for this type.<br/>
-   * Each attribute in the  string list is added to this unique key instance.
-   *
-   * @param _attrList string with comma separated list of attribute names
-   */
-  UniqueKey(Type _type, String _attrList)  {
-    StringTokenizer tokens = new StringTokenizer(_attrList, ",");
-    while (tokens.hasMoreTokens())  {
-      Attribute attr = _type.getAttribute(tokens.nextToken());
-      attr.addUniqueKey(this);
-      getAttributes().add(attr);
+    /**
+     * The constructor creates a new list of attributes which are an unique
+     * key for this type.<br/>
+     * Each attribute in the  string list is added to this unique key instance.
+     *
+     * @param _type     related type for the unique key
+     * @param _attrList string with comma separated list of attribute names
+     */
+    UniqueKey(final Type _type,
+              final String _attrList)
+    {
+        final StringTokenizer tokens = new StringTokenizer(_attrList, ",");
+        while (tokens.hasMoreTokens())  {
+            final Attribute attr = _type.getAttribute(tokens.nextToken());
+            attr.addUniqueKey(this);
+            getAttributes().add(attr);
+        }
     }
-  }
 
-  ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The collection instance variables holds all attributes for this unique
-   * key.
-   *
-   * @see #getAttributes
-   */
-  private Collection<Attribute> attributes = new HashSet<Attribute>();
-
-  ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This is the getter method for instance variable {@link #attributes}.
-   *
-   * @return value of instance variable {@link #attributes}
-   * @see #attributes
-   */
-  public Collection<Attribute> getAttributes()  {
-    return this.attributes;
-  }
+    /**
+     * This is the getter method for instance variable {@link #attributes}.
+     *
+     * @return value of instance variable {@link #attributes}
+     * @see #attributes
+     */
+    public Collection<Attribute> getAttributes()
+    {
+        return this.attributes;
+    }
 }

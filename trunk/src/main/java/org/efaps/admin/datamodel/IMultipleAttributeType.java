@@ -27,13 +27,18 @@ import org.efaps.db.query.CachedResult;
 
 
 /**
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public interface IMultipleAttributeType extends IAttributeType{
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // methods for the interface to the database
-  public Map<String,List<Object>> readValues(final CachedResult _rs, final Map<Integer,String> _index2expression);
-
+public interface IMultipleAttributeType
+    extends IAttributeType
+{
+    /**
+     *
+     * @param _rs               cached result
+     * @param _index2expression map depending of the index and the expression
+     * @return values
+     */
+    Map<String, List<Object>> readValues(final CachedResult _rs,
+                                         final Map<Integer, String> _index2expression);
 }
