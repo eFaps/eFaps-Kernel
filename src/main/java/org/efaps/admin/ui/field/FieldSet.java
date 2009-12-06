@@ -28,38 +28,53 @@ import org.efaps.util.cache.CacheReloadException;
 /**
  * TODO comment
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class FieldSet extends Field{
+public class FieldSet
+    extends Field
+{
+    private final List<String> order = new ArrayList<String>();
 
-  private final List<String> order = new ArrayList<String>();
-
-
-
-  /**
-   * @param id
-   * @param object
-   * @param name
-   */
-  public FieldSet(final long _id, final String _uuid, final String _name) {
-    super(_id, _uuid, _name);
-  }
-
-  @Override
-  protected void setProperty(final String _name, final String _value)
-                                                         throws CacheReloadException {
-    if ("Order".equals(_name)) {
-      final String[] values = _value.split("\\|");
-      for (final String value : values) {
-        this.order.add(value);
-      }
-    } else {
-      super.setProperty(_name, _value);
+    /**
+     * @param _id       id of the field set
+     * @param _uuid     UUID of the field set
+     * @param _name     name of the field set
+     */
+    public FieldSet(final long _id,
+                    final String _uuid,
+                    final String _name)
+    {
+        super(_id, _uuid, _name);
     }
-  }
 
-  public List<String> getOrder() {
-    return this.order;
-  }
+    /**
+     * Sets the property for this field set. This includes
+     * <ul>
+     * <li>{@link #order}</li>
+     * </ul>
+     *
+     * @param _name     name / key of the property
+     * @param _value    value of the property
+     * @throws CacheReloadException from called super property method
+     */
+    @Override()
+    protected void setProperty(final String _name,
+                               final String _value)
+    throws CacheReloadException
+    {
+        if ("Order".equals(_name)) {
+            final String[] values = _value.split("\\|");
+            for (final String value : values) {
+                this.order.add(value);
+            }
+        } else {
+            super.setProperty(_name, _value);
+        }
+    }
+
+    public List<String> getOrder()
+    {
+        return this.order;
+    }
 }

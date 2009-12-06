@@ -20,97 +20,103 @@
 
 package org.efaps.admin.ui;
 
-import static org.efaps.admin.EFapsClassNames.PICKER;
-
 import java.util.UUID;
 
 import org.efaps.admin.EFapsClassNames;
-import org.efaps.util.cache.CacheReloadException;
+
+import static org.efaps.admin.EFapsClassNames.PICKER;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  * @todo description
  */
-public class Picker extends AbstractCollection {
-
-  /**
-   * The static variable defines the class name in eFaps.
-   */
-  public static final EFapsClassNames EFAPS_CLASSNAME = PICKER;
-
-  /**
-   * Cache for the Pickers.
-   */
-  private static final PickerCache CACHE = new PickerCache();
-
-  /**
-   * @param _id     ID
-   * @param _uuid   UUID
-   * @param _name   Name
-   */
-  public Picker(final Long _id, final String _uuid, final String _name) {
-    super(_id, _uuid, _name);
-  }
-
-   /**
-   * Returns for given parameter <i>_id</i> the instance of class
-   * {@link Picker}.
-   *
-   * @param _id id to search in the cache
-   * @return instance of class {@link Picker}
-   * @throws CacheReloadException
-   * @see #getCache
-   */
-  public static Picker get(final long _id) {
-    return CACHE.get(_id);
-  }
-
-  /**
-   * Returns for given parameter <i>_name</i> the instance of class
-   * {@link Picker}.
-   *
-   * @param _name name to search in the cache
-   * @return instance of class {@link Picker}
-   * @throws CacheReloadException
-   * @see #getCache
-   */
-  public static Picker get(final String _name) {
-    return CACHE.get(_name);
-  }
-
-  /**
-   * Returns for given parameter <i>_uuid</i> the instance of class
-   * {@link Picker}.
-   *
-   * @param _uuid UUID to search in the cache
-   * @return instance of class {@link Picker}
-   * @throws CacheReloadException
-   * @see #getCache
-   */
-  public static Picker get(final UUID _uuid)  {
-    return CACHE.get(_uuid);
-  }
-
-  /**
-   * Static getter method for the type hashtable {@link #CACHE}.
-   *
-   * @return value of static variable {@link #CACHE}
-   */
-  protected static UserInterfaceObjectCache<Picker> getCache() {
-    return CACHE;
-  }
-
-  /**
-   * Cache for Picker.
-   */
-  private static class PickerCache extends UserInterfaceObjectCache<Picker> {
+public class Picker
+    extends AbstractCollection
+{
+    /**
+     * The static variable defines the class name in eFaps.
+     */
+    public static final EFapsClassNames EFAPS_CLASSNAME = PICKER;
 
     /**
-     *
+     * Cache for the Pickers.
      */
-    protected PickerCache() {
-      super(Picker.class);
+    private static final PickerCache CACHE = new PickerCache();
+
+    /**
+     * @param _id     ID
+     * @param _uuid   UUID
+     * @param _name   Name
+     */
+    public Picker(final Long _id,
+                  final String _uuid,
+                  final String _name)
+    {
+        super(_id, _uuid, _name);
     }
-  }
+
+    /**
+     * Returns for given parameter <i>_id</i> the instance of class
+     * {@link Picker}.
+     *
+     * @param _id id to search in the cache
+     * @return instance of class {@link Picker}
+     * @see #CACHE
+     */
+    public static Picker get(final long _id)
+    {
+        return Picker.CACHE.get(_id);
+    }
+
+    /**
+     * Returns for given parameter <i>_name</i> the instance of class
+     * {@link Picker}.
+     *
+     * @param _name name to search in the cache
+     * @return instance of class {@link Picker}
+     * @see #CACHE
+     */
+    public static Picker get(final String _name)
+    {
+        return Picker.CACHE.get(_name);
+    }
+
+    /**
+     * Returns for given parameter <i>_uuid</i> the instance of class
+     * {@link Picker}.
+     *
+     * @param _uuid UUID to search in the cache
+     * @return instance of class {@link Picker}
+     * @see #CACHE
+     */
+    public static Picker get(final UUID _uuid)
+    {
+        return Picker.CACHE.get(_uuid);
+    }
+
+    /**
+     * Static getter method for the picker {@link #CACHE}.
+     *
+     * @return value of static variable {@link #CACHE}
+     */
+    protected static UserInterfaceObjectCache<Picker> getCache()
+    {
+        return Picker.CACHE;
+    }
+
+    /**
+     * Cache for Picker.
+     */
+    private static class PickerCache
+        extends UserInterfaceObjectCache<Picker>
+    {
+        /**
+         *
+         */
+        protected PickerCache()
+        {
+            super(Picker.class);
+        }
+    }
 }

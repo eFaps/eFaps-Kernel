@@ -20,94 +20,99 @@
 
 package org.efaps.admin.ui;
 
-import static org.efaps.admin.EFapsClassNames.COMMAND;
-
 import java.util.UUID;
 
 import org.efaps.admin.EFapsClassNames;
-import org.efaps.util.cache.CacheReloadException;
+
+import static org.efaps.admin.EFapsClassNames.COMMAND;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  * @todo description
  */
-public class Command extends AbstractCommand {
+public class Command
+    extends AbstractCommand
+{
+    /**
+     * The static variable defines the class name in eFaps.
+     */
+    public static final EFapsClassNames EFAPS_CLASSNAME = COMMAND;
 
-  /**
-   * The static variable defines the class name in eFaps.
-   */
-  public static final EFapsClassNames EFAPS_CLASSNAME = COMMAND;
+    /**
+     * Cache for the commands.
+     */
+    private static final CommandCache CACHE = new CommandCache();
 
-  private static final CommandCache CACHE = new CommandCache();
-
-  /**
-   * Constructor to set the id and name of the command object.
-   *
-   * @param _id
-   *                id of the command to set
-   * @param _name
-   *                name of the command to set
-   */
-  public Command(final Long _id, final String _uuid, final String _name) {
-    super(_id, _uuid, _name);
-  }
-
-
-  /**
-   * Static getter method for the type hashtable {@link #CACHE}.
-   *
-   * @return value of static variable {@link #CACHE}
-   */
-  protected static UserInterfaceObjectCache<Command> getCache() {
-    return CACHE;
-  }
-  /**
-   * Returns for given parameter <i>UUID</i> the instance of class
-   * {@link Command}.
-   *
-   * @param _uuid
-   *                UUID to search in the cache
-   * @return instance of class {@link Command}
-   * @see #getCache
-   */
-  public static Command get(final UUID _uuid) {
-    return CACHE.get(_uuid);
-  }
-  /**
-   * Returns for given parameter <i>_id</i> the instance of class
-   * {@link Command}.
-   *
-   * @param _id
-   *                id to search in the cache
-   * @return instance of class {@link Command}
-   * @throws CacheReloadException
-   * @see #getCache
-   */
-  static public Command get(final long _id)  {
-    return CACHE.get(_id);
-  }
-
-
-
-  /**
-   * Returns for given parameter <i>_name</i> the instance of class
-   * {@link Command}.
-   *
-   * @param _name
-   *                name to search in the cache
-   * @return instance of class {@link Command}
-   * @throws CacheReloadException
-   * @see #getCache
-   */
-  static public Command get(final String _name) {
-    return CACHE.get(_name);
-  }
-
-  private static class CommandCache extends UserInterfaceObjectCache<Command> {
-
-    protected CommandCache() {
-      super(Command.class);
+    /**
+     * Constructor to set the id and name of the command object.
+     *
+     * @param _id       id of the command to set
+     * @param _uuid     UUID of the command to set
+     * @param _name     name of the command to set
+     */
+    public Command(final Long _id,
+                   final String _uuid,
+                   final String _name)
+    {
+        super(_id, _uuid, _name);
     }
-  }
+
+    /**
+     * Static getter method for the command {@link #CACHE}.
+     *
+     * @return value of static variable {@link #CACHE}
+     */
+    protected static UserInterfaceObjectCache<Command> getCache()
+    {
+        return Command.CACHE;
+    }
+
+    /**
+     * Returns for given parameter <i>UUID</i> the instance of class
+     * {@link Command}.
+     *
+     * @param _uuid         UUID to search in the cache
+     * @return instance of class {@link Command}
+     * @see #CACHE
+     */
+    public static Command get(final UUID _uuid)
+    {
+        return Command.CACHE.get(_uuid);
+    }
+
+    /**
+     * Returns for given parameter <i>_id</i> the instance of class
+     * {@link Command}.
+     *
+     * @param _id       id to search in the cache
+     * @return instance of class {@link Command}
+     * @see #CACHE
+     */
+    public static Command get(final long _id)
+    {
+        return Command.CACHE.get(_id);
+    }
+
+    /**
+     * Returns for given parameter <i>_name</i> the instance of class
+     * {@link Command}.
+     *
+     * @param _name     name to search in the cache
+     * @return instance of class {@link Command}
+     * @see #CACHE
+     */
+    public static Command get(final String _name)
+    {
+        return Command.CACHE.get(_name);
+    }
+
+    private static class CommandCache
+        extends UserInterfaceObjectCache<Command>
+    {
+        protected CommandCache()
+        {
+            super(Command.class);
+        }
+    }
 }
