@@ -26,14 +26,13 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -41,9 +40,9 @@ import org.efaps.util.cache.CacheReloadException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class Company extends AbstractUserObject
+public final class Company
+    extends AbstractUserObject
 {
-
     /**
      * Logging instance used in this class.
      */
