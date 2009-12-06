@@ -91,6 +91,7 @@ public interface IAttributeType
      * interface. The string is a localized value!
      *
      * @param _values new object value to set
+     * @throws EFapsException if values could not be set
      */
     void set(final Object[] _values) throws EFapsException;
 
