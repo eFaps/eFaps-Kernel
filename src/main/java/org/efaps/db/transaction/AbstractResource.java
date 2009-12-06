@@ -22,15 +22,13 @@ package org.efaps.db.transaction;
 
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
-import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract class used to given an easy interface to implemented XA resources
@@ -40,182 +38,187 @@ import org.efaps.util.EFapsException;
  * work was OK) or {@link #abort} (if the transaction must be rolled back) must
  * be called.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractResource implements XAResource {
+public abstract class AbstractResource
+    implements XAResource
+{
+    /**
+     * Logging instance used in this class.
+     */
+    private static Logger LOG = LoggerFactory.getLogger(AbstractResource.class);
 
-  /////////////////////////////////////////////////////////////////////////////
-  // static variables
+    /**
+     * Is set to <i>true</i> if the connection resource is already enlisted in
+     * the transaction. Otherwise the value is <i>false</i>.
+     */
+    private boolean opened = false;
 
-  /**
-   * Logging instance used in this class.
-   */
-  private static Logger LOG = LoggerFactory.getLogger(AbstractResource.class);
-
-
-  /**
-   * Is set to <i>true</i> if the connection resource is already enlisted in
-   * the transaction. Otherwise the value is <i>false</i>.
-   */
-  private boolean opened = false;
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance methods
-
-  /**
-   * Opens this connection resource and enlisted this resource in the
-   * transaction.
-   *
-   * @throws EFapsException if the resource is already opened or this
-   *         resource could not be enlisted
-   */
-  public void open() throws EFapsException  {
-    if (LOG.isDebugEnabled())  {
-      LOG.debug("open");
-    }
-    if (this.opened)  {
-      LOG.error("resource already opened");
-      throw new EFapsException(AbstractResource.class, "open.AlreadyOpened");
-    }
-    try  {
-      final Context context = Context.getThreadContext();
-      context.getTransaction().enlistResource(this);
-    } catch (final RollbackException e)  {
-      LOG.error("exception occurs while delisting in transaction, "
+    /**
+     * Opens this connection resource and enlisted this resource in the
+     * transaction.
+     *
+     * @throws EFapsException if the resource is already opened or this
+     *                        resource could not be enlisted
+     */
+    public void open() throws EFapsException
+    {
+        if (AbstractResource.LOG.isDebugEnabled())  {
+            AbstractResource.LOG.debug("open");
+        }
+        if (this.opened)  {
+            AbstractResource.LOG.error("resource already opened");
+            throw new EFapsException(AbstractResource.class, "open.AlreadyOpened");
+        }
+        try  {
+            final Context context = Context.getThreadContext();
+            context.getTransaction().enlistResource(this);
+        } catch (final RollbackException e)  {
+            AbstractResource.LOG.error("exception occurs while delisting in transaction, "
                                                 + "commit not possible", e);
-      throw new EFapsException(AbstractResource.class,
-                                                "open.RollbackException", e);
-    } catch (final SystemException e)  {
-      LOG.error("exception occurs while delisting in transaction, "
+            throw new EFapsException(AbstractResource.class,
+                                     "open.RollbackException", e);
+        } catch (final SystemException e)  {
+            AbstractResource.LOG.error("exception occurs while delisting in transaction, "
                                                 + "commit not possible", e);
-      throw new EFapsException(AbstractResource.class,
-                                                "open.SystemException", e);
+            throw new EFapsException(AbstractResource.class,
+                                     "open.SystemException", e);
+        }
+        this.opened = true;
     }
-    this.opened = true;
-  }
 
-  /**
-   * Closes this connection resource and delisted this resource in the
-   * transaction.
-   * The method must be called if the transaction should be commited.
-   *
-   * @throws EFapsException if the resource is not opened or this resource
-   *         could not delisted
-   */
-  public void commit() throws EFapsException  {
-    if (LOG.isDebugEnabled())  {
-      LOG.debug("commit");
-    }
-    if (!this.opened)  {
-      LOG.error("resource not opened, commit not possible");
-      throw new EFapsException(AbstractResource.class, "commit.NotOpened");
-    }
-    try  {
-      final Context context = Context.getThreadContext();
-      context.getTransaction().delistResource(this, TMSUCCESS);
-    } catch (final SystemException e)  {
-      LOG.error("exception occurs while delisting in transaction, "
+    /**
+     * Closes this connection resource and delisted this resource in the
+     * transaction. The method must be called if the transaction should be
+     * commited.
+     *
+     * @throws EFapsException if the resource is not opened or this resource
+     *                        could not delisted
+     */
+    public void commit() throws EFapsException
+    {
+        if (AbstractResource.LOG.isDebugEnabled())  {
+            AbstractResource.LOG.debug("commit");
+        }
+        if (!this.opened)  {
+            AbstractResource.LOG.error("resource not opened, commit not possible");
+            throw new EFapsException(AbstractResource.class, "commit.NotOpened");
+        }
+        try  {
+            final Context context = Context.getThreadContext();
+            context.getTransaction().delistResource(this, TMSUCCESS);
+        } catch (final SystemException e)  {
+            AbstractResource.LOG.error("exception occurs while delisting in transaction, "
                                                 + "commit not possible", e);
-      throw new EFapsException(AbstractResource.class,
-                                              "commit.SystemException", e);
+            throw new EFapsException(AbstractResource.class,
+                                     "commit.SystemException", e);
+        }
+        freeResource();
+        this.opened = false;
     }
-    freeResource();
-    this.opened = false;
-  }
 
-  /**
-   * Closes this XA resource and delisted this resource in the transaction.
-   * <br/>
-   * The method must be called if the transaction should be aborted (rolled
-   * back).
-   *
-   * @throws EFapsException if the resource is not opened or this resource
-   *         could not delisted
-   */
-  public void abort() throws EFapsException  {
-    if (LOG.isDebugEnabled())  {
-      LOG.debug("abort");
+    /**
+     * Closes this XA resource and delisted this resource in the transaction.
+     * <br/>
+     * The method must be called if the transaction should be aborted (rolled
+     * back).
+     *
+     * @throws EFapsException if the resource is not opened or this resource
+     *                        could not delisted
+     */
+    public void abort()
+        throws EFapsException
+    {
+        if (AbstractResource.LOG.isDebugEnabled())  {
+            AbstractResource.LOG.debug("abort");
+        }
+        if (!this.opened)  {
+            throw new EFapsException(AbstractResource.class, "abort.NotOpened");
+        }
+        try  {
+            final Context context = Context.getThreadContext();
+            context.getTransaction().delistResource(this, TMFAIL);
+            context.abort();
+        } catch (final SystemException e)  {
+            throw new EFapsException(AbstractResource.class, "abort.SystemException", e);
+        }
+        freeResource();
+        this.opened = false;
     }
-    if (!this.opened)  {
-      throw new EFapsException(AbstractResource.class, "abort.NotOpened");
+
+    /**
+     * Method used to free this resource in the eFaps context object (so that
+     * the resource instance could be reused).
+     */
+    protected abstract void freeResource();
+
+    /**
+     * This is the getter method for instance variable {@link #opened}.
+     *
+     * @return <code>true</code> if this resource is open, otherwise
+     *         <code>false</code> is returned.
+     * @see #opened
+     */
+    public final boolean isOpened()
+    {
+        return this.opened;
     }
-    try  {
-      final Context context = Context.getThreadContext();
-      context.getTransaction().delistResource(this, TMFAIL);
-      context.abort();
-    } catch (final SystemException e)  {
-      throw new EFapsException(AbstractResource.class,
-                                                  "abort.SystemException", e);
+
+    /////////////////////////////////////////////////////////////////////////////
+    // all further methods are implementing javax.transaction.xa.XAResource
+
+    /**
+     * The method starts work on behalf of a transaction branch specified in
+     * parameter <code>_xid</code>. Normally nothing must be done, because the
+     * pre-work is already done in the contructor (and an instance of a
+     * resource is only defined for one transaction).
+     *
+     * @param _xid      global transaction identifier
+     * @param _flags    flags
+     */
+    public void start(final Xid _xid,
+                      final int _flags)
+    {
+        if (AbstractResource.LOG.isDebugEnabled())  {
+            AbstractResource.LOG.debug("start resource " + _xid + ", flags = " + _flags);
+        }
     }
-    freeResource();
-    this.opened = false;
-  }
 
-  /**
-   * Method used to free this resource in the eFaps context object (so that the
-   * resource instance could be reused).
-   */
-  protected abstract void freeResource();
-
-  /**
-   * This is the getter method for instance variable {@link #opened}.
-   *
-   * @return <code>true</code> if this resource is open, otherwise
-   *         <code>false</code> is returned.
-   * @see #opened
-   */
-  public final boolean isOpened()  {
-    return this.opened;
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // all further methods are implementing javax.transaction.xa.XAResource
-
-  /**
-   * The method starts work on behalf of a transaction branch specified in
-   * parameter <code>_xid</code>. Normally nothing must be done, because the
-   * pre-work is already done in the contructor (and an instance of a resource
-   * is only defined for one transaction).
-   *
-   * @param _xid      global transaction identifier
-   */
-  public void start(final Xid _xid, final int _flags) throws XAException  {
-    if (LOG.isDebugEnabled())  {
-      LOG.debug("start resource " + _xid + ", flags = " + _flags);
+    /**
+     * The method ends the work performed on behalf of a transaction branch.
+     * Normally nothing must be done, because an instance of a resource is only
+     * defined for one transaction.
+     *
+     * @param _xid      global transaction identifier
+     * @param _flags    flags
+     */
+    public void end(final Xid _xid,
+                    final int _flags)
+    {
+        if (AbstractResource.LOG.isDebugEnabled())  {
+            AbstractResource.LOG.debug("end resource " + _xid + ", flags = " + _flags);
+        }
     }
-  }
 
-  /**
-   * The method ends the work performed on behalf of a transaction branch.
-   * Normally nothing must be done, because an instance of a resource is only
-   * defined for one transaction.
-   *
-   * @param _xid      global transaction identifier
-   */
-  public void end(final Xid _xid, final int _flags) throws XAException  {
-    if (LOG.isDebugEnabled())  {
-      LOG.debug("end resource " + _xid + ", flags = " + _flags);
+    /**
+     * The method is called from the transaction (manager) to check if the XA
+     * resource is the same as the given XA resource in the parameter
+     * <code>_xaras</code>. This is done with a string compare
+     * (method {@link java.lang.String#equals}) off the
+     * {@link #java.lang.Object#toString} methods of this and the XA resource in
+     * <code>_xaras</code>.
+     *
+     * @param _xares    XA resource used to test if same resource
+     * @return <code>true</code> if the string compare returns that they are
+     *         equal, otherwise <code>false</code> is returned
+     * @see {@link javax.transaction.xa.XAResource#isSameRM}
+     */
+    public boolean isSameRM(final XAResource _xares)
+    {
+        if (AbstractResource.LOG.isDebugEnabled())  {
+            AbstractResource.LOG.debug("is Same RM " + _xares.toString().equals(toString()));
+        }
+        return _xares.toString().equals(toString());
     }
-  }
-
-  /**
-   * The method is called from the transaction (manager) to check if the XA
-   * resource is the same as the given XA resource in the parameter
-   * <code>_xaras</code>. This is done with a string compare
-   * (method {@link java.lang.String#equals}) off the
-   * {@link #java.lang.Object#toString} methods of this and the XA resource in
-   * <code>_xaras</code>.
-   *
-   * @param _xares    XA resource used to test if same resource
-   * @return <code>true</code> if the string compare returns that they are
-   *         equal, otherwise <code>false</code> is returned
-   * @see {@link javax.transaction.xa.XAResource#isSameRM}
-   */
-  public boolean isSameRM(final XAResource _xares)  {
-    if (LOG.isDebugEnabled())  {
-      LOG.debug("is Same RM " + _xares.toString().equals(toString()));
-    }
-    return _xares.toString().equals(toString());
-  }
 }

@@ -27,125 +27,127 @@ import java.util.Map;
 import javax.transaction.xa.XAResource;
 
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
-
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public interface Resource extends XAResource  {
-  /**
-   * Store resource could implement the possibility to compress and uncompress
-   * data while writing to and reading from files.
-   */
-  enum Compress {
-    /** File should not be compressed.*/
-    NONE,
-    /** File should be compressed using zip.*/
-    ZIP,
-    /** File should  be compressed using gzip.*/
-    GZIP
-  };
+public interface Resource
+    extends XAResource
+{
+    /**
+     * Store resource could implement the possibility to compress and uncompress
+     * data while writing to and reading from files.
+     */
+    enum Compress
+    {
+        /** File should not be compressed.*/
+        NONE,
+        /** File should be compressed using zip.*/
+        ZIP,
+        /** File should  be compressed using gzip.*/
+        GZIP
+    };
 
-  /**
-   * Writes the file with the given input stream.
-   *
-   * @param _in     input stream
-   * @param _size   size of the data to write (or negative if the size is not
-   *                known)
-   * @return length of the file which is stored
-   * @throws EFapsException if an error occurs
-   */
-  int write(InputStream _in, int _size) throws EFapsException;
+    /**
+     * Writes the file with the given input stream.
+     *
+     * @param _in       input stream
+     * @param _size     size of the data to write (or negative if the size is
+     *                  not known)
+     * @return length of the file which is stored
+     * @throws EFapsException if an error occurs
+     */
+    int write(InputStream _in, int _size) throws EFapsException;
 
-  /**
-   * Method to open the Resource.
-   *
-   * @throws EFapsException on error
-   */
-  void open() throws EFapsException;
+    /**
+     * Method to open the Resource.
+     *
+     * @throws EFapsException on error
+     */
+    void open() throws EFapsException;
 
-  /**
-   * Method to commit the Resource.
-   *
-   * @throws EFapsException on error
-   */
-  void commit() throws EFapsException;
+    /**
+     * Method to commit the Resource.
+     *
+     * @throws EFapsException on error
+     */
+    void commit() throws EFapsException;
 
-  /**
-   * @return if the Resource was opened.
-   */
-  boolean isOpened();
+    /**
+     * @return if the Resource was opened.
+     */
+    boolean isOpened();
 
-  /**
-   * Method to open the Resource.
-   *
-   * @throws EFapsException on error
-   */
-  void abort() throws EFapsException;
+    /**
+     * Method to open the Resource.
+     *
+     * @throws EFapsException on error
+     */
+    void abort() throws EFapsException;
 
-  /**
-   * The input stream with the attached content of the object returned.
-   *
-   * @return input stream with the content of the file
-   * @throws EFapsException if an error occurs
-   */
-  InputStream read() throws EFapsException;
+    /**
+     * The input stream with the attached content of the object returned.
+     *
+     * @return input stream with the content of the file
+     * @throws EFapsException if an error occurs
+     */
+    InputStream read() throws EFapsException;
 
-  /**
-   * The output stream is written with the content of the file. From method
-   * {@link #read()} the input stream is used and copied into the output
-   * stream.
-   *
-   * @param _out    output stream where the file content must be written
-   * @throws EFapsException if an error occurs
-   *
-   */
-   void read(final OutputStream _out) throws EFapsException;
+    /**
+     * The output stream is written with the content of the file. From method
+     * {@link #read()} the input stream is used and copied into the output
+     * stream.
+     *
+     * @param _out    output stream where the file content must be written
+     * @throws EFapsException if an error occurs
+     */
+    void read(final OutputStream _out) throws EFapsException;
 
-   /**
-    * Deletes the file defined in {@link #fileId}.
-    *
-    * @throws EFapsException if an error occurs
-    */
-   void delete() throws EFapsException;
+    /**
+     * Deletes the file defined in {@link #fileId}.
+     *
+     * @throws EFapsException if an error occurs
+     */
+    void delete() throws EFapsException;
 
-   /**
-    * Method called to initialize this StoreResource.
-    * @see org.efaps.db.store.Resource#initialize(org.efaps.db.Instance,
-    *  java.util.Map, org.efaps.db.store.Resource.Compress)
-    * @param _instance     Instance of the object this StoreResource is wanted
-    *                      for
-    * @param _properties   properties for this StoreResource
-    * @param _compress     compress type for this StoreResource
-    * @throws EFapsException on error
-    */
-  void initialize(Instance _instance,
-                  Map<String, String> _properties,
-                  Compress _compress) throws EFapsException;
+    /**
+     * Method called to initialize this StoreResource.
+     * @see org.efaps.db.store.Resource#initialize(org.efaps.db.Instance,
+     *  java.util.Map, org.efaps.db.store.Resource.Compress)
+     * @param _instance     Instance of the object this StoreResource is wanted
+     *                      for
+     * @param _properties   properties for this StoreResource
+     * @param _compress     compress type for this StoreResource
+     * @throws EFapsException on error
+     */
+    void initialize(final Instance _instance,
+                    final Map<String, String> _properties,
+                    final Compress _compress)
+        throws EFapsException;
 
-  /**
-   * Method to determine if the Resource is a Virtual File System and therefore
-   * needs a FileSystemManager.
-   *
-   * @return true if it is a VFS, else false
-   */
-  boolean isVFS();
+    /**
+     * Method to determine if the Resource is a Virtual File System and
+     * therefore needs a FileSystemManager.
+     *
+     * @return <i>true</i> if it is a VFS, else <i>false</i>
+     */
+    boolean isVFS();
 
-  /**
-   * Method is used to set the FileSytemManager for a Virtual File System.
-   *
-   * @param _fileSytemManager DefaultFileSystemManager to set
-   */
-  void setFileSystemManager(DefaultFileSystemManager _fileSytemManager);
+    /**
+     * Method is used to set the FileSytemManager for a Virtual File System.
+     *
+     * @param _fileSytemManager DefaultFileSystemManager to set
+     */
+    void setFileSystemManager(final DefaultFileSystemManager _fileSytemManager);
 
-  /**
-   * @return DefaultFileSystemManager
-   * @throws EFapsException on error
-   */
-  DefaultFileSystemManager evaluateFileSystemManager() throws EFapsException;
+    /**
+     * @return DefaultFileSystemManager
+     * @throws EFapsException on error
+     */
+    DefaultFileSystemManager evaluateFileSystemManager() throws EFapsException;
 }

@@ -26,177 +26,83 @@ import org.efaps.db.AbstractQuery;
 /**
  * The class represents an equal where clause between two attributes.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class WhereClauseAttrEqAttr implements WhereClause
+public class WhereClauseAttrEqAttr
+    implements WhereClause
 {
+    private final Attribute attr1;
+    private final Attribute attr2;
+    private final AbstractQuery.SelectType selectType1;
+    private final AbstractQuery.SelectType selectType2;
 
-    public WhereClauseAttrEqAttr(final AbstractQuery _query, final Attribute _attr1, final Attribute _attr2)
+    public WhereClauseAttrEqAttr(final AbstractQuery _query,
+                                 final Attribute _attr1,
+                                 final Attribute _attr2)
     {
-        setAttr1(_attr1);
-        setAttr2(_attr2);
-        setSelectType1(_query.getSelectType(getAttr1().getParent()));
-        setSelectType2(_query.getSelectType(getAttr2().getParent()));
+        this.attr1 = _attr1;
+        this.attr2 = _attr2;
+        this.selectType1 = _query.getSelectType(this.attr1.getParent());
+        this.selectType2 = _query.getSelectType(this.attr2.getParent());
     }
 
-    public WhereClauseAttrEqAttr(final AbstractQuery.SelectType _selectType1, final Attribute _attr1,
-                    final AbstractQuery.SelectType _selectType2, final Attribute _attr2)
+    public WhereClauseAttrEqAttr(final AbstractQuery.SelectType _selectType1,
+                                 final Attribute _attr1,
+                                 final AbstractQuery.SelectType _selectType2,
+                                 final Attribute _attr2)
     {
-        setAttr1(_attr1);
-        setAttr2(_attr2);
-        setSelectType1(_selectType1);
-        setSelectType2(_selectType2);
+        this.attr1 = _attr1;
+        this.attr2 = _attr2;
+        this.selectType1 = _selectType1;
+        this.selectType2 = _selectType2;
     }
 
     /**
-     * @todo compare does not work if an attribute has more than one sql
+     * @todo compare does not work if an attribute has more than one SQL
      *       column!!
      */
-    public WhereClause appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex)
+    public WhereClause appendWhereClause(final CompleteStatement _completeStatement,
+                                         final int _orderIndex)
     {
-        if (_orderIndex < 0
-                        || (getSelectType1().getOrderIndex() < _orderIndex && getSelectType2().getOrderIndex() < _orderIndex)) {
-            final String sqlColName1 = getAttr1().getSqlColNames().get(0);
-            final String sqlColName2 = getAttr2().getSqlColNames().get(0);
+        if ((_orderIndex < 0)
+                        || ((this.selectType1.getOrderIndex() < _orderIndex) && (this.selectType2.getOrderIndex() < _orderIndex))) {
+            final String sqlColName1 = this.attr1.getSqlColNames().get(0);
+            final String sqlColName2 = this.attr2.getSqlColNames().get(0);
             _completeStatement.appendWhereAnd();
-            _completeStatement.appendWhere(getAttr1().getTable().getSqlTable());
-            _completeStatement.appendWhere(getSelectType1().getTypeIndex());
+            _completeStatement.appendWhere(this.attr1.getTable().getSqlTable());
+            _completeStatement.appendWhere(this.selectType1.getTypeIndex());
             _completeStatement.appendWhere(".");
             // _completeStatement.appendWhere(getAttr1().getSqlColName());
             _completeStatement.appendWhere(sqlColName1);
             _completeStatement.appendWhere("=");
-            _completeStatement.appendWhere(getAttr2().getTable().getSqlTable());
-            _completeStatement.appendWhere(getSelectType2().getTypeIndex());
+            _completeStatement.appendWhere(this.attr2.getTable().getSqlTable());
+            _completeStatement.appendWhere(this.selectType2.getTypeIndex());
             _completeStatement.appendWhere(".");
             // _completeStatement.appendWhere(getAttr2().getSqlColName());
             _completeStatement.appendWhere(sqlColName2);
-        } else if (_orderIndex >= 0 && getSelectType1().getOrderIndex() < _orderIndex
-                        && getSelectType2().getOrderIndex() == _orderIndex) {
-            final String sqlColName1 = getAttr1().getSqlColNames().get(0);
+        } else if ((_orderIndex >= 0) && (this.selectType1.getOrderIndex() < _orderIndex)
+                        && (this.selectType2.getOrderIndex() == _orderIndex)) {
+            final String sqlColName1 = this.attr1.getSqlColNames().get(0);
             _completeStatement.appendWhereAnd();
-            _completeStatement.appendWhere(getAttr1().getTable().getSqlTable());
-            _completeStatement.appendWhere(getSelectType1().getTypeIndex());
+            _completeStatement.appendWhere(this.attr1.getTable().getSqlTable());
+            _completeStatement.appendWhere(this.selectType1.getTypeIndex());
             _completeStatement.appendWhere(".");
             // _completeStatement.appendWhere(getAttr1().getSqlColName());
             _completeStatement.appendWhere(sqlColName1);
             _completeStatement.appendWhere(" is null");
-        } else if (_orderIndex >= 0 && getSelectType1().getOrderIndex() == _orderIndex
-                        && getSelectType2().getOrderIndex() < _orderIndex) {
-            final String sqlColName2 = getAttr2().getSqlColNames().get(0);
+        } else if ((_orderIndex >= 0) && (this.selectType1.getOrderIndex() == _orderIndex)
+                        && (this.selectType2.getOrderIndex() < _orderIndex)) {
+            final String sqlColName2 = this.attr2.getSqlColNames().get(0);
             _completeStatement.appendWhereAnd();
-            _completeStatement.appendWhere(getAttr2().getTable().getSqlTable());
-            _completeStatement.appendWhere(getSelectType2().getTypeIndex());
+            _completeStatement.appendWhere(this.attr2.getTable().getSqlTable());
+            _completeStatement.appendWhere(this.selectType2.getTypeIndex());
             _completeStatement.appendWhere(".");
             // _completeStatement.appendWhere(getAttr2().getSqlColName());
             _completeStatement.appendWhere(sqlColName2);
             _completeStatement.appendWhere(" is null");
         }
         return this;
-    }
-
-    // /////////////////////////////////////////////////////////////////////////
-
-    private Attribute attr1 = null;
-    private Attribute attr2 = null;
-    private AbstractQuery.SelectType selectType1 = null;
-    private AbstractQuery.SelectType selectType2 = null;
-
-    // /////////////////////////////////////////////////////////////////////////
-
-    /**
-     * This is the getter method for instance variable {@link #attr1}.
-     *
-     * @return value of instance variable {@link #attr1}
-     * @see #attr1
-     * @see #setAttr1
-     */
-    private Attribute getAttr1()
-    {
-        return this.attr1;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #attr1}.
-     *
-     * @param _attr1 new value for instance variable {@link #attr1}
-     * @see #attr1
-     * @see #getAttr1
-     */
-    private void setAttr1(final Attribute _attr1)
-    {
-        this.attr1 = _attr1;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #attr2}.
-     *
-     * @return value of instance variable {@link #attr2}
-     * @see #attr2
-     * @see #setAttr2
-     */
-    private Attribute getAttr2()
-    {
-        return this.attr2;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #attr2}.
-     *
-     * @param _attr2 new value for instance variable {@link #attr2}
-     * @see #attr2
-     * @see #getAttr2
-     */
-    private void setAttr2(final Attribute _attr2)
-    {
-        this.attr2 = _attr2;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #selectType1}.
-     *
-     * @return value of instance variable {@link #selectType1}
-     * @see #selectType1
-     * @see #setSelectType1
-     */
-    private AbstractQuery.SelectType getSelectType1()
-    {
-        return this.selectType1;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #selectType1}.
-     *
-     * @param _selectType1 new value for instance variable {@link #selectType1}
-     * @see #selectType1
-     * @see #getSelectType1
-     */
-    private void setSelectType1(final AbstractQuery.SelectType _selectType1)
-    {
-        this.selectType1 = _selectType1;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #selectType2}.
-     *
-     * @return value of instance variable {@link #selectType2}
-     * @see #selectType2
-     */
-    private AbstractQuery.SelectType getSelectType2()
-    {
-        return this.selectType2;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #selectType2}.
-     *
-     * @param _selectType2 new value for instance variable {@link #selectType2}
-     * @see #selectType2
-     * @see #getSelectType2
-     */
-    private void setSelectType2(final AbstractQuery.SelectType _selectType2)
-    {
-        this.selectType2 = _selectType2;
     }
 
     /**
