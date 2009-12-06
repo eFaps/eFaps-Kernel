@@ -26,15 +26,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 
+import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Database class for the Postgre SQL Database.
+ * Database class for the PostgreSQL database.
+ *
  * @author The eFaps Team
  * @version $Id$
- *
  */
 public class PostgreSQLDatabase
     extends AbstractDatabase<PostgreSQLDatabase>
@@ -43,6 +45,53 @@ public class PostgreSQLDatabase
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(PostgreSQLDatabase.class);
+
+    /**
+     * Select statement to select all unique keys for current logged in
+     * PostgreSQL database user.
+     *
+     * @see #initTableInfoUniqueKeys(Connection, String, Map)
+     */
+    private static final String SQL_UNIQUE_KEYS = "select "
+            + "a.constraint_name as INDEX_NAME, "
+            + "a.table_name as TABLE_NAME, "
+            + "b.column_name as COLUMN_NAME, "
+            + "b.ordinal_position as ORDINAL_POSITION "
+        + "from "
+            + "information_schema.table_constraints a,"
+            + "information_schema.key_column_usage b "
+        + "where "
+            + "a.constraint_type='UNIQUE' "
+            + "and a.table_schema=b.table_schema "
+            + "and a.table_name=b.table_name "
+            + "and a.constraint_name=b.constraint_name";
+
+    /**
+     * Select statement for all foreign keys for current logged in PostgreSQL
+     * database user.
+     *
+     * @see #initTableInfoForeignKeys(Connection, String, Map)
+     */
+    private static final String SQL_FOREIGN_KEYS = "select "
+            + "a.table_name as TABLE_NAME, "
+            + "a.constraint_name as FK_NAME, "
+            + "b.column_name as FKCOLUMN_NAME, "
+            + "case "
+                    + "when c.delete_rule='NO ACTION' then '" + DatabaseMetaData.importedKeyNoAction + "' "
+                    + "when c.delete_rule='CASCASE' then '" + DatabaseMetaData.importedKeyCascade + "' "
+                    + "else '' end as DELETE_RULE, "
+            + "d.table_name as PKTABLE_NAME, "
+            + "d.column_name as PKCOLUMN_NAME "
+        + "from "
+            + "information_schema.table_constraints a, "
+            + "information_schema.constraint_column_usage b, "
+            + "information_schema.referential_constraints c, "
+            + "information_schema.constraint_column_usage d "
+        + "where "
+            + "a.constraint_type='FOREIGN KEY' "
+            + "and a.constraint_name=b.constraint_name "
+            + "and a.constraint_name=c.constraint_name "
+            + "and c.unique_constraint_name=d.constraint_name";
 
     /**
      * @todo specificy real column type
@@ -384,5 +433,47 @@ public class PostgreSQLDatabase
             stmt.close();
         }
         return this;
+    }
+
+    /**
+     * Overwrites the original method to specify SQL statement
+     * {@link #SQL_UNIQUE_KEYS} as replacement because the JDBC driver for
+     * PostgreSQL does not handle matching table names.
+     *
+     * @param _con          SQL connection
+     * @param _sql          SQL statement (not used)
+     * @param _cache4Name   map used to fetch depending on the table name the
+     *                      related table information
+     * @throws SQLException if unique keys could not be fetched
+     * @see #SQL_UNIQUE_KEYS
+     */
+    @Override()
+    protected void initTableInfoUniqueKeys(final Connection _con,
+                                           final String _sql,
+                                           final Map<String, TableInformation> _cache4Name)
+        throws SQLException
+    {
+        super.initTableInfoUniqueKeys(_con, PostgreSQLDatabase.SQL_UNIQUE_KEYS, _cache4Name);
+    }
+
+    /**
+     * Overwrites the original method to specify SQL statement
+     * {@link #SQL_FOREIGN_KEYS} as replacement because the JDBC driver for
+     * PostgreSQL does not handle matching table names.
+     *
+     * @param _con          SQL connection
+     * @param _sql          SQL statement (not used)
+     * @param _cache4Name   map used to fetch depending on the table name the
+     *                      related table information
+     * @throws SQLException if foreign keys could not be fetched
+     * @see #SQL_FOREIGN_KEYS
+     */
+    @Override()
+    protected void initTableInfoForeignKeys(final Connection _con,
+                                            final String _sql,
+                                            final Map<String, TableInformation> _cache4Name)
+        throws SQLException
+    {
+        super.initTableInfoForeignKeys(_con, PostgreSQLDatabase.SQL_FOREIGN_KEYS, _cache4Name);
     }
 }

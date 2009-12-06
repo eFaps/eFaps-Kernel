@@ -29,11 +29,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
+import org.efaps.db.Context;
+import org.efaps.db.databases.information.TableInformation;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.efaps.db.databases.information.TableInformation;
 
 /**
  * Abstract definition of database specific information and methods like alter
@@ -102,6 +105,23 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      */
     private final Map<AbstractDatabase.ColumnType, String> nullValueColTypeMap
         = new HashMap<AbstractDatabase.ColumnType, String>();
+
+    /**
+     * Caching for table information read from the SQL database.
+     *
+     * @see #getTableInformation(Connection, String)
+     */
+    private final TableInfoCache cache = new TableInfoCache();
+
+    /**
+     * Initializes the {@link #cache} for the table informations.
+     *
+     * @see #cache
+     */
+    public void initialize()
+    {
+        this.cache.initialize(AbstractDatabase.class);
+    }
 
     /**
      * Adds a new mapping for given eFaps column type used for mapping from and
@@ -268,8 +288,27 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
     }
 
     /**
-     * Evaluates for given table name all information about the table and
-     * returns them as instance of {@link TableInformation}.
+     * Returns for given table name all information about the table and
+     * returns them as instance of {@link TableInformation}. The information is
+     * cached and NOT evaluated directly.
+     *
+     * @param _tableName    name of SQL table for which the information is
+     *                      fetched
+     * @return instance of {@link TableInformation} with table information
+     * @throws SQLException if information about the table could not be fetched
+     * @see TableInformation
+     * @see #getRealTableInformation(Connection, String)
+     * @see #cache
+     */
+    public TableInformation getCachedTableInformation(final String _tableName)
+        throws SQLException
+    {
+        return this.cache.get(_tableName.toUpperCase());
+    }
+
+    /**
+     * Evaluates for given table name all current information about the table
+     * and returns them as instance of {@link TableInformation}.
      *
      * @param _con          SQL connection
      * @param _tableName    name of SQL table for which the information is
@@ -277,12 +316,21 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @return instance of {@link TableInformation} with table information
      * @throws SQLException if information about the table could not be fetched
      * @see TableInformation
+     * @see #getCachedTableInformation(String)
      */
-    public TableInformation getTableInformation(final Connection _con,
-                                                final String _tableName)
+    public TableInformation getRealTableInformation(final Connection _con,
+                                                    final String _tableName)
         throws SQLException
     {
-        return new TableInformation(_con, _tableName);
+        final TableInformation tableInfo = new TableInformation(_tableName.toUpperCase());
+
+        final Map<String, TableInformation> tableInfos = new HashMap<String, TableInformation>(1);
+        tableInfos.put(_tableName.toUpperCase(), tableInfo);
+        this.initTableInfoColumns(_con, null, tableInfos);
+        this.initTableInfoUniqueKeys(_con, null, tableInfos);
+        this.initTableInfoForeignKeys(_con, null, tableInfos);
+
+        return tableInfo;
     }
 
 
@@ -562,13 +610,13 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
     }
 
     /**
-     * <p>This int is used for the maximum numbers of Values inside an
+     * <p>This integer is used for the maximum numbers of Values inside an
      * expression.</p>
-     * <p>The value is used in the OneRounQuery. The SQL-Statemenat looks like
-     * "SELECT...WHERE..IN (val1,val2,val3,...valn)" The int is the maximum
-     * Value for n before making a new Select.</p>
+     * <p>The value is used in the OneRounQuery. The SQL statement looks like
+     * "SELECT...WHERE..IN (val1,val2,val3,...valn)" The integer is the maximum
+     * value for n before making a new Select.</p>
      *
-     * @return max Number of Value in an Expression, 0 if no max is kown
+     * @return max Number of Value in an Expression, 0 if no max is known
      */
     public int getMaxExpressions()
     {
@@ -672,5 +720,225 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
         throws ClassNotFoundException, InstantiationException, IllegalAccessException
     {
         return (AbstractDatabase) Class.forName(_dbClassName).newInstance();
+    }
+
+    /**
+     * <p>Fetches all table name for all tables and views. If a SQL statement
+     * is given, this SQL statement is used instead of using the JDBC meta data
+     * methods. The SQL select statement must define this column
+     * <ul>
+     * <li><b><code>TABLE_NAME</code></b> for the real name of the table.</li>
+     * </ul></p>
+     *
+     * @param _con          SQL connection
+     * @param _sql          SQL statement which must be executed if the JDBC
+     *                      functionality does not work (or null if JDBC meta
+     *                      data is used to fetch all tables and views)
+     * @param _cache4Name   map used to fetch depending on the table name the
+     *                      related table information
+     * @throws SQLException if information could not be fetched from the data
+     *                      base
+     */
+    protected void initTableInfo(final Connection _con,
+                                 final String _sql,
+                                 final Map<String, TableInformation> _cache4Name)
+        throws SQLException
+    {
+        final ResultSet rs = (_sql == null)
+                             ? _con.getMetaData().getTables(null, null, "%", new String[]{"TABLE", "VIEW"})
+                             : _con.createStatement().executeQuery(_sql);
+        try  {
+            while (rs.next())  {
+                final String tableName = rs.getString("TABLE_NAME").toUpperCase();
+                _cache4Name.put(tableName, new TableInformation(tableName));
+            }
+        } finally  {
+            rs.close();
+        }
+    }
+
+    /**
+     * <p>Fetches all unique keys for all tables. If a SQL statement is given,
+     * this SQL statement is used instead of using the JDBC meta data methods.
+     * The SQL select statement must define this four columns
+     * <ul>
+     * <li><b><code>TABLE_NAME</code></b> for the real name of the table,</li>
+     * <li><b><code>COLUMN_NAME</code></b> for the name of a column,</li>
+     * <li><b><code>TYPE_NAME</code></b> for the name of the column type,</li>
+     * <li><b><code>COLUMN_SIZE</code></b> for the size of the column,</li>
+     * <li><b><code>DECIMAL_DIGITS</code></b> for the count of decimal digits
+     *     (if the <b><code>TYPE_NAME</code></b> is number) and</li>
+     * <li><b><code>IS_NULLABLE</code></b> if the column could have no value
+     *     (with value &quot;NO&quot; if no null value is allowed).</li>
+     * </ul></p>
+     *
+     * @param _con          SQL connection
+     * @param _sql          SQL statement which must be executed if the JDBC
+     *                      functionality does not work (or null if JDBC meta
+     *                      data is used to fetch the table columns)
+     * @param _cache4Name   map used to cache depending on the table name the
+     *                      related table information
+     * @throws SQLException if column information could not be fetched
+     */
+    protected void initTableInfoColumns(final Connection _con,
+                                        final String _sql,
+                                        final Map<String, TableInformation> _cache4Name)
+        throws SQLException
+    {
+        final ResultSet rsc = (_sql == null)
+                              ? _con.getMetaData().getColumns(null, null, "%", "%")
+                              : _con.createStatement().executeQuery(_sql);
+        try  {
+            while (rsc.next())  {
+                final String tableName = rsc.getString("TABLE_NAME").toUpperCase();
+                if (_cache4Name.containsKey(tableName))  {
+                    final String colName = rsc.getString("COLUMN_NAME").toUpperCase();
+                    final String typeName = rsc.getString("TYPE_NAME").toLowerCase();
+                    final Set<AbstractDatabase.ColumnType> colTypes
+                        = AbstractDatabase.this.getReadColumnTypes(typeName);
+                    if (colTypes == null)  {
+                        throw new SQLException("read unknown column type '" + typeName + "'");
+                    }
+                    final int size = rsc.getInt("COLUMN_SIZE");
+                    final int scale = rsc.getInt("DECIMAL_DIGITS");
+                    final boolean isNullable = !"NO".equalsIgnoreCase(rsc.getString("IS_NULLABLE"));
+                    _cache4Name.get(tableName).addColInfo(colName, colTypes, size, scale, isNullable);
+                }
+            }
+        } finally  {
+            rsc.close();
+        }
+    }
+
+    /**
+     * <p>Fetches all unique keys for all tables. If a SQL statement is given,
+     * this SQL statement is used instead of using the JDBC meta data methods.
+     * The SQL select statement must define this four columns
+     * <ul>
+     * <li><b><code>TABLE_NAME</code></b> for the real name of the table,</li>
+     * <li><b><code>INDEX_NAME</code></b> for the real name of the unique key
+     *     name,</li>
+     * <li><b><code>COLUMN_NAME</code></b> for the name of a column within the
+     *     unique key and</li>
+     * <li><b><code>ORDINAL_POSITION</code></b> for the position of the column
+     *     name within the unique key.</li>
+     * </ul>
+     * If more than one column is used to define the unique key, one line for
+     * each column name with same index name must be used.</p>
+     *
+     * @param _con          SQL connection
+     * @param _sql          SQL statement which must be executed if the JDBC
+     *                      functionality does not work (or null if JDBC meta
+     *                      data is used to fetch the unique keys)
+     * @param _cache4Name   map used to fetch depending on the table name the
+     *                      related table information
+     * @throws SQLException if unique keys could not be fetched
+     */
+    protected void initTableInfoUniqueKeys(final Connection _con,
+                                           final String _sql,
+                                           final Map<String, TableInformation> _cache4Name)
+        throws SQLException
+    {
+        final ResultSet rsu = (_sql == null)
+                              ? _con.getMetaData().getIndexInfo(null, null, "%", true, false)
+                              : _con.createStatement().executeQuery(_sql);
+        try  {
+            while (rsu.next())  {
+                final String tableName = rsu.getString("TABLE_NAME").toUpperCase();
+                if (_cache4Name.containsKey(tableName))  {
+                    final String ukName = rsu.getString("INDEX_NAME").toUpperCase();
+                    final String colName = rsu.getString("COLUMN_NAME").toUpperCase();
+                    final int colIdx = rsu.getInt("ORDINAL_POSITION");
+                    _cache4Name.get(tableName).addUniqueKeyColumn(ukName, colIdx, colName);
+                }
+            }
+        } finally  {
+            rsu.close();
+        }
+    }
+
+    /**
+     * <p>Fetches all foreign keys for all tables. If a SQL statement is given,
+     * this SQL statement is used instead of using the JDBC meta data methods.
+     * The SQL select statement must define this six columns
+     * <ul>
+     * <li><b><code>TABLE_NAME</code></b> for the real name of the table,</li>
+     * <li><b><code>FK_NAME</code></b> for the real name of the foreign key
+     *     name,</li>
+     * <li><b><code>FKCOLUMN_NAME</code></b> for the name of the column for
+     *     which the foreign key is defined,</li>
+     * <li><b><code>PKTABLE_NAME</code></b> for the name of the referenced
+     *     table,</li>
+     * <li><b><code>PKCOLUMN_NAME</code></b> for the name of column within the
+     *     referenced table and</li>
+     * <li><b><code>DELETE_RULE</code></b> defining the rule what happens in
+     *     the case a row of the table is deleted (with value
+     *     {@link DatabaseMetaData#importedKeyCascade} in the case the delete
+     *     is cascaded).</li>
+     * </ul></p>
+     *
+     * @param _con          SQL connection
+     * @param _sql          SQL statement which must be executed if the JDBC
+     *                      functionality does not work (or null if JDBC meta
+     *                      data is used to fetch the foreign keys)
+     * @param _cache4Name   map used to fetch depending on the table name the
+     *                      related table information
+     * @throws SQLException if foreign keys could not be fetched
+     */
+    protected void initTableInfoForeignKeys(final Connection _con,
+                                            final String _sql,
+                                            final Map<String, TableInformation> _cache4Name)
+        throws SQLException
+    {
+        final ResultSet rsf = (_sql == null)
+                              ? _con.getMetaData().getImportedKeys(null, null, "%")
+                              : _con.createStatement().executeQuery(_sql);
+        try  {
+            while (rsf.next())  {
+                final String tableName = rsf.getString("TABLE_NAME").toUpperCase();
+                if (_cache4Name.containsKey(tableName))  {
+                    final String fkName = rsf.getString("FK_NAME").toUpperCase();
+                    final String colName = rsf.getString("FKCOLUMN_NAME").toUpperCase();
+                    final String refTableName = rsf.getString("PKTABLE_NAME").toUpperCase();
+                    final String refColName = rsf.getString("PKCOLUMN_NAME").toUpperCase();
+                    final boolean cascade = (rsf.getInt("DELETE_RULE") == DatabaseMetaData.importedKeyCascade);
+                    _cache4Name.get(tableName).addForeignKey(fkName, colName, refTableName, refColName, cascade);
+                }
+            }
+        } finally  {
+            rsf.close();
+        }
+    }
+
+    /**
+     * Implements the cache for the table information.
+     *
+     * @see AbstractDatabase#cache
+     * @see TableInformation
+     */
+    private class TableInfoCache
+        extends Cache<TableInformation>
+    {
+        /**
+         * {@inheritDoc}
+         */
+        @Override()
+        protected void readCache(final Map<Long, TableInformation> _cache4Id,
+                                 final Map<String, TableInformation> _cache4Name,
+                                 final Map<UUID, TableInformation> _cache4UUID)
+            throws CacheReloadException
+        {
+            try {
+                final Connection con = Context.getThreadContext().getConnectionResource().getConnection();
+
+                AbstractDatabase.this.initTableInfo(con, null, _cache4Name);
+                AbstractDatabase.this.initTableInfoColumns(con, null, _cache4Name);
+                AbstractDatabase.this.initTableInfoUniqueKeys(con, null, _cache4Name);
+                AbstractDatabase.this.initTableInfoForeignKeys(con, null, _cache4Name);
+
+            } catch (final Exception e)  {
+                throw new CacheReloadException("cache for table information could not be read", e);
+            }
+        }
     }
 }

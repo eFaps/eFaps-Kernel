@@ -20,70 +20,76 @@
 
 package org.efaps.db.databases.information;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * The class is used to store information about unique keys within SQL tables.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
 public class UniqueKeyInformation
 {
-  /**
-   * Name of the unique key in upper case.
-   */
-  private final String ukName;
+    /**
+     * Name of the unique key in upper case.
+     */
+    private final String ukName;
 
-  /**
-   * Comma separated string of column names in upper case for which this unique
-   * key is defined.
-   */
-  private final StringBuilder columnNames = new StringBuilder();
+    /**
+     * Comma separated string of column names in upper case for which this unique
+     * key is defined.
+     */
+    private final Map<Integer, String> columnNames = new TreeMap<Integer, String>();
 
-  /**
-   * Constructor to initialize all instance variables.
-   *
-   * @param _ukName   name of unique key
-   * @param _colName  first name of column of a unique key
-   */
-  protected UniqueKeyInformation(final String _ukName,
-                                 final String _colName)
-  {
-    this.ukName = _ukName.toUpperCase();
-    this.columnNames.append(_colName.toUpperCase());
-  }
+    /**
+     * Constructor to initialize all instance variables.
+     *
+     * @param _ukName   name of unique key
+     */
+    protected UniqueKeyInformation(final String _ukName)
+    {
+        this.ukName = _ukName.toUpperCase();
+    }
 
-  /**
-   * Append a new name of column for which this unique key is defined.
-   *
-   * @param _colName  further column names which are defined in this unique key
-   */
-  protected void appendColumnName(final String _colName)
-  {
-    this.columnNames.append(',').append(_colName.toUpperCase());
-  }
+    /**
+     * Append a new name of column for which this unique key is defined.
+     *
+     * @param _index    index within the unique key of the column name
+     * @param _colName  further column names which are defined in this unique
+     *                  key
+     */
+    protected void appendColumnName(final int _index,
+                                    final String _colName)
+    {
+        this.columnNames.put(_index, _colName);
+    }
 
-  /**
-   * Getter method for instance variable {@link #columnNames}.
-   *
-   * @return value of instance variable columnNames
-   * @see #columnNames
-   */
-  public String getColumnNames()  {
-    return this.columnNames.toString();
-  }
+    /**
+     * Getter method for instance variable {@link #columnNames}.
+     *
+     * @return value of instance variable columnNames
+     * @see #columnNames
+     */
+    public String getColumnNames()
+    {
+        return this.columnNames.toString();
+    }
 
-  /**
-   * Returns string representation of this class instance. The information
-   * includes {@link #ukName} and {@link #columnNames}.
-   */
-  @Override
-  public String toString()
-  {
-    return new ToStringBuilder(this)
+    /**
+     * Returns string representation of this class instance. The information
+     * includes {@link #ukName} and {@link #columnNames}.
+     *
+     * @return string representation of the unique key information
+     */
+    @Override()
+    public String toString()
+    {
+        return new ToStringBuilder(this)
             .append("ukName", this.ukName)
             .append("columnNames", this.columnNames)
             .toString();
-  }
+    }
 }

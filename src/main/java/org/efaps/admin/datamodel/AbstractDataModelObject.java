@@ -21,6 +21,7 @@
 package org.efaps.admin.datamodel;
 
 import org.efaps.admin.AbstractAdminObject;
+import org.efaps.db.Context;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -49,6 +50,7 @@ public abstract class AbstractDataModelObject extends AbstractAdminObject
      */
     public static void initialize() throws CacheReloadException
     {
+        Context.getDbType().initialize();
         AttributeType.initialize(AbstractDataModelObject.class);
         SQLTable.initialize(AbstractDataModelObject.class);
         Type.initialize(AbstractDataModelObject.class);
