@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.IAttributeType;
@@ -46,7 +45,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @todo description
- * @author The eFasp Team
+ * @author The eFaps Team
  * @version $Id$
  */
 public class OneRoundQuery

@@ -24,180 +24,144 @@ package org.efaps.db.query;
  * The class is used to build a complete statement with correct order etc.
  * The class is working like a string buffer.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class CompleteStatement  {
+public class CompleteStatement
+{
+    private final StringBuilder statement = new StringBuilder();
 
-  public void appendUnion()  {
-    append(" union ");
-this.expr = false;
-    setWhere(false);
-    setFrom(false);
-  }
+    /**
+     * The instance variable stores if a where clause must be appended.
+     *
+     * @see #hasWhere
+     */
+    private boolean where = false;
 
+    /**
+     * The instance variable stores if a from clause must be appended.
+     *
+     * @see #hasWhere
+     */
+    private boolean from = false;
 
-boolean expr = false;
+    private boolean expr = false;
 
-  public void appendWhereAnd()  {
-    if (hasWhere() && this.expr)  {
-      append(" and ");
-this.expr = false;
+    public void appendUnion()
+    {
+        append(" union ");
+        this.expr = false;
+        this.where = false;
+        this.from = false;
     }
-  }
 
-
-  /**
-   *
-   */
-  public CompleteStatement appendWhere(final String _where)  {
-    if (!hasWhere())  {
-      append(" where ");
-      setWhere(true);
+    public void appendWhereAnd()
+    {
+        if (this.where && this.expr)  {
+            append(" and ");
+            this.expr = false;
+        }
     }
-    append(_where);
-this.expr = true;
-    return this;
-  }
 
-  /**
-   *
-   */
-  public CompleteStatement appendWhere(final int _where)  {
-    if (!hasWhere())  {
-      append(" where ");
-      setWhere(true);
+    /**
+     *
+     */
+    public CompleteStatement appendWhere(final String _where)
+    {
+        if (!this.where)  {
+            append(" where ");
+            this.where = true;
+        }
+        append(_where);
+        this.expr = true;
+        return this;
     }
-    append(_where);
-this.expr = true;
-    return this;
-  }
 
-  /**
-   *
-   */
-  public CompleteStatement appendWhere(final long _where)  {
-    if (!hasWhere())  {
-      append(" where ");
-      setWhere(true);
+    /**
+     *
+     */
+    public CompleteStatement appendWhere(final int _where)
+    {
+        if (!this.where)  {
+            append(" where ");
+            this.where = true;
+        }
+        append(_where);
+        this.expr = true;
+        return this;
     }
-    append(_where);
-this.expr = true;
-    return this;
-  }
 
-  /**
-   *
-   */
-  public CompleteStatement appendFrom(final String _from)  {
-    if (!hasFrom())  {
-      append(" from ");
-      setFrom(true);
-    } else  {
-      append(",");
+    /**
+     *
+     */
+    public CompleteStatement appendWhere(final long _where)
+    {
+        if (!this.where)  {
+            append(" where ");
+            this.where = true;
+        }
+        append(_where);
+        this.expr = true;
+        return this;
     }
-    append(_from);
-    return this;
-  }
 
-  /**
-   *
-   */
-  public CompleteStatement append(final long _text)  {
-    getStatement().append(_text);
-    return this;
-  }
+    /**
+     *
+     */
+    public CompleteStatement appendFrom(final String _from)
+    {
+        if (!this.from)  {
+            append(" from ");
+            this.from = true;
+        } else  {
+            append(",");
+        }
+        append(_from);
+        return this;
+    }
 
-  /**
-   *
-   */
-  public CompleteStatement append(final int _text)  {
-    getStatement().append(_text);
-    return this;
-  }
+    /**
+     *
+     */
+    public CompleteStatement append(final long _text)
+    {
+        getStatement().append(_text);
+        return this;
+    }
 
-  /**
-   *
-   */
-  public CompleteStatement append(final String _text)  {
-    getStatement().append(_text);
-    return this;
-  }
+    /**
+     *
+     */
+    public CompleteStatement append(final int _text)
+    {
+        getStatement().append(_text);
+        return this;
+    }
 
-  ///////////////////////////////////////////////////////////////////////////
+    /**
+     *
+     */
+    public CompleteStatement append(final String _text)
+    {
+        getStatement().append(_text);
+        return this;
+    }
 
-  private final StringBuilder statement = new StringBuilder();
+    /**
+     * This is the getter method for instance variable
+     * {@link #selectStatement}.
+     *
+     * @return value of instance variable {@link #selectStatement}
+     * @see #selectStatement
+     */
+    public StringBuilder getStatement()
+    {
+        return this.statement;
+    }
 
-  /**
-   * The instance variable stores if a where clause must be appended.
-   *
-   * @see #hasWhere
-   */
-  private boolean where = false;
-
-  /**
-   * The instance variable stores if a from clause must be appended.
-   *
-   * @see #hasWhere
-   */
-  private boolean from = false;
-
-  ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This is the getter method for instance variable {@link #selectStatement}.
-   *
-   * @return value of instance variable {@link #selectStatement}
-   * @see #selectStatement
-   */
-  public StringBuilder getStatement()  {
-    return this.statement;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #where}.
-   *
-   * @return value of instance variable {@link #where}
-   * @see #where
-   */
-  private boolean hasWhere()  {
-    return this.where;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #where}.
-   *
-   * @param _where new value for instance variable {@link #where}
-   * @see #where
-   * @see #getWhere
-   */
-  private void setWhere(final boolean _where)  {
-    this.where = _where;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #from}.
-   *
-   * @return value of instance variable {@link #from}
-   * @see #from
-   */
-  private boolean hasFrom()  {
-    return this.from;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #from}.
-   *
-   * @param _from new value for instance variable {@link #from}
-   * @see #from
-   * @see #getFrom
-   */
-  private void setFrom(final boolean _from)  {
-    this.from = _from;
-  }
-
-  @Override
-  public String toString() {
-    return this.statement.toString();
-  }
+    @Override()
+    public String toString()
+    {
+        return this.statement.toString();
+    }
 }
