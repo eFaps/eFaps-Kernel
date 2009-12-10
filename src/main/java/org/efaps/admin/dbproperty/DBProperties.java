@@ -25,10 +25,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
@@ -87,8 +89,8 @@ public class DBProperties
      */
     public static boolean hasProperty(final String _key)
     {
-        if (!isInitialized()) {
-            initialize();
+        if (!DBProperties.isInitialized()) {
+            DBProperties.initialize();
         }
         return DBProperties.PROPERTIESCACHE.get(DBProperties.DEFAULT).get(_key) != null;
     }
@@ -104,8 +106,8 @@ public class DBProperties
      */
     public static String getProperty(final String _key)
     {
-        if (!isInitialized()) {
-            initialize();
+        if (!DBProperties.isInitialized()) {
+            DBProperties.initialize();
         }
 
         String language = null;
@@ -115,7 +117,7 @@ public class DBProperties
         } catch (final EFapsException e) {
             DBProperties.LOG.error("not able to read the language from the context", e);
         }
-        return getProperty(_key, language);
+        return DBProperties.getProperty(_key, language);
 
     }
 
@@ -129,23 +131,32 @@ public class DBProperties
      * @param _language language to use
      * @return if key exists, the value for the key, otherwise the key
      */
-    public static String getProperty(final String _key, final String _language)
+    public static String getProperty(final String _key,
+                                     final String _language)
     {
-        if (!isInitialized()) {
-            initialize();
+        if (!DBProperties.isInitialized()) {
+            DBProperties.initialize();
         }
 
         String value = null;
 
-        final Map<String, String> map = DBProperties.PROPERTIESCACHE.get(_language);
-        if (map != null) {
-            value = map.get(_key);
-        }
+        // WebApp-Configuration
+        final boolean showKey = SystemConfiguration.get(UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"))
+                        .getAttributeValueAsBoolean("ShowDBPropertiesKey");
 
-        if (value == null) {
-            final Map<String, String> defaultProps = DBProperties.PROPERTIESCACHE.get(DBProperties.DEFAULT);
-            if (defaultProps != null) {
-                value = DBProperties.PROPERTIESCACHE.get(DBProperties.DEFAULT).get(_key);
+        if (showKey) {
+            value = _key;
+        } else {
+            final Map<String, String> map = DBProperties.PROPERTIESCACHE.get(_language);
+            if (map != null) {
+                value = map.get(_key);
+            }
+
+            if (value == null) {
+                final Map<String, String> defaultProps = DBProperties.PROPERTIESCACHE.get(DBProperties.DEFAULT);
+                if (defaultProps != null) {
+                    value = DBProperties.PROPERTIESCACHE.get(DBProperties.DEFAULT).get(_key);
+                }
             }
         }
         return (value == null) ? "?? - " + _key + " - ??" : value;
@@ -166,15 +177,14 @@ public class DBProperties
                         + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID  "
                         + " order by SEQUENCE";
 
-        initializeCache(sqlStmt);
+        DBProperties.initializeCache(sqlStmt);
 
         final String sqlStmt2 = "select distinct PROPKEY, VALUE, LANG, SEQUENCE from T_ADPROP "
                         + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID "
                         + " inner join T_ADPROPLOC on T_ADPROPLOC.PROPID = T_ADPROP.ID "
                         + " inner join T_ADLANG on T_ADLANG.ID = T_ADPROPLOC.LANGID " + " order by LANG, SEQUENCE";
 
-        initializeCache(sqlStmt2);
-
+        DBProperties.initializeCache(sqlStmt2);
     }
 
     /**
@@ -190,11 +200,10 @@ public class DBProperties
     /**
      * This method is initializing the cache.
      *
-     * @param _sqlstmt SQl-Statment to access the database
+     * @param _sqlstmt  SQl-Statement to access the database
      */
     private static void initializeCache(final String _sqlstmt)
     {
-
         String value;
         String language = "";
 
