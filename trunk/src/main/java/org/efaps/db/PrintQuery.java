@@ -50,25 +50,48 @@ public class PrintQuery extends AbstractPrintQuery
     private final Instance instance;
 
     /**
-     * @param _type Type to be updated
-     * @param _id id to be updated
+     * Initializes this print query depending on a <code>_type</code> and
+     * <code>_id</code>.
+     *
+     * @param _type     type of the eFaps object to print
+     * @param _id       id of the eFaps object to print
      * @throws EFapsException on error
      */
-    public PrintQuery(final Type _type, final String _id)
+    public PrintQuery(final Type _type,
+                      final String _id)
         throws EFapsException
     {
         this(Instance.get(_type, _id));
     }
 
     /**
-     * @param _type Type to be updated
-     * @param _id id to be updated
+     * Initializes this print query depending on a <code>_type</code> and
+     * <code>_id</code>.
+     *
+     * @param _type     type of the eFaps object to print
+     * @param _id       id of the eFaps object to print
      * @throws EFapsException on error
      */
-    public PrintQuery(final String _type, final String _id)
+    public PrintQuery(final Type _type,
+                      final long _id)
         throws EFapsException
     {
-        this(Type.get(_type), _id);
+        this(Instance.get(_type, _id));
+    }
+
+    /**
+     * Initializes this print query depending on a <code>_type</code> and
+     * <code>_id</code>.
+     *
+     * @param _type     type of the eFaps object to print
+     * @param _id       id of the eFaps object to print
+     * @throws EFapsException on error
+     */
+    public PrintQuery(final String _type,
+                      final String _id)
+        throws EFapsException
+    {
+        this(Instance.get(_type, _id));
     }
 
     /**

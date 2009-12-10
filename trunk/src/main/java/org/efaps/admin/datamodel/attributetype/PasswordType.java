@@ -27,6 +27,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.crypto.BadPaddingException;
@@ -39,17 +40,16 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.efaps.db.query.CachedResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.efaps.db.query.CachedResult;
 
 /**
  * Passwords a stored in a two way encryption in the eFaps-Database. That means
  * the password is encrypted before storing it in the eFaps-Database, so that it
  * can not be read. After retrieving it from the database the password is
  * decrypted and is available in clear text. This is necessary because e.g. the
- * CRAM-MD5 authorisation needs the password in clear text.
+ * CRAM-MD5 authorization needs the password in clear text.
  *
  * @author The eFaps Team
  *
@@ -86,7 +86,7 @@ public class PasswordType extends StringType
      * @param _indexes indexs
      * @return value
      */
-    @Override
+    @Override()
     public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
     {
         String ret = _rs.getString(_indexes.get(0).intValue());
@@ -94,6 +94,32 @@ public class PasswordType extends StringType
             ret = ret.trim();
         }
         ret = decryptEncrypt(ret, true);
+        return ret;
+    }
+
+    /**
+     * 'Reads' the passwords from the list of objects
+     * ({@link #decryptEncrypt(String, boolean) decrypts} them).
+     *
+     * @param _objectList   list of objects read
+     * @return list of decrypted passwords
+     */
+    @Override()
+    public Object readValue(final List<Object> _objectList)
+    {
+        Object ret = null;
+        if (_objectList.size() < 1) {
+            ret = null;
+        } else if (_objectList.size() > 1) {
+            final List<String> list = new ArrayList<String>();
+            for (final Object object : _objectList) {
+                list.add((object == null) ? "" : decryptEncrypt(object.toString().trim(), true));
+            }
+            ret = list;
+        } else {
+            final Object object = _objectList.get(0);
+            ret = (object == null) ? "" : decryptEncrypt(object.toString().trim(), true);
+        }
         return ret;
     }
 
@@ -118,11 +144,12 @@ public class PasswordType extends StringType
      * Algorithm as defined in NIST's FIPS 180-1. The output of this algorithm
      * is a 160-bit digest.
      *
-     * @param _password password to encrypt/decrypt
-     * @param _decrypt decrypt or encrypt?
-     * @return encrypted by salt password
+     * @param _password     password to encrypt/decrypt
+     * @param _decrypt      <i>true</i> to decrypt or <i>false</i> to encrypt
+     * @return decrypted / encrypted by salt password
      */
-    private String decryptEncrypt(final String _password, final boolean _decrypt)
+    private String decryptEncrypt(final String _password,
+                                  final boolean _decrypt)
     {
         String ret = null;
         if (_password != null) {
@@ -162,21 +189,21 @@ public class PasswordType extends StringType
                 }
                 // TODO rework errorhandling
             } catch (final NoSuchAlgorithmException e) {
-                LOG.error("Encryption/Decryption failed!", e);
+                PasswordType.LOG.error("Encryption/Decryption failed!", e);
             } catch (final NoSuchPaddingException e) {
-                LOG.error("Encryption/Decryption failed!", e);
+                PasswordType.LOG.error("Encryption/Decryption failed!", e);
             } catch (final InvalidKeySpecException e) {
-                LOG.error("Encryption/Decryption failed!", e);
+                PasswordType.LOG.error("Encryption/Decryption failed!", e);
             } catch (final InvalidKeyException e) {
-                LOG.error("Encryption/Decryption failed!", e);
+                PasswordType.LOG.error("Encryption/Decryption failed!", e);
             } catch (final InvalidAlgorithmParameterException e) {
-                LOG.error("Encryption/Decryption failed!", e);
+                PasswordType.LOG.error("Encryption/Decryption failed!", e);
             } catch (final IllegalBlockSizeException e) {
-                LOG.error("Encryption/Decryption failed!", e);
+                PasswordType.LOG.error("Encryption/Decryption failed!", e);
             } catch (final BadPaddingException e) {
-                LOG.error("Encryption/Decryption failed!", e);
+                PasswordType.LOG.error("Encryption/Decryption failed!", e);
             } catch (final UnsupportedEncodingException e) {
-                LOG.error("Encryption/Decryption failed!", e);
+                PasswordType.LOG.error("Encryption/Decryption failed!", e);
             }
         }
         return ret;
