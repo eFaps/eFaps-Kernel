@@ -140,12 +140,6 @@ public final class JAASSystem
         super(_id, null, _name);
     }
 
-  // TODO: this is needed anymore??
-    public String getViewableName(final Context _context)
-    {
-        return getName();
-    }
-
     /**
      * This is the getter method for instance variable
      * {@link #personJAASPrincipleClass}.

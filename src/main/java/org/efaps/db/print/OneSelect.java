@@ -456,7 +456,7 @@ public class OneSelect
             }
         } else {
             // if the currentObject is not null it means that the values are
-            // retrieved by iteration through the objectlist
+            // retrieved by iteration through the object list
             if (this.currentId != null) {
                 ret = this.valueSelect.getValue(this.currentObject);
             } else {

@@ -149,9 +149,11 @@ public final class Group
      *                      is searched
      * @return instance of class {@link Group}, or <code>null</code> if group
      *         is not found
+     * @throws EFapsException if group with JAAS key could not be fetched from
+     *                        eFaps
      * @see #get(long)
      */
-    static public Group getWithJAASKey(final JAASSystem _jaasSystem,
+    public static Group getWithJAASKey(final JAASSystem _jaasSystem,
                                        final String _jaasKey)
         throws EFapsException
     {
@@ -184,6 +186,7 @@ public final class Group
                 try {
                     stmt.close();
                 } catch (final SQLException e) {
+                    Group.LOG.error("Statement could not be closed", e);
                 }
             }
             rsrc.commit();

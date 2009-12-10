@@ -20,8 +20,6 @@
 
 package org.efaps.admin.user;
 
-import static org.efaps.admin.EFapsClassNames.USER_ATTRIBUTEABSTRACT;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +30,8 @@ import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
+
+import static org.efaps.admin.EFapsClassNames.USER_ATTRIBUTEABSTRACT;
 
 /**
  * This class represents a set of UserAttribute related to a User.<br>
@@ -48,7 +48,6 @@ import org.efaps.util.EFapsException;
  */
 public class UserAttributesSet
 {
-
     /**
      * This static variable is the Key used to store the UserAttribtues into the
      * SessionContext {@link #org.efaps.db.Context.getUserAttribute()}.
@@ -56,33 +55,41 @@ public class UserAttributesSet
     public static final String CONTEXTMAPKEY = "eFapsUserAttributes";
 
     /**
-     * This enum is used to get a Realtion to the necessary Types in the
-     * eFpas-DataBase.
-     *
-     * @author jmox
-     * @version $Id$
+     * This enumeration is used to get a relation to the necessary types in the
+     * eFaps database for the attribute set.
      */
     public enum UserAttributesDefinition
     {
-
+        /**
+         *
+         */
         ATTRIBUTE("Admin_User_Attribute", "Key", "Value");
 
         /**
          * stores the name of the Type.
          */
-        public final String name;
+        private final String name;
 
         /**
-         * stores the Name of the Attribute containing the Key.
+         * Name of the attribute containing the Key.
          */
-        public final String keyAttribute;
+        private final String keyAttribute;
 
         /**
-         * stores the Name of the Attribute containing the Value.
+         * Name of the attribute containing the Value.
          */
-        public final String valueAttribute;
+        private final String valueAttribute;
 
-        private UserAttributesDefinition(final String _name, final String _keyAttribute, final String _value)
+        /**
+         * Initializes the relationship definition for an user attribute set.
+         *
+         * @param _name             name of type (relationship)
+         * @param _keyAttribute     name of the key attribute
+         * @param _value            name of the value attribute
+         */
+        private UserAttributesDefinition(final String _name,
+                                         final String _keyAttribute,
+                                         final String _value)
         {
             this.name = _name;
             this.keyAttribute = _keyAttribute;
@@ -94,9 +101,10 @@ public class UserAttributesSet
 
     /**
      * this static Map contains the name-to=UserAttribute Relation used by the
-     * enum.
+     * enumeration.
      */
-    private final static Map<String, UserAttributesDefinition> MAPPER = new HashMap<String, UserAttributesDefinition>();
+    private static final Map<String, UserAttributesSet.UserAttributesDefinition> MAPPER
+        = new HashMap<String, UserAttributesSet.UserAttributesDefinition>();
 
     /**
      * instance map to store a Key-to-UserAttribute Relation.
@@ -110,48 +118,54 @@ public class UserAttributesSet
     private final Long userId;
 
     /**
-     * constructor using the constructor {@link #UserAttributesSet(long)}
-     * through searching the Id for the given Name
+     * Constructor using the constructor {@link #UserAttributesSet(long)}
+     * through searching the person id for the given name.
      *
-     * @param _userName UserName of the User this UserAttributesSet will belong
-     *            to
-     * @throws EFapsException
+     * @param _userName     name of the user this attribute set will belong to
+     * @throws EFapsException if user attribute set could not be fetched from
+     *                        eFaps database
      */
-    public UserAttributesSet(final String _userName) throws EFapsException
+    public UserAttributesSet(final String _userName)
+        throws EFapsException
     {
         this(Person.get(_userName).getId());
     }
 
     /**
-     * constructor setting the Id of the User this UserAttributesSet belongs to
+     * Constructor setting the {@link #userId} of the user this user attribute
+     * set belongs to and fetching the user attributes for this {@link #userId}
+     * from the eFaps database..
      *
-     * @param _userId Id of the User this UserAttributesSet will belong to
-     * @throws EFapsException
+     * @param _userId   id of the user this user attribute set will belong to
+     * @throws EFapsException if attribute set could not be read from eFaps
+     * @see #readUserAttributes()
      */
-    public UserAttributesSet(final long _userId) throws EFapsException
+    public UserAttributesSet(final long _userId)
+        throws EFapsException
     {
         this.userId = _userId;
-        UserAttributesDefinition.values();
         readUserAttributes();
     }
 
     /**
-     * method to initialise this UserAttributesSet
+     * Initialize this user attribute set.
      *
-     * @throws EFapsException
+     * @throws EFapsException if this attribute set could not be read from the
+     *                        eFaps database
+     * @see #readUserAttributes()
      */
-    public void initialise() throws EFapsException
+    public void initialise()
+        throws EFapsException
     {
-        UserAttributesDefinition.values();
         readUserAttributes();
     }
 
     /**
-     * method to check if this UserAttributesSet contains a UserAttribute with
-     * the given key
+     * Check if this user attribute set contains an attribute for given
+     * <code>_key</code>.
      *
-     * @param _key key to check if this UserAttributesSet contains it
-     * @return true if the key was found, else false
+     * @param _key  key to check if this user attribute set contains it
+     * @return <i>true</i> if the key was found; otherwise <i>false</i>
      */
     public boolean containsKey(final String _key)
     {
@@ -159,10 +173,10 @@ public class UserAttributesSet
     }
 
     /**
-     * method to get the Value for a Key as a String
+     * Returns the value for a key as a String.
      *
-     * @param _key Key for the Value, that should be returned as String
-     * @return String of the Value if exist, else null
+     * @param _key  key for the searched value
+     * @return string of the value if exist; otherwise <code>null</code>
      */
     public String getString(final String _key)
     {
@@ -174,37 +188,43 @@ public class UserAttributesSet
     }
 
     /**
-     * method to set a Key-Value-Pair into the UserAttributesSet. It uses
-     * {@link #set(String, String, org.efaps.admin.user.UserAttributesSet.UserAttributesDefinition)}
-     * to set the the Relation. It will search in the {@link #MAPPER} to
-     * retrieve the UserAttributesDefinition. If found it will use the found
-     * one, else it will use the a default (UserAttributesDefinition.ATTRIBUTE).
+     * Sets a key-value pair for the attribute set of this attribute set. It
+     * uses {@link #set(String, String, UserAttributesDefinition)}
+     * to set the the relationship information. It will search in the
+     * {@link #MAPPER} to retrieve the definition of the attribute. If found it
+     * will use the found one, else it will use the a default
+     * {@link UserAttributesDefinition#ATTRIBUTE}.
      *
-     * @param _key key to be set
-     * @param _value value to be set
-     * @throws EFapsException
+     * @param _key      key to be set
+     * @param _value    value to be set
+     * @throws EFapsException if <code>_key</code> or <code>_value</code> is
+     *                        <code>null</code>
      */
-    public void set(final String _key, final String _value) throws EFapsException
+    public void set(final String _key, final String _value)
+        throws EFapsException
     {
-        if (MAPPER.containsKey(_key)) {
-            set(_key, _value, MAPPER.get(_key));
+        if (UserAttributesSet.MAPPER.containsKey(_key)) {
+            set(_key, _value, UserAttributesSet.MAPPER.get(_key));
         } else {
-            set(_key, _value, UserAttributesDefinition.ATTRIBUTE);
+            set(_key, _value, UserAttributesSet.UserAttributesDefinition.ATTRIBUTE);
         }
     }
 
     /**
-     * this method sets a Key-Value-Pair into the UserAttributesSet. The method
-     * will search for the Key and if the Key allready exist it will update the
-     * UserAttribute in this UserAttributesSet. If the Key does not exist a new
-     * UserAttribute will be added to this UserAttribute.
+     * Sets a key-value pair into the attribute set of an user. The method
+     * will search for the key and if the key already exists it will update the
+     * user attribute in this set. If the key does not exist a new user
+     * attribute will be added to this set.
      *
-     * @param _key key to be set
-     * @param _value value to be set
-     * @param _definition Type of the Key-Value-Pair
-     * @throws EFapsException
+     * @param _key          key to be set
+     * @param _value        value to be set
+     * @param _definition   type of the key-value pair
+     * @throws EFapsException if <code>_key</code> or <code>_value</code> is
+     *                        <code>null</code>
      */
-    public void set(final String _key, final String _value, final UserAttributesDefinition _definition)
+    public void set(final String _key,
+                    final String _value,
+                    final UserAttributesDefinition _definition)
         throws EFapsException
     {
         if (_key == null || _value == null) {
@@ -217,18 +237,18 @@ public class UserAttributesSet
                 userattribute.setUpdate(true);
                 userattribute.setValue(_value.trim());
             }
-
         }
     }
 
     /**
-     * This method stores the UserAttribute of this UserAttributeSet into the
-     * eFaps-DataBase. Only UserAttribute witch where added or updated in this
-     * session will be updated/inserted in the eFpas-DataBASe.
+     * This method stores all user attributes of this user attributes set into
+     * the eFaps database. Only user attributes which where added or updated in
+     * this session will be updated/inserted in the eFpas database.
      *
-     * @throws EFapsException
+     * @throws EFapsException if update of the user attributes failed
      */
-    public void storeInDb() throws EFapsException
+    public void storeInDb()
+        throws EFapsException
     {
 
         for (final Entry<String, UserAttribute> entry : this.attributes.entrySet()) {
@@ -237,8 +257,9 @@ public class UserAttributesSet
                 query.setQueryTypes(entry.getValue().getType());
                 query.addSelect("OID");
                 query.addWhereExprEqValue("UserLink", this.userId.toString());
-                if (MAPPER.get(entry.getValue().getType()).keyAttribute != null) {
-                    query.addWhereExprEqValue(MAPPER.get(entry.getValue().getType()).keyAttribute, entry.getKey());
+                if (UserAttributesSet.MAPPER.get(entry.getValue().getType()).keyAttribute != null) {
+                    query.addWhereExprEqValue(UserAttributesSet.MAPPER.get(entry.getValue().getType()).keyAttribute,
+                                              entry.getKey());
                 }
                 query.execute();
                 Update update;
@@ -246,8 +267,9 @@ public class UserAttributesSet
                     update = new Update(query.get("OID").toString());
                 } else {
                     update = new Insert(entry.getValue().getType());
-                    if (MAPPER.get(entry.getValue().getType()).keyAttribute != null) {
-                        update.add(MAPPER.get(entry.getValue().getType()).keyAttribute, entry.getKey());
+                    if (UserAttributesSet.MAPPER.get(entry.getValue().getType()).keyAttribute != null) {
+                        update.add(UserAttributesSet.MAPPER.get(entry.getValue().getType()).keyAttribute,
+                                   entry.getKey());
                     }
                     update.add("UserLink", this.userId.toString());
                 }
@@ -261,19 +283,20 @@ public class UserAttributesSet
     }
 
     /**
-     * this method reads all UserAttribute from the eFaps-DataBase which belong
-     * to the User this UserAttributesSet is realted to and stores them in a Map
-     * for fast access.
+     * Reads all {@link UserAttribute user attributes} from the eFaps database
+     * which belong to the user this user attribute set is read to and caches
+     * them in a map for fast access.
      *
      * @see #UserAttribute
-     * @throws EFapsException
+     * @throws EFapsException if attributes could not be read from eFaps
      */
-    private void readUserAttributes() throws EFapsException
+    private void readUserAttributes()
+        throws EFapsException
     {
         final Set<Type> types = Type.get(USER_ATTRIBUTEABSTRACT).getChildTypes();
         for (final Type type : types) {
-            if (MAPPER.containsKey(type.getName())) {
-                final UserAttributesDefinition definition = MAPPER.get(type.getName());
+            if (UserAttributesSet.MAPPER.containsKey(type.getName())) {
+                final UserAttributesDefinition definition = UserAttributesSet.MAPPER.get(type.getName());
                 final SearchQuery query = new SearchQuery();
 
                 query.setQueryTypes(definition.name);
@@ -299,31 +322,37 @@ public class UserAttributesSet
     }
 
     /**
-     * Each instance of this class represents one UserAttribute for this
-     * UserAttributeSet.
-     *
-     * @author jmox
-     * @version $Id$
+     * Each instance of this class represents one UserAttribute for this user
+     * attribute set.
      */
     private class UserAttribute
     {
 
         /**
-         * the value of this UserAttribute
+         * Value of this user attribute.
          */
         private String value;
 
         /**
-         * must this UserAttribute be updated in the eFaps-DataBase
+         * Must this user attribute updated in the eFaps database?
          */
         private boolean update;
 
         /**
-         * Type of this UserAttribute
+         * Type of this user attribute.
          */
         private final String type;
 
-        public UserAttribute(final String _type, final String _value, final boolean _update)
+        /**
+         *
+         * @param _type     type of this user attribute set
+         * @param _value    value of this user attribute set
+         * @param _update   <i>true</i> if the attribute must be updated in
+         *                  eFaps
+         */
+        public UserAttribute(final String _type,
+                             final String _value,
+                             final boolean _update)
         {
             this.type = _type;
             this.value = _value;
@@ -380,5 +409,4 @@ public class UserAttributesSet
             return this.type;
         }
     }
-
 }
