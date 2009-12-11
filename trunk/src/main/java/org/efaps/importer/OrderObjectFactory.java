@@ -22,32 +22,50 @@ package org.efaps.importer;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.ObjectCreationFactory;
-
 import org.xml.sax.Attributes;
 
 /**
- * Class to create OrderObjects with the Digester using a Constructor with
- * Parameters.
+ * <p>Class to create order objects with the digester using a constructor with
+ * parameters.</p>
+ * <p>This Constructor is needed, because the attribute "type" and "direction"
+ * are needed from the beginning.</p>
  *
- * This Constructor is needed, because the Attribute "type" and "direction" are
- * needed from the beginning.
- *
- * @author jmox
- *
+ * @author The eFaps Team
  */
-public class OrderObjectFactory implements ObjectCreationFactory {
+public class OrderObjectFactory
+    implements ObjectCreationFactory
+{
+    /**
+     * Returns a new instance of the order object for given type and direction
+     * defined in <code>_attributes</code>.
+     *
+     * @param _attributes   attributes used to get the type for the order
+     *                      object
+     * @return new order object instance
+     */
+    public Object createObject(final Attributes _attributes)
+    {
+        return new OrderObject(_attributes.getValue("type"), _attributes.getValue("direction"));
+    }
 
-  public Object createObject(final Attributes _attributes) {
-    final OrderObject ret = new OrderObject(_attributes.getValue("type"), _attributes
-        .getValue("direction"));
-    return ret;
-  }
+    /**
+     * The digester is not needed from the order object factory and therefore
+     * this method is only a stub.
+     *
+     * @return always <code>null</code>
+     */
+    public Digester getDigester()
+    {
+        return null;
+    }
 
-  public Digester getDigester() {
-    return null;
-  }
-
-  public void setDigester(Digester digester) {
-  }
-
+    /**
+     * The digester is not needed from the order object factory and therefore
+     * this method is only a stub.
+     *
+     * @param _digester     not used
+     */
+    public void setDigester(final Digester _digester)
+    {
+    }
 }

@@ -36,52 +36,53 @@ import org.efaps.util.EFapsException;
  * LoginHandler for the case that eFaps is the Server. e.g SVN-Server. The
  * Class must be called using a Context.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class ServerLoginHandler implements CallbackHandler {
-
-  /**
-   * @see javax.security.auth.callback.CallbackHandler#handle(javax.security.auth.callback.Callback[])
-   * @param _callback
-   * @throws IOException
-   * @throws UnsupportedCallbackException
-   */
-  public void handle(final Callback[] _callbacks) throws IOException,
-      UnsupportedCallbackException {
-    String name = null;
-    PasswordCallback pwdCallback = null;
-    for (int i = 0; i < _callbacks.length; i++) {
-      if (_callbacks[i] instanceof NameCallback) {
-        name = ((NameCallback) _callbacks[i]).getName();
-        if (name == null) {
-          name = ((NameCallback) _callbacks[i]).getDefaultName();
+public class ServerLoginHandler
+    implements CallbackHandler
+{
+    /**
+     * @see CallbackHandler#handle(javax.security.auth.callback.Callback[])
+     * @param _callbacks
+     * @throws IOException
+     * @throws UnsupportedCallbackException
+     */
+    public void handle(final Callback[] _callbacks)
+        throws UnsupportedCallbackException
+    {
+        String name = null;
+        PasswordCallback pwdCallback = null;
+        for (int i = 0; i < _callbacks.length; i++) {
+            if (_callbacks[i] instanceof NameCallback) {
+                name = ((NameCallback) _callbacks[i]).getName();
+                if (name == null) {
+                    name = ((NameCallback) _callbacks[i]).getDefaultName();
+                }
+            } else if (_callbacks[i] instanceof PasswordCallback) {
+                pwdCallback = ((PasswordCallback) _callbacks[i]);
+            } else if (_callbacks[i] instanceof AuthorizeCallback) {
+                final AuthorizeCallback authCallback = ((AuthorizeCallback) _callbacks[i]);
+                final String authenId = authCallback.getAuthenticationID();
+                final String authorId = authCallback.getAuthorizationID();
+                if (authenId.equals(authorId)) {
+                    authCallback.setAuthorized(true);
+                    authCallback.setAuthorizedID(authorId);
+                }
+            }
         }
-      } else if (_callbacks[i] instanceof PasswordCallback) {
-        pwdCallback = ((PasswordCallback) _callbacks[i]);
-      } else if (_callbacks[i] instanceof AuthorizeCallback) {
-        final AuthorizeCallback authCallback
-                                          = ((AuthorizeCallback) _callbacks[i]);
-        final String authenId = authCallback.getAuthenticationID();
-        final String authorId = authCallback.getAuthorizationID();
-        if (authenId.equals(authorId)) {
-          authCallback.setAuthorized(true);
-          authCallback.setAuthorizedID(authorId);
+        if (name != null && pwdCallback != null) {
+            try {
+                final Person person = Person.get(name);
+                if (person != null) {
+                    pwdCallback.setPassword(person.getPassword().toCharArray());
+                } else {
+// TODO: fehler schmeissen
+                }
+            } catch (final EFapsException e) {
+// TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
-      }
     }
-    if (name != null && pwdCallback != null) {
-      try {
-        final Person person = Person.get(name);
-        if (person != null) {
-          pwdCallback.setPassword(person.getPassword().toCharArray());
-        } else {
-          //fehler schmeissen
-        }
-      } catch (final EFapsException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    }
-  }
 }

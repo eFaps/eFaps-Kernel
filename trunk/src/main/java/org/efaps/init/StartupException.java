@@ -24,34 +24,36 @@ package org.efaps.init;
  * Exception which is thrown if the database connection or store binding could
  * not initialized correctly.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
 @SuppressWarnings("serial")
-public class StartupException extends Exception
+public class StartupException
+    extends Exception
 {
-  /**
-   * Constructs a new exception with the specified detail message without
-   * cause.
-   *
-   * @param  message the detail message
-   */
-  public StartupException(final String _message)
-  {
-    this(_message, null);
-  }
+    /**
+     * Constructs a new exception with the specified detail message without
+     * cause.
+     *
+     * @param  _message     the detailed message
+     */
+    public StartupException(final String _message)
+    {
+        this(_message, null);
+    }
 
-  /**
-   * Constructs a new exception with the specified detail message an
-   * cause.
-   *
-   * @param  message the detail message
-   * @param  cause the cause (A <code>null</code> value is permitted, and
-   *         indicates that the cause is nonexistent or unknown.)
-   */
-  public StartupException(final String _message,
-                          final Throwable _cause)
-  {
-    super(_message, _cause);
-  }
+    /**
+     * Constructs a new exception with the specified detail message a
+     * cause.
+     *
+     * @param  _message     the detailed message
+     * @param  _cause       the cause (a <code>null</code> value is permitted,
+     *                      and indicates that the cause is nonexistent or
+     *                      unknown)
+     */
+    public StartupException(final String _message,
+                            final Throwable _cause)
+    {
+        super(_message, _cause);
+    }
 }

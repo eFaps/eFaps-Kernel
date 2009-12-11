@@ -25,164 +25,169 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * This Class gives the Possibility to specify a Order for Objects, in wich they
- * will be inserted into the Database<br>
- * <br>
- * Example:<br>
- * &lt;order type="YDSS_DocumentVersion" direction="ascending"&gt;<br>
- * &lt;attribute index="1" name="Version" criteria="numerical"/&gt; <br>
+ * <p>This Class gives the possibility to specify an order for objects, in
+ * which they will be inserted into the Database.</p>
+ * <p><b>Example:</b><br>
+ * <pre>
+ * &lt;order type="YDSS_DocumentVersion" direction="ascending"&gt;
+ *      &lt;attribute index="1" name="Version" criteria="numerical"/&gt;
  * &lt;/order&gt;
+ * </pre></p>
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  *
  */
-public class OrderObject implements Comparator<AbstractObject> {
-
-  /**
-   * contains the Type of the OrderObject
-   */
-  private final String                             type;
-
-  /**
-   * contains the direction of the order, true if ascending, false if descending
-   */
-  private boolean                            ascending;
-
-  /**
-   * contains the OrderAttribbutes of ths OrderObject
-   */
-  private final Map<Integer, OrderAttribute> orderAttributes = new TreeMap<Integer, OrderAttribute>();
-
-  /**
-   * default-Constructor
-   */
-  public OrderObject() {
-    this.type = null;
-    this.ascending = true;
-  }
-
-  /**
-   * Constructof for an OrderObject
-   *
-   * @param _type
-   *          Type of the OrderObject
-   * @param _direction
-   *          Direction of the Order, if it equals "descending" the value of
-   *          this.ascending will be set to false, in all other cases to true
-   */
-  public OrderObject(final String _type, final String _direction) {
-    this.type = _type;
-    this.ascending = !"descending".equalsIgnoreCase(_direction);
-  }
-
-  /**
-   * get the Type of this OrderObject
-   *
-   * @return Type of the OrderObject
-   */
-  public String getType() {
-    return this.type;
-  }
-
-  /**
-   * Method to add a OrderAttribute to this OrderObject
-   *
-   * @param _index
-   *          Index of the OrderAttribute
-   * @param _name
-   *          Name of the OrderAttribute
-   * @param _criteria
-   *          Criteria for comparing
-   */
-  public void addAttribute(final Integer _index, final String _name,
-                           final String _criteria) {
-    this.orderAttributes.put(_index, new OrderAttribute(_name, _criteria));
-  }
-
-  public int compare(final AbstractObject _arg0, final AbstractObject _arg1) {
-    // TODO 1 ersetzen
-    int returnValue;
-
-    if (this.orderAttributes.get(1).getCriteria().equalsIgnoreCase("numerical")) {
-      final Long comp1 = Long.parseLong((String) _arg0
-          .getAttribute(this.orderAttributes.get(1).getName()));
-      final Long comp2 = Long.parseLong((String) _arg1
-          .getAttribute(this.orderAttributes.get(1).getName()));
-
-      if (comp1 > comp2)
-
-        returnValue = 1;
-
-      else if (comp1 < comp2)
-
-        returnValue = -1;
-
-      else
-
-        returnValue = 0;
-
-    } else {
-
-      final String comp1 = (String) _arg0.getAttribute(this.orderAttributes.get(1)
-          .getName());
-      final String comp2 = (String) _arg1.getAttribute(this.orderAttributes.get(1)
-          .getName());
-
-      returnValue = comp1.compareToIgnoreCase(comp2);
-    }
-
-    if (!this.ascending) {
-      switch (returnValue) {
-      case 1:
-        returnValue = -1;
-        break;
-      case -1:
-        returnValue = 1;
-        break;
-      }
-    }
-
-    return returnValue;
-  }
-
-  /**
-   * private Class to store a OrderAttribute
-   *
-   */
-  private class OrderAttribute {
+public class OrderObject
+    implements Comparator<AbstractObject>
+{
     /**
-     * Contains the Name of the Attribute
+     * Contains the type of this order object.
      */
-    private final String name;
+    private final String type;
 
     /**
-     * Criteria this Attribute will be ordered, like "numerical"
+     * Contains the direction of the order, <i>true</i> if ascending,
+     * <i>false</i> if descending.
      */
-    private final String criteria;
+    private final boolean ascending;
 
-    public OrderAttribute(final String _name, final String _criteria) {
-      this.name = _name;
-      this.criteria = _criteria;
+    /**
+     * Contains the order attributes of this order object.
+     */
+    private final Map<Integer, OrderAttribute> orderAttributes = new TreeMap<Integer, OrderAttribute>();
+
+    /**
+     * Default constructor.
+     */
+    public OrderObject()
+    {
+        this.type = null;
+        this.ascending = true;
     }
 
     /**
-     * get the Name of this OrderAttribute
+     * Constructor for an order object.
      *
-     * @return String with the Name of the Attribute
+     * @param _type         type of the order object
+     * @param _direction    direction of the order, if it equals "descending"
+     *                      the value of this.ascending will be set to
+     *                      <i>false</i>, in all other cases to <i>true</i>
      */
-    public String getName() {
-      return this.name;
+    public OrderObject(final String _type,
+                       final String _direction)
+    {
+        this.type = _type;
+        this.ascending = !"descending".equalsIgnoreCase(_direction);
     }
 
     /**
-     * get the Criteria for this OrderAttribute
+     * Return the type of this order object.
      *
-     * @return
+     * @return type of this order object
+     * @see #type
      */
-    public String getCriteria() {
-      return this.criteria;
+    public String getType()
+    {
+        return this.type;
     }
-  }
 
+    /**
+     * Adds an order attribute to this order object.
+     *
+     * @param _index    index of the order attribute
+     * @param _name     name of the order attribute
+     * @param _criteria criteria for comparing
+     */
+    public void addAttribute(final Integer _index,
+                             final String _name,
+                             final String _criteria)
+    {
+        this.orderAttributes.put(_index, new OrderAttribute(_name, _criteria));
+    }
+
+    /**
+     * @param _arg0     first argument
+     * @param _arg1     second argument
+     */
+    public int compare(final AbstractObject _arg0,
+                       final AbstractObject _arg1)
+    {
+// TODO 1 ersetzen
+        int returnValue;
+
+        if (this.orderAttributes.get(1).getCriteria().equalsIgnoreCase("numerical")) {
+            final Long comp1 = Long.parseLong((String) _arg0.getAttribute(this.orderAttributes.get(1).getName()));
+            final Long comp2 = Long.parseLong((String) _arg1.getAttribute(this.orderAttributes.get(1).getName()));
+
+            if (comp1 > comp2)  {
+                returnValue = 1;
+            } else if (comp1 < comp2)  {
+                returnValue = -1;
+            } else  {
+                returnValue = 0;
+            }
+        } else {
+            final String comp1 = (String) _arg0.getAttribute(this.orderAttributes.get(1).getName());
+            final String comp2 = (String) _arg1.getAttribute(this.orderAttributes.get(1).getName());
+
+            returnValue = comp1.compareToIgnoreCase(comp2);
+        }
+
+        if (!this.ascending) {
+            returnValue *= -1;
+        }
+        return returnValue;
+    }
+
+    /**
+     * Used to store an order attribute.
+     */
+    private static class OrderAttribute
+    {
+        /**
+         * Contains the name of the attribute.
+         */
+        private final String name;
+
+        /**
+         * Defines the criteria  how this attribute will be ordered, (e.g.
+         * "numerical").
+         */
+        private final String criteria;
+
+        /**
+         *
+         * @param _name         name of the order attribute
+         * @param _criteria     order criteria
+         */
+        public OrderAttribute(final String _name,
+                              final String _criteria)
+        {
+            this.name = _name;
+            this.criteria = _criteria;
+        }
+
+        /**
+         * Returns the name of this order attribute.
+         *
+         * @return name of this order attribute
+         * @see #name
+         */
+        public String getName()
+        {
+            return this.name;
+        }
+
+        /**
+         * Returns the criteria for this order attribute.
+         *
+         * @return criteria
+         * @see #criteria
+         */
+        public String getCriteria()
+        {
+            return this.criteria;
+        }
+    }
 }

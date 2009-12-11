@@ -24,106 +24,103 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Abstract Class for Importing Objects into the Database connected to eFaps
+ * Abstract Class for Importing Objects into the Database connected to eFaps.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
- *
  */
-public abstract class AbstractObject {
+public abstract class AbstractObject
+{
+    /**
+     * Returns the links of the object.
+     *
+     * @return Set with the ForeignObjects connected to this Object
+     */
+    public abstract Set<ForeignObject> getLinks();
 
-  /**
-   * get the Links of the Object
-   *
-   * @return Set with the ForeignObjects connected to this Object
-   */
-  public abstract Set<ForeignObject> getLinks();
+    /**
+     * Returns the type of the object.
+     *
+     * @return type of the object
+     */
+    public abstract String getType();
 
-  /**
-   * get the Type of the Object
-   *
-   * @return the Type of the Object
-   */
-  public abstract String getType();
+    /**
+     * Returns the value of an attribute.
+     *
+     * @param _attribute    attribute of the searched value
+     * @return object with the Value, <code>null</code> if the attribute does
+     *         not exist
+     */
+    public abstract Object getAttribute(final String _attribute);
 
-  /**
-   * Get the Value of an Attribute
-   *
-   * @param _attribute
-   *          Attribute of wich the Value will be returned
-   * @return Object with the Value, null if Attribute das not exist
-   */
-  public abstract Object getAttribute(final String _attribute);
+    /**
+     * Returns the map with all attributes.
+     *
+     * @return map containing all Attributes
+     */
+    public abstract Map<String, Object> getAttributes();
 
-  /**
-   * get the Map with all Attributes
-   *
-   * @return Map containing all Attributes
-   */
-  public abstract Map<String, Object> getAttributes();
+    /**
+     * Returns the id of the object.
+     *
+     * @return string with the id of the object
+     */
+    public abstract String getID();
 
-  /**
-   * get the ID of the Object
-   *
-   * @return Strng with the ID of the Object
-   */
-  public abstract String getID();
+    /**
+     * Sets the id of the object.
+     *
+     * @param _id   new id of the object
+     */
+    public abstract void setID(final String _id);
 
-  /**
-   * sets the ID of the Object
-   *
-   * @param _id
-   */
-  public abstract void setID(String _id);
+    /**
+     * Returns the attribute which contains the parent-child relationship.
+     *
+     * @return String with the Name of the Attribute
+     */
+    public abstract String getParrentAttribute();
 
-  /**
-   * get the Attribute wich contains the Parent-Child-Relation
-   *
-   * @return String with the Name of the Attribute
-   */
-  public abstract String getParrentAttribute();
+    /**
+     * Has the object a checkin object?
+     *
+     * @return <i>true</i> if so, otherwise <i>false</i>
+     */
+    public abstract boolean isCheckinObject();
 
-  /**
-   * has the Object a CheckinObject
-   *
-   * @return true if so, false if not
-   */
-  public abstract boolean isCheckinObject();
+    /**
+     * Returns the unique attributes.
+     *
+     * @return set of the unique attributes
+     */
+    public abstract Set<String> getUniqueAttributes();
 
-  /**
-   * get the Attributes defined as Unique
-   *
-   * @return Set of the unique Attributes
-   */
-  public abstract Set<String> getUniqueAttributes();
+    /**
+     * Has the Object children?
+     *
+     * @return <i>true</i> if the Object has children, otherwise <i>false</i>
+     */
+    public abstract boolean hasChilds();
 
-  /**
-   * has the Object Childs?
-   *
-   * @return true if the Object has Childs, otherwise false
-   */
-  public abstract boolean hasChilds();
+    /**
+     * File is checked into the object.
+     */
+    public abstract void dbCheckObjectIn();
 
-  /**
-   * Check the Object into the Database
-   */
-  public abstract void dbCheckObjectIn();
+    /**
+     * Appends in eFaps all children.
+     */
+    public abstract void dbAddChilds();
 
-  /**
-   * Method that executes the Insert into the Database
-   */
-  public abstract void dbAddChilds();
-
-  /**
-   * Method to Create the Update or Insert of the Datebase
-   *
-   * @param _parent
-   *          Parent-Object of this Object
-   * @param _ID
-   *          Id of the Object to be updated, if "" is given a Insert will be
-   *          made
-   * @return String with the ID of the new or updated Object
-   */
-  public abstract String dbUpdateOrInsert(final AbstractObject _parent,
-                                          final String _ID);
+    /**
+     * Create or update of the object in eFaps.
+     *
+     * @param _parent   Parent-Object of this Object
+     * @param _id       id of the Object to be updated, if an empty string is
+     *                  given an insert will be made
+     * @return string with the id of the new or updated object
+     */
+    public abstract String dbUpdateOrInsert(final AbstractObject _parent,
+                                            final String _id);
 }

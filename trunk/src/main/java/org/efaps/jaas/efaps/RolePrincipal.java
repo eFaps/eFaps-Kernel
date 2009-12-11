@@ -25,12 +25,12 @@ package org.efaps.jaas.efaps;
  * user. The class is used from the {@link UserLoginModule} class to implement
  * a JAAS login module and set the role principals.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
 public final class RolePrincipal extends AbstractPrincipal  {
 
-  
+
   private static final long serialVersionUID = 8662834430307103046L;
 
   /**
@@ -49,7 +49,8 @@ public final class RolePrincipal extends AbstractPrincipal  {
    * @return returns <i>true</i> if the other object is from this class and
    *         has the same name (method equals is used), otherwise <i>false</i>
    */
-  public boolean equals(final Object _another)  {
+  @Override
+public boolean equals(final Object _another)  {
     boolean ret = false;
     if (_another instanceof RolePrincipal
         && ((RolePrincipal) _another).getName().equals(getName()))  {

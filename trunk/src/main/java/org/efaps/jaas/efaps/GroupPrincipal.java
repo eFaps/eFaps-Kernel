@@ -25,37 +25,37 @@ package org.efaps.jaas.efaps;
  * user. The class is used from the {@link UserLoginModule} class to implement
  * a JAAS login module and set the group principals.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public final class GroupPrincipal extends AbstractPrincipal  {
+public final class GroupPrincipal
+    extends AbstractPrincipal
+{
+    /**
+     * Unique identifier used to serialize.
+     */
+    private static final long serialVersionUID = -6997130370815113314L;
 
-  
-  private static final long serialVersionUID = -6997130370815113314L;
-
-  /**
-   * Constructor used to create a new group principal instance.
-   *
-   * @param _name name of the user
-   */
-  GroupPrincipal(final String _name)  {
-    super(_name);
-  }
-
-  /**
-   * Compares this principal to the specified object.
-   *
-   * @param _another object to compare to this principle
-   * @return returns <i>true</i> if the other object is from this class and
-   *         has the same name (method equals is used), otherwise <i>false</i>
-   */
-  public boolean equals(final Object _another)  {
-    boolean ret = false;
-    if (_another instanceof GroupPrincipal
-        && ((GroupPrincipal) _another).getName().equals(getName()))  {
-
-      ret = true;
+    /**
+     * Constructor used to create a new group principal instance.
+     *
+     * @param _name name of the user
+     */
+    GroupPrincipal(final String _name)
+    {
+        super(_name);
     }
-    return ret;
-  }
+
+    /**
+     * Compares this principal to the specified object.
+     *
+     * @param _another object to compare to this principle
+     * @return returns <i>true</i> if the other object is from this class and
+     *         has the same name (method equals is used), otherwise <i>false</i>
+     */
+    @Override()
+    public boolean equals(final Object _another)
+    {
+        return (_another instanceof GroupPrincipal && ((GroupPrincipal) _another).getName().equals(getName()));
+    }
 }
