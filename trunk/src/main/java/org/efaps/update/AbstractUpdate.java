@@ -142,7 +142,7 @@ public abstract class AbstractUpdate implements IUpdate
      * @param _tags tags path as list
      * @param _attributes map of attributes for current tag
      * @param _text content text of this tags path
-     * @todo error could not be thrown because db properties is not read
+     * TODO:  error could not be thrown because db properties is not read
      *       correctly
      */
     public void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
@@ -892,9 +892,9 @@ public abstract class AbstractUpdate implements IUpdate
          * @param _instance instance for which the properties must be set
          * @param _properties new properties to set
          * @throws EFapsException if properties could not be set
-         * @todo rework of the update algorithm (not always a complete delete
+         * TODO: rework of the update algorithm (not always a complete delete
          *       and and new create is needed)
-         * @todo description
+         * TODO: description
          */
         protected void setPropertiesInDb(final Instance _instance,
                                          final Map<String, String> _properties)

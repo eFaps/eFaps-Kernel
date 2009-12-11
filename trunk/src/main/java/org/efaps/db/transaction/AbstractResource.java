@@ -205,14 +205,14 @@ public abstract class AbstractResource
      * The method is called from the transaction (manager) to check if the XA
      * resource is the same as the given XA resource in the parameter
      * <code>_xaras</code>. This is done with a string compare
-     * (method {@link java.lang.String#equals}) off the
-     * {@link #java.lang.Object#toString} methods of this and the XA resource in
+     * (method {@link String#equals(Object)}) off the
+     * {@link Object#toString()} methods of this and the XA resource in
      * <code>_xaras</code>.
      *
      * @param _xares    XA resource used to test if same resource
      * @return <code>true</code> if the string compare returns that they are
      *         equal, otherwise <code>false</code> is returned
-     * @see {@link javax.transaction.xa.XAResource#isSameRM}
+     * @see XAResource#isSameRM(XAResource)
      */
     public boolean isSameRM(final XAResource _xares)
     {

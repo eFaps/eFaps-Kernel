@@ -37,7 +37,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class AccessSetUpdate extends AbstractUpdate
+public class AccessSetUpdate
+    extends AbstractUpdate
 {
     /** Link to access types. */
     private static final Link LINK2ACCESSTYPE = new Link("Admin_Access_AccessSet2Type", "AccessSetLink",
@@ -86,10 +87,10 @@ public class AccessSetUpdate extends AbstractUpdate
     }
 
     /**
-     * Creates new instance of class {@link Definition}.
+     * Creates new instance of class {@link AccessSetUpdate.Definition}.
      *
      * @return new definition instance
-     * @see Definition
+     * @see AccessSetUpdate.Definition
      */
     @Override
     protected AbstractDefinition newDefinition()

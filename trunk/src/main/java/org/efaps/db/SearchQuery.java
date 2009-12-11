@@ -23,11 +23,6 @@ package org.efaps.db;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
-import org.joda.time.ReadableDateTime;
-import org.joda.time.format.ISODateTimeFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.query.WhereClause;
@@ -38,13 +33,18 @@ import org.efaps.db.query.WhereClauseAttributeLessValue;
 import org.efaps.db.query.WhereClauseAttributeMatchValue;
 import org.efaps.db.query.WhereClauseAttributeNotEqualValue;
 import org.efaps.util.EFapsException;
+import org.joda.time.ReadableDateTime;
+import org.joda.time.format.ISODateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
  * @version $Id$
- * @todo description
+ * TODO:  description
  */
-public class SearchQuery extends AbstractQuery
+public class SearchQuery
+    extends AbstractQuery
 {
     /**
      * Logging instance used in this class.
@@ -175,9 +175,12 @@ public class SearchQuery extends AbstractQuery
     }
 
     /**
-     * @todo Exception
+     * TODO: Exception
      */
-    public void setExpand(final Instance _instance, final String _expand, final boolean _companyDepend) throws EFapsException
+    public void setExpand(final Instance _instance,
+                          final String _expand,
+                          final boolean _companyDepend)
+        throws EFapsException
     {
         final StringTokenizer tokens = new StringTokenizer(_expand, ".");
         boolean first = true;

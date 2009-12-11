@@ -125,7 +125,7 @@ public abstract class AbstractUserInterfaceObject
     /**
      * The instance method reads the access for this user interface object.
      *
-     * @todo use SearchQuery
+     * TODO: use SearchQuery
      * @throws CacheReloadException on error during reload
      */
     private void readFromDB4Access() throws CacheReloadException

@@ -105,7 +105,7 @@ public class Checkin
      * @param _size         size of file in stream to check in (negative size
      *                      means that all from the stream must be written)
      * @throws EFapsException if checkout action fails
-     * @todo history entries
+     * TODO:  history entries
      */
     public void executeWithoutAccessCheck(final String _fileName,
                                           final InputStream _in,

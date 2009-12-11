@@ -29,7 +29,7 @@ import static org.efaps.admin.EFapsClassNames.COMMAND;
 /**
  * @author The eFaps Team
  * @version $Id$
- * @todo description
+ * TODO: description
  */
 public class Command
     extends AbstractCommand

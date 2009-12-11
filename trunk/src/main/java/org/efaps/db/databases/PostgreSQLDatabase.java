@@ -94,7 +94,7 @@ public class PostgreSQLDatabase
             + "and c.unique_constraint_name=d.constraint_name";
 
     /**
-     * @todo specificy real column type
+     * TODO: specificy real column type
      */
     public PostgreSQLDatabase()
     {

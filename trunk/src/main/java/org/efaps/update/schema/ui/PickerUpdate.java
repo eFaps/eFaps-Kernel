@@ -44,10 +44,10 @@ public class PickerUpdate
     }
 
     /**
-     * Creates new instance of class {@link Definition}.
+     * Creates new instance of class {@link PickerUpdate.PickerDefinition}.
      *
      * @return new definition instance
-     * @see Definition
+     * @see PickerUpdate.PickerDefinition
      */
     @Override()
     protected AbstractDefinition newDefinition()

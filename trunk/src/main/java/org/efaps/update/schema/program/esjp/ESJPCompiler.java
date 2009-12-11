@@ -47,9 +47,6 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
@@ -60,6 +57,8 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The class is used to compile all checked in ESJP programs. Because the
@@ -271,10 +270,10 @@ public class ESJPCompiler
 
     /**
      * All stored compiled ESJP's classes in the eFaps database are stored in
-     * the mapping {@link @class2id}. If a ESJP's program is compiled and
-     * stored with {@link StoreObject#write()}, the class is removed.
-     * After the compile, {@link #compile()} removed all stored classes which
-     * are not needed anymore.
+     * the mapping {@link #class2id}. If a ESJP's program is compiled and
+     * stored with {@link ESJPCompiler.StoreObject#write()}, the class is
+     * removed. After the compile, {@link ESJPCompiler#compile(String)} removes
+     * all stored classes which are not needed anymore.
      *
      * @throws InstallationException if read of the ESJP classes failed
      * @see #class2id

@@ -32,9 +32,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
@@ -52,6 +49,8 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the class for the type description. The type description holds
@@ -301,7 +300,7 @@ public class Type extends AbstractDataModelObject
      * under the name of all child types of the attribute.
      *
      * @param _attr attribute with the link to this type
-     * @todo description of algorithm
+     * TODO: description of algorithm
      */
     protected void addLink(final Attribute _attr)
     {

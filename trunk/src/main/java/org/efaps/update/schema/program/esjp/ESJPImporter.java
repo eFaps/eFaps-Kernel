@@ -43,7 +43,7 @@ import org.efaps.util.EFapsException;
  *
  * @author The eFaps Team
  * @version $Id$
- * @todo encoding from java files!
+ * TODO:  encoding from java files!
  */
 public class ESJPImporter
     extends AbstractProgramImporter
@@ -58,8 +58,6 @@ public class ESJPImporter
      * class name.
      *
      * @param _url    url to the ESJP source code
-     * @see #readCode
-     * @see #evalClassName
      * @throws EFapsException on error
      */
     public ESJPImporter(final URL _url)

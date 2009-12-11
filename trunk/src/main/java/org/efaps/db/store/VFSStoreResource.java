@@ -41,17 +41,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The class implements the {@link javax.transaction.XAResource} interface for
- * Apache Jakarta Commons Virtual File System.<br/>
- * All different virtual file systems could be used.
- * The algorithm is:
+ * <p>The class implements the {@link Resource} interface for Apache Jakarta
+ * Commons Virtual File System.<p/>
+ * <p>
+ * All different virtual file systems could be used. The algorithm is:
  * <ol>
  *   <li>check if the file already exists</li>
  *   <li></li>
  *   <li></li>
  * </ol>
  * The store implements the compress property setting on the type for
- * <code>ZIP</code> and <code>GZIP</code>.
+ * <code>ZIP</code> and <code>GZIP</code>.</p>
  *
  * For each file id a new VFS store resource must be created.
  *

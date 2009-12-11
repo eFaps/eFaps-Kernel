@@ -48,7 +48,7 @@ public class BooleanType extends AbstractType
     }
 
     /**
-     * @todo test that only one value is given for indexes
+     * TODO: test that only one value is given for indexes
      */
     public Object readValue(final CachedResult _rs, final List<Integer> _indexes) throws SQLException
     {

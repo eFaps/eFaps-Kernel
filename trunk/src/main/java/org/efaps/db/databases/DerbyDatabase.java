@@ -82,7 +82,7 @@ public class DerbyDatabase
                     + "and t.TABLETYPE='T'";
 
     /**
-     * @todo specificy real column type
+     * TODO: specificy real column type
      */
     public DerbyDatabase()
     {

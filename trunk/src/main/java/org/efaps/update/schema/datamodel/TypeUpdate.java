@@ -304,7 +304,7 @@ public class TypeUpdate extends AbstractUpdate
          * @see #getAttrTypeId
          * @see #getSqlTableId
          * @see #getTypeLinkId
-         * @todo throw Exception is not allowed
+         * TODO:  throw Exception is not allowed
          */
         protected void updateInDB(final Instance _instance, final String _typeName, final long _setID)
                 throws EFapsException

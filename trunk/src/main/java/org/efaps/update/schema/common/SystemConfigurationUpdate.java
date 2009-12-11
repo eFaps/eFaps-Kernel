@@ -191,7 +191,7 @@ public class SystemConfigurationUpdate
 
         /**
          * If the current life cycle <code>step</code> is
-         * {@link UpdateLifecycle.EFAPS_UPDATE EFAPS_UPDATE}, the
+         * {@link UpdateLifecycle#EFAPS_UPDATE EFAPS_UPDATE}, the
          * {@link #attributes} are updated.
          *
          * @param _step             current life cycle update step

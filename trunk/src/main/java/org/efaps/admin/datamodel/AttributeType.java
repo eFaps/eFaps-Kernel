@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author The eFaps Team
  * @version $Id$
- * @todo description
+ * TODO: description
  */
 public class AttributeType
     extends AbstractDataModelObject

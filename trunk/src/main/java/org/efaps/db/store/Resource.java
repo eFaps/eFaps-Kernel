@@ -109,7 +109,7 @@ public interface Resource
     void read(final OutputStream _out) throws EFapsException;
 
     /**
-     * Deletes the file defined in {@link #fileId}.
+     * Will delete the file.
      *
      * @throws EFapsException if an error occurs
      */

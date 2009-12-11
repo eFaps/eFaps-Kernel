@@ -73,7 +73,7 @@ public class DataImport
      * @param _xml    name and path of the XML file
      * @throws MalformedURLException if <code>_xml</code> could not be
      *                               converted into an URL
-     * @see #readXMLFile(URL)
+     * @see #readFile(URL)
      */
     public void readFile(final File _xml)
         throws MalformedURLException

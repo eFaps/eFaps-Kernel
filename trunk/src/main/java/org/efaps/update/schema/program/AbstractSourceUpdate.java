@@ -67,10 +67,9 @@ public abstract class AbstractSourceUpdate
     }
 
     /**
-     * Get the Version of this Update. Override id to use other than 1. To set
-     * the Version to the last Version return {@link #getMaxVersion()}.
+     * Get the Version of this Update. Override id to use other than 1.
      *
-     * @return 1
+     * @return always 1
      */
     protected Long getVersion()
     {
