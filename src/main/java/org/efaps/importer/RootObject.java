@@ -27,12 +27,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.efaps.db.Insert;
+import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.efaps.db.Insert;
-import org.efaps.util.EFapsException;
 
 /**
  * This Class represents a simplified an specialized version of an InsertObject.
@@ -40,152 +39,228 @@ import org.efaps.util.EFapsException;
  * The Root means in this case the &lt;import&gt;&lt;/import&gt; of the
  * XML-File.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class RootObject extends AbstractObject {
+public class RootObject
+    extends AbstractObject
+{
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(RootObject.class);
 
-  /**
-   * Logger for this class
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(RootObject.class);
+    private final static Map<String, OrderObject> ORDER = new HashMap<String, OrderObject>();
 
-  final List<AbstractObject> CHILDS = new ArrayList<AbstractObject>();
-  //default is yyyy-MM-dd'T'HH:mm:ss.SSSZZ
-  static String DATEFORMAT;
+    //default is yyyy-MM-dd'T'HH:mm:ss.SSSZZ
+    static String DATEFORMAT;
 
-  final static Map<String, OrderObject> ORDER =
-      new HashMap<String, OrderObject>();
+    private final List<AbstractObject> childs = new ArrayList<AbstractObject>();
 
-  public void setDateFormat(final String _DateFormat) {
-    DATEFORMAT = _DateFormat;
-  }
 
-  public void addOrder(final OrderObject _order) {
-
-    ORDER.put(_order.getType(), _order);
-  }
-
-  public static OrderObject getOrder(final String _type) {
-    return ORDER.get(_type);
-  }
-
-  @Override
-  public Map<String, Object> getAttributes() {
-    // not needed here
-    return null;
-  }
-
-  @Override
-  public String getType() {
-    // not needed here
-    return null;
-  }
-
-  @Override
-  public void setID(final String _ID) {
-    // not needed here
-  }
-
-  public void addChild(final AbstractObject _Object) {
-    this.CHILDS.add(_Object);
-  }
-
-  @Override
-  public void dbAddChilds() {
-    for (final AbstractObject object : this.CHILDS) {
-      try {
-        if (LOG.isInfoEnabled()) {
-          LOG.info("Inserting the Base-Objects '"
-              + object.getType()
-              + "' to the Database");
-        }
-        final Insert insert = new Insert(object.getType());
-
-        for (final Entry<String, Object> element : object.getAttributes()
-            .entrySet()) {
-          if (element.getValue() instanceof DateTime) {
-            insert.add(element.getKey().toString(), (DateTime) element
-                .getValue());
-
-          } else {
-            insert.add(element.getKey().toString(), element.getValue()
-                .toString());
-          }
-        }
-        for (final ForeignObject link : object.getLinks()) {
-          insert.add(link.getLinkAttribute(), link.dbGetValue());
-        }
-        insert.executeWithoutAccessCheck();
-        final String ID = insert.getId();
-        insert.close();
-
-        object.setID(ID);
-
-      } catch (final EFapsException e) {
-        LOG.error("insertDB()", e);
-      } catch (final Exception e) {
-        LOG.error("insertDB()", e);
-      }
-
+    public static void setDateFormat(final String _DateFormat)
+    {
+        RootObject.DATEFORMAT = _DateFormat;
     }
 
-    for (final AbstractObject object : this.CHILDS) {
-      object.dbAddChilds();
+    public static void addOrder(final OrderObject _order)
+    {
+        RootObject.ORDER.put(_order.getType(), _order);
     }
 
-  }
+    public static OrderObject getOrder(final String _type)
+    {
+        return ORDER.get(_type);
+    }
 
-  @Override
-  public String getParrentAttribute() {
-    // not needed here
-    return null;
-  }
 
-  @Override
-  public Set<ForeignObject> getLinks() {
-    // not needed here
-    return null;
-  }
+    public void addChild(final AbstractObject _object)
+    {
+        this.childs.add(_object);
+    }
 
-  @Override
-  public boolean isCheckinObject() {
-    return false;
-  }
+    @Override()
+    public void dbAddChilds()
+    {
+        for (final AbstractObject object : this.childs) {
+            try {
+                if (RootObject.LOG.isInfoEnabled()) {
+                    RootObject.LOG.info("Inserting the Base-Objects '"
+                            + object.getType() + "' to the Database");
+                }
+                final Insert insert = new Insert(object.getType());
 
-  @Override
-  public void dbCheckObjectIn() {
-    // not needed here
-  }
+                for (final Entry<String, Object> element : object.getAttributes().entrySet()) {
+                    if (element.getValue() instanceof DateTime) {
+                        insert.add(element.getKey().toString(), (DateTime) element.getValue());
+                    } else {
+                        insert.add(element.getKey().toString(), element.getValue().toString());
+                    }
+                }
+                for (final ForeignObject link : object.getLinks()) {
+                    insert.add(link.getLinkAttribute(), link.dbGetValue());
+                }
+                insert.executeWithoutAccessCheck();
+                final String newId = insert.getId();
+                insert.close();
 
-  @Override
-  public Set<String> getUniqueAttributes() {
-    // not needed here
-    return null;
-  }
+                object.setID(newId);
 
-  @Override
-  public Object getAttribute(final String _attribute) {
-    // not needed here
-    return null;
-  }
+            } catch (final EFapsException e) {
+                RootObject.LOG.error("insertDB()", e);
+            } catch (final Exception e) {
+                RootObject.LOG.error("insertDB()", e);
+            }
+        }
 
-  @Override
-  public boolean hasChilds() {
-    // not needed here
-    return false;
-  }
+        for (final AbstractObject object : this.childs) {
+            object.dbAddChilds();
+        }
+    }
 
-  @Override
-  public String dbUpdateOrInsert(final AbstractObject _parent, final String _ID) {
-    // not needed here
-    return null;
-  }
+    /**
+     * The method is not required for root objects and therefore the method is
+     * only a stub method.
+     *
+     * @return always <code>null</code>
+     */
+    @Override()
+    public Map<String, Object> getAttributes()
+    {
+        return null;
+    }
 
-  @Override
-  public String getID() {
-    // not needed here
-    return null;
-  }
+    /**
+     * The method is not required for root objects and therefore the method is
+     * only a stub method.
+     *
+     * @return always <code>null</code>
+     */
+    @Override()
+    public String getType()
+    {
+        return null;
+    }
 
+    /**
+     * The method is not required for root objects and therefore the method is
+     * only a stub method.
+     *
+     * @param _id       not used
+     */
+    @Override()
+    public void setID(final String _id)
+    {
+    }
+
+    /**
+     * The method is not required for root objects and therefore the method is
+     * only a stub method.
+     *
+     * @return always <code>null</code>
+     */
+    @Override()
+    public String getParrentAttribute()
+    {
+        return null;
+    }
+
+    /**
+     * The method is not required for root objects and therefore the method is
+     * only a stub method.
+     *
+     * @return always <code>null</code>
+     */
+    @Override()
+    public Set<ForeignObject> getLinks()
+    {
+        return null;
+    }
+
+    /**
+     * The method is not required for root objects and therefore the method is
+     * only a stub method.
+     *
+     * @return always <i>false</i>
+     */
+    @Override()
+    public boolean isCheckinObject()
+    {
+        return false;
+    }
+
+    /**
+     * The method is not required for root objects and therefore the method is
+     * only a stub method.
+     */
+    @Override()
+    public void dbCheckObjectIn()
+    {
+    }
+
+    /**
+     * The method is not required for root objects and therefore the method is
+     * only a stub method.
+     *
+     * @return always <code>null</code>
+     */
+    @Override()
+    public Set<String> getUniqueAttributes()
+    {
+        // not needed here
+        return null;
+    }
+
+    /**
+     * The method is not required for root objects and therefore the method is
+     * only a stub method.
+     *
+     * @param _attribute    not used
+     * @return always <code>null</code>
+     */
+    @Override()
+    public Object getAttribute(final String _attribute)
+    {
+        // not needed here
+        return null;
+    }
+
+    /**
+     * The method is not required for root objects and therefore the method is
+     * only a stub method.
+     *
+     * @return always <i>false</i>
+     */
+    @Override()
+    public boolean hasChilds()
+    {
+        return false;
+    }
+
+    /**
+     * The method is not required for root objects and therefore the method is
+     * only a stub method.
+     *
+     * @param _parent   not used
+     * @param _id       not used
+     * @return always <code>null</code>
+     */
+    @Override()
+    public String dbUpdateOrInsert(final AbstractObject _parent,
+                                   final String _id)
+    {
+        return null;
+    }
+
+    /**
+     * The method is not required for root objects and therefore the method is
+     * only a stub method.
+     *
+     * @return always <code>null</code>
+     */
+    @Override()
+    public String getID()
+    {
+        return null;
+    }
 }

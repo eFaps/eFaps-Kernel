@@ -22,33 +22,52 @@ package org.efaps.importer;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.ObjectCreationFactory;
-
 import org.xml.sax.Attributes;
 
 /**
- * Class to create InsertObjects with the Digester using a Constructor with
- * Parameters.
+ * <p>Class to create InsertObjects with the Digester using a Constructor with
+ * Parameters.</p>
+ * <p>This Constructor is needed, because the Attribute "type" is needed from
+ * the beginning to store the information about an insert object sorted by the
+ * type. This information can't be changed later.</p>
  *
- * This Constructor is needed, because the Attribute "type" is needed from the
- * beginning to store the Information about an InsertObject sorted by the Type.
- * This information can't be changed later.
- *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
- *
  */
-public class InsertObjectFactory implements ObjectCreationFactory {
+public class InsertObjectFactory
+    implements ObjectCreationFactory
+{
+    /**
+     * Returns a new instance of the insert object for given type defined in
+     * <code>_attributes</code>.
+     *
+     * @param _attributes   attributes used to get the type for the insert
+     *                      object
+     * @return new insert object instance
+     */
+    public Object createObject(final Attributes _attributes)
+    {
+        return new InsertObject(_attributes.getValue("type"));
+    }
 
-  public Object createObject(final Attributes _attributes) {
-    final InsertObject ret = new InsertObject(_attributes.getValue("type"));
-    return ret;
-  }
+    /**
+     * The digester is not needed from the insert object factory and therefore
+     * this method is only a stub.
+     *
+     * @return always <code>null</code>
+     */
+    public Digester getDigester()
+    {
+        return null;
+    }
 
-  public Digester getDigester() {
-    return null;
-  }
-
-  public void setDigester(Digester digester) {
-  }
-
+    /**
+     * The digester is not needed from the insert object factory and therefore
+     * this method is only a stub.
+     *
+     * @param _digester     not used
+     */
+    public void setDigester(final Digester _digester)
+    {
+    }
 }

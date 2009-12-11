@@ -25,17 +25,19 @@ package org.efaps.jaas.xml;
  * group. The class is used from the {@link XMLUserLoginModule} class to implement
  * a JAAS login module and set the group principals.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public final class XMLGroupPrincipal extends XMLAbstractPrincipal  {
-
-  /**
-   * Constructor used to create a new group principal instance.
-   *
-   * @param _name name of the user
-   */
-  XMLGroupPrincipal(final String _name)  {
-    setName(_name);
-  }
+public final class XMLGroupPrincipal
+    extends XMLAbstractPrincipal
+{
+    /**
+     * Constructor used to create a new group principal instance.
+     *
+     * @param _name name of the user
+     */
+    XMLGroupPrincipal(final String _name)
+    {
+        setName(_name);
+    }
 }

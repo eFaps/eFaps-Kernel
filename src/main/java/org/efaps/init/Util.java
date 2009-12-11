@@ -32,51 +32,58 @@ import org.slf4j.LoggerFactory;
  * Utility class for the init package to startup database connections and
  * stores.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class Util
+public final class Util
 {
+    /**
+     * Logging instance used to give logging information of this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(Util.class);
 
-  /**
-   * Logging instance used to give logging information of this class.
-   */
-  private final static Logger LOG = LoggerFactory.getLogger(Util.class);
-
-  /**
-   * Bing given object at the given name path within given name context.
-   *
-   * @param _ctx      naming context
-   * @param _nameStr  string with complete name path
-   * @param _object   object to bind
-   * @throws NamingException
-   */
-  public static void bind(final Context _ctx,
-                          final String _nameStr,
-                          final Object _object)
-     throws NamingException
-  {
-    final Name names = _ctx.getNameParser("").parse(_nameStr);
-    if (names.size() > 0)  {
-      Context subCtx = _ctx;
-      for (int idx = 0; idx < names.size() - 1; idx++)  {
-        final String name = names.get(idx);
-        try {
-          subCtx = (Context) subCtx.lookup(name);
-          if (LOG.isDebugEnabled())  {
-            LOG.debug("Subcontext " + name + " already exists");
-          }
-        } catch (NameNotFoundException e) {
-          subCtx = subCtx.createSubcontext(name);
-          if (LOG.isDebugEnabled())  {
-            LOG.debug("Subcontext " + name + " created");
-          }
-        }
-      }
-      subCtx.rebind(names.get(names.size() - 1), _object);
-      if (LOG.isDebugEnabled())  {
-        LOG.debug("Bound object to " + names.get(names.size() - 1));
-      }
+    /**
+     * Private constructor so that this utility class could not be
+     * instantiated.
+     */
+    private Util()
+    {
     }
-  }
+
+    /**
+     * Bing given object at the given name path within given name context.
+     *
+     * @param _ctx      naming context
+     * @param _nameStr  string with complete name path
+     * @param _object   object to bind
+     * @throws NamingException if bind failed
+     */
+    public static void bind(final Context _ctx,
+                            final String _nameStr,
+                            final Object _object)
+        throws NamingException
+    {
+        final Name names = _ctx.getNameParser("").parse(_nameStr);
+        if (names.size() > 0)  {
+            Context subCtx = _ctx;
+            for (int idx = 0; idx < names.size() - 1; idx++)  {
+                final String name = names.get(idx);
+                try {
+                    subCtx = (Context) subCtx.lookup(name);
+                    if (Util.LOG.isDebugEnabled())  {
+                        Util.LOG.debug("Subcontext " + name + " already exists");
+                    }
+                } catch (final NameNotFoundException e) {
+                    subCtx = subCtx.createSubcontext(name);
+                    if (Util.LOG.isDebugEnabled())  {
+                        Util.LOG.debug("Subcontext " + name + " created");
+                    }
+                }
+            }
+            subCtx.rebind(names.get(names.size() - 1), _object);
+            if (Util.LOG.isDebugEnabled())  {
+                Util.LOG.debug("Bound object to " + names.get(names.size() - 1));
+            }
+        }
+    }
 }

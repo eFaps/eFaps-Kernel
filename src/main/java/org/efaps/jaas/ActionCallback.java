@@ -23,59 +23,58 @@ package org.efaps.jaas;
 import javax.security.auth.callback.Callback;
 
 /**
- * The class defines with which action the Callback is made. It defines e.g. the
- * difference between a login and an import of all persons.
+ * The class defines with which action the call back is made. It defines e.g.
+ * the difference between a login and an import of all persons.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class ActionCallback implements Callback {
+public class ActionCallback
+    implements Callback
+{
+    /**
+     * Defines all possible modes of the call back.
+     */
+    public enum Mode {
+        /** A List of all persons is needed. */
+        ALL_PERSONS,
+        /** A 'normal' login is done. Name and Password must be checked. */
+        LOGIN,
+        /** Information about a person is needed. Password is not to check */
+        PERSON_INFORMATION,
+        /** The Password is set. The right to change the password must be checked */
+        SET_PASSWORD,
+        /** Mode is undefined. An exception should be thrown. */
+        UNDEFINED
+    }
 
-  public enum Mode {
-    /** A List of all persons is needed. */
-    ALL_PERSONS,
-    /** A 'normal' login is done. Name and Password must be checked. */
-    LOGIN,
-    /** Information about a person is needed. Password is not to check */
-    PERSON_INFORMATION,
-    /** The Password is set. The right to change the password must be checked */
-    SET_PASSWORD,
-    /** Mode is undefined. An exception should be thrown. */
-    UNDEFINED
-  }
+    /**
+     * @see #setMode(Mode)
+     * @see #getMode()
+     */
+    private Mode mode = ActionCallback.Mode.UNDEFINED;
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance variables
+    /**
+     * This is the setter method for instance variable {@link #mode}.
+     *
+     * @param _mode new value for instance variable {@link #mode}
+     * @see #mode
+     * @see #getMode()
+     */
+    public void setMode(final Mode _mode)
+    {
+        this.mode = _mode;
+    }
 
-  /**
-   * @see #setMode
-   * @see #getMode
-   */
-  private Mode mode = Mode.UNDEFINED;
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // getter and setter methods
-
-  /**
-   * This is the setter method for instance variable {@link #mode}.
-   *
-   * @param _id
-   *                new value for instance variable {@link #mode}
-   * @see #mode
-   * @see #getMode
-   */
-  public void setMode(final Mode _mode) {
-    this.mode = _mode;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #mode}.
-   *
-   * @return the value of the instance variable {@link #mode}.
-   * @see #mode
-   * @see #setMode
-   */
-  public Mode getMode() {
-    return this.mode;
-  }
+    /**
+     * This is the getter method for instance variable {@link #mode}.
+     *
+     * @return the value of the instance variable {@link #mode}.
+     * @see #mode
+     * @see #setMode(Mode)
+     */
+    public Mode getMode()
+    {
+        return this.mode;
+    }
 }

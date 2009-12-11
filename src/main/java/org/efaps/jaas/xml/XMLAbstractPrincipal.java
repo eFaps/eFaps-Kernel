@@ -28,58 +28,57 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * The abstract class is used to implement the person, role and group principal
  * instances used by class {@link XMLUserLoginModule}.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public abstract class XMLAbstractPrincipal implements Principal  {
+public abstract class XMLAbstractPrincipal
+    implements Principal
+{
+    /**
+     * The instance variable stores the name of the principal.
+     *
+     * @see #getName
+     * @see #setName
+     */
+    private String name = null;
 
-  /////////////////////////////////////////////////////////////////////////////
-  // instance variables
+    /**
+     * Returns the name of this principal stored in instance variable
+     * {@link #name}.
+     *
+     * @return name of this principal
+     * @see #name
+     * @see #setName
+     */
+    public String getName()
+    {
+        return this.name;
+    }
 
-  /**
-   * The instance variable stores the name of the principal.
-   *
-   * @see #getName
-   * @see #setName
-   */
-  private String name = null;
+    /**
+     * Sets the name of this principal stored in instance variable
+     * {@link #name}. The method must be public, because it is set from the XML
+     * to bean converter in {@link XMLUserLoginModule}.
+     *
+     * @param _name new name to set for this principal
+     * @see #name
+     * @see #getName
+     */
+    public void setName(final String _name)
+    {
+        this.name = _name;
+    }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // getter and setter methods
-
-  /**
-   * Returns the name of this principal stored in instance variable
-   * {@link #name}.
-   *
-   * @return name of this principal
-   * @see #name
-   * @see #setName
-   */
-  public String getName()  {
-    return this.name;
-  }
-
-  /**
-   * Sets the name of this principal stored in instance variable
-   * {@link #name}. The method must be public, because it is set from the XML
-   * to bean converter in {@link XMLUserLoginModule}.
-   *
-   * @param _name new name to set for this principal
-   * @see #name
-   * @see #getName
-   */
-  public void setName(final String _name)  {
-    this.name = _name;
-  }
-
-  /**
-   * Returns a string representation of this principal.
-   *
-   * @return string representation of this principal
-   */
-  public String toString()  {
-    return new ToStringBuilder(this)
-        .append("name", getName())
-        .toString();
-  }
+    /**
+     * Returns a string representation of this principal.
+     *
+     * @return string representation of this principal
+     */
+    @Override()
+    public String toString()
+    {
+        return new ToStringBuilder(this)
+            .append("name", getName())
+            .toString();
+    }
 }

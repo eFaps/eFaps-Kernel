@@ -32,13 +32,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
@@ -47,541 +41,558 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This class presents the main Object for the import of Data into eFaps and the
- * connected Database.<br>
- * <br>
- * Every InsertObject can be a child to an other InsertObject, so that a
- * parent-child-hirachie can be constructed. The first InsertObject must be the
- * child to a {@code org.efaps.importer.RootObject}.
+ * <p>This class presents the main Object for the import of Data into eFaps and
+ * the connected Database.</p>
+ * <p>Every &quot;insert object&quot; can be a child to an other &quot;insert
+ * object&quot;, so that a parent-child hierarchy can be constructed. The first
+ * &quot;insert object&quot; must be the child to a
+ * {@link RootObject root object}.</p>
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class InsertObject extends AbstractObject {
-  /**
-   * Logger for this class
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(InsertObject.class);
+public class InsertObject
+    extends AbstractObject
+{
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(InsertObject.class);
 
-  /**
-   * contains the Name of the Type of the current InsertObeject
-   */
-  private String type = null;
+    /**
+     *Name of the Type of the current insert object.
+     */
+    private String type;
 
-  /**
-   * Map containing all Attributes of this InsertObject
-   */
-  private final Map<String, Object> attributes = new HashMap<String, Object>();
+    /**
+     * Map containing all Attributes of this insert object.
+     */
+    private final Map<String, Object> attributes = new HashMap<String, Object>();
 
-  /**
-   * contains the Name of the Attribute, wich presents the
-   * parent-child-relation, for this InsertObject
-   */
-  private String parentAttribute = null;
+    /**
+     * Name of the attribute, which presents the parent-child-relation for this
+     * insert object.
+     */
+    private String parentAttribute;
 
-  /**
-   * contains all Childs of this Insertobject
-   */
-  private final Map<String, List<AbstractObject>> childs =
-      new HashMap<String, List<AbstractObject>>();
+    /**
+     * Contains all children of this insert object.
+     */
+    private final Map<String, List<AbstractObject>> childs = new HashMap<String, List<AbstractObject>>();
 
-  /**
-   * contains the ID for this InsertObject
-   */
-  private String id = null;
+    /**
+     * Contains the id for this insert object.
+     */
+    private String id;
 
-  /**
-   * contains all {@link ForeignObjects} of this InsertObject
-   */
-  private final Set<ForeignObject> links = new HashSet<ForeignObject>();
+    /**
+     * Contains all links to {@link ForeignObject foreign objects} of this
+     * insert object.
+     */
+    private final Set<ForeignObject> links = new HashSet<ForeignObject>();
 
-  /**
-   * contains all Attributes wich are defined as unique for this InsertObejct
-   */
-  private final Set<String> uniqueAttributes = new HashSet<String>();
+    /**
+     * Contains all Attributes which are defined as unique for this insert
+     * object.
+     */
+    private final Set<String> uniqueAttributes = new HashSet<String>();
 
-  /**
-   * contains the CheckinObject, if the InsertObject contains one
-   */
-  private CheckinObject ceckInObject = null;
+    /**
+     * Contains the checkin object if this insert object contains one.
+     */
+    private CheckinObject checkInObject;
 
-  public InsertObject() {
-
-  }
-
-  /**
-   * Constructor used by {@link InsertObjectFactory}
-   *
-   * @param _type
-   *                Type of the InsertObject
-   */
-  public InsertObject(final String _type) {
-    LOG.info("Creating new " + _type);
-    setType(_type);
-  }
-
-  /**
-   * set the Type of the InsertObject
-   *
-   * @param _type
-   *                Type of the InsertObject
-   */
-  public void setType(final String _type) {
-    this.type = _type;
-  }
-
-  /**
-   * adds an Attribute to the <code>attributes</code> of this InsertObject and
-   * in the case that the Parameter "_unique" equals "true" the Attribute will
-   * also be added to the <code>uniqueAttributes.</code>
-   *
-   * @param _Name
-   *                Name of the Attribute
-   * @param _Value
-   *                Value of the Attribute
-   * @param _unique
-   *                if _unique equals "true" the Attribute will be added to the
-   *                uniqueAttributes of this InsertObject
-   */
-  public void addAttribute(final String _Name, final String _Value,
-      final String _unique) {
-    this.attributes.put(_Name, _Value.trim());
-
-    if (_unique != null && _unique.equals("true")) {
-      this.uniqueAttributes.add(_Name);
-    }
-  }
-
-  /**
-   * sets the <code>parentAttribute</code> of this InsertObject. If the
-   * Parameter "_unique" equals "true" the Attribute will also be added to the
-   * <code>uniqueAttributes.</code>
-   *
-   * @param _ParentAttribute
-   *                Name of the Attribute
-   * @param _unique
-   *                if _unique equals "true" the Attribute will be added to the
-   *                uniqueAttributes of this InsertObject
-   */
-  public void setParentAttribute(final String _ParentAttribute,
-      final String _unique) {
-    this.parentAttribute = _ParentAttribute;
-
-    if (_unique != null && _unique.equals("true")) {
-      this.uniqueAttributes.add(_ParentAttribute);
+    /**
+     * Default constructor.
+     */
+    public InsertObject()
+    {
     }
 
-  }
-
-  /**
-   * adds a Child to this InsertObject seperated for the diferend Types. If the
-   * Type of the InsertObject is also an OrderObject, the Childs will be sorted.
-   *
-   * @param _object
-   *                Child to be added
-   */
-  public void addChild(final AbstractObject _object) {
-    List<AbstractObject> list = this.childs.get(_object.getType());
-    if (list == null) {
-
-      list = new ArrayList<AbstractObject>();
-      this.childs.put(_object.getType(), list);
-      list.add(_object);
-    } else {
-
-      list.add(_object);
-      if (RootObject.getOrder(_object.getType()) != null) {
-
-        final TreeSet<AbstractObject> treeSet =
-            new TreeSet<AbstractObject>(RootObject.getOrder(_object.getType()));
-
-        treeSet.addAll(list);
-        list.clear();
-        list.addAll(treeSet);
-      }
-
+    /**
+     * Constructor used by
+     * {@link InsertObjectFactory#createObject(org.xml.sax.Attributes)}.
+     *
+     * @param _type     type of the insert object
+     */
+    public InsertObject(final String _type)
+    {
+        InsertObject.LOG.info("Creating new " + _type);
+        setType(_type);
     }
-  }
 
-  @Override
-  public boolean hasChilds() {
-
-    return this.childs.size() > 0;
-  }
-
-  /**
-   * adds a ForeignObject to this InsertObject
-   *
-   * @param _Object
-   *                ForeignObject to be added
-   */
-  public void addLink(final ForeignObject _Object) {
-    this.links.add(_Object);
-
-  }
-
-  /**
-   * adds a <code>uniqueAttributes</code>
-   *
-   * @param _unique
-   *                the Attribute will be added if the Parameter equals "true"
-   * @param _Name
-   *                Name of the Attribute
-   */
-  public void addUniqueAttribute(final String _unique, final String _Name) {
-    if (_unique != null && _unique.equals("true")) {
-      this.uniqueAttributes.add(_Name);
+    /**
+     * Defines the type of this insert object.
+     *
+     * @param _type     type of this insert object
+     */
+    public void setType(final String _type)
+    {
+        this.type = _type;
     }
-  }
 
-  @Override
-  public void setID(final String _id) {
-    this.id = _id;
-  }
-
-  @Override
-  public void dbAddChilds() {
-
-    String ID = null;
-    boolean noInsert = false;
-
-    for (final List<AbstractObject> list : this.childs.values()) {
-      for (final AbstractObject object : list) {
-        noInsert = false;
-
-        if (LOG.isInfoEnabled()) {
-          LOG.info("adding Child:" + object.getType());
+    /**
+     * Adds an Attribute to the {@link #attributes} of this insert object and
+     * in the case that the parameter <code>_unique</code> equals <i>true</i>
+     * the attribute will also be added to the {@link #uniqueAttributes}.
+     *
+     * @param _name     name of the attribute
+     * @param _value    value of the attribute
+     * @param _unique   if <i>true</i> the attribute will be added to the
+     *                  {@link #uniqueAttributes} of this insert object
+     */
+    public void addAttribute(final String _name,
+                             final String _value,
+                             final String _unique)
+    {
+        this.attributes.put(_name, _value.trim());
+        if (_unique != null && _unique.equals("true")) {
+            this.uniqueAttributes.add(_name);
         }
-        if (LOG.isDebugEnabled()) {
-          LOG.debug("this: " + toString());
-          LOG.debug("Cild: " + object.toString());
+    }
+
+    /**
+     * Defines the {@link #parentAttribute parent attribute} of this insert
+     * object. If the parameter <code>_unique</code> equals <i>true</i> the
+     * attribute will also be added to the {@link #uniqueAttributes}.
+     *
+     * @param _parentAttribute  name of the Attribute
+     * @param _unique           if <i>true</i> the attribute will be also added
+     *                          to the {@link #uniqueAttributes}
+     */
+    public void setParentAttribute(final String _parentAttribute,
+                                   final String _unique)
+    {
+        this.parentAttribute = _parentAttribute;
+        if ((_unique != null) && "true".equals(_unique)) {
+            this.uniqueAttributes.add(_parentAttribute);
         }
-        try {
-          if (object.getUniqueAttributes().size() > 0) {
+    }
 
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes(object.getType());
-            query.addSelect("ID");
-            for (final String element : object.getUniqueAttributes()) {
+    /**
+     * Adds a child to this insert object separated for the different types. If
+     * the type of the insert object is also an order object, the children will
+     * be sorted.
+     *
+     * @param _object   child to be added
+     */
+    public void addChild(final AbstractObject _object)
+    {
+        List<AbstractObject> list = this.childs.get(_object.getType());
+        if (list == null) {
+            list = new ArrayList<AbstractObject>();
+            this.childs.put(_object.getType(), list);
+            list.add(_object);
+        } else {
+            list.add(_object);
+            if (RootObject.getOrder(_object.getType()) != null) {
+                final TreeSet<AbstractObject> treeSet
+                    = new TreeSet<AbstractObject>(RootObject.getOrder(_object.getType()));
+                treeSet.addAll(list);
+                list.clear();
+                list.addAll(treeSet);
+            }
+        }
+    }
 
-              if (object.getAttributes().get(element) != null) {
-                query.addWhereExprEqValue(element, object.getAttributes().get(
-                    element).toString());
+    /**
+     * Checks if {@link #childs} is not empy meaning that this insert object
+     * has children.
+     *
+     * @return <i>true</i> if this insert object has children; otherwise
+     *         <i>false</i>
+     * @see #childs
+     */
+    @Override()
+    public boolean hasChilds()
+    {
+        return !this.childs.isEmpty();
+    }
 
-              }
+    /**
+     * Links given foreign <code>_object</code> to this insert object.
+     *
+     * @param _object   foreign object to link
+     * @see #links
+     */
+    public void addLink(final ForeignObject _object)
+    {
+        this.links.add(_object);
+    }
 
-              if (object.getParrentAttribute() != null
-                  && object.getParrentAttribute().equals(element)) {
-                query.addWhereExprEqValue(element, this.id);
+    /**
+     * Adds the attribute with <code>_name</code> to the
+     * {@link #uniqueAttributes} if <code>_unique</code> is equals true.
+     *
+     * @param _unique   the attribute will be added if equals "true"
+     * @param _name     name of the attribute
+     * @see #uniqueAttributes
+     */
+    public void addUniqueAttribute(final String _unique,
+                                   final String _name)
+    {
+        if ((_unique != null) && "true".equals(_unique)) {
+            this.uniqueAttributes.add(_name);
+        }
+    }
 
-              }
-              for (final ForeignObject link : object.getLinks()) {
-                if (link.getLinkAttribute().equals(element)) {
-                  final String foreignValue = link.dbGetValue();
-                  if (foreignValue != null) {
-                    query.addWhereExprEqValue(element, foreignValue);
+    /**
+     * Defines the new <code>_id</code> of this insert object.
+     *
+     * @param _id   new id of the insert object
+     * @see #id
+     */
+    @Override()
+    public void setID(final String _id)
+    {
+        this.id = _id;
+    }
 
-                  } else {
-                    noInsert = true;
-                  }
+    @Override()
+    public void dbAddChilds()
+    {
+        String newId = null;
+        boolean noInsert = false;
+        for (final List<AbstractObject> list : this.childs.values()) {
+            for (final AbstractObject object : list) {
+                noInsert = false;
+                if (InsertObject.LOG.isInfoEnabled()) {
+                    InsertObject.LOG.info("adding Child:" + object.getType());
                 }
-              }
+                if (InsertObject.LOG.isDebugEnabled()) {
+                    InsertObject.LOG.debug("this: " + toString());
+                    InsertObject.LOG.debug("Cild: " + object.toString());
+                }
+                try {
+                    if (object.getUniqueAttributes().size() > 0) {
 
+                        final SearchQuery query = new SearchQuery();
+                        query.setQueryTypes(object.getType());
+                        query.addSelect("ID");
+                        for (final String element : object.getUniqueAttributes()) {
+                            if (object.getAttributes().get(element) != null) {
+                                query.addWhereExprEqValue(element, object.getAttributes().get(element).toString());
+                            }
+                            if (object.getParrentAttribute() != null
+                                    && object.getParrentAttribute().equals(element)) {
+                                query.addWhereExprEqValue(element, this.id);
+                            }
+                            for (final ForeignObject link : object.getLinks()) {
+                                if (link.getLinkAttribute().equals(element)) {
+                                    final String foreignValue = link.dbGetValue();
+                                    if (foreignValue != null) {
+                                        query.addWhereExprEqValue(element, foreignValue);
+                                    } else {
+                                        noInsert = true;
+                                    }
+                                }
+                            }
+                        }
+                        query.executeWithoutAccessCheck();
+                        if (query.next() && !noInsert) {
+                            newId = object.dbUpdateOrInsert(this, query.get("ID").toString());
+                        } else {
+                            if (noInsert && !object.hasChilds()) {
+                                InsertObject.LOG.error("sskipt: " + object.toString());
+                            } else {
+                                newId = object.dbUpdateOrInsert(this, "");
+                            }
+                        }
+                        query.close();
+                    } else {
+                        newId = object.dbUpdateOrInsert(this, "");
+                    }
+                    object.setID(newId);
+
+                    if (object.isCheckinObject()) {
+                        object.dbCheckObjectIn();
+                    }
+                } catch (final EFapsException e) {
+                    InsertObject.LOG.error("dbAddChilds() " + toString(), e);
+                } catch (final Exception e) {
+                    InsertObject.LOG.error("dbAddChilds() " + toString(), e);
+                }
             }
-            query.executeWithoutAccessCheck();
+        }
 
-            if (query.next() && !noInsert) {
-              ID = object.dbUpdateOrInsert(this, query.get("ID").toString());
+        for (final List<AbstractObject> list : this.childs.values()) {
+            for (final AbstractObject object : list) {
+                object.dbAddChilds();
+            }
+        }
+    }
 
+    /**
+     * Method to create or update an object.
+     *
+     * @param _parent   parent object of this object
+     * @param _id       id of the object to be updated, if empty string "" is
+     *                  given an insert will be made
+     * @return string with the id of the new or updated object,
+     *         <code>null</code> if the creation of the new object was skipped,
+     *         because of a foreign object was not found
+     */
+    @Override()
+    public String dbUpdateOrInsert(final AbstractObject _parent,
+                                   final String _id)
+    {
+        Boolean noInsert = false;
+        String newId = null;
+        try {
+            Update upIn;
+            if ("".equals(_id))  {
+                upIn = new Update(Type.get(this.type), _id);
             } else {
-              if (noInsert && object.hasChilds() == false) {
-                LOG.error("skipt: " + object.toString());
-              } else {
-
-                ID = object.dbUpdateOrInsert(this, "");
-              }
+                upIn = new Insert(this.type);
             }
-            query.close();
-          } else {
-            ID = object.dbUpdateOrInsert(this, "");
-
-          }
-          object.setID(ID);
-
-          if (object.isCheckinObject()) {
-            object.dbCheckObjectIn();
-          }
-
-        }
-
-        catch (final EFapsException e) {
-
-          LOG.error("dbAddChilds() " + toString(), e);
+            for (final Entry<String, Object> element : getAttributes().entrySet()) {
+                if (element.getValue() instanceof DateTime) {
+                    upIn.add(element.getKey().toString(), (DateTime) element.getValue());
+                } else {
+                    upIn.add(element.getKey().toString(), element.getValue().toString());
+                }
+            }
+            if (getParrentAttribute() != null) {
+                upIn.add(getParrentAttribute(), _parent.getID());
+            }
+            for (final ForeignObject link : getLinks()) {
+                final String foreignValue = link.dbGetValue();
+                if (foreignValue != null) {
+                    upIn.add(link.getLinkAttribute(), foreignValue);
+                } else {
+                    noInsert = true;
+                    InsertObject.LOG.error("skipt: " + toString());
+                }
+            }
+            if (!noInsert) {
+                upIn.executeWithoutAccessCheck();
+                newId = upIn.getId();
+                upIn.close();
+            }
+        } catch (final EFapsException e) {
+            InsertObject.LOG.error("dbUpdateOrInsert() " + toString(), e);
+            newId = null;
         } catch (final Exception e) {
-
-          LOG.error("dbAddChilds() " + toString(), e);
+            InsertObject.LOG.error("dbUpdateOrInsert() " + toString(), e);
+            newId = null;
         }
-      }
+        return newId;
     }
 
-    for (final List<AbstractObject> list : this.childs.values()) {
-      for (final AbstractObject object : list) {
-        object.dbAddChilds();
-      }
+    /**
+     * Returns the {@link #id} of the insert object.
+     *
+     * @return id of the insert object
+     * @see #id
+     */
+    @Override()
+    public String getID()
+    {
+        return this.id;
     }
-  }
 
-  /**
-   * Method to Create the Update or Insert of the Datebase
-   *
-   * @param _parent
-   *                Parent-Object of this Object
-   * @param _ID
-   *                Id of the Object to be updated, if "" is given a Insert will
-   *                be made
-   * @return String with the ID of the new or updated Object, null if the
-   *         creation of the new object was skipped, because of a foreign Object
-   *         was not found
-   */
-  @Override
-  public String dbUpdateOrInsert(final AbstractObject _parent, final String _ID) {
-    Boolean noInsert = false;
-    String ID = null;
-    try {
-      Update UpIn;
-      if (_ID != "") {
+    /**
+     * Returns the {@link #type} of the insert object.
+     *
+     * @return type of insert object
+     * @see #type
+     */
+    @Override()
+    public String getType()
+    {
+        return this.type;
+    }
 
-        UpIn = new Update(Type.get(this.type), _ID);
-
-      } else {
-
-        UpIn = new Insert(this.type);
-
-      }
-
-      for (final Entry<String, Object> element : getAttributes().entrySet()) {
-        if (element.getValue() instanceof DateTime) {
-
-          UpIn.add(element.getKey().toString(), (DateTime) element.getValue());
-
-        } else {
-          UpIn.add(element.getKey().toString(), element.getValue().toString());
+    @Override()
+    public Map<String, Object> getAttributes()
+    {
+        for (final Entry<String, Object> element : this.attributes.entrySet()) {
+            final Attribute attribute = Type.get(this.type).getAttribute(element.getKey().toString());
+// TODO das ist nur ein
+// hack damit CreatedType als DateTimeType behandelt werden kann
+            if (attribute.getAttributeType().getClassRepr().getName().equals(
+                    "org.efaps.admin.datamodel.attributetype.DateTimeType")
+                || attribute.getAttributeType().getClassRepr().getName().equals(
+                    "org.efaps.admin.datamodel.attributetype.CreatedType")) {
+                final DateTimeFormatter fmt;
+                if (RootObject.DATEFORMAT == null) {
+                    fmt = ISODateTimeFormat.dateTime();
+                } else {
+                    fmt = DateTimeFormat.forPattern(RootObject.DATEFORMAT);
+                }
+                final DateTime date = fmt.parseDateTime(element.getValue().toString());
+                this.attributes.put(element.getKey(), date);
+            }
         }
-      }
-      if (getParrentAttribute() != null) {
-        UpIn.add(getParrentAttribute(), _parent.getID());
-      }
-      for (final ForeignObject link : getLinks()) {
+        return this.attributes;
+    }
 
-        final String foreignValue = link.dbGetValue();
-        if (foreignValue != null) {
-          UpIn.add(link.getLinkAttribute(), foreignValue);
-        } else {
-          noInsert = true;
-          LOG.error("skipt: " + toString());
+    @Override()
+    public Object getAttribute(final String _attribute)
+    {
+        return (this.attributes.get(_attribute));
+    }
+
+    @Override()
+    public String getParrentAttribute()
+    {
+        return this.parentAttribute;
+    }
+
+    /**
+     * Returns the set of all {@link #links}.
+     *
+     * @return all links
+     * @see #links
+     */
+    @Override()
+    public Set<ForeignObject> getLinks()
+    {
+        return this.links;
+    }
+
+    /**
+     * Returns the set of all {@link #uniqueAttributes unique attributes}.
+     *
+     * @return set of all unique attributes
+     * @see #uniqueAttributes
+     */
+    @Override()
+    public Set<String> getUniqueAttributes()
+    {
+        return this.uniqueAttributes;
+    }
+
+    /**
+     * Initializes {@link #checkInObject} with a new instance depending on the
+     * file <code>_name</code> and the <code>_url</code> of the check in
+     * object.
+     *
+     * @param _name     name of the check in object
+     * @param _url      URL to the File of the check in object
+     * @see #checkInObject
+     */
+    public void setCheckinObject(final String _name,
+                                 final String _url)
+    {
+        this.checkInObject = new CheckinObject(_name, _url);
+    }
+
+    /**
+     * Checks if a check in object for this insert object is defined.
+     *
+     * @return <i>true</i> if a check in object exists (meaning a file must be
+     *         checked in); otherwise <i>false</i>
+     */
+    @Override()
+    public boolean isCheckinObject()
+    {
+        return (this.checkInObject != null);
+    }
+
+    @Override()
+    public void dbCheckObjectIn()
+    {
+        final Checkin checkin = new Checkin(Instance.get(this.type, this.id));
+        try {
+            checkin.executeWithoutAccessCheck(this.checkInObject.getName(), this.checkInObject.getInputStream(), -1);
+        } catch (final EFapsException e) {
+            InsertObject.LOG.error("checkObjectin() " + toString(), e);
+        }
+    }
+
+    /**
+     * Returns the link representation for this insert object including the
+     * {@link #type}, {@link #parentAttribute parent attribute} and all
+     * {@link #links}.
+     *
+     * @return string representation of this class
+     */
+    @Override()
+    public String toString()
+    {
+        return new ToStringBuilder(this)
+            .appendSuper(super.toString())
+            .append("type", this.type)
+            .append("parent attribute", this.parentAttribute)
+            .append("links", this.links.toString())
+            .toString();
+    }
+
+    /**
+     * Class to store the information, needed to check in a insert object.
+     */
+    public class CheckinObject
+    {
+        /**
+         * Contains the file name of the check in object.
+         */
+        private String name = null;
+
+        /**
+         * Contains the URL to the file.
+         */
+        private String url = null;
+
+        /**
+         * Constructor setting the {@link #name file name} and the
+         * {@link #url URL} of the check in object.
+         *
+         * @param _name     file name of the check in object
+         * @param _url      URL to the File
+         */
+        public CheckinObject(final String _name,
+                             final String _url)
+        {
+            this.name = _name.trim();
+            this.url = _url.trim();
         }
 
-      }
-      if (!noInsert) {
-        UpIn.executeWithoutAccessCheck();
-
-        ID = UpIn.getId();
-        UpIn.close();
-      }
-      return ID;
-    } catch (final EFapsException e) {
-      LOG.error("dbUpdateOrInsert() " + toString(), e);
-    } catch (final Exception e) {
-      LOG.error("dbUpdateOrInsert() " + toString(), e);
-    }
-
-    return null;
-  }
-
-  @Override
-  public String getID() {
-    return this.id;
-  }
-
-  @Override
-  public String getType() {
-    return this.type;
-
-  }
-
-  @Override
-  public Map<String, Object> getAttributes() {
-    for (final Entry<String, Object> element : this.attributes.entrySet()) {
-
-      final Attribute attribute =
-          Type.get(this.type).getAttribute(element.getKey().toString());
-      // TODO das ist nur ein
-      // hack damit CreatedType als DateTimeType behandelt werden kann
-      if (attribute.getAttributeType().getClassRepr().getName().equals(
-          "org.efaps.admin.datamodel.attributetype.DateTimeType")
-          || attribute.getAttributeType().getClassRepr().getName().equals(
-              "org.efaps.admin.datamodel.attributetype.CreatedType")) {
-        final DateTimeFormatter fmt;
-        if (RootObject.DATEFORMAT == null) {
-          fmt = ISODateTimeFormat.dateTime();
-        } else {
-          fmt = DateTimeFormat.forPattern(RootObject.DATEFORMAT);
+        /**
+         * Returns the file name of the check in object.
+         *
+         * @return file name of the check in object
+         * @see #name
+         */
+        public String getName()
+        {
+            return this.name;
         }
-        final DateTime date = fmt.parseDateTime(element.getValue().toString());
 
-        this.attributes.put(element.getKey(), date);
-      }
+        /**
+         * Returns the {@link #url URL} of the check in object.
+         *
+         * @return URL to the file
+         * @see #url
+         */
+        public String getURL()
+        {
+            return this.url;
+        }
+
+        /**
+         * Returns an input stream of the file to check in.
+         *
+         * @return input stream of the file
+         */
+        public InputStream getInputStream()
+        {
+            InputStream inputstream;
+            try {
+                inputstream = new FileInputStream(this.url);
+            } catch (final FileNotFoundException e) {
+                InsertObject.LOG.error("getInputStream()", e);
+                inputstream = null;
+            }
+            return inputstream;
+        }
     }
-    return this.attributes;
-  }
-
-  @Override
-  public Object getAttribute(final String _attribute) {
-
-    return (this.attributes.get(_attribute));
-  }
-
-  @Override
-  public String getParrentAttribute() {
-
-    return this.parentAttribute;
-  }
-
-  @Override
-  public Set<ForeignObject> getLinks() {
-
-    return this.links;
-  }
-
-  @Override
-  public Set<String> getUniqueAttributes() {
-    return this.uniqueAttributes;
-  }
-
-  /**
-   * method to Create a new {@link CheckinObject} and store it
-   *
-   * @param _Name
-   *                Name of the CheckinObject
-   * @param _URL
-   *                URL to the File of the CheckinObject
-   */
-  public void setCheckinObject(final String _Name, final String _URL) {
-    this.ceckInObject = new CheckinObject(_Name, _URL);
-
-  }
-
-  @Override
-  public boolean isCheckinObject() {
-    if (this.ceckInObject != null) {
-      return true;
-    }
-    return false;
-  }
-
-  @Override
-  public void dbCheckObjectIn() {
-
-    final Checkin checkin = new Checkin(Instance.get(this.type, this.id));
-
-    try {
-      checkin.executeWithoutAccessCheck(this.ceckInObject.getName(),
-          this.ceckInObject.getInputStream(), -1);
-    } catch (final EFapsException e) {
-
-      LOG.error("checkObjectin() " + toString(), e);
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
-  @Override
-  public String toString() {
-
-    final StringBuilder tmp = new StringBuilder();
-    tmp.append("Type: ");
-    tmp.append(this.type);
-    tmp.append(" - ParentAttribute: ");
-    tmp.append(this.parentAttribute);
-    tmp.append(" - Attributes: ");
-    tmp.append(this.attributes.toString());
-    tmp.append(" - Links: ");
-    tmp.append(this.links.toString());
-    return tmp.toString();
-  }
-
-  /**
-   * Class to store the Information, needed to Check in a InsertObject
-   *
-   * @author jmox
-   * @version $Id$
-   *
-   */
-  public class CheckinObject {
-
-    /**
-     * contains the Filename of the CheckinObject
-     */
-    private String name = null;
-
-    /**
-     * contains the URL to the File
-     */
-    private String url = null;
-
-    /**
-     * constructor setting the Filename and the URL of the CheckinObject
-     *
-     * @param _name
-     *                Filename of the CheckinObject
-     * @param _url
-     *                URL to the File
-     */
-    public CheckinObject(final String _name, final String _url) {
-      this.name = _name.trim();
-      this.url = _url.trim();
-    }
-
-    /**
-     * get the Name of the CheckinObject
-     *
-     * @return Filename of the CheckinObject
-     */
-    public String getName() {
-      return this.name;
-    }
-
-    /**
-     * get the URL of the CheckinObject
-     *
-     * @return URL to the File
-     */
-    public String getURL() {
-      return this.url;
-    }
-
-    /**
-     * get an Inputstream of the File to check in
-     *
-     * @return Inputstream of the File
-     */
-    public InputStream getInputStream() {
-      try {
-        final InputStream inputstream = new FileInputStream(this.url);
-        return inputstream;
-      } catch (final FileNotFoundException e) {
-
-        LOG.error("getInputStream()", e);
-      }
-
-      return null;
-
-    }
-  }
-
 }

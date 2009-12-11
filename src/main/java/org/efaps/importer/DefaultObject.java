@@ -24,83 +24,81 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Thsi Class represents the Possibility to define default Values, for the Case
+ * This Class represents the Possibility to define default Values, for the Case
  * a Foreign-Object returns a invalid Value. <br>
  * <br>
  * Example for the XML-Structure:<br/> &lt;definition&gt;<br/> &lt;default
  * type="Admin_User_Person" name="Creator"&gt;1&lt;/default&gt;<br/>
  * &lt;/definition&gt; <br>
  * <br>
- * The Value can also be retrived by a ForeignObject.
+ * The Value can also be d by a ForeignObject.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class DefaultObject {
-  /**
-   * contains the Defaults defined for this Import
-   */
-  final static Map<String, DefaultObject> DEFAULTS = new HashMap<String, DefaultObject>();
+public class DefaultObject
+{
+    /**
+     * Contains the defaults defined for this import.
+     */
+    private static final Map<String, DefaultObject> DEFAULTS = new HashMap<String, DefaultObject>();
 
-  /**
-   * contains the {@link ForeignObjects} of this InsertObject
-   */
-  private ForeignObject                   link;
+    /**
+     * Contains the link to the {@link ForeignObject foreign object} of this
+     * default object.
+     */
+    private ForeignObject link;
 
-  /**
-   * contains the Value of the Default
-   */
-  private String                          value    = null;
+    /**
+     * Contains the value of the default.
+     */
+    private String value = null;
 
-  /**
-   * adds a new Dafult to the DEFAULTS
-   *
-   * @param _type
-   *          String containing the Type of the Object
-   * @param _name
-   *          String containing the Name of the Attribute
-   * @param _value
-   *          Value to be Set if the Default will be inserte
-   */
-  public void addDefault(final String _type, final String _name,
-                         final String _value) {
-    this.value = _value;
-    DEFAULTS.put(_type + "/" + _name, this);
-
-  }
-
-  /**
-   * get the DefaultValue of the Object
-   *
-   * @param _type
-   *          String containing the Type of the Object
-   * @param _name
-   *          String containing the Name of the Attribute
-   * @return String containing the DefaultValue, null if not defined
-   */
-  public static String getDefault(final String _type, final String _name) {
-    final DefaultObject def = DEFAULTS.get(_type + "/" + _name);
-    if (def == null) {
-      return null;
-    }
-    String ret = def.value;
-    if (ret.equals("")) {
-      ret = def.link.dbGetValue();
-      def.value = ret;
+    /**
+     * Defines the {@value} and adds a new default to the {@link #DEFAULTS}.
+     *
+     * @param _type     string containing the Type of the Object
+     * @param _name     string containing the Name of the Attribute
+     * @param _value    value to be Set if the Default will be inserted
+     */
+    public void addDefault(final String _type,
+                           final String _name,
+                           final String _value)
+    {
+        this.value = _value;
+        DefaultObject.DEFAULTS.put(_type + "/" + _name, this);
     }
 
-    return ret;
-  }
+    /**
+     * Returns the default value of the object.
+     *
+     * @param _type     type of the Object
+     * @param _name     name of the Attribute
+     * @return string containing the default value, <code>null</code> if not
+     *         defined
+     */
+    public static String getDefault(final String _type,
+                                    final String _name)
+    {
+        final DefaultObject def = DefaultObject.DEFAULTS.get(_type + "/" + _name);
+        String ret = null;
+        if (def != null) {
+            ret = def.value;
+            if (ret.equals("")) {
+                ret = def.link.dbGetValue();
+                def.value = ret;
+            }
+        }
+        return ret;
+    }
 
-  /**
-   * Adds a ForeignObject to this DefaultObject
-   *
-   * @param _Object
-   *          ForeignObject to add
-   */
-  public void addLink(ForeignObject _Object) {
-    this.link = (_Object);
-
-  }
-
+    /**
+     * Adds a foreign object to this default object.
+     *
+     * @param _link     foreign object to add
+     */
+    public void addLink(final ForeignObject _link)
+    {
+        this.link = _link;
+    }
 }

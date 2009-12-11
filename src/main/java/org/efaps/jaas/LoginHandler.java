@@ -20,7 +20,6 @@
 
 package org.efaps.jaas;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
@@ -36,14 +35,13 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.JAASSystem;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The login handler is used to handle the interface between JAAS and eFaps.
@@ -51,442 +49,385 @@ import org.efaps.util.EFapsException;
  * used to test if the user is allowed to login. The method returns then the
  * related person to the given name and password (if found) or <i>null</i> (if
  * not found)..
- * 
- * @author tmo
+ *
+ * @author The eFaps Team
  * @version $Id$
  */
-public class LoginHandler {
+public class LoginHandler
+{
+    /**
+     * Logging instance used to give logging information of this class.
+     */
+    private static Logger LOG = LoggerFactory.getLogger(LoginHandler.class);
 
-  // ////////////////////////////////////////////////////////////////////////////
-  // static variables
+    /**
+     * The name of the application used to create a new login context. The
+     * default value is <code>eFaps</code>.
+     *
+     * @see #checkLogin(String, String)
+     */
+    private String application = "eFaps";
 
-  /**
-   * Logging instance used to give logging information of this class.
-   */
-  private static Logger LOG = LoggerFactory.getLogger(LoginHandler.class);
-
-  // ////////////////////////////////////////////////////////////////////////////
-  // instance variables
-
-  /**
-   * The name of the application used to create a new login context. The default
-   * value is <code>eFaps</code>.
-   * 
-   * @see #checkLogin
-   */
-  private String application = "eFaps";
-
-  // ////////////////////////////////////////////////////////////////////////////
-  // constructors
-
-  /**
-   * Constructor to initialize the login handler. If <i>null</i> is given to
-   * the application name, the default value defined in {@link #application} is
-   * used.
-   * 
-   * @param _application
-   *                application name of the JAAS configuration
-   */
-  public LoginHandler(final String _application) {
-    if (_application != null) {
-      this.application = _application;
-    }
-  }
-
-  // ////////////////////////////////////////////////////////////////////////////
-  // instance methods
-
-  /**
-   * The instance method checks if for the given user the password is correct.
-   * The test itself is done with the JAAS module from Java.<br/> If a person
-   * is found and successfully logged in, the last login information from the
-   * person is updated to current timestamp.
-   * 
-   * @param _name
-   *                name of the person name to check
-   * @param _passwd
-   *                password of the person to check
-   * @return found person
-   * @see #getPerson
-   * @see #createPerson
-   * @see #updatePerson
-   * @see #updateRoles
-   * @see #updateGroups
-   */
-  public Person checkLogin(final String _name, final String _passwd) {
-    Person person = null;
-    try {
-      LoginContext login =
-          new LoginContext(getApplication(), new LoginCallbackHandler(
-              ActionCallback.Mode.LOGIN, _name, _passwd));
-      login.login();
-
-      person = getPerson(login);
-
-      if (person == null) {
-        person = createPerson(login);
-      }
-
-      if (person != null) {
-
-        updatePerson(login, person);
-
-        person.cleanUp();
-
-        updateRoles(login, person);
-        updateGroups(login, person);
-
-        person.updateLastLogin();
-      }
-    } catch (EFapsException e) {
-      LOG.error("login failed for '" + _name + "'", e);
-    } catch (LoginException e) {
-      LOG.error("login failed for '" + _name + "'", e);
-    }
-    return person;
-  }
-
-  /**
-   * For the given JAAS login context the person inside eFaps is searched. If
-   * more than one person is related to the JAAS login context, an exception is
-   * thrown. If no person is found, <i>null</i> is returned.
-   * 
-   * @param _login
-   *                JAAS login context
-   * @return <i>null</i> if no person in eFaps is found for given JAAS login
-   *         context
-   * @throws EFapsException
-   *                 if more than one person for given JAAS login context is
-   *                 found or a method of the principals inside the JAAS login
-   *                 contexts could not be executed.
-   */
-  protected Person getPerson(final LoginContext _login) throws EFapsException {
-    Person person = null;
-    for (JAASSystem system : JAASSystem.getAllJAASSystems()) {
-      Set<?> users =
-          _login.getSubject().getPrincipals(
-              system.getPersonJAASPrincipleClass());
-
-      for (Object persObj : users) {
-        try {
-          String persKey =
-              (String) system.getPersonMethodKey().invoke(persObj);
-
-          Person foundPerson = Person.getWithJAASKey(system, persKey);
-          if (foundPerson == null) {
-            // TODO: muss noch gemacht werden!!! da funkt halt was nicht...
-            // person.assignToJAASSystem(system, persKey);
-          } else if (person == null) {
-            person = foundPerson;
-          } else if (person.getId() != foundPerson.getId()) {
-            LOG.error("For JAAS system " + system.getName() + " "
-                + "person with key '" + persKey + "' is not unique!"
-                + "Have found person '" + person.getName() + "' " + "(id = "
-                + person.getId() + ") and person " + "'"
-                + foundPerson.getName() + "' " + "(id = " + foundPerson.getId()
-                + ").");
-            // TODO: throw exception!!
-          }
-        } catch (IllegalAccessException e) {
-          LOG.error("could not execute person key method for system "
-              + system.getName(), e);
-          // TODO: throw exception!!
-        } catch (IllegalArgumentException e) {
-          LOG.error("could not execute person key method for system "
-              + system.getName(), e);
-          // TODO: throw exception!!
-        } catch (InvocationTargetException e) {
-          LOG.error("could not execute person key method for system "
-              + system.getName(), e);
-          // TODO: throw exception!!
+    /**
+     * Constructor to initialize the login handler. If <i>null</i> is given to
+     * the application name, the default value defined in {@link #application}
+     * is used.
+     *
+     * @param _application  application name of the JAAS configuration
+     */
+    public LoginHandler(final String _application)
+    {
+        if (_application != null) {
+            this.application = _application;
         }
-      }
     }
-    return person;
-  }
 
-  /**
-   * The person represented in the JAAS login context is created and associated
-   * to eFaps. If the person is defined in more than one JAAS system, the person
-   * is also assiciated to the other JAAS systems.
-   * 
-   * @param _login
-   *                JAAS login context
-   * @return Java instance of newly created person
-   * @throws EFapsException
-   *                 if a method of the principals inside the JAAS login
-   *                 contexts could not be executed.
-   */
-  protected Person createPerson(final LoginContext _login)
-      throws EFapsException {
-    Person person = null;
-
-    for (JAASSystem system : JAASSystem.getAllJAASSystems()) {
-      Set<?> users =
-          _login.getSubject().getPrincipals(
-              system.getPersonJAASPrincipleClass());
-      for (Object persObj : users) {
+    /**
+     * The instance method checks if for the given user the password is
+     * correct. The test itself is done with the JAAS module from Java.<br/> If
+     * a person is found and successfully logged in, the last login information
+     * from the person is updated to current time stamp.
+     *
+     * @param _name     name of the person name to check
+     * @param _passwd   password of the person to check
+     * @return found person
+     * @see #getPerson(LoginContext)
+     * @see #createPerson(LoginContext)
+     * @see #updatePerson(LoginContext, Person)
+     * @see #updateRoles(LoginContext, Person)
+     * @see #updateGroups(LoginContext, Person)
+     */
+    public Person checkLogin(final String _name,
+                             final String _passwd)
+    {
+        Person person = null;
         try {
-          String persKey =
-              (String) system.getPersonMethodKey().invoke(persObj);
-          String persName =
-              (String) system.getPersonMethodName().invoke(persObj);
+            final LoginContext login = new LoginContext(
+                    getApplication(),
+                    new LoginCallbackHandler(ActionCallback.Mode.LOGIN, _name, _passwd));
+            login.login();
 
-          if (person == null) {
-            person = Person.createPerson(system, persKey, persName);
-          } else {
-            person.assignToJAASSystem(system, persKey);
-          }
+            person = getPerson(login);
 
-        } catch (IllegalAccessException e) {
-          LOG.error("could not execute a person method for system "
-              + system.getName(), e);
-          // TODO: throw exception!!
-        } catch (IllegalArgumentException e) {
-          LOG.error("could not execute a person method for system "
-              + system.getName(), e);
-          // TODO: throw exception!!
-        } catch (InvocationTargetException e) {
-          LOG.error("could not execute a person method for system "
-              + system.getName(), e);
-          // TODO: throw exception!!
-        }
-      }
-    }
-    return person;
-  }
-
-  /**
-   * The person information inside eFaps is update with information from JAAS
-   * login context.
-   * 
-   * @param _login
-   *                JAAS login context
-   * @param _person
-   *                Java person instance inside eFaps to update
-   * @throws EFapsException
-   *                 if a method of the principals inside the JAAS login
-   *                 contexts could not be executed or the person could not be
-   *                 updated from the values in the JAAS login context.
-   */
-  protected void updatePerson(final LoginContext _login, final Person _person)
-      throws EFapsException {
-
-    for (JAASSystem system : JAASSystem.getAllJAASSystems()) {
-      Set<?> users =
-          _login.getSubject().getPrincipals(
-              system.getPersonJAASPrincipleClass());
-      for (Object persObj : users) {
-        try {
-          for (Map.Entry<Person.AttrName, Method> entry : system
-              .getPersonMethodAttributes().entrySet()) {
-            _person.updateAttrValue(entry.getKey(), (String) entry.getValue()
-                .invoke(persObj));
-          }
-
-        } catch (IllegalAccessException e) {
-          LOG.error("could not execute a person method for system "
-              + system.getName(), e);
-          // TODO: throw exception!!
-        } catch (IllegalArgumentException e) {
-          LOG.error("could not execute a person method for system "
-              + system.getName(), e);
-          // TODO: throw exception!!
-        } catch (InvocationTargetException e) {
-          LOG.error("could not execute a person method for system "
-              + system.getName(), e);
-          // TODO: throw exception!!
-        }
-      }
-    }
-    _person.commitAttrValuesInDB();
-  }
-
-  /**
-   * The roles of the given person are updated with the information from the
-   * JAAS login context.
-   * 
-   * @param _login
-   *                JAAS login context
-   * @param _person
-   *                person for which the roles must be updated
-   * @throws EFapsException
-   *                 if a method of the principals inside the JAAS login
-   *                 contexts could not be executed or the roles for the given
-   *                 person could not be set.
-   */
-  protected void updateRoles(final LoginContext _login, final Person _person)
-      throws EFapsException {
-
-    for (JAASSystem system : JAASSystem.getAllJAASSystems()) {
-      if (system.getRoleJAASPrincipleClass() != null) {
-        Set<?> rolesJaas =
-            _login.getSubject().getPrincipals(
-                system.getRoleJAASPrincipleClass());
-        Set<Role> rolesEfaps = new HashSet<Role>();
-        for (Object roleObj : rolesJaas) {
-          try {
-            String roleKey = (String) system.getRoleMethodKey().invoke(roleObj);
-            Role roleEfaps = Role.getWithJAASKey(system, roleKey);
-            if (roleEfaps != null) {
-              rolesEfaps.add(roleEfaps);
+            if (person == null) {
+                person = createPerson(login);
             }
-          } catch (IllegalAccessException e) {
-            LOG.error("could not execute role key method for system "
-                + system.getName(), e);
-          } catch (IllegalArgumentException e) {
-            LOG.error("could not execute role key method for system "
-                + system.getName(), e);
-          } catch (InvocationTargetException e) {
-            LOG.error("could not execute role key method for system "
-                + system.getName(), e);
-          }
-        }
-        _person.setRoles(system, rolesEfaps);
-      }
-    }
-  }
 
-  /**
-   * The groups of the given person are updated with the information from the
-   * JAAS login context.
-   * 
-   * @param _login
-   *                JAAS login context
-   * @param _person
-   *                person for which the groups must be updated
-   * @throws EFapsException
-   *                 if a method of the principals inside the JAAS login
-   *                 contexts could not be executed or the groups for the given
-   *                 person could not be set.
-   */
-  protected void updateGroups(final LoginContext _login, final Person _person)
-      throws EFapsException {
+            if (person != null) {
+                updatePerson(login, person);
 
-    for (JAASSystem system : JAASSystem.getAllJAASSystems()) {
-      if (system.getGroupJAASPrincipleClass() != null) {
-        Set<?> groupsJaas =
-            _login.getSubject().getPrincipals(
-                system.getGroupJAASPrincipleClass());
-        Set<Group> groupsEfaps = new HashSet<Group>();
-        for (Object groupObj : groupsJaas) {
-          try {
-            String groupKey =
-                (String) system.getGroupMethodKey().invoke(groupObj);
-            Group groupEfaps = Group.getWithJAASKey(system, groupKey);
-            if (groupEfaps != null) {
-              groupsEfaps.add(groupEfaps);
+                person.cleanUp();
+
+                updateRoles(login, person);
+                updateGroups(login, person);
+
+                person.updateLastLogin();
             }
-          } catch (IllegalAccessException e) {
-            LOG.error("could not execute group key method for system "
-                + system.getName(), e);
-          } catch (IllegalArgumentException e) {
-            LOG.error("could not execute group key method for system "
-                + system.getName(), e);
-          } catch (InvocationTargetException e) {
-            LOG.error("could not execute group key method for system "
-                + system.getName(), e);
-          }
+        } catch (final EFapsException e) {
+            LoginHandler.LOG.error("login failed for '" + _name + "'", e);
+        } catch (final LoginException e) {
+            LoginHandler.LOG.error("login failed for '" + _name + "'", e);
         }
-        _person.setGroups(system, groupsEfaps);
-      }
-    }
-  }
-
-  // ////////////////////////////////////////////////////////////////////////////
-  // instance getter and setter methods
-
-  /**
-   * This is the getter method for instance variable {@link #application}.
-   * 
-   * @return the value of the instance variable {@link #application}.
-   * @see #application
-   */
-  public String getApplication() {
-    return this.application;
-  }
-
-  // ////////////////////////////////////////////////////////////////////////////
-  // internal classes
-
-  /**
-   * Class used to handle the call to the JAAS login handler. It's used to
-   * return the name and password on request from the implementing login
-   * modules.
-   */
-  protected class LoginCallbackHandler implements CallbackHandler {
-
-    /**
-     * The user name to test is stored in this instance variable.
-     */
-    private final String name;
-
-    /**
-     * The password used from the user is stored in this instance variable.
-     */
-    private final String password;
-
-    /**
-     * The action mode for which the login must be made is stored in this
-     * instance variable (e.g. login, information about all persons, etc.)
-     */
-    private final ActionCallback.Mode mode;
-
-    /**
-     * Constructor initializing the action, name and password in this call back
-     * handler.
-     * 
-     * @param _action
-     *                defines action for which the login is made
-     * @param _name
-     *                name of the login user
-     * @param _passwd
-     *                password of the login user
-     * @see #action
-     * @see #name
-     * @see #password
-     */
-    protected LoginCallbackHandler(final ActionCallback.Mode _mode,
-                                   final String _name, final String _passwd) {
-      this.mode = _mode;
-      this.name = _name;
-      this.password = _passwd;
+        return person;
     }
 
     /**
-     * The handler sets for instances of {@link NameCallBack} the given
-     * {@link #name} and for instances of {@link PasswordCallBack} the given
-     * {@link #password}. {@link TextOutputCallBack} instances are ignored.
-     * 
-     * @param _callbacks
-     *                callback instances to handle
-     * @throws UnsupportedCallbackException
-     *                 for all {@link Callback} instances which are not
-     *                 {@link NameCallBack}, {@link PasswordCallBack} or
-     *                 {@link TextOutputCallBack}.
+     * For the given JAAS login context the person inside eFaps is searched. If
+     * more than one person is related to the JAAS login context, an exception
+     * is thrown. If no person is found, <code>null</code> is returned.
+     *
+     * @param _login    JAAS login context
+     * @return <i>null</i> if no person in eFaps is found for given JAAS login
+     *         context
+     * @throws EFapsException   if more than one person for given JAAS login
+     *                          context is found or a method of the principals
+     *                          inside the JAAS login contexts could not be
+     *                          executed.
      */
-    public void handle(final Callback[] _callbacks) throws IOException,
-        UnsupportedCallbackException {
+    protected Person getPerson(final LoginContext _login)
+        throws EFapsException
+    {
+        Person person = null;
+        for (JAASSystem system : JAASSystem.getAllJAASSystems()) {
+            final Set<?> users = _login.getSubject().getPrincipals(system.getPersonJAASPrincipleClass());
 
-      for (int i = 0; i < _callbacks.length; i++) {
-        if (_callbacks[i] instanceof ActionCallback) {
-          ActionCallback ac = (ActionCallback) _callbacks[i];
-          ac.setMode(this.mode);
-        } else if (_callbacks[i] instanceof NameCallback) {
-          NameCallback nc = (NameCallback) _callbacks[i];
-          nc.setName(this.name);
-        } else if (_callbacks[i] instanceof PasswordCallback) {
-          if (this.password != null) {
-            PasswordCallback pc = (PasswordCallback) _callbacks[i];
-            pc.setPassword(this.password.toCharArray());
-          }
-        } else if (_callbacks[i] instanceof TextOutputCallback) {
-          // do nothing, TextOutputCallBack's are ignored!
-        } else {
-          throw new UnsupportedCallbackException(_callbacks[i],
-              "Unrecognized Callback");
+            for (Object persObj : users) {
+                try {
+                    final String persKey = (String) system.getPersonMethodKey().invoke(persObj);
+
+                    final Person foundPerson = Person.getWithJAASKey(system, persKey);
+                    if (foundPerson == null) {
+// TODO: muss noch gemacht werden!!! da funkt halt was nicht...
+// person.assignToJAASSystem(system, persKey);
+                    } else if (person == null) {
+                        person = foundPerson;
+                    } else if (person.getId() != foundPerson.getId()) {
+                        LoginHandler.LOG.error("For JAAS system " + system.getName() + " "
+                            + "person with key '" + persKey + "' is not unique!"
+                            + "Have found person '" + person.getName() + "' " + "(id = "
+                            + person.getId() + ") and person " + "'"
+                            + foundPerson.getName() + "' " + "(id = " + foundPerson.getId()
+                            + ").");
+// TODO: throw exception!!
+                    }
+                } catch (final IllegalAccessException e) {
+                    LoginHandler.LOG.error("could not execute person key method for system " + system.getName(), e);
+// TODO: throw exception!!
+                } catch (final IllegalArgumentException e) {
+                    LoginHandler.LOG.error("could not execute person key method for system " + system.getName(), e);
+// TODO: throw exception!!
+                } catch (final InvocationTargetException e) {
+                    LoginHandler.LOG.error("could not execute person key method for system " + system.getName(), e);
+// TODO: throw exception!!
+                }
+            }
         }
-      }
+        return person;
     }
-  }
+
+    /**
+     * The person represented in the JAAS login context is created and
+     * associated to eFaps. If the person is defined in more than one JAAS
+     * system, the person is also associated to the other JAAS systems.
+     *
+     * @param _login    JAAS login context
+     * @return Java instance of newly created person
+     * @throws EFapsException if a method of the principals inside the JAAS
+     *                        login contexts could not be executed.
+     */
+    protected Person createPerson(final LoginContext _login)
+        throws EFapsException
+    {
+        Person person = null;
+
+        for (JAASSystem system : JAASSystem.getAllJAASSystems()) {
+            final Set<?> users = _login.getSubject().getPrincipals(system.getPersonJAASPrincipleClass());
+            for (final Object persObj : users) {
+                try {
+                    final String persKey = (String) system.getPersonMethodKey().invoke(persObj);
+                    final String persName = (String) system.getPersonMethodName().invoke(persObj);
+
+                    if (person == null) {
+                        person = Person.createPerson(system, persKey, persName);
+                    } else {
+                        person.assignToJAASSystem(system, persKey);
+                    }
+                } catch (final IllegalAccessException e) {
+                    LoginHandler.LOG.error("could not execute a person method for system " + system.getName(), e);
+// TODO: throw exception!!
+                } catch (final IllegalArgumentException e) {
+                    LoginHandler.LOG.error("could not execute a person method for system " + system.getName(), e);
+// TODO: throw exception!!
+                } catch (final InvocationTargetException e) {
+                    LoginHandler.LOG.error("could not execute a person method for system " + system.getName(), e);
+// TODO: throw exception!!
+                }
+            }
+        }
+        return person;
+    }
+
+    /**
+     * The person information inside eFaps is update with information from JAAS
+     * login context.
+     *
+     * @param _login    JAAS login context
+     * @param _person   Java person instance inside eFaps to update
+     * @throws EFapsException if a method of the principals inside the JAAS
+     *                        login contexts could not be executed or the
+     *                        person could not be updated from the values in
+     *                        the JAAS login context.
+     */
+    protected void updatePerson(final LoginContext _login,
+                                final Person _person)
+        throws EFapsException
+    {
+        for (final JAASSystem system : JAASSystem.getAllJAASSystems()) {
+            final Set<?> users = _login.getSubject().getPrincipals(system.getPersonJAASPrincipleClass());
+            for (final Object persObj : users) {
+                try {
+                    for (final Map.Entry<Person.AttrName, Method> entry
+                            : system.getPersonMethodAttributes().entrySet()) {
+                        _person.updateAttrValue(entry.getKey(), (String) entry.getValue().invoke(persObj));
+                    }
+                } catch (final IllegalAccessException e) {
+                    LoginHandler.LOG.error("could not execute a person method for system " + system.getName(), e);
+// TODO: throw exception!!
+                } catch (final IllegalArgumentException e) {
+                    LoginHandler.LOG.error("could not execute a person method for system " + system.getName(), e);
+// TODO: throw exception!!
+                } catch (final InvocationTargetException e) {
+                    LoginHandler.LOG.error("could not execute a person method for system " + system.getName(), e);
+// TODO: throw exception!!
+                }
+            }
+        }
+        _person.commitAttrValuesInDB();
+    }
+
+    /**
+     * The roles of the given person are updated with the information from the
+     * JAAS login context.
+     *
+     * @param _login    JAAS login context
+     * @param _person   person for which the roles must be updated
+     * @throws EFapsException if a method of the principals inside the JAAS
+     *                        login contexts could not be executed or the roles
+     *                        for the given person could not be set.
+     */
+    protected void updateRoles(final LoginContext _login,
+                               final Person _person)
+        throws EFapsException
+    {
+        for (final JAASSystem system : JAASSystem.getAllJAASSystems()) {
+            if (system.getRoleJAASPrincipleClass() != null) {
+                final Set<?> rolesJaas =
+                    _login.getSubject().getPrincipals(
+                        system.getRoleJAASPrincipleClass());
+                final Set<Role> rolesEfaps = new HashSet<Role>();
+                for (Object roleObj : rolesJaas) {
+                    try {
+                        final String roleKey = (String) system.getRoleMethodKey().invoke(roleObj);
+                        final Role roleEfaps = Role.getWithJAASKey(system, roleKey);
+                        if (roleEfaps != null) {
+                            rolesEfaps.add(roleEfaps);
+                        }
+                    } catch (final IllegalAccessException e) {
+                        LoginHandler.LOG.error("could not execute role key method for system " + system.getName(), e);
+                    } catch (final IllegalArgumentException e) {
+                        LoginHandler.LOG.error("could not execute role key method for system " + system.getName(), e);
+                    } catch (final InvocationTargetException e) {
+                        LoginHandler.LOG.error("could not execute role key method for system " + system.getName(), e);
+                    }
+                }
+                _person.setRoles(system, rolesEfaps);
+            }
+        }
+    }
+
+    /**
+     * The groups of the given person are updated with the information from the
+     * JAAS login context.
+     *
+     * @param _login    JAAS login context
+     * @param _person   person for which the groups must be updated
+     * @throws EFapsException if a method of the principals inside the JAAS
+     *                        login contexts could not be executed or the
+     *                        groups for the given person could not be set.
+     */
+    protected void updateGroups(final LoginContext _login,
+                                final Person _person)
+        throws EFapsException
+    {
+        for (final JAASSystem system : JAASSystem.getAllJAASSystems()) {
+            if (system.getGroupJAASPrincipleClass() != null) {
+                final Set<?> groupsJaas = _login.getSubject().getPrincipals(system.getGroupJAASPrincipleClass());
+                final Set<Group> groupsEfaps = new HashSet<Group>();
+                for (final Object groupObj : groupsJaas) {
+                    try {
+                        final String groupKey = (String) system.getGroupMethodKey().invoke(groupObj);
+                        final Group groupEfaps = Group.getWithJAASKey(system, groupKey);
+                        if (groupEfaps != null) {
+                            groupsEfaps.add(groupEfaps);
+                        }
+                    } catch (final IllegalAccessException e) {
+                        LoginHandler.LOG.error("could not execute group key method for system " + system.getName(), e);
+                    } catch (final IllegalArgumentException e) {
+                        LoginHandler.LOG.error("could not execute group key method for system " + system.getName(), e);
+                    } catch (final InvocationTargetException e) {
+                        LoginHandler.LOG.error("could not execute group key method for system " + system.getName(), e);
+                    }
+                }
+                _person.setGroups(system, groupsEfaps);
+            }
+        }
+    }
+
+    /**
+     * This is the getter method for instance variable {@link #application}.
+     *
+     * @return the value of the instance variable {@link #application}.
+     * @see #application
+     */
+    public String getApplication()
+    {
+        return this.application;
+    }
+
+    /**
+     * Class used to handle the call to the JAAS login handler. It's used to
+     * return the name and password on request from the implementing login
+     * modules.
+     */
+    protected class LoginCallbackHandler
+        implements CallbackHandler
+    {
+        /**
+         * The user name to test is stored in this instance variable.
+         */
+        private final String name;
+
+        /**
+         * The password used from the user is stored in this instance variable.
+         */
+        private final String password;
+
+        /**
+         * The action mode for which the login must be made is stored in this
+         * instance variable (e.g. login, information about all persons, etc.)
+         */
+        private final ActionCallback.Mode mode;
+
+        /**
+         * Constructor initializing the action, name and password in this call
+         * back handler.
+         *
+         * @param _mode     defines mode for which the login is made
+         * @param _name     name of the login user
+         * @param _passwd   password of the login user
+         * @see #action
+         * @see #name
+         * @see #password
+         */
+        protected LoginCallbackHandler(final ActionCallback.Mode _mode,
+                                       final String _name,
+                                       final String _passwd)
+        {
+            this.mode = _mode;
+            this.name = _name;
+            this.password = _passwd;
+        }
+
+        /**
+         * The handler sets for instances of {@link NameCallBack} the given
+         * {@link #name} and for instances of {@link PasswordCallBack} the given
+         * {@link #password}. {@link TextOutputCallBack} instances are ignored.
+         *
+         * @param _callbacks    callback instances to handle
+         * @throws UnsupportedCallbackException for all {@link Callback}
+         *                  instances which are not {@link NameCallBack},
+         *                  {@link PasswordCallBack} or
+         *                  {@link TextOutputCallBack}
+         */
+        public void handle(final Callback[] _callbacks)
+            throws UnsupportedCallbackException
+        {
+            for (int i = 0; i < _callbacks.length; i++) {
+                if (_callbacks[i] instanceof ActionCallback) {
+                    final ActionCallback ac = (ActionCallback) _callbacks[i];
+                    ac.setMode(this.mode);
+                } else if (_callbacks[i] instanceof NameCallback) {
+                    final NameCallback nc = (NameCallback) _callbacks[i];
+                    nc.setName(this.name);
+                } else if (_callbacks[i] instanceof PasswordCallback) {
+                    if (this.password != null) {
+                        final PasswordCallback pc = (PasswordCallback) _callbacks[i];
+                        pc.setPassword(this.password.toCharArray());
+                    }
+                } else if (!(_callbacks[i] instanceof TextOutputCallback)) {
+                    throw new UnsupportedCallbackException(_callbacks[i], "Unrecognized Callback");
+                }
+            }
+        }
+    }
 }

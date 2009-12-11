@@ -25,17 +25,19 @@ package org.efaps.jaas.xml;
  * role. The class is used from the {@link XMLUserLoginModule} class to implement
  * a JAAS login module and set the role principals.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public final class XMLRolePrincipal extends XMLAbstractPrincipal  {
-
-  /**
-   * Constructor used to create a new role principal instance.
-   *
-   * @param _name name of the user
-   */
-  XMLRolePrincipal(final String _name)  {
-    setName(_name);
-  }
+public final class XMLRolePrincipal
+    extends XMLAbstractPrincipal
+{
+    /**
+     * Constructor used to create a new role principal instance.
+     *
+     * @param _name name of the user
+     */
+    XMLRolePrincipal(final String _name)
+    {
+        setName(_name);
+    }
 }
