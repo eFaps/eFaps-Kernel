@@ -25,13 +25,13 @@
  *
  * To define the database connection, three naming bindings must exists:
  * <dl>
- *   <dt>{@link INamingBinds#RESOURCE_DBTYPE}</dt>
+ *   <dt>{@link org.efaps.init.INamingBinds#RESOURCE_DBTYPE}</dt>
  *   <dd>Holds the instance of the Database Type. The implementing class must
- *       be derived from {@link org.efaps.db.databses.AbstractDatabase}.</dd>
- *   <dt>{@link INamingBinds#RESOURCE_DATASOURCE}<dt>
+ *       be derived from {@link org.efaps.db.databases.AbstractDatabase}.</dd>
+ *   <dt>{@link org.efaps.init.INamingBinds#RESOURCE_DATASOURCE}<dt>
  *   <dd>Holds the instance of the SQL data source. The class must implement
  *       interface {@link javax.sql.DataSource}.</dd>
- *   <dt>{@link INamingBinds#RESOURCE_TRANSMANAG}</dt>
+ *   <dt>{@link org.efaps.init.INamingBinds#RESOURCE_TRANSMANAG}</dt>
  *   <dd>Holds the instance of the Transaction Manager. The class must
  *       implement interface {@link javax.transaction.TransactionManager}.</dd>
  * </dl>

@@ -20,8 +20,6 @@
 
 package org.efaps.update.version;
 
-import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -40,10 +38,6 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.Rule;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.tools.ant.DirectoryScanner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.staticsource.AbstractSourceCompiler;
 import org.efaps.admin.runlevel.RunLevel;
@@ -55,6 +49,11 @@ import org.efaps.update.Install;
 import org.efaps.update.schema.program.esjp.ESJPCompiler;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.Attributes;
+
+import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
 
 /**
  * @author The eFaps Team
@@ -194,8 +193,8 @@ public final class Application
      * @param _classpathElements    elements of the class path
      * @return application instance with all version information
      * @throws InstallationException if version XML file could not be parsed
-     * @todo description
-     * @todo better definition of include dir / file
+     * TODO: description
+     * TODO: better definition of include dir / file
      */
     public static Application getApplication(final URL _versionUrl,
                                              final URL _rootUrl,
@@ -343,20 +342,18 @@ public final class Application
     }
 
     /**
-     * Uses the {@link #includes} and {@link #excludes} together with the root
-     * directory {@link #eFapsDir} to get all related and matched files.
+     * Uses the <code_>includes</code> and <code>_excludes</code> together with
+     * the root directory <code>_eFapsDir</code> to get all related and matched
+     * files.
      *
      * @param _eFapsDir     root directory where the file are located
-     * @param _includes     list of includes
-     * @param _excludes     list of excludes
-     * @see #includes defines includes; if not specified by maven, the default
-     *      value is <code>**&#x002f;*.xml</code>
-     * @see #excludes defines excludes; if not specified by maven , the default
-     *      value is <code>**&#x002f;version.xml</code>
+     * @param _includes     defines includes; if not specified the default
+     *                      value is <code>**&#x002f;*.xml</code>
+     * @param _excludes     defines excludes; if not specified the default
+     *                      value is <code>**&#x002f;version.xml</code>
+     * @return array of file names
      * @see #DEFAULT_INCLUDES
      * @see #DEFAULT_EXCLUDES
-     * @return Array of filename
-     *
      */
     protected static String[] getFiles(final File _eFapsDir,
                                        final List<String> _includes,
@@ -494,7 +491,7 @@ public final class Application
     }
 
     /**
-     * For each version in {@link @versions} is tested, if it is already
+     * For each version in {@link #versions} is tested, if it is already
      * installed. If not already installed, the version is installed. Only if
      * <code>_withDependency</code> is defined, also the {@link #dependencies}
      * are installed.
@@ -574,7 +571,7 @@ public final class Application
      *
      * @param _userName   name of logged in user
      * @param _password   password of logged in user
-     * @todo throw Exceptions instead of logging errors
+     * TODO: throw Exceptions instead of logging errors
      */
     public void updateLastVersion(final String _userName,
                                   final String _password)

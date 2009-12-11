@@ -43,11 +43,6 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.joda.time.Chronology;
-import org.joda.time.DateTimeZone;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.user.Company;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
@@ -59,6 +54,10 @@ import org.efaps.db.store.Store;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.init.INamingBinds;
 import org.efaps.util.EFapsException;
+import org.joda.time.Chronology;
+import org.joda.time.DateTimeZone;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
@@ -322,7 +321,7 @@ public final class Context implements INamingBinds
      * context.<br/>
      * If not all connection are closed, all connection are closed.
      *
-     * @todo better description
+     * TODO:  better description
      */
     public void close()
     {
@@ -934,7 +933,7 @@ public final class Context implements INamingBinds
 
     /**
      * @throws EFapsException if commit of the transaction manager failed
-     * @todo description
+     * TODO:  description
      */
     public static void commit() throws EFapsException
     {

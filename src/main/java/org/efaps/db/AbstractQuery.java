@@ -31,9 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.IAttributeType;
@@ -45,11 +42,13 @@ import org.efaps.db.query.WhereClause;
 import org.efaps.db.query.WhereClauseAttrEqAttr;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
- * @todo description
+ * TODO:  description
  */
 public abstract class AbstractQuery
 {
@@ -371,7 +370,7 @@ public abstract class AbstractQuery
      * The instance method returns the instance for the current selected row.
      *
      * @param _type
-     * @todo why is in this way implemented (other way than method getOID above)
+     * TODO:  why is in this way implemented (other way than method getOID above)
      */
     protected Instance getInstance(final Type _type) throws EFapsException
     {
@@ -1336,10 +1335,12 @@ public abstract class AbstractQuery
          * @param _key key to store the select expression in the select map
          *            expression
          * @param _expression expression itself which must be selected
-         * @todo EFapsException Property
+         * TODO:  EFapsException Property
          */
-        protected void addSelect(final boolean _isOID, final Object _key, final String _expression)
-                        throws EFapsException
+        protected void addSelect(final boolean _isOID,
+                                 final Object _key,
+                                 final String _expression)
+            throws EFapsException
         {
             // System.out.println("AbstractQuery.addSelect("+_isOID+","+_key+","+_expression+")");
             if ((_expression != null) && !"".equals(_expression)) {
@@ -1349,7 +1350,8 @@ public abstract class AbstractQuery
                     final String link = tokens.nextToken();
                     final Attribute attr = getType().getAttribute(link);
                     if (attr == null) {
-                        LOG.error("Link for '" + link + "' does not exists on type " + "'" + getType().getName() + "'");
+                        AbstractQuery.LOG.error("Link for '" + link
+                                + "' does not exists on type " + "'" + getType().getName() + "'");
                         throw new EFapsException(getClass(), "addSelect.LinkDoesNotExists", link, getType().getName());
                     }
 
@@ -1357,7 +1359,7 @@ public abstract class AbstractQuery
                     final Type linkType = attr.getLink();
 
                     if (linkType == null) {
-                        LOG.error("For Link '" + link + "' of type " + "'" + getType().getName() + "' "
+                        AbstractQuery.LOG.error("For Link '" + link + "' of type " + "'" + getType().getName() + "' "
                                         + "the type is not defined.");
                         throw new EFapsException(getClass(), "addSelect.LinkDoesNotExists", link, getType().getName());
                     }
@@ -1382,7 +1384,7 @@ public abstract class AbstractQuery
                 } else {
                     final Attribute attr = getType().getAttribute(_expression);
                     if (attr == null) {
-                        LOG.error("attribute '" + _expression + "' for type " + "'" + getType().getName()
+                        AbstractQuery.LOG.error("attribute '" + _expression + "' for type " + "'" + getType().getName()
                                         + "' not found");
                         throw new EFapsException(getClass(), "addSelect.AttributeNotFound", _expression, getType()
                                         .getName());
@@ -1451,9 +1453,6 @@ public abstract class AbstractQuery
                                 .appendWhere(nextTable.getSqlColId());
             }
         }
-
-        // /////////////////////////////////////////////////////////////////////////
-        // getter and setter methods
 
         /**
          * This is the getter method for instance variable {@link #typeIndex}.

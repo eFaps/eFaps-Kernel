@@ -320,7 +320,7 @@ e.printStackTrace();
          * @see #beforeClose()
          * @see #afterClose()
          * @throws IOException on error
-         * @todo Java6 change IOException with throwable paramter
+         * TODO:  Java6 change IOException with throwable paramter
          */
         @Override()
         public void close()

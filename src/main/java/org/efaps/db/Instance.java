@@ -144,7 +144,7 @@ public final class Instance
      * @param _in   object input stream
      * @throws IOException            from inside called methods
      * @throws ClassNotFoundException if a class not found
-     * @todo update type instance if it is final....
+     * TODO: update type instance if it is final....
      */
     private void readObject(final ObjectInputStream _in)
         throws IOException, ClassNotFoundException

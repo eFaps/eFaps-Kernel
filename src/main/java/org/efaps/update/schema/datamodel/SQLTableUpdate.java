@@ -427,7 +427,7 @@ public class SQLTableUpdate
 
         /**
          * Specific update instructions for the update for SQL tables.
-         * Depending on the {@link #UpdateLifecycle life cycle}
+         * Depending on the {@link UpdateLifecycle life cycle}
          * <code>_step</code> following is done:
          * <table border="1">
          * <tr><th>Life Cycle Step</th><th>Description</th></tr>
@@ -583,7 +583,7 @@ public class SQLTableUpdate
         /**
          * Update the column ID of SQL table in the database. The column ID
          * must be auto increment or defined as foreign key to another SQL
-         * table (if {@link {@parentSQLTableName parent SQL table name} is
+         * table (if {@link #parentSQLTableName parent SQL table name} is
          * defined in the XML configuration item file).
          *
          * @throws EFapsException if update of the SQL tables failed

@@ -82,10 +82,10 @@ public class ImageUpdate
     }
 
     /**
-     * Creates new instance of class {@link ImageDefinition}.
+     * Creates new instance of class {@link ImageUpdate.ImageDefinition}.
      *
      * @return new definition instance
-     * @see ImageDefinition
+     * @see ImageUpdate.ImageDefinition
      */
     @Override()
     protected AbstractDefinition newDefinition()

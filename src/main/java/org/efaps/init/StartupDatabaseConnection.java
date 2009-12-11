@@ -36,11 +36,10 @@ import javax.sql.DataSource;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.util.DateTimeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Initialize the database connection for an eFaps instance.
@@ -75,8 +74,8 @@ public final class StartupDatabaseConnection
      *                          will be used
      * @throws StartupException if the database connection or transaction
      *             manager could not be initialized
-     * @see #startup(String, String, Map, String)
-     * @see #convertToMap(String)
+     * @see StartupDatabaseConnection#startup(String, String, Map, String, Integer)
+     * @see StartupDatabaseConnection#convertToMap(String)
      */
     public static void startup(final String _classDBType,
                                final String _classDSFactory,
@@ -112,7 +111,7 @@ public final class StartupDatabaseConnection
      *                          manager could not be initialized
      * @see #configureDBType(Context, String)
      * @see #configureDataSource(Context, String, Map)
-     * @see #configureTransactionManager(Context, String)
+     * @see #configureTransactionManager(Context, String, Integer)
      */
     public static void startup(final String _classDBType,
                                final String _classDSFactory,
@@ -186,7 +185,7 @@ public final class StartupDatabaseConnection
     /**
      * The class defined with parameter _classDBType initialized and bind to
      * {@link #RESOURCE_DBTYPE}. The initialized class must be extended from
-     * class {@link AbstractDatabse}.
+     * class {@link AbstractDatabase}.
      *
      * @param _compCtx      Java root naming context
      * @param _classDBType  class name of the database type

@@ -20,25 +20,24 @@
 
 package org.efaps.admin.ui;
 
-import static org.efaps.admin.EFapsClassNames.FORM;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.efaps.admin.EFapsClassNames.FORM;
 
 /**
  * @author The eFaps TEam
  * @version $Id$
- * @todo description
+ * TODO: description
  */
 public class Form extends AbstractCollection
 {

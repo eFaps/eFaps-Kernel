@@ -59,7 +59,7 @@ public class WhereClauseAttrEqAttr
     }
 
     /**
-     * @todo compare does not work if an attribute has more than one SQL
+     * TODO:  compare does not work if an attribute has more than one SQL
      *       column!!
      */
     public WhereClause appendWhereClause(final CompleteStatement _completeStatement,

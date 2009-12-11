@@ -30,7 +30,7 @@ import org.efaps.util.EFapsException;
 /**
  * @author The eFaps Team
  * @version $Id$
- * @todo description
+ * TODO: description
  */
 public class PersonLinkType extends AbstractLinkType
 {

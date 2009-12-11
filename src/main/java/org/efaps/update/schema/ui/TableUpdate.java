@@ -25,7 +25,7 @@ import java.net.URL;
 /**
  * @author The eFaps Team
  * @version $Id$
- * @todo description
+ * TODO:  description
  */
 public class TableUpdate
     extends AbstractCollectionUpdate

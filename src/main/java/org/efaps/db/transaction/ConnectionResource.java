@@ -32,8 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The class implements the {@link javax.transaction.XAResource} interface for
- * SQL connections.
+ * The class implements the XAResource interface for SQL connections.
  *
  * @author The eFaps Team
  * @version $Id$

@@ -27,7 +27,7 @@ import org.efaps.update.AbstractUpdate;
 /**
  * @author The eFaps Team
  * @version $Id$
- * @todo description
+ * TODO:  description
  */
 public class AccessTypeUpdate
     extends AbstractUpdate
@@ -42,10 +42,10 @@ public class AccessTypeUpdate
     }
 
     /**
-     * Creates new instance of class {@link Definition}.
+     * Creates new instance of class {@link AccessTypeUpdate.Definition}.
      *
      * @return new definition instance
-     * @see Definition
+     * @see AccessTypeUpdate.Definition
      */
     @Override()
     protected AbstractDefinition newDefinition()
@@ -53,6 +53,9 @@ public class AccessTypeUpdate
         return new Definition();
     }
 
+    /**
+     * Defines the access type.
+     */
     private class Definition
         extends AbstractDefinition
     {

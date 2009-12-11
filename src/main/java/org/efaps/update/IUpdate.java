@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.jexl.JexlContext;
-
 import org.efaps.util.EFapsException;
 
 /**
@@ -35,21 +34,8 @@ import org.efaps.util.EFapsException;
  */
 public interface IUpdate
 {
-
     /**
-     * The instance method returns the eFaps instance representing the read XML
-     * configuration. If not already get from the eFaps database, the
-     * information is read. If no instance exists in the database, a new one is
-     * automatically created. The method searches for the given universal unique
-     * identifier in {@link #uuid} the instance in the eFaps database and stores
-     * the result in {@link #instance}. If no object is found in eFaps,
-     * {@link #instance} is set to <code>null</code>. A new instance is created
-     * in the eFaps DB for given universal unique identifier in {@link #uuid}.
-     * The name of the access set is also the universal unique identifier,
-     * because the name of access set is first updates in the version
-     * definition.<br/>
-     * The new created object is stored as instance information in
-     * {@link #instance}.
+     * Runs the update for given eFaps configuration item.
      *
      * @param _jexlContext  context used to evaluate JEXL expressions
      * @param _step         current step of the update life cycle

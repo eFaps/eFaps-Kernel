@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
@@ -37,16 +36,13 @@ import org.efaps.db.query.OneRoundQuery;
 import org.efaps.util.EFapsException;
 
 /**
- * @todo description
- * @author tmo
+ * TODO:  description
+ * @author The eFaps Team
  * @version $Id$
  */
-public class ListQuery extends AbstractQuery
+public class ListQuery
+    extends AbstractQuery
 {
-
-    // ///////////////////////////////////////////////////////////////////////////
-    // instance variables
-
     /**
      * Stores all instances for which this query is executed.
      */
@@ -64,9 +60,6 @@ public class ListQuery extends AbstractQuery
     private OneRoundQuery query = null;
 
     private AttributeSet attributeSet;
-
-    // ///////////////////////////////////////////////////////////////////////////
-    // constructors / desctructors
 
     /**
      * @param _instances list of instances for which this query is executed

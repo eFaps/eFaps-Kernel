@@ -32,7 +32,7 @@ import org.efaps.util.EFapsException;
 /**
  * @author The eFaps Team
  * @version $Id$
- * @todo till now only integer / Long ID's are allowed; this must be changed
+ * TODO: till now only integer / Long ID's are allowed; this must be changed
  */
 public abstract class AbstractLinkType extends AbstractType
 {
@@ -79,8 +79,8 @@ public abstract class AbstractLinkType extends AbstractType
 
     /**
      * @param _rs
-     * @param _index
-     * @todo test that only one value is given for indexes
+     * @param _indexes
+     * TODO: test that only one value is given for indexes
      */
     public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
     {

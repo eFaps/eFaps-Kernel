@@ -385,7 +385,7 @@ public class LoginHandler
          * @param _mode     defines mode for which the login is made
          * @param _name     name of the login user
          * @param _passwd   password of the login user
-         * @see #action
+         * @see #mode
          * @see #name
          * @see #password
          */
@@ -399,15 +399,15 @@ public class LoginHandler
         }
 
         /**
-         * The handler sets for instances of {@link NameCallBack} the given
-         * {@link #name} and for instances of {@link PasswordCallBack} the given
-         * {@link #password}. {@link TextOutputCallBack} instances are ignored.
+         * The handler sets for instances of {@link NameCallback} the given
+         * {@link #name} and for instances of {@link PasswordCallback} the given
+         * {@link #password}. {@link TextOutputCallback} instances are ignored.
          *
          * @param _callbacks    callback instances to handle
          * @throws UnsupportedCallbackException for all {@link Callback}
-         *                  instances which are not {@link NameCallBack},
-         *                  {@link PasswordCallBack} or
-         *                  {@link TextOutputCallBack}
+         *                  instances which are not {@link NameCallback},
+         *                  {@link PasswordCallback} or
+         *                  {@link TextOutputCallback}
          */
         public void handle(final Callback[] _callbacks)
             throws UnsupportedCallbackException

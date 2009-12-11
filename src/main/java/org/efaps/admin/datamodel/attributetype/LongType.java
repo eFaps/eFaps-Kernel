@@ -30,7 +30,7 @@ import org.efaps.db.query.CachedResult;
 /**
  * @author The eFaps Team
  * @version $Id$
- * @todo description
+ * TODO: description
  */
 public class LongType extends AbstractType
 {

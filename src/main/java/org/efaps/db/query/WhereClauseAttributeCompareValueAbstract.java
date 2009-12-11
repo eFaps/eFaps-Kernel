@@ -79,14 +79,14 @@ public abstract class WhereClauseAttributeCompareValueAbstract implements WhereC
     }
 
     /**
-     * @TODO compare does not work if an attribute has more than one sql
-     *       column!!
      * @param _completeStatement    the CompleteStatement the whereclause will be
      *                              appended to
      * @param _orderIndex           index in the clause
      * @param _operator             operator to be used
      * @throws EFapsException on error
      * @return this
+     * TODO: compare does not work if an attribute has more than one sql
+     *       column!!
      */
     protected WhereClause appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex,
                                      final String _operator)

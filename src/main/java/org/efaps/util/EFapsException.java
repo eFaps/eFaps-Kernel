@@ -101,7 +101,7 @@ public class EFapsException
      * trace.
      *
      * @param _stream <code>PrintStream</code> to use for output
-     * @see makeInfo  to get all information about this EFapsException
+     * @see #makeInfo() to get all information about this EFapsException
      */
     @Override()
     public void printStackTrace(final PrintStream _stream)
@@ -125,7 +125,7 @@ public class EFapsException
      * trace.
      *
      * @param _writer <code>PrintWriter</code> to use for output
-     * @see makeInfo  to get all information about this EFapsException
+     * @see #makeInfo() to get all information about this EFapsException
      */
     @Override()
     public void printStackTrace(final PrintWriter _writer)

@@ -35,8 +35,8 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.AbstractUpdate;
-import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.LinkInstance;
+import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.event.Event;
 import org.efaps.util.EFapsException;
 
@@ -50,16 +50,16 @@ import static org.efaps.admin.EFapsClassNames.FIELDTABLE;
 
 /**
  * This class imports/updates a Form or a Table using the
- * <code>org.apache.commons.digester.Digester</code> to create ojects and to
+ * <code>org.apache.commons.digester.Digester</code> to create objects and to
  * execute methods.
  *
  * @author The eFaps Team
  * @version $Id$
  *
  */
-public abstract class AbstractCollectionUpdate extends AbstractUpdate
+public abstract class AbstractCollectionUpdate
+    extends AbstractUpdate
 {
-
     /** Link from field to icon. */
     private static final Link LINKFIELD2ICON = new Link("Admin_UI_LinkIcon", "From", "Admin_UI_Image", "To");
 
@@ -320,7 +320,6 @@ public abstract class AbstractCollectionUpdate extends AbstractUpdate
          *
          * @param _field new field to add to this table
          * @see #fields
-         * @see #Field
          */
         public void addField(final FieldDefinition _field)
         {

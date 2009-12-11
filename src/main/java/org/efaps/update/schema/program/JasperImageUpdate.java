@@ -64,10 +64,11 @@ public class JasperImageUpdate
     }
 
     /**
-     * Creates new instance of class {@link JasperImageDefinition}.
+     * Creates new instance of class
+     * {@link JasperImageUpdate.JasperImageDefinition}.
      *
      * @return new definition instance
-     * @see JasperImageDefinition
+     * @see JasperImageUpdate.JasperImageDefinition
      */
     @Override()
     protected AbstractDefinition newDefinition()

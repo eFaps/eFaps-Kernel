@@ -153,7 +153,7 @@ public class StoreUpdate
          * @param _step         current life cycle update step
          * @param _allLinkTypes set of all links
          * @throws EFapsException on error
-         * @see AbstractDefinition#updateInDB(UpdateLifecycle,Set)
+         * @see AbstractUpdate.AbstractDefinition#updateInDB(UpdateLifecycle,Set)
          */
         @Override()
         public void updateInDB(final UpdateLifecycle _step,

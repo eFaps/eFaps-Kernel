@@ -55,7 +55,7 @@ import static org.mozilla.javascript.Context.javaToJS;
  *
  * @author The eFaps Team
  * @version $Id$
- * @TODO in case of a script: it must be possible to deactivate the context
+ * TODO: in case of a script: it must be possible to deactivate the context
  */
 public class ApplicationVersion
     implements Comparable<ApplicationVersion>
@@ -457,8 +457,8 @@ public class ApplicationVersion
 
         /**
          * {@inheritDoc}
-         * @throws EFapsException
-         * @TODO it must be able to deactivate the CONTEXT
+         * @throws InstallationException if installation failed
+         * TODO: it must be able to deactivate the CONTEXT
          */
         @Override()
         public void execute(final String _userName,

@@ -39,8 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The class implements the {@link javax.transaction.XAResource} interface for
- * Blobs.<br/> For each file id a new JDBC store resource must be created.
+ * The class implements the {@link Resource} interface for SQL blobs. For each
+ * file id a new JDBC store resource must be created.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -110,8 +110,7 @@ public class JDBCStoreResource
     }
 
     /**
-     * The method writes the context (from the input stream) to a temporary
-     * file (same file URL, but with extension {@link #EXTENSION_TEMP}).
+     * The method writes the context (from the input stream) into a SQL blob.
      *
      * @param _in   input stream defined the content of the file
      * @param _size length of the content (or negative meaning that the length
@@ -326,7 +325,7 @@ public class JDBCStoreResource
      * support the available method (and returns e.g. always 0 like the Oracle
      * JDBC driver).
      *
-     * @todo avaible must be long! (because of max integer value!)
+     * TODO:  avaible must be long! (because of max integer value!)
      */
     private class BlobInputStream extends InputStream
     {
@@ -454,7 +453,7 @@ public class JDBCStoreResource
         }
 
         /**
-         * @todo Java6 change IOException with throwable parameter
+         * TODO:  Java6 change IOException with throwable parameter
          * @throws IOException on error
          */
         @Override

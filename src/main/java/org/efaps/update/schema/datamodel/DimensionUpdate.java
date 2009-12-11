@@ -229,16 +229,12 @@ public class DimensionUpdate
         }
 
         /**
-         * If a parent type in {@link #parentType} is defined, the type id is
-         * evaluated and added to attributes to update (if no parent type is
-         * defined, the parent type id is set to <code>null</code>). After the
-         * type is updated (or inserted if needed), all attributes must be
-         * updated.
+         * Only in the life cycle step {@link UpdateLifecycle#EFAPS_UPDATE} the
+         * {@link #description} and the {@link #uoms} are updated.
          *
          * @param _step         current step of the update life cycle
          * @param _allLinkTypes set of all links
          * @throws EFapsException on error
-         * @see #parentType
          * @see #uoms
          */
         @Override()

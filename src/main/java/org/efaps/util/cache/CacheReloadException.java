@@ -24,11 +24,11 @@ import org.efaps.util.EFapsException;
 
 /**
  * The <code>CacheReloadException</code> class is an exception is thrown, if
- * a cache implementing {@link CacheReloadInterface} could not be reloaded.
+ * a cache implementing {@link Cache} could not be reloaded.
  *
  * @author The eFaps Team
  * @version $Id$
- * @see CacheReloadInterface
+ * @see Cache
  */
 public class CacheReloadException
     extends EFapsException
@@ -41,10 +41,10 @@ public class CacheReloadException
     /**
      * Constructs a new exception with the specified detail message. The cause
      * is not initialized, and may subsequently be initialized by a call to
-     * {@link Throwable.initCause(Throwable)}.
+     * {@link Throwable#initCause(Throwable)}.
      *
      * @param _message  detailed message (which is saved for later retrieval by
-     *                  the {@link Throwable.getMessage} method).
+     *                  the {@link Throwable#getMessage()} method).
      */
     public CacheReloadException(final String _message)
     {
@@ -58,9 +58,9 @@ public class CacheReloadException
      * incorporated in this exception's detail message.
      *
      * @param _message  detailed message (which is saved for later retrieval by
-     *                  the {@link Throwable.getMessage} method).
+     *                  the {@link Throwable#getMessage()} method).
      * @param _cause    cause (which is saved for later retrieval by the
-     *                  {@link Throwable.getCause} method). (A null value is
+     *                  {@link Throwable#getCause()} method). (A null value is
      *                  permitted, and indicates that the cause is nonexistent
      *                  or unknown.)
      */

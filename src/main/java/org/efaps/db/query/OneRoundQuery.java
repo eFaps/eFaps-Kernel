@@ -44,9 +44,9 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 
 /**
- * @todo description
  * @author The eFaps Team
  * @version $Id$
+ * TODO: description
  */
 public class OneRoundQuery
 {
@@ -101,8 +101,8 @@ public class OneRoundQuery
      * @param _instances list of instances for which this query is executed
      * @param _selects aset of attributes to be selected
      * @param _listquery listquery
-     * @todo check das alle instanzen von gleicher main table sind
-     * @todo if no column for the type exists, all types must be the same!
+     * TODO:  check das alle instanzen von gleicher main table sind
+     * TODO:  if no column for the type exists, all types must be the same!
      */
     public OneRoundQuery(final List<Instance> _instances, final Set<String> _selects, final ListQuery _listquery)
     {

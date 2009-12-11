@@ -33,11 +33,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.efaps.admin.common.SystemConfiguration;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
-
-import org.efaps.admin.common.SystemConfiguration;
 
 /**
  * The class is used to cache all results from a eFaps search query. Multiple
@@ -45,16 +44,12 @@ import org.efaps.admin.common.SystemConfiguration;
  * class {@link javax.sql.rowset.JoinRowSet}, because the original classes do
  * not work with Oracle JDBC drivers.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
- * @todo description
+ * TODO: description
  */
 public class CachedResult
 {
-
-    // ////////////////////////////////////////////////////////////////////////////
-    // instance variables
-
     /**
      * Used to cache for given key (Object) the list of values (List).
      */
@@ -79,17 +74,11 @@ public class CachedResult
      */
     private List<Object> currentRow = null;
 
-    // ////////////////////////////////////////////////////////////////////////////
-    // constructors / destructors
-
     private boolean multiple = false;
 
     public CachedResult()
     {
     }
-
-    // ////////////////////////////////////////////////////////////////////////////
-    // instance methods
 
     /**
      * Moves the cursor to the front of this cached result object, just before

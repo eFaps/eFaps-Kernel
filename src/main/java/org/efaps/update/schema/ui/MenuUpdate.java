@@ -31,7 +31,7 @@ import org.efaps.update.LinkInstance;
 /**
  * @author The eFaps Team
  * @version $Id$
- * @todo description
+ * TODO:  description
  */
 public class MenuUpdate
     extends CommandUpdate

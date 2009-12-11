@@ -27,50 +27,48 @@ import java.util.Map;
 import org.efaps.update.AbstractUpdate;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
- * @todo description
+ * TODO:  description
  */
-public class RoleUpdate extends AbstractUpdate
+public class RoleUpdate
+    extends AbstractUpdate
 {
-  /**
-   *
-   * @param _url        URL of the file
-   */
-  public RoleUpdate(final URL _url)
-  {
-    super(_url, "Admin_User_Role");
-  }
-
-  /**
-   * Creates new instance of class {@link RoleDefinition}.
-   *
-   * @return new definition instance
-   * @see RoleDefinition
-   */
-  @Override
-  protected AbstractDefinition newDefinition()
-  {
-    return new RoleDefinition();
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // class for the definitions
-
-  public class RoleDefinition extends AbstractDefinition
-  {
-
-    @Override
-    protected void readXML(final List<String> _tags,
-                           final Map<String,String> _attributes,
-                           final String _text)
+    /**
+     *
+     * @param _url        URL of the file
+     */
+    public RoleUpdate(final URL _url)
     {
-      final String value = _tags.get(0);
-      if ("status".equals(value))  {
-        addValue("Status", _text);
-      } else  {
-        super.readXML(_tags, _attributes, _text);
-      }
+        super(_url, "Admin_User_Role");
     }
- }
+
+    /**
+     * Creates new instance of class {@link RoleDefinition}.
+     *
+     * @return new definition instance
+     * @see RoleDefinition
+     */
+    @Override()
+    protected AbstractDefinition newDefinition()
+    {
+        return new RoleDefinition();
+    }
+
+    public class RoleDefinition
+        extends AbstractDefinition
+    {
+        @Override()
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
+        {
+            final String value = _tags.get(0);
+            if ("status".equals(value))  {
+                addValue("Status", _text);
+            } else  {
+                super.readXML(_tags, _attributes, _text);
+            }
+        }
+    }
 }

@@ -248,7 +248,11 @@ public class LinkFromSelect extends AbstractPrintQuery
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the {@link #type} for which the attribute {@link #attrName}
+     * belongs to.
+     *
+     * @return type
+     * @see #type
      */
     public Type getType()
     {
@@ -258,7 +262,7 @@ public class LinkFromSelect extends AbstractPrintQuery
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
     public Instance getCurrentInstance()
     {
         // TODO Auto-generated method stub

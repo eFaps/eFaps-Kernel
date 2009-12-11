@@ -30,7 +30,7 @@ import org.efaps.db.Context;
 /**
  * @author The eFaps Team
  * @version $Id$
- * @todo description
+ * TODO: description
  */
 public class Table
     extends AbstractCollection

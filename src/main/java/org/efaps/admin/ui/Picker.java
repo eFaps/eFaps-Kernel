@@ -29,7 +29,7 @@ import static org.efaps.admin.EFapsClassNames.PICKER;
 /**
  * @author The eFaps Team
  * @version $Id$
- * @todo description
+ * TODO: description
  */
 public class Picker
     extends AbstractCollection

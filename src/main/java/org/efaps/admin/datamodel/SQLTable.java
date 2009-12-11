@@ -278,7 +278,7 @@ public final class SQLTable
 
     /**
      * Returns for given parameter <i>_id</i> the instance of class
-     * {@link Table}.
+     * {@link SQLTable}.
      *
      * @param _id id to search in the cache
      * @return instance of class {@link SQLTable}
@@ -293,7 +293,7 @@ public final class SQLTable
 
     /**
      * Returns for given parameter <i>_name</i> the instance of class
-     * {@link Table}.
+     * {@link SQLTable}.
      *
      * @param _name name to search in the cache
      * @return instance of class {@link SQLTable}
