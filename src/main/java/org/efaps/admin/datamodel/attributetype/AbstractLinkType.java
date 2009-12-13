@@ -32,7 +32,8 @@ import org.efaps.util.EFapsException;
 /**
  * @author The eFaps Team
  * @version $Id$
- * TODO: till now only integer / Long ID's are allowed; this must be changed
+ *          TODO: till now only integer / Long ID's are allowed; this must be
+ *          changed
  */
 public abstract class AbstractLinkType extends AbstractType
 {
@@ -51,23 +52,29 @@ public abstract class AbstractLinkType extends AbstractType
             if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
                 this.value = (Long.parseLong((String) _value[0]));
             } else if (_value[0] instanceof Long) {
-                this.value = (_value[0]);
+                this.value = _value[0];
+            } else if (_value[0] instanceof Integer) {
+                this.value = ((Integer) _value[0]).longValue();
             }
         }
     }
 
     /**
-     *  Updates the value in the database with the stored value in the cache. If
+     * Updates the value in the database with the stored value in the cache. If
      * the value is '0', the value in the database is set to <i>NULL</i> (a zero
      * in the cache means no link!).
      *
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
+     * @param _object object
+     * @param _stmt SQL statement to update the value
+     * @param _index index in the SQL statement to update the value
+     * @return number of indexes used in the method, if the return value is null
+     *         an error should be thrown
      * @throws SQLException on error
      */
-    public int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException
+    public int update(final Object _object,
+                      final PreparedStatement _stmt,
+                      final int _index)
+        throws SQLException
     {
         if (this.value == null) {
             _stmt.setNull(_index, Types.INTEGER);
@@ -78,11 +85,10 @@ public abstract class AbstractLinkType extends AbstractType
     }
 
     /**
-     * @param _rs
-     * @param _indexes
-     * TODO: test that only one value is given for indexes
+     * {@inheritDoc}
      */
-    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    public Object readValue(final CachedResult _rs,
+                            final List<Integer> _indexes)
     {
         this.value = (_rs.getObject(_indexes.get(0)));
         return this.value;
@@ -90,12 +96,13 @@ public abstract class AbstractLinkType extends AbstractType
 
     /**
      * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
+     * TODO throw error if more than one value is given
      * @param _objectList List of Objects
      * @return Object
-     * TODO throw error if more than one value is given
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
-    public Object readValue(final List<Object> _objectList) throws EFapsException
+    public Object readValue(final List<Object> _objectList)
+        throws EFapsException
     {
         Object ret = null;
         if (_objectList.size() > 0) {
