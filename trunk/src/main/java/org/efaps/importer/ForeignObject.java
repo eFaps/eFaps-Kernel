@@ -25,10 +25,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.efaps.db.SearchQuery;
-import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.efaps.db.SearchQuery;
+import org.efaps.util.EFapsException;
 
 /**
  * This class presents an Object which is connected to an
@@ -143,7 +144,7 @@ public class ForeignObject
             ForeignObject.LOG.error("getID()", e);
             value = null;
         }
-        return null;
+        return value;
     }
 
     /**
