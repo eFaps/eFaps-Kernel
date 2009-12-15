@@ -33,6 +33,13 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
@@ -41,12 +48,6 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>This class presents the main Object for the import of Data into eFaps and
@@ -348,7 +349,7 @@ public class InsertObject
         String newId = null;
         try {
             Update upIn;
-            if ("".equals(_id))  {
+            if (!"".equals(_id))  {
                 upIn = new Update(Type.get(this.type), _id);
             } else {
                 upIn = new Insert(this.type);
