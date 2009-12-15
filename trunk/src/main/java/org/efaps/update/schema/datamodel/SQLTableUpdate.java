@@ -554,10 +554,9 @@ public class SQLTableUpdate
 
                 if (!Context.getDbType().existsTable(con.getConnection(), tableName)
                         && !Context.getDbType().existsView(con.getConnection(), tableName))  {
+
                     if (SQLTableUpdate.LOG.isInfoEnabled()) {
-                        SQLTableUpdate.LOG.info("    Create DB SQL Table '" + tableName + "'"
-                                    + ((this.parentSQLTableName != null)
-                                        ? " (parent " + this.parentSQLTableName + ")" : ""));
+                        SQLTableUpdate.LOG.info("    Create DB SQL Table '" + tableName + "'");
                     }
 
                     Context.getDbType().createTable(con.getConnection(), tableName);
@@ -599,7 +598,12 @@ public class SQLTableUpdate
                 ConnectionResource con = null;
                 final String tableName = getValue("SQLTable");
                 if (SQLTableUpdate.LOG.isInfoEnabled()) {
-                    SQLTableUpdate.LOG.info("    Define ID column for SQL Table '" + tableName + "'");
+                    if (this.parentSQLTableName != null)  {
+                        SQLTableUpdate.LOG.info("    Define ID column for SQL Table '" + tableName + "' "
+                                + "(parent '" + this.parentSQLTableName + "')");
+                    } else  {
+                        SQLTableUpdate.LOG.info("    Define ID column for SQL Table '" + tableName + "'");
+                    }
                 }
                 try {
                     con = context.getConnectionResource();
