@@ -288,15 +288,15 @@ public class Insert extends Update
         }
 
         for (final IAttributeType attrType : _expressions) {
+            val.append(first ? "" : ",");
             for (final String sqColumn : attrType.getAttribute().getSqlColNames()) {
                 if (first) {
                     first = false;
                 } else {
                     cmd.append(",");
                 }
-                cmd.append(sqColumn);
+                cmd.append('`').append(sqColumn).append('`');
             }
-            val.append(first ? "" : ",");
             if (!attrType.prepareInsert(val)) {
                 updateAttr.add(attrType);
             }
