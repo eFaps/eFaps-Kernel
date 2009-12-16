@@ -28,6 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Type;
@@ -39,8 +42,6 @@ import org.efaps.db.print.Phrase;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -170,10 +171,11 @@ public abstract class AbstractPrintQuery
      * @return object for the select statement
      * @throws EFapsException on error
      */
+    @SuppressWarnings("unchecked")
     public <T> T getAttribute(final Attribute _attribute)
         throws EFapsException
     {
-        return getAttribute(_attribute.getName());
+        return (T) getAttribute(_attribute.getName());
     }
 
     /**
