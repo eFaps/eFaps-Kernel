@@ -22,6 +22,7 @@ package org.efaps.db.print;
 
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.wrapper.SQLSelect;
 
 /**
  * TODO comment!
@@ -29,7 +30,8 @@ import org.efaps.admin.datamodel.Type;
  * @author The eFaps Team
  * @version $Id$
  */
-public class ChildTableSelectPart implements ISelectPart
+public class ChildTableSelectPart
+    implements ISelectPart
 {
 
     /**
@@ -46,7 +48,8 @@ public class ChildTableSelectPart implements ISelectPart
      * @param _type type this Type this SelectPart belongs to.
      * @param _table childtable this SelectPart belongs to
      */
-    public ChildTableSelectPart(final Type _type, final SQLTable _table)
+    public ChildTableSelectPart(final Type _type,
+                                final SQLTable _table)
     {
         this.type = _type;
         this.table = _table;
@@ -63,15 +66,16 @@ public class ChildTableSelectPart implements ISelectPart
     /**
      * {@inheritDoc}
      */
-    public int join(final OneSelect _oneSelect, final StringBuilder _fromBldr, final int _relIndex)
+    public int join(final OneSelect _oneSelect,
+                    final SQLSelect _select,
+                    final int _relIndex)
     {
         Integer ret;
         final String tableName = this.table.getSqlTable();
         ret = _oneSelect.getTableIndex(tableName, "ID", _relIndex);
         if (ret == null) {
             ret = _oneSelect.getNewTableIndex(tableName, "ID", _relIndex);
-            _fromBldr.append(" left join ").append(tableName).append(" T").append(ret)
-                .append(" on T").append(_relIndex).append(".ID").append("=T").append(ret).append(".ID");
+            _select.leftJoin(tableName, ret, "ID", _relIndex, "ID");
         }
         return ret;
     }

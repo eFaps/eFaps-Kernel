@@ -26,6 +26,7 @@ import java.util.List;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.IAttributeType;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
 /**
@@ -34,7 +35,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class AttributeValueSelect extends AbstractValueSelect
+public class AttributeValueSelect
+    extends AbstractValueSelect
 {
     /**
      * Attribute belonging to this AttributeValueSelect.
@@ -75,7 +77,7 @@ public class AttributeValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
     public Attribute getAttribute()
     {
         return this.attribute;
@@ -94,8 +96,9 @@ public class AttributeValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Object getValue(final Object _object) throws EFapsException
+    @Override()
+    public Object getValue(final Object _object)
+        throws EFapsException
     {
         final ArrayList<Object> tempList = new ArrayList<Object>();
         tempList.add(_object);
@@ -105,8 +108,9 @@ public class AttributeValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Object getValue(final List<Object> _objectList) throws EFapsException
+    @Override()
+    public Object getValue(final List<Object> _objectList)
+        throws EFapsException
     {
         Object ret;
         final IAttributeType attrInterf = this.attribute.newInstance();
@@ -124,8 +128,10 @@ public class AttributeValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
-    public int append2SQLSelect(final Type _type, final StringBuilder _fromBldr, final int _tableIndex,
+    @Override()
+    public int append2SQLSelect(final Type _type,
+                                final SQLSelect _select,
+                                final int _tableIndex,
                                 final int _colIndex)
     {
         if (this.attribute == null) {
@@ -133,7 +139,7 @@ public class AttributeValueSelect extends AbstractValueSelect
         }
         int ret = 0;
         for (final String colName : this.attribute.getSqlColNames()) {
-            _fromBldr.append(",T").append(_tableIndex).append(".").append(colName);
+            _select.column(_tableIndex, colName);
             getColIndexs().add(_colIndex + ret);
             ret++;
         }
@@ -144,7 +150,7 @@ public class AttributeValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
     public String getValueType()
     {
         return "attribute";

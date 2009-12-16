@@ -22,8 +22,7 @@ package org.efaps.db.print;
 
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
-
-
+import org.efaps.db.wrapper.SQLSelect;
 
 /**
  * Select Part for <code>class[CLASSIFICATIONNAME]</code>.
@@ -31,7 +30,8 @@ import org.efaps.admin.datamodel.Type;
  * @author The eFaps Team
  * @version $Id$
  */
-public class ClassSelectPart implements ISelectPart
+public class ClassSelectPart
+    implements ISelectPart
 {
 
     /**
@@ -50,7 +50,9 @@ public class ClassSelectPart implements ISelectPart
     /**
      * {@inheritDoc}
      */
-    public int join(final OneSelect _oneSelect, final StringBuilder _fromBldr, final int _relIndex)
+    public int join(final OneSelect _oneSelect,
+                    final SQLSelect _select,
+                    final int _relIndex)
     {
         Integer ret;
         final String tableName = this.classification.getMainTable().getSqlTable();
@@ -59,8 +61,7 @@ public class ClassSelectPart implements ISelectPart
         ret = _oneSelect.getTableIndex(tableName, column, _relIndex);
         if (ret == null) {
             ret = _oneSelect.getNewTableIndex(tableName, column, _relIndex);
-            _fromBldr.append(" left join ").append(tableName).append(" T").append(ret).append(" on T").append(
-                            _relIndex).append(".ID=").append("T").append(ret).append(".").append(column);
+            _select.leftJoin(tableName, ret, column, _relIndex, "ID");
         }
         return ret;
     }

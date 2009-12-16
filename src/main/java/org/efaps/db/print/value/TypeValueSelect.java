@@ -22,6 +22,7 @@ package org.efaps.db.print.value;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
 /**
@@ -30,7 +31,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class TypeValueSelect extends AbstractValueSelect
+public class TypeValueSelect
+    extends AbstractValueSelect
 {
     /**
      * Type this TypeValueSelect belongs to.
@@ -40,13 +42,15 @@ public class TypeValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
-    public int append2SQLSelect(final Type _type, final StringBuilder _fromBldr, final int _tableIndex,
+    @Override()
+    public int append2SQLSelect(final Type _type,
+                                final SQLSelect _select,
+                                final int _tableIndex,
                                 final int _colIndex)
     {
         int ret = 0;
         if (_type.getMainTable().getSqlColType() != null) {
-            _fromBldr.append(",T").append(_tableIndex).append(".").append(_type.getMainTable().getSqlColType());
+            _select.column(_tableIndex, _type.getMainTable().getSqlColType());
             getColIndexs().add(_colIndex + ret);
             ret++;
         }
@@ -57,8 +61,9 @@ public class TypeValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Object getValue(final Object _currentObject) throws EFapsException
+    @Override()
+    public Object getValue(final Object _currentObject)
+        throws EFapsException
     {
         Object ret = null;
         Type tempType;
@@ -85,7 +90,7 @@ public class TypeValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
     public String getValueType()
     {
         return "type";

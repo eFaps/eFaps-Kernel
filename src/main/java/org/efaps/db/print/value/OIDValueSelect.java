@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
 /**
@@ -32,7 +33,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class OIDValueSelect extends AbstractValueSelect
+public class OIDValueSelect
+    extends AbstractValueSelect
 {
 
     /**
@@ -43,21 +45,23 @@ public class OIDValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
-    public int append2SQLSelect(final Type _type, final StringBuilder _fromBldr, final int _tableIndex,
-                    final int _colIndex)
+    @Override()
+    public int append2SQLSelect(final Type _type,
+                                final SQLSelect _select,
+                                final int _tableIndex,
+                                final int _colIndex)
     {
         int ret = 0;
         if (getParent() == null || !"type".equals(getParent().getValueType())) {
             this.type = _type;
-            _fromBldr.append(",T").append(_tableIndex).append(".ID");
+            _select.column(_tableIndex, "ID");
             getColIndexs().add(_colIndex);
             ret++;
         }
         // in case that the type has a column for type it must be added
         if (this.type != null) {
             if (this.type.getMainTable().getSqlColType() != null) {
-                _fromBldr.append(",T").append(_tableIndex).append(".").append(this.type.getMainTable().getSqlColType());
+                _select.column(_tableIndex, this.type.getMainTable().getSqlColType());
                 getColIndexs().add(_colIndex + ret);
                 ret++;
             }
@@ -68,8 +72,9 @@ public class OIDValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Object getValue(final Object _object) throws EFapsException
+    @Override()
+    public Object getValue(final Object _object)
+        throws EFapsException
     {
         final StringBuilder bldr = new StringBuilder();
         boolean retNull = false;
@@ -93,8 +98,9 @@ public class OIDValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Object getValue(final List<Object> _objectList) throws EFapsException
+    @Override()
+    public Object getValue(final List<Object> _objectList)
+        throws EFapsException
     {
         final List<Object> ret = new ArrayList<Object>();
         for (final Object object : _objectList) {
@@ -106,7 +112,7 @@ public class OIDValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
     public String getValueType()
     {
         return "oid";

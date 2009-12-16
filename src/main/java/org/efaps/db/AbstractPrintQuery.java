@@ -28,9 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Type;
@@ -40,7 +37,10 @@ import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.print.OneSelect;
 import org.efaps.db.print.Phrase;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -105,6 +105,7 @@ public abstract class AbstractPrintQuery
 
     /**
      * Add a oneselect to this print query.
+     *
      * @param _oneSelect select to be added
      */
     protected void addOneSelect(final OneSelect _oneSelect)
@@ -123,7 +124,8 @@ public abstract class AbstractPrintQuery
     }
 
     /**
-     * Method to get the attribute for an attributename.
+     * Method to get the attribute for an <code>_attributeName</code>.
+     *
      * @param _attributeName name of the attribute
      * @return Attribute
      */
@@ -134,7 +136,7 @@ public abstract class AbstractPrintQuery
     }
 
     /**
-     * Method to get the instance for an attributename.
+     * Method to get the instance for an <code>_attributeName</code>.
      * @param _attributeName name of the attribute
      * @return list of instance
      */
@@ -146,13 +148,15 @@ public abstract class AbstractPrintQuery
 
     /**
      * Get the object returned by the given name of an attribute.
+     *
      * @param <T>               class the return value will be casted to
      * @param _attributeName    name of the attribute the object is wanted for
      * @return object for the select statement
      * @throws EFapsException on error
      */
     @SuppressWarnings("unchecked")
-    public <T> T getAttribute(final String _attributeName) throws EFapsException
+    public <T> T getAttribute(final String _attributeName)
+        throws EFapsException
     {
         final OneSelect oneselect = this.attr2OneSelect.get(_attributeName);
         return oneselect == null ? null : (T) oneselect.getObject();
@@ -160,15 +164,16 @@ public abstract class AbstractPrintQuery
 
     /**
      * Get the object returned by the given Attribute.
+     *
      * @param <T>           class the return value will be casted to
      * @param _attribute    the object is wanted for
      * @return object for the select statement
      * @throws EFapsException on error
      */
-    @SuppressWarnings("unchecked")
-    public <T> T getAttribute(final Attribute _attribute) throws EFapsException
+    public <T> T getAttribute(final Attribute _attribute)
+        throws EFapsException
     {
-        return (T) getAttribute(_attribute.getName());
+        return getAttribute(_attribute.getName());
     }
 
     /**
@@ -176,18 +181,21 @@ public abstract class AbstractPrintQuery
      * based on only one type, this Type is returned. In case that the query
      * contains different Types, the type returned must be the type, all other
      * types are derived from.
+     *
      * @return Type
      */
     public abstract Type getMainType();
 
     /**
      * Method to get the instances this PrintQuery is executed on.
+     *
      * @return List of instances
      */
     public abstract List<Instance> getInstanceList();
 
     /**
      * Method to get the current Instance.
+     *
      * @return current Instance
      */
     public abstract Instance getCurrentInstance();
@@ -244,7 +252,8 @@ public abstract class AbstractPrintQuery
      * @throws EFapsException on error
      */
     @SuppressWarnings("unchecked")
-    public <T> T getAttributeSet(final String _setName) throws EFapsException
+    public <T> T getAttributeSet(final String _setName)
+        throws EFapsException
     {
         final OneSelect oneselect = this.attr2OneSelect.get(_setName);
         Map<String, Object> ret = null;
@@ -312,12 +321,14 @@ public abstract class AbstractPrintQuery
 
     /**
      * Get the object returned by the expression belonging to the given key.
+     *
      * @param <T>           class the return value will be casted to
-     * @param _key  key for an expression the object is wanted for
+     * @param _key          key for an expression the object is wanted for
      * @return object for the expression
      * @throws EFapsException always
      */
-    public <T> T getExpression(final String _key) throws EFapsException
+    public <T> T getExpression(final String _key)
+        throws EFapsException
     {
         throw new EFapsException("PrintQuery.getExpression id not yet implemented", null);
     }
@@ -328,12 +339,14 @@ public abstract class AbstractPrintQuery
      * This would return " John - Doe". One Phrase can contain various selects
      * as defined for {@link #addSelect(String...)} and string to connect them.
      *
-     * @param _key Key the phrase can be accessed
-     * @param _phraseStmt Phrase to add
+     * @param _key          key the phrase can be accessed
+     * @param _phraseStmt   phrase to add
      * @throws EFapsException on error
      * @return this PrintQuery
      */
-    public AbstractPrintQuery addPhrase(final String _key, final String _phraseStmt) throws EFapsException
+    public AbstractPrintQuery addPhrase(final String _key,
+                                        final String _phraseStmt)
+        throws EFapsException
     {
         ValueList list = null;
 
@@ -357,6 +370,7 @@ public abstract class AbstractPrintQuery
 
     /**
      * Get the String representation of a phrase.
+     *
      * @param _key  key to the phrase
      * @return  String representation of the phrase
      * @throws EFapsException on error
@@ -379,7 +393,8 @@ public abstract class AbstractPrintQuery
      * @return this PrintQuery
      * @throws EFapsException   on error
      */
-    public AbstractPrintQuery addSelect(final String... _selectStmts) throws EFapsException
+    public AbstractPrintQuery addSelect(final String... _selectStmts)
+        throws EFapsException
     {
         for (final String selectStmt : _selectStmts) {
             final OneSelect oneselect = new OneSelect(this, selectStmt);
@@ -408,6 +423,7 @@ public abstract class AbstractPrintQuery
 
     /**
      * Method to get the Attribute used for an select.
+     *
      * @param _selectStmt   selectstatement the attribute is wanted for
      * @return  Attribute for the selectstatement
      */
@@ -419,8 +435,9 @@ public abstract class AbstractPrintQuery
 
     /**
      * Method to get the instances used for an select.
+     *
      * @param _selectStmt   selectstatement the attribute is wanted for
-     * @return  Attribute for the selectstatement
+     * @return attribute for the select statement
      */
     public List<Instance> getInstances4Select(final String _selectStmt)
     {
@@ -429,9 +446,10 @@ public abstract class AbstractPrintQuery
     }
 
     /**
-     * Method to determine it the selectstatement returns more than one value.
+     * Method to determine it the select statement returns more than one value.
+     *
      * @param _selectStmt   selectstatement the attribute is wanted for
-     * @return  Attribute for the selectstatement
+     * @return  Attribute for the select statement
      */
     public boolean isList4Select(final String _selectStmt)
     {
@@ -456,7 +474,8 @@ public abstract class AbstractPrintQuery
      * @return true if the query contains values, else false
      * @throws EFapsException on error
      */
-    public boolean executeWithoutAccessCheck() throws EFapsException
+    public boolean executeWithoutAccessCheck()
+    throws EFapsException
     {
         boolean ret = false;
         if (getInstanceList().size() > 0) {
@@ -476,28 +495,27 @@ public abstract class AbstractPrintQuery
 
     /**
      * Method to create on Statement out of the different parts.
-     * @return StringBuilder containing the sql statement
+     *
+     * @return StringBuilder containing the SQL statement
      */
     private StringBuilder createSQLStatement()
     {
-        final StringBuilder selBldr = new StringBuilder();
-        selBldr.append("select T0.ID");
-
-        final StringBuilder fromBldr = new StringBuilder();
-        fromBldr.append(" from ").append(getMainType().getMainTable().getSqlTable()).append(" T0");
-        for (final OneSelect onesel : this.allSelects) {
-            onesel.append2SQLFrom(fromBldr);
+        final SQLSelect select = new SQLSelect()
+            .column(0, "ID")
+            .from(getMainType().getMainTable().getSqlTable(), 0);
+        for (final OneSelect oneSel : this.allSelects) {
+            oneSel.append2SQLFrom(select);
         }
-        // if the maintable has a column for the type it is selected also
+        // if the main table has a column for the type it is selected also
         int colIndex = 2;
         if (getMainType().getMainTable().getSqlColType() != null) {
-            selBldr.append(",T0.").append(getMainType().getMainTable().getSqlColType());
+            select.column(0, getMainType().getMainTable().getSqlColType());
             colIndex++;
         }
 
         for (final OneSelect onesel : this.allSelects) {
             if (onesel.getValueSelect() != null) {
-                colIndex += onesel.append2SQLSelect(selBldr, colIndex);
+                colIndex += onesel.append2SQLSelect(select, colIndex);
             }
         }
 
@@ -514,12 +532,14 @@ public abstract class AbstractPrintQuery
         }
         whereBldr.append(")");
 
-        selBldr.append(fromBldr).append(whereBldr);
+        final StringBuilder cmd = new StringBuilder()
+                .append(select.getSQL())
+                .append(whereBldr);
 
         if (AbstractPrintQuery.LOG.isDebugEnabled()) {
-            AbstractPrintQuery.LOG.debug(selBldr.toString());
+            AbstractPrintQuery.LOG.debug(cmd.toString());
         }
-        return selBldr;
+        return cmd;
     }
 
     /**
@@ -531,7 +551,8 @@ public abstract class AbstractPrintQuery
      * @return true if the query contains values, else false
      * @throws EFapsException on error
      */
-    protected boolean executeOneCompleteStmt(final StringBuilder _complStmt, final List<OneSelect> _oneSelects)
+    protected boolean executeOneCompleteStmt(final StringBuilder _complStmt,
+                                             final List<OneSelect> _oneSelects)
         throws EFapsException
     {
         boolean ret = false;
@@ -587,7 +608,9 @@ public abstract class AbstractPrintQuery
      * @param _relIndex     relation the table is used in
      * @return  index of the table or null if not found
      */
-    public Integer getTableIndex(final String _tableName, final String _column, final int _relIndex)
+    public Integer getTableIndex(final String _tableName,
+                                 final String _column,
+                                 final int _relIndex)
     {
         return this.sqlTable2Index.get(_relIndex + "__" + _tableName + "__" + _column);
     }
@@ -600,7 +623,9 @@ public abstract class AbstractPrintQuery
      * @param _relIndex     relation the table is used in
      * @return new index for the table
      */
-    public Integer getNewTableIndex(final String _tableName, final String _column, final Integer _relIndex)
+    public Integer getNewTableIndex(final String _tableName,
+                                    final String _column,
+                                    final Integer _relIndex)
     {
         this.tableIndex++;
         this.sqlTable2Index.put(_relIndex + "__" + _tableName + "__" + _column, this.tableIndex);

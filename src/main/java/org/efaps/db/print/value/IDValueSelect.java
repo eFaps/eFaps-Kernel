@@ -22,6 +22,7 @@ package org.efaps.db.print.value;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.wrapper.SQLSelect;
 
 /**
  * Class is used to select an id.
@@ -41,13 +42,15 @@ public class IDValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
-    public int append2SQLSelect(final Type _type, final StringBuilder _fromBldr, final int _tableIndex,
+    @Override()
+    public int append2SQLSelect(final Type _type,
+                                final SQLSelect _select,
+                                final int _tableIndex,
                                 final int _colIndex)
     {
         int ret = 0;
         if (getParent() == null || !"type".equals(getParent().getValueType())) {
-            _fromBldr.append(",T").append(_tableIndex).append(".ID");
+            _select.column(_tableIndex, "ID");
             getColIndexs().add(_colIndex);
             ret++;
             this.attribute = _type.getAttribute("ID");
@@ -58,7 +61,7 @@ public class IDValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
     public Attribute getAttribute()
     {
         return this.attribute;
@@ -67,7 +70,7 @@ public class IDValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
     public String getValueType()
     {
         return "id";

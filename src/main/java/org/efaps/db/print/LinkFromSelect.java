@@ -31,6 +31,7 @@ import org.efaps.db.AbstractPrintQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
 /**
@@ -42,7 +43,8 @@ import org.efaps.util.EFapsException;
 /**
  * Select Part for <code>linkfrom[TYPERNAME#ATTRIBUTENAME]</code>.
  */
-public class LinkFromSelect extends AbstractPrintQuery
+public class LinkFromSelect
+    extends AbstractPrintQuery
 {
     /**
      * Name of the Attribute the link to is based on.
@@ -77,7 +79,7 @@ public class LinkFromSelect extends AbstractPrintQuery
                 return LinkFromSelect.this.type;
             }
 
-            public int join(final OneSelect _oneselect, final StringBuilder _fromBldr, final int _relIndex)
+            public int join(final OneSelect _oneselect, final SQLSelect _select, final int _relIndex)
             {
                 // TODO Auto-generated method stub
                 return 0;
@@ -109,25 +111,27 @@ public class LinkFromSelect extends AbstractPrintQuery
 
     /**
      * Method to create on Statement out of the different parts.
+     *
      * @param _parentOnesel instance
-     * @return StringBuilder containing the sql statement
+     * @return StringBuilder containing the SQL statement
      * @throws EFapsException on error
      */
-    private StringBuilder createSQLStatement(final OneSelect _parentOnesel) throws EFapsException
+    private StringBuilder createSQLStatement(final OneSelect _parentOnesel)
+        throws EFapsException
     {
         final Attribute attr = this.type.getAttribute(this.attrName);
-        final StringBuilder selBldr = new StringBuilder();
-        selBldr.append("select T0.ID, T0.").append(attr.getSqlColNames().get(0));
 
-        final StringBuilder fromBldr = new StringBuilder();
-        fromBldr.append(" from ").append(this.type.getMainTable().getSqlTable()).append(" T0");
+        final SQLSelect select = new SQLSelect()
+                .column(0, "ID")
+                .column(0, attr.getSqlColNames().get(0))
+                .from(this.type.getMainTable().getSqlTable(), 0);
 
         // on a from  select only one table is the base
-        getAllSelects().get(0).append2SQLFrom(fromBldr);
+        getAllSelects().get(0).append2SQLFrom(select);
 
         int colIndex = 3;
         for (final OneSelect oneSel : getAllSelects()) {
-            colIndex += oneSel.append2SQLSelect(selBldr, colIndex);
+            colIndex += oneSel.append2SQLSelect(select, colIndex);
         }
 
         final StringBuilder whereBldr = new StringBuilder();
@@ -169,12 +173,14 @@ public class LinkFromSelect extends AbstractPrintQuery
             whereBldr.append(") ");
         }
 
-        selBldr.append(fromBldr).append(whereBldr);
-
+        final StringBuilder cmd = new StringBuilder()
+                .append(select.getSQL())
+                .append(whereBldr);
         if (LOG.isDebugEnabled()) {
-            LOG.debug(selBldr.toString());
+            LOG.debug(cmd.toString());
         }
-        return selBldr;
+        System.out.println("cmd.toString()="+cmd.toString());
+        return cmd;
     }
 
     /**
@@ -195,8 +201,9 @@ public class LinkFromSelect extends AbstractPrintQuery
     /**
      * {@inheritDoc}
      */
-    @Override
-    protected boolean executeOneCompleteStmt(final StringBuilder _complStmt, final List<OneSelect> _oneSelects)
+    @Override()
+    protected boolean executeOneCompleteStmt(final StringBuilder _complStmt,
+                                             final List<OneSelect> _oneSelects)
         throws EFapsException
     {
         boolean ret = false;
@@ -272,7 +279,7 @@ public class LinkFromSelect extends AbstractPrintQuery
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
     public List<Instance> getInstanceList()
     {
         // TODO Auto-generated method stub
@@ -282,7 +289,7 @@ public class LinkFromSelect extends AbstractPrintQuery
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
     public Type getMainType()
     {
         // TODO Auto-generated method stub

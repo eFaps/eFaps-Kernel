@@ -21,6 +21,7 @@
 package org.efaps.db.print;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.wrapper.SQLSelect;
 
 /**
  * Interface used for the different Select parts.
@@ -32,12 +33,15 @@ public interface ISelectPart
 {
     /**
      * Method to join a table to the given from select statement.
-     * @param _oneselect oneselect this select part must be joined to
-     * @param _fromBldr StringBuilder containing the from select statement
-     * @param _relIndex relation index
+     *
+     * @param _oneselect    oneselect this select part must be joined to
+     * @param _select       SQL select statement wrapper
+     * @param _relIndex     relation index
      * @return table index of the joint table
      */
-    int join(final OneSelect _oneselect, final StringBuilder _fromBldr, final int _relIndex);
+    int join(final OneSelect _oneselect,
+             final SQLSelect _select,
+             final int _relIndex);
 
     /**
      * Method to get the Type the part belongs to.
