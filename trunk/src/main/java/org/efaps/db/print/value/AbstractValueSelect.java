@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
 /**
@@ -98,7 +99,8 @@ public abstract class AbstractValueSelect
      * @param _valueSelect  AbstractValueSelect to be added as child
      * @throws EFapsException on error
      */
-    public void addChildValueSelect(final AbstractValueSelect _valueSelect) throws EFapsException
+    public void addChildValueSelect(final AbstractValueSelect _valueSelect)
+        throws EFapsException
     {
         if (this.child == null) {
             this.child = _valueSelect;
@@ -113,12 +115,14 @@ public abstract class AbstractValueSelect
      * select statement. e.g. "select T0.ID, TO.TYPEID" etc.
      *
      * @param _type         Type this ValueSelect belongs to
-     * @param _selectBldr   select statement to be appended to
+     * @param _select       SQL select statement to be appended to
      * @param _tableIndex   index of the table
      * @param _colIndex     last index of the column
      * @return number of columns added to the select statement
      */
-    public int append2SQLSelect(final Type _type, final StringBuilder _selectBldr, final int _tableIndex,
+    public int append2SQLSelect(final Type _type,
+                                final SQLSelect _select,
+                                final int _tableIndex,
                                 final int _colIndex)
     {
         return 0;
@@ -131,7 +135,8 @@ public abstract class AbstractValueSelect
      * @throws EFapsException on error
      * @return object
      */
-    public Object getValue(final Object _object) throws EFapsException
+    public Object getValue(final Object _object)
+        throws EFapsException
     {
         return _object;
     }
@@ -143,7 +148,8 @@ public abstract class AbstractValueSelect
      * @throws EFapsException on error
      * @return object
      */
-    public Object getValue(final List<Object> _objectList) throws EFapsException
+    public Object getValue(final List<Object> _objectList)
+        throws EFapsException
     {
         final List<Object> ret = new ArrayList<Object>();
         for (final Object object : _objectList) {

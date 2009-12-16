@@ -26,12 +26,12 @@ import java.util.List;
 import org.efaps.db.Context;
 
 /**
+ * An easy wrapper for a SQL select statement.
  *
  * @author The eFaps Team
  * @version $Id$
  * TODO: where clause
  * TODO: order
- * TODO: tables for columns
  */
 public class SQLSelect
 {
@@ -58,7 +58,23 @@ public class SQLSelect
      */
     public SQLSelect column(final String _name)
     {
-        this.columns.add(new Column(_name, null));
+        this.columns.add(new Column(null, _name));
+        return this;
+    }
+
+    /**
+     * Appends a selected column <code>_name</code> for given
+     * <code>_tableIndex</code>.
+     *
+     * @param _tableIndex   index of the table
+     * @param _columnName   name of the column
+     * @return this SQL select statement
+     * @see #columns
+     */
+    public SQLSelect column(final int _tableIndex,
+                            final String _columnName)
+    {
+        this.columns.add(new Column(_tableIndex, _columnName));
         return this;
     }
 
@@ -72,6 +88,45 @@ public class SQLSelect
     public SQLSelect from(final String _name)
     {
         this.fromTables.add(new FromTable(_name, null));
+        return this;
+    }
+
+    /**
+     * Appends a table as from selected table.
+     *
+     * @param _tableName    name of the SQL table
+     * @param _tableIndex   index of the table within the SQL statement
+     * @return this SQL select statement
+     * @see #fromTables
+     */
+    public SQLSelect from(final String _tableName,
+                          final int _tableIndex)
+    {
+        this.fromTables.add(new FromTable(_tableName, _tableIndex));
+        return this;
+    }
+
+    /**
+     *
+     * @param _tableName        name of the SQL table
+     * @param _tableIndex       index of the table used within the SQL
+     *                          select statement
+     * @param _columnName       name of the column of table
+     *                          <code>_tableName</code> used for
+     *                          &quot;left join&quot;
+     * @param _joinTableIndex   index of the table from which is joined
+     * @param _joinColumnName   name of the column of the table from which
+     *                          is joined
+     * @return this SQL select statement instance
+     */
+    public SQLSelect leftJoin(final String _tableName,
+                              final int _tableIndex,
+                              final String _columnName,
+                              final int _joinTableIndex,
+                              final String _joinColumnName)
+    {
+        this.fromTables.add(new FromTableLeftJoin(_tableName, _tableIndex, _columnName,
+                                                  _joinTableIndex, _joinColumnName));
         return this;
     }
 
@@ -96,12 +151,10 @@ public class SQLSelect
         cmd.append(" from ");
         first = true;
         for (final FromTable fromTable : this.fromTables)  {
+            fromTable.appendSQL(first, cmd);
             if (first)  {
                 first = false;
-            } else  {
-                cmd.append(',');
             }
-            fromTable.appendSQL(cmd);
         }
 
         return cmd.toString();
@@ -113,37 +166,147 @@ public class SQLSelect
     private static class FromTable
     {
         /** SQL name of the table. */
-        private final String sqlName;
+        private final String tableName;
 
-        /** Internal used name in the select statement. */
-        private final String internalName;
+        /** Index of the table within the SQL select statement. */
+        private final Integer tableIndex;
 
         /**
          * Default constructor.
          *
-         * @param _sqlName          SQL name
-         * @param _internalName     internal name
+         * @param _tableName        name of the SQL table
+         * @param _tableIndex       index of the table
          */
-        FromTable(final String _sqlName,
-                  final String _internalName)
+        FromTable(final String _tableName,
+                  final Integer _tableIndex)
         {
-            this.sqlName = _sqlName;
-            this.internalName = _internalName;
+            this.tableName = _tableName;
+            this.tableIndex = _tableIndex;
         }
 
         /**
+         * Returns the related {@link #tableName SQL table name} which is
+         * represented by this class.
          *
+         * @return name of the SQL table
+         * @see #tableName
+         */
+        public String getTableName()
+        {
+            return this.tableName;
+        }
+
+        /**
+         * Returns the related {@link #tableIndex table index} in the SQL
+         * select statement.
+         *
+         * @return table index
+         * @see #tableIndex
+         */
+        public Integer getTableIndex()
+        {
+            return this.tableIndex;
+        }
+
+        /**
+         * Appends the {@link #tableName name} of this table depending on a
+         * given {@link #tableIndex index} to the SQL select statement in
+         * <code>_cmd</code>. If <code>_first</code> is <i>true</i> a comma
+         * ',' is defined in the front.
+         *
+         * @param _first    <i>true</i> if first statement and a comma must be
+         *                  prefixed; otherwise <i>false</i>
          * @param _cmd      string builder used to append SQL statement for
          *                  this table
          */
-        public void appendSQL(final StringBuilder _cmd)
+        public void appendSQL(final boolean _first,
+                              final StringBuilder _cmd)
         {
-            _cmd.append(Context.getDbType().getTableQuote())
-                .append(this.sqlName)
-                .append(Context.getDbType().getTableQuote());
-            if (this.internalName != null)  {
-                _cmd.append(' ').append(this.internalName);
+            if (!_first)  {
+                _cmd.append(',');
             }
+            _cmd.append(Context.getDbType().getTableQuote())
+                .append(this.tableName)
+                .append(Context.getDbType().getTableQuote());
+            if (this.tableIndex != null)  {
+                _cmd.append(" T").append(this.tableIndex);
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private static class FromTableLeftJoin
+        extends SQLSelect.FromTable
+    {
+        /**
+         * Name of the column used for the &quot;left join&quot;.
+         */
+        private final String columnName;
+
+        /**
+         * Index of the table from which is joined.
+         */
+        private final int joinTableIndex;
+
+        /**
+         * Name of the column of the table from which is joined.
+         */
+        private final String joinColumnName;
+
+        /**
+         *
+         * @param _tableName        name of the SQL table
+         * @param _tableIndex       index of the table used within the SQL
+         *                          select statement
+         * @param _columnName       name of the column of table
+         *                          <code>_tableName</code> used for
+         *                          &quot;left join&quot;
+         * @param _joinTableIndex   index of the table from which is joined
+         * @param _joinColumnName   name of the column of the table from which
+         *                          is joined
+         */
+        FromTableLeftJoin(final String _tableName,
+                          final Integer _tableIndex,
+                          final String _columnName,
+                          final int _joinTableIndex,
+                          final String _joinColumnName)
+        {
+            super(_tableName, _tableIndex);
+            this.columnName = _columnName;
+            this.joinTableIndex = _joinTableIndex;
+            this.joinColumnName = _joinColumnName;
+        }
+
+        /**
+         * Appends the SQL statement for this left join.
+         *
+         * @param _first    <i>true</i> if first statement and a space must be
+         *                  prefixed; otherwise <i>false</i>
+         * @param _cmd      string builder used to append SQL statement for
+         *                  this left join
+         */
+        @Override()
+        public void appendSQL(final boolean _first,
+                              final StringBuilder _cmd)
+        {
+            if (!_first)  {
+                _cmd.append(' ');
+            }
+            _cmd.append("left join ")
+                .append(Context.getDbType().getTableQuote())
+                .append(this.getTableName())
+                .append(Context.getDbType().getTableQuote())
+                .append(" T").append(this.getTableIndex())
+                .append(" on T").append(this.joinTableIndex).append('.')
+                .append(Context.getDbType().getColumnQuote())
+                .append(this.joinColumnName)
+                .append(Context.getDbType().getColumnQuote())
+                .append("=T").append(this.getTableIndex()).append('.')
+                .append(Context.getDbType().getColumnQuote())
+                .append(this.columnName)
+                .append(Context.getDbType().getColumnQuote());
         }
     }
 
@@ -152,23 +315,23 @@ public class SQLSelect
      */
     private static class Column
     {
-        /** SQL name of the column. */
-        private final String sqlName;
+        /** Index of the table in the select statement where this column is defined. */
+        private final Integer tableIndex;
 
-        /** Internal used name in the select statement. */
-        private final String internalName;
+        /** SQL name of the column. */
+        private final String columnName;
 
         /**
          * Default constructor.
          *
-         * @param _sqlName          SQL name
-         * @param _internalName     internal name
+         * @param _tableIndex   related index of the table
+         * @param _columnName   SQL name of the column
          */
-        Column(final String _sqlName,
-               final String _internalName)
+        Column(final Integer _tableIndex,
+               final String _columnName)
         {
-            this.sqlName = _sqlName;
-            this.internalName = _internalName;
+            this.tableIndex = _tableIndex;
+            this.columnName = _columnName;
         }
 
         /**
@@ -178,12 +341,12 @@ public class SQLSelect
          */
         public void appendSQL(final StringBuilder _cmd)
         {
-            _cmd.append(Context.getDbType().getTableQuote())
-                .append(this.sqlName)
-                .append(Context.getDbType().getTableQuote());
-            if (this.internalName != null)  {
-                _cmd.append(' ').append(this.internalName);
+            if (this.tableIndex != null)  {
+                _cmd.append('T').append(this.tableIndex).append('.');
             }
+            _cmd.append(Context.getDbType().getTableQuote())
+                .append(this.columnName)
+                .append(Context.getDbType().getTableQuote());
         }
     }
 }

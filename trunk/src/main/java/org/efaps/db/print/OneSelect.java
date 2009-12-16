@@ -44,6 +44,7 @@ import org.efaps.db.print.value.LabelValueSelect;
 import org.efaps.db.print.value.OIDValueSelect;
 import org.efaps.db.print.value.TypeValueSelect;
 import org.efaps.db.print.value.UUIDValueSelect;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
 /**
@@ -124,7 +125,8 @@ public class OneSelect
      * @param _query        PrintQuery this OneSelect belongs to
      * @param _selectStmt selectStatement this OneSelect belongs to
      */
-    public OneSelect(final AbstractPrintQuery _query, final String _selectStmt)
+    public OneSelect(final AbstractPrintQuery _query,
+                     final String _selectStmt)
     {
         this.query = _query;
         this.selectStmt = _selectStmt;
@@ -134,7 +136,8 @@ public class OneSelect
      * @param _query    AbstractPrintQuery this OneSelect belongs to
      * @param _attr     attribute to be used in this OneSelect
      */
-    public OneSelect(final AbstractPrintQuery _query, final Attribute _attr)
+    public OneSelect(final AbstractPrintQuery _query,
+                     final Attribute _attr)
     {
         this.query = _query;
         this.selectStmt = null;
@@ -196,7 +199,8 @@ public class OneSelect
      * @param _rs ResultSet from the eFaps database
      * @throws SQLException on error
      */
-    public void addObject(final ResultSet _rs) throws SQLException
+    public void addObject(final ResultSet _rs)
+        throws SQLException
     {
         final ResultSetMetaData metaData = _rs.getMetaData();
         // store the ids also
@@ -296,13 +300,14 @@ public class OneSelect
     }
 
     /**
-     * Method used to append to the from part of an sql statement.
-     * @param _fromBldr builder to append to
+     * Method used to append to the from part of an SQL statement.
+     *
+     * @param _select   SQL select wrapper
      */
-    public void append2SQLFrom(final StringBuilder _fromBldr)
+    public void append2SQLFrom(final SQLSelect _select)
     {
         // for attributes it must be evaluated if the attribute is inside a child table
-        if (this.valueSelect != null && "attribute".equals(this.valueSelect.getValueType())) {
+        if ((this.valueSelect != null) && "attribute".equals(this.valueSelect.getValueType())) {
             Type type;
             if (this.selectParts.size() > 0) {
                 type = this.selectParts.get(this.selectParts.size() - 1).getType();
@@ -330,17 +335,19 @@ public class OneSelect
             }
         }
         for (final ISelectPart sel : this.selectParts) {
-            this.tableIndex = sel.join(this, _fromBldr, this.tableIndex);
+            this.tableIndex = sel.join(this, _select, this.tableIndex);
         }
     }
 
     /**
-     * Method used to append to the select part of an sql statement.
-     * @param _fromBldr builder to append to
-     * @param _colIndex aactual column index
-     * @return number of columns added in this part of the sql statement
+     * Method used to append to the select part of an SQL statement.
+     *
+     * @param _select       SQL select statement
+     * @param _colIndex     actual column index
+     * @return number of columns added in this part of the SQL statement
      */
-    public int append2SQLSelect(final StringBuilder _fromBldr, final int _colIndex)
+    public int append2SQLSelect(final SQLSelect _select,
+                                final int _colIndex)
     {
         Type type;
         if (this.selectParts.size() > 0) {
@@ -350,10 +357,10 @@ public class OneSelect
         }
         int ret;
         if (this.valueSelect == null) {
-            ret = this.fromSelect.getMainOneSelect().getValueSelect().append2SQLSelect(type, _fromBldr, this.tableIndex,
+            ret = this.fromSelect.getMainOneSelect().getValueSelect().append2SQLSelect(type, _select, this.tableIndex,
                                                                                        _colIndex);
         } else {
-            ret = this.valueSelect.append2SQLSelect(type, _fromBldr, this.tableIndex, _colIndex);
+            ret = this.valueSelect.append2SQLSelect(type, _select, this.tableIndex, _colIndex);
         }
 
         return ret;
@@ -572,7 +579,9 @@ public class OneSelect
      * @param _relIndex relation the table is used in
      * @return index of the table or null if not found
      */
-    public Integer getTableIndex(final String _tableName, final String _column, final int _relIndex)
+    public Integer getTableIndex(final String _tableName,
+                                 final String _column,
+                                 final int _relIndex)
     {
         Integer ret;
         if (this.valueSelect == null && this.fromSelect != null) {

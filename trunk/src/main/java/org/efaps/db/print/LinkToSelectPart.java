@@ -22,7 +22,7 @@ package org.efaps.db.print;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
-
+import org.efaps.db.wrapper.SQLSelect;
 
 /**
  * Select Part for <code>linkto[ATTRIBUTENAME]</code>.
@@ -30,7 +30,8 @@ import org.efaps.admin.datamodel.Type;
  * @author The eFaps Team
  * @version $Id$
  */
-public class LinkToSelectPart implements ISelectPart
+public class LinkToSelectPart
+    implements ISelectPart
 {
     /**
      * Name of the Attribute the link to is based on.
@@ -46,7 +47,8 @@ public class LinkToSelectPart implements ISelectPart
      * @param _attrName attribute name
      * @param _type     type
      */
-    public LinkToSelectPart(final String _attrName, final Type _type)
+    public LinkToSelectPart(final String _attrName,
+                            final Type _type)
     {
         this.attrName = _attrName;
         this.type = _type;
@@ -55,7 +57,9 @@ public class LinkToSelectPart implements ISelectPart
     /**
      * {@inheritDoc}
      */
-    public int join(final OneSelect _oneSelect, final StringBuilder _fromBldr, final int _relIndex)
+    public int join(final OneSelect _oneSelect,
+                    final SQLSelect _select,
+                    final int _relIndex)
     {
         // it must be evaluated if the attribute that is used as the base for the linkto is inside a child table
         final Attribute attr = this.type.getAttribute(this.attrName);
@@ -65,8 +69,7 @@ public class LinkToSelectPart implements ISelectPart
             relIndex = _oneSelect.getTableIndex(childTableName, "ID", _relIndex);
             if (relIndex == null) {
                 relIndex = _oneSelect.getNewTableIndex(childTableName, "ID", _relIndex);
-                _fromBldr.append(" left join ").append(childTableName).append(" T").append(relIndex)
-                    .append(" on T").append(_relIndex).append(".ID").append("=T").append(relIndex).append(".ID");
+                _select.leftJoin(childTableName, relIndex, "ID", _relIndex, "ID");
             }
         }
         Integer ret;
@@ -75,9 +78,7 @@ public class LinkToSelectPart implements ISelectPart
         ret = _oneSelect.getTableIndex(tableName, column, relIndex);
         if (ret == null) {
             ret = _oneSelect.getNewTableIndex(tableName, column, relIndex);
-            _fromBldr.append(" left join ").append(tableName).append(" T").append(ret)
-                .append(" on T").append(relIndex).append(".").append(column)
-                .append("=T").append(ret).append(".ID");
+            _select.leftJoin(tableName, ret, "ID", relIndex, column);
         }
         return ret;
     }
