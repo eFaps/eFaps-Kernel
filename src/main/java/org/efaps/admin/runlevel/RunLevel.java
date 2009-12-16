@@ -32,6 +32,7 @@ import java.util.Map;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.slf4j.Logger;
@@ -62,17 +63,25 @@ public final class RunLevel
 
     /**
      * This is the SQL select statement to select a RunLevel from the database.
+     *
+     * @see #RunLevel(long)
+     * @see #RunLevel(String)
      */
-    private static final String SQL_RUNLEVEL  = "select ID,PARENT "
-                                                  + "from T_RUNLEVEL "
-                                                  + "WHERE ";
+    private static final SQLSelect SELECT_RUNLEVEL = new SQLSelect()
+                                                    .column("ID")
+                                                    .column("PARENT")
+                                                .from("T_RUNLEVEL");
 
     /**
      * SQL select statement to select a RunLevel from the database.
+     *
+     * @see #initialize(String)
      */
-    private static final String SQL_DEF_PRE   = "select CLASS, METHOD, PARAMETER "
-                                                  + "from T_RUNLEVELDEF "
-                                                  + "where RUNLEVELID=";
+    private static final SQLSelect SELECT_DEF_PRE = new SQLSelect()
+                                                    .column("CLASS")
+                                                    .column("METHOD")
+                                                    .column("PARAMETER")
+                                                .from("T_RUNLEVELDEF");
 
     /**
      * Order part of the SQL select statement.
@@ -114,7 +123,8 @@ public final class RunLevel
     private RunLevel(final String _name)
         throws EFapsException
     {
-        initialize(RunLevel.SQL_RUNLEVEL + " RUNLEVEL='" + _name + "'");
+//        initialize(RunLevel.SQL_RUNLEVEL + " RUNLEVEL='" + _name + "'");
+        initialize(RunLevel.SELECT_RUNLEVEL.getSQL() + " where RUNLEVEL='" + _name + "'");
     }
 
     /**
@@ -126,7 +136,8 @@ public final class RunLevel
     private RunLevel(final long _id)
         throws EFapsException
     {
-        initialize(RunLevel.SQL_RUNLEVEL + " ID=" + _id);
+//        initialize(RunLevel.SQL_RUNLEVEL + " ID=" + _id);
+        initialize(RunLevel.SELECT_RUNLEVEL.getSQL() + " where ID=" + _id);
     }
 
     /**
@@ -249,7 +260,8 @@ public final class RunLevel
                 rs.close();
 
                 // read all methods for one run level
-                rs = stmt.executeQuery(RunLevel.SQL_DEF_PRE + this.id + RunLevel.SQL_DEF_POST);
+                rs = stmt.executeQuery(RunLevel.SELECT_DEF_PRE.getSQL()
+                        + " where RUNLEVELID=" + this.id + RunLevel.SQL_DEF_POST);
                 while (rs.next()) {
                     if (rs.getString(3) != null) {
                         this.cacheMethods.add(new CacheMethod(rs.getString(1).trim(),

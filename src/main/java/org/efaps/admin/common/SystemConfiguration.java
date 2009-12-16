@@ -31,6 +31,7 @@ import org.efaps.admin.EFapsClassNames;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheObjectInterface;
@@ -49,10 +50,17 @@ public final class SystemConfiguration
     /**
      * This static Variable contains the SQL statement used to retrieve the
      * SystemAttributes from the eFaps database.
+     *
+     * @see SystemConfigurationCache#readCache(Map, Map, Map)
      */
-    private static final String SQL_SELECT
-        = " select CONFIGID, CONFIGNAME, CONFIGUUID, KEY, VALUE, UUID "
-                + "from V_CMSYSCONF";
+    private static final SQLSelect SELECT = new SQLSelect()
+                                                .column("CONFIGID")
+                                                .column("CONFIGNAME")
+                                                .column("CONFIGUUID")
+                                                .column("KEY")
+                                                .column("VALUE")
+                                                .column("UUID")
+                                            .from("V_CMSYSCONF");
 
     /**
      * Caches all instances of {@link SystemConfiguration}.
@@ -267,7 +275,7 @@ public final class SystemConfiguration
             try {
                 final ConnectionResource con = Context.getThreadContext().getConnectionResource();
                 final Statement stmt = con.getConnection().createStatement();
-                final ResultSet resultset = stmt.executeQuery(SystemConfiguration.SQL_SELECT);
+                final ResultSet resultset = stmt.executeQuery(SystemConfiguration.SELECT.getSQL());
                 long id = 0;
                 SystemConfiguration config = null;
                 while (resultset.next()) {

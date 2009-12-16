@@ -420,10 +420,13 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @return this instance
      * @throws SQLException if the update of the table failed
      */
-    public abstract DB defineTableParent(final Connection _con,
-                                         final String _table,
-                                         final String _parentTable)
-        throws SQLException;
+    public DB defineTableParent(final Connection _con,
+                                final String _table,
+                                final String _parentTable)
+        throws SQLException
+    {
+        return addForeignKey(_con, _table, _table + "_FK_ID", "ID", _parentTable + "(ID)", false);
+    }
 
     /**
      * Defines a new created SQL table as auto incremented.
@@ -450,21 +453,22 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @param _scale            scale of the column (or 0 if not specified)
      * @param _isNotNull        <i>true</i> means that the column has no
      *                          <code>null</code> values
+     * @return this instance
      * @throws SQLException if the column could not be added to the tables
      */
-    public void addTableColumn(final Connection _con,
-                               final String _tableName,
-                               final String _columnName,
-                               final ColumnType _columnType,
-                               final String _defaultValue,
-                               final int _length,
-                               final int _scale,
-                               final boolean _isNotNull)
+    public DB addTableColumn(final Connection _con,
+                             final String _tableName,
+                             final String _columnName,
+                             final ColumnType _columnType,
+                             final String _defaultValue,
+                             final int _length,
+                             final int _scale,
+                             final boolean _isNotNull)
         throws SQLException
     {
         final StringBuilder cmd = new StringBuilder();
-        cmd.append("alter table ").append(_tableName).append(" ")
-           .append("add ").append(_columnName).append(" ")
+        cmd.append("alter table ").append(getTableQuote()).append(_tableName).append(getTableQuote()).append(' ')
+           .append("add ").append(getColumnQuote()).append(_columnName).append(getColumnQuote()).append(' ')
            .append(getWriteSQLTypeName(_columnType));
         if (_length > 0)  {
             cmd.append("(").append(_length);
@@ -492,6 +496,10 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
         } finally  {
             stmt.close();
         }
+
+        @SuppressWarnings("unchecked")
+        final DB ret = (DB) this;
+        return ret;
     }
 
     /**
@@ -503,12 +511,13 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @param _uniqueKeyName  name of unique key
      * @param _columns        comma separated list of column names for which the
      *                        unique key is created
+     * @return this instance
      * @throws SQLException if the unique key could not be created
      */
-    public void addUniqueKey(final Connection _con,
-                             final String _tableName,
-                             final String _uniqueKeyName,
-                             final String _columns)
+    public DB addUniqueKey(final Connection _con,
+                           final String _tableName,
+                           final String _uniqueKeyName,
+                           final String _columns)
         throws SQLException
     {
         final StringBuilder cmd = new StringBuilder();
@@ -528,6 +537,10 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
         } finally  {
             stmt.close();
         }
+
+        @SuppressWarnings("unchecked")
+        final DB ret = (DB) this;
+        return ret;
     }
 
     /**
@@ -541,14 +554,15 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @param _reference      external reference (external table and column name)
      * @param _cascade        if the value in the external table is deleted,
      *                        should this value also automatically deleted?
+     * @return this instance
      * @throws SQLException if foreign key could not be defined for SQL table
      */
-    public void addForeignKey(final Connection _con,
-                              final String _tableName,
-                              final String _foreignKeyName,
-                              final String _key,
-                              final String _reference,
-                              final boolean _cascade)
+    public DB addForeignKey(final Connection _con,
+                            final String _tableName,
+                            final String _foreignKeyName,
+                            final String _key,
+                            final String _reference,
+                            final boolean _cascade)
         throws SQLException
     {
         final StringBuilder cmd = new StringBuilder()
@@ -572,6 +586,10 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
         } finally  {
             stmt.close();
         }
+
+        @SuppressWarnings("unchecked")
+        final DB ret = (DB) this;
+        return ret;
     }
 
     /**
@@ -607,6 +625,26 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
         } finally  {
             stmt.close();
         }
+    }
+
+    /**
+     * Returns the quote used to select tables.
+     *
+     * @return always empty string as default
+     */
+    public String getTableQuote()
+    {
+        return "";
+    }
+
+    /**
+     * Returns the quote used to select columns.
+     *
+     * @return always empty string as default
+     */
+    public String getColumnQuote()
+    {
+        return "";
     }
 
     /**

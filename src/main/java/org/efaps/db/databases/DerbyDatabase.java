@@ -270,14 +270,14 @@ public class DerbyDatabase
      * @throws SQLException if the column could not be added to the tables
      */
     @Override()
-    public void addTableColumn(final Connection _con,
-                               final String _tableName,
-                               final String _columnName,
-                               final ColumnType _columnType,
-                               final String _defaultValue,
-                               final int _length,
-                               final int _scale,
-                               final boolean _isNotNull)
+    public DerbyDatabase addTableColumn(final Connection _con,
+                                        final String _tableName,
+                                        final String _columnName,
+                                        final ColumnType _columnType,
+                                        final String _defaultValue,
+                                        final int _length,
+                                        final int _scale,
+                                        final boolean _isNotNull)
         throws SQLException
     {
         String defaultValue = _defaultValue;
@@ -295,8 +295,8 @@ public class DerbyDatabase
                     break;
             }
         }
-        super.addTableColumn(_con, _tableName, _columnName, _columnType,
-                defaultValue, _length, _scale, _isNotNull);
+        return super.addTableColumn(_con, _tableName, _columnName, _columnType,
+                                    defaultValue, _length, _scale, _isNotNull);
     }
 
     /**
