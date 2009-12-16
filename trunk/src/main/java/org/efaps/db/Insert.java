@@ -295,7 +295,9 @@ public class Insert extends Update
                 } else {
                     cmd.append(",");
                 }
-                cmd.append('`').append(sqColumn).append('`');
+                cmd.append(Context.getDbType().getColumnQuote())
+                    .append(sqColumn)
+                    .append(Context.getDbType().getColumnQuote());
             }
             if (!attrType.prepareInsert(val)) {
                 updateAttr.add(attrType);

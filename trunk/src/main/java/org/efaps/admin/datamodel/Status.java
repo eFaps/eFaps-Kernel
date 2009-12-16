@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheObjectInterface;
@@ -50,8 +51,15 @@ public final class Status implements CacheObjectInterface
     /**
      * Select statement that will be executed against the database
      * on reading the cache.
+     *
+     * @see StatusGroupCache#readCache(Map, Map, Map)
      */
-    private static String SQL_SELECT = "select ID, TYPEID, KEY, DESCR" + " from T_DMSTATUS";
+    private static final SQLSelect SELECT = new SQLSelect()
+                                            .column("ID")
+                                            .column("TYPEID")
+                                            .column("KEY")
+                                            .column("DESCR")
+                                        .from("T_DMSTATUS");
 
     /**
      * Logging instance used in this class.
@@ -303,7 +311,7 @@ public final class Status implements CacheObjectInterface
         /**
          * {@inheritDoc}
          */
-        @Override
+        @Override()
         protected void readCache(final Map<Long, Status.StatusGroup> _cache4Id,
                                  final Map<String, Status.StatusGroup> _cache4Name,
                                  final Map<UUID, Status.StatusGroup> _cache4UUID)
@@ -318,7 +326,7 @@ public final class Status implements CacheObjectInterface
 
                     stmt = con.getConnection().createStatement();
 
-                    final ResultSet rs = stmt.executeQuery(Status.SQL_SELECT);
+                    final ResultSet rs = stmt.executeQuery(Status.SELECT.getSQL());
                     while (rs.next()) {
                         final long id = rs.getLong(1);
                         final long typeid = rs.getLong(2);

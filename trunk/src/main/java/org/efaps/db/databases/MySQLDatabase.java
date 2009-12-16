@@ -22,7 +22,6 @@ package org.efaps.db.databases;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -33,13 +32,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Database class for the PostgreSQL database.
+ * Database class for the MySQL database.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class PostgreSQLDatabase
-    extends AbstractDatabase<PostgreSQLDatabase>
+public class MySQLDatabase
+    extends AbstractDatabase<MySQLDatabase>
 {
     /**
      * Logging instance used in this class.
@@ -48,7 +47,7 @@ public class PostgreSQLDatabase
 
     /**
      * Select statement to select all unique keys for current logged in
-     * PostgreSQL database user.
+     * MySQL database user.
      *
      * @see #initTableInfoUniqueKeys(Connection, String, Map)
      */
@@ -67,46 +66,42 @@ public class PostgreSQLDatabase
             + "and a.constraint_name=b.constraint_name";
 
     /**
-     * Select statement for all foreign keys for current logged in PostgreSQL
+     * Select statement for all foreign keys for current logged in MySQL
      * database user.
      *
      * @see #initTableInfoForeignKeys(Connection, String, Map)
      */
     private static final String SQL_FOREIGN_KEYS = "select "
-            + "a.table_name as TABLE_NAME, "
-            + "a.constraint_name as FK_NAME, "
-            + "b.column_name as FKCOLUMN_NAME, "
-            + "case "
-                    + "when c.delete_rule='NO ACTION' then '" + DatabaseMetaData.importedKeyNoAction + "' "
-                    + "when c.delete_rule='CASCASE' then '" + DatabaseMetaData.importedKeyCascade + "' "
-                    + "else '' end as DELETE_RULE, "
-            + "d.table_name as PKTABLE_NAME, "
-            + "d.column_name as PKCOLUMN_NAME "
+            + "a.TABLE_NAME as TABLE_NAME, "
+            + "a.CONSTRAINT_NAME as FK_NAME, "
+            + "b.COLUMN_NAME as FKCOLUMN_NAME, "
+            + "'' as DELETE_RULE, "
+            + "b.REFERENCED_TABLE_NAME as PKTABLE_NAME, "
+            + "b.REFERENCED_COLUMN_NAME as PKCOLUMN_NAME "
         + "from "
             + "information_schema.table_constraints a, "
-            + "information_schema.constraint_column_usage b, "
-            + "information_schema.referential_constraints c, "
-            + "information_schema.constraint_column_usage d "
+            + "information_schema.key_column_usage b "
         + "where "
             + "a.constraint_type='FOREIGN KEY' "
-            + "and a.constraint_name=b.constraint_name "
-            + "and a.constraint_name=c.constraint_name "
-            + "and c.unique_constraint_name=d.constraint_name";
+            + "and a.CONSTRAINT_SCHEMA=b.CONSTRAINT_SCHEMA "
+            + "and a.CONSTRAINT_NAME=b.CONSTRAINT_NAME ";
 
     /**
-     * TODO: specificy real column type
+     * Initializes the mapping between the eFaps column types and the MySQL
+     * specific column types.
      */
-    public PostgreSQLDatabase()
+    public MySQLDatabase()
     {
-        addMapping(ColumnType.INTEGER,      "bigint",    "null", "int8", "int4", "bigserial");
-        addMapping(ColumnType.DECIMAL,      "numeric",   "null", "decimal", "numeric");
-        addMapping(ColumnType.REAL,         "real",      "null", "float4");
-        addMapping(ColumnType.STRING_SHORT, "char",      "null", "bpchar");
+        addMapping(ColumnType.INTEGER,      "bigint",    "null", "bigint", "integer", "int", "mediumint");
+        addMapping(ColumnType.DECIMAL,      "decimal",   "null", "decimal", "dec");
+        addMapping(ColumnType.REAL,         "double",    "null", "double", "float");
+        addMapping(ColumnType.STRING_SHORT, "varchar",   "null", "text", "tinytext");
         addMapping(ColumnType.STRING_LONG,  "varchar",   "null", "varchar");
-        addMapping(ColumnType.DATETIME,     "timestamp", "null", "timestamp");
-        addMapping(ColumnType.BLOB,         "bytea",     "null", "bytea");
-        addMapping(ColumnType.CLOB,         "text",      "null", "text");
-        addMapping(ColumnType.BOOLEAN,      "boolean",   "null", "bool");
+        addMapping(ColumnType.DATETIME,     "datetime",  "null", "datetime", "timestamp");
+        addMapping(ColumnType.BLOB,         "longblob",  "null", "longblob", "mediumblob", "blob", "tinyblob",
+                                                                 "varbinary", "binary");
+        addMapping(ColumnType.CLOB,         "longtext",  "null", "longtext");
+        addMapping(ColumnType.BOOLEAN,      "boolean",   "null", "boolean", "bool", "tinyint", "bit");
     }
 
     /**
@@ -120,7 +115,7 @@ public class PostgreSQLDatabase
     }
 
   /**
-     * <p>This is the PostgreSQL specific implementation of an all deletion.
+     * <p>This is the MySQL specific implementation of an all deletion.
      * Following order is used to remove all eFaps specific information:
      * <ul>
      * <li>remove all views of the user</li>
@@ -144,8 +139,8 @@ public class PostgreSQLDatabase
         final Statement stmtExec = _con.createStatement();
 
         try {
-            if (PostgreSQLDatabase.LOG.isInfoEnabled()) {
-                PostgreSQLDatabase.LOG.info("Remove all Tables");
+            if (MySQLDatabase.LOG.isInfoEnabled()) {
+                MySQLDatabase.LOG.info("Remove all Tables");
             }
 
             final DatabaseMetaData metaData = _con.getMetaData();
@@ -154,34 +149,37 @@ public class PostgreSQLDatabase
             final ResultSet rsViews = metaData.getTables(null, null, "%", new String[] { "VIEW" });
             while (rsViews.next()) {
                 final String viewName = rsViews.getString("TABLE_NAME");
-                if (PostgreSQLDatabase.LOG.isDebugEnabled()) {
-                    PostgreSQLDatabase.LOG.debug("  - View '" + viewName + "'");
+                if (MySQLDatabase.LOG.isDebugEnabled()) {
+                    MySQLDatabase.LOG.debug("  - View '" + viewName + "'");
                 }
                 stmtExec.execute("drop view " + viewName);
             }
             rsViews.close();
 
-            // delete all tables
+            // delete all constraints
             final ResultSet rsTables = metaData.getTables(null, null, "%", new String[] { "TABLE" });
             while (rsTables.next()) {
                 final String tableName = rsTables.getString("TABLE_NAME");
-                if (PostgreSQLDatabase.LOG.isDebugEnabled()) {
-                    PostgreSQLDatabase.LOG.debug("  - Table '" + tableName + "'");
+                final ResultSet rsf = _con.getMetaData().getImportedKeys(null, null, tableName);
+                while (rsf.next())  {
+                    final String fkName = rsf.getString("FK_NAME").toUpperCase();
+                    if (MySQLDatabase.LOG.isDebugEnabled()) {
+                        MySQLDatabase.LOG.debug("  - Foreign Key '" + fkName + "'");
+                    }
+                    stmtExec.execute("alter table " + tableName + " drop foreign key " + fkName);
+                }
+            }
+
+            // delete all tables
+            rsTables.beforeFirst();
+            while (rsTables.next()) {
+                final String tableName = rsTables.getString("TABLE_NAME");
+                if (MySQLDatabase.LOG.isDebugEnabled()) {
+                    MySQLDatabase.LOG.debug("  - Table '" + tableName + "'");
                 }
                 stmtExec.execute("drop table " + tableName + " cascade");
             }
             rsTables.close();
-
-            //delete all sequences
-            final ResultSet rsSeq = stmtSel.executeQuery("SELECT sequence_name FROM information_schema.sequences");
-            while (rsSeq.next()) {
-                final String seqName = rsSeq.getString("sequence_name");
-                if (PostgreSQLDatabase.LOG.isDebugEnabled()) {
-                    PostgreSQLDatabase.LOG.debug("  - Sequence '" + seqName + "'");
-                }
-                stmtExec.execute("drop sequence " + seqName);
-            }
-            rsSeq.close();
 
         } finally {
             stmtSel.close();
@@ -190,7 +188,7 @@ public class PostgreSQLDatabase
     }
 
     /**
-     * For the PostgreSQL database, an eFaps SQL table is created in this steps.
+     * For the MySQL database, an eFaps SQL table is created in this steps.
      * <ul>
      * <li>SQL table itself with column <code>ID</code> and unique key on the
      * column is created</li>
@@ -204,21 +202,21 @@ public class PostgreSQLDatabase
      * @see org.efaps.db.databases.AbstractDatabase#createTable(java.sql.Connection, java.lang.String, java.lang.String)
      * @param _con          Connection to be used for the SQL statements
      * @param _table        name for the table
-     * @return this PostgreSQL DB definition instance
+     * @return this MySQL DB definition instance
      * @throws SQLException if the table could not be created
      */
     @Override()
-    public PostgreSQLDatabase createTable(final Connection _con,
-                                          final String _table)
+    public MySQLDatabase createTable(final Connection _con,
+                                     final String _table)
         throws SQLException
     {
         final Statement stmt = _con.createStatement();
         try {
             stmt.executeUpdate(new StringBuilder()
-                .append("create table ").append(_table).append(" (")
-                    .append("ID bigint")
-                    .append(",").append("constraint ").append(_table).append("_PK_ID primary key (ID)")
-                .append(") without OIDS;")
+                .append("create table `").append(_table).append("` (")
+                    .append("`ID` bigint ")
+                    .append(",").append("constraint `").append(_table).append("_PK_ID` primary key (`ID`)")
+                .append(") engine InnoDB character set utf8;")
                 .toString());
         } finally {
             stmt.close();
@@ -231,26 +229,16 @@ public class PostgreSQLDatabase
      * {@inheritDoc}
      */
     @Override()
-    public PostgreSQLDatabase defineTableAutoIncrement(final Connection _con,
-                                                       final String _table)
+    public MySQLDatabase defineTableAutoIncrement(final Connection _con,
+                                                  final String _table)
         throws SQLException
     {
         final Statement stmt = _con.createStatement();
         try {
-            // create sequence
-            stmt.execute(new StringBuilder()
-                .append("create sequence ").append(_table).append("_id_seq")
-                .toString());
             // define for ID column the auto increment value
             stmt.execute(new StringBuilder()
-                .append("alter table ").append(_table)
-                .append(" alter column id set default nextval('")
-                .append(_table).append("_id_seq')")
-                .toString());
-            // sequence owned by table
-            stmt.execute(new StringBuilder()
-                .append("alter sequence ").append(_table).append("_id_seq owned by ")
-                .append(_table).append(".id")
+                .append("alter table `").append(_table)
+                .append("` modify column `ID` bigint not null auto_increment")
                 .toString());
         } finally {
             stmt.close();
@@ -259,45 +247,24 @@ public class PostgreSQLDatabase
     }
 
     /**
-     * A new id for given column of a SQL table is returned (with sequences!).
-     * The method must be implemented because the JDBC driver from PostgreSQL
-     * does not support that the generated ID of a new table row is returned
-     * while the row is inserted.
+     * Overwrites original method because MySQL supports automatically
+     * generated keys.
      *
-     * @param _con      sql connection
-     * @param _table    sql table for which a new id must returned
-     * @param _column   sql table column for which a new id must returned
-     * @throws SQLException if a new id could not be retrieved
-     * @return new id for the sequence
+     * @return always <i>true</i> because generated keys are supported by MySQL
+     *         database
+     * @see AbstractDatabase#supportsGetGeneratedKeys()
      */
     @Override()
-    public long getNewId(final Connection _con,
-                         final String _table,
-                         final String _column)
-        throws SQLException
+    public boolean supportsGetGeneratedKeys()
     {
-
-        long ret = 0;
-        final Statement stmt = _con.createStatement();
-
-        try {
-            final StringBuilder cmd = new StringBuilder();
-            cmd.append("select nextval('").append(_table).append("_").append(_column).append("_SEQ')");
-
-            final ResultSet rs = stmt.executeQuery(cmd.toString());
-            if (rs.next()) {
-                ret = rs.getLong(1);
-            }
-            rs.close();
-
-        } finally {
-            stmt.close();
-        }
-        return ret;
+        return true;
     }
 
     /**
-     * @return always <i>true</i> because supported by PostgreSQL database
+     * Overwrites original method because MySQL supports binary input stream.
+     *
+     * @return always <i>true</i> because supported by MySQL database
+     * @see AbstractDatabase#supportsBinaryInputStream()
      */
     @Override()
     public boolean supportsBinaryInputStream()
@@ -306,96 +273,82 @@ public class PostgreSQLDatabase
     }
 
     /**
+     * Returns a single reversed apostrophe &#96; used to select tables within
+     * SQL statements for a MySQL database..
+     *
+     * @return always single reversed apostrophe
+     */
+    @Override()
+    public String getTableQuote()
+    {
+        return "`";
+    }
+
+    /**
+     * Returns a single reversed apostrophe &#96; used to select columns within
+     * SQL statements for a MySQL database..
+     *
+     * @return always single reversed apostrophe
+     */
+    @Override()
+    public String getColumnQuote()
+    {
+        return "`";
+    }
+
+    /**
      * {@inheritDoc}
      */
-    @Override
-    public PostgreSQLDatabase createSequence(final Connection _con,
+    @Override()
+    public MySQLDatabase createSequence(final Connection _con,
                                              final String _name,
                                              final String _startValue)
         throws SQLException
     {
-        final StringBuilder cmd = new StringBuilder();
-        cmd.append(" create sequence ").append(_name)
-            .append(" increment 1 ")
-            .append(" minvalue 1 ")
-            .append(" maxvalue 9223372036854775807 ")
-            .append(" start ").append(_startValue)
-            .append(" cache 1;");
-
-        PreparedStatement stmt = null;
-        stmt = _con.prepareStatement(cmd.toString());
-        stmt.execute();
-        stmt.close();
-        _con.commit();
-        return this;
+        throw new SQLException("sequence not supported");
     }
 
     /**
      * {@inheritDoc}
      * @throws SQLException
      */
-    @Override
+    @Override()
     public boolean existsSequence(final Connection _con,
                                   final String _name)
         throws SQLException
     {
-        boolean ret = false;
-        final StringBuilder cmd = new StringBuilder();
-        cmd.append("select relname from pg_class where relkind = 'S' and relname = '")
-            .append(_name).append("'");
-        final PreparedStatement stmt = _con.prepareStatement(cmd.toString());
-        final ResultSet resultset = stmt.executeQuery();
-        if (resultset.next()) {
-            ret = true;
-        }
-        return ret;
+        throw new SQLException("sequence not supported");
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
     public long nextSequence(final Connection _con,
                              final String _name)
         throws SQLException
     {
-        Long num = null;
-        final StringBuilder cmd = new StringBuilder();
-        cmd.append(" select nextval('" + _name + "') ");
-        final PreparedStatement stmt = _con.prepareStatement(cmd.toString());
-        final ResultSet resultset = stmt.executeQuery();
-        if (resultset.next()) {
-            num = resultset.getLong(1);
-        }
-        resultset.close();
-        stmt.close();
-        _con.commit();
-        return num != null ? num : 0;
+        throw new SQLException("sequence not supported");
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public PostgreSQLDatabase setSequence(final Connection _con,
-                                          final String _name,
-                                          final String _value)
+    @Override()
+    public MySQLDatabase setSequence(final Connection _con,
+                                     final String _name,
+                                     final String _value)
         throws SQLException
     {
-        final StringBuilder cmd = new StringBuilder();
-        cmd.append("select setval('")
-            .append(_name).append("',").append(_value).append(")");
-        final PreparedStatement stmt = _con.prepareStatement(cmd.toString());
-        stmt.executeQuery();
-        return this;
+        throw new SQLException("sequence not supported");
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public PostgreSQLDatabase createView(final Connection _con,
-                                         final String _view)
+    @Override()
+    public MySQLDatabase createView(final Connection _con,
+                                    final String _view)
         throws SQLException
     {
         final Statement stmt = _con.createStatement();
@@ -411,7 +364,7 @@ public class PostgreSQLDatabase
     /**
      * Overwrites the original method to specify SQL statement
      * {@link #SQL_UNIQUE_KEYS} as replacement because the JDBC driver for
-     * PostgreSQL does not handle matching table names.
+     * MySQL does not handle matching table names.
      *
      * @param _con          SQL connection
      * @param _sql          SQL statement (not used)
@@ -426,13 +379,13 @@ public class PostgreSQLDatabase
                                            final Map<String, TableInformation> _cache4Name)
         throws SQLException
     {
-        super.initTableInfoUniqueKeys(_con, PostgreSQLDatabase.SQL_UNIQUE_KEYS, _cache4Name);
+        super.initTableInfoUniqueKeys(_con, MySQLDatabase.SQL_UNIQUE_KEYS, _cache4Name);
     }
 
     /**
      * Overwrites the original method to specify SQL statement
      * {@link #SQL_FOREIGN_KEYS} as replacement because the JDBC driver for
-     * PostgreSQL does not handle matching table names.
+     * MySQL does not handle matching table names.
      *
      * @param _con          SQL connection
      * @param _sql          SQL statement (not used)
@@ -447,6 +400,6 @@ public class PostgreSQLDatabase
                                             final Map<String, TableInformation> _cache4Name)
         throws SQLException
     {
-        super.initTableInfoForeignKeys(_con, PostgreSQLDatabase.SQL_FOREIGN_KEYS, _cache4Name);
+        super.initTableInfoForeignKeys(_con, MySQLDatabase.SQL_FOREIGN_KEYS, _cache4Name);
     }
 }
