@@ -47,7 +47,6 @@ import org.efaps.util.EFapsException;
  */
 public class FieldValue implements Comparable<Object>
 {
-
     /**
      * Logger for this class.
      */
@@ -104,7 +103,10 @@ public class FieldValue implements Comparable<Object>
      * @param _value value of the FieldValue
      * @param _instance Instance the Value belongs to
      */
-    public FieldValue(final Field _field, final Attribute _attr, final Object _value, final Instance _instance)
+    public FieldValue(final Field _field,
+                      final Attribute _attr,
+                      final Object _value,
+                      final Instance _instance)
     {
         this.field = _field;
         this.attribute = _attr;
@@ -121,7 +123,9 @@ public class FieldValue implements Comparable<Object>
      * @param _ui UIInterface this value belongs to
      * @param _compareValue value to be compared
      */
-    public FieldValue(final Field _field, final UIInterface _ui, final Object _compareValue)
+    public FieldValue(final Field _field,
+                      final UIInterface _ui,
+                      final Object _compareValue)
     {
         this.ui = _ui;
         this.field = _field;
@@ -141,8 +145,10 @@ public class FieldValue implements Comparable<Object>
      * @throws EFapsException on error
      * @return html code as a String
      */
-    public String getEditHtml(final TargetMode _mode, final Instance _callInstance, final Instance _instance)
-            throws EFapsException
+    public String getEditHtml(final TargetMode _mode,
+                              final Instance _callInstance,
+                              final Instance _instance)
+        throws EFapsException
     {
         this.targetMode = _mode;
         this.display = Display.EDITABLE;
@@ -167,8 +173,10 @@ public class FieldValue implements Comparable<Object>
      * @throws EFapsException on error
      * @return html code as a String
      */
-    public String getReadOnlyHtml(final TargetMode _mode, final Instance _callInstance, final Instance _instance)
-            throws EFapsException
+    public String getReadOnlyHtml(final TargetMode _mode,
+                                  final Instance _callInstance,
+                                  final Instance _instance)
+        throws EFapsException
     {
         this.targetMode = _mode;
         this.display = Display.READONLY;
@@ -193,8 +201,10 @@ public class FieldValue implements Comparable<Object>
      * @throws EFapsException on error
      * @return html code as a String
      */
-    public String getHiddenHtml(final TargetMode _mode, final Instance _callInstance, final Instance _instance)
-                throws EFapsException
+    public String getHiddenHtml(final TargetMode _mode,
+                                final Instance _callInstance,
+                                final Instance _instance)
+        throws EFapsException
     {
         this.targetMode = _mode;
         this.display = Display.HIDDEN;
@@ -220,8 +230,10 @@ public class FieldValue implements Comparable<Object>
      * @return plain string
      * @throws EFapsException
      */
-    public String getStringValue(final TargetMode _mode, final Instance _callInstance, final Instance _instance)
-            throws EFapsException
+    public String getStringValue(final TargetMode _mode,
+                                 final Instance _callInstance,
+                                 final Instance _instance)
+        throws EFapsException
     {
         this.targetMode = _mode;
         this.display = Display.NONE;
@@ -247,8 +259,10 @@ public class FieldValue implements Comparable<Object>
      *         field value event is defined
      *
      */
-    protected String executeEvents(final Instance _callInstance, final Instance _instance, final EventType _eventType)
-            throws EFapsException
+    protected String executeEvents(final Instance _callInstance,
+                                   final Instance _instance,
+                                   final EventType _eventType)
+        throws EFapsException
     {
         String ret = null;
         if ((this.field != null) && this.field.hasEvents(_eventType)) {
@@ -354,6 +368,16 @@ public class FieldValue implements Comparable<Object>
     public Object getValue()
     {
         return this.value;
+    }
+
+    /**
+     * Setter method for instance variable {@link #value}.
+     *
+     * @param value value for instance variable {@link #value}
+     */
+    public void setValue(final Object value)
+    {
+        this.value = value;
     }
 
     /**
