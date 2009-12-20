@@ -35,6 +35,7 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
 /**
@@ -177,15 +178,14 @@ public class StatusGroupUpdate extends AbstractUpdate
          *
          * @param _step         current step in the Update Lifecycle
          * @param _allLinkTypes set of all links
-         * @throws EFapsException on error
-         *
+         * @throws InstallationException on error
          * @see #parentType
          * @see #attributes
          */
-        @Override
+        @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws EFapsException
+            throws InstallationException, EFapsException
         {
             if (_step == UpdateLifecycle.STATUSGROUP_CREATE)  {
                 super.updateInDB(UpdateLifecycle.EFAPS_CREATE, _allLinkTypes);

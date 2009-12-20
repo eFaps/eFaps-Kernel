@@ -29,6 +29,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.db.Checkin;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
 /**
@@ -118,12 +119,12 @@ public abstract class AbstractSourceUpdate
          *
          * @param _step             current update step
          * @param _allLinkTypes     set of links
-         * @throws EFapsException on error
+         * @throws InstallationException on error
          */
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws EFapsException
+            throws InstallationException, EFapsException
         {
             super.updateInDB(_step, _allLinkTypes);
 

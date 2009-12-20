@@ -27,10 +27,11 @@ import java.util.Map;
 import org.efaps.update.AbstractUpdate;
 
 /**
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
-public class CompanyUpdate extends AbstractUpdate
+public class CompanyUpdate
+    extends AbstractUpdate
 {
     /**
      *
@@ -54,11 +55,13 @@ public class CompanyUpdate extends AbstractUpdate
     }
 
 
-    public class CompanyDefinition extends AbstractDefinition
+    public class CompanyDefinition
+        extends AbstractDefinition
     {
-
-        @Override
-        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        @Override()
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
         {
             final String value = _tags.get(0);
             if ("status".equals(value)) {

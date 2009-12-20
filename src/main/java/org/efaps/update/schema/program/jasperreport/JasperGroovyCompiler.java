@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.program.jasperreport;
+package org.efaps.update.schema.program.jasperreport;
 
 import groovy.lang.GroovyClassLoader;
 import groovyjarjarasm.asm.ClassVisitor;
@@ -48,7 +48,8 @@ import org.codehaus.groovy.control.Phases;
  * @author The eFaps Team
  * @version $Id$
  */
-public class JasperGroovyCompiler extends JRGroovyCompiler
+public class JasperGroovyCompiler
+    extends JRGroovyCompiler
 {
 
     /**

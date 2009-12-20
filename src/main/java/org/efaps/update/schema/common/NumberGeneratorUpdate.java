@@ -29,6 +29,7 @@ import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
 /**
@@ -38,7 +39,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class NumberGeneratorUpdate extends AbstractUpdate
+public class NumberGeneratorUpdate
+    extends AbstractUpdate
 {
     /**
      * @param _url URL to the xml file
@@ -90,24 +92,30 @@ public class NumberGeneratorUpdate extends AbstractUpdate
         /**
          * {@inheritDoc}
          */
-        @Override
+        @Override()
         protected void createInDB(final Insert _insert)
-            throws EFapsException
+            throws InstallationException
         {
-            _insert.add("Format", getValue("Format"));
+            try  {
+                _insert.add("Format", getValue("Format"));
+            } catch (final EFapsException e)  {
+                throw new InstallationException("Format could not be defined", e);
+            }
             super.createInDB(_insert);
-            final Context context = Context.getThreadContext();
-            final ConnectionResource con = context.getConnectionResource();
+            final ConnectionResource con;
             try {
-                final String name = "numgen_" + ((Long) this.instance.getId()).toString() + "_seq";
+                con = Context.getThreadContext().getConnectionResource();
+            } catch (final EFapsException e) {
+                throw new InstallationException("Connection resource could not be fetched", e);
+            }
+            final String name = "numgen_" + ((Long) this.instance.getId()).toString() + "_seq";
+            try {
                 if (!Context.getDbType().existsSequence(con.getConnection(), name)) {
                     Context.getDbType().createSequence(con.getConnection(), name, this.startvalue);
                 }
             } catch (final SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new InstallationException("Sequence '" + name + "' could not be created", e);
             }
-
         }
     }
 }

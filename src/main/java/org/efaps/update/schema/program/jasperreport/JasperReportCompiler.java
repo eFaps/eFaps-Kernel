@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.program.jasperreport;
+package org.efaps.update.schema.program.jasperreport;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,17 +38,16 @@ import net.sf.jasperreports.engine.xml.JRXmlDigester;
 import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
-import org.xml.sax.SAXException;
-
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.program.staticsource.AbstractSourceCompiler;
 import org.efaps.db.Checkin;
 import org.efaps.db.Checkout;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.Update;
+import org.efaps.update.schema.program.staticsource.AbstractStaticSourceCompiler;
 import org.efaps.util.EFapsException;
+import org.xml.sax.SAXException;
 
 /**
  * Class serves as the compiler for JasperReports.
@@ -56,7 +55,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class JasperReportCompiler extends AbstractSourceCompiler
+public class JasperReportCompiler
+    extends AbstractStaticSourceCompiler
 {
     /**
      * Stores the list of classpath needed to compile (if needed).
@@ -160,7 +160,7 @@ public class JasperReportCompiler extends AbstractSourceCompiler
 
     /**
      * Not needed in this case.
-     * @see org.efaps.admin.program.staticsource.AbstractSourceCompiler#getCompiledString(java.lang.String)
+     * @see org.efaps.admin.program.staticsource.AbstractStaticSourceCompiler#getCompiledString(java.lang.String)
      * @param _oid oid
      * @return null
      */

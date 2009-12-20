@@ -38,6 +38,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.schema.datamodel.SQLTableUpdate;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,19 +96,24 @@ public class Install
      *                          in the version.xml file)
      * @param _ignoredSteps     set of ignored life cycle steps which are not
      *                          executed
-     * @throws EFapsException on error
+     * @throws InstallationException on error
      * @see org.efaps.db.databases.AbstractDatabase#supportsBigTransactions()
      */
     @SuppressWarnings("unchecked")
     public void install(final Long _number,
                         final Long _latestNumber,
                         final Set<UpdateLifecycle> _ignoredSteps)
-        throws EFapsException
+        throws InstallationException
     {
         final boolean bigTrans = Context.getDbType().supportsBigTransactions();
-        final String user = (Context.getThreadContext().getPerson() != null)
-                            ? Context.getThreadContext().getPerson().getName()
-                            : null;
+        final String user;
+        try  {
+            user = (Context.getThreadContext().getPerson() != null)
+                   ? Context.getThreadContext().getPerson().getName()
+                   : null;
+        } catch (final EFapsException e)  {
+            throw new InstallationException("No context in this thread defined!", e);
+        }
 
         // initialize cache
         initialise();
@@ -131,8 +137,16 @@ public class Install
                     for (final IUpdate update : entry.getValue()) {
                         update.updateInDB(jexlContext, step);
                         if (!bigTrans) {
-                            Context.commit();
-                            Context.begin(user);
+                            try {
+                                Context.commit();
+                            } catch (final EFapsException e) {
+                                throw new InstallationException("Transaction commit failed", e);
+                            }
+                            try {
+                                Context.begin(user);
+                            } catch (final EFapsException e) {
+                                throw new InstallationException("Transaction start failed", e);
+                            }
                         }
                     }
                 }
@@ -170,15 +184,21 @@ public class Install
      * defined application in the XML update file. The installation version is
      * the same as the latest version of the application.
      *
-     * @throws EFapsException if update failed
+     * @throws InstallationException if update failed
      */
     @SuppressWarnings("unchecked")
     public void updateLatest()
-        throws EFapsException
+        throws InstallationException
     {
         final boolean bigTrans = Context.getDbType().supportsBigTransactions();
-        final String user = (Context.getThreadContext().getPerson() != null)
-                                ? Context.getThreadContext().getPerson().getName() : null;
+        final String user;
+        try  {
+            user = (Context.getThreadContext().getPerson() != null)
+                   ? Context.getThreadContext().getPerson().getName()
+                   : null;
+        } catch (final EFapsException e)  {
+            throw new InstallationException("No context in this thread defined!", e);
+        }
 
         // initialize cache
         initialise();
@@ -204,8 +224,18 @@ public class Install
                     // and create
                     update.updateInDB(jexlContext, step);
                     if (!bigTrans) {
-                        Context.commit();
-                        Context.begin(user);
+                        if (!bigTrans) {
+                            try {
+                                Context.commit();
+                            } catch (final EFapsException e) {
+                                throw new InstallationException("Transaction commit failed", e);
+                            }
+                            try {
+                                Context.begin(user);
+                            } catch (final EFapsException e) {
+                                throw new InstallationException("Transaction start failed", e);
+                            }
+                        }
                     }
                 }
             }
@@ -217,26 +247,31 @@ public class Install
      * method must be called within a Context begin and commit (it is not done
      * itself in this method!
      * @return Map containing the versions
-     * @throws EFapsException on error
+     * @throws InstallationException on error
      */
-    public Map<String, Long> getLatestVersions() throws EFapsException
+    public Map<String, Long> getLatestVersions()
+        throws InstallationException
     {
         final Map<String, Long> versions = new HashMap<String, Long>();
         final Type versionType = Type.get(ADMIN_COMMON_VERSION);
         if (versionType != null) {
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes(versionType.getName());
-            query.addSelect("Name");
-            query.addSelect("Revision");
-            query.executeWithoutAccessCheck();
-            while (query.next()) {
-                final String name = (String) query.get("Name");
-                final Long revision = (Long) query.get("Revision");
-                if (!versions.containsKey(name) || (versions.get(name) < revision)) {
-                    versions.put(name, revision);
+            try  {
+                final SearchQuery query = new SearchQuery();
+                query.setQueryTypes(versionType.getName());
+                query.addSelect("Name");
+                query.addSelect("Revision");
+                query.executeWithoutAccessCheck();
+                while (query.next()) {
+                    final String name = (String) query.get("Name");
+                    final Long revision = (Long) query.get("Revision");
+                    if (!versions.containsKey(name) || (versions.get(name) < revision)) {
+                        versions.put(name, revision);
+                    }
                 }
+                query.close();
+            } catch (final EFapsException e)  {
+                throw new InstallationException("Latest version could not be found", e);
             }
-            query.close();
         }
         return versions;
     }
@@ -245,9 +280,8 @@ public class Install
      * Reads all XML update files and parses them.
      *
      * @see #initialised
-     * @throws EFapsException on error
      */
-    protected void initialise() throws EFapsException
+    protected void initialise()
     {
 
         if (!this.initialised) {

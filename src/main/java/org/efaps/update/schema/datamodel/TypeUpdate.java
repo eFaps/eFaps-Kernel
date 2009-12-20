@@ -41,6 +41,7 @@ import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.event.Event;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -711,16 +712,17 @@ public class TypeUpdate extends AbstractUpdate
          * defined, the parent type id is set to <code>null</code>). After the
          * type is updated (or inserted if needed), all attributes must be
          * updated.
-         * @param _allLinkTypes set of all links
-         * @throws EFapsException on error
          *
+         * @param _step             lifecycle step
+         * @param _allLinkTypes     set of all links
+         * InstallationException EFapsException on error
          * @see #parentType
          * @see #attributes
          */
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws EFapsException
+            throws InstallationException, EFapsException
         {
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
                 // set the id of the parent type (if defined)

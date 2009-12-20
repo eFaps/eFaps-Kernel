@@ -32,6 +32,7 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
 /**
@@ -196,13 +197,13 @@ public class SystemConfigurationUpdate
          *
          * @param _step             current life cycle update step
          * @param _allLinkTypes     all link types to update
-         * @throws EFapsException if update failed
+         * @throws InstallationException if update failed
          * @see #attributes
          */
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws EFapsException
+            throws InstallationException, EFapsException
         {
             super.updateInDB(_step, _allLinkTypes);
 

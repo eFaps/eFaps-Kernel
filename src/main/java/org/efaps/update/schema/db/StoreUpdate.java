@@ -32,6 +32,7 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
 import static org.efaps.admin.EFapsClassNames.DB_RESOURCE;
@@ -152,13 +153,13 @@ public class StoreUpdate
          *
          * @param _step         current life cycle update step
          * @param _allLinkTypes set of all links
-         * @throws EFapsException on error
+         * @throws InstallationException on error
          * @see AbstractUpdate.AbstractDefinition#updateInDB(UpdateLifecycle,Set)
          */
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws EFapsException
+            throws InstallationException, EFapsException
         {
             super.updateInDB(_step, _allLinkTypes);
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {

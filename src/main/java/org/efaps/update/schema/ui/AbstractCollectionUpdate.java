@@ -38,6 +38,7 @@ import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.event.Event;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
 import static org.efaps.admin.EFapsClassNames.FIELD;
@@ -227,7 +228,7 @@ public abstract class AbstractCollectionUpdate
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws EFapsException
+            throws InstallationException, EFapsException
         {
             super.updateInDB(_step, _allLinkTypes);
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {

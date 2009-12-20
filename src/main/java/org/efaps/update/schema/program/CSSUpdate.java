@@ -25,8 +25,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.program.staticsource.CSSImporter;
 import org.efaps.update.LinkInstance;
+import org.efaps.update.schema.program.staticsource.CSSImporter;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
 import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_CSS;
@@ -112,7 +113,8 @@ public class CSSUpdate
          *             the file could not be accessed because of the wrong URL
          */
         @Override()
-        protected void searchInstance() throws EFapsException
+        protected void searchInstance()
+            throws InstallationException
         {
             if (this.sourceCode == null) {
                 this.sourceCode = new CSSImporter(getUrl());

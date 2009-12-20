@@ -19,7 +19,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.program.staticsource;
+package org.efaps.update.schema.program.staticsource;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -28,15 +28,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.UUID;
 
-import org.mozilla.javascript.ErrorReporter;
-import org.mozilla.javascript.EvaluatorException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.db.Checkout;
 import org.efaps.util.EFapsException;
+import org.mozilla.javascript.ErrorReporter;
+import org.mozilla.javascript.EvaluatorException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
@@ -50,7 +49,7 @@ import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
  * @author The eFaps Team
  * @version $Id$
  */
-public class JavaScriptCompiler extends AbstractSourceCompiler
+public class JavaScriptCompiler extends AbstractStaticSourceCompiler
 {
     /**
      * Logger for this class.
