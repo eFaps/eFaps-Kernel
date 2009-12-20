@@ -20,9 +20,8 @@
 
 package org.efaps.update.schema.program.jasperreport;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -38,6 +37,8 @@ import net.sf.jasperreports.engine.xml.JRXmlDigester;
 import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
+import org.xml.sax.SAXException;
+
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
@@ -47,7 +48,6 @@ import org.efaps.db.Instance;
 import org.efaps.db.Update;
 import org.efaps.update.schema.program.staticsource.AbstractStaticSourceCompiler;
 import org.efaps.util.EFapsException;
-import org.xml.sax.SAXException;
 
 /**
  * Class serves as the compiler for JasperReports.
@@ -103,7 +103,6 @@ public class JasperReportCompiler
             update.close();
             compileJasperReport(Instance.get(onesource.getOid()), instance);
         }
-
     }
 
     /**
@@ -125,7 +124,7 @@ public class JasperReportCompiler
         }
         JRProperties.setProperty(JRProperties.COMPILER_CLASSPATH, classPath.toString());
         JRProperties.setProperty("net.sf.jasperreports.compiler.groovy",
-                                 "org.efaps.admin.program.jasperreport.JasperGroovyCompiler");
+                                 "org.efaps.update.schema.program.jasperreport.JasperGroovyCompiler");
 
         try {
             final JRXmlDigester digester = JRXmlDigesterFactory.createDigester();
@@ -134,15 +133,14 @@ public class JasperReportCompiler
 
             final JasperDesign jasperDesign = loader.loadXML(source);
 
-            final File file = File.createTempFile(jasperDesign.getName(), "jasper");
-            final FileOutputStream out = new FileOutputStream(file);
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
             JasperCompileManager.compileReportToStream(jasperDesign, out);
-            out.close();
 
-            final FileInputStream compiled = new FileInputStream(file);
+            final ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
             final Checkin checkin = new Checkin(_instCompiled);
-            checkin.executeWithoutAccessCheck(jasperDesign.getName() + ".jasper", compiled,
-                                             ((Long) file.length()).intValue());
+            checkin.executeWithoutAccessCheck(jasperDesign.getName() + ".jasper", in, in.available());
+            out.close();
+            in.close();
         } catch (final ParserConfigurationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
