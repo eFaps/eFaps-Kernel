@@ -33,6 +33,7 @@ import org.efaps.db.Checkin;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.UpdateLifecycle;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
 /**
@@ -142,12 +143,12 @@ public class ImageUpdate
          *
          * @param _step             current update step
          * @param _allLinkTypes     set of all type of links
-         * @throws EFapsException if update failed
+         * @throws InstallationException if update failed
          */
         @Override()
         protected void updateInDB(final UpdateLifecycle _step,
                                   final Set<Link> _allLinkTypes)
-            throws EFapsException
+            throws InstallationException, EFapsException
         {
             super.updateInDB(_step, _allLinkTypes);
 
@@ -162,11 +163,12 @@ public class ImageUpdate
                     } finally  {
                         in.close();
                     }
+                } catch (final EFapsException e)  {
+                    throw new InstallationException("Check of file '" + ImageUpdate.this.root + this.file
+                            + "' failed", e);
                 } catch (final IOException e)  {
-                    throw new EFapsException(this.getClass(),
-                                             "updateInDB.IOException",
-                                             e,
-                                             ImageUpdate.this.root + this.file);
+                    throw new InstallationException("It seems that file '" + ImageUpdate.this.root + this.file
+                            + "' does not exists or is not accessable.", e);
                 }
             }
         }

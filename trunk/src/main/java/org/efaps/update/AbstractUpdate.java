@@ -42,6 +42,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.event.Event;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,11 +205,11 @@ public abstract class AbstractUpdate implements IUpdate
      *
      * @param _jexlContext  context used to evaluate JEXL expressions
      * @param _step         current step of the update life cycle
-     * @throws EFapsException from called update methods
+     * @throws InstallationException from called update methods
      */
     public void updateInDB(final JexlContext _jexlContext,
                            final UpdateLifecycle _step)
-        throws EFapsException
+        throws InstallationException
     {
         try {
             for (final AbstractDefinition def : this.definitions) {
@@ -220,8 +221,9 @@ public abstract class AbstractUpdate implements IUpdate
                 }
             }
         } catch (final EFapsException e) {
+// TODO: only InstallationException should be defined in the updateInDB method
             AbstractUpdate.LOG.error("updateInDB", e);
-            throw e;
+            throw new InstallationException("Update failed", e);
         }
     }
 
@@ -612,71 +614,29 @@ public abstract class AbstractUpdate implements IUpdate
         }
 
         /**
-         * Search for given data model type. If an attribute name for the search
-         * is defined in {@link #searchAttrName}, the search is done with this
-         * given attribute. If no attribute name is defined (value is
-         * <code>null</code>, the method searches for given UUID. The result is
-         * stored in {@link #instance} (or set to null, if not found).<br/>
-         * The search is only done, if no instance is defined (meaning if
-         * {@link #instance} has no value).
-         *
-         * @see #instance variable in which the search result is stored (and the
-         *      search is only done if the value is <code>null</code>)
-         * @see #searchAttrName name of the attribute which them the search is
-         *      done
-         * @throws EFapsException if search for the instance failed
-         */
-        protected void searchInstance()
-            throws EFapsException
-        {
-            if (this.instance == null) {
-                final SearchQuery query = new SearchQuery();
-                query.setQueryTypes(AbstractUpdate.this.dataModelTypeName);
-                if (this.searchAttrName == null) {
-                    query.addWhereExprEqValue("UUID", AbstractUpdate.this.uuid);
-                } else {
-                    query.addWhereExprEqValue(this.searchAttrName, this.values.get(this.searchAttrName));
-                }
-                query.addSelect("OID");
-                query.executeWithoutAccessCheck();
-                if (query.next()) {
-                    this.instance = Instance.get((String) query.get("OID"));
-                }
-                query.close();
-            }
-        }
-
-        protected void createInDB(final Insert _insert)
-            throws EFapsException
-        {
-            if (_insert.getInstance().getType().getAttribute("Revision") != null) {
-                _insert.add("Revision", AbstractUpdate.this.fileRevision);
-            }
-            final String name = this.values.get("Name");
-            _insert.add("Name", (name == null) ? "-" : name);
-            if (AbstractUpdate.LOG.isInfoEnabled())  {
-                AbstractUpdate.LOG.info("    Insert " + _insert.getInstance().getType().getName() + " '" + name + "'");
-            }
-            _insert.executeWithoutAccessCheck();
-            this.instance = _insert.getInstance();
-        }
-
-        /**
          * @param _step             current update step
          * @param _allLinkTypes     set of all type of links
-         * @throws EFapsException if update failed
+         * @throws InstallationException if update failed
+         * TODO: do not throw EFapsException
          */
         protected void updateInDB(final UpdateLifecycle _step,
                                   final Set<AbstractUpdate.Link> _allLinkTypes)
-            throws EFapsException
+            throws EFapsException, InstallationException
         {
             if (_step == UpdateLifecycle.EFAPS_CREATE)  {
                 searchInstance();
 
                 // if no instance exists, a new insert must be done
                 if (this.instance == null) {
-                    final Insert insert = new Insert(AbstractUpdate.this.dataModelTypeName);
-                    insert.add("UUID", AbstractUpdate.this.uuid);
+                    final Insert insert;
+                    try {
+                        insert = new Insert(AbstractUpdate.this.dataModelTypeName);
+                        insert.add("UUID", AbstractUpdate.this.uuid);
+                    } catch (final EFapsException e)  {
+                        throw new InstallationException("Initialize for the insert of '"
+                                + AbstractUpdate.this.dataModelTypeName + "' with UUID '"
+                                + AbstractUpdate.this.uuid + "' failed", e);
+                    }
                     createInDB(insert);
                 }
 
@@ -707,6 +667,77 @@ public abstract class AbstractUpdate implements IUpdate
                     setPropertiesInDb(newInstance, event.getProperties());
                 }
             }
+        }
+
+        /**
+         * Search for given data model type. If an attribute name for the search
+         * is defined in {@link #searchAttrName}, the search is done with this
+         * given attribute. If no attribute name is defined (value is
+         * <code>null</code>, the method searches for given UUID. The result is
+         * stored in {@link #instance} (or set to null, if not found).<br/>
+         * The search is only done, if no instance is defined (meaning if
+         * {@link #instance} has no value).
+         *
+         * @see #instance variable in which the search result is stored (and the
+         *      search is only done if the value is <code>null</code>)
+         * @see #searchAttrName name of the attribute which them the search is
+         *      done
+         * @throws InstallationException if search for the instance failed
+         */
+        protected void searchInstance()
+            throws InstallationException
+        {
+            if (this.instance == null) {
+                try {
+                    final SearchQuery query = new SearchQuery();
+                    query.setQueryTypes(AbstractUpdate.this.dataModelTypeName);
+                    if (this.searchAttrName == null) {
+                        query.addWhereExprEqValue("UUID", AbstractUpdate.this.uuid);
+                    } else {
+                        query.addWhereExprEqValue(this.searchAttrName, this.values.get(this.searchAttrName));
+                    }
+                    query.addSelect("OID");
+                    query.executeWithoutAccessCheck();
+                    if (query.next()) {
+                        this.instance = Instance.get((String) query.get("OID"));
+                    }
+                    query.close();
+                } catch (final EFapsException e) {
+                    throw new InstallationException("Search for '" + AbstractUpdate.this.dataModelTypeName + "' for '"
+                            + ((this.searchAttrName == null)
+                                    ? AbstractUpdate.this.uuid
+                                    : this.values.get(this.searchAttrName))
+                            + "' failed", e);
+                }
+            }
+        }
+
+        /**
+         * Inserts current instance defined by <code>_insert</code> into the
+         * eFaps database without any access check.
+         *
+         * @param _insert   insert instance
+         * @throws InstallationException if insert failed
+         */
+        protected void createInDB(final Insert _insert)
+            throws InstallationException
+        {
+            try {
+                if (_insert.getInstance().getType().getAttribute("Revision") != null) {
+                    _insert.add("Revision", AbstractUpdate.this.fileRevision);
+                }
+                final String name = this.values.get("Name");
+                _insert.add("Name", (name == null) ? "-" : name);
+                if (AbstractUpdate.LOG.isInfoEnabled())  {
+                    AbstractUpdate.LOG.info("    Insert " + _insert.getInstance().getType().getName()
+                            + " '" + name + "'");
+                }
+                _insert.executeWithoutAccessCheck();
+            } catch (final EFapsException e)  {
+                throw new InstallationException("Insert for '" + _insert.getInstance().getType().getName()
+                        + "' '" + this.values.get("Name") + " failed", e);
+            }
+            this.instance = _insert.getInstance();
         }
 
         /**

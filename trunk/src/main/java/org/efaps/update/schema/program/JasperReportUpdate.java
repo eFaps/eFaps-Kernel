@@ -24,8 +24,8 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.efaps.admin.program.jasperreport.JasperReportImporter;
-import org.efaps.util.EFapsException;
+import org.efaps.update.schema.program.jasperreport.JasperReportImporter;
+import org.efaps.update.util.InstallationException;
 
 /**
  * TODO comment!
@@ -99,11 +99,14 @@ public class JasperReportUpdate extends AbstractSourceUpdate
         /**
          * Search the instance.
          *
-         * @throws EFapsException if the Java source code could not be read or
-         *             the file could not be accessed because of the wrong URL
+         * @throws InstallationException if the source code for the Jasper
+         *                               Report could not be read or file could
+         *                               not be accessed because of the wrong
+         *                               URL
          */
-        @Override
-        protected void searchInstance() throws EFapsException
+        @Override()
+        protected void searchInstance()
+            throws InstallationException
         {
             if (this.jrxml == null) {
                 this.jrxml = new JasperReportImporter(getUrl());

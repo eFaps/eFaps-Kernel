@@ -230,18 +230,6 @@ public class DerbyDatabase
      * TODO: implement
      */
     @Override()
-    public DerbyDatabase defineTableParent(final Connection _con,
-                                           final String _table,
-                                           final String _parentTable)
-        throws SQLException
-    {
-        throw new Error("not implemented");
-    }
-
-    /**
-     * TODO: implement
-     */
-    @Override()
     public DerbyDatabase defineTableAutoIncrement(final Connection _con,
                                                   final String _table)
         throws SQLException

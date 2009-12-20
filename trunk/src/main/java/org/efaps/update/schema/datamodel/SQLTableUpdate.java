@@ -21,6 +21,7 @@
 package org.efaps.update.schema.datamodel;
 
 import java.net.URL;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.efaps.db.databases.information.UniqueKeyInformation;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -223,9 +225,9 @@ public class SQLTableUpdate
         /**
          *
          * @param _name         name of the foreign key
-         * @param _key
-         * @param _reference
-         * @param _cascade
+         * @param _key          key of the foreign key
+         * @param _reference    reference of the foreign key
+         * @param _cascade      <i>true</i> if cascade; otherwise <i>false</i>
          */
         private ForeignKey(final String _name,
                            final String _key,
@@ -411,17 +413,28 @@ public class SQLTableUpdate
         }
 
         /**
+         * Appends to the update the SQL table specific attribute values to the
+         * <code>_insert</code>.
+         *
          * @param _insert   insert instance to append SQL table specific
          *                  attributes
-         * @throws EFapsException if insert of the eFaps definition for the SQL
-         *                        table failed
+         * @throws InstallationException if insert of the eFaps definition for
+         *                               the SQL table failed
          */
         @Override()
         protected void createInDB(final Insert _insert)
-            throws EFapsException
+            throws InstallationException
         {
-            _insert.add("SQLTable", getValue("SQLTable"));
-            _insert.add("SQLColumnID", getValue("SQLColumnID"));
+            try {
+                _insert.add("SQLTable", getValue("SQLTable"));
+            } catch (final EFapsException e) {
+                throw new InstallationException("Could not add SQLTable attribute", e);
+            }
+            try {
+                _insert.add("SQLColumnID", getValue("SQLColumnID"));
+            } catch (final EFapsException e) {
+                throw new InstallationException("Could not add SQLColumnID attribute", e);
+            }
             super.createInDB(_insert);
         }
 
@@ -447,7 +460,7 @@ public class SQLTableUpdate
          *
          * @param _step             current life cycle update step
          * @param _allLinkTypes     all link types
-         * @throws EFapsException if update failed
+         * @throws InstallationException if update failed
          * @see #createSQLTable()
          * @see #updateColIdSQLTable()
          * @see #updateSQLTable()
@@ -456,7 +469,7 @@ public class SQLTableUpdate
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws EFapsException
+            throws InstallationException, EFapsException
         {
             if (_step == UpdateLifecycle.SQL_CREATE_TABLE)  {
                 if (!this.view) {
@@ -634,20 +647,19 @@ public class SQLTableUpdate
         /**
          * Update the SQL table in the database.
          *
-         * @throws EFapsException if update of the SQL tables failed
+         * @throws InstallationException if update of the SQL tables failed
          * @see #updateInDB(UpdateLifecycle, Set)
          */
         protected void updateSQLTable()
-            throws EFapsException
+            throws InstallationException
         {
-            final Context context = Context.getThreadContext();
             ConnectionResource con = null;
             final String tableName = getValue("SQLTable");
             if (SQLTableUpdate.LOG.isInfoEnabled()) {
                 SQLTableUpdate.LOG.info("    Update DB SQL Table '" + tableName + "'");
             }
             try {
-                con = context.getConnectionResource();
+                con = Context.getThreadContext().getConnectionResource();
 
                 final TableInformation tableInfo = Context.getDbType().getRealTableInformation(con.getConnection(),
                                                                                                tableName);
@@ -711,18 +723,19 @@ public class SQLTableUpdate
                 }
 
                 con.commit();
+                con = null;
             } catch (final EFapsException e) {
-                SQLTableUpdate.LOG.error("SQLTableUpdate.updateSQLTable.EFapsException", e);
+                throw new InstallationException("update of the SQL table failed", e);
+            } catch (final SQLException e) {
+                throw new InstallationException("update of the SQL table failed", e);
+            } finally  {
                 if (con != null) {
-                    con.abort();
+                    try {
+                        con.abort();
+                    } catch (final EFapsException e) {
+                        throw new InstallationException("Abort failed", e);
+                    }
                 }
-                throw e;
-            } catch (final Throwable e) {
-                SQLTableUpdate.LOG.error("SQLTableUpdate.updateSQLTable.Throwable", e);
-                if (con != null) {
-                    con.abort();
-                }
-                throw new EFapsException(getClass(), "updateSQLTable.Throwable", e);
             }
         }
     }

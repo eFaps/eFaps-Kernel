@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.jexl.JexlContext;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
 /**
@@ -39,11 +40,11 @@ public interface IUpdate
      *
      * @param _jexlContext  context used to evaluate JEXL expressions
      * @param _step         current step of the update life cycle
-     * @throws EFapsException from called update methods
+     * @throws InstallationException from called update methods
      */
     void updateInDB(final JexlContext _jexlContext,
                     final UpdateLifecycle _step)
-        throws EFapsException;
+        throws InstallationException;
 
     /**
      * Name of the file application for which this XML file is defined.

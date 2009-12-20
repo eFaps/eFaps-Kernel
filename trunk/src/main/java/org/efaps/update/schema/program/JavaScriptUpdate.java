@@ -24,9 +24,9 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.efaps.admin.program.staticsource.JavaScriptImporter;
 import org.efaps.update.LinkInstance;
-import org.efaps.util.EFapsException;
+import org.efaps.update.schema.program.staticsource.JavaScriptImporter;
+import org.efaps.update.util.InstallationException;
 
 /**
  * Class to update a javascript into eFaps.
@@ -102,11 +102,13 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
         /**
          * Search the instance.
          *
-         * @throws EFapsException if the Java source code could not be read or
-         *             the file could not be accessed because of the wrong URL
+         * @throws InstallationException if the Javascript source code could
+         *                               not be read or the file could not be
+         *                               accessed because of the wrong URL
          */
-        @Override
-        protected void searchInstance() throws EFapsException
+        @Override()
+        protected void searchInstance()
+            throws InstallationException
         {
             if (this.sourceCode == null) {
                 this.sourceCode = new JavaScriptImporter(getUrl());

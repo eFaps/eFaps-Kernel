@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.program.staticsource;
+package org.efaps.update.schema.program.staticsource;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
@@ -27,18 +27,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.program.jasperreport.JasperReportCompiler;
 import org.efaps.db.Checkin;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
+import org.efaps.update.schema.program.jasperreport.JasperReportCompiler;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class used to compile JavaScript and style sheets.
@@ -46,13 +45,13 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractSourceCompiler
+public abstract class AbstractStaticSourceCompiler
 {
 
     /**
      * Logging instance used in this class.
      */
-    protected static final Logger LOG = LoggerFactory.getLogger(AbstractSourceCompiler.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(AbstractStaticSourceCompiler.class);
 
     /**
      * Static Method that executes the method compile for the SubClasses
@@ -60,7 +59,8 @@ public abstract class AbstractSourceCompiler
      * @param _classPathElements elements on the classpath
      * @throws EFapsException on error
      */
-    public static void compileAll(final List<String> _classPathElements) throws EFapsException
+    public static void compileAll(final List<String> _classPathElements)
+        throws EFapsException
     {
         (new CSSCompiler()).compile();
         (new JavaScriptCompiler()).compile();
@@ -84,8 +84,8 @@ public abstract class AbstractSourceCompiler
 
         for (final AbstractSource onesource : allsource) {
 
-            if (AbstractSourceCompiler.LOG.isInfoEnabled()) {
-                AbstractSourceCompiler.LOG.info("compiling " + onesource.getName());
+            if (AbstractStaticSourceCompiler.LOG.isInfoEnabled()) {
+                AbstractStaticSourceCompiler.LOG.info("compiling " + onesource.getName());
             }
 
             final List<String> supers = getSuper(onesource.getOid());
@@ -111,7 +111,7 @@ public abstract class AbstractSourceCompiler
             try {
                 mybytes = builder.toString().getBytes("UTF-8");
             } catch (final UnsupportedEncodingException e) {
-                AbstractSourceCompiler.LOG.error("error in reading Bytes from String using UTF-8", e);
+                AbstractStaticSourceCompiler.LOG.error("error in reading Bytes from String using UTF-8", e);
             }
             final ByteArrayInputStream str = new ByteArrayInputStream(mybytes);
             String name = onesource.getName().substring(0, onesource.getName().lastIndexOf("."));

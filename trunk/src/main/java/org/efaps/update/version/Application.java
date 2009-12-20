@@ -39,7 +39,6 @@ import org.apache.commons.digester.Rule;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.tools.ant.DirectoryScanner;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.program.staticsource.AbstractSourceCompiler;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
@@ -47,6 +46,7 @@ import org.efaps.db.SearchQuery;
 import org.efaps.update.FileType;
 import org.efaps.update.Install;
 import org.efaps.update.schema.program.esjp.ESJPCompiler;
+import org.efaps.update.schema.program.staticsource.AbstractStaticSourceCompiler;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -468,7 +468,7 @@ public final class Application
         try {
             Context.begin(_userName);
             (new ESJPCompiler(this.classpathElements)).compile(null);
-            AbstractSourceCompiler.compileAll(this.classpathElements);
+            AbstractStaticSourceCompiler.compileAll(this.classpathElements);
             Context.commit();
         } catch (final EFapsException e)  {
             throw new InstallationException("Compile failed", e);

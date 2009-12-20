@@ -29,6 +29,7 @@ import java.util.Set;
 import org.efaps.db.Insert;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
 /**
@@ -82,7 +83,8 @@ public class JAASSystemUpdate
         return new Definition();
     }
 
-    private class Definition extends AbstractDefinition
+    private class Definition
+        extends AbstractDefinition
     {
 
         @Override()
@@ -143,15 +145,27 @@ public class JAASSystemUpdate
          * all attribute values of this attributes are set.
          *
          * @param _insert  insert instance
-         * @throws EFapsException if insert failed
+         * @throws InstallationException if insert failed
          */
         @Override()
         protected void createInDB(final Insert _insert)
-            throws EFapsException
+            throws InstallationException
         {
-            _insert.add("ClassNamePerson",      getValue("ClassNamePerson"));
-            _insert.add("MethodNamePersonKey",  getValue("MethodNamePersonKey"));
-            _insert.add("MethodNamePersonName", getValue("MethodNamePersonName"));
+            try {
+                _insert.add("ClassNamePerson",      getValue("ClassNamePerson"));
+            } catch (final EFapsException e) {
+                throw new InstallationException("Attribute 'ClassNamePerson' for person could not be defined", e);
+            }
+            try {
+                _insert.add("MethodNamePersonKey",  getValue("MethodNamePersonKey"));
+            } catch (final EFapsException e) {
+                throw new InstallationException("Attribute 'MethodNamePersonKey' for person could not be defined", e);
+            }
+            try {
+                _insert.add("MethodNamePersonName", getValue("MethodNamePersonName"));
+            } catch (final EFapsException e) {
+                throw new InstallationException("Attribute 'MethodNamePersonName' for person could not be defined", e);
+            }
             super.createInDB(_insert);
         }
     }

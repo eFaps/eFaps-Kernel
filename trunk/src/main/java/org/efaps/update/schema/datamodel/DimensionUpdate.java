@@ -32,6 +32,7 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
 /**
@@ -214,17 +215,29 @@ public class DimensionUpdate
          *
          * @see org.efaps.update.AbstractUpdate.AbstractDefinition#createInDB(org.efaps.db.Insert)
          * @param _insert insert to be executed
-         * @throws EFapsException on error
+         * @throws InstallationException on error
          */
         @Override()
         protected void createInDB(final Insert _insert)
-            throws EFapsException
+            throws InstallationException
         {
             final String name = super.getValue("Name");
-            _insert.add("Name", (name == null) ? "-" : name);
-            _insert.add("Description", (this.description == null) ? "-" : this.description);
+            try {
+                _insert.add("Name", (name == null) ? "-" : name);
+            } catch (final EFapsException e) {
+                throw new InstallationException("Name attribute could not be defined", e);
+            }
+            try {
+                _insert.add("Description", (this.description == null) ? "-" : this.description);
+            } catch (final EFapsException e) {
+                throw new InstallationException("Description attribute could not be defined", e);
+            }
             LOG.info("    Insert " + _insert.getInstance().getType().getName() + " '" + name + "'");
-            _insert.executeWithoutAccessCheck();
+            try {
+                _insert.executeWithoutAccessCheck();
+            } catch (final EFapsException e) {
+                throw new InstallationException("Insert failed", e);
+            }
             this.instance = _insert.getInstance();
         }
 
@@ -234,13 +247,13 @@ public class DimensionUpdate
          *
          * @param _step         current step of the update life cycle
          * @param _allLinkTypes set of all links
-         * @throws EFapsException on error
+         * @throws InstallationException on error
          * @see #uoms
          */
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws EFapsException
+            throws InstallationException, EFapsException
         {
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
                 this.addValue("Description", this.description);

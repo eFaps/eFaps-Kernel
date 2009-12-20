@@ -26,6 +26,7 @@ import java.util.Set;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.schema.program.esjp.ESJPImporter;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
 /**
@@ -87,13 +88,13 @@ public class JavaUpdate
         /**
          * Search the instance.
          *
-         * @throws EFapsException if the Java source code could not be read or the
-         *                        file could not be accessed because of the wrong
-         *                        URL
+         * @throws InstallationException if the Java source code could not be
+         *                               read or the file could not be accessed
+         *                               because of the wrong URL
          */
         @Override()
         protected void searchInstance()
-            throws EFapsException
+            throws InstallationException
         {
             if (this.javaCode == null) {
                 this.javaCode = new ESJPImporter(getUrl());
@@ -119,12 +120,12 @@ public class JavaUpdate
          *
          * @param _step             current update step
          * @param _allLinkTypes     all link types to update
-         * @throws EFapsException on error
+         * @throws InstallationException on error
          */
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws EFapsException
+            throws InstallationException, EFapsException
         {
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
                 if (AbstractUpdate.LOG.isInfoEnabled() && (this.javaCode.getProgramName() != null)) {

@@ -222,18 +222,6 @@ public class OracleDatabase
      * TODO: implement
      */
     @Override()
-    public OracleDatabase defineTableParent(final Connection _con,
-                                            final String _table,
-                                            final String _parentTable)
-        throws SQLException
-    {
-        throw new Error("not implemented");
-    }
-
-    /**
-     * TODO: implement
-     */
-    @Override()
     public OracleDatabase defineTableAutoIncrement(final Connection _con,
                                                    final String _table)
         throws SQLException

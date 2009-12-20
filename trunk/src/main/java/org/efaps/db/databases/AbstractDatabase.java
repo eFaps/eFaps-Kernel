@@ -33,6 +33,7 @@ import java.util.UUID;
 
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.TableInformation;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -423,7 +424,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
     public DB defineTableParent(final Connection _con,
                                 final String _table,
                                 final String _parentTable)
-        throws SQLException
+        throws InstallationException
     {
         return addForeignKey(_con, _table, _table + "_FK_ID", "ID", _parentTable + "(ID)", false);
     }
@@ -555,7 +556,8 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @param _cascade        if the value in the external table is deleted,
      *                        should this value also automatically deleted?
      * @return this instance
-     * @throws SQLException if foreign key could not be defined for SQL table
+     * @throws InstallationException if foreign key could not be defined for
+     *                               SQL table
      */
     public DB addForeignKey(final Connection _con,
                             final String _tableName,
@@ -563,7 +565,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
                             final String _key,
                             final String _reference,
                             final boolean _cascade)
-        throws SQLException
+        throws InstallationException
     {
         final StringBuilder cmd = new StringBuilder()
             .append("alter table ").append(_tableName).append(" ")
@@ -580,11 +582,16 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
         }
 
         // execute statement
-        final Statement stmt = _con.createStatement();
         try {
-            stmt.execute(cmd.toString());
-        } finally  {
-            stmt.close();
+            final Statement stmt = _con.createStatement();
+            try {
+                stmt.execute(cmd.toString());
+            } finally  {
+                stmt.close();
+            }
+        } catch (final SQLException e)  {
+            throw new InstallationException("Foreign key could not be created. SQL statement was:\n"
+                    + cmd.toString(), e);
         }
 
         @SuppressWarnings("unchecked")

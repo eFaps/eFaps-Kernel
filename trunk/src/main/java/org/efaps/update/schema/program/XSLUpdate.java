@@ -23,8 +23,8 @@ package org.efaps.update.schema.program;
 import java.net.URL;
 
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.program.staticsource.XSLImporter;
-import org.efaps.util.EFapsException;
+import org.efaps.update.schema.program.staticsource.XSLImporter;
+import org.efaps.update.util.InstallationException;
 
 import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_XSL;
 
@@ -84,12 +84,13 @@ public class XSLUpdate
         /**
          * Search the instance.
          *
-         * @throws EFapsException if the Java source code could not be read or
-         *             the file could not be accessed because of the wrong URL
+         * @throws InstallationException if the XSLT source code could not be
+         *                               read or the file could not be accessed
+         *                               because of the wrong URL
          */
-        @Override
+        @Override()
         protected void searchInstance()
-            throws EFapsException
+            throws InstallationException
         {
             if (this.sourceCode == null) {
                 this.sourceCode = new XSLImporter(getUrl());

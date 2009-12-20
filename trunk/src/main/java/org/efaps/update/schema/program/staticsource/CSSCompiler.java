@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.program.staticsource;
+package org.efaps.update.schema.program.staticsource;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -26,12 +26,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.db.Checkout;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.yahoo.platform.yui.compressor.CssCompressor;
 
@@ -41,7 +40,8 @@ import com.yahoo.platform.yui.compressor.CssCompressor;
  * @author The eFaps Team
  * @version $Id$
  */
-public class CSSCompiler extends AbstractSourceCompiler
+public class CSSCompiler
+    extends AbstractStaticSourceCompiler
 {
 
     /**
@@ -76,7 +76,7 @@ public class CSSCompiler extends AbstractSourceCompiler
         return EFapsClassNames.ADMIN_PROGRAM_CSSCOMPILED;
     }
 
-    @Override
+    @Override()
     protected String getCompiledString(final String _oid)
     {
         String ret = "";
@@ -96,10 +96,10 @@ public class CSSCompiler extends AbstractSourceCompiler
             ret += "\n";
 
         } catch (final EFapsException e) {
-            LOG.error("error during checkout of Instance with oid:" + _oid, e);
+            CSSCompiler.LOG.error("error during checkout of Instance with oid:" + _oid, e);
             e.printStackTrace();
         } catch (final IOException e) {
-            LOG.error("error during reqding of the Inputstram of Instance with oid:" + _oid, e);
+            CSSCompiler.LOG.error("error during reqding of the Inputstram of Instance with oid:" + _oid, e);
         }
         return ret;
 
@@ -124,7 +124,6 @@ public class CSSCompiler extends AbstractSourceCompiler
         {
             super(_name, _oid, _id);
         }
-
     }
 
 }

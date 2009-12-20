@@ -33,16 +33,16 @@ import java.util.Properties;
 import java.util.Map.Entry;
 
 import org.apache.commons.jexl.JexlContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.IUpdate;
 import org.efaps.update.UpdateLifecycle;
+import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for importing or updating of Properties from a properties-file into the
@@ -468,7 +468,7 @@ public class DBPropertiesUpdate implements IUpdate
      */
     public void updateInDB(final JexlContext _jexlContext,
                            final UpdateLifecycle _step)
-        throws EFapsException
+        throws InstallationException
     {
         if (_step == UpdateLifecycle.DBPROPERTIES_UPDATE) {
 
