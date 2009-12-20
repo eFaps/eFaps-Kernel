@@ -88,6 +88,7 @@ public class MultiPrintQuery extends AbstractPrintQuery
                 for (final Type type : types) {
                     final List<Type> parents = new ArrayList<Type>();
                     Type currentType = type;
+                    parents.add(currentType);
                     while (currentType.getParentType() != null) {
                         currentType = currentType.getParentType();
                         parents.add(currentType);
