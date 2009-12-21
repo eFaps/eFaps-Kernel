@@ -367,16 +367,29 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
 
 
     /**
-     * A new SQL view w is created.
+     * A new SQL view <code>_view</code> is created. To create a correct view
+     * a dummy select on the value one is done (which will overwritten).
      *
      * @param _con          SQL connection
-     * @param _table        name of the view to create
+     * @param _view         name of the view to create
      * @return this instance
      * @throws SQLException if the create of the table failed
+     * TODO: really neeeded? not referenced anymore...
      */
-    public abstract DB createView(final Connection _con,
-                                  final String _table)
-        throws SQLException;
+    @SuppressWarnings("unchecked")
+    public DB createView(final Connection _con,
+                         final String _view)
+        throws SQLException
+    {
+        final Statement stmt = _con.createStatement();
+        try {
+            stmt.executeUpdate(new StringBuilder().append("create view ").append(_view)
+                        .append(" as select 1").toString());
+        } finally {
+            stmt.close();
+        }
+        return (DB) this;
+    }
 
     /**
      * Method to create a new Sequence in this DataBase.
@@ -450,7 +463,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @param _table        name of the SQL table to update
      * @param _parentTable  name of the parent table
      * @return this instance
-     * @throws SQLException if the update of the table failed
+     * @throws InstallationException if the update of the table failed
      */
     public DB defineTableParent(final Connection _con,
                                 final String _table,
