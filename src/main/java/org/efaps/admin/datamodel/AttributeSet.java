@@ -22,8 +22,10 @@ package org.efaps.admin.datamodel;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.efaps.db.query.CachedResult;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -68,7 +70,8 @@ public class AttributeSet extends Type
                            final AttributeType _attributeType,
                            final String _sqlColNames,
                            final long _tableId,
-                           final long _typeLinkId) throws CacheReloadException
+                           final long _typeLinkId)
+        throws CacheReloadException
     {
         super(_id, null, evaluateName(_type.getName(), _name));
 
@@ -106,14 +109,18 @@ public class AttributeSet extends Type
     }
 
     /**
-     * Method to get the attribute instance.
-     * @return IMultipleAttributeType
+     * Method to read value from the database.
+     *
+     * @param _rs               cached result
+     * @param _index2expression map index to expression
+     * @return read values from the database
      * @throws EFapsException on error
      */
-    public IMultipleAttributeType getAttributeTypeInstance() throws EFapsException
+    public Map<String, List<Object>> readValues(final CachedResult _rs,
+                                                final Map<Integer, String> _index2expression)
+        throws EFapsException
     {
-        final IMultipleAttributeType ret = (IMultipleAttributeType) this.attributeType.newInstance();
-        return ret;
+        return ((IMultipleAttributeType) this.attributeType.getDbAttrType()).readValues(_rs, _index2expression);
     }
 
     /**
@@ -176,6 +183,7 @@ public class AttributeSet extends Type
 
     /**
      * Method to get the type from the cache.
+     *
      * @param _typeName name of the type
      * @param _name name of the attribute
      * @return  AttributeSet
@@ -186,12 +194,15 @@ public class AttributeSet extends Type
     }
 
     /**
-     * Method to get the type from the cache. Searches if not found in the type hirachy.
-     * @param _typeName  name of the type
+     * Method to get the type from the cache. Searches if not found in the type
+     * hierarchy.
+     *
+     * @param _typeName name of the type
      * @param _name     name of the attribute
      * @return AttributeSet
      */
-    public static AttributeSet find(final String _typeName, final String _name)
+    public static AttributeSet find(final String _typeName,
+                                    final String _name)
     {
         AttributeSet ret = (AttributeSet) Type.get(evaluateName(_typeName, _name));
         if (ret == null) {

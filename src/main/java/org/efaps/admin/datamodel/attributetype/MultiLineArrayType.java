@@ -20,14 +20,13 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.IMultipleAttributeType;
 import org.efaps.db.query.CachedResult;
 import org.efaps.util.EFapsException;
@@ -41,17 +40,17 @@ import org.efaps.util.EFapsException;
 public class MultiLineArrayType extends AbstractType implements IMultipleAttributeType
 {
 
-    public Object readValue(final CachedResult _rs, final List<Integer> _indexes) throws Exception
+    public Object readValue(final Attribute _attribute,
+                            final CachedResult _rs,
+                            final List<Integer> _indexes)
+        throws Exception
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public void set(final Object[] _value)
-    {
-    }
-
-    public Map<String, List<Object>> readValues(final CachedResult _rs, final Map<Integer, String> _index2expression)
+    public Map<String, List<Object>> readValues(final CachedResult _rs,
+                                                final Map<Integer, String> _index2expression)
     {
 
         final Map<String, List<Object>> ret = new HashMap<String, List<Object>>();
@@ -74,25 +73,14 @@ public class MultiLineArrayType extends AbstractType implements IMultipleAttribu
     }
 
     /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
-     * @throws SQLException on error
-     */
-    public int update(final Object _object, final PreparedStatement _stmt, final int _indexes) throws SQLException
-    {
-        throw new SQLException("Update value for Type not allowed!!!");
-    }
-
-    /**
      * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
      * @param objectList
      * @return
      * @throws EFapsException
      */
-    public Object readValue(final List<Object> objectList) throws EFapsException
+    public Object readValue(final Attribute _attribute,
+                            final List<Object> objectList)
+        throws EFapsException
     {
         // TODO Auto-generated method stub
         return null;

@@ -20,85 +20,81 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.query.CachedResult;
+import org.efaps.db.wrapper.SQLUpdate;
 
 /**
+ * Implements the mapping between values in the database and {@link Type}
+ * values in eFaps.
+ *
  * @author The eFaps Team
  * @version $Id$
  */
-public class TypeType extends AbstractType
+public class TypeType
+    extends AbstractType
 {
-
     /**
-     * The value stores the instance of {@link org.efaps.admin.datamodel.Type}
-     * which represents current value.
+     * A {@link SQLException} is always thrown because an update of a type is
+     * not allowed.
      *
-     * @see #setType
-     * @see #getType
+     * @param _update       update SQL statement
+     * @param _attribute    related eFaps attribute; ignored, because update is
+     *                      not allowed
+     * @param _values       values ignored, because update not allowed
+     * @throws SQLException always, because update is not allowed
      */
-    private Type value = null;
-
-    /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
-     * @throws SQLException on error
-     */
-    public int update(final Object _object, final PreparedStatement _stmt, final int _index)
-            throws SQLException
+    @Override()
+    public void prepareUpdate(final SQLUpdate _update,
+                              final Attribute _attribute,
+                              final Object... _values)
+        throws SQLException
     {
         throw new SQLException("Update value for Type not allowed!!!");
     }
 
     /**
-     * The method reads from a SQL result set the value for the type. If no type
-     * sql column is given in the type description, the value is read directly
-     * from the attribute.
+     * The method reads from a SQL result set the value for the type. If no
+     * type SQL column is given in the type description, the value is read
+     * directly from the attribute.
      */
-    public Object readValue(final CachedResult _rs, final List<Integer> _indexes) throws Exception
+    public Object readValue(final Attribute _attribute,
+                            final CachedResult _rs,
+                            final List<Integer> _indexes)
+        throws Exception
     {
         Type ret;
-        if (getAttribute().getSqlColNames().size() > 0) {
+        if (!_attribute.getSqlColNames().isEmpty()) {
             ret = Type.get(_rs.getLong(_indexes.get(0).intValue()));
         } else {
-            ret = getAttribute().getParent();
+            ret = _attribute.getParent();
         }
-        this.value = ret;
         return ret;
     }
 
     /**
-     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
-     * @param _objectList List of Objects
-     * @return DateTime
+     * The method reads from a SQL result set the value for the type. If no
+     * type SQL column is given in the type description, the value is read
+     * directly from the attribute.
+     *
+     * @param _attribute    related eFaps attribute
+     * @param _objectList   list of objects
+     * @return evaluated type instance
      * TODO throw error if more than one value is given
      */
-    public Object readValue(final List<Object> _objectList)
+    public Object readValue(final Attribute _attribute,
+                            final List<Object> _objectList)
     {
         Type ret;
-        if (getAttribute().getSqlColNames().size() > 0) {
+        if (!_attribute.getSqlColNames().isEmpty()) {
             ret = Type.get((Long) _objectList.get(0));
         } else {
-            ret = getAttribute().getParent();
+            ret = _attribute.getParent();
         }
-        this.value = ret;
         return ret;
-    }
-
-    public void set(final Object[] _value)
-    {
-    }
-
-    @Override
-    public String toString()
-    {
-        return "" + this.value;
     }
 }

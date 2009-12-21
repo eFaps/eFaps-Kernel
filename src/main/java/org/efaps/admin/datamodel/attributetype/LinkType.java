@@ -26,10 +26,4 @@ package org.efaps.admin.datamodel.attributetype;
  */
 public class LinkType extends AbstractLinkType
 {
-
-    @Override
-    public String toString()
-    {
-        return "" + getValue();
-    }
 }

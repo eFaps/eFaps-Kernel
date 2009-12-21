@@ -33,6 +33,8 @@ import java.util.UUID;
 
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.TableInformation;
+import org.efaps.db.wrapper.SQLInsert;
+import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
@@ -158,6 +160,35 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
         }
     }
 
+    /**
+     *
+     * @param _tableName    name of the table to insert
+     * @param _idCol        column holding the id
+     * @param _newId        <i>true</i> if a new id must be created; otherwise
+     *                      <i>false</i>
+     * @return new SQL insert statement
+     */
+    public SQLInsert newInsert(final String _tableName,
+                               final String _idCol,
+                               final boolean _newId)
+    {
+        return new SQLInsert(_tableName, _idCol, _newId);
+    }
+
+
+    /**
+     *
+     * @param _tableName    name of the table to insert
+     * @param _idCol        column holding the id
+     * @param _id           id to update
+     * @return new SQL insert statement
+     */
+    public SQLUpdate newUpdate(final String _tableName,
+                               final String _idCol,
+                               final long _id)
+    {
+        return new SQLUpdate(_tableName, _idCol, _id);
+    }
 
     /**
      * Returns for given column type the database vendor specific type name.

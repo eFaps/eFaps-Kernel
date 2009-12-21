@@ -33,8 +33,6 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
-import org.efaps.admin.datamodel.IAttributeType;
-import org.efaps.admin.datamodel.IMultipleAttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
@@ -348,9 +346,7 @@ public class OneRoundQuery
             }
         }
 
-        final IMultipleAttributeType attrInterf = this.listquery.getAttributeSet().getAttributeTypeInstance();
-        ret = attrInterf.readValues(OneRoundQuery.this.cachedResult, indexes);
-        return ret;
+        return  this.listquery.getAttributeSet().readValues(OneRoundQuery.this.cachedResult, indexes);
     }
 
     /**
@@ -386,7 +382,7 @@ public class OneRoundQuery
          *
          */
         private final Map<SQLTable, SQLTableMapping2Attributes> sqlTable2Attrs
-                                                                = new HashMap<SQLTable, SQLTableMapping2Attributes>();
+            = new HashMap<SQLTable, SQLTableMapping2Attributes>();
 
         /**
          * @param _type type for which this type mapping is defined
@@ -640,11 +636,10 @@ public class OneRoundQuery
          */
         public Object getValue(final Attribute _attribute) throws EFapsException
         {
-            final IAttributeType attrInterf = _attribute.newInstance();
             Object ret = null;
             if (this.expandHasResult) {
                 try {
-                    ret = attrInterf.readValue(OneRoundQuery.this.cachedResult, this.attr2index.get(_attribute));
+                    ret = _attribute.readDBValue(OneRoundQuery.this.cachedResult, this.attr2index.get(_attribute));
                 } catch (final Exception e) {
                     // TODO correct errorhandling
                     throw new EFapsException(SQLTableMapping2Attributes.class, "TODO", e);

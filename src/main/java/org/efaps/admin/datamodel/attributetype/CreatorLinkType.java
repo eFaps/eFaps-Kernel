@@ -20,13 +20,12 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.Context;
+import org.efaps.db.wrapper.SQLInsert;
+import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.util.EFapsException;
 
 /**
@@ -36,37 +35,9 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class CreatorLinkType extends PersonLinkType
+public class CreatorLinkType
+    extends PersonLinkType
 {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(CreatorLinkType.class);
-
-    // ///////////////////////////////////////////////////////////////////////////
-    // interface to the data base
-
-    /**
-     * The value of the modifier is added via the prepared statement setter
-     * method. So only a question mark ('?') is added to the statement. The
-     * value is set with method {@link #update}.
-     *
-     * @param _stmt string buffer with the statement
-     * @see #update
-     */
-    @Override
-    public boolean prepareUpdate(final StringBuilder _stmt)
-    {
-        _stmt.append("?");
-        return false;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "" + getValue();
-    }
-
     /**
      * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
      * @param _object   object
@@ -75,15 +46,35 @@ public class CreatorLinkType extends PersonLinkType
      * @return number of indexes used in the method, if the return value is null an error should be thrown
      * @throws SQLException on error
      */
-    @Override
-    public int update(final Object _object, final PreparedStatement _stmt, final int _index)
-                    throws SQLException
+    @Override()
+    public void prepareInsert(final SQLInsert _insert,
+                              final Attribute _attribute,
+                              final Object... _values)
+        throws SQLException
     {
+        checkSQLColumnSize(_attribute, 1);
         try {
-            _stmt.setLong(_index, Context.getThreadContext().getPerson().getId());
+            _insert.column(_attribute.getSqlColNames().get(0),
+                           Context.getThreadContext().getPerson().getId());
         } catch (final EFapsException e) {
-            LOG.error("update(Object, PreparedStatement, List<Integer>)", e);
+            throw new SQLException("could not fetch current context person id", e);
         }
-        return 1;
+    }
+
+    /**
+     * An update of a creator link is not allowed and therefore a
+     * {@link SQLException} is always thrown.
+     *
+     * @param _update   update SQL statement
+     * @param _values   ignored because update is not allowed
+     * @throws SQLException always because update is not allowed
+     */
+    @Override()
+    public void prepareUpdate(final SQLUpdate _update,
+                              final Attribute _attribute,
+                              final Object... _values)
+        throws SQLException
+    {
+        throw new SQLException("not allowed");
     }
 }

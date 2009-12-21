@@ -20,69 +20,84 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
+import org.efaps.admin.datamodel.Dimension.UoM;
+import org.efaps.admin.datamodel.attributevalue.IntegerWithUoM;
+import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 
 /**
+ * Implements the mapping between values in the database and
+ * {@link IntegerWithUoM} values in eFaps.
+ *
  * @author The eFaps Team
  * @version $Id$
  */
-public class IntegerWithUoMType extends AbstractWithUoMType
+public class IntegerWithUoMType
+    extends AbstractWithUoMType
 {
-
     /**
-     * @see #getValue
-     * @see #setValue
+     * The method prepares the statement for insert the object in the database.
+     * It must be overwritten, because this type has at least two columns.
+     * {@inheritDoc}
      */
-    private Integer value = 0;
-
-    /**
-     * The localised string and the internal string value are equal. So the
-     * internal value can be set directly with method {@link #setValue}.
-     *
-     * @param _value new value to set
-     */
-    public void set(final Object[] _value)
+    @Override()
+    public void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
+                        final Attribute _attribute,
+                        final Object... _values)
+        throws SQLException
     {
-        if (_value instanceof Object[]) {
-            if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
-                this.value = (Integer.parseInt((String) _value[0]));
-            } else if (_value[0] instanceof Number) {
-                this.value = (((Number) _value[0]).intValue());
-            }
-            if ((_value[1] instanceof String) && (((String) _value[1]).length() > 0)) {
-                setUoM(Dimension.getUoM(Long.parseLong((String) _value[1])));
-            } else if (_value[1] instanceof Number) {
-                setUoM(Dimension.getUoM(((Number) _value[1]).longValue()));
-            }
+        if (_attribute.getSqlColNames().size() == 3)  {
+            checkSQLColumnSize(_attribute, 3);
+        } else  {
+            checkSQLColumnSize(_attribute, 2);
+        }
+
+        final IntegerWithUoM value = eval(_values);
+        _insertUpdate.column(_attribute.getSqlColNames().get(0), value.getValue());
+        _insertUpdate.column(_attribute.getSqlColNames().get(1), value.getUoM().getId());
+        if (_attribute.getSqlColNames().size() == 3) {
+            _insertUpdate.column(_attribute.getSqlColNames().get(2), value.getBaseDouble());
         }
     }
 
     /**
-     * This is the getter method for instance variable {@link #value}.
+     * The localized string and the internal string value are equal. So the
+     * internal value can be set directly with method {@link #setValue}.
      *
-     * @return the value of the instance variable {@link #value}.
-     * @see #value
-     * @see #setValue
+     * @param _values new value to set
+     * @return related value with unit of measure
      */
-    @Override
-    protected Double getValue()
+    protected IntegerWithUoM eval(final Object... _values)
     {
-        return this.value.doubleValue();
-    }
+        final IntegerWithUoM ret;
 
-    /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractWithUoMType#setValueStmt(java.sql.PreparedStatement, int)
-     * @param _stmt     prepared statement
-     * @param _index    index
-     * @throws SQLException on error
-     */
-    @Override
-    protected void setValueStmt(final PreparedStatement _stmt, final int _index) throws SQLException
-    {
-        _stmt.setInt(_index, this.value);
+        if ((_values == null) || (_values.length < 2) || (_values[0] == null))  {
+            ret = null;
+        } else  {
+            final Long value;
+            if ((_values[0] instanceof String) && (((String) _values[0]).length() > 0)) {
+                value = Long.parseLong((String) _values[0]);
+            } else if (_values[0] instanceof Number) {
+                value = ((Number) _values[0]).longValue();
+            } else  {
+                value = null;
+            }
+
+            final UoM uom;
+            if ((_values[1] instanceof String) && (((String) _values[1]).length() > 0)) {
+                uom = Dimension.getUoM(Long.parseLong((String) _values[1]));
+            } else if (_values[1] instanceof Number) {
+                uom = Dimension.getUoM(((Number) _values[1]).longValue());
+            } else  {
+                uom = null;
+            }
+
+            ret = new IntegerWithUoM(value, uom);
+        }
+        return ret;
     }
 
     /**
@@ -90,14 +105,17 @@ public class IntegerWithUoMType extends AbstractWithUoMType
      * @param _object    Object to read
      * @return the value as Integer
      */
-    @Override
+    @Override()
     protected Object readValue(final Object _object)
     {
+        final Long ret;
         if (_object instanceof Number) {
-            this.value = ((Number) _object).intValue();
+            ret = ((Number) _object).longValue();
         } else if (_object != null) {
-            this.value = Integer.parseInt(_object.toString());
+            ret = Long.parseLong(_object.toString());
+        } else  {
+            ret = null;
         }
-        return this.value;
+        return ret;
     }
 }

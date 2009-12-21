@@ -20,29 +20,25 @@
 
 package org.efaps.db;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
-import org.efaps.admin.datamodel.IAttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
@@ -95,8 +91,8 @@ public class Insert extends Update
     private void addTables()
     {
         for (final SQLTable table : getType().getTables()) {
-            if (getExpr4Tables().get(table) == null) {
-                getExpr4Tables().put(table, new ArrayList<IAttributeType>());
+            if (!getExpr4Tables().containsKey(table)) {
+                getExpr4Tables().put(table, new HashMap<Attribute, Update.Value>());
             }
         }
     }
@@ -184,15 +180,14 @@ public class Insert extends Update
 
             final SQLTable mainTable = getType().getMainTable();
 
-            final List<IAttributeType> expressions = getExpr4Tables().get(mainTable);
-            final long id = executeOneStatement(con, mainTable, expressions, 0);
+            final long id = executeOneStatement(con, mainTable, getExpr4Tables().get(mainTable).values(), 0);
 
             setInstance(Instance.get(getInstance().getType(), id));
 
-            for (final Entry<SQLTable, List<IAttributeType>> entry : getExpr4Tables().entrySet()) {
+            for (final Entry<SQLTable, Map<Attribute, Value>> entry : this.getExpr4Tables().entrySet()) {
                 final SQLTable table = entry.getKey();
                 if ((table != mainTable) && !table.isReadOnly()) {
-                    executeOneStatement(con, table, entry.getValue(), id);
+                    executeOneStatement(con, table, entry.getValue().values(), id);
                 }
             }
             con.commit();
@@ -224,122 +219,38 @@ public class Insert extends Update
      * @see #createOneStatement
      * @throws EFapsException on error
      */
-    private long executeOneStatement(final ConnectionResource _con, final SQLTable _table,
-                                     final List<IAttributeType> _expressions, final long _id)
+    private long executeOneStatement(final ConnectionResource _con,
+                                     final SQLTable _table,
+                                     final Collection<Update.Value> _values,
+                                     final long _id)
         throws EFapsException
     {
-
         long ret = _id;
-        PreparedStatement stmt = null;
         try {
-            if ((ret == 0) && !Context.getDbType().supportsGetGeneratedKeys()) {
-                ret = Context.getDbType().getNewId(_con.getConnection(), _table.getSqlTable(), _table.getSqlColId());
+            final SQLInsert insert = Context.getDbType().newInsert(_table.getSqlTable(),
+                                                                   _table.getSqlColId(),
+                                                                   (_id == 0));
+
+            if (_id != 0) {
+                insert.column(_table.getSqlColId(), _id);
+            }
+            if (_table.getSqlColType() != null) {
+                insert.column(_table.getSqlColType(), getType().getId());
             }
 
-            stmt = createOneStatement(_con, _table, _expressions, ret);
+            for (final Update.Value value : _values) {
+                value.attribute.prepareDBInsert(insert, value.getValues());
+            }
 
-            final int rows = stmt.executeUpdate();
-            if (rows == 0) {
-                throw new EFapsException(getClass(), "executeOneStatement.NotInserted", _table.getName());
+            final Long bck = insert.execute(_con.getConnection());
+            if (bck != null)  {
+                ret = bck;
             }
-            if (ret == 0) {
-                final ResultSet resultset = stmt.getGeneratedKeys();
-                if (resultset.next()) {
-                    ret = resultset.getLong(1);
-                }
-                resultset.close();
-            }
-        } catch (final EFapsException e) {
-            throw e;
-        } catch (final Exception e) {
+
+        } catch (final SQLException e) {
+            Insert.LOG.error("executeOneStatement", e);
             throw new EFapsException(getClass(), "executeOneStatement.Exception", e, _table.getName());
-        } finally {
-            try {
-                stmt.close();
-            } catch (final Exception e) {
-            }
         }
         return ret;
-    }
-
-    /**
-     * @param _con     ConnectionResource
-     * @param _table    SQLTable
-     * @param _expressions List
-     *  @param _id new created id, if null, the table is an autoincrement SQL
-     *            table and the id is not set
-     *@return new created prepared statement
-     * @throws SQLException on error
-     */
-    private PreparedStatement createOneStatement(final ConnectionResource _con, final SQLTable _table,
-                                                final List<IAttributeType> _expressions, final long _id)
-        throws SQLException
-    {
-
-        final List<IAttributeType> updateAttr = new ArrayList<IAttributeType>();
-        final StringBuilder cmd = new StringBuilder();
-        final StringBuilder val = new StringBuilder();
-        boolean first = true;
-        cmd.append("insert into ").append(_table.getSqlTable()).append("(");
-
-        if (_id != 0) {
-            cmd.append(_table.getSqlColId());
-            first = false;
-        }
-
-        for (final IAttributeType attrType : _expressions) {
-            val.append(first ? "" : ",");
-            for (final String sqColumn : attrType.getAttribute().getSqlColNames()) {
-                if (first) {
-                    first = false;
-                } else {
-                    cmd.append(",");
-                }
-                cmd.append(Context.getDbType().getColumnQuote())
-                    .append(sqColumn)
-                    .append(Context.getDbType().getColumnQuote());
-            }
-            if (!attrType.prepareInsert(val)) {
-                updateAttr.add(attrType);
-            }
-        }
-
-        if (_table.getSqlColType() != null) {
-            cmd.append(",").append(_table.getSqlColType());
-            val.append(",?");
-        }
-        cmd.append(") values (");
-        if (_id != 0) {
-            cmd.append(_id);
-        }
-        cmd.append("").append(val).append(")");
-
-        if (Insert.LOG.isDebugEnabled()) {
-            Insert.LOG.debug(cmd.toString());
-        }
-
-        PreparedStatement stmt;
-        if (_id == 0) {
-            if (Context.getDbType().supportsMultiGeneratedKeys()) {
-                stmt = _con.getConnection().prepareStatement(cmd.toString(), new String[] { _table.getSqlColId() });
-            } else {
-                stmt = _con.getConnection().prepareStatement(cmd.toString(), Statement.RETURN_GENERATED_KEYS);
-            }
-        } else {
-            stmt = _con.getConnection().prepareStatement(cmd.toString());
-        }
-        int index = 1;
-        for (final IAttributeType attrType : updateAttr) {
-
-            if (Insert.LOG.isDebugEnabled()) {
-                Insert.LOG.debug(attrType.toString());
-            }
-
-            index += attrType.update(null, stmt, index);
-        }
-        if (_table.getSqlColType() != null) {
-            stmt.setLong(index, getType().getId());
-        }
-        return stmt;
     }
 }

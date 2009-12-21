@@ -20,13 +20,11 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.Context;
+import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.EFapsException;
 
 /**
@@ -36,48 +34,32 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class CompanyLinkType extends PersonLinkType
+public class CompanyLinkType
+    extends PersonLinkType
 {
     /**
-     * Logger for this class.
+     * @param _insertUpdate     insert / update SQL statement
+     * @throws SQLException if not exact one SQL column for the attribute is
+     *                      defined of the company id could not be fetched
      */
-    private static final Logger LOG = LoggerFactory.getLogger(CompanyLinkType.class);
-
-    /**
-     * The value of the modifier is added via the prepared statement setter
-     * method. So only a question mark ('?') is added to the statement. The
-     * value is set with method {@link #update}.
-     *
-     * @param _stmt string buffer with the statement
-     * @see #update
-     * @return false
-     */
-    @Override
-    public boolean prepareUpdate(final StringBuilder _stmt)
-    {
-        _stmt.append("?");
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int update(final Object _object,
-                      final PreparedStatement _stmt,
-                      final int _index)
+    @Override()
+    protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
+                           final Attribute _attribute,
+                           final Object... _values)
         throws SQLException
     {
-        try {
-            //if a value was explicitly set the value is used, else the company id from the context
-            if (getValue() != null && getValue() instanceof Long) {
-                _stmt.setLong(_index, (Long) getValue());
-            } else {
-                _stmt.setLong(_index, Context.getThreadContext().getCompany().getId());
+        checkSQLColumnSize(_attribute, 1);
+        // if a value was explicitly set the value is used, else the company
+        // id from the context
+        if ((_values != null) && (_values.length > 0) && (_values[0] instanceof Long)) {
+            _insertUpdate.column(_attribute.getSqlColNames().get(0), (Long) _values[0]);
+        } else {
+            try {
+                _insertUpdate.column(_attribute.getSqlColNames().get(0),
+                                     Context.getThreadContext().getCompany().getId());
+            } catch (final EFapsException e) {
+                throw new SQLException("could not fetch company id", e);
             }
-        } catch (final EFapsException e) {
-            CompanyLinkType.LOG.error("update(Object, PreparedStatement, List<Integer>)", e);
         }
-        return 1;
     }
 }

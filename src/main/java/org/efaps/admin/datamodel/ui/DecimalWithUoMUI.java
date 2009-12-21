@@ -76,8 +76,10 @@ public class DecimalWithUoMUI extends AbstractUI
     /**
      * {@inheritDoc}
      */
-    @Override
-    public String getEditHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    @Override()
+    public String getEditHtml(final FieldValue _fieldValue,
+                              final TargetMode _mode)
+        throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
         final Field field = _fieldValue.getField();
@@ -86,15 +88,16 @@ public class DecimalWithUoMUI extends AbstractUI
         UoM uomValue = null;
         if (value instanceof Object[]) {
             final Object[] values =  (Object[]) value;
-            final DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(Context.getThreadContext()
-                            .getLocale());
+            final DecimalFormat formatter
+                = (DecimalFormat) DecimalFormat.getInstance(Context.getThreadContext().getLocale());
             strValue = values[0] instanceof Number ? formatter.format(values[0]) : values[0].toString();
             uomValue = (UoM) values[1];
         }
 
         if (_mode.equals(TargetMode.SEARCH)) {
-            ret.append("<input type=\"text\"").append(" size=\"").append(field.getCols()).append("\" name=\"").append(
-                           field.getName()).append("\" value=\"").append((value != null ? value : "*")).append("\" />");
+            ret.append("<input type=\"text\" size=\"").append(field.getCols())
+                .append("\" name=\"").append(field.getName())
+                .append("\" value=\"").append((value != null ? value : "*")).append("\" />");
         } else {
             ret.append("<input type=\"text\" size=\"").append(field.getCols())
                 .append("\" name=\"").append(field.getName())
@@ -119,8 +122,9 @@ public class DecimalWithUoMUI extends AbstractUI
     /**
      * {@inheritDoc}
      */
-    @Override
-    public String validateValue(final String _value, final Attribute _attribute)
+    @Override()
+    public String validateValue(final String _value,
+                                final Attribute _attribute)
     {
         String ret = null;
         try {
@@ -134,12 +138,14 @@ public class DecimalWithUoMUI extends AbstractUI
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Object format(final Object _object, final String _pattern) throws EFapsException
+    @Override()
+    public Object format(final Object _object,
+                         final String _pattern)
+        throws EFapsException
     {
         final Object ret;
-        final DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(Context.getThreadContext()
-                        .getLocale());
+        final DecimalFormat formatter
+            = (DecimalFormat) DecimalFormat.getInstance(Context.getThreadContext().getLocale());
         formatter.applyPattern(_pattern);
         if (_object instanceof Object[]) {
             final String tmp = formatter.format(((Object[]) _object)[0]);

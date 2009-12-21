@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
@@ -545,8 +546,7 @@ public final class Person extends AbstractUserObject
     {
         if (_count > 0) {
             final Timestamp now = DateTimeUtil.getCurrentTimeFromDB();
-            final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
-                            .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+            final SystemConfiguration kernelConfig = EFapsSystemConfiguration.KERNEL.get();
 
             // Admin_User_LoginTimeBeforeRetry
             final int dif = kernelConfig.getAttributeValueAsInteger("LoginTimeBeforeRetry");

@@ -26,9 +26,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.UUID;
 
 import org.efaps.admin.EFapsClassNames;
+import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.db.Checkout;
 import org.efaps.util.EFapsException;
@@ -62,8 +62,7 @@ public class JavaScriptCompiler extends AbstractStaticSourceCompiler
     @Override
     protected String getCompiledString(final String _oid)
     {
-        final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
-                        .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+        final SystemConfiguration kernelConfig = EFapsSystemConfiguration.KERNEL.get();
         final StringBuilder ret = new StringBuilder();
         final Checkout checkout = new Checkout(_oid);
         try {
@@ -139,8 +138,7 @@ public class JavaScriptCompiler extends AbstractStaticSourceCompiler
                     {
                         // Admin_Program_JavaScriptCompiled_Warn: do we want
                         // warnings?
-                        final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
-                                        .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+                        final SystemConfiguration kernelConfig = EFapsSystemConfiguration.KERNEL.get();
                         if (kernelConfig.getAttributeValueAsBoolean("JavaScriptCompiled_Warn")) {
                             JavaScriptCompiler.LOG.warn(_warning);
                         }

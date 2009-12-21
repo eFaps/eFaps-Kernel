@@ -21,14 +21,15 @@
 package org.efaps.admin.datamodel.attributetype;
 
 /**
- * This class is used for string that contains a formated string. Meaning
- * that the string not only contains value, but also formating information.
- * This makes this class e.g. not effectively searchable with parameters.
+ * This class is used for string that contains a formated {@link String}.
+ * Meaning that the string not only contains value, but also formating
+ * information. This makes this class e.g. not effectively searchable with
+ * parameters.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class FormatedStringType extends StringType
+public class FormatedStringType
+    extends StringType
 {
-
 }

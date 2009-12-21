@@ -20,7 +20,10 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import org.efaps.db.Context;
+import java.sql.SQLException;
+
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 
 /**
  * The class is the attribute type representation for the modified date time of
@@ -29,20 +32,26 @@ import org.efaps.db.Context;
  * @author The eFaps Team
  * @version $Id$
  */
-public class ModifiedType extends DateTimeType
+public class ModifiedType
+    extends DateTimeType
 {
     /**
-     * The instance method appends <i>SYSDATE</i> to the sql statement. Because
-     * This is not a value, the method returns a <i>true</i>, that the value is
-     * hard coded and must not updated via a prepared sql statement.
+     * The instance method appends
+     * {@link org.efaps.db.databases.AbstractDatabase#getCurrentTimeStamp()} to
+     * the SQL statement.
      *
-     * @param _stmt string buffer with the statement
-     * @return always <i>true</i>
+     * @param _insertUpdate insert / update statement
+     * @param _values       values are ignored because current time is set
+     * @throws SQLException if SQL columns for the attribute are not correctly
+     *                      defined
      */
-    @Override
-    public boolean prepareUpdate(final StringBuilder _stmt)
+    @Override()
+    protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
+                           final Attribute _attribute,
+                           final Object... _values)
+        throws SQLException
     {
-        _stmt.append(Context.getDbType().getCurrentTimeStamp());
-        return true;
+        checkSQLColumnSize(_attribute, 1);
+        _insertUpdate.columnWithCurrentTimestamp(_attribute.getSqlColNames().get(0));
     }
 }

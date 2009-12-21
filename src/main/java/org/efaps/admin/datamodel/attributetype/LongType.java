@@ -20,29 +20,25 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.query.CachedResult;
+import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 
 /**
+ * Implements the mapping between values in the database and {@link Long}
+ * values in eFaps.
+ *
  * @author The eFaps Team
  * @version $Id$
  * TODO: description
  */
-public class LongType extends AbstractType
+public class LongType
+    extends AbstractType
 {
-
-    // ///////////////////////////////////////////////////////////////////////////
-
-    /**
-     * @see #getValue
-     * @see #setValue
-     */
-    private long value = 0;
-
     /**
      * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
      * @param _object   object
@@ -51,24 +47,48 @@ public class LongType extends AbstractType
      * @return number of indexes used in the method, if the return value is null an error should be thrown
      * @throws SQLException on error
      */
-    public int update(final Object _Object, final PreparedStatement _stmt, final int _index)
-                    throws SQLException
+    /**
+     * {@inheritDoc}
+     */
+    @Override()
+    protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
+                           final Attribute _attribute,
+                           final Object... _values)
+        throws SQLException
     {
-        _stmt.setLong(_index, this.value);
-        return 1;
+        checkSQLColumnSize(_attribute, 1);
+        _insertUpdate.column(_attribute.getSqlColNames().get(0), this.eval(_values));
     }
 
-    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    protected Long eval(final Object... _values)
     {
-        final Long temp = _rs.getLong(_indexes.get(0).intValue());
-        this.value = (temp != null ? temp.longValue() : 0);
-        return this.value;
+        final Long ret;
+
+        if ((_values == null) || (_values.length == 0) || (_values[0] == null))  {
+            ret = null;
+        } else if ((_values[0] instanceof String) && !"".equals(_values[0])) {
+            ret = Long.parseLong((String) _values[0]);
+        } else if (_values[0] instanceof Number) {
+            ret = (((Number) _values[0]).longValue());
+        } else  {
+            ret = null;
+        }
+
+        return ret;
+    }
+
+    public Object readValue(final Attribute _attribute,
+                            final CachedResult _rs,
+                            final List<Integer> _indexes)
+    {
+        return _rs.getLong(_indexes.get(0).intValue());
     }
 
     /**
      * {@inheritDoc}
      */
-    public Object readValue(final List<Object> _objectList)
+    public Object readValue(final Attribute _attribute,
+                            final List<Object> _objectList)
     {
         Object ret = null;
         if (_objectList.size() < 1) {
@@ -94,23 +114,5 @@ public class LongType extends AbstractType
             ret = object == null ? 0 : object;
         }
         return ret;
-    }
-
-    public void set(final Object[] _value)
-    {
-        if (_value != null) {
-            if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
-                this.value = Long.parseLong((String) _value[0]);
-            } else if (_value[0] instanceof Number) {
-                this.value = (((Number) _value[0]).longValue());
-            }
-        }
-    }
-
-
-    @Override
-    public String toString()
-    {
-        return "" + this.value;
     }
 }

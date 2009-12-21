@@ -25,8 +25,6 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +38,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.query.CachedResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +54,8 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Id$
  */
-public class PasswordType extends StringType
+public class PasswordType
+    extends StringType
 {
 
     /**
@@ -64,19 +64,15 @@ public class PasswordType extends StringType
     private static final Logger LOG = LoggerFactory.getLogger(PasswordType.class);
 
     /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _indexes    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
-     * @throws SQLException on error
+     * The localized string and the internal string value are equal. So the
+     * internal value can be set directly with method {@link #setValue}.
+     *
+     * @param _value new value to set
      */
-    @Override
-    public int update(final Object _object, final PreparedStatement _stmt, final int _indexes)
-                    throws SQLException
+    @Override()
+    protected String eval(final Object... _values)
     {
-        _stmt.setString(_indexes, decryptEncrypt(getValue(), false));
-        return 1;
+        return this.decryptEncrypt(super.eval(_values), false);
     }
 
     /**
@@ -87,7 +83,9 @@ public class PasswordType extends StringType
      * @return value
      */
     @Override()
-    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    public Object readValue(final Attribute _attribute,
+                            final CachedResult _rs,
+                            final List<Integer> _indexes)
     {
         String ret = _rs.getString(_indexes.get(0).intValue());
         if (ret != null) {
@@ -105,7 +103,8 @@ public class PasswordType extends StringType
      * @return list of decrypted passwords
      */
     @Override()
-    public Object readValue(final List<Object> _objectList)
+    public Object readValue(final Attribute _attribute,
+                            final List<Object> _objectList)
     {
         Object ret = null;
         if (_objectList.size() < 1) {
@@ -121,22 +120,6 @@ public class PasswordType extends StringType
             ret = (object == null) ? "" : decryptEncrypt(object.toString().trim(), true);
         }
         return ret;
-    }
-
-    /**
-     * The localised string and the internal string value are equal. So the
-     * internal value can be set directly with method {@link #setValue}.
-     *
-     * @param _value new value to set
-     */
-    @Override
-    public void set(final Object[] _value)
-    {
-        if (_value[0] instanceof String) {
-            setValue((String) _value[0]);
-        } else if (_value[0] != null) {
-            setValue(_value[0].toString());
-        }
     }
 
     /**
