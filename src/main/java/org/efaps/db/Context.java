@@ -1034,7 +1034,7 @@ public final class Context implements INamingBinds
      * @see #DBTYPE
      * @return AbstractDatabase
      */
-    public static AbstractDatabase getDbType()
+    public static AbstractDatabase<?> getDbType()
     {
         return Context.DBTYPE;
     }
