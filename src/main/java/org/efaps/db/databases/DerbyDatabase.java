@@ -361,17 +361,6 @@ public class DerbyDatabase
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override()
-    public DerbyDatabase createView(final Connection _con,
-                                    final String _table)
-        throws SQLException
-    {
-        throw new Error("not implemented");
-    }
-
-    /**
      * Evaluates for given table name all information about the table and returns
      * them as instance of {@link TableInformation}.<br/>
      * This method overwrites the original method because the standard JDBC

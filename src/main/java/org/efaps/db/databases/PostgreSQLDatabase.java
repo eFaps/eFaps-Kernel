@@ -391,24 +391,6 @@ public class PostgreSQLDatabase
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PostgreSQLDatabase createView(final Connection _con,
-                                         final String _view)
-        throws SQLException
-    {
-        final Statement stmt = _con.createStatement();
-        try {
-            stmt.executeUpdate(new StringBuilder().append("create view ").append(_view).append(" as select 1")
-                            .toString());
-        } finally {
-            stmt.close();
-        }
-        return this;
-    }
-
-    /**
      * Overwrites the original method to specify SQL statement
      * {@link #SQL_UNIQUE_KEYS} as replacement because the JDBC driver for
      * PostgreSQL does not handle matching table names.
