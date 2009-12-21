@@ -70,7 +70,7 @@ public class Event
     /**
      * Index of the trigger.
      */
-    private final String index;
+    private final long index;
 
     /**
      * Name of the trigger.
@@ -99,7 +99,11 @@ public class Event
         this.event = _event;
         this.program = _program;
         this.method = (_method == null) ? "execute" : _method;
-        this.index = _index;
+        if (_index == null)  {
+            this.index = 0;
+        } else  {
+            this.index = Long.valueOf(_index);
+        }
     }
 
     /**
@@ -132,12 +136,12 @@ public class Event
                 update = new Update((String) query.get("OID"));
             } else {
                 update = new Insert(this.event.name);
-                update.add("Abstract", "" + typeID);
+                update.add("Abstract", typeID);
                 update.add("IndexPosition", this.index);
                 update.add("Name", this.name);
             }
             query.close();
-            update.add("JavaProg", "" + progID);
+            update.add("JavaProg", progID);
             update.add("Method", this.method);
             update.executeWithoutAccessCheck();
 
