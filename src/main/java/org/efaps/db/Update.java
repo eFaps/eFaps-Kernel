@@ -30,6 +30,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
@@ -44,8 +47,6 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
@@ -171,8 +172,13 @@ public class Update
         boolean ret = false;
         final List<EventDefinition> triggers = getInstance().getType().getEvents(_eventtype);
         if (triggers != null) {
+            // convert the map in a more simple map (following exsiting api)
+            final Map<Attribute, Object[]> values = new HashMap<Attribute, Object[]>();
+            for (final Entry<Attribute, Value> entry : this.trigRelevantAttr2values.entrySet()) {
+                values.put(entry.getKey(), entry.getValue().getValues());
+            }
             final Parameter parameter = new Parameter();
-            parameter.put(ParameterValues.NEW_VALUES, this.trigRelevantAttr2values);
+            parameter.put(ParameterValues.NEW_VALUES, values);
             parameter.put(ParameterValues.INSTANCE, getInstance());
             for (final EventDefinition evenDef : triggers) {
                 evenDef.execute(parameter);
