@@ -20,14 +20,18 @@
 
 package org.efaps.admin.datamodel;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.efaps.db.query.CachedResult;
+import org.efaps.db.wrapper.SQLInsert;
+import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.util.EFapsException;
 
 /**
+ * Classes which implements this interface are used to handle the mapping of
+ * attributes between eFaps and the database.
+ *
  * @author The eFaps Team
  * @version $Id$
  */
@@ -36,76 +40,58 @@ public interface IAttributeType
     /**
      * The method prepares the statement for update the object in the database.
      *
-     * @param _stmt string buffer to append the statement
-     * @return <i>true</i> if only a preparation is needed, otherwise
-     *         <i>false</i> if the value must be set
+     * @param _update       SQL update statement
+     * @param _attribute    attribute which is updated
+     * @param _values       new object value to set; values are localized and
+     *                      are coming from the user interface
+     * @throws SQLException if preparation for the update failed
      */
-    boolean prepareUpdate(final StringBuilder _stmt);
+    void prepareUpdate(final SQLUpdate _update,
+                       final Attribute _attribute,
+                       final Object... _values)
+        throws SQLException;
 
     /**
      * The method prepares the statement for insert the object in the database.
      *
-     * @param _stmt string buffer to append the statement
-     * @return <i>true</i> if only a preparation is needed, otherwise
-     *         <i>false</i> if the value must be set
+     * @param _insert       SQL insert statement
+     * @param _attribute    attribute which is inserted
+     * @param _values       new object value to set; values are localized and
+     *                      are coming from the user interface
+     * @throws SQLException if preparation for the insert failed
      */
-    boolean prepareInsert(final StringBuilder _stmt);
+    void prepareInsert(final SQLInsert _insert,
+                       final Attribute _attribute,
+                       final Object... _values)
+        throws SQLException;
 
     /**
-     * The method updates in the statement the value.
-     *
-     * @param _object object
-     * @param _stmt SQL statement to update the value
-     * @param _index index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null
-     *         an error should be thrown
-     * @throws SQLException on error
-     */
-    int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException;
-
-    /**
-     * Method is used to read the values, retrieved from an jdbc resultset and
+     * Method is used to read the values, retrieved from an JDBC result set and
      * put into the given parameter <code>_objectList</code>. This is
      * necessary, because only in the different instances of this interface
      * it can be determined what to do with the objects from the database. e.g.
      * in case of DateTimeType the values will be cased into a DateTime Object
-     * and in case of a PersonLinkType a Person or Role instance will be returned.
-     * This method is called from the {@link org.efaps.db.PrintQuery}.
+     * and in case of a PersonLinkType a Person or Role instance will be
+     * returned. This method is called from the {@link org.efaps.db.PrintQuery}.
      *
-     * @param _objectList list of objects from the eFaps Database
+     * @param _attribute    related attribute which is read
+     * @param _objectList   list of objects from the eFaps Database
      * @return Object as needed for eFaps
      * @throws EFapsException on error
      */
-    Object readValue(final List<Object> _objectList) throws EFapsException;
+    Object readValue(final Attribute _attribute,
+                     final List<Object> _objectList)
+        throws EFapsException;
 
     /**
-     * @param _rs cached result from the JDBC select statement
-     * @param _indexes index in the result set
+     * @param _attribute    related attribute which is read
+     * @param _rs cached    result from the JDBC select statement
+     * @param _indexes      index in the result set
      * @throws Exception on error
      * @return Object
      */
-    Object readValue(final CachedResult _rs, final List<Integer> _indexes) throws Exception;
-
-    /**
-     * This methods sets the internal value with a string coming from the user
-     * interface. The string is a localized value!
-     *
-     * @param _values new object value to set
-     * @throws EFapsException if values could not be set
-     */
-    void set(final Object[] _values) throws EFapsException;
-
-    /**
-     * The instance method gets the attribute for this attribute type interface.
-     *
-     * @return attribute for this attribute value representing
-     */
-    Attribute getAttribute();
-
-    /**
-     * The instance method sets the field for this attribute type interface.
-     *
-     * @param _attribute attribute
-     */
-    void setAttribute(final Attribute _attribute);
+    Object readValue(final Attribute _attribute,
+                     final CachedResult _rs,
+                     final List<Integer> _indexes)
+        throws Exception;
 }

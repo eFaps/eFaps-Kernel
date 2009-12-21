@@ -22,6 +22,7 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.util.List;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
 import org.efaps.db.query.CachedResult;
@@ -32,19 +33,21 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * TODO: description
  */
-public class PersonLinkType extends AbstractLinkType
+public class PersonLinkType
+    extends AbstractLinkType
 {
-
     /**
      * @param _rs
      * @param _index
      */
-    @Override
-    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    @Override()
+    public Object readValue(final Attribute _attribute,
+                            final CachedResult _rs,
+                            final List<Integer> _indexes)
     {
         Object ret = null;
 
-        final Object userId = super.readValue(_rs, _indexes);
+        final Object userId = super.readValue(_attribute, _rs, _indexes);
         if (userId != null) {
             try {
                 long id = 0;
@@ -69,11 +72,13 @@ public class PersonLinkType extends AbstractLinkType
      * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
      * @param _objectList List of Objects
      * @return DateTime
-     * TODO throw error if more than one value is given
      * @throws EFapsException on error
+     * TODO: throw error if more than one value is given
      */
-    @Override
-    public Object readValue(final List<Object> _objectList) throws EFapsException
+    @Override()
+    public Object readValue(final Attribute _attribute,
+                            final List<Object> _objectList)
+        throws EFapsException
     {
         Object ret = null;
         final Object obj = _objectList.get(0);
@@ -89,14 +94,6 @@ public class PersonLinkType extends AbstractLinkType
                 ret = Role.get(id);
             }
         }
-        setValue(ret);
         return ret;
-    }
-
-
-    @Override
-    public String toString()
-    {
-        return "" + getValue();
     }
 }

@@ -24,10 +24,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.efaps.admin.EFapsClassNames;
-import org.efaps.admin.common.SystemConfiguration;
+import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
@@ -516,9 +515,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
         Menu ret = null;
         if (this.targetDefaultMenu) {
             // reads the Value from "Common_Main_DefaultMenu"
-            final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
-                            .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
-            final String menuname = kernelConfig.getAttributeValue("DefaultMenu");
+            final String menuname = EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DefaultMenu");
 
             if (!"none".equals(menuname)) {
                 if (this.targetMenu == null) {

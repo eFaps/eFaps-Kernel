@@ -175,7 +175,7 @@ public class Checkin
             // set file name and length in the eFaps object
             final Update update = new Update(super.getInstance());
             update.add(attrFileName, fileName);
-            update.add(attrFileLength, "" + size);
+            update.add(attrFileLength, size);
             update.executeWithoutAccessCheck();
             ok = true;
         } catch (final EFapsException e) {

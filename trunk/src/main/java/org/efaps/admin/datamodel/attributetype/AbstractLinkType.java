@@ -20,13 +20,13 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.query.CachedResult;
+import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.EFapsException;
 
 /**
@@ -35,28 +35,27 @@ import org.efaps.util.EFapsException;
  *          TODO: till now only integer / Long ID's are allowed; this must be
  *          changed
  */
-public abstract class AbstractLinkType extends AbstractType
+public abstract class AbstractLinkType
+    extends AbstractType
 {
-    /**
-     * @see #getValue
-     * @see #setValue
-     */
-    private Object value = null;
-
     /**
      * {@inheritDoc}
      */
-    public void set(final Object[] _value)
+    protected Long eval(final Object[] _value)
     {
-        if (_value != null) {
-            if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
-                this.value = (Long.parseLong((String) _value[0]));
-            } else if (_value[0] instanceof Long) {
-                this.value = _value[0];
-            } else if (_value[0] instanceof Integer) {
-                this.value = ((Integer) _value[0]).longValue();
-            }
+        final Long ret;
+        if (_value == null) {
+            ret = null;
+        } else  if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
+            ret = Long.parseLong((String) _value[0]);
+        } else if (_value[0] instanceof Long) {
+            ret = (Long) _value[0];
+        } else if (_value[0] instanceof Integer) {
+            ret = ((Integer) _value[0]).longValue();
+        } else  {
+            ret = null;
         }
+        return ret;
     }
 
     /**
@@ -71,27 +70,24 @@ public abstract class AbstractLinkType extends AbstractType
      *         an error should be thrown
      * @throws SQLException on error
      */
-    public int update(final Object _object,
-                      final PreparedStatement _stmt,
-                      final int _index)
+    @Override()
+    protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
+                           final Attribute _attribute,
+                           final Object... _values)
         throws SQLException
     {
-        if (this.value == null) {
-            _stmt.setNull(_index, Types.INTEGER);
-        } else {
-            _stmt.setObject(_index, getValue());
-        }
-        return 1;
+        checkSQLColumnSize(_attribute, 1);
+        _insertUpdate.column(_attribute.getSqlColNames().get(0), this.eval(_values));
     }
 
     /**
      * {@inheritDoc}
      */
-    public Object readValue(final CachedResult _rs,
+    public Object readValue(final Attribute _attribute,
+                            final CachedResult _rs,
                             final List<Integer> _indexes)
     {
-        this.value = (_rs.getObject(_indexes.get(0)));
-        return this.value;
+        return _rs.getLong(_indexes.get(0));
     }
 
     /**
@@ -101,42 +97,20 @@ public abstract class AbstractLinkType extends AbstractType
      * @return Object
      * @throws EFapsException on error
      */
-    public Object readValue(final List<Object> _objectList)
+    public Object readValue(final Attribute _attribute,
+                            final List<Object> _objectList)
         throws EFapsException
     {
         Object ret = null;
         if (_objectList.size() > 0) {
-            this.value = _objectList.get(0);
             if (_objectList.size() > 1) {
                 final List<Object> list = new ArrayList<Object>();
                 ret = list;
                 list.addAll(_objectList);
             } else {
-                ret = this.value;
+                ret = _objectList.get(0);
             }
         }
         return ret;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #value}.
-     *
-     * @return the value of the instance variable {@link #value}.
-     * @see #value
-     * @see #setValue
-     */
-    protected Object getValue()
-    {
-        return this.value;
-    }
-
-    /**
-     * Setter method for instance variable {@link #value}.
-     *
-     * @param _value value for instance variable {@link #value}
-     */
-    protected void setValue(final Object _value)
-    {
-        this.value = _value;
     }
 }

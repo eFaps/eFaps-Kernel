@@ -20,51 +20,92 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
+import java.sql.SQLException;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.IAttributeType;
+import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
+import org.efaps.db.wrapper.SQLInsert;
+import org.efaps.db.wrapper.SQLUpdate;
 
 /**
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractType implements IAttributeType
+public abstract class AbstractType
+    implements IAttributeType
 {
-    private Attribute attribute = null;
-
-    public boolean prepareInsert(final StringBuilder _stmt)
-    {
-        return prepareUpdate(_stmt);
-    }
-
-    public boolean prepareUpdate(final StringBuilder _stmt)
-    {
-        _stmt.append("?");
-        return false;
-    }
-
-
     /**
-     * This is the getter method for the field variable {@link #attribute}.
      *
-     * @return value of field variable {@link #attribute}
-     * @see #attribute
-     * @see #setAttribute
+     * @param _insert       SQL insert statement
+     * @param _attribute    attribute which is updated
+     * @param _values       new object value to set; values are localized and
+     *                      are coming from the user interface
+     * @throws SQLException if the insert preparation failed
+     * @see #prepare(AbstractSQLInsertUpdate, Attribute, Object...)
      */
-    public Attribute getAttribute()
+    public void prepareInsert(final SQLInsert _insert,
+                              final Attribute _attribute,
+                              final Object... _values)
+        throws SQLException
     {
-        return this.attribute;
+        this.prepare(_insert, _attribute, _values);
     }
 
     /**
-     * This is the setter method for the field variable {@link #attribute}.
      *
-     * @param _field new value for field variable {@link #attribute}
-     * @see #attribute
-     * @see #getAttribute
+     * @param _update       SQL update statement
+     * @param _attribute    attribute which is updated
+     * @param _values       new object value to set; values are localized and
+     *                      are coming from the user interface
+     * @throws SQLException if the update preparation failed
+     * @see #prepare(AbstractSQLInsertUpdate, Attribute, Object...)
      */
-    public void setAttribute(final Attribute _attribute)
+    public void prepareUpdate(final SQLUpdate _update,
+                              final Attribute _attribute,
+                              final Object... _values)
+        throws SQLException
     {
-        this.attribute = _attribute;
+        this.prepare(_update, _attribute, _values);
     }
 
+    /**
+     *
+     *
+     * @param _insertUpdate SQL insert / update statement
+     * @param _attribute    SQL update statement
+     * @param _values       new object value to set; values are localized and
+     *                      are coming from the user interface
+     * @throws SQLException always, because the method must be overwritten
+     */
+    protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
+                           final Attribute _attribute,
+                           final Object... _values)
+        throws SQLException
+    {
+        throw new SQLException("not implemented for " + this.getClass());
+    }
+
+    /**
+     * Checks for expected <code>_size</code> of SQL columns for
+     * <code>_attribute</code>.
+     *
+     * @param _attribute    attribute to check
+     * @param _size         expected size of SQL columns
+     * @throws SQLException if the size of the SQL columns in
+     *                      <code>_attribute</code> is not the expected
+     *                      <code>_size</code>
+     */
+    public void checkSQLColumnSize(final Attribute _attribute,
+                                   final int _size)
+        throws SQLException
+    {
+        if ((_attribute.getSqlColNames() == null) || _attribute.getSqlColNames().isEmpty())  {
+            throw new SQLException("no SQL column for attribute defined");
+        }
+        if (_attribute.getSqlColNames().size() > _size)  {
+            throw new SQLException("more than " + _size + " SQL columns defined (is "
+                    + _attribute.getSqlColNames().size() + ")");
+        }
+    }
 }

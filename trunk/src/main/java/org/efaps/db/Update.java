@@ -20,7 +20,6 @@
 
 package org.efaps.db;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,13 +30,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
-import org.efaps.admin.datamodel.IAttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
@@ -47,7 +42,10 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
@@ -78,17 +76,17 @@ public class Update
      *
      * @see #getExpr4Tables
      */
-    private final Map<SQLTable, List<IAttributeType>> expr4Tables = new Hashtable<SQLTable, List<IAttributeType>>();
+    private final Map<SQLTable, Map<Attribute, Value>> expr4Tables = new Hashtable<SQLTable, Map<Attribute, Value>>();
 
     /**
-     * Mapping of attribute name to attribute type.
+     * Mapping of attribute to values.
      */
-    private final Map<String, IAttributeType> mapAttr2Value = new HashMap<String, IAttributeType>();
+    private final Map<Attribute, Value> attr2values = new HashMap<Attribute, Value>();
 
     /**
-     * Mapping of attribute to value.
+     * Mapping of attribute to values.
      */
-    private final Map<Attribute, Object> values = new HashMap<Attribute, Object>();
+    private final Map<Attribute, Value> trigRelevantAttr2values = new HashMap<Attribute, Value>();
 
     /**
      * @param _type     Type to be updated
@@ -174,7 +172,7 @@ public class Update
         final List<EventDefinition> triggers = getInstance().getType().getEvents(_eventtype);
         if (triggers != null) {
             final Parameter parameter = new Parameter();
-            parameter.put(ParameterValues.NEW_VALUES, this.values);
+            parameter.put(ParameterValues.NEW_VALUES, this.trigRelevantAttr2values);
             parameter.put(ParameterValues.INSTANCE, getInstance());
             for (final EventDefinition evenDef : triggers) {
                 evenDef.execute(parameter);
@@ -185,12 +183,14 @@ public class Update
     }
 
     /**
-     * @param _attr name of attribute to update
-     * @param _values attribute value
+     * @param _attr     name of attribute to update
+     * @param _values   attribute values
      * @throws EFapsException on error
      * @return Status
      */
-    public Status add(final String _attr, final Object... _values) throws EFapsException
+    public Status add(final String _attr,
+                      final Object... _values)
+        throws EFapsException
     {
         final Attribute attr = getInstance().getType().getAttribute(_attr);
         if (attr == null) {
@@ -205,7 +205,9 @@ public class Update
      * @throws EFapsException on error
      * @return Status
      */
-    public Status add(final Attribute _attr, final Object... _values) throws EFapsException
+    public Status add(final Attribute _attr,
+                      final Object... _values)
+        throws EFapsException
     {
         return add(_attr, true, _values);
     }
@@ -217,7 +219,9 @@ public class Update
      * @return Status
      * @throws EFapsException on error
      */
-    protected Status add(final Attribute _attr, final boolean _triggerRelevant, final Object... _value)
+    protected Status add(final Attribute _attr,
+                         final boolean _triggerRelevant,
+                         final Object... _value)
         throws EFapsException
     {
         Status ret = Update.STATUSOK;
@@ -231,30 +235,19 @@ public class Update
             }
         }
 
-        List<IAttributeType> expressions = getExpr4Tables().get(_attr.getTable());
+        final Value value = new Value(_attr, _value);
 
+        Map<Attribute, Value> expressions = this.expr4Tables.get(_attr.getTable());
         if (expressions == null) {
-            expressions = new ArrayList<IAttributeType>();
-            getExpr4Tables().put(_attr.getTable(), expressions);
+            expressions = new HashMap<Attribute, Value>();
+            this.expr4Tables.put(_attr.getTable(), expressions);
         }
+        expressions.put(_attr, value);
 
-        // if the attribute was added allready overwrite it
-        if (this.mapAttr2Value.containsKey(_attr.getName())) {
-            for (final IAttributeType iattr : expressions) {
-                if (iattr.getAttribute().getName().equals(_attr.getName())) {
-                    iattr.set(_value);
-                }
-            }
-        } else {
-            final IAttributeType attrType = _attr.newInstance();
-            attrType.setAttribute(_attr);
-            attrType.set(_value);
-            expressions.add(attrType);
-            this.mapAttr2Value.put(_attr.getName(), attrType);
-        }
+        this.attr2values.put(_attr, value);
 
         if (_triggerRelevant) {
-            this.values.put(_attr, _value);
+            this.trigRelevantAttr2values.put(_attr, value);
         }
         return ret;
     }
@@ -288,9 +281,9 @@ public class Update
 
                 boolean testNeeded = false;
                 for (final Attribute attr : uk.getAttributes()) {
-                    final IAttributeType value = this.mapAttr2Value.get(attr.getName());
+                    final Value value = this.attr2values.get(attr.getName());
                     if (value != null) {
-                        query.addWhereAttrEqValue(attr, value.toString());
+                        query.addWhereAttrEqValue(attr, value.values[0].toString());
                         testNeeded = true;
                     }
                 }
@@ -378,21 +371,14 @@ public class Update
                     throw new EFapsException(getClass(), "executeWithoutTrigger.UniqueKeyError");
                 }
 
-                for (final Entry<SQLTable, List<IAttributeType>> entry : getExpr4Tables().entrySet()) {
-                    final SQLTable table = entry.getKey();
-                    final List<IAttributeType> expressions = entry.getValue();
-
-                    PreparedStatement stmt = null;
-                    try {
-                        stmt = createOneStatement(con, table, expressions);
-                        final int rows = stmt.executeUpdate();
-                        if (rows == 0) {
-                            throw new EFapsException(getClass(), "executeWithoutTrigger.ObjectDoesNotExists",
-                                            this.instance);
-                        }
-                    } finally {
-                        stmt.close();
+                for (final Entry<SQLTable, Map<Attribute, Value>> entry : this.expr4Tables.entrySet()) {
+                    final SQLUpdate update = Context.getDbType().newUpdate(entry.getKey().getSqlTable(),
+                                                                           entry.getKey().getSqlColId(),
+                                                                           this.instance.getId());
+                    for (final Value value : entry.getValue().values()) {
+                        value.attribute.prepareDBUpdate(update, value.values);
                     }
+                    update.execute(con.getConnection());
                 }
                 con.commit();
             } catch (final SQLException e) {
@@ -409,57 +395,6 @@ public class Update
     }
 
     /**
-     * Method to create the sql statement for this update.
-     * @param _con          connection resource
-     * @param _table        table
-     * @param _expressions  list of expressions
-     * @return PreparedStatement
-     * @throws SQLException on error
-     * @throws EFapsException on error
-     */
-    private PreparedStatement createOneStatement(final ConnectionResource _con, final SQLTable _table,
-                                                 final List<IAttributeType> _expressions)
-        throws SQLException, EFapsException
-    {
-        final List<IAttributeType> updateAttr = new ArrayList<IAttributeType>();
-        final StringBuilder cmd = new StringBuilder();
-        cmd.append("update ").append(_table.getSqlTable()).append(" set ");
-        boolean first = true;
-        for (final IAttributeType attrType : _expressions) {
-            boolean added = false;
-            for (final String sqColumn : attrType.getAttribute().getSqlColNames()) {
-                if (first) {
-                    first = false;
-                } else {
-                    cmd.append(",");
-                }
-                cmd.append(sqColumn).append("=");
-                if (!attrType.prepareUpdate(cmd)) {
-                    if (!added) {
-                        updateAttr.add(attrType);
-                        added = true;
-                    }
-                }
-            }
-        }
-        cmd.append(" where ").append(_table.getSqlColId()).append("=").append(getId()).append("");
-
-        if (Update.LOG.isDebugEnabled()) {
-            Update.LOG.debug(cmd.toString());
-        }
-
-        final PreparedStatement stmt = _con.getConnection().prepareStatement(cmd.toString());
-        int index = 1;
-        for (final IAttributeType attrType : updateAttr) {
-            if (Update.LOG.isDebugEnabled()) {
-                Update.LOG.debug(attrType.toString());
-            }
-            index += attrType.update(null, stmt, index);
-        }
-        return stmt;
-    }
-
-    /**
      * The instance method returns the Type instance of {@link #instance}.
      *
      * @return type of {@link #instance}
@@ -468,6 +403,14 @@ public class Update
     protected Type getType()
     {
         return getInstance().getType();
+    }
+
+    /**
+     * @return the expr4Tables
+     */
+    public Map<SQLTable, Map<Attribute, Value>> getExpr4Tables()
+    {
+        return this.expr4Tables;
     }
 
     /**
@@ -503,18 +446,6 @@ public class Update
     protected void setInstance(final Instance _instance)
     {
         this.instance = _instance;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #tableNames}.
-     *
-     * @return value of instance variable {@link #tableNames}
-     * @see #tableNames
-     * @see #setTableNames
-     */
-    protected Map<SQLTable, List<IAttributeType>> getExpr4Tables()
-    {
-        return this.expr4Tables;
     }
 
     /**
@@ -648,7 +579,35 @@ public class Update
             return new ToStringBuilder(this).append("AttributeName", getAttribute().getName())
                 .append(" Value", getValue()).append(" ReturnValue:", getReturnValue()).toString();
         }
-
     }
 
+    protected static class Value
+    {
+        final Attribute attribute;
+
+        final Object[] values;
+
+        private Value(final Attribute _attribute,
+                      final Object... _values)
+        {
+            this.attribute = _attribute;
+            this.values = _values;
+        }
+
+        /**
+         * @return the attribute
+         */
+        public Attribute getAttribute()
+        {
+            return this.attribute;
+        }
+
+        /**
+         * @return the values
+         */
+        public Object[] getValues()
+        {
+            return this.values;
+        }
+    }
 }

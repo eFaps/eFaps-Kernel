@@ -20,26 +20,23 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.query.CachedResult;
+import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 
 /**
+ * Implements the mapping between values in the database and {@link Double}
+ * values in eFaps.
+ *
  * @author The eFaps Team
  * @version $Id$
  */
-public class RealType extends AbstractType
+public class RealType
+    extends AbstractType
 {
-
-    /**
-     * The instance method stores the value for this real type.
-     *
-     * @see #getValue
-     * @see #setValue
-     */
-    private double value = 0;
     /**
      * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
      * @param _object   object
@@ -48,26 +45,49 @@ public class RealType extends AbstractType
      * @return number of indexes used in the method, if the return value is null an error should be thrown
      * @throws SQLException on error
      */
-    public int update(final Object _object, final PreparedStatement _stmt, final int _indexes)
-                    throws SQLException
+    @Override()
+    protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
+                           final Attribute _attribute,
+                           final Object... _values)
+        throws SQLException
     {
-        _stmt.setDouble(_indexes, this.value);
-        return 1;
+        checkSQLColumnSize(_attribute, 1);
+        _insertUpdate.column(_attribute.getSqlColNames().get(0), eval(_values));
     }
 
-    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    protected Double eval(final Object[] _value)
     {
-        this.value = (_rs.getDouble(_indexes.get(0).intValue()));
+        final Double ret;
+
+        if (_value == null) {
+            ret = null;
+        } else if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
+            ret = (Double.parseDouble((String) _value[0]));
+        } else if (_value[0] instanceof Number) {
+            ret = (((Number) _value[0]).doubleValue());
+        } else  {
+            ret = null;
+        }
+
+        return ret;
+    }
+
+    public Object readValue(final Attribute _attribute,
+                            final CachedResult _rs,
+                            final List<Integer> _indexes)
+    {
         return _rs.getDouble(_indexes.get(0).intValue());
     }
 
     /**
-     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
-     * @param _objectList List of Objects
-     * @return DateTime
+     * @param _attribute    related eFaps attribute
+     * @param _objectList   list of objects
+     * @return double value (if a {@link Number} value is defined on the first
+     *         index); otherwise <code>null</code>
      * TODO throw error if more than one value is given
      */
-    public Object readValue(final List<Object> _objectList)
+    public Object readValue(final Attribute _attribute,
+                            final List<Object> _objectList)
     {
         Double ret = null;
         final Object obj = _objectList.get(0);
@@ -76,24 +96,6 @@ public class RealType extends AbstractType
         } else if (obj != null) {
             ret = Double.parseDouble(obj.toString());
         }
-        this.value = ret;
         return ret;
-    }
-
-    public void set(final Object[] _value)
-    {
-        if (_value != null) {
-            if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
-                this.value = (Double.parseDouble((String) _value[0]));
-            } else if (_value[0] instanceof Number) {
-                this.value = (((Number) _value[0]).doubleValue());
-            }
-        }
-    }
-
-    @Override
-    public String toString()
-    {
-        return "" + this.value;
     }
 }

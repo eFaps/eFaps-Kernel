@@ -73,12 +73,12 @@ public class AttributeType
      * @see #getClassRepr()
      * @see #setClassRepr(String)
      */
-    private Class<?> classRepr = null;
+    private IAttributeType dbAttrType;
 
     /**
      * The instance variable stores the instance for the user interface.
      */
-    private UIInterface ui = null;
+    private UIInterface uiAttrType;
 
     /**
      * The instance variable store the behavior, if an update is made. If the
@@ -101,72 +101,55 @@ public class AttributeType
      * class {@link Attribute} must have a name (parameter <i>_name</i>) and an
      * identifier (parameter <i>_id</i>).
      *
-     * @param _id id of the attribute
-     * @param _uuid universal unique identifier
-     * @param _name name of the instance
+     * @param _id               id of the attribute
+     * @param _uuid             universal unique identifier
+     * @param _name             name of the instance
+     * @param _dbAttrTypeName   name of the database attribute type
+     * @param _uiAttrTypeName   name of the user interface attribute type
+     * @throws EFapsException if attribute type for the data model or user
+     *                        interface could not be initialized
      */
-    protected AttributeType(final long _id, final String _uuid, final String _name)
+    protected AttributeType(final long _id,
+                            final String _uuid,
+                            final String _name,
+                            final String _dbAttrTypeName,
+                            final String _uiAttrTypeName)
+        throws EFapsException
     {
         super(_id, _uuid, _name);
+
+        try {
+            this.dbAttrType = (IAttributeType) Class.forName(_dbAttrTypeName).newInstance();
+        } catch (final ClassNotFoundException e) {
+            throw new EFapsException(getClass(), "setUIClass.ClassNotFoundException", e, _uiAttrTypeName);
+        } catch (final InstantiationException e) {
+            throw new EFapsException(getClass(), "newInstance.InstantiationException", e);
+        } catch (final IllegalAccessException e) {
+            throw new EFapsException(getClass(), "newInstance.IllegalAccessException", e);
+        }
+
+        try {
+            this.uiAttrType = (UIInterface) Class.forName(_uiAttrTypeName).newInstance();
+        } catch (final ClassNotFoundException e) {
+            throw new EFapsException(getClass(), "setUIClass.ClassNotFoundException", e, _uiAttrTypeName);
+        } catch (final InstantiationException e) {
+            throw new EFapsException(getClass(), "setUIClass.InstantiationException", e, _uiAttrTypeName);
+        } catch (final IllegalAccessException e) {
+            throw new EFapsException(getClass(), "setUIClass.IllegalAccessException", e, _uiAttrTypeName);
+        } catch (final ClassCastException e) {
+            throw new EFapsException(getClass(), "setUIClass.ClassCastException", e, _uiAttrTypeName);
+        }
     }
 
     /**
      *
      *
      * @return new instance of the class representation
-     * @throws EFapsException if instance for {@link #classRepr} could not be
-     *                        initiated
-     * @see #classRepr
+     * @see #dbAttrType
      */
-    public IAttributeType newInstance()
-        throws EFapsException
+    public IAttributeType getDbAttrType()
     {
-        IAttributeType ret = null;
-        try {
-            ret = (IAttributeType) this.classRepr.newInstance();
-        } catch (final InstantiationException e) {
-            throw new EFapsException(getClass(), "newInstance.InstantiationException", e);
-        } catch (final IllegalAccessException e) {
-            throw new EFapsException(getClass(), "newInstance.IllegalAccessException", e);
-        }
-        return ret;
-    }
-
-    /**
-     * The parameter <i>_classRepr</i> is the name of the class representation.
-     * The method searches for the class and stores the class representation in
-     * instance variable {@link #classRepr}.
-     *
-     * @param _classRepr class name of the class representation
-     * @throws ClassNotFoundException if class <code>_classRepr</code> could
-     *                                not be found
-     * @see #classRepr
-     * @see #setClassRepr(Class)
-     */
-    private void setClassRepr(final String _classRepr)
-        throws ClassNotFoundException
-    {
-        this.classRepr = Class.forName(_classRepr);
-    }
-
-    /**
-     * @param _className    name of the user interface class
-     * @throws EFapsException if class could not be found or not instantiated
-     */
-    private void setUI(final String _className)
-        throws EFapsException
-    {
-        try {
-            setUI((UIInterface) Class.forName(_className).newInstance());
-        } catch (final ClassNotFoundException e) {
-            throw new EFapsException(getClass(), "setUIClass.ClassNotFoundException", e, _className);
-        } catch (final InstantiationException e) {
-            throw new EFapsException(getClass(), "setUIClass.InstantiationException", e, _className);
-        } catch (final IllegalAccessException e) {
-            throw new EFapsException(getClass(), "setUIClass.IllegalAccessException", e, _className);
-        } catch (final ClassCastException e) {
-            throw new EFapsException(getClass(), "setUIClass.ClassCastException", e, _className);
-        }
+        return this.dbAttrType;
     }
 
     /**
@@ -178,31 +161,19 @@ public class AttributeType
      */
     public Class<?> getClassRepr()
     {
-        return this.classRepr;
+        return this.dbAttrType.getClass();
     }
 
     /**
-     * This is the getter method for instance variable {@link #ui}.
+     * This is the getter method for instance variable {@link #uiAttrType}.
      *
-     * @return value of instance variable {@link #ui}
-     * @see #ui
+     * @return value of instance variable {@link #uiAttrType}
+     * @see #uiAttrType
      * @see #setUI(Class)
      */
     public UIInterface getUI()
     {
-        return this.ui;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #ui}.
-     *
-     * @param _ui new value for instance variable {@link #ui}
-     * @see #ui
-     * @see #getUI
-     */
-    private void setUI(final UIInterface _ui)
-    {
-        this.ui = _ui;
+        return this.uiAttrType;
     }
 
     /**
@@ -237,7 +208,8 @@ public class AttributeType
     {
         return new ToStringBuilder(this)
             .appendSuper(super.toString())
-            .append("classRepr", this.classRepr)
+            .append("dbAttrType", this.dbAttrType)
+            .append("uiAttrType", this.uiAttrType)
             .append("alwaysUpdate", this.alwaysUpdate)
             .append("createUpdate", this.createUpdate)
             .toString();
@@ -328,9 +300,11 @@ public class AttributeType
                                             + uuid + "')");
                         }
 
-                        final AttributeType attrType = new AttributeType(id, uuid, name);
-                        attrType.setClassRepr(rs.getString(4).trim());
-                        attrType.setUI(rs.getString(5).trim());
+                        final AttributeType attrType = new AttributeType(id,
+                                                                         uuid,
+                                                                         name,
+                                                                         rs.getString(4).trim(),
+                                                                         rs.getString(5).trim());
                         if (rs.getInt(6) != 0) {
                             attrType.alwaysUpdate = true;
                         }
@@ -348,8 +322,6 @@ public class AttributeType
                     }
                 }
                 con.commit();
-            } catch (final ClassNotFoundException e) {
-                throw new CacheReloadException("could not read attribute types", e);
             } catch (final SQLException e) {
                 throw new CacheReloadException("could not read attribute types", e);
             } catch (final EFapsException e) {

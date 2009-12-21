@@ -20,7 +20,11 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import org.efaps.db.Context;
+import java.sql.SQLException;
+
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.db.wrapper.SQLInsert;
+import org.efaps.db.wrapper.SQLUpdate;
 
 /**
  * The class is the attribute type representation for the created date time of a
@@ -29,21 +33,43 @@ import org.efaps.db.Context;
  * @author The eFaps Team
  * @version $Id$
  */
-public class CreatedType extends DateTimeType
+public class CreatedType
+    extends DateTimeType
 {
+    /**
+     * The instance method appends
+     * {@link org.efaps.db.databases.AbstractDatabase#getCurrentTimeStamp()} to
+     * the SQL statement.
+     *
+     * @param _insert   insert statement
+     * @param _values   ignored, because always set to current time
+     * @throws SQLException if SQL columns for the attribute are not correctly
+     *                      defined
+     */
+    @Override()
+    public void prepareInsert(final SQLInsert _insert,
+                              final Attribute _attribute,
+                              final Object... _values)
+        throws SQLException
+    {
+        checkSQLColumnSize(_attribute, 1);
+        _insert.columnWithCurrentTimestamp(_attribute.getSqlColNames().get(0));
+    }
 
     /**
-     * The instance method appends <i>SYSDATE</i> to the sql statement. Because
-     * This is not a value, the method returns a <i>true</i>, that the value is
-     * hard coded and must not updated via a prepared sql statement.
+     * An update of a type is not allowed and therefore a {@link SQLException}
+     * is always thrown.
      *
-     * @param _stmt string buffer with the statement
-     * @return always <i>true</i>
+     * @param _update   update SQL statement; ignored
+     * @param _values   ignored
+     * @throws SQLException always because update is not allowed
      */
-    @Override
-    public boolean prepareUpdate(final StringBuilder _stmt)
+    @Override()
+    public void prepareUpdate(final SQLUpdate _update,
+                              final Attribute _attribute,
+                              final Object... _values)
+        throws SQLException
     {
-        _stmt.append(Context.getDbType().getCurrentTimeStamp());
-        return true;
+        throw new SQLException("not allowed");
     }
 }

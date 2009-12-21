@@ -20,30 +20,37 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.query.CachedResult;
+import org.efaps.db.wrapper.SQLUpdate;
 
 /**
  * @author The eFaps Team
  * @version $Id$
  */
-public class OIDType extends StringType
+public class OIDType
+    extends StringType
 {
+
     /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
-     * @throws SQLException on error
+     * An update of an OID is not allowed and therefore a {@link SQLException}
+     * is always thrown.
+     *
+     * @param _update       update SQL statement; ignored
+     * @param _attribute    related eFaps attribute; ignored because update is
+     *                      not allowed for the eFaps object id
+     * @param _values       ignored
+     * @throws SQLException always because update is not allowed
      */
-    @Override
-    public int update(final Object _object, final PreparedStatement _stmt, final int _index)
-            throws SQLException
+    @Override()
+    public void prepareUpdate(final SQLUpdate _update,
+                              final Attribute _attribute,
+                              final Object... _values)
+        throws SQLException
     {
         throw new SQLException("Update value for OID not allowed!!!");
     }
@@ -55,17 +62,19 @@ public class OIDType extends StringType
      * derived and has no childs).
      *
      */
-    @Override
-    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    @Override()
+    public Object readValue(final Attribute _attribute,
+                            final CachedResult _rs,
+                            final List<Integer> _indexes)
     {
         final StringBuilder ret = new StringBuilder();
-        if (getAttribute().getSqlColNames().size() > 1) {
+        if (_attribute.getSqlColNames().size() > 1) {
             final long typeId = _rs.getLong(_indexes.get(0).intValue());
             final long id = _rs.getLong(_indexes.get(1).intValue());
             ret.append(typeId).append(".").append(id);
         } else {
             final long id = _rs.getLong(_indexes.get(0).intValue());
-            ret.append(getAttribute().getParent().getId()).append(".").append(id);
+            ret.append(_attribute.getParent().getId()).append(".").append(id);
         }
         return ret.toString();
     }
@@ -73,8 +82,9 @@ public class OIDType extends StringType
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Object readValue(final List<Object> _objectList)
+    @Override()
+    public Object readValue(final Attribute _attribute,
+                            final List<Object> _objectList)
     {
         final List<String> ret = new ArrayList<String>();
         for (final Object object : _objectList) {
@@ -83,17 +93,10 @@ public class OIDType extends StringType
                 final Object[] temp = (Object[]) object;
                 oid.append(temp[0]).append(".").append(temp[1]);
             } else {
-                oid.append(getAttribute().getParent().getId()).append(".").append(object);
+                oid.append(_attribute.getParent().getId()).append(".").append(object);
             }
             ret.add(oid.toString());
         }
         return _objectList.size() > 0 ? (ret.size() > 1 ? ret : ret.get(0)) : null;
-    }
-
-
-    @Override
-    public String toString()
-    {
-        return "" + getValue();
     }
 }

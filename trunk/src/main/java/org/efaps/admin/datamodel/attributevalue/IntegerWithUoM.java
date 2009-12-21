@@ -18,26 +18,29 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.datamodel.attributetype;
+package org.efaps.admin.datamodel.attributevalue;
 
-import java.util.List;
-
-import org.efaps.admin.datamodel.Attribute;
-import org.efaps.db.query.CachedResult;
+import org.efaps.admin.datamodel.Dimension.UoM;
 
 /**
+ * Attribute value with {@link Long} and unit of measure.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class BlobType
-    extends AbstractFileType
+public class IntegerWithUoM
+    extends AbstractWithUoM<Long>
 {
-    public Object readValue(final Attribute _attribute,
-                            final CachedResult _rs,
-                            final List<Integer> _index)
-        throws Exception
+    /**
+     * Initializes this attribute value for given <code>_value</code> and
+     * <code>_uom</code>.
+     *
+     * @param _value    new value
+     * @param _uom      link to the unit of measure instance
+     */
+    public IntegerWithUoM(final Long _value,
+                          final UoM _uom)
     {
-        return _rs.getString(_index.get(0).intValue());
+        super(_value, _uom);
     }
 }

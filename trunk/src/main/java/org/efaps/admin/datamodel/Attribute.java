@@ -20,6 +20,34 @@
 
 package org.efaps.admin.datamodel;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.UUID;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.EventType;
+import org.efaps.db.Context;
+import org.efaps.db.databases.information.ColumnInformation;
+import org.efaps.db.query.CachedResult;
+import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLInsert;
+import org.efaps.db.wrapper.SQLUpdate;
+import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static org.efaps.admin.EFapsClassNames.ATTRTYPE_CREATOR_LINK;
 import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK;
 import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK_WITH_RANGES;
@@ -29,31 +57,6 @@ import static org.efaps.admin.EFapsClassNames.ATTRTYPE_STATUS;
 import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESET;
 import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESETATTRIBUTE;
 import static org.efaps.admin.EFapsClassNames.USER_PERSON;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.UUID;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.efaps.admin.event.EventDefinition;
-import org.efaps.admin.event.EventType;
-import org.efaps.db.Context;
-import org.efaps.db.databases.information.ColumnInformation;
-import org.efaps.db.transaction.ConnectionResource;
-import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
-import org.efaps.util.cache.CacheReloadException;
 
 /**
  * This is the class for the attribute description. The type description holds
@@ -117,7 +120,7 @@ public class Attribute extends AbstractDataModelObject
     private final AttributeType attributeType;
 
     /**
-     * The collection intance variables holds all unique keys, for which this
+     * The collection instance variables holds all unique keys, for which this
      * attribute belongs to.
      *
      * @see #getUniqueKeys
@@ -218,8 +221,14 @@ public class Attribute extends AbstractDataModelObject
      * @param _size             Size
      * @param _scale            Scale
      */
-    private Attribute(final long _id, final String _name, final SQLTable _sqlTable, final AttributeType _attributeType,
-                      final String _defaultValue, final String _dimensionUUID, final boolean _required, final int _size,
+    private Attribute(final long _id,
+                      final String _name,
+                      final SQLTable _sqlTable,
+                      final AttributeType _attributeType,
+                      final String _defaultValue,
+                      final String _dimensionUUID,
+                      final boolean _required,
+                      final int _size,
                       final int _scale)
     {
         super(_id, null, _name);
@@ -260,20 +269,6 @@ public class Attribute extends AbstractDataModelObject
             setUniqueKeys(new HashSet<UniqueKey>());
         }
         getUniqueKeys().add(_uniqueKey);
-    }
-
-    /**
-     * Creates a new instance of this attribute from type {@link #attributeType}
-     * .
-     *
-     * @throws EFapsException on error
-     * @return new created instance of this attribute
-     */
-    public IAttributeType newInstance() throws EFapsException
-    {
-        final IAttributeType ret = getAttributeType().newInstance();
-        ret.setAttribute(this);
-        return ret;
     }
 
     /**
@@ -489,7 +484,64 @@ public class Attribute extends AbstractDataModelObject
      */
     public boolean hasUoM()
     {
-        return this.dimensionUUID != null;
+        return (this.dimensionUUID != null);
+    }
+
+    /**
+     * Prepares for given <code>_values</code> depending on this attribute the
+     * <code>_insert</code> into the database.
+     *
+     * @param _insert   SQL insert statement for related {@link #sqlTable}
+     * @param _values   values to insert
+     * @throws SQLException if values could not be inserted
+     */
+    public void prepareDBInsert(final SQLInsert _insert,
+                                final Object... _values)
+        throws SQLException
+    {
+        this.attributeType.getDbAttrType().prepareInsert(_insert, this, _values);
+    }
+
+    /**
+     * Prepares for given <code>_values</code> depending on this attribute the
+     * <code>_update</code> into the database.
+     *
+     * @param _update   SQL update statement for related {@link #sqlTable}
+     * @param _values   values to update
+     * @throws SQLException if values could not be inserted
+     */
+    public void prepareDBUpdate(final SQLUpdate _update,
+                                final Object... _values)
+        throws SQLException
+    {
+        this.attributeType.getDbAttrType().prepareUpdate(_update, this, _values);
+    }
+
+    /**
+     *
+     * @param _rs       cached result set
+     * @param _indexes  indexes within the cached result for the value
+     * @return found value
+     * @throws Exception if values could not be read from the cached result
+     */
+    public Object readDBValue(final CachedResult _rs,
+                              final List<Integer> _indexes)
+        throws Exception
+    {
+        return this.attributeType.getDbAttrType().readValue(this, _rs, _indexes);
+    }
+
+    /**
+     *
+     * @param _objectList   object list from the database
+     * @return found value
+     * @throws EFapsException if values could not be read from the
+     *                        <code>_objectList</code>
+     */
+    public Object readDBValue(final List<Object> _objectList)
+        throws EFapsException
+    {
+        return this.attributeType.getDbAttrType().readValue(this, _objectList);
     }
 
     /**
@@ -518,7 +570,8 @@ public class Attribute extends AbstractDataModelObject
      * @throws CacheReloadException on error
      * @see #getCache
      */
-    public static Attribute get(final long _id) throws CacheReloadException
+    public static Attribute get(final long _id)
+        throws CacheReloadException
     {
         return Attribute.CACHE.get(_id);
     }

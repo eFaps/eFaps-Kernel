@@ -31,9 +31,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-import org.efaps.admin.common.SystemConfiguration;
+import org.efaps.admin.EFapsSystemConfiguration;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
@@ -338,9 +337,7 @@ public class CachedResult
         final Object obj = getObject(_index);
         if (obj instanceof Timestamp || obj instanceof Date) {
             // reads the Value from "Admin_Common_DataBaseTimeZone"
-            final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
-                            .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
-            final String timezoneID = kernelConfig.getAttributeValue("DataBaseTimeZone");
+            final String timezoneID = EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DataBaseTimeZone");
             final ISOChronology chron;
             if (timezoneID != null) {
                 final DateTimeZone timezone = DateTimeZone.forID(timezoneID);

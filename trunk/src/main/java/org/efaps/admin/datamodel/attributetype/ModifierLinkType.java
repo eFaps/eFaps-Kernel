@@ -20,13 +20,11 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.Context;
+import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.EFapsException;
 
 /**
@@ -36,56 +34,31 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class ModifierLinkType extends PersonLinkType
+public class ModifierLinkType
+    extends PersonLinkType
 {
     /**
-     * Logger for this class
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(ModifierLinkType.class);
-
-    // ///////////////////////////////////////////////////////////////////////////
-    // interface to the data base
-
-    /**
-     * The value of the modifier is added via the prepared statement setter
-     * method. So only a question mark ('?') is added to the statement. The
-     * value is set with method {@link #update}.
+     * The instance method appends the SQL columns with always with the id of
+     * the current context user as value.
      *
-     * @param _stmt string buffer with the statement
-     * @see #update
+     * @param _insertUpdate insert / update statement
+     * @param _values       values; ignored, because always set to current
+     *                      logged in person
+     * @throws SQLException if SQL columns for the attribute are not correctly
+     *                      defined
      */
-    @Override
-    public boolean prepareUpdate(final StringBuilder _stmt)
+    @Override()
+    protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
+                           final Attribute _attribute,
+                           final Object... _values)
+        throws SQLException
     {
-        _stmt.append("?");
-        return false;
-    }
-
-    /**
-     * The instance method sets the value in the prepared statement to the id of
-     * the current context user.
-     *
-     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
-     * @throws SQLException on error
-     */
-    @Override
-    public int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException
-    {
+        checkSQLColumnSize(_attribute, 1);
         try {
-            _stmt.setLong(_index, Context.getThreadContext().getPerson().getId());
+            _insertUpdate.column(_attribute.getSqlColNames().get(0),
+                                 Context.getThreadContext().getPerson().getId());
         } catch (final EFapsException e) {
-            LOG.error("update(Object, PreparedStatement, List<Integer>)", e);
+            throw new SQLException("could not fetch current context person id", e);
         }
-        return 1;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "" + getValue();
     }
 }

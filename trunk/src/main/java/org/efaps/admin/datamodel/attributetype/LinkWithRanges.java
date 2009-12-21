@@ -28,12 +28,4 @@ package org.efaps.admin.datamodel.attributetype;
 public class LinkWithRanges
     extends AbstractLinkType
 {
-    /**
-     * @return value as string representation for the link with ranges
-     */
-    @Override()
-    public String toString()
-    {
-        return "" + getValue();
-    }
 }

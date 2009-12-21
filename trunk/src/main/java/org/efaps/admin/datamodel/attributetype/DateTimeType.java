@@ -20,62 +20,46 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
+import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.db.query.CachedResult;
+import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
+import org.efaps.util.DateTimeUtil;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
-
-import org.efaps.admin.common.SystemConfiguration;
-import org.efaps.db.query.CachedResult;
 
 /**
  * @author The eFaps Team
  * @version $Id$
  */
-public class DateTimeType extends AbstractType
+public class DateTimeType
+    extends AbstractType
 {
     /**
-     * Value of this DateTimeType.
+     * {@inheritDoc}
      */
-    private DateTime value = null;
-
-    /**
-     * Getter method for instance variable {@link #value}.
-     *
-     * @return value of instance variable {@link #value}
-     */
-    public DateTime getValue()
+    public Object readValue(final Attribute _attribute,
+                            final CachedResult _rs,
+                            final List<Integer> _indexes)
     {
-        return this.value;
+        return _rs.getDateTime(_indexes.get(0).intValue());
     }
 
     /**
      * {@inheritDoc}
      */
-    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
-    {
-        this.value = _rs.getDateTime(_indexes.get(0).intValue());
-        return this.value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Object readValue(final List<Object> _objectList)
+    public Object readValue(final Attribute _attribute,
+                            final List<Object> _objectList)
     {
         // reads the Value from "Admin_Common_DataBaseTimeZone"
-        final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
-                        .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
-        final String timezoneID = kernelConfig.getAttributeValue("DataBaseTimeZone");
+        final String timezoneID = EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DataBaseTimeZone");
         final ISOChronology chron;
         if (timezoneID != null) {
             final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
@@ -96,55 +80,40 @@ public class DateTimeType extends AbstractType
     }
 
     /**
+     *
+     * @param _insertUpdate     insert / update statement
+     * @throws SQLException if SQL columns for the attribute are not correctly
+     *                      defined
+     */
+    @Override()
+    protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
+                           final Attribute _attribute,
+                           final Object... _values)
+        throws SQLException
+    {
+        checkSQLColumnSize(_attribute, 1);
+        _insertUpdate.column(_attribute.getSqlColNames().get(0), eval(_values));
+    }
+
+
+    /**
      * The value that can be set is a Date, a DateTime or a String
      * yyyy-MM-dd'T'HH:mm:ss.SSSZZ. It will be normalized to ISO Calender with
      * TimeZone from SystemAttribute Admin_Common_DataBaseTimeZone. In case that
      * the SystemAttribute is missing UTC will be used.
      *
-     *
-     * @param _value new value to set
+     * @param _value value to evaluate
+     * @return evaluated value
      */
-    public void set(final Object[] _value)
+    protected Timestamp eval(final Object[] _value)
     {
-        if (_value[0] != null) {
-            // reads the Value from "Admin_Common_DataBaseTimeZone"
-            final SystemConfiguration kernelConfig = SystemConfiguration.get(UUID
-                            .fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
-            final String timezoneID = kernelConfig.getAttributeValue("DataBaseTimeZone");
-            final ISOChronology chron;
-            if (timezoneID != null) {
-                final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
-                chron = ISOChronology.getInstance(timezone);
-            } else {
-                chron = ISOChronology.getInstanceUTC();
-            }
-            if (_value[0] instanceof Date) {
-                final DateTime datetime = new DateTime(_value[0]);
-                this.value = datetime.withChronology(chron);
-            } else if (_value[0] instanceof DateTime) {
-                this.value = ((DateTime) _value[0]).withChronology(chron);
-            } else if (_value[0] instanceof String) {
-                final DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
-                this.value = fmt.parseDateTime((String) _value[0]);
-            }
+        final Timestamp ret;
+        if ((_value == null) || (_value.length == 0) || (_value[0] == null)) {
+            ret = null;
+        } else  {
+            final DateTime dateTime = DateTimeUtil.translateFromUI(_value[0]);
+            ret = (dateTime != null) ? new Timestamp(dateTime.getMillis()) : null;
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public int update(final Object _object, final PreparedStatement _stmt, final int _index) throws SQLException
-    {
-        _stmt.setTimestamp(_index, new Timestamp(this.value.getMillis()));
-        return 1;
-    }
-
-    /**
-     * @return String representation of this class
-     */
-    @Override
-    public String toString()
-    {
-        return "" + this.value;
+        return ret;
     }
 }

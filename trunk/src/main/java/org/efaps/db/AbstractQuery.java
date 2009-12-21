@@ -33,7 +33,6 @@ import java.util.StringTokenizer;
 
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.IAttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.query.CachedResult;
@@ -1050,11 +1049,9 @@ public abstract class AbstractQuery
             if (getAttribute() == null) {
                 throw new EFapsException(getClass(), "SelectExpression.get.NoAttribute");
             }
-            // System.out.println("~~~~~~~~~~~~++getIndexes()="+getIndexes());
-            final IAttributeType attrInterf = getAttribute().newInstance();
             Object ret = null;
             try {
-                ret = attrInterf.readValue(AbstractQuery.this.cachedResult, getIndexes());
+                ret = getAttribute().readDBValue(AbstractQuery.this.cachedResult, getIndexes());
             } catch (final Exception e) {
                 throw new EFapsException(getClass(), "getAttrValue.CouldNotReadValue", e);
             }

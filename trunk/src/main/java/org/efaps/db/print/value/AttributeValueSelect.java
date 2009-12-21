@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.IAttributeType;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -112,9 +111,7 @@ public class AttributeValueSelect
     public Object getValue(final List<Object> _objectList)
         throws EFapsException
     {
-        Object ret;
-        final IAttributeType attrInterf = this.attribute.newInstance();
-        ret = attrInterf.readValue(_objectList);
+        Object ret = this.attribute.readDBValue(_objectList);
 
         if (getChildValueSelect() != null) {
             if ("format".equals(getChildValueSelect().getValueType())) {

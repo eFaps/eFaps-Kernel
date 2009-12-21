@@ -24,14 +24,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.UUID;
+import java.util.Date;
 
-import org.efaps.admin.common.SystemConfiguration;
+import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
+import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +85,7 @@ public final class DateTimeUtil
 
     /**
      * The given DateTime will be normalized to ISO calendar with time zone
-     * from {@link SystemConfiguration system configuration}
+     * from {@link EFapsSystemConfiguration#KERNEL kernel system configuration}
      * &quot;Admin_Common_DataBaseTimeZone&quot;. In case that the
      * system configuration is missing &quot;UTC&quot; will be used.
      *
@@ -94,9 +95,7 @@ public final class DateTimeUtil
     public static DateTime normalize(final DateTime _date)
     {
         // reads the Value from "Admin_Common_DataBaseTimeZone"
-        final SystemConfiguration kernelConfig = SystemConfiguration.get(
-                UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
-        final String timezoneID = kernelConfig.getAttributeValue("DataBaseTimeZone");
+        final String timezoneID = EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DataBaseTimeZone");
         final ISOChronology chron;
         if (timezoneID != null) {
             final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
@@ -105,5 +104,39 @@ public final class DateTimeUtil
             chron = ISOChronology.getInstanceUTC();
         }
         return _date.withChronology(chron);
+    }
+
+    /**
+     * The value that can be set is a Date, a DateTime or a String
+     * yyyy-MM-dd'T'HH:mm:ss.SSSZZ. It will be normalized to ISO Calender with
+     * TimeZone from SystemAttribute Admin_Common_DataBaseTimeZone. In case
+     * that the SystemAttribute is missing UTC will be used.
+     *
+     *
+     * @param _value    value from user interface to translate
+     * @return translated date time
+     */
+    public static DateTime translateFromUI(final Object _value)
+    {
+        final DateTime ret;
+        // reads the Value from "Admin_Common_DataBaseTimeZone"
+        final String timezoneID = EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DataBaseTimeZone");
+        final ISOChronology chron;
+        if (timezoneID != null) {
+            final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
+            chron = ISOChronology.getInstance(timezone);
+        } else {
+            chron = ISOChronology.getInstanceUTC();
+        }
+        if (_value instanceof Date) {
+            ret = new DateTime(_value).withChronology(chron);
+        } else if (_value instanceof DateTime) {
+            ret = ((DateTime) _value).withChronology(chron);
+        } else if (_value instanceof String) {
+            ret = ISODateTimeFormat.dateTime().parseDateTime((String) _value);
+        } else  {
+            ret = null;
+        }
+        return ret;
     }
 }

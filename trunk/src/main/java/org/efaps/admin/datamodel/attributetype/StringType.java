@@ -20,33 +20,59 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.query.CachedResult;
+import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 
 /**
+ * Implements the mapping between values in the database and {@link String}
+ * values in eFaps.
+
  * @author The eFaps Team
  * @version $Id$
  */
-public class StringType extends AbstractType
+public class StringType
+    extends AbstractType
 {
     /**
-     * @see #getValue
-     * @see #setValue
+     * {@inheritDoc}
      */
-    private final List<String> values = new ArrayList<String>();;
-
-    /**
-     *{@inheritDoc}
-     */
-    public int update(final Object _object, final PreparedStatement _stmt, final int _index)
+    @Override()
+    protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
+                           final Attribute _attribute,
+                           final Object... _values)
         throws SQLException
     {
-        _stmt.setString(_index, getValue());
-        return 1;
+        checkSQLColumnSize(_attribute, 1);
+        _insertUpdate.column(_attribute.getSqlColNames().get(0), this.eval(_values));
+    }
+
+    /**
+     * The localized string and the internal string value are equal. So the
+     * internal value can be set directly with method {@link #setValue}.
+     *
+     * @param _values   values to evaluate
+     * @return string representation for the <code>_values</code>
+     */
+    protected String eval(final Object[] _values)
+    {
+        final String ret;
+
+        if ((_values == null) || (_values.length == 0) || (_values[0] == null))  {
+            ret = null;
+        } else if (_values[0] instanceof String) {
+            ret = (String) _values[0];
+        } else if (_values[0] != null) {
+            ret = _values[0].toString();
+        } else  {
+            ret = null;
+        }
+
+        return ret;
     }
 
     /**
@@ -55,10 +81,11 @@ public class StringType extends AbstractType
      * @param _indexes  indexsx
      * @return Object
      */
-    public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+    public Object readValue(final Attribute _attribute,
+                            final CachedResult _rs,
+                            final List<Integer> _indexes)
     {
         String value = (_rs.getString(_indexes.get(0).intValue()));
-        this.values.add(value);
         if (value != null) {
             value = value.trim();
         }
@@ -68,7 +95,8 @@ public class StringType extends AbstractType
     /**
      * {@inheritDoc}
      */
-    public Object readValue(final List<Object> _objectList)
+    public Object readValue(final Attribute _attribute,
+                            final List<Object> _objectList)
     {
         Object ret = null;
         if (_objectList.size() < 1) {
@@ -84,54 +112,5 @@ public class StringType extends AbstractType
             ret = object == null ? "" : object.toString().trim();
         }
         return ret;
-    }
-
-    /**
-     * The localised string and the internal string value are equal. So the
-     * internal value can be set directly with method {@link #setValue}.
-     *
-     * @param _value new value to set
-     */
-    public void set(final Object[] _value)
-    {
-        if (_value[0] instanceof String) {
-            this.values.add((String) _value[0]);
-        } else if (_value[0] != null) {
-            this.values.add(_value[0].toString());
-        }
-    }
-
-    /**
-     * Getter method for instance variable {@link #value}.
-     *
-     * @return value of instance variable {@link #value}
-     */
-    protected String getValue()
-    {
-        return this.values.size() > 0 ? this.values.get(0) : "";
-    }
-
-    /**
-     * Setter method for instance variable {@link #value}.
-     *
-     * @param _value value for instance variable {@link #value}
-     */
-    protected void setValue(final String _value)
-    {
-        if (this.values.size() > 1) {
-            this.values.set(0, _value);
-        } else {
-            this.values.add(_value);
-        }
-    }
-
-    /**
-     * @see java.lang.Object#toString()
-     * @return string representation
-     */
-    @Override
-    public String toString()
-    {
-        return "" + this.values;
     }
 }
