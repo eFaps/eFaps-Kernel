@@ -245,11 +245,13 @@ public abstract class AbstractSourceImporter
         try {
             final InputStream is = newCodeInputStream();
             final Checkin checkin = new Checkin(_instance);
-            checkin.executeWithoutAccessCheck(getProgramName(), is, getCode().length());
+            checkin.executeWithoutAccessCheck(getProgramName(), is, is.available());
         } catch (final UnsupportedEncodingException e) {
             throw new InstallationException("Encoding failed for " + this.programName, e);
         } catch (final EFapsException e)  {
             throw new InstallationException("Could not check in " + this.programName, e);
+        } catch (final IOException e) {
+            throw new InstallationException("Reading from inoutstream faild for " + this.programName, e);
         }
     }
 
