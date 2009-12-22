@@ -47,7 +47,10 @@ import org.efaps.util.EFapsException;
 public abstract class AbstractSourceImporter
 {
     /**
-     * Defines the encoding of the ESJP source code within eFaps.
+     * Defines the encoding of source code within eFaps.
+     *
+     * @see #readCode()
+     * @see #newCodeInputStream()
      */
     private static final String ENCODING = "UTF8";
 
@@ -87,7 +90,8 @@ public abstract class AbstractSourceImporter
      * Constructor used to read the source code from given URL and extract the
      * class name.
      *
-     * @param _url url to the ESJP source code
+     * @param _type     related eFaps type
+     * @param _url      URL to the source code
      * @throws InstallationException on error
      * @see #readCode()
      * @see #evalProgramName()
@@ -107,10 +111,12 @@ public abstract class AbstractSourceImporter
     }
 
     /**
-     * Read the code from the file defined through {@link #url}.
+     * Read the code from the file defined through {@link #url} with character
+     * set {@link #ENCODING}.
      *
      * @throws InstallationException if the source code could not read from URL
      * @see #url
+     * @see #ENCODING
      */
     protected void readCode()
         throws InstallationException
@@ -120,14 +126,14 @@ public abstract class AbstractSourceImporter
 
             final InputStream input = getUrl().openStream();
 
-            final Reader reader = new InputStreamReader(input);
+            final Reader reader = new InputStreamReader(input, AbstractSourceImporter.ENCODING);
             int length;
             while ((length = reader.read(buf)) > 0) {
-                getCode().append(buf, 0, length);
+                this.code.append(buf, 0, length);
             }
             reader.close();
         } catch (final IOException e) {
-            throw new InstallationException("Could not read ESJP source code from url '" + this.url + "'.", e);
+            throw new InstallationException("Could not read source code from url '" + this.url + "'.", e);
         }
     }
 
@@ -237,8 +243,7 @@ public abstract class AbstractSourceImporter
         throws InstallationException
     {
         try {
-            final InputStream is
-                = new ByteArrayInputStream(getCode().toString().getBytes(AbstractSourceImporter.ENCODING));
+            final InputStream is = newCodeInputStream();
             final Checkin checkin = new Checkin(_instance);
             checkin.executeWithoutAccessCheck(getProgramName(), is, getCode().length());
         } catch (final UnsupportedEncodingException e) {
@@ -249,13 +254,18 @@ public abstract class AbstractSourceImporter
     }
 
     /**
-     * Getter method for instance variable {@link #url}.
+     * Creates a new byte array input stream for {@link #code} which is encoded
+     * in character set {@link #ENCODING}.
      *
-     * @return value for instance variable {@link #url}
+     * @return byte array input stream
+     * @throws UnsupportedEncodingException if {@link #code} could not be
+     *                                      encoded
+     * @see #code
      */
-    public URL getUrl()
+    protected InputStream newCodeInputStream()
+        throws UnsupportedEncodingException
     {
-        return this.url;
+        return new ByteArrayInputStream(this.code.toString().getBytes(AbstractSourceImporter.ENCODING));
     }
 
     /**
@@ -266,6 +276,16 @@ public abstract class AbstractSourceImporter
     public StringBuilder getCode()
     {
         return this.code;
+    }
+
+    /**
+     * Getter method for instance variable {@link #url}.
+     *
+     * @return value for instance variable {@link #url}
+     */
+    public URL getUrl()
+    {
+        return this.url;
     }
 
     /**
