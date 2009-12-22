@@ -20,8 +20,7 @@
 
 package org.efaps.update.schema.program.jasperreport;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.UUID;
 
@@ -30,7 +29,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.design.JRDesignParameter;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.xml.JRXmlDigester;
 import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
@@ -70,15 +68,9 @@ public class JasperReportImporter
     protected void readCode()
         throws InstallationException
     {
+        super.readCode();
         try {
-            final JRXmlDigester digester = JRXmlDigesterFactory.createDigester();
-            final JRXmlLoader loader = new JRXmlLoader(digester);
-            final InputStream input = getUrl().openStream();
-
-            this.jasperDesign = loader.loadXML(input);
-        } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            this.jasperDesign = new JRXmlLoader(JRXmlDigesterFactory.createDigester()).loadXML(newCodeInputStream());
         } catch (final ParserConfigurationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -88,6 +80,8 @@ public class JasperReportImporter
         } catch (final JRException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (final UnsupportedEncodingException e) {
+            throw new InstallationException("source code for " + getUrl() + "could not encoded", e);
         }
     }
 
