@@ -31,7 +31,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;
-import javax.naming.spi.ObjectFactory;
 import javax.sql.DataSource;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
@@ -138,14 +137,14 @@ public final class StartupDatabaseConnection
     }
 
     /**
-     * The class defined with parameter _classDSFactory initialized and bind to
-     * {@link #RESOURCE_DATASOURCE}. The initialized class must implement
-     * interface {@link DataSource}. As JDBC connection properties the map
-     * _propConneciton is used.
+     * The class defined with parameter <code>_classDSFactory</code>
+     * initialized and bind to {@link #RESOURCE_DATASOURCE}. The initialized
+     * class must implement interface {@link DataSource}. As JDBC connection
+     * properties the map <code>_propConneciton</code> is used.
      *
-     * @param _compCtx Java root naming context
-     * @param _classDSFactory class name of the SQL data source factory
-     * @param _propConnection map of properties for the JDBC connection
+     * @param _compCtx          Java root naming context
+     * @param _classDSFactory   class name of the SQL data source factory
+     * @param _propConnection   map of properties for the JDBC connection
      * @throws StartupException on error
      */
     protected static void configureDataSource(final Context _compCtx,
@@ -157,28 +156,12 @@ public final class StartupDatabaseConnection
         for (final Entry<String, String> entry : _propConnection.entrySet()) {
             ref.add(new StringRefAddr(entry.getKey(), entry.getValue()));
         }
-        ObjectFactory of = null;
         try {
-            final Class<?> factClass = Class.forName(ref.getFactoryClassName());
-            of = (ObjectFactory) factClass.newInstance();
-        } catch (final ClassNotFoundException e) {
-            throw new StartupException("could not found data source class '" + _classDSFactory + "'", e);
-        } catch (final InstantiationException e) {
-            throw new StartupException("could not initialise data source class '" + _classDSFactory + "'", e);
-        } catch (final IllegalAccessException e) {
-            throw new StartupException("could not access data source class '" + _classDSFactory + "'", e);
-        }
-        if (of != null) {
-            try {
-                final DataSource ds = (DataSource) of.getObjectInstance(ref, null, null, null);
-                if (ds != null) {
-                    Util.bind(_compCtx, "env/" + RESOURCE_DATASOURCE, ds);
-                }
-            } catch (final NamingException e) {
-                throw new StartupException("could not bind JDBC pooling class '" + _classDSFactory + "'", e);
-            } catch (final Exception e) {
-                throw new StartupException("coud not get object instance of factory '" + _classDSFactory + "'", e);
-            }
+            Util.bind(_compCtx, "env/" + RESOURCE_DATASOURCE, ref);
+        } catch (final NamingException e) {
+            throw new StartupException("could not bind JDBC pooling class '" + _classDSFactory + "'", e);
+        } catch (final Exception e) {
+            throw new StartupException("coud not get object instance of factory '" + _classDSFactory + "'", e);
         }
     }
 
@@ -258,11 +241,11 @@ public final class StartupDatabaseConnection
     }
 
     /**
-     * Separates all key / value pairs of given text string.<br/>
-     * Evaluation algorithm:<br/>
+     * <p>Separates all key / value pairs of given text string.</p>
+     * <p><b>Evaluation algorithm:</b><br/>
      * Separates the text by all found commas (only if in front of the comma is
      * no back slash). This are the key / value pairs. A key / value pair is
-     * separated by the first equal ('=') sign.
+     * separated by the first equal ('=') sign.</p>
      *
      * @param _text   text string to convert to a key / value map
      * @return Map of strings with all found key / value pairs
