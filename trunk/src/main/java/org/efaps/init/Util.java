@@ -86,4 +86,21 @@ public final class Util
             }
         }
     }
+
+    /**
+     * Unbinds given <code>_nameStr</code> from <code>_ctx</code>.
+     *
+     * @param _ctx      naming context
+     * @param _nameStr  name to unbind
+     * @throws NamingException if unbind failed
+     */
+    public static void unbind(final Context _ctx,
+                              final String _nameStr)
+        throws NamingException
+    {
+        final Name names = _ctx.getNameParser("").parse(_nameStr);
+        if (names.size() > 0)  {
+            _ctx.unbind(names);
+        }
+    }
 }
