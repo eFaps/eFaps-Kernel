@@ -27,9 +27,6 @@ import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -37,6 +34,8 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -175,7 +174,8 @@ public final class NumberGenerator implements CacheObjectInterface
         throws EFapsException
     {
         try {
-            Context.getDbType().setSequence(Context.getThreadContext().getConnection(), getDBName(), _value);
+            Context.getDbType().setSequence(Context.getThreadContext().getConnection(), getDBName(),
+                                            Long.valueOf(_value));
         } catch (final SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

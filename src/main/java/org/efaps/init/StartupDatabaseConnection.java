@@ -306,6 +306,9 @@ public final class StartupDatabaseConnection
         configureDBType(compCtx, _classDBType);
         configureDataSource(compCtx, _classDSFactory, _propConnection);
         configureTransactionManager(compCtx, _classTM, _timeout);
+
+        // and reset eFaps context (to be sure..)
+        org.efaps.db.Context.reset();
     }
 
     /**
@@ -445,5 +448,30 @@ public final class StartupDatabaseConnection
             }
         }
         return properties;
+    }
+
+    /**
+     * Shutdowns the connection to the database.
+     *
+     * @throws StartupException if shutdown failed
+     */
+    public static void shutdown()
+        throws StartupException
+    {
+        final Context compCtx;
+        try {
+            final InitialContext context = new InitialContext();
+            compCtx = (javax.naming.Context) context.lookup("java:comp");
+        } catch (final NamingException e) {
+            throw new StartupException("Could not initialize JNDI", e);
+        }
+        try  {
+            Util.unbind(compCtx, "env/" + RESOURCE_DATASOURCE);
+            Util.unbind(compCtx, "env/" + RESOURCE_DBTYPE);
+            Util.unbind(compCtx, "env/" + RESOURCE_TRANSMANAGTIMEOUT);
+            Util.unbind(compCtx, "env/" + RESOURCE_TRANSMANAG);
+        } catch (final NamingException e)  {
+            throw new StartupException("unbind of the database connection failed", e);
+        }
     }
 }

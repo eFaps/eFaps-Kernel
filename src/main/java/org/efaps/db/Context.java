@@ -48,11 +48,11 @@ import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.admin.user.UserAttributesSet.UserAttributesDefinition;
 import org.efaps.db.databases.AbstractDatabase;
-import org.efaps.db.store.AbstractStoreResource;
 import org.efaps.db.store.Resource;
 import org.efaps.db.store.Store;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.init.INamingBinds;
+import org.efaps.init.StartupException;
 import org.efaps.util.EFapsException;
 import org.joda.time.Chronology;
 import org.joda.time.DateTimeZone;
@@ -78,19 +78,19 @@ public final class Context implements INamingBinds
     /**
      * Static variable storing the database type.
      */
-    private static AbstractDatabase DBTYPE = null;
+    private static AbstractDatabase<?> DBTYPE;
 
     /**
-     * Datasource.
+     * SQL data source to the database.
      */
-    private static DataSource DATASOURCE = null;
+    private static DataSource DATASOURCE;
 
     /**
      * Stores the transaction manager.
      *
      * @see #setTransactionManager
      */
-    private static TransactionManager TRANSMANAG = null;
+    private static TransactionManager TRANSMANAG;
 
     /**
      * STore the timeout for the transaction manager.
@@ -101,7 +101,7 @@ public final class Context implements INamingBinds
         try {
             final InitialContext initCtx = new InitialContext();
             final javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
-            Context.DBTYPE = (AbstractDatabase) envCtx.lookup(RESOURCE_DBTYPE);
+            Context.DBTYPE = (AbstractDatabase<?>) envCtx.lookup(RESOURCE_DBTYPE);
             Context.DATASOURCE = (DataSource) envCtx.lookup(RESOURCE_DATASOURCE);
             Context.TRANSMANAG = (TransactionManager) envCtx.lookup(RESOURCE_TRANSMANAG);
             try {
@@ -127,7 +127,7 @@ public final class Context implements INamingBinds
 
     /**
      * The instance variable stores all open instances of
-     * {@link AbstractStoreResource}.
+     * {@link Resource}.
      *
      * @see #getStoreResource(Instance)
      * @see #getStoreResource(Type,long)
@@ -1037,6 +1037,37 @@ public final class Context implements INamingBinds
     public static AbstractDatabase<?> getDbType()
     {
         return Context.DBTYPE;
+    }
+
+
+    /**
+     * Resets the context to current defined values in the Javax naming
+     * environment.
+     *
+     * @throws StartupException if context could not be reseted to new values
+     * @see #DBTYPE
+     * @see #DATASOURCE
+     * @see #TRANSMANAG
+     * @see #TRANSMANAGTIMEOUT
+     */
+    public static void reset()
+        throws StartupException
+    {
+        try {
+            final InitialContext initCtx = new InitialContext();
+            final javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
+            Context.DBTYPE = (AbstractDatabase<?>) envCtx.lookup(RESOURCE_DBTYPE);
+            Context.DATASOURCE = (DataSource) envCtx.lookup(RESOURCE_DATASOURCE);
+            Context.TRANSMANAG = (TransactionManager) envCtx.lookup(RESOURCE_TRANSMANAG);
+            try {
+                Context.TRANSMANAGTIMEOUT = (Integer) envCtx.lookup(RESOURCE_TRANSMANAGTIMEOUT);
+            } catch (final NamingException e) {
+                // this is actual no error, so nothing is presented
+                Context.TRANSMANAGTIMEOUT = 0;
+            }
+        } catch (final NamingException e) {
+            throw new StartupException("eFaps context could not be initialized", e);
+        }
     }
 
     /**
