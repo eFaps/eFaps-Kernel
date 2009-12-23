@@ -20,8 +20,13 @@
 
 package org.efaps.init;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,10 +60,177 @@ public final class StartupDatabaseConnection
     private static final Logger LOG = LoggerFactory.getLogger(DateTimeUtil.class);
 
     /**
+     * Name of the environment variable to define the bootstrap path.
+     */
+    private static final String ENV_PATH = "EFAPS_BOOTSTRAP_PATH";
+
+    /**
+     * Name of the environment variable to define the name of the bootstrap
+     * file.
+     */
+    private static final String ENV_FILE = "EFAPS_BOOTSTRAP_FILE";
+
+    /**
+     * Name of the property for the database type class.
+     */
+    private static final String PROP_DBTYPE_CLASS = "databaseTypeClass";
+
+    /**
+     * Name of the property for the database factory class.
+     */
+    private static final String PROP_DBFACTORY_CLASS = "databaseSourceFactoryClass";
+
+    /**
+     * Name of the property for the database connection.
+     */
+    private static final String PROP_DBCONNECTION = "databaseConnection";
+
+    /**
+     * Name of the property for the transaction manager class.
+     */
+    private static final String PROP_TM_CLASS = "transactionManagerClass";
+
+    /**
+     * Name of the property for the timeout of the transaction manager.
+     */
+    private static final String PROP_TM_TIMEOUT = "transactionManagerTimeout";
+
+    /**
+     * Name of the default bootstrap path in the user home directory.
+     */
+    private static final String DEFAULT_BOOTSTRAP_PATH = ".efaps/bootstrap";
+
+    /**
+     * Name of the default bootstrap file.
+     */
+    private static final String DEFAULT_BOOTSTRAP_FILE = "default.efaps";
+
+    /**
+     * File extension of the bootstrap file.
+     */
+    private static final String BOOTSTRAP_EXTENSION = ".efaps";
+
+    /**
      * Constructor is hidden to prevent instantiation.
      */
     private StartupDatabaseConnection()
     {
+    }
+
+    /**
+     * Startups the eFaps kernel with the bootstrap configuration defined as
+     * shell variable. If the bootstrap configuration is not defined as shell
+     * variables, the default bootstrap definition is used.
+     *
+     * @throws StartupException if startup failed
+     * @see #startup(String, String)
+     */
+    public static void startup()
+        throws StartupException
+    {
+        StartupDatabaseConnection.startup(null, null);
+    }
+
+    /**
+     * Startups the eFaps kernel with the bootstrap path defined as shell
+     * variable (or if not defined the default bootstrap path is used).
+     *
+     * @param _bootstrapFile    name of the bootstrap file (without file
+     *                          extension); <code>null</code> means the the
+     *                          name of the bootstrap is not predefined
+     * @throws StartupException if startup failed
+     * @see #startup(String, String)
+     */
+    public static void startup(final String _bootstrapFile)
+        throws StartupException
+    {
+        StartupDatabaseConnection.startup(null, _bootstrapFile);
+    }
+
+    /**
+     * <p>Startups he kernel depending on a bootstrap definition.</p>
+     *
+     * <p>Following rules applies for the bootstrap path:
+     * <ul>
+     * <li>if <code>_bootstrapPath</code> is not <code>null</code>,
+     *     <code>_bootstrapPath</code> is used as bootstrap path</li>
+     * <li>if in the system environment the shell variable {@link #ENV_PATH} is
+     *     defined, this value of this shell variable is used</li>
+     * <li>in all other cases {@link #DEFAULT_BOOTSTRAP_PATH} is used</li>
+     * </ul></p>
+     *
+     * <p>Following rules applies for the bootstrap name:
+     * <ul>
+     * <li>if <code>_bootstrapFile</code> is not <code>null</code>,
+     *     <code>_bootstrapFile</code> is used as bootstrap name</li>
+     * <li>if in the system environment the shell variable {@link #ENV_FILE} is
+     *     defined, this value of this shell variable is used</li>
+     * <li>in all other cases {@link #DEFAULT_BOOTSTRAP_FILE} is used</li>
+     * </ul></p>
+     *
+     * <p>After the used bootstrap file is identified, this file is opened and
+     * the keys are read and evaluated.</p>
+     *
+     * @param _bootstrapPath    path where the bootstrap files are located;
+     *                          <code>null</code> means that the path is not
+     *                          predefined
+     * @param _bootstrapFile    name of the bootstrap file (without file
+     *                          extension); <code>null</code> means the the
+     *                          name of the bootstrap is not predefined
+     * @throws StartupException if startup failed
+     */
+    public static void startup(final String _bootstrapPath,
+                               final String _bootstrapFile)
+        throws StartupException
+    {
+        // evaluate bootstrap path
+        final File bsPath;
+        if (_bootstrapPath != null)  {
+            bsPath = new File(_bootstrapPath);
+        } else  {
+            final String envPath = System.getenv(StartupDatabaseConnection.ENV_PATH);
+            if (envPath != null)  {
+                bsPath = new File(envPath);
+            } else  {
+                bsPath = new File(System.getProperty("user.home"), StartupDatabaseConnection.DEFAULT_BOOTSTRAP_PATH);
+            }
+        }
+        // evaluate bootstrap file
+        final String bsFile;
+        if (_bootstrapFile != null)  {
+            bsFile = _bootstrapFile;
+        } else  {
+            final String envFile = System.getenv(StartupDatabaseConnection.ENV_FILE);
+            if (envFile != null)  {
+                bsFile = envFile;
+            } else  {
+                bsFile = StartupDatabaseConnection.DEFAULT_BOOTSTRAP_FILE;
+            }
+        }
+        final File bootstrap = new File(bsPath, bsFile + StartupDatabaseConnection.BOOTSTRAP_EXTENSION);
+
+        // read bootstrap file
+        final Properties props = new Properties();
+        try {
+            props.load(new FileReader(bootstrap));
+        } catch (final FileNotFoundException e) {
+            throw new StartupException("bootstrap file " + bootstrap + " not found", e);
+        } catch (final IOException e) {
+            throw new StartupException("bootstrap file " + bootstrap + " could not be read", e);
+        }
+
+        // and startup
+        final Integer timeout;
+        if (props.containsKey(StartupDatabaseConnection.PROP_TM_TIMEOUT))  {
+            timeout = Integer.parseInt(props.getProperty(StartupDatabaseConnection.PROP_TM_TIMEOUT));
+        } else  {
+            timeout = null;
+        }
+        StartupDatabaseConnection.startup(props.getProperty(StartupDatabaseConnection.PROP_DBTYPE_CLASS),
+                                          props.getProperty(StartupDatabaseConnection.PROP_DBFACTORY_CLASS),
+                                          props.getProperty(StartupDatabaseConnection.PROP_DBCONNECTION),
+                                          props.getProperty(StartupDatabaseConnection.PROP_TM_CLASS),
+                                          timeout);
     }
 
     /**
