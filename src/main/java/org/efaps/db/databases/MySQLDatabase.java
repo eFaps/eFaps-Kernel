@@ -46,6 +46,17 @@ public class MySQLDatabase
     private static final Logger LOG = LoggerFactory.getLogger(PostgreSQLDatabase.class);
 
     /**
+     * Prefix used for tables which simulates sequences.
+     *
+     * @see #createSequence(Connection, String, long)
+     * @see #deleteSequence(Connection, String)
+     * @see #existsSequence(Connection, String)
+     * @see #nextSequence(Connection, String)
+     * @see #setSequence(Connection, String, long)
+     */
+    private static final String PREFIX_SEQUENCE = "seq_";
+
+    /**
      * Select statement to select all unique keys for current logged in
      * MySQL database user.
      *
@@ -297,50 +308,190 @@ public class MySQLDatabase
     }
 
     /**
-     * {@inheritDoc}
+     * Creates a table with auto generated keys with table name as
+     * concatenation of the prefix {@link #PREFIX_SEQUENCE} and the lower case
+     * of <code>_name</code>. This table "simulates" the sequences (which are
+     * not supported by MySQL).
+     *
+     * @param _con          SQL connection
+     * @param _name         name of the sequence
+     * @param _startValue   start value of the sequence number
+     * @return this instance
+     * @throws SQLException if SQL table could not be created; defined as auto
+     *                      increment table or if the sequence number could not
+     *                      be defined
+     * @see #createTable(Connection, String)
+     * @see #defineTableAutoIncrement(Connection, String)
+     * @see #setSequence(Connection, String, long)
+     * @see #PREFIX_SEQUENCE
      */
     @Override()
     public MySQLDatabase createSequence(final Connection _con,
-                                             final String _name,
-                                             final String _startValue)
+                                        final String _name,
+                                        final long _startValue)
         throws SQLException
     {
-        throw new SQLException("sequence not supported");
+        final String name = new StringBuilder()
+                .append(MySQLDatabase.PREFIX_SEQUENCE).append(_name.toLowerCase())
+                .toString();
+        this.createTable(_con, name);
+        this.defineTableAutoIncrement(_con, name);
+        this.setSequence(_con, _name, _startValue);
+        return this;
     }
 
     /**
-     * {@inheritDoc}
-     * @throws SQLException
+     * Deletes given sequence <code>_name</code> which is internally
+     * represented by this MySQL connector as normal SQL table. The name of the
+     * SQL table to delete is a concatenation of {@link #PREFIX_SEQUENCE} and
+     * <code>_name</code> in lower case.
+     *
+     * @param _con      SQL connection
+     * @param _name     name of the sequence
+     * @return this instance
+     * @throws SQLException if sequence (simulated by an auto increment SQL
+     *                      table) could not be deleted
+     * @see #PREFIX_SEQUENCE
+     */
+    @Override()
+    public MySQLDatabase deleteSequence(final Connection _con,
+                                        final String _name)
+        throws SQLException
+    {
+        final String cmd = new StringBuilder()
+            .append("DROP TABLE `").append(MySQLDatabase.PREFIX_SEQUENCE).append(_name.toLowerCase()).append("`")
+            .toString();
+        final Statement stmt = _con.createStatement();
+        try {
+            stmt.executeUpdate(cmd);
+        } finally {
+            stmt.close();
+        }
+        return this;
+    }
+
+    /**
+     * Checks if the related table representing sequence <code>_name</code>
+     * exists.
+     *
+     * @param _con          SQL connection
+     * @param _name         name of the sequence
+     * @return <i>true</i> if a table with name as concatenation of
+     *        {@link #PREFIX_SEQUENCE} and <code>_name</code> (in lower case)
+     *        representing the sequence exists; otherwise <i>false</i>
+     * @throws SQLException if check for the existence of the table
+     *                      representing the sequence failed
+     * @see #existsTable(Connection, String)
+     * @see #PREFIX_SEQUENCE
      */
     @Override()
     public boolean existsSequence(final Connection _con,
                                   final String _name)
         throws SQLException
     {
-        throw new SQLException("sequence not supported");
+        return this.existsTable(
+                _con,
+                new StringBuilder().append(MySQLDatabase.PREFIX_SEQUENCE).append(_name.toLowerCase()).toString());
     }
 
     /**
-     * {@inheritDoc}
+     * Fetches next number for sequence <code>_name</code> by inserting new
+     * row into representing table. The new auto generated key is returned as
+     * next number of the sequence.
+     *
+     * @param _con      SQL connection
+     * @param _name     name of the sequence
+     * @return current inserted value of the table
+     * @throws SQLException if next number from the sequence could not be
+     *                      fetched
+     * @see #PREFIX_SEQUENCE
      */
     @Override()
     public long nextSequence(final Connection _con,
                              final String _name)
         throws SQLException
     {
-        throw new SQLException("sequence not supported");
+        final long ret;
+        final Statement stmt = _con.createStatement();
+        try {
+            // insert new line
+            final String insertCmd = new StringBuilder()
+                    .append("INSERT INTO `").append(MySQLDatabase.PREFIX_SEQUENCE).append(_name.toLowerCase())
+                    .append("` VALUES ()")
+                    .toString();
+            final int row = stmt.executeUpdate(insertCmd, Statement.RETURN_GENERATED_KEYS);
+            if (row != 1)  {
+                throw new SQLException("no sequence found for '" + _name + "'");
+            }
+
+            // fetch new number
+            final ResultSet resultset = stmt.getGeneratedKeys();
+            if (resultset.next()) {
+                ret = resultset.getLong(1);
+            } else  {
+                throw new SQLException("no sequence found for '" + _name + "'");
+            }
+        } finally {
+            stmt.close();
+        }
+        return ret;
     }
 
     /**
-     * {@inheritDoc}
+     * Defines new <code>_value</code> for sequence <code>_name</code>. Because
+     * in MySQL the sequences are simulated and the values from fetched
+     * sequence numbers are not deleted, all existing values in the table are
+     * first deleted (to be sure that the sequence could be reseted to already
+     * fetched numbers). After the new starting value is defined a first auto
+     * generated value is fetched from the database so that this value is also
+     * stored if the MySQL database is restarted.
+     *
+     * @param _con          SQL connection
+     * @param _name         name of the sequence
+     * @param _value        new value of the sequence
+     * @return this instance
+     * @throws SQLException if new number of the sequence could not be defined
+     *                      for the table
+     * @see #PREFIX_SEQUENCE
      */
     @Override()
     public MySQLDatabase setSequence(final Connection _con,
                                      final String _name,
-                                     final String _value)
+                                     final long _value)
         throws SQLException
     {
-        throw new SQLException("sequence not supported");
+        final String name = _name.toLowerCase();
+        final String lockCmd = new StringBuilder()
+                .append("LOCK TABLES `").append(MySQLDatabase.PREFIX_SEQUENCE).append(name)
+                .append("` WRITE")
+                .toString();
+        final String deleteCmd = new StringBuilder()
+                .append("DELETE FROM `").append(MySQLDatabase.PREFIX_SEQUENCE).append(name).append("`")
+                .toString();
+        final String alterCmd = new StringBuilder()
+                .append("ALTER TABLE `").append(MySQLDatabase.PREFIX_SEQUENCE).append(name)
+                .append("` AUTO_INCREMENT=").append(_value - 1)
+                .toString();
+        final String insertCmd = new StringBuilder()
+                .append("INSERT INTO `").append(MySQLDatabase.PREFIX_SEQUENCE).append(name)
+                .append("` VALUES ()")
+                .toString();
+        final String unlockCmd = new StringBuilder()
+                .append("UNLOCK TABLES")
+                .toString();
+
+        final Statement stmt = _con.createStatement();
+        try {
+            stmt.executeUpdate(lockCmd);
+            stmt.executeUpdate(deleteCmd);
+            stmt.executeUpdate(alterCmd);
+            stmt.executeUpdate(insertCmd);
+            stmt.executeUpdate(unlockCmd);
+        } finally {
+            stmt.close();
+        }
+
+        return this;
     }
 
     /**

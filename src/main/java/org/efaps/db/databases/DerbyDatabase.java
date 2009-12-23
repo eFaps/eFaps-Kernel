@@ -318,10 +318,10 @@ public class DerbyDatabase
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
     public DerbyDatabase createSequence(final Connection _con,
                                         final String _name,
-                                        final String _startValue)
+                                        final long _startValue)
     {
         throw new Error("not implemented");
     }
@@ -329,7 +329,17 @@ public class DerbyDatabase
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
+    public DerbyDatabase deleteSequence(final Connection _con,
+                                        final String _name)
+    {
+        throw new Error("not implemented");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override()
     public boolean existsSequence(final Connection _con,
                                   final String _name)
     {
@@ -339,7 +349,7 @@ public class DerbyDatabase
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
     public long nextSequence(final Connection _con,
                              final String _name)
         throws SQLException
@@ -350,10 +360,10 @@ public class DerbyDatabase
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
     public DerbyDatabase setSequence(final Connection _con,
                                      final String _name,
-                                     final String _value)
+                                     final long _value)
         throws SQLException
     {
         // TODO Auto-generated method stub
