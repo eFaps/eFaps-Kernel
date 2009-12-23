@@ -269,8 +269,18 @@ public class OracleDatabase
     @Override
     public OracleDatabase createSequence(final Connection _con,
                                          final String _name,
-                                         final String _startValue)
+                                         final long _startValue)
         throws SQLException
+    {
+        throw new Error("not implemented");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override()
+    public OracleDatabase deleteSequence(final Connection _con,
+                                         final String _name)
     {
         throw new Error("not implemented");
     }
@@ -302,7 +312,7 @@ public class OracleDatabase
     @Override
     public OracleDatabase setSequence(final Connection _con,
                                       final String _name,
-                                      final String _value)
+                                      final long _value)
         throws SQLException
     {
         throw new Error("not implemented");

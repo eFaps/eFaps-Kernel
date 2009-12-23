@@ -69,7 +69,7 @@ public class NumberGeneratorUpdate
         /**
          * Start value for this NumberGenerator.
          */
-        private String startvalue;
+        private long startvalue;
 
         /**
          * {@inheritDoc}
@@ -83,7 +83,7 @@ public class NumberGeneratorUpdate
             if ("format".equals(value)) {
                 addValue("Format", _text);
             } else if ("startvalue".equals(value)) {
-                this.startvalue = _text;
+                this.startvalue = Long.valueOf(_text);
             } else  {
                 super.readXML(_tags, _attributes, _text);
             }

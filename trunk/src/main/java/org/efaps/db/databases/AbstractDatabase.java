@@ -392,7 +392,11 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
     }
 
     /**
-     * Method to create a new Sequence in this DataBase.
+     * Method to create new sequence <code>_name</code>in this database. The
+     * next time the value for sequence <code>_name</code> will return
+     * <code>_value</code> (by calling
+     * {@link #nextSequence(Connection, String)}).
+     *
      * @param _con          SQL connection
      * @param _name         name of the sequence
      * @param _startValue   start value for the sequence
@@ -401,11 +405,24 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      */
     public abstract DB createSequence(final Connection _con,
                                       final String _name,
-                                      final String _startValue)
+                                      final long _startValue)
+        throws SQLException;
+
+    /**
+     * Deletes given sequence <code>_name</code> in this database.
+     *
+     * @param _con          SQL connection
+     * @param _name         name of the sequence
+     * @return this instance
+     * @throws SQLException if delete of the sequence failed
+     */
+    public abstract DB deleteSequence(final Connection _con,
+                                      final String _name)
         throws SQLException;
 
     /**
      * Method to check for an existing Sequence in this Database.
+     *
      * @param _con          SQL connection
      * @param _name         name of the sequence
      * @return true if exists, else false
@@ -416,7 +433,8 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
         throws SQLException;
 
     /**
-     * Method to get the next value from a given sequence in this Database.
+     * Method to get the next value from a given sequence in this database.
+     *
      * @param _con          SQL connection
      * @param _name         name of the sequence
      * @return next value in sequence
@@ -427,9 +445,11 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
         throws SQLException;
 
     /**
-     * Method to set the value for a Sequence. The next time the value for
-     * sequence will be called using {@link #nextSequence(Connection, String)}
-     * it will return <code>value + 1</code>.
+     * Method to define current value for sequence <code>_name</code>. The
+     * next time the value for sequence <code>_name</code> will return
+     * <code>_value</code> (by calling
+     * {@link #nextSequence(Connection, String)}).
+     *
      * @param _con          SQL connection
      * @param _name         name of the sequence
      * @param _value        value for the sequence
@@ -437,8 +457,8 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @throws SQLException on error
      */
     public abstract DB setSequence(final Connection _con,
-                                     final String _name,
-                                     final String _value)
+                                   final String _name,
+                                   final long _value)
         throws SQLException;
 
     /**

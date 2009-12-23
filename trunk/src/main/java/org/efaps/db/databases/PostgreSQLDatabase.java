@@ -306,47 +306,95 @@ public class PostgreSQLDatabase
     }
 
     /**
-     * {@inheritDoc}
+     * <p>Creates sequence <code>_name</code> in PostgreSQL. As name of the
+     * sequence the lower case of <code>_name</code> is used.</p>
+     * <p>The minimum and starting value is set to <code>_startValue</code>
+     * minus one and then updated to current value (by fetching a value from
+     * the sequence). The current value is <code>_startValue</code> minus one
+     * so that a call to {@link #nextSequence(Connection, String)} returns the
+     * expected <code>_startValue</code>.</p>
+     *
+     * @param _con          SQL connection
+     * @param _name         name of the sequence to update
+     * @param _startValue   start value of the sequence
+     * @return this database instance
+     * @throws SQLException if sequence could not be created
+     * @see #nextSequence(Connection, String)
      */
     @Override
     public PostgreSQLDatabase createSequence(final Connection _con,
                                              final String _name,
-                                             final String _startValue)
+                                             final long _startValue)
         throws SQLException
     {
+        final long value = _startValue - 1;
         final StringBuilder cmd = new StringBuilder();
-        cmd.append(" create sequence ").append(_name)
-            .append(" increment 1 ")
-            .append(" minvalue 1 ")
-            .append(" maxvalue 9223372036854775807 ")
-            .append(" start ").append(_startValue)
-            .append(" cache 1;");
+        cmd.append("CREATE SEQUENCE \"").append(_name.toLowerCase())
+            .append("\" INCREMENT 1")
+            .append(" MINVALUE  ").append(value)
+            .append(" MAXVALUE 9223372036854775807 ")
+            .append(" START ").append(value)
+            .append(" CACHE 1;");
 
         PreparedStatement stmt = null;
         stmt = _con.prepareStatement(cmd.toString());
         stmt.execute();
         stmt.close();
         _con.commit();
+
+        nextSequence(_con, _name);
+
         return this;
     }
 
     /**
      * {@inheritDoc}
-     * @throws SQLException
      */
-    @Override
+    @Override()
+    public PostgreSQLDatabase deleteSequence(final Connection _con,
+                                             final String _name)
+        throws SQLException
+    {
+        final String cmd = new StringBuilder()
+                .append("DROP SEQUENCE \"").append(_name.toLowerCase()).append("\" RESTRICT")
+                .toString();
+        final Statement stmt = _con.createStatement();
+        try {
+            stmt.executeUpdate(cmd);
+        } finally {
+            stmt.close();
+        }
+        return this;
+    }
+
+    /**
+     * <p>Checks in the database schema if the sequence <code>_name</code>
+     * exists.</p>
+     * <p>As name of the sequence the lower case of <code>_name</code> is
+     * used.</p>
+     *
+     * @param _con          SQL connection
+     * @param _name         name of the sequence to update
+     * @return <i>true</i> if sequence exists; otherwise <i>false</i>
+     * @throws SQLException if it could not be checked that the sequence exists
+     */
+    @Override()
     public boolean existsSequence(final Connection _con,
                                   final String _name)
         throws SQLException
     {
-        boolean ret = false;
-        final StringBuilder cmd = new StringBuilder();
-        cmd.append("select relname from pg_class where relkind = 'S' and relname = '")
-            .append(_name).append("'");
-        final PreparedStatement stmt = _con.prepareStatement(cmd.toString());
-        final ResultSet resultset = stmt.executeQuery();
-        if (resultset.next()) {
-            ret = true;
+        final boolean ret;
+        final String cmd = new StringBuilder()
+                .append("SELECT relname FROM pg_class WHERE relkind = 'S' AND relname='")
+                .append(_name.toLowerCase()).append("'")
+                .toString();
+        final Statement stmt = _con.createStatement();
+        try {
+            final ResultSet resultset = stmt.executeQuery(cmd);
+            ret = resultset.next();
+            resultset.close();
+        } finally {
+            stmt.close();
         }
         return ret;
     }
@@ -354,39 +402,55 @@ public class PostgreSQLDatabase
     /**
      * {@inheritDoc}
      */
-    @Override
+    @Override()
     public long nextSequence(final Connection _con,
                              final String _name)
         throws SQLException
     {
-        Long num = null;
-        final StringBuilder cmd = new StringBuilder();
-        cmd.append(" select nextval('" + _name + "') ");
-        final PreparedStatement stmt = _con.prepareStatement(cmd.toString());
-        final ResultSet resultset = stmt.executeQuery();
-        if (resultset.next()) {
-            num = resultset.getLong(1);
+        final long ret;
+        final String cmd = new StringBuilder()
+                .append("SELECT NEXTVAL('\"" + _name.toLowerCase() + "\"') ")
+                .toString();
+        final Statement stmt = _con.createStatement();
+        try {
+            final ResultSet resultset = stmt.executeQuery(cmd);
+            if (resultset.next()) {
+                ret = resultset.getLong(1);
+            } else  {
+                throw new SQLException("fetching new value from sequence '" + _name + "' failed");
+            }
+            resultset.close();
+        } finally {
+            stmt.close();
         }
-        resultset.close();
-        stmt.close();
-        _con.commit();
-        return num != null ? num : 0;
+        return ret;
     }
 
     /**
-     * {@inheritDoc}
+     * <p>Defines new <code>_value</code> for sequence <code>_name</code>.
+     * Because it could be that the new <code>_value</code> is lower than the
+     * current defined minimum value of the sequence <code>_name</code>, the
+     * sequence is {@link #deleteSequence(Connection, String) deleted} and then
+     * {@link #createSequence(Connection, String, long) recreated}.</p>
+     * <p>As name of the sequence the lower case of <code>_name</code> is
+     * used.</p>
+     *
+     * @param _con          SQL connection
+     * @param _name         name of the sequence to update
+     * @param _value        new value of the sequence
+     * @return this database instance
+     * @throws SQLException if sequence could not be deleted or created
+     * @see #deleteSequence(Connection, String)
+     * @see #createSequence(Connection, String, long)
      */
-    @Override
+    @Override()
     public PostgreSQLDatabase setSequence(final Connection _con,
                                           final String _name,
-                                          final String _value)
+                                          final long _value)
         throws SQLException
     {
-        final StringBuilder cmd = new StringBuilder();
-        cmd.append("select setval('")
-            .append(_name).append("',").append(_value).append(")");
-        final PreparedStatement stmt = _con.prepareStatement(cmd.toString());
-        stmt.executeQuery();
+        deleteSequence(_con, _name);
+        createSequence(_con, _name, _value);
         return this;
     }
 
