@@ -20,6 +20,9 @@
 
 package org.efaps.update.version;
 
+import static org.mozilla.javascript.Context.enter;
+import static org.mozilla.javascript.Context.javaToJS;
+
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 
@@ -35,20 +38,19 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.efaps.admin.program.esjp.EFapsClassLoader;
-import org.efaps.db.Context;
-import org.efaps.update.Install;
-import org.efaps.update.UpdateLifecycle;
-import org.efaps.update.util.InstallationException;
-import org.efaps.util.EFapsException;
+import org.codehaus.groovy.control.CompilerConfiguration;
 import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.mozilla.javascript.Context.enter;
-import static org.mozilla.javascript.Context.javaToJS;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.db.Context;
+import org.efaps.update.Install;
+import org.efaps.update.UpdateLifecycle;
+import org.efaps.update.util.InstallationException;
+import org.efaps.util.EFapsException;
 
 /**
  * Defines one version of the application to install.
@@ -474,7 +476,9 @@ public class ApplicationVersion
                 }
                 final ClassLoader parent = getClass().getClassLoader();
                 final EFapsClassLoader efapsClassLoader = new EFapsClassLoader(parent);
-                final GroovyClassLoader loader = new GroovyClassLoader(efapsClassLoader);
+                final CompilerConfiguration config = new CompilerConfiguration();
+                config.setClasspathList(ApplicationVersion.this.application.getClassPathElements());
+                final GroovyClassLoader loader = new GroovyClassLoader(efapsClassLoader, config);
                 if (getCode() != null) {
                     final Class<?> clazz = loader.parseClass(getCode());
                     groovy.lang.Script go;
@@ -485,7 +489,7 @@ public class ApplicationVersion
                         binding.setVariable("EFAPS_LOGGER", ApplicationVersion.LOG);
                         binding.setVariable("EFAPS_USERNAME", _userName);
                         binding.setVariable("EFAPS_PASSWORD", _userName);
-                        binding.setVariable("EFAPS_ROOTURL", ApplicationVersion.this.getCompleteRootUrl());
+                        binding.setVariable("EFAPS_ROOTURL", getCompleteRootUrl());
                         go.setBinding(binding);
 
                         final Object[] args = {};
@@ -560,15 +564,15 @@ public class ApplicationVersion
                 ScriptableObject.putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
                 ScriptableObject.putProperty(scope,
                                              "EFAPS_ROOTURL",
-                                             javaToJS(ApplicationVersion.this.getCompleteRootUrl(), scope));
+                                             javaToJS(getCompleteRootUrl(), scope));
 
                 // evaluate java script file (if defined)
-                if (this.getFileName() != null) {
+                if (getFileName() != null) {
                     if (ApplicationVersion.LOG.isInfoEnabled()) {
                         ApplicationVersion.LOG.info("Execute script file '" + getFileName() + "'");
                     }
                     final Reader in = new InputStreamReader(
-                            new URL(ApplicationVersion.this.getCompleteRootUrl(), getFileName()).openStream());
+                            new URL(getCompleteRootUrl(), getFileName()).openStream());
                     javaScriptContext.evaluateReader(scope, in, getFileName(), 1, null);
                     in.close();
                 }
