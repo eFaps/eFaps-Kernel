@@ -20,6 +20,8 @@
 
 package org.efaps.update.version;
 
+import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -38,6 +40,10 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.Rule;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.tools.ant.DirectoryScanner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.Attributes;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
@@ -49,11 +55,6 @@ import org.efaps.update.schema.program.esjp.ESJPCompiler;
 import org.efaps.update.schema.program.staticsource.AbstractStaticSourceCompiler;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
-
-import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
 
 /**
  * @author The eFaps Team
@@ -75,6 +76,7 @@ public final class Application
         Application.DEFAULT_TYPE_MAPPING.put("java", FileType.JAVA.type);
         Application.DEFAULT_TYPE_MAPPING.put("js", FileType.JS.type);
         Application.DEFAULT_TYPE_MAPPING.put("jrxml", FileType.JRXML.type);
+        Application.DEFAULT_TYPE_MAPPING.put("wiki", FileType.WIKI.type);
         Application.DEFAULT_TYPE_MAPPING.put("xml", FileType.XML.type);
         Application.DEFAULT_TYPE_MAPPING.put("xsl", FileType.XSL.type);
     }
@@ -90,6 +92,7 @@ public final class Application
         Application.DEFAULT_INCLUDES.add("**/*.java");
         Application.DEFAULT_INCLUDES.add("**/*.js");
         Application.DEFAULT_INCLUDES.add("**/*.jrxml");
+        Application.DEFAULT_INCLUDES.add("**/*.wiki");
         Application.DEFAULT_INCLUDES.add("**/*.xml");
         Application.DEFAULT_INCLUDES.add("**/*.xsl");
     }
