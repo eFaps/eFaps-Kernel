@@ -29,6 +29,7 @@ import org.efaps.update.schema.program.CSSUpdate;
 import org.efaps.update.schema.program.JasperReportUpdate;
 import org.efaps.update.schema.program.JavaScriptUpdate;
 import org.efaps.update.schema.program.JavaUpdate;
+import org.efaps.update.schema.program.WikiUpdate;
 import org.efaps.update.schema.program.XSLUpdate;
 
 /**
@@ -41,6 +42,7 @@ public enum FileType
     JS("source-js", "js"),
     JRXML("jasperreport", "jrxml"),
     CSS("source-css", "css"),
+    WIKI("source-wiki", "wiki"),
     XML("install-xml", "xml"),
     XSL("source-xsl", "xsl", "xslt");
 
@@ -117,6 +119,8 @@ public enum FileType
             this.clazzes.add(XSLUpdate.class);
         } else if ("jasperreport".equals(_type)) {
             this.clazzes.add(JasperReportUpdate.class);
+        } else if ("source-wiki".equals(_type)) {
+            this.clazzes.add(WikiUpdate.class);
         }
     }
 

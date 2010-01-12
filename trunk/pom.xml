@@ -405,6 +405,13 @@
             <version>2.3.6</version>
         </dependency>
 
+        <!-- wikiutil from efaps to compile wiki into html -->
+        <dependency>
+            <groupId>org.efaps</groupId>
+            <artifactId>wikiutil</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <!-- JasperReport as a flexible reporting tool -->
         <dependency>
             <groupId>jasperreports</groupId>
@@ -551,5 +558,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>
