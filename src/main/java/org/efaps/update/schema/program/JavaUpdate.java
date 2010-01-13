@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,14 +99,14 @@ public class JavaUpdate
             if (this.javaCode == null) {
                 this.javaCode = new ESJPImporter(getUrl());
             }
-            this.setName(this.javaCode.getProgramName());
+            setName(this.javaCode.getProgramName());
 
             if (this.javaCode.getEFapsUUID() != null) {
-                this.addValue("UUID", this.javaCode.getEFapsUUID().toString());
+                addValue("UUID", this.javaCode.getEFapsUUID().toString());
             }
 
             if (this.javaCode.getRevision() != null) {
-                this.addValue("Revision", this.javaCode.getRevision());
+                addValue("Revision", this.javaCode.getRevision());
             }
             if (this.instance == null) {
                 this.instance = this.javaCode.searchInstance();
@@ -121,6 +121,7 @@ public class JavaUpdate
          * @param _step             current update step
          * @param _allLinkTypes     all link types to update
          * @throws InstallationException on error
+         * @throws EFapsException on error
          */
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
@@ -136,6 +137,19 @@ public class JavaUpdate
             } else  {
                 super.updateInDB(_step, _allLinkTypes);
             }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected String getRevision()
+            throws InstallationException
+        {
+            if (this.javaCode == null) {
+                this.javaCode = new ESJPImporter(getUrl());
+            }
+            return this.javaCode.getRevision();
         }
     }
 }

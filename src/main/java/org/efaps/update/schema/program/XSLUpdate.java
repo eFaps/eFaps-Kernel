@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@
 
 package org.efaps.update.schema.program;
 
+import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_XSL;
+
 import java.net.URL;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.update.schema.program.staticsource.XSLImporter;
 import org.efaps.update.util.InstallationException;
-
-import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_XSL;
 
 /**
  * TODO description
@@ -104,6 +104,19 @@ public class XSLUpdate
             if (this.instance == null) {
                 this.instance = this.sourceCode.searchInstance();
             }
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         */
+        @Override
+        protected String getRevision() throws InstallationException
+        {
+            if (this.sourceCode == null) {
+                this.sourceCode = new XSLImporter(getUrl());
+            }
+            return this.sourceCode.getRevision();
         }
     }
 }

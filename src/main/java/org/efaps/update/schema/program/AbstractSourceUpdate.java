@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+
 import org.efaps.db.Checkin;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
@@ -114,21 +115,33 @@ public abstract class AbstractSourceUpdate
         }
 
         /**
+         * Method to get the Revision from the importer.
+         * @return revision
+         * @throws InstallationException on error
+         */
+        protected abstract String getRevision() throws InstallationException;
+
+        /**
          * Updates / creates the instance in the database. If a file
          * name is given, this file is checked in
          *
          * @param _step             current update step
          * @param _allLinkTypes     set of links
          * @throws InstallationException on error
+         *
          */
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
             throws InstallationException, EFapsException
         {
+            // on update the revision must be set before the super method is called
+            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+                setFileRevision(getRevision());
+            }
             super.updateInDB(_step, _allLinkTypes);
 
-            if ((_step == UpdateLifecycle.EFAPS_UPDATE) && (this.getValue("Name") != null))  {
+            if ((_step == UpdateLifecycle.EFAPS_UPDATE) && (getValue("Name") != null))  {
                 final Checkin checkin = new Checkin(this.instance);
                 try {
                     final InputStream in = this.fileUrl.openStream();
