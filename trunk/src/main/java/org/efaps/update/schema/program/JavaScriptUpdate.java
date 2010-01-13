@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,6 +126,19 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
             if (this.instance == null) {
                 this.instance = this.sourceCode.searchInstance();
             }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected String getRevision()
+            throws InstallationException
+        {
+            if (this.sourceCode == null) {
+                this.sourceCode = new JavaScriptImporter(getUrl());
+            }
+            return this.sourceCode.getRevision();
         }
     }
 }

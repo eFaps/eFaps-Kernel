@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@
 
 package org.efaps.update.schema.program;
 
+import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_CSS;
+import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_CSS2CSS;
+
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,9 +32,6 @@ import org.efaps.update.LinkInstance;
 import org.efaps.update.schema.program.staticsource.CSSImporter;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
-
-import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_CSS;
-import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_CSS2CSS;
 
 /**
  * The class updates programs from type <code>Admin_Program_CSS</code> inside
@@ -119,20 +119,33 @@ public class CSSUpdate
             if (this.sourceCode == null) {
                 this.sourceCode = new CSSImporter(getUrl());
             }
-            this.setName(this.sourceCode.getProgramName());
+            setName(this.sourceCode.getProgramName());
 
             if (this.sourceCode.getEFapsUUID() != null) {
-                this.addValue("UUID", this.sourceCode.getEFapsUUID().toString());
+                addValue("UUID", this.sourceCode.getEFapsUUID().toString());
             }
 
             if (this.sourceCode.getExtendSource() != null) {
-                this.addLink(CSSUpdate.LINK2SUPER,
+                addLink(CSSUpdate.LINK2SUPER,
                              new LinkInstance(this.sourceCode.getExtendSource()));
             }
 
             if (this.instance == null) {
                 this.instance = this.sourceCode.searchInstance();
             }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected String getRevision()
+            throws InstallationException
+        {
+            if (this.sourceCode == null) {
+                this.sourceCode = new CSSImporter(getUrl());
+            }
+            return this.sourceCode.getRevision();
         }
     }
 }
