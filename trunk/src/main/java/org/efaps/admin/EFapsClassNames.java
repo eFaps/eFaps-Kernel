@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -194,7 +194,15 @@ public enum EFapsClassNames
     /** Admin_CommonVersion. */
     ADMIN_COMMON_VERSION("1bb051f3-b664-43db-b409-c0c4009f5972"),
     /** Admin_Common_Property. */
-    ADMIN_COMMON_PROPERTY("f3d54a86-c323-43d8-9c78-284d61d955b3");
+    ADMIN_COMMON_PROPERTY("f3d54a86-c323-43d8-9c78-284d61d955b3"),
+
+    /** Admin_Wiki_Menu. **/
+    ADMIN_WIKI_MENU("34897a17-eadc-446c-8a98-3061fb7c5240"),
+    /** Admin_Wiki_Menu2Menu. **/
+    ADMIN_WIKI_MENU2MENU("69343a26-b1ef-404b-b13d-76b3b7da8782"),
+    /** Admin_Wiki_Menu2Wiki. **/
+    ADMIN_WIKI_MENU2WIKI("f603d8e9-1bf5-474e-948d-34f9d181caa1");
+
 
     /**
      * The class is only used to define a mapping between UUID's and an instance
