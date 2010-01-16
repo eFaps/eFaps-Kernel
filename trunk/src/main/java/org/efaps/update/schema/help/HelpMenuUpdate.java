@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.update.schema.wiki;
+package org.efaps.update.schema.help;
 
 import java.net.URL;
 import java.util.HashSet;
@@ -35,34 +35,35 @@ import org.efaps.update.LinkInstance;
  * @author The eFaps Team
  * @version $Id$
  */
-public class WikiMenuUpdate extends AbstractUpdate
+public class HelpMenuUpdate
+    extends AbstractUpdate
 {
     /** Link from menu to child command / menu. */
-    private static final Link LINK2CHILD = new OrderedLink("Admin_Wiki_Menu2Menu",
+    private static final Link LINK2CHILD = new OrderedLink("Admin_Help_Menu2Menu",
                                                            "FromLink",
-                                                           "Admin_Wiki_Menu", "ToLink");
+                                                           "Admin_Help_Menu", "ToLink");
 
     /** Link from menu to type as type tree menu. */
-    private static final Link LINK2COMPILED = new Link("Admin_Wiki_Menu2Wiki",
-                                                       "FromLink",
-                                                       "Admin_Program_WikiCompiled", "ToLink");
+    private static final Link LINK2WIKI = new Link("Admin_Help_Menu2Wiki",
+                                                   "FromLink",
+                                                   "Admin_Program_Wiki", "ToLink");
 
     /**
      * Set of all links for wiki menus.
      */
     private static final Set<Link> ALLLINKS = new HashSet<Link>();
     static  {
-        WikiMenuUpdate.ALLLINKS.add(WikiMenuUpdate.LINK2CHILD);
-        WikiMenuUpdate.ALLLINKS.add(WikiMenuUpdate.LINK2COMPILED);
+        HelpMenuUpdate.ALLLINKS.add(HelpMenuUpdate.LINK2CHILD);
+        HelpMenuUpdate.ALLLINKS.add(HelpMenuUpdate.LINK2WIKI);
     }
 
     /**
      * Constructor calling the super constructor.
      * @param _url URL to the xml definition file.
      */
-    public WikiMenuUpdate(final URL _url)
+    public HelpMenuUpdate(final URL _url)
     {
-        super(_url, "Admin_Wiki_Menu", WikiMenuUpdate.ALLLINKS);
+        super(_url, "Admin_Help_Menu", HelpMenuUpdate.ALLLINKS);
     }
 
     /**
@@ -94,7 +95,7 @@ public class WikiMenuUpdate extends AbstractUpdate
                 if (_tags.size() > 1) {
                     final String subValue = _tags.get(1);
                     if ("child".equals(subValue)) {
-                        addLink(WikiMenuUpdate.LINK2CHILD, new LinkInstance(_text));
+                        addLink(HelpMenuUpdate.LINK2CHILD, new LinkInstance(_text));
                     } else {
                         super.readXML(_tags, _attributes, _text);
                     }
@@ -103,7 +104,7 @@ public class WikiMenuUpdate extends AbstractUpdate
                 if (_tags.size() == 2) {
                     final String subValue = _tags.get(1);
                     if ("wiki".equals(subValue)) {
-                        addLink(WikiMenuUpdate.LINK2COMPILED, new LinkInstance(_text));
+                        addLink(HelpMenuUpdate.LINK2WIKI, new LinkInstance(_text));
                     }
                 }
             } else {

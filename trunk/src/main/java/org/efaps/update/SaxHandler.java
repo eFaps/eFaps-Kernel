@@ -45,6 +45,7 @@ import org.efaps.update.schema.datamodel.StatusGroupUpdate;
 import org.efaps.update.schema.datamodel.TypeUpdate;
 import org.efaps.update.schema.db.StoreUpdate;
 import org.efaps.update.schema.dbproperty.DBPropertiesUpdate;
+import org.efaps.update.schema.help.HelpMenuUpdate;
 import org.efaps.update.schema.integration.WebDAVUpdate;
 import org.efaps.update.schema.program.JasperImageUpdate;
 import org.efaps.update.schema.program.JasperReportUpdate;
@@ -58,7 +59,6 @@ import org.efaps.update.schema.ui.TableUpdate;
 import org.efaps.update.schema.user.CompanyUpdate;
 import org.efaps.update.schema.user.JAASSystemUpdate;
 import org.efaps.update.schema.user.RoleUpdate;
-import org.efaps.update.schema.wiki.WikiMenuUpdate;
 
 /**
  * @author The eFaps Team
@@ -251,8 +251,8 @@ public class SaxHandler extends DefaultHandler
             this.update = new TypeUpdate(this.url);
         } else if ("dbproperties".equals(_qName)) {
             this.update = new DBPropertiesUpdate(this.url);
-        } else if ("wiki-menu".equals(_qName)) {
-            this.update = new WikiMenuUpdate(this.url);
+        } else if ("help-menu".equals(_qName)) {
+            this.update = new HelpMenuUpdate(this.url);
         } else {
             throw new SAXException("Unknown XML Tag " + _qName);
         }

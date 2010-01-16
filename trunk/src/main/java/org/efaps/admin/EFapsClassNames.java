@@ -150,6 +150,8 @@ public enum EFapsClassNames
     LINK_TARGET_SEARCH("c78c1f61-3f64-4f69-92fc-e01854bc7512"),
     /** */
     LINK_TARGET_TABLE("27eae97f-c6f4-4c4e-9947-c1c9bc4ea297"),
+    /** Admin_UI_LinkTargetWiki. */
+    LINK_TARGET_WIKI("28d94899-9998-449d-9bd1-dc4255388cc8"),
     /** */
     LINK_DEFAULT_SEARCHCOMMAND("3f827900-eda2-409f-be92-497dcacb0eef"),
 
@@ -196,12 +198,12 @@ public enum EFapsClassNames
     /** Admin_Common_Property. */
     ADMIN_COMMON_PROPERTY("f3d54a86-c323-43d8-9c78-284d61d955b3"),
 
-    /** Admin_Wiki_Menu. **/
-    ADMIN_WIKI_MENU("34897a17-eadc-446c-8a98-3061fb7c5240"),
-    /** Admin_Wiki_Menu2Menu. **/
-    ADMIN_WIKI_MENU2MENU("69343a26-b1ef-404b-b13d-76b3b7da8782"),
-    /** Admin_Wiki_Menu2Wiki. **/
-    ADMIN_WIKI_MENU2WIKI("f603d8e9-1bf5-474e-948d-34f9d181caa1");
+    /** Admin_Help_Menu. **/
+    ADMIN_HELP_MENU("34897a17-eadc-446c-8a98-3061fb7c5240"),
+    /** Admin_Help_Menu2Menu. **/
+    ADMIN_HELP_MENU2MENU("69343a26-b1ef-404b-b13d-76b3b7da8782"),
+    /** Admin_Help_Menu2Wiki. **/
+    ADMIN_HELP_MENU2WIKI("f603d8e9-1bf5-474e-948d-34f9d181caa1");
 
 
     /**

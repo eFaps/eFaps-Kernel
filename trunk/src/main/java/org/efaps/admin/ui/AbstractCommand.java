@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -356,6 +356,11 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     private String targetStructurBrowserField;
 
     /**
+     * Name of the target wiki.
+     */
+    private String targeHelp;
+
+    /**
      * Constructor to set the id and name of the command object. The constructor
      * also sets the label of the command and the titel of the target.
      *
@@ -539,6 +544,16 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     public AbstractCommand getTargetCommand()
     {
         return this.targetCommand;
+    }
+
+    /**
+     * Getter method for instance variable {@link #targeHelp}.
+     *
+     * @return value of instance variable {@link #targeHelp}
+     */
+    public String getTargetHelp()
+    {
+        return this.targeHelp;
     }
 
     /**
@@ -819,8 +834,11 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
      * @throws EFapsException on error
      */
     @Override
-    protected void setLinkProperty(final EFapsClassNames _linkType, final long _toId, final EFapsClassNames _toType,
-                    final String _toName) throws EFapsException
+    protected void setLinkProperty(final EFapsClassNames _linkType,
+                                   final long _toId,
+                                   final EFapsClassNames _toType,
+                                   final String _toName)
+        throws EFapsException
     {
         switch (_linkType) {
             case LINK_ICON:
@@ -840,6 +858,9 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
                 break;
             case LINK_TARGET_CMD:
                 this.targetCommand = Command.get(_toId);
+                break;
+            case LINK_TARGET_WIKI:
+                this.targeHelp = _toName;
                 break;
             default:
                 super.setLinkProperty(_linkType, _toId, _toType, _toName);
