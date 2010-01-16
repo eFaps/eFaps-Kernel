@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,6 +77,10 @@ public class CommandUpdate extends AbstractUpdate
     private static final Link LINK2TARGETSEARCH = new Link("Admin_UI_LinkTargetSearch", "From", "Admin_UI_Search",
                                                            "To");
 
+    /** Link from command to wiki. */
+    private static final Link LINK2TARGETHELP = new Link("Admin_UI_LinkTargetHelp", "FromMenuLink",
+                                                         "Admin_Program_Wiki", "ToWikiLink");
+
     static {
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2ACCESSROLE);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2ACCESSPERSON);
@@ -88,6 +92,7 @@ public class CommandUpdate extends AbstractUpdate
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETFORM);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETMENU);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETSEARCH);
+        CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETHELP);
     }
 
     /**
@@ -189,12 +194,10 @@ public class CommandUpdate extends AbstractUpdate
                         // assigns a menu as target for this command definition.
                         addLink(CommandUpdate.LINK2TARGETMENU, new LinkInstance(_text));
                     } else if ("search".equals(subValue)) {
-                        // assigns a search menu as target for this command
-                        // definition.
+                        // assigns a search menu as target for this command definition.
                         addLink(CommandUpdate.LINK2TARGETSEARCH, new LinkInstance(_text));
                     } else if ("table".equals(subValue)) {
-                        // assigns a table as target for this command
-                        // definition.
+                        // assigns a table as target for this command definition.
                         addLink(CommandUpdate.LINK2TARGETTABLE, new LinkInstance(_text));
                     } else if ("trigger".equals(subValue)) {
                         this.events.add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
@@ -204,6 +207,9 @@ public class CommandUpdate extends AbstractUpdate
                         this.events.add(new Event(_attributes.get("name"), EventType.UI_VALIDATE,
                                                   _attributes.get("program"), _attributes.get("method"),
                                                   _attributes.get("index")));
+                    } else if ("help".equals(subValue)) {
+                        // assigns a wiki as target for this command definition.
+                        addLink(CommandUpdate.LINK2TARGETHELP, new LinkInstance(_text));
                     } else {
                         super.readXML(_tags, _attributes, _text);
                     }
