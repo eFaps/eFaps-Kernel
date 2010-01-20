@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,20 +33,32 @@ import org.efaps.update.schema.program.WikiUpdate;
 import org.efaps.update.schema.program.XSLUpdate;
 
 /**
- * @author tmo
+ * Main File type definition for the import and update of files.
+ *
+ * @author The eFaps Team
  * @version $Id$
  */
-public enum FileType
-{
+public enum FileType {
+
+    /** Java Source file. */
     JAVA("source-java", "java"),
+    /** Java Script file. */
     JS("source-js", "js"),
+    /** JasperReport Source file. */
     JRXML("jasperreport", "jrxml"),
+    /** CSS Source file. */
     CSS("source-css", "css"),
+    /** Wiki Source file. */
     WIKI("source-wiki", "wiki"),
+    /** XML Source file. */
     XML("install-xml", "xml"),
+    /** XSL Source file. */
     XSL("source-xsl", "xsl", "xslt");
 
-    private final static class Mapper
+    /**
+     * Class used for mapping.
+     */
+    private static final class Mapper
     {
         /**
          * Mapping between an extensions and the related file type.
@@ -58,42 +70,30 @@ public enum FileType
          */
         private static final Map<String, FileType> TYPE2FILETYPE = new HashMap<String, FileType>();
 
-        static {
-            // FileType.CSS.clazzes.add(CSSUpdate.class);
-            // FileType.JAVA.clazzes.add(JavaUpdate.class);
-            // FileType.JS.clazzes.add(JavaScriptUpdate.class);
-            /*
-             * FileType.XML.clazzes.add(AccessSetUpdate.class);
-             * FileType.XML.clazzes.add(AccessTypeUpdate.class);
-             * FileType.XML.clazzes.add(CommandUpdate.class);
-             * FileType.XML.clazzes.add(FormUpdate.class);
-             * FileType.XML.clazzes.add(ImageUpdate.class);
-             * FileType.XML.clazzes.add(JAASSystemUpdate.class);
-             * FileType.XML.clazzes.add(MenuUpdate.class);
-             * FileType.XML.clazzes.add(RoleUpdate.class);
-             * FileType.XML.clazzes.add(SQLTableUpdate.class);
-             * FileType.XML.clazzes.add(SearchUpdate.class);
-             * FileType.XML.clazzes.add(SystemAttributeUpdate.class);
-             * FileType.XML.clazzes.add(TableUpdate.class);
-             * FileType.XML.clazzes.add(TypeUpdate.class);
-             * FileType.XML.clazzes.add(WebDAVUpdate.class);
-             * FileType.XSL.clazzes.add(XSLUpdate.class);
-             */}
+        /**
+         * hidden Constructor.
+         */
+        private Mapper()
+        {
+        }
     }
 
     /**
      * Internal type of the file (used e.g. from the eFaps Maven installer).
      */
-    public final String type;
+    private final String type;
+
+
     /**
      * All extensions of this file type.
      */
-    public final Set<String> extensions = new HashSet<String>();
+    private final Set<String> extensions = new HashSet<String>();
 
     /**
      * Set of all update classes.
      */
-    public final Set<Class<? extends AbstractUpdate>> clazzes = new HashSet<Class<? extends AbstractUpdate>>();
+    private final Set<Class<? extends AbstractUpdate>> clazzes = new HashSet<Class<? extends AbstractUpdate>>();
+
 
     /**
      * File type enum constructor.
@@ -101,7 +101,8 @@ public enum FileType
      * @param _type file type
      * @param _extensions extensions of the file type
      */
-    private FileType(final String _type, final String... _extensions)
+    private FileType(final String _type,
+                     final String... _extensions)
     {
         this.type = _type;
         for (final String extension : _extensions) {
@@ -122,6 +123,26 @@ public enum FileType
         } else if ("source-wiki".equals(_type)) {
             this.clazzes.add(WikiUpdate.class);
         }
+    }
+
+    /**
+     * Getter method for the instance variable {@link #type}.
+     *
+     * @return value of instance variable {@link #type}
+     */
+    public String getType()
+    {
+        return this.type;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #clazzes}.
+     *
+     * @return value of instance variable {@link #clazzes}
+     */
+    public Set<Class<? extends AbstractUpdate>> getClazzes()
+    {
+        return this.clazzes;
     }
 
     /**
