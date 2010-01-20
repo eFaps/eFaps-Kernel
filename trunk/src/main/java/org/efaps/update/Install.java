@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
  */
 
 package org.efaps.update;
+
+import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -42,8 +44,6 @@ import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
 
 /**
  * TODO description.
@@ -310,7 +310,7 @@ public class Install
                         }
                     }
                 } else {
-                    for (final Class<? extends AbstractUpdate> updateClass : fileType.clazzes) {
+                    for (final Class<? extends AbstractUpdate> updateClass : fileType.getClazzes()) {
 
                         final List<IUpdate> list = new ArrayList<IUpdate>();
                         this.cache.put(updateClass, list);
