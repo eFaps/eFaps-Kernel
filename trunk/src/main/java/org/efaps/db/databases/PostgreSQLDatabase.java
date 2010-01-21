@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -187,6 +187,19 @@ public class PostgreSQLDatabase
             stmtSel.close();
             stmtExec.close();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PostgreSQLDatabase deleteView(final Connection _con,
+                                    final String _name)
+        throws SQLException
+    {
+        final Statement stmtExec = _con.createStatement();
+        stmtExec.execute("drop view " + _name);
+        return this;
     }
 
     /**

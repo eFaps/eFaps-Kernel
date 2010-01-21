@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -284,6 +284,18 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
 
         return ret;
     }
+
+    /**
+     * Deletes given view <code>_name</code> in this database.
+     *
+     * @param _con          SQL connection
+     * @param _name         name of the sequence
+     * @return this instance
+     * @throws SQLException if delete of the sequence failed
+     */
+    public abstract DB deleteView(final Connection _con,
+                                  final String _name)
+        throws SQLException;
 
     /**
      * The method tests, if a view with given name exists.

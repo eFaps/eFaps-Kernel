@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -526,6 +526,13 @@ public class SQLTableUpdate
                 ConnectionResource con = null;
                 try {
                     con = context.getConnectionResource();
+                    if (this.view) {
+                        final String tableName = getValue("SQLTable");
+                        if (Context.getDbType().existsView(con.getConnection(), tableName)) {
+                            Context.getDbType().deleteView(con.getConnection(), tableName);
+                        }
+                    }
+
                     final Statement stmt = con.getConnection().createStatement();
                     for (final String sql : this.sqls) {
                         if (SQLTableUpdate.LOG.isDebugEnabled()) {
