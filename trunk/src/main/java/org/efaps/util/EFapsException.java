@@ -90,9 +90,16 @@ public class EFapsException
                           final Throwable _cause)
     {
         super(_message, _cause);
-        this.id = null;
-        this.className = null;
-        this.args = null;
+        if (_cause instanceof EFapsException) {
+             final EFapsException cause = ((EFapsException) _cause);
+             this.id = cause.getId();
+             this.className = cause.getClassName();
+             this.args = cause.getArgs();
+        } else {
+            this.id = null;
+            this.className = null;
+            this.args = null;
+        }
     }
 
     /**

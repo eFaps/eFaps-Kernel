@@ -232,11 +232,17 @@ public class Type extends AbstractDataModelObject
      * @param _name name of the type name of the instance
      * @throws CacheReloadException on error
      */
-    protected Type(final long _id, final String _uuid, final String _name)
+    protected Type(final long _id,
+                   final String _uuid,
+                   final String _name)
         throws CacheReloadException
     {
         super(_id, _uuid, _name);
-        addAttribute(new Attribute(0, "Type", "", (SQLTable) null, AttributeType.get("Type"), null, null), false);
+        try {
+            addAttribute(new Attribute(0, "Type", "", (SQLTable) null, AttributeType.get("Type"), null, null), false);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("Error on reading Attribute for Type '" + _name + "'", e);
+        }
     }
 
   /**
@@ -265,14 +271,16 @@ public class Type extends AbstractDataModelObject
      * @param _attribute    attribute to add
      * @param _inherited    is the attribute inherited or form this type
      */
-    protected void addAttribute(final Attribute _attribute, final boolean _inherited)
+    protected void addAttribute(final Attribute _attribute,
+                                final boolean _inherited)
     {
         _attribute.setParent(this);
-        //evaluate for status, an inherited attribute will not overwrite the original attribute
+        // evaluate for status, an inherited attribute will not overwrite the
+        // original attribute
         if (_attribute.getAttributeType().getClassRepr().equals(StatusType.class) && !_inherited) {
             this.statusAttribute = _attribute;
         }
-        //evaluate for company
+        // evaluate for company
         if (_attribute.getAttributeType().getClassRepr().equals(CompanyLinkType.class)) {
             this.companyAttribute = _attribute;
         }
@@ -430,7 +438,8 @@ public class Type extends AbstractDataModelObject
      * @throws EFapsException on error
      * @return true if user has access, else false
      */
-    public boolean hasAccess(final Instance _instance, final AccessType _accessType)
+    public boolean hasAccess(final Instance _instance,
+                             final AccessType _accessType)
         throws EFapsException
     {
         boolean hasAccess = true;
@@ -456,7 +465,8 @@ public class Type extends AbstractDataModelObject
      * @return Map of instances to boolean
      */
     @SuppressWarnings("unchecked")
-    public Map<Instance, Boolean> checkAccess(final List<Instance> _instances, final AccessType _accessType)
+    public Map<Instance, Boolean> checkAccess(final List<Instance> _instances,
+                                              final AccessType _accessType)
         throws EFapsException
     {
         final List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);
@@ -508,13 +518,15 @@ public class Type extends AbstractDataModelObject
      *
      */
     @Override
-    protected void setLinkProperty(final EFapsClassNames _linkType, final long _toId, final EFapsClassNames _toType,
+    protected void setLinkProperty(final EFapsClassNames _linkType,
+                                   final long _toId,
+                                   final EFapsClassNames _toType,
                                    final String _toName)
-            throws EFapsException
+        throws EFapsException
     {
         switch (_linkType) {
             case DATAMODEL_TYPEEVENTISALLOWEDFOR:
-                final Type eventType = get(_toId);
+                final Type eventType = Type.get(_toId);
                 this.allowedEventTypes.add(eventType);
                 break;
             case DATAMODEL_TYPE2STORE:
@@ -534,7 +546,9 @@ public class Type extends AbstractDataModelObject
      * @throws CacheReloadException on error
      */
     @Override
-    protected void setProperty(final String _name, final String _value) throws CacheReloadException
+    protected void setProperty(final String _name,
+                               final String _value)
+        throws CacheReloadException
     {
         if (_name.startsWith("UniqueKey")) {
             addUniqueKey(_value);
@@ -772,7 +786,8 @@ public class Type extends AbstractDataModelObject
      * @param _class class that called the method
      * @throws CacheReloadException on error
      */
-    public static void initialize(final Class<?> _class) throws CacheReloadException
+    public static void initialize(final Class<?> _class)
+        throws CacheReloadException
     {
         Type.CACHE.initialize(_class);
         // initialize properties and links
@@ -795,7 +810,8 @@ public class Type extends AbstractDataModelObject
      *
      * @throws CacheReloadException on error
      */
-    public static void initialize() throws CacheReloadException
+    public static void initialize()
+        throws CacheReloadException
     {
         Type.initialize(Type.class);
     }
@@ -877,7 +893,8 @@ public class Type extends AbstractDataModelObject
          * @throws CacheReloadException on error during reading
          */
         @Override
-        protected void readCache(final Map<Long, Type> _cache4Id, final Map<String, Type> _cache4Name,
+        protected void readCache(final Map<Long, Type> _cache4Id,
+                                 final Map<String, Type> _cache4Name,
                                  final Map<UUID, Type> _cache4UUID)
             throws CacheReloadException
         {

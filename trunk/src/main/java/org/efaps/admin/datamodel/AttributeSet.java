@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,15 +27,15 @@ import java.util.Set;
 
 import org.efaps.db.query.CachedResult;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 
 /**
- * TODO comment
+ * Basic class for AttributeSets.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class AttributeSet extends Type
+public class AttributeSet
+    extends Type
 {
 
     /**
@@ -53,7 +53,6 @@ public class AttributeSet extends Type
      */
     private final Set<String> setAttributes = new HashSet<String>();
 
-
     /**
      * @param _id               id of this set
      * @param _type             type of his set
@@ -62,7 +61,7 @@ public class AttributeSet extends Type
      * @param _sqlColNames      name of the sql column
      * @param _tableId          id of the table
      * @param _typeLinkId       id of the type link
-     * @throws CacheReloadException on error
+     * @throws EFapsException on error
      */
     protected AttributeSet(final long _id,
                            final Type _type,
@@ -71,13 +70,13 @@ public class AttributeSet extends Type
                            final String _sqlColNames,
                            final long _tableId,
                            final long _typeLinkId)
-        throws CacheReloadException
+        throws EFapsException
     {
-        super(_id, null, evaluateName(_type.getName(), _name));
+        super(_id, null, AttributeSet.evaluateName(_type.getName(), _name));
 
         this.attributeName = (_name == null) ? null : _name.trim();
 
-        getTypeCache().addObject(this);
+        Type.getTypeCache().addObject(this);
         readFromDB4Properties();
 
         this.attributeType = _attributeType;
@@ -148,7 +147,8 @@ public class AttributeSet extends Type
      * {@inheritDoc}
      */
     @Override
-    protected void addAttribute(final Attribute _attribute, final boolean _inherited)
+    protected void addAttribute(final Attribute _attribute,
+                                final boolean _inherited)
     {
         super.addAttribute(_attribute, _inherited);
         // in the superconstructur this method is called, so the set might not
@@ -170,11 +170,13 @@ public class AttributeSet extends Type
 
     /**
      * Evaluate the name. (Build the name as the set is cached).
+     *
      * @param _typeName name of the type
-     * @param _name     name of the attribute
-     * @return  String
+     * @param _name name of the attribute
+     * @return String
      */
-    public static String evaluateName(final String _typeName, final String _name)
+    public static String evaluateName(final String _typeName,
+                                      final String _name)
     {
         final StringBuilder ret = new StringBuilder();
         ret.append(_typeName).append(":").append(_name).toString();
@@ -186,11 +188,12 @@ public class AttributeSet extends Type
      *
      * @param _typeName name of the type
      * @param _name name of the attribute
-     * @return  AttributeSet
+     * @return AttributeSet
      */
-    public static AttributeSet get(final String _typeName, final String _name)
+    public static AttributeSet get(final String _typeName,
+                                   final String _name)
     {
-        return (AttributeSet) Type.get(evaluateName(_typeName, _name));
+        return (AttributeSet) Type.get(AttributeSet.evaluateName(_typeName, _name));
     }
 
     /**
@@ -198,13 +201,13 @@ public class AttributeSet extends Type
      * hierarchy.
      *
      * @param _typeName name of the type
-     * @param _name     name of the attribute
+     * @param _name name of the attribute
      * @return AttributeSet
      */
     public static AttributeSet find(final String _typeName,
                                     final String _name)
     {
-        AttributeSet ret = (AttributeSet) Type.get(evaluateName(_typeName, _name));
+        AttributeSet ret = (AttributeSet) Type.get(AttributeSet.evaluateName(_typeName, _name));
         if (ret == null) {
             if (Type.get(_typeName).getParentType() != null) {
                 ret = AttributeSet.find(Type.get(_typeName).getParentType().getName(), _name);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,16 @@
  */
 
 package org.efaps.admin.datamodel;
+
+import static org.efaps.admin.EFapsClassNames.ATTRTYPE_CREATOR_LINK;
+import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK;
+import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK_WITH_RANGES;
+import static org.efaps.admin.EFapsClassNames.ATTRTYPE_MODIFIER_LINK;
+import static org.efaps.admin.EFapsClassNames.ATTRTYPE_PERSON_LINK;
+import static org.efaps.admin.EFapsClassNames.ATTRTYPE_STATUS;
+import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESET;
+import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESETATTRIBUTE;
+import static org.efaps.admin.EFapsClassNames.USER_PERSON;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,16 +57,6 @@ import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.efaps.admin.EFapsClassNames.ATTRTYPE_CREATOR_LINK;
-import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK;
-import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK_WITH_RANGES;
-import static org.efaps.admin.EFapsClassNames.ATTRTYPE_MODIFIER_LINK;
-import static org.efaps.admin.EFapsClassNames.ATTRTYPE_PERSON_LINK;
-import static org.efaps.admin.EFapsClassNames.ATTRTYPE_STATUS;
-import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESET;
-import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESETATTRIBUTE;
-import static org.efaps.admin.EFapsClassNames.USER_PERSON;
 
 /**
  * This is the class for the attribute description. The type description holds
@@ -176,9 +176,16 @@ public class Attribute extends AbstractDataModelObject
      * @param _attributeType    type of this attribute
      * @param _defaultValue     default value for this attribute
      * @param _dimensionUUID    UUID of the Dimension
+     * @throws EFapsException on error while retreiving column informationfrom database
      */
-    protected Attribute(final long _id, final String _name, final String _sqlColNames, final SQLTable _sqlTable,
-                        final AttributeType _attributeType, final String _defaultValue, final String _dimensionUUID)
+    protected Attribute(final long _id,
+                        final String _name,
+                        final String _sqlColNames,
+                        final SQLTable _sqlTable,
+                        final AttributeType _attributeType,
+                        final String _defaultValue,
+                        final String _dimensionUUID)
+        throws EFapsException
     {
         super(_id, null, _name);
         this.sqlTable = _sqlTable;
@@ -194,6 +201,9 @@ public class Attribute extends AbstractDataModelObject
             final String colName = tok.nextToken().trim();
             getSqlColNames().add(colName);
             final ColumnInformation columInfo = this.sqlTable.getTableInformation().getColInfo(colName);
+            if (columInfo == null) {
+                throw new EFapsException(Attribute.class, "Attribute", _id, _name, _sqlTable, colName);
+            }
             req |= !columInfo.isNullable();
             sizeTemp = columInfo.getSize();
             scaleTemp = columInfo.getScale();
@@ -291,11 +301,12 @@ public class Attribute extends AbstractDataModelObject
      * {@inheritDoc}
      */
     @Override
-    public void addEvent(final EventType _eventtype, final EventDefinition _eventdef)
+    public void addEvent(final EventType _eventtype,
+                         final EventDefinition _eventdef)
     {
         super.addEvent(_eventtype, _eventdef);
         for (final Type child : this.parent.getChildTypes()) {
-            final Attribute childAttr =  child.getAttribute(getName());
+            final Attribute childAttr = child.getAttribute(getName());
             if (childAttr != null) {
                 childAttr.addEvent(_eventtype, _eventdef);
             }
@@ -585,7 +596,8 @@ public class Attribute extends AbstractDataModelObject
      * @throws CacheReloadException on error
      * @see #getCache
      */
-    public static Attribute get(final String _name) throws CacheReloadException
+    public static Attribute get(final String _name)
+        throws CacheReloadException
     {
         return Attribute.CACHE.get(_name);
     }
@@ -610,7 +622,8 @@ public class Attribute extends AbstractDataModelObject
      * Class used as cache.
      *
      */
-    protected static final class AttributeCache extends Cache<Attribute>
+    protected static final class AttributeCache
+        extends Cache<Attribute>
     {
 
         /**
@@ -638,8 +651,10 @@ public class Attribute extends AbstractDataModelObject
          * @throws CacheReloadException on error
          */
         @Override
-        protected void readCache(final Map<Long, Attribute> _newCache4Id, final Map<String, Attribute> _newCache4Name,
-                        final Map<UUID, Attribute> _newCache4UUID) throws CacheReloadException
+        protected void readCache(final Map<Long, Attribute> _newCache4Id,
+                                 final Map<String, Attribute> _newCache4Name,
+                                 final Map<UUID, Attribute> _newCache4UUID)
+            throws CacheReloadException
         {
             ConnectionResource con = null;
             try {
