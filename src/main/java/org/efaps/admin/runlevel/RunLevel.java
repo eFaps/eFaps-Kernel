@@ -402,12 +402,15 @@ public final class RunLevel
                 RunLevel.LOG.error("could not execute class '" + this.className + "' method '"
                         + this.methodName + "' because an exception was thrown.", e);
                 if (e.getCause() != null) {
-                    throw new EFapsException(getClass(),
-                                             "callMethod.InvocationTargetException",
+                    if (e.getCause() instanceof EFapsException) {
+                        throw (EFapsException) e.getCause();
+                    } else {
+                        throw new EFapsException(getClass(),"callMethod.InvocationTargetException",
                                              null,
                                              e.getCause(),
                                              this.className,
                                              this.methodName);
+                    }
                 } else {
                     throw new EFapsException(getClass(),
                                              "callMethod.InvocationTargetException",
