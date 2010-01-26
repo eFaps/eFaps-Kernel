@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev: 3511 $
+ * Last Changed:    $Date: 2009-12-20 11:11:53 -0500 (Sun, 20 Dec 2009) $
+ * Last Changed By: $Author: tim.moxter $
  */
 
 package org.efaps.update.schema.program;
@@ -25,45 +25,45 @@ import java.net.URL;
 import org.efaps.update.schema.AbstractFileUpdate;
 
 /**
- * Handles the import / update of Jasper Images for eFaps read from a XML
+ * Handles the import / update of wiki Images for eFaps read from a XML
  * configuration item file (for the meta data) and the image itself as binary
  * file.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: JasperImageUpdate.java 3511 2009-12-20 16:11:53Z tim.moxter $
  */
-public class JasperImageUpdate
+public class WikiImageUpdate
     extends AbstractFileUpdate
 {
-
     /**
      * Default constructor to initialize this Jasper report image update
      * instance for given <code>_url</code>.
      *
      * @param _url URL of the file
      */
-    public JasperImageUpdate(final URL _url)
+    public WikiImageUpdate(final URL _url)
     {
-        super(_url, "Admin_Program_JasperImage");
+        super(_url, "Admin_Program_WikiImage");
     }
 
     /**
      * Creates new instance of class
-     * {@link JasperImageUpdate.JasperImageDefinition}.
+     * {@link WikiImageUpdate.WikiImageDefinition}.
      *
      * @return new definition instance
-     * @see JasperImageUpdate.JasperImageDefinition
+     * @see WikiImageUpdate.JasperImageDefinition
      */
     @Override()
     protected AbstractDefinition newDefinition()
     {
-        return new JasperImageDefinition();
+        return new WikiImageDefinition();
     }
 
     /**
-     * Definition for a Jasper Image.
+     * Definition for a Wiki Image.
+     *
      */
-    protected class JasperImageDefinition
+    private class WikiImageDefinition
         extends AbstractFileDefinition
     {
     }

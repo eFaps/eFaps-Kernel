@@ -28,13 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
-
 import org.efaps.update.schema.access.AccessSetUpdate;
 import org.efaps.update.schema.access.AccessTypeUpdate;
 import org.efaps.update.schema.common.NumberGeneratorUpdate;
@@ -49,6 +42,7 @@ import org.efaps.update.schema.help.HelpMenuUpdate;
 import org.efaps.update.schema.integration.WebDAVUpdate;
 import org.efaps.update.schema.program.JasperImageUpdate;
 import org.efaps.update.schema.program.JasperReportUpdate;
+import org.efaps.update.schema.program.WikiImageUpdate;
 import org.efaps.update.schema.ui.CommandUpdate;
 import org.efaps.update.schema.ui.FormUpdate;
 import org.efaps.update.schema.ui.ImageUpdate;
@@ -59,6 +53,12 @@ import org.efaps.update.schema.ui.TableUpdate;
 import org.efaps.update.schema.user.CompanyUpdate;
 import org.efaps.update.schema.user.JAASSystemUpdate;
 import org.efaps.update.schema.user.RoleUpdate;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * @author The eFaps Team
@@ -253,6 +253,8 @@ public class SaxHandler extends DefaultHandler
             this.update = new DBPropertiesUpdate(this.url);
         } else if ("help-menu".equals(_qName)) {
             this.update = new HelpMenuUpdate(this.url);
+        } else if ("wiki-image".equals(_qName)) {
+            this.update = new WikiImageUpdate(this.url);
         } else {
             throw new SAXException("Unknown XML Tag " + _qName);
         }
