@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,14 @@
 
 package org.efaps.update.schema.ui;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.efaps.db.Checkin;
-import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
-import org.efaps.update.UpdateLifecycle;
-import org.efaps.update.util.InstallationException;
-import org.efaps.util.EFapsException;
+import org.efaps.update.schema.AbstractFileUpdate;
 
 /**
  * Handles the import / update of images for eFaps read from a XML
@@ -45,7 +38,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class ImageUpdate
-    extends AbstractUpdate
+    extends AbstractFileUpdate
 {
     /**
      * Link from menu to type as type tree menu.
@@ -63,10 +56,6 @@ public class ImageUpdate
         ImageUpdate.ALLLINKS.add(ImageUpdate.LINK2TYPE);
     }
 
-    /**
-     * Name of the root path used to initialize the path for the image.
-     */
-    private final String root;
 
     /**
      * Default constructor to initialize this image update instance for given
@@ -77,9 +66,6 @@ public class ImageUpdate
     public ImageUpdate(final URL _url)
     {
         super(_url, "Admin_UI_Image", ImageUpdate.ALLLINKS);
-        final String urlStr = _url.toString();
-        final int i = urlStr.lastIndexOf("/");
-        this.root = urlStr.substring(0, i + 1);
     }
 
     /**
@@ -98,19 +84,13 @@ public class ImageUpdate
      * Handles the definition of one version for an image defined within XML
      * configuration item file.
      */
-    private class ImageDefinition
-        extends AbstractDefinition
+    protected class ImageDefinition
+        extends AbstractFileDefinition
     {
-        /**
-         * Name of the Image file (including the path) to import.
-         */
-        private String file;
-
         /**
          * Interprets the image specific part of the XML configuration item
          * file. Following information is read:
          * <ul>
-         * <li>name of the {@link #file}</li>
          * <li>name of the type for which this image is defined (as type
          *     image); interpreted as {@link ImageUpdate#LINK2TYPE link}</li>
          * </ul>
@@ -125,66 +105,13 @@ public class ImageUpdate
                                final String _text)
         {
             final String value = _tags.get(0);
-            if ("file".equals(value))  {
-                this.file = _text;
-            } else if ("type".equals(value))  {
+            if ("type".equals(value))  {
                 // assigns a type the image for which this image instance is
                 // the type icon
-                this.addLink(ImageUpdate.LINK2TYPE, new LinkInstance(_text));
+                addLink(ImageUpdate.LINK2TYPE, new LinkInstance(_text));
             } else  {
                 super.readXML(_tags, _attributes, _text);
             }
-        }
-
-        /**
-         * Updates / creates the instance in the database. If a
-         * {@link #file file name} is given, this file is checked in the
-         * created image instance.
-         *
-         * @param _step             current update step
-         * @param _allLinkTypes     set of all type of links
-         * @throws InstallationException if update failed
-         */
-        @Override()
-        protected void updateInDB(final UpdateLifecycle _step,
-                                  final Set<Link> _allLinkTypes)
-            throws InstallationException, EFapsException
-        {
-            super.updateInDB(_step, _allLinkTypes);
-
-            if ((_step == UpdateLifecycle.EFAPS_UPDATE) && (this.file != null))  {
-                try  {
-                    final InputStream in = new URL(ImageUpdate.this.root + this.file).openStream();
-                    try  {
-                        final Checkin checkin = new Checkin(this.instance);
-                        checkin.executeWithoutAccessCheck(this.file,
-                                                          in,
-                                                          in.available());
-                    } finally  {
-                        in.close();
-                    }
-                } catch (final EFapsException e)  {
-                    throw new InstallationException("Check of file '" + ImageUpdate.this.root + this.file
-                            + "' failed", e);
-                } catch (final IOException e)  {
-                    throw new InstallationException("It seems that file '" + ImageUpdate.this.root + this.file
-                            + "' does not exists or is not accessable.", e);
-                }
-            }
-        }
-
-        /**
-         * Returns a string representation with values of all instance
-         * variables of an image definition.
-         *
-         * @return string representation of this definition of a column
-         */
-        @Override()
-        public String toString()
-        {
-            return new ToStringBuilder(this)
-                .appendSuper(super.toString())
-                .append("file", this.file).toString();
         }
     }
 }

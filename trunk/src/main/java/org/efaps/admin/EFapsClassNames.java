@@ -192,6 +192,8 @@ public enum EFapsClassNames
     ADMIN_PROGRAM_WIKI2WIKI("11cb5cee-654e-4cfd-8ac2-c5676cf0c33f"),
     /**Admin_Program_WikiCompiled. */
     ADMIN_PROGRAM_WIKICOMPILED("f9d0aa00-5687-45d1-8206-36662f09fb24"),
+    /** Admin_Program_WikiImage. */
+    ADMIN_PROGRAM_IMAGE("2afc7562-2d1d-4751-8ca6-7811cb60e783"),
 
     /** Admin_CommonVersion. */
     ADMIN_COMMON_VERSION("1bb051f3-b664-43db-b409-c0c4009f5972"),
