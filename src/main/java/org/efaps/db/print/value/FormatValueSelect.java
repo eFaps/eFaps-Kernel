@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.UIInterface;
+import org.efaps.db.print.OneSelect;
 import org.efaps.util.EFapsException;
 
 /**
@@ -33,7 +34,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class FormatValueSelect extends AbstractValueSelect
+public class FormatValueSelect
+    extends AbstractValueSelect
 {
 
     /**
@@ -42,10 +44,13 @@ public class FormatValueSelect extends AbstractValueSelect
     private final String pattern;
 
     /**
+     * @param _oneSelect OneSelect
      * @param _pattern pattern the formatter will use
      */
-    public FormatValueSelect(final String _pattern)
+    public FormatValueSelect(final OneSelect _oneSelect,
+                             final String _pattern)
     {
+        super(_oneSelect);
         this.pattern = _pattern;
     }
 
@@ -61,12 +66,14 @@ public class FormatValueSelect extends AbstractValueSelect
     /**
      * Method to format a given object.
      *
-     * @param _attribute    Attribute the object belongs to
-     * @param _object       Object to be formated
-     * @return  formated object
+     * @param _attribute Attribute the object belongs to
+     * @param _object Object to be formated
+     * @return formated object
      * @throws EFapsException on error
      */
-    public Object format(final Attribute _attribute, final Object _object) throws EFapsException
+    public Object format(final Attribute _attribute,
+                         final Object _object)
+        throws EFapsException
     {
         Object ret = null;
         if (_object != null) {

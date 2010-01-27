@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ package org.efaps.db.print.value;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.print.OneSelect;
 import org.efaps.db.wrapper.SQLSelect;
 
 /**
@@ -38,6 +39,14 @@ public class IDValueSelect extends AbstractValueSelect
      * Attribute belonging to this IDValueSelect.
      */
     private Attribute attribute;
+
+    /**
+     * @param _oneSelect OneSelect
+     */
+    public IDValueSelect(final OneSelect _oneSelect)
+    {
+        super(_oneSelect);
+    }
 
     /**
      * {@inheritDoc}

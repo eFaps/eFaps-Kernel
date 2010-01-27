@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.print.OneSelect;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
@@ -41,6 +42,14 @@ public class OIDValueSelect
      * Type belonging to this OIDValueSelect.
      */
     private Type type;
+
+    /**
+     * @param _oneSelect    OneSelect
+     */
+    public OIDValueSelect(final OneSelect _oneSelect)
+    {
+        super(_oneSelect);
+    }
 
     /**
      * {@inheritDoc}
@@ -116,5 +125,27 @@ public class OIDValueSelect
     public String getValueType()
     {
         return "oid";
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #type}.
+     *
+     * @return value of instance variable {@link #type}
+     */
+    public Type getType()
+    {
+        return this.type;
+    }
+
+    /**
+     * Setter method for instance variable {@link #type}.
+     *
+     * @param _type value for instance variable {@link #type}
+     */
+
+    public void setType(final Type _type)
+    {
+        this.type = _type;
     }
 }
