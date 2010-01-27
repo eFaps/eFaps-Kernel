@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,9 @@ import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.db.print.OneSelect;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
-
 
 /**
  * TODO comment!
@@ -45,14 +45,9 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class ClassificationValueSelect extends OIDValueSelect
+public class ClassificationValueSelect
+    extends OIDValueSelect
 {
-
-    /**
-     * List of instances the query belongs to.
-     */
-    private final List<Instance> instances;
-
     /**
      * Mapping of the instances to classIds. Used as temporary cache.
      */
@@ -62,12 +57,13 @@ public class ClassificationValueSelect extends OIDValueSelect
      * Have the values been retrieved allready.
      */
     private boolean retrieved = false;
+
     /**
-     * @param query
+     * @param _oneSelect OneSelect
      */
-    public ClassificationValueSelect(final List<Instance> _instances)
+    public ClassificationValueSelect(final OneSelect _oneSelect)
     {
-        this.instances = _instances;
+        super(_oneSelect);
     }
 
     /**
@@ -83,15 +79,18 @@ public class ClassificationValueSelect extends OIDValueSelect
      * {@inheritDoc}
      */
     @Override
-    public Object getValue(final Object _object) throws EFapsException
+    public Object getValue(final Object _object)
+        throws EFapsException
     {
         final ArrayList<Classification> ret = new ArrayList<Classification>();
-        //TODO th eexecution of getting the value should be done on the execute of the query!
+        final String oid = (String) super.getValue(_object);
+        // TODO the execution of getting the value should be done on the execute
+        // of the query!
         if (!this.retrieved) {
-            getValues4Instances();
+            getValues4Instances(oid);
             this.retrieved = true;
         }
-        final String oid = (String) super.getValue(_object);
+
         if (getChildValueSelect() == null) {
             throw new EFapsException(ClassificationValueSelect.class, "notyet");
         } else {
@@ -109,7 +108,8 @@ public class ClassificationValueSelect extends OIDValueSelect
      * {@inheritDoc}
      */
     @Override
-    public Object getValue(final List<Object> _objectList) throws EFapsException
+    public Object getValue(final List<Object> _objectList)
+        throws EFapsException
     {
         final List<Object> ret = new ArrayList<Object>();
         for (final Object object : _objectList) {
@@ -119,7 +119,8 @@ public class ClassificationValueSelect extends OIDValueSelect
     }
 
     /**
-     * Method to get  only the leaf of the classification tree.
+     * Method to get only the leaf of the classification tree.
+     *
      * @param _classIds List of classids
      * @return set
      */
@@ -129,7 +130,7 @@ public class ClassificationValueSelect extends OIDValueSelect
         final Set<Classification> add = new HashSet<Classification>();
         if (_classIds != null) {
             for (final Long id : _classIds) {
-                Classification clazz =  (Classification) Classification.get(id);
+                Classification clazz = (Classification) Type.get(id);
                 if (!noadd.contains(clazz)) {
                     add.add(clazz);
                     while (clazz.getParentClassification() != null) {
@@ -145,16 +146,29 @@ public class ClassificationValueSelect extends OIDValueSelect
         return add;
     }
 
-
     /**
      * Method to get the values for the instances.
+     *
      * @throws EFapsException on error
      */
-    private void getValues4Instances() throws EFapsException
+    private void getValues4Instances(final String _oid) throws EFapsException
     {
         // group the instance by type
+        // check if the current instance is the list (happens if this
+        // value select is e.g. part of a linkto
         final Map<Type, List<Instance>> type2instance = new HashMap<Type, List<Instance>>();
-        for (final Instance instance : this.instances) {
+        final Instance currentInst = Instance.get(_oid);
+        final List<Instance> instances = new ArrayList<Instance>();
+        if (getOneSelect().getQuery().getInstanceList().contains(currentInst)) {
+           instances.addAll(getOneSelect().getQuery().getInstanceList());
+        } else {
+            for (final Object object : getOneSelect().getObjectList()) {
+               final String oid =  (String) super.getValue(object);
+                   instances.add(Instance.get(oid));
+              }
+        }
+
+        for (final Instance instance : instances) {
             List<Instance> tmpList;
             if (type2instance.containsKey(instance.getType())) {
                 tmpList = type2instance.get(instance.getType());
@@ -164,6 +178,7 @@ public class ClassificationValueSelect extends OIDValueSelect
             }
             tmpList.add(instance);
         }
+
         // make one union part for every type
         for (final Entry<Type, List<Instance>> entry : type2instance.entrySet()) {
             final StringBuilder selBldr = new StringBuilder();
@@ -212,12 +227,14 @@ public class ClassificationValueSelect extends OIDValueSelect
 
     /**
      * Method to execute one statement against the eFaps-DataBase.
-     * @param _complStmt    ststement
-     * @param _instances    list of instances
-     * @return  true it values where found
+     *
+     * @param _complStmt ststement
+     * @param _instances list of instances
+     * @return true it values where found
      * @throws EFapsException on error
      */
-    protected boolean executeOneCompleteStmt(final StringBuilder _complStmt, final List<Instance> _instances)
+    protected boolean executeOneCompleteStmt(final StringBuilder _complStmt,
+                                             final List<Instance> _instances)
         throws EFapsException
     {
         final boolean ret = false;

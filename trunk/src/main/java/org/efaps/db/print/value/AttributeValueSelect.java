@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.print.OneSelect;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
@@ -32,11 +33,13 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: AttributeValueSelect.java 3520 2009-12-21 12:37:44Z tim.moxter
+ *          $
  */
 public class AttributeValueSelect
     extends AbstractValueSelect
 {
+
     /**
      * Attribute belonging to this AttributeValueSelect.
      */
@@ -48,18 +51,24 @@ public class AttributeValueSelect
     private String attrName;
 
     /**
+     * @param _oneSelect OneSelect
      * @param _attrName name of the attribute
      */
-    public AttributeValueSelect(final String _attrName)
+    public AttributeValueSelect(final OneSelect _oneSelect,
+                                final String _attrName)
     {
+        super(_oneSelect);
         this.attrName = _attrName;
     }
 
     /**
+     * @param _oneSelect OneSelect
      * @param _attr Attribute
      */
-    public AttributeValueSelect(final Attribute _attr)
+    public AttributeValueSelect(final OneSelect _oneSelect,
+                                final Attribute _attr)
     {
+        super(_oneSelect);
         this.attribute = _attr;
     }
 

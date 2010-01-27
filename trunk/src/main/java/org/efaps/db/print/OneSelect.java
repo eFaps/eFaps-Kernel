@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
  */
 
 package org.efaps.db.print;
-
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -46,6 +45,7 @@ import org.efaps.db.print.value.TypeValueSelect;
 import org.efaps.db.print.value.UUIDValueSelect;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+
 
 /**
  * This class is used as a part of one complete statement to be executed
@@ -79,6 +79,7 @@ public class OneSelect
      */
     private final List<Object> objectList = new ArrayList<Object>();
 
+
     /**
      * List of ids retrieved from the ResultSet returned
      * from the eFaps database. It represent one row in a result set.
@@ -95,6 +96,7 @@ public class OneSelect
      * PrintQuery this ONeSelct belongs to.
      */
     private final AbstractPrintQuery query;
+
 
     /**
      * Iterator for the objects.
@@ -141,7 +143,7 @@ public class OneSelect
     {
         this.query = _query;
         this.selectStmt = null;
-        this.valueSelect =  new AttributeValueSelect(_attr);
+        this.valueSelect =  new AttributeValueSelect(this, _attr);
     }
 
     /**
@@ -190,7 +192,7 @@ public class OneSelect
      */
     public void setAttribute(final Attribute _attribute)
     {
-        this.valueSelect = new AttributeValueSelect(_attribute);
+        this.valueSelect = new AttributeValueSelect(this, _attribute);
     }
 
     /**
@@ -396,38 +398,38 @@ public class OneSelect
             } else if (part.startsWith("attributeset")) {
                 final Matcher matcher = attrPattern.matcher(part);
                 if (matcher.find()) {
-                    currentSelect.addValueSelect(new IDValueSelect());
+                    currentSelect.addValueSelect(new IDValueSelect(currentSelect));
                     currentSelect.addAttributeSetSelectPart(matcher.group());
                     currentSelect = currentSelect.fromSelect.getMainOneSelect();
                 }
             } else if (part.startsWith("attribute")) {
                 final Matcher matcher = attrPattern.matcher(part);
                 if (matcher.find()) {
-                    currentSelect.addValueSelect(new AttributeValueSelect(matcher.group()));
+                    currentSelect.addValueSelect(new AttributeValueSelect(currentSelect, matcher.group()));
                 }
             } else if (part.startsWith("linkfrom")) {
                 final Matcher matcher = linkfomPat.matcher(part);
                 if (matcher.find()) {
-                    currentSelect.addValueSelect(new IDValueSelect());
+                    currentSelect.addValueSelect(new IDValueSelect(currentSelect));
                     currentSelect.addLinkFromSelectPart(matcher.group());
                     currentSelect = currentSelect.fromSelect.getMainOneSelect();
                 }
             } else if (part.equalsIgnoreCase("oid")) {
-                currentSelect.addValueSelect(new OIDValueSelect());
+                currentSelect.addValueSelect(new OIDValueSelect(currentSelect));
             } else if (part.equalsIgnoreCase("type")) {
-                currentSelect.addValueSelect(new TypeValueSelect());
+                currentSelect.addValueSelect(new TypeValueSelect(currentSelect));
             } else if (part.equalsIgnoreCase("label")) {
-                currentSelect.addValueSelect(new LabelValueSelect());
+                currentSelect.addValueSelect(new LabelValueSelect(currentSelect));
             } else if (part.equalsIgnoreCase("id")) {
-                currentSelect.addValueSelect(new IDValueSelect());
+                currentSelect.addValueSelect(new IDValueSelect(currentSelect));
             } else if (part.equalsIgnoreCase("uuid")) {
-                currentSelect.addValueSelect(new UUIDValueSelect());
+                currentSelect.addValueSelect(new UUIDValueSelect(currentSelect));
             } else if (part.equalsIgnoreCase("class")) {
-                currentSelect.addValueSelect(new ClassificationValueSelect(this.query.getInstanceList()));
+                currentSelect.addValueSelect(new ClassificationValueSelect(currentSelect));
             } else if (part.startsWith("format")) {
                 final Matcher matcher = formatPat.matcher(part);
                 if (matcher.find()) {
-                    currentSelect.addValueSelect(new FormatValueSelect(matcher.group()));
+                    currentSelect.addValueSelect(new FormatValueSelect(currentSelect, matcher.group()));
                 }
             }
         }
@@ -611,5 +613,25 @@ public class OneSelect
             ret = true;
         }
         return ret;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #query}.
+     *
+     * @return value of instance variable {@link #query}
+     */
+    public AbstractPrintQuery getQuery()
+    {
+        return this.query;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #objectList}.
+     *
+     * @return value of instance variable {@link #objectList}
+     */
+    public List<Object> getObjectList()
+    {
+        return this.objectList;
     }
 }

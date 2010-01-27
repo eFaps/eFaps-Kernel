@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.print.OneSelect;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
@@ -36,6 +37,7 @@ import org.efaps.util.EFapsException;
  */
 public abstract class AbstractValueSelect
 {
+
     /**
      * List of column indexes the values have in the ResultSet returned from the
      * eFaps database.
@@ -53,6 +55,21 @@ public abstract class AbstractValueSelect
     private AbstractValueSelect child;
 
     /**
+     *  OneSelect this ValueSelect belongs to.
+     */
+    private final OneSelect oneSelect;
+
+    /**
+     * Constructor setting the OneSelect this valueselect belongs to.
+     *
+     * @param _oneSelect OneSelect
+     */
+    public AbstractValueSelect(final OneSelect _oneSelect)
+    {
+        this.oneSelect = _oneSelect;
+    }
+
+    /**
      * Getter method for instance variable {@link #parent}.
      *
      * @return value of instance variable {@link #parent}
@@ -63,9 +80,8 @@ public abstract class AbstractValueSelect
     }
 
     /**
-     * Method must return a unique String to identify the class. This is used
-     * to determine which class was instantiated instead of using
-     * "instanceof".
+     * Method must return a unique String to identify the class. This is used to
+     * determine which class was instantiated instead of using "instanceof".
      *
      * @return unique name.
      */
@@ -82,8 +98,8 @@ public abstract class AbstractValueSelect
     }
 
     /**
-     * Method to set an AbstractValueSelect as the parent of
-     * this AbstractValueSelect.
+     * Method to set an AbstractValueSelect as the parent of this
+     * AbstractValueSelect.
      *
      * @param _parent AbstractValueSelect to be set as parent
      */
@@ -96,7 +112,7 @@ public abstract class AbstractValueSelect
      * Method adds an AbstractValueSelect as a child of this chain of
      * AbstractValueSelect.
      *
-     * @param _valueSelect  AbstractValueSelect to be added as child
+     * @param _valueSelect AbstractValueSelect to be added as child
      * @throws EFapsException on error
      */
     public void addChildValueSelect(final AbstractValueSelect _valueSelect)
@@ -111,13 +127,13 @@ public abstract class AbstractValueSelect
     }
 
     /**
-     * Method is used to add the select part for this ValueSelect to the
-     * select statement. e.g. "select T0.ID, TO.TYPEID" etc.
+     * Method is used to add the select part for this ValueSelect to the select
+     * statement. e.g. "select T0.ID, TO.TYPEID" etc.
      *
-     * @param _type         Type this ValueSelect belongs to
-     * @param _select       SQL select statement to be appended to
-     * @param _tableIndex   index of the table
-     * @param _colIndex     last index of the column
+     * @param _type Type this ValueSelect belongs to
+     * @param _select SQL select statement to be appended to
+     * @param _tableIndex index of the table
+     * @param _colIndex last index of the column
      * @return number of columns added to the select statement
      */
     public int append2SQLSelect(final Type _type,
@@ -131,7 +147,7 @@ public abstract class AbstractValueSelect
     /**
      * Method to get the value for the current object.
      *
-     * @param _object  current object
+     * @param _object current object
      * @throws EFapsException on error
      * @return object
      */
@@ -142,9 +158,9 @@ public abstract class AbstractValueSelect
     }
 
     /**
-     * Method to get the value for a list of  object.
+     * Method to get the value for a list of object.
      *
-     * @param _objectList  list of objects
+     * @param _objectList list of objects
      * @throws EFapsException on error
      * @return object
      */
@@ -157,7 +173,6 @@ public abstract class AbstractValueSelect
         }
         return _objectList.size() > 0 ? (ret.size() > 1 ? ret : ret.get(0)) : null;
     }
-
 
     /**
      * Getter method for instance variable {@link #child}.
@@ -177,5 +192,15 @@ public abstract class AbstractValueSelect
     public Attribute getAttribute()
     {
         return null;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #oneSelect}.
+     *
+     * @return value of instance variable {@link #oneSelect}
+     */
+    public OneSelect getOneSelect()
+    {
+        return this.oneSelect;
     }
 }
