@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,6 @@ package org.efaps.admin.datamodel.ui;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -35,8 +32,11 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Field.Display;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used as the value for a field. It can be used to get the for
@@ -276,6 +276,9 @@ public class FieldValue implements Comparable<Object>
                 parameter.put(ParameterValues.UIOBJECT, this);
                 parameter.put(ParameterValues.CALL_INSTANCE, _callInstance);
                 parameter.put(ParameterValues.INSTANCE, _instance);
+                if (parameter.get(ParameterValues.PARAMETERS) == null) {
+                    parameter.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
+                }
                 for (final EventDefinition evenDef : events) {
                     final Return retu = evenDef.execute(parameter);
                     if (retu.get(ReturnValues.SNIPLETT) != null) {
