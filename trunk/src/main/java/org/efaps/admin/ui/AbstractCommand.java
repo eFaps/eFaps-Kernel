@@ -77,7 +77,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
         private SortDirection(final String _value)
         {
             this.value = _value;
-            MAPPER.put(this.value, this);
+            AbstractCommand.MAPPER.put(this.value, this);
         }
 
         /**
@@ -98,7 +98,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
          */
         public static SortDirection getEnum(final String _value)
         {
-            return MAPPER.get(_value);
+            return AbstractCommand.MAPPER.get(_value);
         }
     }
 
@@ -182,6 +182,24 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
      * @see #setSubmit
      */
     private boolean submit = false;
+
+    /**
+     * Number of rows that must be committed.
+     * Special meanings:
+     * <ul>
+     * <li>
+     * 0: the mechanism expects at least one. Default
+     * </li>
+     * <li>
+     * -1: the mechanism is deactivated.
+     * </li>
+     * <li>
+     * 1, 2, 3 ...: the exact number of selected rows will be checked.
+     * </li>
+     * </ul>
+     *
+     */
+    private int submitSelectedRows = 0;
 
     /**
      * The target of the command is the content frame.
@@ -573,7 +591,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     {
         final String[] values = _value.split(",");
         for (final String value : values) {
-            final Type classification = Classification.get(value.trim());
+            final Type classification = Type.get(value.trim());
             if (classification != null) {
                 this.targetCreateClassification.add((Classification) classification);
             }
@@ -745,6 +763,16 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     }
 
     /**
+     * Getter method for the instance variable {@link #submitSelectedRows}.
+     *
+     * @return value of instance variable {@link #submitSelectedRows}
+     */
+    public int getSubmitSelectedRows()
+    {
+        return this.submitSelectedRows;
+    }
+
+    /**
      * Test, if the value of instance variable {@link #target} is equal to
      * {@link #TARGET_CONTENT}.
      *
@@ -887,6 +915,8 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
             this.label = _value;
         } else if ("Submit".equals(_name)) {
             this.submit = "true".equalsIgnoreCase(_value);
+        } else if ("SubmitSelectedRows".equals(_name)) {
+            this.submitSelectedRows = Integer.parseInt(_value);
         } else if ("Target".equals(_name)) {
             if ("content".equals(_value)) {
                 this.target = (AbstractCommand.Target.CONTENT);
