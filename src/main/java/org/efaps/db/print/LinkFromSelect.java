@@ -176,10 +176,9 @@ public class LinkFromSelect
         final StringBuilder cmd = new StringBuilder()
                 .append(select.getSQL())
                 .append(whereBldr);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(cmd.toString());
+        if (AbstractPrintQuery.LOG.isDebugEnabled()) {
+            AbstractPrintQuery.LOG.debug(cmd.toString());
         }
-        System.out.println("cmd.toString()="+cmd.toString());
         return cmd;
     }
 
