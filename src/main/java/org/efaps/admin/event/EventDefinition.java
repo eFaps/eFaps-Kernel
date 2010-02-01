@@ -75,6 +75,11 @@ public final class EventDefinition
     private static final Logger LOG = LoggerFactory.getLogger(EventDefinition.class);
 
     /**
+     * Classloader used for EventDefinition.
+     */
+    private static final EFapsClassLoader CLASSLOADER =  new EFapsClassLoader(EventDefinition.class.getClassLoader());
+
+    /**
      * The variable stores the position in a event pool (more than one event
      * definition for one thrown event.
      *
@@ -178,8 +183,7 @@ public final class EventDefinition
             if (EventDefinition.LOG.isDebugEnabled()) {
                 EventDefinition.LOG.debug("setting Instance: " + this.resourceName + " - " + this.methodName);
             }
-            final Class<?> cls = Class.forName(this.resourceName, true,
-                            new EFapsClassLoader(EventDefinition.class.getClassLoader()));
+            final Class<?> cls = Class.forName(this.resourceName, true, EventDefinition.CLASSLOADER);
             this.method = cls.getMethod(this.methodName, new Class[] { Parameter.class });
             this.progInstance = cls.newInstance();
         } catch (final ClassNotFoundException e) {
