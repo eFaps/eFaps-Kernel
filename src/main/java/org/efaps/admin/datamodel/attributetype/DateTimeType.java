@@ -72,7 +72,7 @@ public class DateTimeType
         for (final Object object : _objectList) {
             if (object instanceof Timestamp || object instanceof Date) {
                 ret.add(new DateTime(object, chron));
-            } else {
+            } else if (ret != null){
                 ret.add(new DateTime());
             }
         }
