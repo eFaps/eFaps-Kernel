@@ -39,6 +39,8 @@ public class CompanyLinkType
 {
     /**
      * @param _insertUpdate     insert / update SQL statement
+     * @param _attribute        Attribute to be prepared
+     * @param _values           values for the insert or update
      * @throws SQLException if not exact one SQL column for the attribute is
      *                      defined of the company id could not be fetched
      */
@@ -51,8 +53,12 @@ public class CompanyLinkType
         checkSQLColumnSize(_attribute, 1);
         // if a value was explicitly set the value is used, else the company
         // id from the context
-        if ((_values != null) && (_values.length > 0) && (_values[0] instanceof Long)) {
-            _insertUpdate.column(_attribute.getSqlColNames().get(0), (Long) _values[0]);
+        if ((_values != null) && (_values.length > 0) && _values[0] != null) {
+            if (_values[0] instanceof Long) {
+                _insertUpdate.column(_attribute.getSqlColNames().get(0), (Long) _values[0]);
+            } else {
+                _insertUpdate.column(_attribute.getSqlColNames().get(0), Long.parseLong(_values[0].toString()));
+            }
         } else {
             try {
                 _insertUpdate.column(_attribute.getSqlColNames().get(0),
