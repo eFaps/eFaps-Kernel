@@ -186,6 +186,18 @@ public final class Instance
     }
 
     /**
+     * Method to evaluate if this instance is an valid instance.
+     * Meaning that it has a valid type and a valid id.
+     *
+     * @return true if valid, else false
+     */
+    public boolean isValid()
+    {
+        return this.type != null && this.id > 0;
+    }
+
+
+    /**
      * The method returns a string representation of the instance object. It
      * does not replace method {@link #getOid}!.
      *
@@ -215,7 +227,7 @@ public final class Instance
         if ((_type != null) && (_id != 0)) {
             keyTmp = _type.getId() + "." + _id;
         }
-        return get(_type, _id, keyTmp);
+        return Instance.get(_type, _id, keyTmp);
     }
 
     /**
@@ -241,7 +253,7 @@ public final class Instance
     public static Instance get(final Type _type,
                                final String _id)
     {
-        return get(_type, _id, null);
+        return Instance.get(_type, _id, null);
     }
 
     /**
@@ -261,7 +273,7 @@ public final class Instance
         } else {
             idTmp = 0;
         }
-        return get(_type, idTmp, _key);
+        return Instance.get(_type, idTmp, _key);
     }
 
     /**
@@ -273,7 +285,7 @@ public final class Instance
     public static Instance get(final String _type,
                                final String _id)
     {
-        return get(_type, _id, null);
+        return Instance.get(_type, _id, null);
     }
 
     /**
@@ -291,7 +303,7 @@ public final class Instance
         if ((_type != null) && (_type.length() > 0)) {
             typeTmp = Type.get(_type);
         }
-        return get(typeTmp, _id, _key);
+        return Instance.get(typeTmp, _id, _key);
     }
 
     /**
@@ -316,6 +328,6 @@ public final class Instance
             typeTmp = null;
             idTmp = 0;
         }
-        return get(typeTmp, idTmp);
+        return Instance.get(typeTmp, idTmp);
     }
 }
