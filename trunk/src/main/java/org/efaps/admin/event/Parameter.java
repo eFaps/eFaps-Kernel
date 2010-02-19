@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
 import org.efaps.db.Instance;
 
 /**
@@ -85,6 +84,11 @@ public class Parameter
          * Object
          */
         NEW_VALUES,
+
+        /**
+         * Holds an Map used to obfuscate the oids for presentation in the UserInterface.
+         */
+        OIDMAP4UI,
 
         /**
          * Further Parameters as map (key is string, value is string array),
