@@ -26,9 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.UIInterface;
@@ -42,6 +39,8 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class represents the Fields of the UserInterface.
@@ -264,7 +263,7 @@ public class Field extends AbstractUserInterfaceObject
     private String select;
 
     /**
-     * Stores the name of the attrbiute that returns the value for this field.
+     * Stores the name of the attribute that returns the value for this field.
      */
     private String attribute;
 
@@ -277,6 +276,11 @@ public class Field extends AbstractUserInterfaceObject
      *  Stores the select that returns the value for the alternate OID.
      */
     private String selectAlternateOID;
+
+    /**
+     * Stores the value of the align attribute for a field.
+     */
+    private String align = "left";
 
     /**
      * Standart-Constructor.
@@ -420,6 +424,16 @@ public class Field extends AbstractUserInterfaceObject
     public String getAlternateOID()
     {
         return this.alternateOID;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #align}.
+     *
+     * @return value of instance variable {@link #align}
+     */
+    public String getAlign()
+    {
+        return this.align;
     }
 
     /**
@@ -873,6 +887,8 @@ public class Field extends AbstractUserInterfaceObject
     {
         if ("AlternateOID".equals(_name)) {
             this.alternateOID = _value;
+        } else if ("Align".equals(_name)) {
+           this.align = _value;
         } else if ("ClassNameUI".equals(_name)) {
             try {
                 this.classUI = (UIInterface) Class.forName(_value).newInstance();
