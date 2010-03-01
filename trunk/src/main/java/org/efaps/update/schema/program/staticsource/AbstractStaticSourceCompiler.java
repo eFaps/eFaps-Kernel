@@ -27,9 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
@@ -39,6 +36,8 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.schema.program.jasperreport.JasperReportCompiler;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class used to compile JavaScript and style sheets.
@@ -63,10 +62,10 @@ public abstract class AbstractStaticSourceCompiler
     public static void compileAll(final List<String> _classPathElements)
         throws EFapsException
     {
+        (new JasperReportCompiler(_classPathElements)).compile();
         (new CSSCompiler()).compile();
         (new JavaScriptCompiler()).compile();
         (new WikiCompiler()).compile();
-        (new JasperReportCompiler(_classPathElements)).compile();
     }
 
     /**
