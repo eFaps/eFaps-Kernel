@@ -22,7 +22,6 @@ package org.efaps.update.schema.program.jasperreport;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -38,6 +37,8 @@ import net.sf.jasperreports.engine.xml.JRXmlDigester;
 import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
+import org.xml.sax.SAXException;
+
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
@@ -47,9 +48,6 @@ import org.efaps.db.Instance;
 import org.efaps.db.Update;
 import org.efaps.update.schema.program.staticsource.AbstractStaticSourceCompiler;
 import org.efaps.util.EFapsException;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * Class serves as the compiler for JasperReports.
@@ -88,8 +86,8 @@ public class JasperReportCompiler
 
         for (final AbstractSource onesource : allsource) {
 
-            if (AbstractStaticSourceCompiler.LOG.isInfoEnabled()) {
-                AbstractStaticSourceCompiler.LOG.info("compiling " + onesource.getName());
+            if (LOG.isInfoEnabled()) {
+                LOG.info("compiling " + onesource.getName());
             }
 
             final Update update;
@@ -130,21 +128,7 @@ public class JasperReportCompiler
 
         try {
             final JRXmlDigester digester = JRXmlDigesterFactory.createDigester();
-            digester.setValidating(false);
-            digester.setNamespaceAware(true);
-            digester.setEntityResolver(new EntityResolver() {
 
-                @Override
-                public InputSource resolveEntity(final String arg0,
-                                                 final String arg1)
-                    throws SAXException, IOException
-                {
-                    final InputSource ret = new InputSource();
-                    ret.setByteStream(new FileInputStream("/Users/janmoxter/Documents/jasperreport.xsd"));
-                    ret.setEncoding("UTF-8");
-                    return ret;
-                }
-            });
             final JRXmlLoader loader = new JRXmlLoader(digester);
 
             final JasperDesign jasperDesign = loader.loadXML(source);
