@@ -77,7 +77,7 @@ public class Update
                     final BodyPartEntity entity = (BodyPartEntity) part.getEntity();
                     final InputStream in = entity.getInputStream();
 
-                    final File file = new File(storeFolder, "sdfs.xml");
+                    final File file = new File(storeFolder, part.getContentDisposition().getFileName());
 
                     final FileOutputStream out = new FileOutputStream(file);
                     final byte[] buf = new byte[1024];
