@@ -63,8 +63,10 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public final class Context implements INamingBinds
+public final class Context
+    implements INamingBinds
 {
+
     /**
      * Key used to access the current company from the userattributes.
      */
@@ -101,11 +103,11 @@ public final class Context implements INamingBinds
         try {
             final InitialContext initCtx = new InitialContext();
             final javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
-            Context.DBTYPE = (AbstractDatabase<?>) envCtx.lookup(RESOURCE_DBTYPE);
-            Context.DATASOURCE = (DataSource) envCtx.lookup(RESOURCE_DATASOURCE);
-            Context.TRANSMANAG = (TransactionManager) envCtx.lookup(RESOURCE_TRANSMANAG);
+            Context.DBTYPE = (AbstractDatabase<?>) envCtx.lookup(INamingBinds.RESOURCE_DBTYPE);
+            Context.DATASOURCE = (DataSource) envCtx.lookup(INamingBinds.RESOURCE_DATASOURCE);
+            Context.TRANSMANAG = (TransactionManager) envCtx.lookup(INamingBinds.RESOURCE_TRANSMANAG);
             try {
-                Context.TRANSMANAGTIMEOUT = (Integer) envCtx.lookup(RESOURCE_TRANSMANAGTIMEOUT);
+                Context.TRANSMANAGTIMEOUT = (Integer) envCtx.lookup(INamingBinds.RESOURCE_TRANSMANAGTIMEOUT);
             } catch (final NamingException e) {
                 // this is actual no error, so nothing is presented
                 Context.TRANSMANAGTIMEOUT = 0;
@@ -119,15 +121,14 @@ public final class Context implements INamingBinds
     /**
      * Each thread has his own context object. The value is automatically
      * assigned from the filter class. This allows to have a different Context
-     * for every Users which is connect to the WebApp Server. For the case
-     * that a thread creates a child threat the context is inherited to this
-     * new thread. This is needed e.g. in JasperReport for SubReports.
+     * for every Users which is connect to the WebApp Server. For the case that
+     * a thread creates a child threat the context is inherited to this new
+     * thread. This is needed e.g. in JasperReport for SubReports.
      */
     private static InheritableThreadLocal<Context> THREADCONTEXT = new InheritableThreadLocal<Context>();
 
     /**
-     * The instance variable stores all open instances of
-     * {@link Resource}.
+     * The instance variable stores all open instances of {@link Resource}.
      *
      * @see #getStoreResource(Instance)
      * @see #getStoreResource(Type,long)
@@ -230,8 +231,8 @@ public final class Context implements INamingBinds
     private String language;
 
     /**
-     * If used in a webapp the context path of the webapp can be stored here,
-     * so that it is accessible for e.g. esjps.
+     * If used in a webapp the context path of the webapp can be stored here, so
+     * that it is accessible for e.g. esjps.
      */
     private String path;
 
@@ -240,15 +241,18 @@ public final class Context implements INamingBinds
      *
      * @see #begin(String, Locale, Map, Map, Map)
      *
-     * @param _transaction          Transaction to be used in this context
-     * @param _locale               Locale to be used in this context
-     * @param _sessionAttributes    attributes belonging to this session
-     * @param _parameters           parameters beloonging to this session
-     * @param _fileParameters       paramters for file up/download
+     * @param _transaction Transaction to be used in this context
+     * @param _locale Locale to be used in this context
+     * @param _sessionAttributes attributes belonging to this session
+     * @param _parameters parameters beloonging to this session
+     * @param _fileParameters paramters for file up/download
      * @throws EFapsException on error
      */
-    private Context(final Transaction _transaction, final Locale _locale, final Map<String, Object> _sessionAttributes,
-                    final Map<String, String[]> _parameters, final Map<String, FileParameter> _fileParameters)
+    private Context(final Transaction _transaction,
+                    final Locale _locale,
+                    final Map<String, Object> _sessionAttributes,
+                    final Map<String, String[]> _parameters,
+                    final Map<String, FileParameter> _fileParameters)
         throws EFapsException
     {
 
@@ -321,7 +325,7 @@ public final class Context implements INamingBinds
      * context.<br/>
      * If not all connection are closed, all connection are closed.
      *
-     * TODO:  better description
+     * TODO: better description
      */
     public void close()
     {
@@ -360,7 +364,8 @@ public final class Context implements INamingBinds
      *
      * @throws EFapsException if setting of rollback was not successfully
      */
-    public void abort() throws EFapsException
+    public void abort()
+        throws EFapsException
     {
         try {
             this.transaction.setRollbackOnly();
@@ -377,7 +382,8 @@ public final class Context implements INamingBinds
      * @return opened connection resource
      * @throws EFapsException if connection resource cannot be created
      */
-    public ConnectionResource getConnectionResource() throws EFapsException
+    public ConnectionResource getConnectionResource()
+        throws EFapsException
     {
         ConnectionResource con = null;
 
@@ -401,10 +407,10 @@ public final class Context implements INamingBinds
     public void returnConnectionResource(final ConnectionResource _con)
     {
         // System.out.println("returnConnectionResource.con="+_con);
-        //TODO throw error
-        //if (_con == null) {
-            // throw new EFapsException();
-        //}
+        // TODO throw error
+        // if (_con == null) {
+        // throw new EFapsException();
+        // }
         this.connectionStack.push(_con);
     }
 
@@ -416,7 +422,8 @@ public final class Context implements INamingBinds
      * @return StoreResource
      * @see #getStoreResource(Type,long)
      */
-    public Resource getStoreResource(final Instance _instance) throws EFapsException
+    public Resource getStoreResource(final Instance _instance)
+        throws EFapsException
     {
         Resource storeRsrc = null;
         final Store store = Store.get(_instance.getType().getStoreId());
@@ -539,7 +546,8 @@ public final class Context implements INamingBinds
      * @see #containsRequestAttribute
      * @see #getRequestAttribute
      */
-    public Object setRequestAttribute(final String _key, final Object _value)
+    public Object setRequestAttribute(final String _key,
+                                      final Object _value)
     {
         return this.requestAttributes.put(_key, _value);
     }
@@ -600,7 +608,8 @@ public final class Context implements INamingBinds
      * @see #containsSessionAttribute
      * @see #getSessionAttribute
      */
-    public Object setSessionAttribute(final String _key, final Object _value)
+    public Object setSessionAttribute(final String _key,
+                                      final Object _value)
     {
         return this.sessionAttributes.put(_key, _value);
     }
@@ -614,7 +623,8 @@ public final class Context implements INamingBinds
      * @return String with the value
      * @throws EFapsException on error
      */
-    public String getUserAttribute(final String _key) throws EFapsException
+    public String getUserAttribute(final String _key)
+        throws EFapsException
     {
         if (containsSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)) {
             return ((UserAttributesSet) getSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)).getString(_key);
@@ -634,13 +644,14 @@ public final class Context implements INamingBinds
      *
      * @throws EFapsException on error
      */
-    public boolean containsUserAttribute(final String _key) throws EFapsException
+    public boolean containsUserAttribute(final String _key)
+        throws EFapsException
     {
+        boolean ret = false;
         if (containsSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)) {
-            return ((UserAttributesSet) getSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)).containsKey(_key);
-        } else {
-            throw new EFapsException(Context.class, "getUserAttribute.NoSessionAttribute");
+            ret = ((UserAttributesSet) getSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)).containsKey(_key);
         }
+        return ret;
     }
 
     /**
@@ -652,12 +663,16 @@ public final class Context implements INamingBinds
      * @param _value Value of the UserAttribute
      * @throws EFapsException on error
      */
-    public void setUserAttribute(final String _key, final String _value) throws EFapsException
+    public void setUserAttribute(final String _key,
+                                 final String _value)
+        throws EFapsException
     {
         if (containsSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)) {
             ((UserAttributesSet) getSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)).set(_key, _value);
         } else {
-            throw new EFapsException(Context.class, "getUserAttributes.NoSessionAttribute");
+            final UserAttributesSet userAttribute = new UserAttributesSet(getPersonId());
+            userAttribute.set(_key, _value);
+            setSessionAttribute(UserAttributesSet.CONTEXTMAPKEY, userAttribute);
         }
     }
 
@@ -671,7 +686,9 @@ public final class Context implements INamingBinds
      * @param _definition Definition
      * @throws EFapsException on error
      */
-    public void setUserAttribute(final String _key, final String _value, final UserAttributesDefinition _definition)
+    public void setUserAttribute(final String _key,
+                                 final String _value,
+                                 final UserAttributesDefinition _definition)
         throws EFapsException
     {
         if (containsSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)) {
@@ -687,7 +704,8 @@ public final class Context implements INamingBinds
      * @return UserAttributesSet
      * @throws EFapsException on error
      */
-    public UserAttributesSet getUserAttributes() throws EFapsException
+    public UserAttributesSet getUserAttributes()
+        throws EFapsException
     {
         if (containsSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)) {
             return (UserAttributesSet) getSessionAttribute(UserAttributesSet.CONTEXTMAPKEY);
@@ -825,7 +843,8 @@ public final class Context implements INamingBinds
      * @throws EFapsException if no context object for current thread is defined
      * @see #THREADCONTEXT
      */
-    public static Context getThreadContext() throws EFapsException
+    public static Context getThreadContext()
+        throws EFapsException
     {
         final Context context = Context.THREADCONTEXT.get();
         if (context == null) {
@@ -841,9 +860,10 @@ public final class Context implements INamingBinds
      * @throws EFapsException on error
      * @return new Context
      */
-    public static Context begin() throws EFapsException
+    public static Context begin()
+        throws EFapsException
     {
-        return begin(null, null, null, null, null);
+        return Context.begin(null, null, null, null, null);
     }
 
     /**
@@ -855,9 +875,10 @@ public final class Context implements INamingBinds
      * @return new Context
      *
      */
-    public static Context begin(final String _userName) throws EFapsException
+    public static Context begin(final String _userName)
+        throws EFapsException
     {
-        return begin(_userName, null, null, null, null);
+        return Context.begin(_userName, null, null, null, null);
     }
 
     /**
@@ -873,8 +894,10 @@ public final class Context implements INamingBinds
      *             current thread context is already set
      * @see #THREADCONTEXT
      */
-    public static Context begin(final String _userName, final Locale _locale,
-                                final Map<String, Object> _sessionAttributes, final Map<String, String[]> _parameters,
+    public static Context begin(final String _userName,
+                                final Locale _locale,
+                                final Map<String, Object> _sessionAttributes,
+                                final Map<String, String[]> _parameters,
                                 final Map<String, FileParameter> _fileParameters)
         throws EFapsException
     {
@@ -883,8 +906,10 @@ public final class Context implements INamingBinds
         }
 
         try {
-            //the timeout set is reseted on creation of a new Current object in the transaction manager,
-            // so if the default must be overwritten it must be set explicitly again
+            // the timeout set is reseted on creation of a new Current object in
+            // the transaction manager,
+            // so if the default must be overwritten it must be set explicitly
+            // again
             if (Context.TRANSMANAGTIMEOUT > 0) {
                 Context.TRANSMANAG.setTransactionTimeout(Context.TRANSMANAGTIMEOUT);
             }
@@ -901,7 +926,7 @@ public final class Context implements INamingBinds
             throw new EFapsException(Context.class, "begin.getTransactionSystemException", e);
         }
         final Context context = new Context(transaction, (_locale == null) ? Locale.ENGLISH : _locale,
-                                            _sessionAttributes, _parameters, _fileParameters);
+                        _sessionAttributes, _parameters, _fileParameters);
         Context.THREADCONTEXT.set(context);
 
         if (_userName != null) {
@@ -932,10 +957,11 @@ public final class Context implements INamingBinds
     }
 
     /**
-     * @throws EFapsException if commit of the transaction manager failed
-     * TODO:  description
+     * @throws EFapsException if commit of the transaction manager failed TODO:
+     *             description
      */
-    public static void commit() throws EFapsException
+    public static void commit()
+        throws EFapsException
     {
         try {
             Context.TRANSMANAG.commit();
@@ -952,14 +978,15 @@ public final class Context implements INamingBinds
         } catch (final SystemException e) {
             throw new EFapsException(Context.class, "commit.SystemException", e);
         } finally {
-            getThreadContext().close();
+            Context.getThreadContext().close();
         }
     }
 
     /**
      * @throws EFapsException if roll back of the transaction manager failed
      */
-    public static void rollback() throws EFapsException
+    public static void rollback()
+        throws EFapsException
     {
         try {
             Context.TRANSMANAG.rollback();
@@ -970,7 +997,7 @@ public final class Context implements INamingBinds
         } catch (final SystemException e) {
             throw new EFapsException(Context.class, "rollback.SystemException", e);
         } finally {
-            getThreadContext().close();
+            Context.getThreadContext().close();
         }
     }
 
@@ -983,7 +1010,8 @@ public final class Context implements INamingBinds
      *             be evaluated
      * @see #TRANSMANAG
      */
-    public static boolean isTMActive() throws EFapsException
+    public static boolean isTMActive()
+        throws EFapsException
     {
         try {
             return Context.TRANSMANAG.getStatus() == Status.STATUS_ACTIVE;
@@ -1000,7 +1028,8 @@ public final class Context implements INamingBinds
      *             be evaluated
      * @see #TRANSMANAG
      */
-    public static boolean isTMNoTransaction() throws EFapsException
+    public static boolean isTMNoTransaction()
+        throws EFapsException
     {
         try {
             return Context.TRANSMANAG.getStatus() == Status.STATUS_NO_TRANSACTION;
@@ -1018,7 +1047,8 @@ public final class Context implements INamingBinds
      *             be evaluated
      * @see #TRANSMANAG
      */
-    public static boolean isTMMarkedRollback() throws EFapsException
+    public static boolean isTMMarkedRollback()
+        throws EFapsException
     {
         try {
             return Context.TRANSMANAG.getStatus() == Status.STATUS_MARKED_ROLLBACK;
@@ -1039,7 +1069,6 @@ public final class Context implements INamingBinds
         return Context.DBTYPE;
     }
 
-
     /**
      * Resets the context to current defined values in the Javax naming
      * environment.
@@ -1056,11 +1085,11 @@ public final class Context implements INamingBinds
         try {
             final InitialContext initCtx = new InitialContext();
             final javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
-            Context.DBTYPE = (AbstractDatabase<?>) envCtx.lookup(RESOURCE_DBTYPE);
-            Context.DATASOURCE = (DataSource) envCtx.lookup(RESOURCE_DATASOURCE);
-            Context.TRANSMANAG = (TransactionManager) envCtx.lookup(RESOURCE_TRANSMANAG);
+            Context.DBTYPE = (AbstractDatabase<?>) envCtx.lookup(INamingBinds.RESOURCE_DBTYPE);
+            Context.DATASOURCE = (DataSource) envCtx.lookup(INamingBinds.RESOURCE_DATASOURCE);
+            Context.TRANSMANAG = (TransactionManager) envCtx.lookup(INamingBinds.RESOURCE_TRANSMANAG);
             try {
-                Context.TRANSMANAGTIMEOUT = (Integer) envCtx.lookup(RESOURCE_TRANSMANAGTIMEOUT);
+                Context.TRANSMANAGTIMEOUT = (Integer) envCtx.lookup(INamingBinds.RESOURCE_TRANSMANAGTIMEOUT);
             } catch (final NamingException e) {
                 // this is actual no error, so nothing is presented
                 Context.TRANSMANAGTIMEOUT = 0;
@@ -1083,7 +1112,8 @@ public final class Context implements INamingBinds
          *
          * @throws IOException if the close failed
          */
-        void close() throws IOException;
+        void close()
+            throws IOException;
 
         /**
          * Returns the input stream of the file for which this file parameter is
@@ -1092,7 +1122,8 @@ public final class Context implements INamingBinds
          * @return input stream of the file
          * @throws IOException if the input stream could not be returned
          */
-        InputStream getInputStream() throws IOException;
+        InputStream getInputStream()
+            throws IOException;
 
         /**
          * Returns the size of the file for which this file parameter is
