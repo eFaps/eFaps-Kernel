@@ -24,8 +24,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
+import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -39,6 +42,8 @@ import org.efaps.update.Install;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.BodyPartEntity;
@@ -54,12 +59,23 @@ import com.sun.jersey.multipart.MultiPart;
 public class Update
 {
 
+    /**
+     * Logging instance used to give logging information of this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(Update.class);
+
+
+    /**
+     * Called on post to consume files used to update.
+     *
+     * @param _multiPart Mulitpart containing the update files
+     */
     @POST
     @Consumes("multipart/mixed")
     public void updateFromFile(final MultiPart _multiPart)
     {
-
         try {
+            Update.LOG.info("===Start of Update via REST==");
             //Admin_REST
             if (Context.getThreadContext().getPerson().isAssigned(Role.get(
                             UUID.fromString("2d142645-140d-46ad-af67-835161a8d732")))) {
@@ -68,16 +84,19 @@ public class Update
 
                 final File tmpfld = temp.getParentFile();
                 temp.delete();
-                final File storeFolder = new File(tmpfld, "eFapsUpdate");
-                if (!storeFolder.exists()) {
-                    storeFolder.mkdirs();
+                final File updateFolder = new File(tmpfld, "eFapsUpdate");
+                if (!updateFolder.exists()) {
+                    updateFolder.mkdirs();
                 }
-                final List<BodyPart> parts = _multiPart.getBodyParts();
-                for (final BodyPart part : parts) {
+                final File dateFolder = new File(updateFolder, ((Long) new Date().getTime()).toString());
+                dateFolder.mkdirs();
+
+                final Map<File, FileType> files = new TreeMap<File, FileType>();
+                for (final BodyPart part : _multiPart.getBodyParts()) {
                     final BodyPartEntity entity = (BodyPartEntity) part.getEntity();
                     final InputStream in = entity.getInputStream();
 
-                    final File file = new File(storeFolder, part.getContentDisposition().getFileName());
+                    final File file = new File(dateFolder, part.getContentDisposition().getFileName());
 
                     final FileOutputStream out = new FileOutputStream(file);
                     final byte[] buf = new byte[1024];
@@ -92,23 +111,28 @@ public class Update
 
                     final FileType filetype = FileType.getFileTypeByExensione(ending);
 
+                    Update.LOG.info("= Receieved: " + file.getName());
+                    if (filetype != null) {
+                        files.put(file, filetype);
+                    }
+                }
+
+                for (final Entry<File, FileType> entry : files.entrySet()) {
+                    Update.LOG.info("...Updating " + entry.getKey().getName());
                     final Install install = new Install();
-                    install.addFile(file.toURI().toURL(), filetype.getType());
+                    install.addFile(entry.getKey().toURI().toURL(), entry.getValue().getType());
                     install.updateLatest();
                 }
+                Update.LOG.info("===End of Update via REST==");
             }
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Update.LOG.error("IOException", e);
         } catch (final InstallationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Update.LOG.error("InstallationException", e);
         } catch (final CacheReloadException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Update.LOG.error("CacheReloadException", e);
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Update.LOG.error("EFapsException", e);
         }
     }
 
@@ -117,5 +141,4 @@ public class Update
     {
         return "not implemented yet";
     }
-
 }
