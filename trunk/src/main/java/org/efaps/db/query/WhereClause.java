@@ -35,7 +35,9 @@ public interface WhereClause
      * @throws EFapsException on error while accessing the context
      * @return this
      */
-    WhereClause appendWhereClause(final CompleteStatement _completeStatement, int _orderIndex) throws EFapsException;
+    WhereClause appendWhereClause(final CompleteStatement _completeStatement,
+                                  int _orderIndex)
+        throws EFapsException;
 
     /**
      * Is the where clause set to ignore case.
@@ -46,6 +48,21 @@ public interface WhereClause
     /**
      * Set the where clause to ignore case.
      * @param _ignoreCase value to set
+     * @return this
      */
-    void setIgnoreCase(boolean _ignoreCase);
+    WhereClause setIgnoreCase(boolean _ignoreCase);
+
+
+    /**
+     * Is this where clause an or.
+     * @return true if this wherecluse is an or
+     */
+    boolean isOr();
+
+    /**
+     * Set this WhereClause tro be an or.
+     * @param _or Or
+     * @return this
+     */
+    WhereClause setOr(boolean _or);
 }

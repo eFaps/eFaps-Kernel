@@ -116,8 +116,26 @@ public class WhereClauseAttrEqAttr
     /**
      * {@inheritDoc}
      */
-    public void setIgnoreCase(final boolean _ignoreCase)
+    public WhereClause setIgnoreCase(final boolean _ignoreCase)
     {
+        return this;
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isOr()
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WhereClause setOr(final boolean or)
+    {
+        return this;
     }
 }

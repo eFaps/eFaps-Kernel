@@ -23,6 +23,7 @@ package org.efaps.admin.datamodel.attributetype;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class DecimalType extends AbstractType
         throws SQLException
     {
         checkSQLColumnSize(_attribute, 1);
-        _insertUpdate.column(_attribute.getSqlColNames().get(0), this.eval(_values));
+        _insertUpdate.column(_attribute.getSqlColNames().get(0), eval(_values));
     }
 
     /**
@@ -67,7 +68,7 @@ public class DecimalType extends AbstractType
             ret = null;
         } else if ((_values[0] instanceof String) && (((String) _values[0]).length() > 0)) {
             try {
-                ret = parseLocalized((String) _values[0]);
+                ret = DecimalType.parseLocalized((String) _values[0]);
             } catch (final EFapsException e) {
                 throw new SQLException(e);
             }
@@ -119,7 +120,7 @@ public class DecimalType extends AbstractType
      */
     public static BigDecimal parseLocalized(final String _value) throws EFapsException
     {
-        final DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Context.getThreadContext()
+        final DecimalFormat format = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
                         .getLocale());
         format.setParseBigDecimal(true);
         try {
@@ -127,5 +128,24 @@ public class DecimalType extends AbstractType
         } catch (final ParseException e) {
             throw new EFapsException(DecimalType.class, "ParseException", e);
         }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString4Where(final Object _value)
+        throws EFapsException
+    {
+        String ret = "";
+        if (_value instanceof BigDecimal) {
+            ret =  ((BigDecimal) _value).toPlainString();
+        } else if (_value instanceof String) {
+            ret = (String) _value;
+        } else if (_value != null) {
+            ret = (new BigDecimal(_value.toString())).toPlainString();
+        }
+        return ret;
     }
 }
