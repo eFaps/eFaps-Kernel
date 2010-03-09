@@ -59,7 +59,12 @@ public class WhereClauseAttributeMatchValue extends WhereClauseAttributeCompareV
 
             final String sqlColName = getAttr().getSqlColNames().get(0);
 
-            _completeStatement.appendWhereAnd();
+            if (isOr()) {
+                _completeStatement.appendWhereOr();
+            } else {
+                _completeStatement.appendWhereAnd();
+            }
+
             if (isIgnoreCase()) {
                 _completeStatement.appendWhere("UPPER(");
             }
