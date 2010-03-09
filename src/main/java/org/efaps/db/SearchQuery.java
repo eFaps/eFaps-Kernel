@@ -274,7 +274,7 @@ public class SearchQuery
                                               final long _value)
         throws EFapsException
     {
-        return addWhereExprNotEqValue(_attrName, (Long) _value);
+        return addWhereExprNotEqValue(_attrName, Long.valueOf(_value));
     }
 
     /**
@@ -308,7 +308,7 @@ public class SearchQuery
                                            final long _value)
         throws EFapsException
     {
-        return addWhereExprNotEqValue(_attrName, (Long) _value);
+        return addWhereExprEqValue(_attrName, Long.valueOf(_value));
     }
     /**
      * @param _attrName name of the attribute to compare for match
