@@ -106,9 +106,11 @@ public abstract class WhereClauseAttributeCompareValueAbstract
 
             final String sqlColName = getAttr().getSqlColNames().get(0);
             _completeStatement.isWhere();
-            _completeStatement.appendWhereAnd();
+
             if (isOr()) {
                 _completeStatement.appendWhereOr();
+            } else {
+                _completeStatement.appendWhereAnd();
             }
 
             if (isIgnoreCase()) {
