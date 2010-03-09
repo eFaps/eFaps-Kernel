@@ -31,9 +31,12 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.query.CachedResult;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.DateTimeUtil;
+import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.ReadableDateTime;
 import org.joda.time.chrono.ISOChronology;
+import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * @author The eFaps Team
@@ -116,4 +119,22 @@ public class DateTimeType
         }
         return ret;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString4Where(final Object _value)
+        throws EFapsException
+    {
+        String ret = "";
+        if (_value instanceof ReadableDateTime) {
+            ret = ((ReadableDateTime) _value).toDateTime().toString(ISODateTimeFormat.dateTime());
+        } else if (_value instanceof String) {
+            ret = (String) _value;
+        }
+        return ret;
+    }
+
+
 }

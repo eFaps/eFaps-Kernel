@@ -27,6 +27,7 @@ import java.util.List;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.query.CachedResult;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
+import org.efaps.util.EFapsException;
 
 /**
  * Implements the mapping between values in the database and {@link Long}
@@ -57,7 +58,7 @@ public class LongType
         throws SQLException
     {
         checkSQLColumnSize(_attribute, 1);
-        _insertUpdate.column(_attribute.getSqlColNames().get(0), this.eval(_values));
+        _insertUpdate.column(_attribute.getSqlColNames().get(0), eval(_values));
     }
 
     protected Long eval(final Object... _values)
@@ -112,6 +113,24 @@ public class LongType
                 ret = Long.parseLong(object.toString());
             }
             ret = object == null ? 0 : object;
+        }
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString4Where(final Object _value)
+        throws EFapsException
+    {
+        String ret = "";
+        if (_value instanceof Number) {
+            ret =  ((Number) _value).toString();
+        } else if (_value instanceof String) {
+            ret = (String) _value;
+        } else if (_value != null) {
+            ret = _value.toString();
         }
         return ret;
     }

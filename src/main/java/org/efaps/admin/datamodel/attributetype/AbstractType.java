@@ -27,6 +27,7 @@ import org.efaps.admin.datamodel.IAttributeType;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLUpdate;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -49,7 +50,7 @@ public abstract class AbstractType
                               final Object... _values)
         throws SQLException
     {
-        this.prepare(_insert, _attribute, _values);
+        prepare(_insert, _attribute, _values);
     }
 
     /**
@@ -66,7 +67,7 @@ public abstract class AbstractType
                               final Object... _values)
         throws SQLException
     {
-        this.prepare(_update, _attribute, _values);
+        prepare(_update, _attribute, _values);
     }
 
     /**
@@ -108,4 +109,15 @@ public abstract class AbstractType
                     + _attribute.getSqlColNames().size() + ")");
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString4Where(final Object _value)
+        throws EFapsException
+    {
+        return _value.toString();
+    }
+
 }

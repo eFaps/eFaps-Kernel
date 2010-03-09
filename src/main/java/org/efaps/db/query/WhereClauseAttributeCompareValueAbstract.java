@@ -32,7 +32,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class WhereClauseAttributeCompareValueAbstract implements WhereClause
+public abstract class WhereClauseAttributeCompareValueAbstract
+    implements WhereClause
 {
 
     /**
@@ -43,7 +44,7 @@ public abstract class WhereClauseAttributeCompareValueAbstract implements WhereC
     /**
      * Value to be compared.
      */
-    private final String value;
+    private final Object value;
 
     /**
      * Type of the select.
@@ -61,14 +62,21 @@ public abstract class WhereClauseAttributeCompareValueAbstract implements WhereC
     private boolean ignoreCase;
 
     /**
+     * Is this WhereClause an or.
+     */
+    private boolean or;
+
+
+    /**
      * Constructor.
      *
      * @param _query    query for this whereclause
      * @param _attr     attribute for this whereclause
      * @param _value    value used for this whereclause
      */
-    public WhereClauseAttributeCompareValueAbstract(final AbstractQuery _query, final Attribute _attr,
-                    final String _value)
+    public WhereClauseAttributeCompareValueAbstract(final AbstractQuery _query,
+                                                    final Attribute _attr,
+                                                    final Object _value)
     {
         this.attr = _attr;
         this.value = _value;
@@ -88,16 +96,21 @@ public abstract class WhereClauseAttributeCompareValueAbstract implements WhereC
      * TODO: compare does not work if an attribute has more than one sql
      *       column!!
      */
-    protected WhereClause appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex,
-                                     final String _operator)
+    protected WhereClause appendWhereClause(final CompleteStatement _completeStatement,
+                                            final int _orderIndex,
+                                            final String _operator)
         throws EFapsException
     {
 
         if (_orderIndex < 0 || getSelType().getOrderIndex() < _orderIndex) {
 
             final String sqlColName = getAttr().getSqlColNames().get(0);
-
+            _completeStatement.isWhere();
             _completeStatement.appendWhereAnd();
+            if (isOr()) {
+                _completeStatement.appendWhereOr();
+            }
+
             if (isIgnoreCase()) {
                 _completeStatement.appendWhere("UPPER(");
             }
@@ -141,11 +154,13 @@ public abstract class WhereClauseAttributeCompareValueAbstract implements WhereC
      * @throws EFapsException on error while retrieving local from context
      * @see #value
      */
-    protected String getValue() throws EFapsException
+    protected String getValue()
+        throws EFapsException
     {
+        final String strValue = this.attr.getAttributeType().getDbAttrType().toString4Where(this.value);
         return isIgnoreCase()
-                ? this.value.toUpperCase(Context.getThreadContext().getLocale())
-                : this.value;
+                ? strValue.toUpperCase(Context.getThreadContext().getLocale())
+                : strValue;
     }
 
     /**
@@ -172,9 +187,10 @@ public abstract class WhereClauseAttributeCompareValueAbstract implements WhereC
     /**
      * {@inheritDoc}
      */
-    public void setIgnoreCase(final boolean _ignoreCase)
+    public WhereClause setIgnoreCase(final boolean _ignoreCase)
     {
         this.ignoreCase = _ignoreCase;
+        return this;
     }
 
     /**
@@ -185,4 +201,27 @@ public abstract class WhereClauseAttributeCompareValueAbstract implements WhereC
         return this.ignoreCase;
     }
 
+
+    /**
+     * Getter method for the instance variable {@link #or}.
+     *
+     * @return value of instance variable {@link #or}
+     */
+    public boolean isOr()
+    {
+        return this.or;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #or}.
+     *
+     * @param _or value for instance variable {@link #or}
+     * @return this
+     */
+    public WhereClause setOr(final boolean _or)
+    {
+        this.or = _or;
+        return this;
+    }
 }

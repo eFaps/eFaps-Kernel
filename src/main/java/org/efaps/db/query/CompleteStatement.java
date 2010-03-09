@@ -29,6 +29,9 @@ package org.efaps.db.query;
  */
 public class CompleteStatement
 {
+    /**
+     * StringBuilder used for this statement.
+     */
     private final StringBuilder statement = new StringBuilder();
 
     /**
@@ -38,6 +41,7 @@ public class CompleteStatement
      */
     private boolean where = false;
 
+
     /**
      * The instance variable stores if a from clause must be appended.
      *
@@ -45,8 +49,14 @@ public class CompleteStatement
      */
     private boolean from = false;
 
+    /**
+     * Is the current part an expression.
+     */
     private boolean expr = false;
 
+    /**
+     * Append an <code>union</code> to this statement.
+     */
     public void appendUnion()
     {
         append(" union ");
@@ -55,18 +65,51 @@ public class CompleteStatement
         this.from = false;
     }
 
-    public void appendWhereAnd()
+    /**
+     * Append an <code>and</code> to this statement.
+     * @return this
+     */
+    public CompleteStatement appendWhereAnd()
     {
         if (this.where && this.expr)  {
             append(" and ");
             this.expr = false;
         }
+        return this;
     }
 
     /**
-     *
+     * Append an <code>or</code> to this statement.
      */
-    public CompleteStatement appendWhere(final String _where)
+    public void appendWhereOr()
+    {
+        if (this.where && this.expr)  {
+            append(" or ");
+            this.expr = false;
+        }
+    }
+
+    /**
+     * Append an <code>where</code> to this statement.
+     * @return this
+     */
+    public CompleteStatement appendWhere()
+    {
+        if (!this.where)  {
+            append(" where ");
+            this.where = true;
+        }
+        this.expr = false;
+        return this;
+    }
+
+
+    /**
+     * Append an <code>where</code> to this statement.
+     * @param _where where
+     * @return this
+     */
+    public CompleteStatement appendWhere(final Object _where)
     {
         if (!this.where)  {
             append(" where ");
@@ -78,35 +121,9 @@ public class CompleteStatement
     }
 
     /**
-     *
-     */
-    public CompleteStatement appendWhere(final int _where)
-    {
-        if (!this.where)  {
-            append(" where ");
-            this.where = true;
-        }
-        append(_where);
-        this.expr = true;
-        return this;
-    }
-
-    /**
-     *
-     */
-    public CompleteStatement appendWhere(final long _where)
-    {
-        if (!this.where)  {
-            append(" where ");
-            this.where = true;
-        }
-        append(_where);
-        this.expr = true;
-        return this;
-    }
-
-    /**
-     *
+     * Append an <code>from</code> to this statement.
+     * @param _from from
+     * @return this
      */
     public CompleteStatement appendFrom(final String _from)
     {
@@ -121,27 +138,11 @@ public class CompleteStatement
     }
 
     /**
-     *
+     * Append an <code>text</code> to this statement.
+     * @param _text text
+     * @return this
      */
-    public CompleteStatement append(final long _text)
-    {
-        getStatement().append(_text);
-        return this;
-    }
-
-    /**
-     *
-     */
-    public CompleteStatement append(final int _text)
-    {
-        getStatement().append(_text);
-        return this;
-    }
-
-    /**
-     *
-     */
-    public CompleteStatement append(final String _text)
+    public CompleteStatement append(final Object _text)
     {
         getStatement().append(_text);
         return this;
@@ -159,6 +160,20 @@ public class CompleteStatement
         return this.statement;
     }
 
+    /**
+     * Getter method for the instance variable {@link #where}.
+     *
+     * @return value of instance variable {@link #where}
+     */
+    public boolean isWhere()
+    {
+        return this.where;
+    }
+
+    /**
+     * Return this statement.
+     * @return this
+     */
     @Override()
     public String toString()
     {

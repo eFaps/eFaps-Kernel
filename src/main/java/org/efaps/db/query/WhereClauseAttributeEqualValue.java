@@ -31,7 +31,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class WhereClauseAttributeEqualValue extends WhereClauseAttributeCompareValueAbstract
+public class WhereClauseAttributeEqualValue
+    extends WhereClauseAttributeCompareValueAbstract
 {
     /**
      * Constructor.
@@ -40,7 +41,9 @@ public class WhereClauseAttributeEqualValue extends WhereClauseAttributeCompareV
      * @param _attr     attribute for this whereclause
      * @param _value    value used for this whereclause
      */
-    public WhereClauseAttributeEqualValue(final AbstractQuery _query, final Attribute _attr, final String _value)
+    public WhereClauseAttributeEqualValue(final AbstractQuery _query,
+                                          final Attribute _attr,
+                                          final Object _value)
     {
         super(_query, _attr, _value);
     }
@@ -49,7 +52,8 @@ public class WhereClauseAttributeEqualValue extends WhereClauseAttributeCompareV
      * {@inheritDoc}
      *
      */
-    public WhereClause appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex)
+    public WhereClause appendWhereClause(final CompleteStatement _completeStatement,
+                                         final int _orderIndex)
         throws EFapsException
     {
         return super.appendWhereClause(_completeStatement, _orderIndex, "=");

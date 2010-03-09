@@ -94,4 +94,19 @@ public interface IAttributeType
                      final CachedResult _rs,
                      final List<Integer> _indexes)
         throws Exception;
+
+
+    /**
+     * Method is called when the value of the related attribute is used
+     * as argument in a where clause for a query. This is necessary because
+     * for the different attribute types the string representation must be
+     * generated different, e.g  a datetime must be converted in an iso string
+     * etc.
+     *
+     * @param _value    value to be returned as a string
+     * @return  string representation of the value
+     * @throws EFapsException on error
+     */
+    String toString4Where(final Object _value)
+        throws EFapsException;
 }

@@ -112,6 +112,12 @@ public abstract class AbstractQuery
     private final List<WhereClause> mainWhereClauses = new ArrayList<WhereClause>();
 
     /**
+     * WHereClause for the company form the context. (if given)
+     */
+    private WhereClause companyClause;
+
+
+    /**
      * Should the child types als be expanded?
      *
      * @see #isExpandChildTypes
@@ -230,6 +236,17 @@ public abstract class AbstractQuery
         selectType.setOrderIndex(getSelectTypesOrder().size());
         selectType.setNullAllowed(_nullAllowed);
         getSelectTypesOrder().add(selectType);
+    }
+
+    /**
+     * Setter method for instance variable {@link #companyClause}.
+     *
+     * @param _companyClause value for instance variable {@link #companyClause}
+     */
+
+    protected void setCompanyClause(final WhereClause _companyClause)
+    {
+        this.companyClause = _companyClause;
     }
 
     // ///////////////////////////////////////////////////////////////////////////
@@ -375,7 +392,7 @@ public abstract class AbstractQuery
     {
         final SelectType selectType = getMainSelectTypes().get(_type);
         if (selectType == null) {
-            LOG.error("Type '" + _type.getName() + "' is not selected! New Instance can not created!");
+            AbstractQuery.LOG.error("Type '" + _type.getName() + "' is not selected! New Instance can not created!");
             throw new EFapsException(getClass(), "getInstance.TypeNotSelected", _type.getName());
         }
         // String id =
@@ -467,8 +484,8 @@ public abstract class AbstractQuery
         try {
             con = Context.getThreadContext().getConnectionResource();
 
-            if (LOG.isTraceEnabled()) {
-                LOG.trace(_complStmt.getStatement().toString());
+            if (AbstractQuery.LOG.isTraceEnabled()) {
+                AbstractQuery.LOG.trace(_complStmt.getStatement().toString());
             }
 
             final Statement stmt = con.getConnection().createStatement();
@@ -710,14 +727,24 @@ public abstract class AbstractQuery
                     selectType.appendTypeWhereClause(_completeStatement, _childTypes);
                 }
             }
-
             for (final WhereClause whereClause : this.whereClauses) {
                 whereClause.appendWhereClause(_completeStatement, _orderIndex);
             }
 
-            for (final WhereClause whereClause : getMainWhereClauses()) {
-                whereClause.appendWhereClause(_completeStatement, _orderIndex);
+            if (AbstractQuery.this.companyClause != null) {
+                AbstractQuery.this.companyClause.appendWhereClause(_completeStatement, _orderIndex);
             }
+
+            if (getMainWhereClauses().size() > 0) {
+                _completeStatement.appendWhereAnd();
+                _completeStatement.appendWhere();
+                _completeStatement.append(" (");
+                for (final WhereClause whereClause : getMainWhereClauses()) {
+                    whereClause.appendWhereClause(_completeStatement, _orderIndex);
+                }
+                _completeStatement.append(" )");
+            }
+
         }
 
         /**

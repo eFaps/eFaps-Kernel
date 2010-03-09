@@ -26,6 +26,7 @@ import java.util.List;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.query.CachedResult;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
+import org.efaps.util.EFapsException;
 
 /**
  * Implements the mapping between values in the database and {@link Double}
@@ -95,6 +96,24 @@ public class RealType
             ret = ((Number) obj).doubleValue();
         } else if (obj != null) {
             ret = Double.parseDouble(obj.toString());
+        }
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString4Where(final Object _value)
+        throws EFapsException
+    {
+        String ret = "";
+        if (_value instanceof Number) {
+            ret =  ((Number) _value).toString();
+        } else if (_value instanceof String) {
+            ret = (String) _value;
+        } else if (_value != null) {
+            ret = _value.toString();
         }
         return ret;
     }

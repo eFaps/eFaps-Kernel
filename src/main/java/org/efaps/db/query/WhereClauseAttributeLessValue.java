@@ -40,7 +40,9 @@ public class WhereClauseAttributeLessValue extends WhereClauseAttributeCompareVa
      * @param _attr     attribute for this whereclause
      * @param _value    value used for this whereclause
      */
-    public WhereClauseAttributeLessValue(final AbstractQuery _query, final Attribute _attr, final String _value)
+    public WhereClauseAttributeLessValue(final AbstractQuery _query,
+                                         final Attribute _attr,
+                                         final Object _value)
     {
         super(_query, _attr, _value);
     }
@@ -48,7 +50,8 @@ public class WhereClauseAttributeLessValue extends WhereClauseAttributeCompareVa
     /**
      * {@inheritDoc}
      */
-    public WhereClause appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex)
+    public WhereClause appendWhereClause(final CompleteStatement _completeStatement,
+                                         final int _orderIndex)
         throws EFapsException
     {
         return super.appendWhereClause(_completeStatement, _orderIndex, "<");

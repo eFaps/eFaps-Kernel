@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,11 +29,10 @@ import org.efaps.util.EFapsException;
 
 /**
  * PrintQuery is a query uses to get the value for one object, specified by one
- * instance. The PrintQuery is able to execute various of the partes for the
+ * instance. The PrintQuery is able to execute various of the parts for the
  * select from EQL definition.
  *
  * TODO description!
- * TODO .type
  * TODO .value
  * TODO .attribute[ValueUOM].number
  * .attribute[ValueUOM].uom .attribute[ValueUOM].base

@@ -39,7 +39,9 @@ public class WhereClauseAttributeMatchValue extends WhereClauseAttributeCompareV
      * @param _attr     attribute for this whereclause
      * @param _value    value used for this whereclause
      */
-    public WhereClauseAttributeMatchValue(final AbstractQuery _query, final Attribute _attr, final String _value)
+    public WhereClauseAttributeMatchValue(final AbstractQuery _query,
+                                          final Attribute _attr,
+                                          final Object _value)
     {
         super(_query, _attr, _value);
     }
@@ -48,7 +50,8 @@ public class WhereClauseAttributeMatchValue extends WhereClauseAttributeCompareV
      * {@inheritDoc}
      * @throws EFapsException
      */
-    public WhereClause appendWhereClause(final CompleteStatement _completeStatement, final int _orderIndex)
+    public WhereClause appendWhereClause(final CompleteStatement _completeStatement,
+                                         final int _orderIndex)
         throws EFapsException
     {
 
