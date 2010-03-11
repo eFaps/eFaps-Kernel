@@ -37,6 +37,7 @@ import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
 import org.efaps.admin.datamodel.attributetype.CompanyLinkType;
 import org.efaps.admin.datamodel.attributetype.StatusType;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
@@ -764,6 +765,25 @@ public class Type extends AbstractDataModelObject
         return ret;
     }
 
+
+    /**
+     * Method to get the key to the label.
+     * @return key to the label
+     */
+    public String getLabelKey()
+    {
+        final StringBuilder keyStr = new StringBuilder();
+        return keyStr.append(getName()).append(".Label").toString();
+    }
+
+    /**
+     * Method to get the translated label for this Status.
+     * @return translated Label
+     */
+    public String getLabel()
+    {
+        return DBProperties.getProperty(getLabelKey());
+    }
 
     /**
      * The method overrides the original method 'toString' and returns
