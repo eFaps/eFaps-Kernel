@@ -20,12 +20,14 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import java.text.Collator;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**
@@ -35,7 +37,8 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  *
  */
-public class StringUI extends AbstractUI
+public class StringUI
+    extends AbstractUI
 {
 
     /**
@@ -52,7 +55,8 @@ public class StringUI extends AbstractUI
      *
      */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode)
+    public String getReadOnlyHtml(final FieldValue _fieldValue,
+                                  final TargetMode _mode)
     {
         final StringBuilder ret = new StringBuilder();
         final Field field = _fieldValue.getField();
@@ -75,31 +79,34 @@ public class StringUI extends AbstractUI
         } else {
             final String tmp = value != null ? value.toString() : "";
             if (tmp != null) {
-                ret.append("<span name=\"").append(field.getName()).append("\" ").append(EFAPSTMPTAG).append(">")
-                    .append(tmp.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\n", "<br/>"))
-                    .append("</span>");
+                ret.append("<span name=\"").append(field.getName()).append("\" ").append(UIInterface.EFAPSTMPTAG).append(">")
+                                .append(tmp.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\n", "<br/>"))
+                                .append("</span>");
             }
         }
         return ret.toString();
     }
 
     /**
-     * @see org.efaps.admin.datamodel.ui.AbstractUI#getHiddenHtml(org.efaps.admin.datamodel.ui.FieldValue, org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode)
+     * @see org.efaps.admin.datamodel.ui.AbstractUI#getHiddenHtml(org.efaps.admin.datamodel.ui.FieldValue,
+     *      org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode)
      * @param _fieldValue Fieldvalue the representation is requested
      * @param _mode target mode
      * @return value for field
      * @throws EFapsException on error
      */
     @Override
-    public String getHiddenHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    public String getHiddenHtml(final FieldValue _fieldValue,
+                                final TargetMode _mode)
+        throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
         final Field field = _fieldValue.getField();
         final Object value = _fieldValue.getValue();
 
         ret.append("<input type=\"hidden\" ").append(" name=\"").append(field.getName())
-            .append("\" value=\"").append(value != null ? value : "").append("\"")
-            .append(EFAPSTMPTAG).append("/>");
+                        .append("\" value=\"").append(value != null ? value : "").append("\"")
+                        .append(UIInterface.EFAPSTMPTAG).append("/>");
 
         return ret.toString();
     }
@@ -113,44 +120,48 @@ public class StringUI extends AbstractUI
      *
      */
     @Override
-    public String getEditHtml(final FieldValue _fieldValue, final TargetMode _mode)
+    public String getEditHtml(final FieldValue _fieldValue,
+                              final TargetMode _mode)
     {
         final StringBuilder ret = new StringBuilder();
         final Field field = _fieldValue.getField();
         final Object value = _fieldValue.getValue();
         if (_mode.equals(TargetMode.SEARCH)) {
             ret.append("<input type=\"text\"").append(" size=\"").append(field.getCols()).append("\" name=\"").append(
-                           field.getName()).append("\" value=\"").append((value != null ? value : "*")).append("\" />");
+                            field.getName()).append("\" value=\"").append((value != null ? value : "*")).append("\" />");
         } else {
             if (field.getRows() > 1) {
                 ret.append("<textarea type=\"text\"")
-                    .append(" cols=\"").append(field.getCols())
-                    .append("\" rows=\"").append(field.getRows())
-                    .append("\" name=\"").append(field.getName()).append("\"")
-                    .append(EFAPSTMPTAG).append("/>");
+                                .append(" cols=\"").append(field.getCols())
+                                .append("\" rows=\"").append(field.getRows())
+                                .append("\" name=\"").append(field.getName()).append("\"")
+                                .append(UIInterface.EFAPSTMPTAG).append("/>");
                 if (value != null) {
                     ret.append(value);
                 }
                 ret.append("</textarea>");
             } else {
                 ret.append("<input type=\"text\" size=\"").append(field.getCols())
-                    .append("\" name=\"").append(field.getName())
-                    .append("\" value=\"").append(value != null ? value : "").append("\"")
-                    .append(EFAPSTMPTAG).append("/>");
+                                .append("\" name=\"").append(field.getName())
+                                .append("\" value=\"").append(value != null ? value : "").append("\"")
+                                .append(UIInterface.EFAPSTMPTAG).append("/>");
             }
         }
         return ret.toString();
     }
 
     /**
-     * @see org.efaps.admin.datamodel.ui.UIInterface#getStringValue(org.efaps.admin.datamodel.ui.FieldValue, org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode)
+     * @see org.efaps.admin.datamodel.ui.UIInterface#getStringValue(org.efaps.admin.datamodel.ui.FieldValue,
+     *      org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode)
      * @param _fieldValue Fieldvalue the representation is requested
      * @param _mode the target mode
      * @return "String-Value"
      * @throws EFapsException on error
      */
     @Override
-    public String getStringValue(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    public String getStringValue(final FieldValue _fieldValue,
+                                 final TargetMode _mode)
+        throws EFapsException
     {
         return _fieldValue.getValue() == null ? "" : _fieldValue.getValue().toString();
     }
@@ -161,20 +172,31 @@ public class StringUI extends AbstractUI
      * @param _fieldValue first Value
      * @param _fieldValue2 second Value
      * @return 0
+     * @throws EFapsException
      */
     @Override
-    public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2)
+    public int compare(final FieldValue _fieldValue,
+                       final FieldValue _fieldValue2)
     {
         final String value = _fieldValue.getValue().toString();
         final String value2 = _fieldValue2.getValue().toString();
-        return value.compareTo(value2);
+        Collator collator;
+        try {
+            collator = Collator.getInstance(Context.getThreadContext().getLocale());
+        } catch (final EFapsException e) {
+            // on an error the default locale is used
+            collator =  Collator.getInstance();
+        }
+        collator.setStrength(Collator.PRIMARY);
+        return collator.compare(value, value2);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String validateValue(final String _value, final Attribute _attribute)
+    public String validateValue(final String _value,
+                                final Attribute _attribute)
     {
         String ret = null;
         if (_attribute != null) {

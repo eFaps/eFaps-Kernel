@@ -345,7 +345,7 @@ public class FieldValue implements Comparable<Object>
             if (getClassUI().equals(target.getClassUI())) {
                 ret = getClassUI().compare(this, target);
             } else {
-                FieldValue.LOG.error("can't compare this Objects because " + "they don't have the same ClassUI");
+                FieldValue.LOG.error("can't compare this Objects because they don't have the same ClassUI");
             }
         }
         return ret;
@@ -376,11 +376,11 @@ public class FieldValue implements Comparable<Object>
     /**
      * Setter method for instance variable {@link #value}.
      *
-     * @param value value for instance variable {@link #value}
+     * @param _value value for instance variable {@link #value}
      */
-    public void setValue(final Object value)
+    public void setValue(final Object _value)
     {
-        this.value = value;
+        this.value = _value;
     }
 
     /**
