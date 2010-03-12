@@ -35,8 +35,8 @@ public interface UIInterface
 {
 
     /**
-     * Used as a temporary tag inside html. It is used to set e.g. the id or
-     * add javascript during the rendering;
+     * Used as a temporary tag inside html. It is used to set e.g. the id or add
+     * javascript during the rendering;
      */
     String EFAPSTMPTAG = " eFapsTempTag ";
 
@@ -48,7 +48,9 @@ public interface UIInterface
      * @return String representation of the object for creation
      * @throws EFapsException on error
      */
-    String getHiddenHtml(final FieldValue _fieldValue, TargetMode _mode) throws EFapsException;
+    String getHiddenHtml(final FieldValue _fieldValue,
+                         TargetMode _mode)
+        throws EFapsException;
 
     /**
      * Method to get the Value for editing in an html document.
@@ -58,7 +60,9 @@ public interface UIInterface
      * @return String representation of the object for editing
      * @throws EFapsException on error
      */
-    String getEditHtml(final FieldValue _fieldValue, TargetMode _mode) throws EFapsException;
+    String getEditHtml(final FieldValue _fieldValue,
+                       TargetMode _mode)
+        throws EFapsException;
 
     /**
      * Method to get the Value for viewing in an html document.
@@ -68,18 +72,22 @@ public interface UIInterface
      * @return String representation of the object for viewing
      * @throws EFapsException on error
      */
-    String getReadOnlyHtml(final FieldValue _fieldValue, TargetMode _mode) throws EFapsException;
+    String getReadOnlyHtml(final FieldValue _fieldValue,
+                           TargetMode _mode)
+        throws EFapsException;
 
     /**
-     * Method to get a String representation of the value. This is used e.g.
-     * for labels. In comparison to the Html-Methods it should not contain html.
+     * Method to get a String representation of the value. This is used e.g. for
+     * labels. In comparison to the Html-Methods it should not contain html.
      *
      * @param _fieldValue Fieldvalue the representation is requested
      * @param _mode target mode
      * @return String representation of the object for viewing
      * @throws EFapsException on error
      */
-    String getStringValue(final FieldValue _fieldValue, TargetMode _mode) throws EFapsException;
+    String getStringValue(final FieldValue _fieldValue,
+                          TargetMode _mode)
+        throws EFapsException;
 
     /**
      * Method to get the Object for use in case of comparison.
@@ -88,7 +96,8 @@ public interface UIInterface
      * @return Object for comparison
      * @throws EFapsException on error
      */
-    Object getObject4Compare(final FieldValue _fieldValue) throws EFapsException;
+    Object getObject4Compare(final FieldValue _fieldValue)
+        throws EFapsException;
 
     /**
      * Method to compare the values.
@@ -97,28 +106,30 @@ public interface UIInterface
      * @param _fieldValue2 second Value
      * @return int
      */
-    int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2);
-
+    int compare(final FieldValue _fieldValue,
+                final FieldValue _fieldValue2);
 
     /**
      * Method is used to validate a string value given from an Userinterface.
      *
-     * @param _value        value to validate
-     * @param _attribute    Attribute the value is related to
+     * @param _value value to validate
+     * @param _attribute Attribute the value is related to
      * @return if the given value is valid for this type null must be returned,
-     *      else the message that will be shown to the user as a snipplet must
-     *      be returned
+     *         else the message that will be shown to the user as a snipplet
+     *         must be returned
      */
-    String validateValue(final String _value, final Attribute _attribute);
-
+    String validateValue(final String _value,
+                         final Attribute _attribute);
 
     /**
      * Method to format the given Object.
      *
-     * @param _object   the object to be formated
-     * @param _pattern  pattern to be used by the formatter
+     * @param _object the object to be formated
+     * @param _pattern pattern to be used by the formatter
      * @return formated object
      * @throws EFapsException on error
      */
-    Object format(final Object _object, final String _pattern) throws EFapsException;
+    Object format(final Object _object,
+                  final String _pattern)
+        throws EFapsException;
 }
