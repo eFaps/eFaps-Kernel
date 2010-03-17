@@ -40,7 +40,7 @@ import org.efaps.util.EFapsException;
  * Abstract class for the different image updates/inserts.
  *
  * @author The eFaps Team
- * @version $Id: $
+ * @version $Id$
  */
 public abstract class AbstractFileUpdate
     extends AbstractUpdate
