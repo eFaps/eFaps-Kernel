@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Type;
@@ -42,6 +39,8 @@ import org.efaps.db.print.Phrase;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -86,6 +85,15 @@ public abstract class AbstractPrintQuery
      * Index of an sqltable.
      */
     private int tableIndex = 0;
+
+    /**
+     * Must the list of instance be in the same order as given.
+     * (There are some cases the sequence might be different returned from the
+     * database. To enforce the exact sequence this flag can be set. But sorting
+     * takes time and should not be used by default.)
+     */
+    private boolean enforceSorted;
+
 
     /**
      * Add an attribute to the PrintQuery. It is used to get editable values
@@ -460,6 +468,29 @@ public abstract class AbstractPrintQuery
     }
 
     /**
+     * Getter method for the instance variable {@link #enforceSorted}.
+     *
+     * @return value of instance variable {@link #enforceSorted}
+     */
+    public boolean isEnforceSorted()
+    {
+        return this.enforceSorted;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #enforceSorted}.
+     *
+     * @param _enforceSorted value for instance variable {@link #enforceSorted}
+     */
+
+    public void setEnforceSorted(final boolean _enforceSorted)
+    {
+        this.enforceSorted = _enforceSorted;
+    }
+
+
+    /**
      * The instance method executes the query.
      *
      * @return true if the query contains values, else false
@@ -477,7 +508,7 @@ public abstract class AbstractPrintQuery
      * @throws EFapsException on error
      */
     public boolean executeWithoutAccessCheck()
-    throws EFapsException
+        throws EFapsException
     {
         boolean ret = false;
         if (getInstanceList().size() > 0) {
@@ -569,7 +600,9 @@ public abstract class AbstractPrintQuery
             final Statement stmt = con.getConnection().createStatement();
 
             final ResultSet rs = stmt.executeQuery(_complStmt.toString());
-            getInstanceList().clear();
+            final List<Instance> tmpList = new ArrayList<Instance>();
+            final Map<Instance, Integer> sortMap = new HashMap<Instance, Integer>();
+            int i = 0;
             while (rs.next()) {
                 final Instance instance;
                 if (getMainType().getMainTable().getSqlColType() != null) {
@@ -577,13 +610,22 @@ public abstract class AbstractPrintQuery
                 } else {
                     instance = Instance.get(getMainType(), rs.getLong(1));
                 }
-                getInstanceList().add(instance);
+                sortMap.put(instance, i);
+                tmpList.add(instance);
                 for (final OneSelect onesel : _oneSelects) {
                     onesel.addObject(rs);
                 }
                 ret = true;
+                i++;
             }
-
+            if (this.enforceSorted) {
+                for (final OneSelect onesel : _oneSelects) {
+                    onesel.sortByInstanceList(getInstanceList(), sortMap);
+                }
+            } else {
+                getInstanceList().clear();
+                getInstanceList().addAll(tmpList);
+            }
             rs.close();
             stmt.close();
             con.commit();

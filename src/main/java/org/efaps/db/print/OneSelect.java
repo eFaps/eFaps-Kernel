@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -595,8 +596,7 @@ public class OneSelect
     }
 
     /**
-     * @return
-     *
+     * @return true if next, else false
      */
     public boolean next()
     {
@@ -633,5 +633,30 @@ public class OneSelect
     public List<Object> getObjectList()
     {
         return this.objectList;
+    }
+
+
+    /**
+     * Method sorts the object and idList.
+     * @param _targetList   list of instances
+     * @param _currentList  list if instances how it is sorted now
+     */
+    public void sortByInstanceList(final List<Instance> _targetList,
+                                   final Map<Instance, Integer> _currentList)
+    {
+        final List<Long> idListNew = new ArrayList<Long>();
+        final List<Object> objectListNew = new ArrayList<Object>();
+        for (final Instance instance : _targetList) {
+            if (_currentList.containsKey(instance)) {
+                final Integer i = _currentList.get(instance);
+                idListNew.add(this.idList.get(i));
+                objectListNew.add(this.objectList.get(i));
+            }
+        }
+        this.idList.clear();
+        this.idList.addAll(idListNew);
+        this.objectList.clear();
+        this.objectList.addAll(objectListNew);
+
     }
 }
