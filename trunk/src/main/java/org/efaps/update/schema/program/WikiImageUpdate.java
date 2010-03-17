@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 3511 $
- * Last Changed:    $Date: 2009-12-20 11:11:53 -0500 (Sun, 20 Dec 2009) $
- * Last Changed By: $Author: tim.moxter $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program;
@@ -30,7 +30,7 @@ import org.efaps.update.schema.AbstractFileUpdate;
  * file.
  *
  * @author The eFaps Team
- * @version $Id: JasperImageUpdate.java 3511 2009-12-20 16:11:53Z tim.moxter $
+ * @version $Id$
  */
 public class WikiImageUpdate
     extends AbstractFileUpdate
