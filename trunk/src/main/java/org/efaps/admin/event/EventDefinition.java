@@ -278,7 +278,8 @@ public final class EventDefinition
                 EventDefinition.LOG.debug("   resName=" + resName);
             }
 
-            final EFapsClassNames eFapsClass = EFapsClassNames.getEnum(EventDefinition.getTypeName(abstractID));
+            final EFapsClassNames eFapsClass = EFapsClassNames.getEnum(EventDefinition.getTypeName(abstractID,
+                            eventId, eventName));
 
             EventType triggerEvent = null;
             for (final EventType trigger : EventType.values()) {
@@ -404,10 +405,14 @@ public final class EventDefinition
     /**
      * Get the Name of the Type from the Database.
      *
-     * @param _abstractID ID the Typename must be resolved
+     * @param _abstractID   ID the Typename must be resolved
+     * @param _eventId      id of the event, only used for logging on error
+     * @param _eventName    name of the event, only used for logging error
      * @return NAem of the Type
      */
-    private static UUID getTypeName(final long _abstractID)
+    private static UUID getTypeName(final long _abstractID,
+                                    final long _eventId,
+                                    final String _eventName)
     {
         final SearchQuery query = new SearchQuery();
         Type type = null;
@@ -429,7 +434,8 @@ public final class EventDefinition
             EventDefinition.LOG.error("getClassName(String)", e);
         }
         if (type == null) {
-            EventDefinition.LOG.error("Can't find the Type  with ID: " + _abstractID);
+            EventDefinition.LOG.error("Can't find the Type  with ID: " + _abstractID + " for event ID: " + _eventId
+                            + " Name: " + _eventName);
         } else {
             ret = type.getUUID();
         }
