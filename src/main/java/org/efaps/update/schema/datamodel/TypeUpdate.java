@@ -33,10 +33,12 @@ import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
+import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
+import org.efaps.db.store.Store;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.UpdateLifecycle;
@@ -45,9 +47,6 @@ import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_LENGTH;
-import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_NAME;
 /**
  * Handles the import / update of types for eFaps read from a XML configuration
  * item file.
@@ -55,7 +54,8 @@ import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_NAME;
  * @author The eFaps Team
  * @version $Id$
  */
-public class TypeUpdate extends AbstractUpdate
+public class TypeUpdate
+    extends AbstractUpdate
 {
     /**
      * Logging instance used to give logging information of this class.
@@ -158,7 +158,9 @@ public class TypeUpdate extends AbstractUpdate
          * @param _text         text
          */
         @Override
-        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
         {
 
             final String value = _tags.get(0);
@@ -307,8 +309,10 @@ public class TypeUpdate extends AbstractUpdate
          * @see #getTypeLinkId
          * TODO:  throw Exception is not allowed
          */
-        protected void updateInDB(final Instance _instance, final String _typeName, final long _setID)
-                throws EFapsException
+        protected void updateInDB(final Instance _instance,
+                                  final String _typeName,
+                                  final long _setID)
+            throws EFapsException
         {
             final long attrTypeId = getAttrTypeId(_typeName);
             final long sqlTableId = getSqlTableId(_typeName);
@@ -372,7 +376,7 @@ public class TypeUpdate extends AbstractUpdate
          * @see #type
          */
         protected long getAttrTypeId(final String _typeName)
-                throws EFapsException
+            throws EFapsException
         {
             final SearchQuery query = new SearchQuery();
             query.setQueryTypes("Admin_DataModel_AttributeType");
@@ -397,7 +401,7 @@ public class TypeUpdate extends AbstractUpdate
          * @see #sqlTable
          */
         protected long getSqlTableId(final String _typeName)
-                throws EFapsException
+            throws EFapsException
         {
             final SearchQuery query = new SearchQuery();
             query.setQueryTypes("Admin_DataModel_SQLTable");
@@ -485,7 +489,9 @@ public class TypeUpdate extends AbstractUpdate
          * @param _text         content for current path
          */
         @Override()
-        public void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        public void readXML(final List<String> _tags,
+                            final Map<String, String> _attributes,
+                            final String _text)
         {
             final String value = _tags.get(0);
             if ("name".equals(value)) {
@@ -518,7 +524,7 @@ public class TypeUpdate extends AbstractUpdate
          * @throws EFapsException on error
          */
         protected long getParentTypeId(final String _typeName)
-                throws EFapsException
+            throws EFapsException
         {
             final SearchQuery query = new SearchQuery();
             query.setQueryTypes("Admin_DataModel_Type");
@@ -541,7 +547,9 @@ public class TypeUpdate extends AbstractUpdate
          * @param _typeName     name of the type
          * @throws EFapsException on error
          */
-        public void updateInDB(final Instance _instance, final String _typeName) throws EFapsException
+        public void updateInDB(final Instance _instance,
+                               final String _typeName)
+            throws EFapsException
         {
             final String name = AttributeSet.evaluateName(_typeName, getName());
 
@@ -591,7 +599,8 @@ public class TypeUpdate extends AbstractUpdate
     /**
      * Class for the definition of the type.
      */
-    public class TypeDefinition extends AbstractDefinition
+    public class TypeDefinition
+        extends AbstractDefinition
     {
 
         /**
@@ -620,7 +629,7 @@ public class TypeUpdate extends AbstractUpdate
          * @see #addAttribute
          */
         private final List<TypeUpdate.AttributeSetDefinition> attributeSets
-                                                                   = new ArrayList<TypeUpdate.AttributeSetDefinition>();
+                                            = new ArrayList<TypeUpdate.AttributeSetDefinition>();
 
         /**
          * Current read attribute definition instance.
@@ -644,7 +653,9 @@ public class TypeUpdate extends AbstractUpdate
          * @param _text         text
          */
         @Override
-        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
         {
             final String value = _tags.get(0);
             if ("purpose".equals(value)) {
@@ -690,8 +701,8 @@ public class TypeUpdate extends AbstractUpdate
                 this.parentType = _text;
             } else if ("store".equals(value)) {
                 addLink(TypeUpdate.LINK2STORE, new LinkInstance(_attributes.get("name")));
-                getProperties().put(PROPERTY_ATTR_FILE_LENGTH, _attributes.get("attributeFileLength"));
-                getProperties().put(PROPERTY_ATTR_FILE_NAME, _attributes.get("attributeFileName"));
+                getProperties().put(Store.PROPERTY_ATTR_FILE_LENGTH, _attributes.get("attributeFileLength"));
+                getProperties().put(Store.PROPERTY_ATTR_FILE_NAME, _attributes.get("attributeFileName"));
             } else if ("trigger".equals(value)) {
                 if (_tags.size() == 1) {
                     this.events.add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
@@ -715,7 +726,8 @@ public class TypeUpdate extends AbstractUpdate
          *
          * @param _step             lifecycle step
          * @param _allLinkTypes     set of all links
-         * InstallationException EFapsException on error
+         * @throws InstallationException on error
+         * @throws EFapsException on error
          * @see #parentType
          * @see #attributes
          */
@@ -754,26 +766,32 @@ public class TypeUpdate extends AbstractUpdate
                 for (final AttributeSetDefinition attrSet : this.attributeSets) {
                     attrSet.updateInDB(this.instance, getValue("Name"));
                 }
+
+                removeObsoleteAttributes();
             }
         }
 
-
         /**
-         * @see org.efaps.update.AbstractUpdate.AbstractDefinition#setLinksInDB(org.efaps.db.Instance, org.efaps.update.AbstractUpdate.Link, java.util.Set)
-         * @param _instance     instande
-         * @param _linktype     type of the link
-         * @param _links        links
          * @throws EFapsException on error
          */
-        @Override()
-        protected void setLinksInDB(final Instance _instance,
-                                    final Link _linktype,
-                                    final Set<LinkInstance> _links)
+        private void removeObsoleteAttributes()
             throws EFapsException
         {
-            // TODO Auto-generated method stub
-            super.setLinksInDB(_instance, _linktype, _links);
+            final Set<String> attrNames = new HashSet<String>();
+            for (final AttributeDefinition attr : this.attributes) {
+                attrNames.add(attr.name);
+            }
+            final SearchQuery query = new SearchQuery();
+            query.setExpand(this.instance, "Admin_DataModel_Attribute\\ParentType");
+            query.addSelect("Name");
+            query.addSelect("OID");
+            query.executeWithoutAccessCheck();
+            while (query.next()) {
+                if (!attrNames.contains(query.get("Name"))) {
+                    final Delete delete = new Delete(Instance.get((String) query.get("OID")));
+                    delete.executeWithoutAccessCheck();
+                }
+            }
         }
     }
-
 }
