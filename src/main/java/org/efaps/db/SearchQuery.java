@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id$ TODO:
  *          description
  */
+@Deprecated
 public class SearchQuery
     extends AbstractQuery
 {
