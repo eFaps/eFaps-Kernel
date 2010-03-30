@@ -37,6 +37,7 @@ import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
 import org.efaps.admin.datamodel.attributetype.CompanyLinkType;
 import org.efaps.admin.datamodel.attributetype.StatusType;
+import org.efaps.admin.datamodel.attributetype.TypeType;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -215,14 +216,23 @@ public class Type extends AbstractDataModelObject
     private boolean abstractBool;
 
     /**
-     * Stores the attribute that contains the status of this type. (if exist)
+     * Stores the name of attribute that contains the status of this
+     * type. (if exist)
      */
-    private Attribute statusAttribute;
+    private String statusAttributeName;
 
     /**
-     * Stores the attribute that contains the company of this type. (if exist)
+     * Stores the name of attribute that contains the company of this
+     * type. (if exist)
      */
-    private Attribute companyAttribute;
+    private String companyAttributeName;
+
+    /**
+     * Stores the name of attribute that contains the type of this
+     * type. (if exist)
+     */
+    private String typeAttributeName;
+
 
     /**
      * This is the constructor for class Type. Every instance of class Type must
@@ -279,12 +289,17 @@ public class Type extends AbstractDataModelObject
         // evaluate for status, an inherited attribute will not overwrite the
         // original attribute
         if (_attribute.getAttributeType().getClassRepr().equals(StatusType.class) && !_inherited) {
-            this.statusAttribute = _attribute;
+            this.statusAttributeName = _attribute.getName();
         }
         // evaluate for company
         if (_attribute.getAttributeType().getClassRepr().equals(CompanyLinkType.class)) {
-            this.companyAttribute = _attribute;
+            this.companyAttributeName = _attribute.getName();
         }
+        // evaluate for type attribute
+        if (_attribute.getAttributeType().getClassRepr().equals(TypeType.class)) {
+            this.typeAttributeName = _attribute.getName();
+        }
+
         getAttributes().put(_attribute.getName(), _attribute);
         if (_attribute.getTable() != null) {
             getTables().add(_attribute.getTable());
@@ -331,7 +346,7 @@ public class Type extends AbstractDataModelObject
      */
     public Attribute getStatusAttribute()
     {
-        return this.statusAttribute;
+        return this.attributes.get(this.statusAttributeName);
     }
 
     /**
@@ -340,7 +355,7 @@ public class Type extends AbstractDataModelObject
      */
     public boolean isCheckStatus()
     {
-        return this.statusAttribute != null;
+        return this.statusAttributeName != null;
     }
 
     /**
@@ -349,17 +364,27 @@ public class Type extends AbstractDataModelObject
      */
     public boolean isCompanyDepended()
     {
-        return this.companyAttribute != null;
+        return this.companyAttributeName != null;
     }
 
     /**
-     * Getter method for instance variable {@link #companyAttribute}.
+     * Get the attribute containing the company information.
      *
-     * @return value of instance variable {@link #companyAttribute}
+     * @return attribute containing the company information
      */
     public Attribute getCompanyAttribute()
     {
-        return this.companyAttribute;
+        return this.attributes.get(this.companyAttributeName);
+    }
+
+    /**
+     * Get the attribute containing the type information.
+     *
+     * @return attribute containing the type information
+     */
+    public Attribute getTypeAttribute()
+    {
+        return this.attributes.get(this.typeAttributeName);
     }
 
     /**
