@@ -21,8 +21,8 @@
 
 package org.efaps.db.search;
 
-import org.efaps.db.InstanceQuery;
 import org.efaps.util.EFapsException;
+
 
 
 /**
@@ -31,17 +31,36 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractValue
-    extends AbstractPart
+public class QOr
+    extends QAnd
 {
+    /**
+     * Constructor setting the parts of this OR.
+     * @param _parts parts for this and
+     */
+    public QOr(final QAbstractPart... _parts)
+    {
+       super(_parts);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart prepare(final InstanceQuery _query,
-                                final AbstractPart _part)
+    public QAbstractPart appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
+        _sql.append("(");
+        boolean first = true;
+        for (final QAbstractPart part : getParts()) {
+            if (first) {
+                first = false;
+            } else {
+                _sql.append(" OR ");
+            }
+            part.appendSQL(_sql);
+        }
+        _sql.append(")");
         return this;
     }
 }

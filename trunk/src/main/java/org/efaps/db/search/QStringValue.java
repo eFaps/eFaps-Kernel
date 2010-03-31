@@ -32,8 +32,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class StringValue
-    extends AbstractValue
+public class QStringValue
+    extends QAbstractValue
 {
     /**
      * Value for this StringValue.
@@ -43,7 +43,7 @@ public class StringValue
     /**
      * @param _value Value
      */
-    public StringValue(final String _value)
+    public QStringValue(final String _value)
     {
         this.value = _value;
     }
@@ -53,15 +53,15 @@ public class StringValue
      *
      */
     @Override
-    public AbstractPart prepare(final InstanceQuery _query,
-                                final AbstractPart _part)
+    public QAbstractPart prepare(final InstanceQuery _query,
+                                final QAbstractPart _part)
         throws EFapsException
     {
-        if (_part instanceof AbstractAttrCompare) {
-            if (_part instanceof Match) {
+        if (_part instanceof QAbstractAttrCompare) {
+            if (_part instanceof QMatch) {
                 this.value = this.value.replace("*", "%");
             }
-            if (((AbstractAttrCompare) _part).isIgnoreCase()) {
+            if (((QAbstractAttrCompare) _part).isIgnoreCase()) {
                 this.value = this.value.toUpperCase(Context.getThreadContext().getLocale());
             }
         }
@@ -71,7 +71,7 @@ public class StringValue
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart appendSQL(final StringBuilder _sql)
+    public QAbstractPart appendSQL(final StringBuilder _sql)
     {
         _sql.append("'").append(this.value).append("'");
         return this;

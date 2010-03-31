@@ -34,22 +34,22 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class And
-    extends AbstractPart
+public class QAnd
+    extends QAbstractPart
 {
     /**
      * List of parts that will be connected by "AND".
      */
-    private final List<AbstractPart> parts = new ArrayList<AbstractPart>();
+    private final List<QAbstractPart> parts = new ArrayList<QAbstractPart>();
 
 
     /**
      * Constructor setting the parts of this AND.
      * @param _parts parts for this and
      */
-    public And(final AbstractPart... _parts)
+    public QAnd(final QAbstractPart... _parts)
     {
-        for (final AbstractPart part : _parts) {
+        for (final QAbstractPart part : _parts) {
             this.parts.add(part);
         }
     }
@@ -59,7 +59,7 @@ public class And
      * @param _part part to be include
      * @return this
      */
-    public AbstractPart addPart(final AbstractPart _part)
+    public QAbstractPart addPart(final QAbstractPart _part)
     {
         this.parts.add(_part);
         return this;
@@ -70,7 +70,7 @@ public class And
      *
      * @return value of instance variable {@link #parts}
      */
-    protected List<AbstractPart> getParts()
+    protected List<QAbstractPart> getParts()
     {
         return this.parts;
     }
@@ -79,12 +79,12 @@ public class And
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart appendSQL(final StringBuilder _sql)
+    public QAbstractPart appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
         _sql.append("(");
         boolean first = true;
-        for (final AbstractPart part : this.parts) {
+        for (final QAbstractPart part : this.parts) {
             if (first) {
                 first = false;
             } else {
@@ -100,11 +100,11 @@ public class And
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart prepare(final InstanceQuery _query,
-                                final AbstractPart _part)
+    public QAbstractPart prepare(final InstanceQuery _query,
+                                final QAbstractPart _part)
         throws EFapsException
     {
-        for (final AbstractPart part : this.parts) {
+        for (final QAbstractPart part : this.parts) {
             part.prepare(_query, this);
         }
         return this;

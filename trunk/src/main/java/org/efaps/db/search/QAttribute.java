@@ -32,8 +32,8 @@ import org.efaps.db.InstanceQuery;
  * @author The eFaps Team
  * @version $Id$
  */
-public class QueryAttribute
-    extends AbstractPart
+public class QAttribute
+    extends QAbstractPart
 {
 
     /**
@@ -59,7 +59,7 @@ public class QueryAttribute
     /**
      * @param _attribute Attribute
      */
-    public QueryAttribute(final Attribute _attribute)
+    public QAttribute(final Attribute _attribute)
     {
         this.attribute = _attribute;
         this.attributeName = this.attribute.getName();
@@ -68,7 +68,7 @@ public class QueryAttribute
     /**
      * @param _attributeName Name of the attribute
      */
-    public QueryAttribute(final String _attributeName)
+    public QAttribute(final String _attributeName)
     {
         this.attributeName = _attributeName;
     }
@@ -77,11 +77,11 @@ public class QueryAttribute
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart prepare(final InstanceQuery _query,
-                                final AbstractPart _part)
+    public QAbstractPart prepare(final InstanceQuery _query,
+                                final QAbstractPart _part)
     {
-        if (_part instanceof AbstractAttrCompare) {
-            this.ignoreCase = ((AbstractAttrCompare) _part).isIgnoreCase();
+        if (_part instanceof QAbstractAttrCompare) {
+            this.ignoreCase = ((QAbstractAttrCompare) _part).isIgnoreCase();
         }
         if (this.attribute == null) {
             this.attribute =  _query.getBaseType().getAttribute(this.attributeName);
@@ -94,7 +94,7 @@ public class QueryAttribute
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart appendSQL(final StringBuilder _sql)
+    public QAbstractPart appendSQL(final StringBuilder _sql)
     {
         if (this.ignoreCase) {
             _sql.append("UPPER(");

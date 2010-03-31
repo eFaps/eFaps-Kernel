@@ -21,9 +21,6 @@
 
 package org.efaps.db.search;
 
-import org.efaps.util.EFapsException;
-
-
 
 /**
  * TODO comment!
@@ -31,31 +28,30 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class Less
-    extends AbstractAttrCompare
+public class QNumberValue
+    extends QAbstractValue
 {
 
     /**
-     * Constructor setting attribute and value.
-     * @param _attribute Attribute to be checked for greater
-     * @param _value     value as criteria
+     * Number of this Value.
      */
-    public Less(final QueryAttribute _attribute,
-                   final AbstractValue _value)
+    private final Number number;
+
+    /**
+     * @param _value value
+     */
+    public QNumberValue(final long _value)
     {
-        super(_attribute, _value);
+        this.number = _value;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart appendSQL(final StringBuilder _sql)
-        throws EFapsException
+    public QAbstractPart appendSQL(final StringBuilder _sql)
     {
-        getAttribute().appendSQL(_sql);
-        _sql.append(" < ");
-        getValue().appendSQL(_sql);
+        _sql.append(this.number);
         return this;
     }
 }

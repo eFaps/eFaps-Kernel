@@ -34,25 +34,25 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class Equal
-    extends AbstractAttrCompare
+public class QEqual
+    extends QAbstractAttrCompare
 {
 
    /**
     * The values the given attribute must be equal to.
     */
-    private final List<AbstractValue> values = new ArrayList<AbstractValue>();
+    private final List<QAbstractValue> values = new ArrayList<QAbstractValue>();
 
     /**
      * Constructor setting attribute and value.
      * @param _attribute Attribute to be checked for equal
      * @param _values    values as criteria
      */
-    public Equal(final QueryAttribute _attribute,
-                 final AbstractValue... _values)
+    public QEqual(final QAttribute _attribute,
+                 final QAbstractValue... _values)
     {
         super(_attribute, null);
-        for (final AbstractValue value : _values) {
+        for (final QAbstractValue value : _values) {
             this.values.add(value);
         }
     }
@@ -63,7 +63,7 @@ public class Equal
      * @return null if list is empty else first value
      */
     @Override
-    public AbstractValue getValue()
+    public QAbstractValue getValue()
     {
         return this.values.isEmpty() ? null : this.values.get(0);
     }
@@ -73,7 +73,7 @@ public class Equal
      *
      * @return value of instance variable {@link #values}
      */
-    public List<AbstractValue> getValues()
+    public List<QAbstractValue> getValues()
     {
         return this.values;
     }
@@ -83,7 +83,7 @@ public class Equal
      * @param _value value to be include
      * @return this
      */
-    public AbstractPart addValue(final AbstractValue _value)
+    public QAbstractPart addValue(final QAbstractValue _value)
     {
         this.values.add(_value);
         return this;
@@ -93,14 +93,14 @@ public class Equal
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart appendSQL(final StringBuilder _sql)
+    public QAbstractPart appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
         if (this.values.size() > 1) {
             _sql.append(" IN ( ");
             boolean first = true;
-            for (final AbstractValue value : this.values) {
+            for (final QAbstractValue value : this.values) {
                 if (first) {
                     first = false;
                 } else {
@@ -121,12 +121,12 @@ public class Equal
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart prepare(final InstanceQuery _query,
-                                final AbstractPart _part)
+    public QAbstractPart prepare(final InstanceQuery _query,
+                                final QAbstractPart _part)
         throws EFapsException
     {
         getAttribute().prepare(_query, this);
-        for (final AbstractValue value : this.values) {
+        for (final QAbstractValue value : this.values) {
             value.prepare(_query, this);
         }
         return this;

@@ -21,8 +21,8 @@
 
 package org.efaps.db.search;
 
-import org.efaps.db.InstanceQuery;
 import org.efaps.util.EFapsException;
+
 
 
 /**
@@ -31,28 +31,31 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractPart
+public class QLess
+    extends QAbstractAttrCompare
 {
 
     /**
-     * Method adds the sql statement parts to the given StringBuilder.
-     *
-     * @param _sql StringBuilder to append to
-     * @return this AbstractPart
-     * @throws EFapsException on any error
+     * Constructor setting attribute and value.
+     * @param _attribute Attribute to be checked for greater
+     * @param _value     value as criteria
      */
-    public abstract AbstractPart appendSQL(final StringBuilder _sql)
-        throws EFapsException;
+    public QLess(final QAttribute _attribute,
+                   final QAbstractValue _value)
+    {
+        super(_attribute, _value);
+    }
 
     /**
-     * Method is executed to prepare the different parts for execution
-     * of the sql statement.
-     * @param _query    query the part belong to
-     * @param _part     Part this part is nested in
-     * @return this AbstractPart
-     * @throws EFapsException on any error
+     * {@inheritDoc}
      */
-    public abstract AbstractPart prepare(final InstanceQuery _query,
-                                         final AbstractPart _part)
-        throws EFapsException;
+    @Override
+    public QAbstractPart appendSQL(final StringBuilder _sql)
+        throws EFapsException
+    {
+        getAttribute().appendSQL(_sql);
+        _sql.append(" < ");
+        getValue().appendSQL(_sql);
+        return this;
+    }
 }

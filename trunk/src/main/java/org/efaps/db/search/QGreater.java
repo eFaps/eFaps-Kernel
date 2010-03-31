@@ -31,36 +31,31 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class Or
-    extends And
+public class QGreater
+    extends QAbstractAttrCompare
 {
+
     /**
-     * Constructor setting the parts of this OR.
-     * @param _parts parts for this and
+     * Constructor setting attribute and value.
+     * @param _attribute Attribute to be checked for greater
+     * @param _value     value as criteria
      */
-    public Or(final AbstractPart... _parts)
+    public QGreater(final QAttribute _attribute,
+                   final QAbstractValue _value)
     {
-       super(_parts);
+        super(_attribute, _value);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart appendSQL(final StringBuilder _sql)
+    public QAbstractPart appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
-        _sql.append("(");
-        boolean first = true;
-        for (final AbstractPart part : getParts()) {
-            if (first) {
-                first = false;
-            } else {
-                _sql.append(" OR ");
-            }
-            part.appendSQL(_sql);
-        }
-        _sql.append(")");
+        getAttribute().appendSQL(_sql);
+        _sql.append(" > ");
+        getValue().appendSQL(_sql);
         return this;
     }
 }
