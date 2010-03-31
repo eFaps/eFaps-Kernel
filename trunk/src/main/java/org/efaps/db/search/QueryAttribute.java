@@ -22,6 +22,7 @@
 package org.efaps.db.search;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.db.Context;
 import org.efaps.db.Query;
 
 
@@ -46,6 +47,11 @@ public class QueryAttribute
     private final String attributeName;
 
     /**
+     * Index of the table the attribute belongs to.
+     */
+    private Integer tableIndex;
+
+    /**
      * @param _attribute Attribute
      */
     public QueryAttribute(final Attribute _attribute)
@@ -68,7 +74,13 @@ public class QueryAttribute
     @Override
     public AbstractPart appendSQL(final StringBuilder _sql)
     {
-        _sql.append(this.attribute.getSqlColNames().get(0));
+
+        if (this.tableIndex != null)  {
+            _sql.append('T').append(this.tableIndex).append('.');
+        }
+        _sql.append(Context.getDbType().getTableQuote())
+            .append(this.attribute.getSqlColNames().get(0))
+            .append(Context.getDbType().getTableQuote());
         return this;
     }
 
@@ -81,7 +93,7 @@ public class QueryAttribute
         if (this.attribute == null) {
             this.attribute =  _query.getBaseType().getAttribute(this.attributeName);
         }
+        this.tableIndex = _query.getSqlTable2Index().get(this.attribute.getTable());
         return this;
     }
-
 }
