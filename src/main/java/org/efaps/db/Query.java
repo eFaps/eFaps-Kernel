@@ -25,8 +25,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.search.And;
 import org.efaps.db.search.Equal;
@@ -36,6 +38,8 @@ import org.efaps.db.search.Where;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -44,8 +48,19 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
+/**
+ * TODO comment!
+ *
+ * @author The eFaps Team
+ * @version $Id$
+ */
 public class Query
 {
+    /**
+     * Logging instance used in this class.
+     */
+    protected static final Logger LOG = LoggerFactory.getLogger(PrintQuery.class);
+
     /**
      * Base type this query is searching on.
      */
@@ -56,11 +71,23 @@ public class Query
      */
     private Where where;
 
-
     /**
      * Should the child types be also be included in this search?
      */
     private boolean includeChildTypes = true;
+
+    /**
+     * Map to store the table to index relation.
+     */
+    private final Map<SQLTable, Integer> sqlTable2Index = new HashMap<SQLTable, Integer>();
+
+
+    /**
+     * Must this query be executed company depended.
+     * (if the type is company dependend)
+     */
+    private boolean companyDepended = true;
+
 
     /**
      * Constructor setting the type by his UUID.
@@ -81,6 +108,31 @@ public class Query
     }
 
     /**
+     * Getter method for the instance variable {@link #companyDepended}.
+     *
+     * @return value of instance variable {@link #companyDepended}
+     */
+    public boolean isCompanyDepended()
+    {
+        return this.companyDepended;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #companyDepended}.
+     *
+     * @param _companyDepended value for instance variable {@link #companyDepended}
+     * @return this
+     */
+
+    public Query setCompanyDepended(final boolean _companyDepended)
+    {
+        this.companyDepended = _companyDepended;
+        return this;
+    }
+
+
+    /**
      * Getter method for the instance variable {@link #includeChildTypes}.
      *
      * @return value of instance variable {@link #includeChildTypes}
@@ -95,11 +147,13 @@ public class Query
      * Setter method for instance variable {@link #includeChildTypes}.
      *
      * @param _includeChildTypes value for instance variable {@link #includeChildTypes}
+     * @return this
      */
 
-    public void setIncludeChildTypes(final boolean _includeChildTypes)
+    public Query setIncludeChildTypes(final boolean _includeChildTypes)
     {
         this.includeChildTypes = _includeChildTypes;
+        return this;
     }
 
 
@@ -111,6 +165,16 @@ public class Query
     public Type getBaseType()
     {
         return this.baseType;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #sqlTable2Index}.
+     *
+     * @return value of instance variable {@link #sqlTable2Index}
+     */
+    public Map<SQLTable, Integer> getSqlTable2Index()
+    {
+        return this.sqlTable2Index;
     }
 
     /**
@@ -160,14 +224,27 @@ public class Query
     private void prepareQuery()
         throws EFapsException
     {
-        if (getBaseType().getMainTable().getSqlColType() != null) {
+        this.sqlTable2Index.put(this.baseType.getMainTable(), 0);
+        if (this.baseType.getMainTable().getSqlColType() != null) {
             final Equal eqPart = new Equal(new QueryAttribute(this.baseType.getTypeAttribute()),
                                            new NumberValue(this.baseType.getId()));
-            if (this.includeChildTypes && !getBaseType().getChildTypes().isEmpty()) {
-                for (final Type type : getBaseType().getChildTypes()) {
+            if (this.includeChildTypes && !this.baseType.getChildTypes().isEmpty()) {
+                for (final Type type : this.baseType.getChildTypes()) {
                     eqPart.addValue(new NumberValue(type.getId()));
                 }
             }
+            if (this.where == null) {
+                this.where = new Where(eqPart);
+            } else {
+                this.where.setPart(new And(this.where.getPart(), eqPart));
+            }
+        }
+        if (this.companyDepended && this.baseType.isCompanyDepended()) {
+            if (Context.getThreadContext().getCompany() == null) {
+                throw new EFapsException(Query.class, "noCompany");
+            }
+            final Equal eqPart = new Equal(new QueryAttribute(this.baseType.getCompanyAttribute()),
+                                           new NumberValue(Context.getThreadContext().getCompany().getId()));
             if (this.where == null) {
                 this.where = new Where(eqPart);
             } else {
@@ -199,8 +276,8 @@ public class Query
         final StringBuilder cmd = new StringBuilder()
                 .append(select.getSQL()).append(this.where.getSQL());
 
-        if (AbstractPrintQuery.LOG.isDebugEnabled()) {
-            AbstractPrintQuery.LOG.debug(cmd.toString());
+        if (Query.LOG.isDebugEnabled()) {
+            Query.LOG.debug(cmd.toString());
         }
         return cmd;
     }
@@ -220,8 +297,8 @@ public class Query
         try {
             con = Context.getThreadContext().getConnectionResource();
 
-            if (AbstractPrintQuery.LOG.isDebugEnabled()) {
-                AbstractPrintQuery.LOG.debug(_complStmt.toString());
+            if (Query.LOG.isDebugEnabled()) {
+                Query.LOG.debug(_complStmt.toString());
             }
 
             final Statement stmt = con.getConnection().createStatement();
@@ -251,7 +328,5 @@ public class Query
         }
         return ret;
     }
-
-
 
 }
