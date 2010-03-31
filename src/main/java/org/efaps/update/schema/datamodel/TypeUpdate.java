@@ -781,6 +781,12 @@ public class TypeUpdate
             for (final AttributeDefinition attr : this.attributes) {
                 attrNames.add(attr.name);
             }
+            for (final AttributeSetDefinition attr : this.attributeSets) {
+                attrNames.add(attr.getName());
+                for (final AttributeDefinition subAttr : attr.attributes) {
+                    attrNames.add(subAttr.name);
+                }
+            }
             final SearchQuery query = new SearchQuery();
             query.setExpand(this.instance, "Admin_DataModel_Attribute\\ParentType");
             query.addSelect("Name");
