@@ -22,6 +22,7 @@
 package org.efaps.db.search;
 
 import org.efaps.db.InstanceQuery;
+import org.efaps.util.EFapsException;
 
 
 /**
@@ -37,7 +38,9 @@ public abstract class AbstractValue
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart prepare(final InstanceQuery _query)
+    public AbstractPart prepare(final InstanceQuery _query,
+                                final AbstractPart _part)
+        throws EFapsException
     {
         return this;
     }

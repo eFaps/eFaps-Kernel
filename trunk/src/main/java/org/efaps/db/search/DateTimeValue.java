@@ -59,5 +59,4 @@ public class DateTimeValue
         _sql.append(" timestamp '").append(new DateTimeType().toString4Where(this.value)).append("'");
         return this;
     }
-
 }

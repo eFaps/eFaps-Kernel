@@ -89,6 +89,6 @@ public class Where
     public void prepare(final InstanceQuery _query)
         throws EFapsException
     {
-        this.part.prepare(_query);
+        this.part.prepare(_query, null);
     }
 }

@@ -54,5 +54,4 @@ public class NumberValue
         _sql.append(this.number);
         return this;
     }
-
 }

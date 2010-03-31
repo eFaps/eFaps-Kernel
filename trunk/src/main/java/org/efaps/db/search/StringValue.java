@@ -21,6 +21,10 @@
 
 package org.efaps.db.search;
 
+import org.efaps.db.Context;
+import org.efaps.db.InstanceQuery;
+import org.efaps.util.EFapsException;
+
 
 /**
  * TODO comment!
@@ -34,7 +38,7 @@ public class StringValue
     /**
      * Value for this StringValue.
      */
-    private final String value;
+    private String value;
 
     /**
      * @param _value Value
@@ -44,6 +48,25 @@ public class StringValue
         this.value = _value;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     */
+    @Override
+    public AbstractPart prepare(final InstanceQuery _query,
+                                final AbstractPart _part)
+        throws EFapsException
+    {
+        if (_part instanceof AbstractAttrCompare) {
+            if (_part instanceof Match) {
+                this.value = this.value.replace("*", "%");
+            }
+            if (((AbstractAttrCompare) _part).isIgnoreCase()) {
+                this.value = this.value.toUpperCase(Context.getThreadContext().getLocale());
+            }
+        }
+        return this;
+    }
     /**
      * {@inheritDoc}
      */

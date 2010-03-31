@@ -100,11 +100,12 @@ public class And
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart prepare(final InstanceQuery _query)
+    public AbstractPart prepare(final InstanceQuery _query,
+                                final AbstractPart _part)
         throws EFapsException
     {
         for (final AbstractPart part : this.parts) {
-            part.prepare(_query);
+            part.prepare(_query, this);
         }
         return this;
     }
