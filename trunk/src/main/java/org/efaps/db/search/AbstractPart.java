@@ -21,7 +21,7 @@
 
 package org.efaps.db.search;
 
-import org.efaps.db.Query;
+import org.efaps.db.InstanceQuery;
 import org.efaps.util.EFapsException;
 
 
@@ -51,6 +51,6 @@ public abstract class AbstractPart
      * @return this AbstractPart
      * @throws EFapsException on any error
      */
-    public abstract AbstractPart prepare(final Query _query)
+    public abstract AbstractPart prepare(final InstanceQuery _query)
         throws EFapsException;
 }

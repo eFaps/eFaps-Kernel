@@ -24,7 +24,7 @@ package org.efaps.db.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.efaps.db.Query;
+import org.efaps.db.InstanceQuery;
 import org.efaps.util.EFapsException;
 
 
@@ -100,7 +100,7 @@ public class And
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart prepare(final Query _query)
+    public AbstractPart prepare(final InstanceQuery _query)
         throws EFapsException
     {
         for (final AbstractPart part : this.parts) {

@@ -25,6 +25,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -48,13 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-/**
- * TODO comment!
- *
- * @author The eFaps Team
- * @version $Id$
- */
-public class Query
+public class InstanceQuery
 {
     /**
      * Logging instance used in this class.
@@ -88,12 +84,27 @@ public class Query
      */
     private boolean companyDepended = true;
 
+    /**
+     * List contains the values returned from the query.
+     */
+    private final List<Instance> instances = new ArrayList<Instance>();
+
+
+    /**
+     * Iterator for the instances.
+     */
+    private Iterator<Instance> iter;
+
+    /**
+     * Variable holds the current instance.
+     */
+    private Instance current;
 
     /**
      * Constructor setting the type by his UUID.
      * @param _typeUUI UUID of the Type the query is based on
      */
-    public Query(final UUID _typeUUI)
+    public InstanceQuery(final UUID _typeUUI)
     {
         this(Type.get(_typeUUI));
     }
@@ -102,7 +113,7 @@ public class Query
      * Constructor setting the type.
      * @param _type TYpe the query is based on
      */
-    public Query(final Type _type)
+    public InstanceQuery(final Type _type)
     {
         this.baseType = _type;
     }
@@ -125,7 +136,7 @@ public class Query
      * @return this
      */
 
-    public Query setCompanyDepended(final boolean _companyDepended)
+    public InstanceQuery setCompanyDepended(final boolean _companyDepended)
     {
         this.companyDepended = _companyDepended;
         return this;
@@ -150,7 +161,7 @@ public class Query
      * @return this
      */
 
-    public Query setIncludeChildTypes(final boolean _includeChildTypes)
+    public InstanceQuery setIncludeChildTypes(final boolean _includeChildTypes)
     {
         this.includeChildTypes = _includeChildTypes;
         return this;
@@ -182,12 +193,11 @@ public class Query
      * @param _where value for instance variable {@link #where}
      * @return this
      */
-    public Query setWhere(final Where _where)
+    public InstanceQuery setWhere(final Where _where)
     {
         this.where = _where;
         return this;
     }
-
 
     /**
      * Execute the Query.
@@ -195,11 +205,10 @@ public class Query
      * @throws EFapsException
      * TODO Accesscheck
      */
-    public Query execute()
+    public List<Instance> execute()
         throws EFapsException
     {
-        executeWithoutAccessCheck();
-        return this;
+        return executeWithoutAccessCheck();
     }
 
     /**
@@ -208,13 +217,47 @@ public class Query
      * @return true if the query contains values, else false
      * @throws EFapsException on error
      */
-    public Query executeWithoutAccessCheck()
+    public List<Instance> executeWithoutAccessCheck()
         throws EFapsException
     {
-
         prepareQuery();
         executeOneCompleteStmt(createSQLStatement());
-        return this;
+        return this.instances;
+    }
+
+    /**
+     * Move the current instance to the next instance in the list.
+     * @return true if the instance was set to the next value, else false
+     */
+    public boolean next()
+    {
+        if (this.iter == null) {
+            this.iter = this.instances.iterator();
+        }
+        final boolean ret = this.iter.hasNext();
+        if (ret) {
+            this.current = this.iter.next();
+        }
+        return ret;
+    }
+
+    /**
+     * Get the current instance.
+     * @return value of instance variable {@link #current}
+     */
+    public Instance getCurrentInstance()
+    {
+        return this.current;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #instances}.
+     *
+     * @return value of instance variable {@link #instances}
+     */
+    public List<Instance> getInstances()
+    {
+        return this.instances;
     }
 
     /**
@@ -241,7 +284,7 @@ public class Query
         }
         if (this.companyDepended && this.baseType.isCompanyDepended()) {
             if (Context.getThreadContext().getCompany() == null) {
-                throw new EFapsException(Query.class, "noCompany");
+                throw new EFapsException(InstanceQuery.class, "noCompany");
             }
             final Equal eqPart = new Equal(new QueryAttribute(this.baseType.getCompanyAttribute()),
                                            new NumberValue(Context.getThreadContext().getCompany().getId()));
@@ -264,20 +307,20 @@ public class Query
     {
         final SQLSelect select = new SQLSelect()
             .column(0, "ID")
-            .from(getBaseType().getMainTable().getSqlTable(), 0);
+            .from(this.baseType.getMainTable().getSqlTable(), 0);
 
         // if the main table has a column for the type it is selected also
         int colIndex = 2;
-        if (getBaseType().getMainTable().getSqlColType() != null) {
-            select.column(0, getBaseType().getMainTable().getSqlColType());
+        if (this.baseType.getMainTable().getSqlColType() != null) {
+            select.column(0, this.baseType.getMainTable().getSqlColType());
             colIndex++;
         }
 
         final StringBuilder cmd = new StringBuilder()
                 .append(select.getSQL()).append(this.where.getSQL());
 
-        if (Query.LOG.isDebugEnabled()) {
-            Query.LOG.debug(cmd.toString());
+        if (InstanceQuery.LOG.isDebugEnabled()) {
+            InstanceQuery.LOG.debug(cmd.toString());
         }
         return cmd;
     }
@@ -297,20 +340,22 @@ public class Query
         try {
             con = Context.getThreadContext().getConnectionResource();
 
-            if (Query.LOG.isDebugEnabled()) {
-                Query.LOG.debug(_complStmt.toString());
+            if (InstanceQuery.LOG.isDebugEnabled()) {
+                InstanceQuery.LOG.debug(_complStmt.toString());
             }
 
             final Statement stmt = con.getConnection().createStatement();
 
             final ResultSet rs = stmt.executeQuery(_complStmt.toString());
             new ArrayList<Instance>();
-            new HashMap<Instance, Integer>();
-            int i = 0;
             while (rs.next()) {
-                i++;
+                final long id = rs.getLong(1);
+                Long typeId = null;
+                if (this.baseType.getMainTable().getSqlColType() != null) {
+                    typeId = rs.getLong(2);
+                }
+                this.instances.add(Instance.get(typeId == null ? this.baseType : Type.get(typeId), id));
             }
-
             rs.close();
             stmt.close();
             con.commit();
