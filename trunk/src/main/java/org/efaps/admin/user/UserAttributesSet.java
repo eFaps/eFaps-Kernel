@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@
 
 package org.efaps.admin.user;
 
+import static org.efaps.admin.EFapsClassNames.USER_ATTRIBUTEABSTRACT;
+
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -30,8 +33,6 @@ import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
-
-import static org.efaps.admin.EFapsClassNames.USER_ATTRIBUTEABSTRACT;
 
 /**
  * This class represents a set of UserAttribute related to a User.<br>
@@ -46,8 +47,13 @@ import static org.efaps.admin.EFapsClassNames.USER_ATTRIBUTEABSTRACT;
  * @author The eFasp Team
  * @version $Id$
  */
-public class UserAttributesSet
+public class UserAttributesSet implements Serializable
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * This static variable is the Key used to store the UserAttribtues into the
      * SessionContext {@link #org.efaps.db.Context.getUserAttribute()}.
@@ -325,8 +331,12 @@ public class UserAttributesSet
      * Each instance of this class represents one UserAttribute for this user
      * attribute set.
      */
-    private class UserAttribute
+    private class UserAttribute implements Serializable
     {
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
 
         /**
          * Value of this user attribute.
