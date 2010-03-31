@@ -21,6 +21,8 @@
 
 package org.efaps.db.search;
 
+import org.efaps.db.Query;
+
 
 /**
  * TODO comment!
@@ -33,8 +35,17 @@ public abstract class AbstractPart
 
     /**
      * Method adds the sql statement parts to the given StringBuilder.
+     *
      * @param _sql StringBuilder to append to
      * @return this AbstractPart
      */
     public abstract AbstractPart appendSQL(final StringBuilder _sql);
+
+    /**
+     * Method is executed to prepare the different parts for execution
+     * of the sql statement.
+     * @param _query query the part belong to
+     * @return this AbstractPart
+     */
+    public abstract AbstractPart prepare(final Query _query);
 }

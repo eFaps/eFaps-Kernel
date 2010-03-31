@@ -24,6 +24,8 @@ package org.efaps.db.search;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.efaps.db.Query;
+
 
 /**
  * TODO comment!
@@ -39,6 +41,7 @@ public class And
      */
     private final List<AbstractPart> parts = new ArrayList<AbstractPart>();
 
+
     /**
      * Constructor setting the parts of this AND.
      * @param _parts parts for this and
@@ -51,19 +54,55 @@ public class And
     }
 
     /**
+     * Add a part to be included in the and.
+     * @param _part part to be include
+     * @return this
+     */
+    public AbstractPart addPart(final AbstractPart _part)
+    {
+        this.parts.add(_part);
+        return this;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #parts}.
+     *
+     * @return value of instance variable {@link #parts}
+     */
+    protected List<AbstractPart> getParts()
+    {
+        return this.parts;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public AbstractPart appendSQL(final StringBuilder _sql)
     {
         _sql.append("(");
+        boolean first = true;
         for (final AbstractPart part : this.parts) {
-            part.appendSQL(_sql);
-            if (!this.parts.isEmpty()) {
+            if (first) {
+                first = false;
+            } else {
                 _sql.append(" AND ");
             }
+            part.appendSQL(_sql);
         }
         _sql.append(")");
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AbstractPart prepare(final Query _query)
+    {
+        for (final AbstractPart part : this.parts) {
+            part.prepare(_query);
+        }
         return this;
     }
 }

@@ -21,7 +21,6 @@
 
 package org.efaps.db.search;
 
-import org.efaps.db.Query;
 
 
 /**
@@ -30,15 +29,35 @@ import org.efaps.db.Query;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractValue
-    extends AbstractPart
+public class Or
+    extends And
 {
+    /**
+     * Constructor setting the parts of this OR.
+     * @param _parts parts for this and
+     */
+    public Or(final AbstractPart... _parts)
+    {
+       super(_parts);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart prepare(final Query _query)
+    public AbstractPart appendSQL(final StringBuilder _sql)
     {
+        _sql.append("(");
+        boolean first = true;
+        for (final AbstractPart part : getParts()) {
+            if (first) {
+                first = false;
+            } else {
+                _sql.append(" OR ");
+            }
+            part.appendSQL(_sql);
+        }
+        _sql.append(")");
         return this;
     }
 }

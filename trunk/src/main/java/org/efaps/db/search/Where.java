@@ -21,6 +21,8 @@
 
 package org.efaps.db.search;
 
+import org.efaps.db.Query;
+
 
 
 /**
@@ -75,5 +77,13 @@ public class Where
         ret.append(" where ");
         this.part.appendSQL(ret);
         return ret;
+    }
+
+    /**
+     * @param _query Query this Where belongs to
+     */
+    public void prepare(final Query _query)
+    {
+        this.part.prepare(_query);
     }
 }

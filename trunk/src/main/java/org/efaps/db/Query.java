@@ -56,6 +56,12 @@ public class Query
      */
     private Where where;
 
+
+    /**
+     * Should the child types be also be included in this search?
+     */
+    private boolean includeChildTypes = true;
+
     /**
      * Constructor setting the type by his UUID.
      * @param _typeUUI UUID of the Type the query is based on
@@ -73,6 +79,29 @@ public class Query
     {
         this.baseType = _type;
     }
+
+    /**
+     * Getter method for the instance variable {@link #includeChildTypes}.
+     *
+     * @return value of instance variable {@link #includeChildTypes}
+     */
+    public boolean isIncludeChildTypes()
+    {
+        return this.includeChildTypes;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #includeChildTypes}.
+     *
+     * @param _includeChildTypes value for instance variable {@link #includeChildTypes}
+     */
+
+    public void setIncludeChildTypes(final boolean _includeChildTypes)
+    {
+        this.includeChildTypes = _includeChildTypes;
+    }
+
 
     /**
      * Getter method for the instance variable {@link #baseType}.
@@ -130,15 +159,20 @@ public class Query
     private void prepareQuery()
     {
         if (getBaseType().getMainTable().getSqlColType() != null) {
-
-            final Equal typeEq = new Equal(new QueryAttribute(this.baseType.getTypeAttribute()),
+            final Equal eqPart = new Equal(new QueryAttribute(this.baseType.getTypeAttribute()),
                                            new NumberValue(this.baseType.getId()));
+            if (this.includeChildTypes && !getBaseType().getChildTypes().isEmpty()) {
+                for (final Type type : getBaseType().getChildTypes()) {
+                    eqPart.addValue(new NumberValue(type.getId()));
+                }
+            }
             if (this.where == null) {
-                this.where = new Where(typeEq);
+                this.where = new Where(eqPart);
             } else {
-                this.where.setPart(new And(this.where.getPart(), typeEq));
+                this.where.setPart(new And(this.where.getPart(), eqPart));
             }
         }
+        this.where.prepare(this);
     }
 
     /**
