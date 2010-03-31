@@ -22,6 +22,7 @@
 package org.efaps.db.search;
 
 import org.efaps.db.InstanceQuery;
+import org.efaps.util.EFapsException;
 
 
 /**
@@ -38,12 +39,15 @@ public abstract class AbstractAttrCompare
      */
     private final QueryAttribute attribute;
 
-
     /**
      * The value the attribute will be compared to.
      */
     private final AbstractValue value;
 
+    /**
+     * Must this compare ignore the case.
+     */
+    private boolean ignoreCase;
 
     /**
      * Constructor setting attribute and value.
@@ -78,13 +82,37 @@ public abstract class AbstractAttrCompare
     }
 
     /**
+     * Getter method for the instance variable {@link #ignoreCase}.
+     *
+     * @return value of instance variable {@link #ignoreCase}
+     */
+    public boolean isIgnoreCase()
+    {
+        return this.ignoreCase;
+    }
+
+    /**
+     * Setter method for instance variable {@link #ignoreCase}.
+     *
+     * @param _ignoreCase value for instance variable {@link #ignoreCase}
+     * @return this
+     */
+    public AbstractAttrCompare setIgnoreCase(final boolean _ignoreCase)
+    {
+        this.ignoreCase = _ignoreCase;
+        return this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart prepare(final InstanceQuery _query)
+    public AbstractPart prepare(final InstanceQuery _query,
+                                final AbstractPart _part)
+        throws EFapsException
     {
-        this.attribute.prepare(_query);
-        this.value.prepare(_query);
+        this.attribute.prepare(_query, this);
+        this.value.prepare(_query, this);
         return this;
     }
 }

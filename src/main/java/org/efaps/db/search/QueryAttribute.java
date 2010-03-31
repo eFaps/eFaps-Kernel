@@ -52,6 +52,11 @@ public class QueryAttribute
     private Integer tableIndex;
 
     /**
+     * Is this attribute used in a compare applying ignore case.
+     */
+    private boolean ignoreCase = false;
+
+    /**
      * @param _attribute Attribute
      */
     public QueryAttribute(final Attribute _attribute)
@@ -72,15 +77,16 @@ public class QueryAttribute
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart appendSQL(final StringBuilder _sql)
+    public AbstractPart prepare(final InstanceQuery _query,
+                                final AbstractPart _part)
     {
-
-        if (this.tableIndex != null)  {
-            _sql.append('T').append(this.tableIndex).append('.');
+        if (_part instanceof AbstractAttrCompare) {
+            this.ignoreCase = ((AbstractAttrCompare) _part).isIgnoreCase();
         }
-        _sql.append(Context.getDbType().getTableQuote())
-            .append(this.attribute.getSqlColNames().get(0))
-            .append(Context.getDbType().getTableQuote());
+        if (this.attribute == null) {
+            this.attribute =  _query.getBaseType().getAttribute(this.attributeName);
+        }
+        this.tableIndex = _query.getSqlTable2Index().get(this.attribute.getTable());
         return this;
     }
 
@@ -88,12 +94,20 @@ public class QueryAttribute
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart prepare(final InstanceQuery _query)
+    public AbstractPart appendSQL(final StringBuilder _sql)
     {
-        if (this.attribute == null) {
-            this.attribute =  _query.getBaseType().getAttribute(this.attributeName);
+        if (this.ignoreCase) {
+            _sql.append("UPPER(");
         }
-        this.tableIndex = _query.getSqlTable2Index().get(this.attribute.getTable());
+        if (this.tableIndex != null)  {
+            _sql.append('T').append(this.tableIndex).append('.');
+        }
+        _sql.append(Context.getDbType().getTableQuote())
+            .append(this.attribute.getSqlColNames().get(0))
+            .append(Context.getDbType().getTableQuote());
+        if (this.ignoreCase) {
+            _sql.append(")");
+        }
         return this;
     }
 }

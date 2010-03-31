@@ -35,12 +35,8 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class Equal
-    extends AbstractPart
+    extends AbstractAttrCompare
 {
-    /**
-     * The attribute used for this equal.
-     */
-    private final QueryAttribute attribute;
 
    /**
     * The values the given attribute must be equal to.
@@ -55,20 +51,10 @@ public class Equal
     public Equal(final QueryAttribute _attribute,
                  final AbstractValue... _values)
     {
-        this.attribute = _attribute;
+        super(_attribute, null);
         for (final AbstractValue value : _values) {
             this.values.add(value);
         }
-    }
-
-    /**
-     * Getter method for the instance variable {@link #attribute}.
-     *
-     * @return value of instance variable {@link #attribute}
-     */
-    public QueryAttribute getQueryAttribute()
-    {
-        return this.attribute;
     }
 
     /**
@@ -76,6 +62,7 @@ public class Equal
      *
      * @return null if list is empty else first value
      */
+    @Override
     public AbstractValue getValue()
     {
         return this.values.isEmpty() ? null : this.values.get(0);
@@ -109,7 +96,7 @@ public class Equal
     public AbstractPart appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
-        this.attribute.appendSQL(_sql);
+        getAttribute().appendSQL(_sql);
         if (this.values.size() > 1) {
             _sql.append(" IN ( ");
             boolean first = true;
@@ -134,11 +121,13 @@ public class Equal
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart prepare(final InstanceQuery _query)
+    public AbstractPart prepare(final InstanceQuery _query,
+                                final AbstractPart _part)
+        throws EFapsException
     {
-        this.attribute.prepare(_query);
+        getAttribute().prepare(_query, this);
         for (final AbstractValue value : this.values) {
-            value.prepare(_query);
+            value.prepare(_query, this);
         }
         return this;
     }
