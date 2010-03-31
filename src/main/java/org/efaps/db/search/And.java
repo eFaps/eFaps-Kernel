@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.db.Query;
+import org.efaps.util.EFapsException;
 
 
 /**
@@ -79,6 +80,7 @@ public class And
      */
     @Override
     public AbstractPart appendSQL(final StringBuilder _sql)
+        throws EFapsException
     {
         _sql.append("(");
         boolean first = true;
@@ -99,6 +101,7 @@ public class And
      */
     @Override
     public AbstractPart prepare(final Query _query)
+        throws EFapsException
     {
         for (final AbstractPart part : this.parts) {
             part.prepare(_query);

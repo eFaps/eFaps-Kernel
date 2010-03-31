@@ -22,6 +22,7 @@
 package org.efaps.db.search;
 
 import org.efaps.db.Query;
+import org.efaps.util.EFapsException;
 
 
 
@@ -70,8 +71,10 @@ public class Where
 
     /**
      * @return the sql statement for this where
+     * @throws EFapsException on error
      */
     public StringBuilder getSQL()
+        throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
         ret.append(" where ");
@@ -81,8 +84,10 @@ public class Where
 
     /**
      * @param _query Query this Where belongs to
+     * @throws EFapsException on error
      */
     public void prepare(final Query _query)
+        throws EFapsException
     {
         this.part.prepare(_query);
     }

@@ -155,8 +155,10 @@ public class Query
 
     /**
      * Prepare the Query for execution.
+     * @throws EFapsException on error
      */
     private void prepareQuery()
+        throws EFapsException
     {
         if (getBaseType().getMainTable().getSqlColType() != null) {
             final Equal eqPart = new Equal(new QueryAttribute(this.baseType.getTypeAttribute()),
@@ -178,8 +180,10 @@ public class Query
     /**
      * Create the SQL statement.
      * @return StringBuilder containing the statement
+     * @throws EFapsException on error
      */
     private StringBuilder createSQLStatement()
+        throws EFapsException
     {
         final SQLSelect select = new SQLSelect()
             .column(0, "ID")

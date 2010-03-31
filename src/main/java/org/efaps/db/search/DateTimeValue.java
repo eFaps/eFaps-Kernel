@@ -21,8 +21,9 @@
 
 package org.efaps.db.search;
 
-import org.efaps.db.Query;
+import org.efaps.admin.datamodel.attributetype.DateTimeType;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateTime;
 
 
 /**
@@ -31,26 +32,32 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractPart
+public class DateTimeValue
+    extends AbstractValue
 {
 
     /**
-     * Method adds the sql statement parts to the given StringBuilder.
-     *
-     * @param _sql StringBuilder to append to
-     * @return this AbstractPart
-     * @throws EFapsException on any error
+     * Number of this Value.
      */
-    public abstract AbstractPart appendSQL(final StringBuilder _sql)
-        throws EFapsException;
+    private final DateTime value;
 
     /**
-     * Method is executed to prepare the different parts for execution
-     * of the sql statement.
-     * @param _query query the part belong to
-     * @return this AbstractPart
-     * @throws EFapsException on any error
+     * @param _value value
      */
-    public abstract AbstractPart prepare(final Query _query)
-        throws EFapsException;
+    public DateTimeValue(final DateTime _value)
+    {
+        this.value = _value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AbstractPart appendSQL(final StringBuilder _sql)
+        throws EFapsException
+    {
+        _sql.append(" timestamp '").append(new DateTimeType().toString4Where(this.value)).append("'");
+        return this;
+    }
+
 }
