@@ -21,7 +21,7 @@
 
 package org.efaps.db.search;
 
-import org.efaps.db.Query;
+import org.efaps.db.InstanceQuery;
 import org.efaps.util.EFapsException;
 
 
@@ -86,7 +86,7 @@ public class Where
      * @param _query Query this Where belongs to
      * @throws EFapsException on error
      */
-    public void prepare(final Query _query)
+    public void prepare(final InstanceQuery _query)
         throws EFapsException
     {
         this.part.prepare(_query);

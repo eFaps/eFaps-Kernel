@@ -21,7 +21,7 @@
 
 package org.efaps.db.search;
 
-import org.efaps.db.Query;
+import org.efaps.db.InstanceQuery;
 
 
 /**
@@ -81,7 +81,7 @@ public abstract class AbstractAttrCompare
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart prepare(final Query _query)
+    public AbstractPart prepare(final InstanceQuery _query)
     {
         this.attribute.prepare(_query);
         this.value.prepare(_query);

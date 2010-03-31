@@ -23,7 +23,7 @@ package org.efaps.db.search;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.Context;
-import org.efaps.db.Query;
+import org.efaps.db.InstanceQuery;
 
 
 /**
@@ -88,7 +88,7 @@ public class QueryAttribute
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart prepare(final Query _query)
+    public AbstractPart prepare(final InstanceQuery _query)
     {
         if (this.attribute == null) {
             this.attribute =  _query.getBaseType().getAttribute(this.attributeName);
