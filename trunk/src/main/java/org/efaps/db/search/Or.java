@@ -21,6 +21,8 @@
 
 package org.efaps.db.search;
 
+import org.efaps.util.EFapsException;
+
 
 
 /**
@@ -46,6 +48,7 @@ public class Or
      */
     @Override
     public AbstractPart appendSQL(final StringBuilder _sql)
+        throws EFapsException
     {
         _sql.append("(");
         boolean first = true;

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.db.Query;
+import org.efaps.util.EFapsException;
 
 
 /**
@@ -71,7 +72,7 @@ public class Equal
     }
 
     /**
-     * Get the first valeu from th evalue list.
+     * Get the first value from the value list.
      *
      * @return null if list is empty else first value
      */
@@ -106,6 +107,7 @@ public class Equal
      */
     @Override
     public AbstractPart appendSQL(final StringBuilder _sql)
+        throws EFapsException
     {
         this.attribute.appendSQL(_sql);
         if (this.values.size() > 1) {
