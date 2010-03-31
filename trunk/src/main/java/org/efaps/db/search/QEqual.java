@@ -49,7 +49,7 @@ public class QEqual
      * @param _values    values as criteria
      */
     public QEqual(final QAttribute _attribute,
-                 final QAbstractValue... _values)
+                  final QAbstractValue... _values)
     {
         super(_attribute, null);
         for (final QAbstractValue value : _values) {

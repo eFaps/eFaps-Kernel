@@ -40,7 +40,7 @@ public class QNumberValue
     /**
      * @param _value value
      */
-    public QNumberValue(final long _value)
+    public QNumberValue(final Number _value)
     {
         this.number = _value;
     }
