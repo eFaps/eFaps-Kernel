@@ -21,6 +21,11 @@
 
 package org.efaps.db.search;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.efaps.db.Query;
+
 
 /**
  * TODO comment!
@@ -36,22 +41,23 @@ public class Equal
      */
     private final QueryAttribute attribute;
 
-
-    /**
-     * The value the given attribute muts be equal to.
-     */
-    private final AbstractValue value;
+   /**
+    * The values the given attribute must be equal to.
+    */
+    private final List<AbstractValue> values = new ArrayList<AbstractValue>();
 
     /**
      * Constructor setting attribute and value.
      * @param _attribute Attribute to be checked for equal
-     * @param _value    value sa criteria
+     * @param _values    values as criteria
      */
     public Equal(final QueryAttribute _attribute,
-                 final AbstractValue _value)
+                 final AbstractValue... _values)
     {
         this.attribute = _attribute;
-        this.value = _value;
+        for (final AbstractValue value : _values) {
+            this.values.add(value);
+        }
     }
 
     /**
@@ -65,13 +71,34 @@ public class Equal
     }
 
     /**
-     * Getter method for the instance variable {@link #value}.
+     * Get the first valeu from th evalue list.
      *
-     * @return value of instance variable {@link #value}
+     * @return null if list is empty else first value
      */
     public AbstractValue getValue()
     {
-        return this.value;
+        return this.values.isEmpty() ? null : this.values.get(0);
+    }
+
+    /**
+     * Getter method for the instance variable {@link #values}.
+     *
+     * @return value of instance variable {@link #values}
+     */
+    public List<AbstractValue> getValues()
+    {
+        return this.values;
+    }
+
+    /**
+     * Add a value to be included in the equal.
+     * @param _value value to be include
+     * @return this
+     */
+    public AbstractPart addValue(final AbstractValue _value)
+    {
+        this.values.add(_value);
+        return this;
     }
 
     /**
@@ -81,8 +108,36 @@ public class Equal
     public AbstractPart appendSQL(final StringBuilder _sql)
     {
         this.attribute.appendSQL(_sql);
-        _sql.append(" = ");
-        this.value.appendSQL(_sql);
+        if (this.values.size() > 1) {
+            _sql.append(" IN ( ");
+            boolean first = true;
+            for (final AbstractValue value : this.values) {
+                if (first) {
+                    first = false;
+                } else {
+                    _sql.append(",");
+                }
+                value.appendSQL(_sql);
+            }
+            _sql.append(" )");
+        } else {
+            _sql.append(" = ");
+            getValue().appendSQL(_sql);
+        }
+        return this;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AbstractPart prepare(final Query _query)
+    {
+        this.attribute.prepare(_query);
+        for (final AbstractValue value : this.values) {
+            value.prepare(_query);
+        }
         return this;
     }
 }

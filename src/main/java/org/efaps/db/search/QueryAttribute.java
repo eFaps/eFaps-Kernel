@@ -22,6 +22,7 @@
 package org.efaps.db.search;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.db.Query;
 
 
 /**
@@ -37,7 +38,12 @@ public class QueryAttribute
     /**
      * Attribute this QueryAttribute is based on.
      */
-    private final Attribute attribute;
+    private Attribute attribute;
+
+    /**
+     * Name of the attribute this QueryAttribute is based on.
+     */
+    private final String attributeName;
 
     /**
      * @param _attribute Attribute
@@ -45,6 +51,15 @@ public class QueryAttribute
     public QueryAttribute(final Attribute _attribute)
     {
         this.attribute = _attribute;
+        this.attributeName = this.attribute.getName();
+    }
+
+    /**
+     * @param _attributeName Name of the attribute
+     */
+    public QueryAttribute(final String _attributeName)
+    {
+        this.attributeName = _attributeName;
     }
 
     /**
@@ -54,6 +69,18 @@ public class QueryAttribute
     public AbstractPart appendSQL(final StringBuilder _sql)
     {
         _sql.append(this.attribute.getSqlColNames().get(0));
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AbstractPart prepare(final Query _query)
+    {
+        if (this.attribute == null) {
+            this.attribute =  _query.getBaseType().getAttribute(this.attributeName);
+        }
         return this;
     }
 
