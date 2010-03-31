@@ -31,18 +31,18 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractAttrCompare
-    extends AbstractPart
+public abstract class QAbstractAttrCompare
+    extends QAbstractPart
 {
     /**
      * The attribute used for this equal.
      */
-    private final QueryAttribute attribute;
+    private final QAttribute attribute;
 
     /**
      * The value the attribute will be compared to.
      */
-    private final AbstractValue value;
+    private final QAbstractValue value;
 
     /**
      * Must this compare ignore the case.
@@ -54,8 +54,8 @@ public abstract class AbstractAttrCompare
      * @param _attribute Attribute to be checked for equal
      * @param _value     value as criteria
      */
-    public AbstractAttrCompare(final QueryAttribute _attribute,
-                               final AbstractValue _value)
+    public QAbstractAttrCompare(final QAttribute _attribute,
+                               final QAbstractValue _value)
     {
         this.attribute = _attribute;
         this.value = _value;
@@ -66,7 +66,7 @@ public abstract class AbstractAttrCompare
      *
      * @return value of instance variable {@link #attribute}
      */
-    public QueryAttribute getAttribute()
+    public QAttribute getAttribute()
     {
         return this.attribute;
     }
@@ -76,7 +76,7 @@ public abstract class AbstractAttrCompare
      *
      * @return value of instance variable {@link #value}
      */
-    public AbstractValue getValue()
+    public QAbstractValue getValue()
     {
         return this.value;
     }
@@ -97,7 +97,7 @@ public abstract class AbstractAttrCompare
      * @param _ignoreCase value for instance variable {@link #ignoreCase}
      * @return this
      */
-    public AbstractAttrCompare setIgnoreCase(final boolean _ignoreCase)
+    public QAbstractAttrCompare setIgnoreCase(final boolean _ignoreCase)
     {
         this.ignoreCase = _ignoreCase;
         return this;
@@ -107,8 +107,8 @@ public abstract class AbstractAttrCompare
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart prepare(final InstanceQuery _query,
-                                final AbstractPart _part)
+    public QAbstractPart prepare(final InstanceQuery _query,
+                                final QAbstractPart _part)
         throws EFapsException
     {
         this.attribute.prepare(_query, this);

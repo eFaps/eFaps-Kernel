@@ -32,18 +32,18 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class Where
+public class QWhere
 {
 
     /**
      * Base part for this Where.
      */
-    private AbstractPart part;
+    private QAbstractPart part;
 
     /**
      * @param _part part for this where
      */
-    public Where(final AbstractPart _part)
+    public QWhere(final QAbstractPart _part)
     {
         this.part = _part;
     }
@@ -53,7 +53,7 @@ public class Where
      *
      * @return value of instance variable {@link #part}
      */
-    public AbstractPart getPart()
+    public QAbstractPart getPart()
     {
         return this.part;
     }
@@ -64,7 +64,7 @@ public class Where
      * @param _part value for instance variable {@link #part}
      */
 
-    public void setPart(final AbstractPart _part)
+    public void setPart(final QAbstractPart _part)
     {
         this.part = _part;
     }

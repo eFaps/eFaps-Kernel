@@ -32,11 +32,11 @@ import java.util.UUID;
 
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.search.And;
-import org.efaps.db.search.Equal;
-import org.efaps.db.search.NumberValue;
-import org.efaps.db.search.QueryAttribute;
-import org.efaps.db.search.Where;
+import org.efaps.db.search.QAnd;
+import org.efaps.db.search.QEqual;
+import org.efaps.db.search.QNumberValue;
+import org.efaps.db.search.QAttribute;
+import org.efaps.db.search.QWhere;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -65,7 +65,7 @@ public class InstanceQuery
     /**
      * The where criteria for this search.
      */
-    private Where where;
+    private QWhere where;
 
     /**
      * Should the child types be also be included in this search?
@@ -193,7 +193,7 @@ public class InstanceQuery
      * @param _where value for instance variable {@link #where}
      * @return this
      */
-    public InstanceQuery setWhere(final Where _where)
+    public InstanceQuery setWhere(final QWhere _where)
     {
         this.where = _where;
         return this;
@@ -269,29 +269,29 @@ public class InstanceQuery
     {
         this.sqlTable2Index.put(this.baseType.getMainTable(), 0);
         if (this.baseType.getMainTable().getSqlColType() != null) {
-            final Equal eqPart = new Equal(new QueryAttribute(this.baseType.getTypeAttribute()),
-                                           new NumberValue(this.baseType.getId()));
+            final QEqual eqPart = new QEqual(new QAttribute(this.baseType.getTypeAttribute()),
+                                           new QNumberValue(this.baseType.getId()));
             if (this.includeChildTypes && !this.baseType.getChildTypes().isEmpty()) {
                 for (final Type type : this.baseType.getChildTypes()) {
-                    eqPart.addValue(new NumberValue(type.getId()));
+                    eqPart.addValue(new QNumberValue(type.getId()));
                 }
             }
             if (this.where == null) {
-                this.where = new Where(eqPart);
+                this.where = new QWhere(eqPart);
             } else {
-                this.where.setPart(new And(this.where.getPart(), eqPart));
+                this.where.setPart(new QAnd(this.where.getPart(), eqPart));
             }
         }
         if (this.companyDepended && this.baseType.isCompanyDepended()) {
             if (Context.getThreadContext().getCompany() == null) {
                 throw new EFapsException(InstanceQuery.class, "noCompany");
             }
-            final Equal eqPart = new Equal(new QueryAttribute(this.baseType.getCompanyAttribute()),
-                                           new NumberValue(Context.getThreadContext().getCompany().getId()));
+            final QEqual eqPart = new QEqual(new QAttribute(this.baseType.getCompanyAttribute()),
+                                           new QNumberValue(Context.getThreadContext().getCompany().getId()));
             if (this.where == null) {
-                this.where = new Where(eqPart);
+                this.where = new QWhere(eqPart);
             } else {
-                this.where.setPart(new And(this.where.getPart(), eqPart));
+                this.where.setPart(new QAnd(this.where.getPart(), eqPart));
             }
         }
         this.where.prepare(this);

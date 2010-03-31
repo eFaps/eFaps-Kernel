@@ -21,9 +21,8 @@
 
 package org.efaps.db.search;
 
-import org.efaps.admin.datamodel.attributetype.DateTimeType;
+import org.efaps.db.InstanceQuery;
 import org.efaps.util.EFapsException;
-import org.joda.time.DateTime;
 
 
 /**
@@ -32,31 +31,17 @@ import org.joda.time.DateTime;
  * @author The eFaps Team
  * @version $Id$
  */
-public class DateTimeValue
-    extends AbstractValue
+public abstract class QAbstractValue
+    extends QAbstractPart
 {
-
-    /**
-     * Number of this Value.
-     */
-    private final DateTime value;
-
-    /**
-     * @param _value value
-     */
-    public DateTimeValue(final DateTime _value)
-    {
-        this.value = _value;
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public AbstractPart appendSQL(final StringBuilder _sql)
+    public QAbstractPart prepare(final InstanceQuery _query,
+                                final QAbstractPart _part)
         throws EFapsException
     {
-        _sql.append(" timestamp '").append(new DateTimeType().toString4Where(this.value)).append("'");
         return this;
     }
 }
