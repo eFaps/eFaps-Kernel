@@ -270,4 +270,15 @@ public class QueryBuilder
         }
         return this.query;
     }
+
+    /**
+     * Method to get a MultiPrintQuery.
+     * @return MultiPrintQuery based on the InstanceQuery
+     * @throws EFapsException on error
+     */
+    public MultiPrintQuery getPrint()
+        throws EFapsException
+    {
+        return new MultiPrintQuery(getQuery().execute());
+    }
 }
