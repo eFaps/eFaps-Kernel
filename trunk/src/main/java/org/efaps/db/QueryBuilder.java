@@ -26,14 +26,19 @@ import java.util.List;
 import java.util.UUID;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.Classification;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.search.QAbstractAttrCompare;
 import org.efaps.db.search.QAbstractValue;
 import org.efaps.db.search.QAnd;
 import org.efaps.db.search.QAttribute;
+import org.efaps.db.search.QClassEqual;
+import org.efaps.db.search.QClassValue;
 import org.efaps.db.search.QDateTimeValue;
 import org.efaps.db.search.QEqual;
 import org.efaps.db.search.QGreater;
 import org.efaps.db.search.QLess;
+import org.efaps.db.search.QMatch;
 import org.efaps.db.search.QNumberValue;
 import org.efaps.db.search.QStringValue;
 import org.efaps.db.search.QWhere;
@@ -74,12 +79,21 @@ public class QueryBuilder
     }
 
     /**
+     * @param _type  type this query is based on
+     */
+    public QueryBuilder(final Type _type)
+    {
+        this.typeUUID = _type.getUUID();
+    }
+
+    /**
      * @param _attrName Name of the attribute
      * @param _values    value to be included in the where
+     * @return QEqual
      * @throws EFapsException on error
      */
-    public void addWhereAttrEqValue(final String _attrName,
-                                    final Object... _values)
+    public QEqual addWhereAttrEqValue(final String _attrName,
+                                      final Object... _values)
         throws EFapsException
     {
         final QEqual equal = new QEqual(new QAttribute(_attrName));
@@ -87,15 +101,17 @@ public class QueryBuilder
         for (final Object value : _values) {
             equal.addValue(getValue(value));
         }
+        return equal;
     }
 
     /**
      * @param _attr     attribute
      * @param _values   value to be included in the where
+     * @return QEqual
      * @throws EFapsException on error
      */
-    public void addWhereAttrEqValue(final Attribute _attr,
-                                    final Object... _values)
+    public QEqual addWhereAttrEqValue(final Attribute _attr,
+                                      final Object... _values)
         throws EFapsException
     {
         final QEqual equal = new QEqual(new QAttribute(_attr));
@@ -103,54 +119,113 @@ public class QueryBuilder
         for (final Object value : _values) {
             equal.addValue(getValue(value));
         }
+        return equal;
     }
 
     /**
      * @param _attrName name of the attribute
      * @param _value    value to be included in the where
+     * @return QLess
      * @throws EFapsException on error
      */
-    public void addWhereAttrLessValue(final String _attrName,
-                                      final Object _value)
+    public QLess addWhereAttrLessValue(final String _attrName,
+                                       final Object _value)
         throws EFapsException
     {
-        this.compares.add(new QLess(new QAttribute(_attrName), getValue(_value)));
+        final QLess ret = new QLess(new QAttribute(_attrName), getValue(_value));
+        this.compares.add(ret);
+        return ret;
     }
 
     /**
      * @param _attr     attribute
      * @param _value    value to be included in the where
+     * @return QLess
      * @throws EFapsException on error
      */
-    public void addWhereAttrLessValue(final Attribute _attr,
-                                      final Object _value)
+    public QLess addWhereAttrLessValue(final Attribute _attr,
+                                       final Object _value)
         throws EFapsException
     {
-        this.compares.add(new QLess(new QAttribute(_attr), getValue(_value)));
+        final QLess ret = new QLess(new QAttribute(_attr), getValue(_value));
+        this.compares.add(ret);
+        return ret;
     }
 
     /**
      * @param _attrName name of the attribute
      * @param _value    value to be included in the where
+     * @return QGreater
      * @throws EFapsException on error
      */
-    public void addWhereAttrGreaterValue(final String _attrName,
+    public QGreater addWhereAttrGreaterValue(final String _attrName,
                                          final Object _value)
         throws EFapsException
     {
-        this.compares.add(new QGreater(new QAttribute(_attrName), getValue(_value)));
+        final QGreater ret = new QGreater(new QAttribute(_attrName), getValue(_value));
+        this.compares.add(ret);
+        return ret;
     }
 
     /**
      * @param _attr     attribute
      * @param _value    value to be included in the where
+     * @return QGreater
      * @throws EFapsException on error
      */
-    public void addWhereAttrGreaterValue(final Attribute _attr,
+    public QGreater addWhereAttrGreaterValue(final Attribute _attr,
+                                             final Object _value)
+        throws EFapsException
+    {
+        final QGreater ret = new QGreater(new QAttribute(_attr), getValue(_value));
+        this.compares.add(ret);
+        return ret;
+    }
+
+    /**
+     * @param _attr     attribute
+     * @param _value    value to be included in the where
+     * @return QMatch
+     * @throws EFapsException on error
+     */
+    public QMatch addWhereAttrMatchValue(final Attribute _attr,
                                          final Object _value)
         throws EFapsException
     {
-        this.compares.add(new QGreater(new QAttribute(_attr), getValue(_value)));
+        final QMatch ret = new QMatch(new QAttribute(_attr), getValue(_value));
+        this.compares.add(ret);
+        return ret;
+    }
+
+    /**
+     * @param _attrName name of the attribute
+     * @param _value    value to be included in the where
+     * @return QMatch
+     * @throws EFapsException on error
+     */
+    public QMatch addWhereAttrMatchValue(final String _attrName,
+                                         final Object _value)
+        throws EFapsException
+    {
+        final QMatch ret = new QMatch(new QAttribute(_attrName), getValue(_value));
+        this.compares.add(ret);
+        return ret;
+    }
+
+    /**
+     * @param _classes    value to be included in the where
+     * @return QClassEqual
+     * @throws EFapsException on error
+     */
+    public QClassEqual addWhereClassification(final Classification... _classes)
+        throws EFapsException
+    {
+        final QClassEqual ret = new QClassEqual();
+        for (final Classification clazz : _classes) {
+            ret.addValue(new QClassValue(clazz));
+        }
+        this.compares.add(ret);
+        return ret;
     }
 
 
