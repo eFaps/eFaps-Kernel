@@ -20,7 +20,9 @@
 
 package org.efaps.admin;
 
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -207,25 +209,17 @@ public enum EFapsClassNames
     /** Admin_Help_Menu2Wiki. **/
     ADMIN_HELP_MENU2WIKI("f603d8e9-1bf5-474e-948d-34f9d181caa1");
 
+    /**
+     * Mapping between the UUID and the enumeration instance.
+     */
+    private static final Map<UUID, EFapsClassNames> MAPPER = new HashMap<UUID, EFapsClassNames>();
 
     /**
-     * The class is only used to define a mapping between UUID's and an instance
-     * of this enumeration. Because such variable could not be defined as static
-     * within enumeration definitions.
+     * fill the MAPPER with values.
      */
-    private static final class Mapper
-    {
-
-        /**
-         * Mapping between the UUID and the enumeration instance.
-         */
-        private static HashMap<UUID, EFapsClassNames> MAPPER = new HashMap<UUID, EFapsClassNames>();
-
-        /**
-         * Empty Constructor.
-         */
-        private Mapper()
-        {
+    static {
+        for (final EFapsClassNames names : EnumSet.allOf(EFapsClassNames.class)) {
+            EFapsClassNames.MAPPER.put(names.getUuid(), names);
         }
     }
 
@@ -242,7 +236,6 @@ public enum EFapsClassNames
     private EFapsClassNames(final String _uuid)
     {
         this.uuid = UUID.fromString(_uuid);
-        EFapsClassNames.Mapper.MAPPER.put(getUuid(), this);
     }
 
     /**
@@ -253,7 +246,7 @@ public enum EFapsClassNames
      */
     public static EFapsClassNames getEnum(final UUID _uuid)
     {
-        return EFapsClassNames.Mapper.MAPPER.get(_uuid);
+        return EFapsClassNames.MAPPER.get(_uuid);
     }
 
     /**
