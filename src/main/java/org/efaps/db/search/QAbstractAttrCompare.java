@@ -55,7 +55,7 @@ public abstract class QAbstractAttrCompare
      * @param _value     value as criteria
      */
     public QAbstractAttrCompare(final QAttribute _attribute,
-                               final QAbstractValue _value)
+                                final QAbstractValue _value)
     {
         this.attribute = _attribute;
         this.value = _value;
