@@ -32,6 +32,7 @@ import org.efaps.db.search.QAbstractAttrCompare;
 import org.efaps.db.search.QAbstractValue;
 import org.efaps.db.search.QAnd;
 import org.efaps.db.search.QAttribute;
+import org.efaps.db.search.QBooleanValue;
 import org.efaps.db.search.QClassEqual;
 import org.efaps.db.search.QClassValue;
 import org.efaps.db.search.QDateTimeValue;
@@ -245,6 +246,8 @@ public class QueryBuilder
             ret = new QStringValue((String) _value);
         } else if (_value instanceof DateTime) {
             ret = new QDateTimeValue((DateTime) _value);
+        } else if (_value instanceof Boolean) {
+            ret = new QBooleanValue((Boolean) _value);
         } else {
             throw new EFapsException(QueryBuilder.class, "notsuported");
         }
