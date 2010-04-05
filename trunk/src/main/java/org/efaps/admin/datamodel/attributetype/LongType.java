@@ -112,7 +112,7 @@ public class LongType
             } else if (object != null) {
                 ret = Long.parseLong(object.toString());
             }
-            ret = object == null ? 0 : object;
+            ret = object == null ? new Long(0) : object;
         }
         return ret;
     }
