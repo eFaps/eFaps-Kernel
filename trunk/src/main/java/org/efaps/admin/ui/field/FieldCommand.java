@@ -46,6 +46,11 @@ public class FieldCommand
     private String targetField;
 
     /**
+     * Icon to be displayed on the button.
+     */
+    private String buttonIcon;
+
+    /**
      *
      * @param _id       id of the field
      * @param _uuid     UUID of the field
@@ -93,7 +98,9 @@ public class FieldCommand
             this.append = "true".equalsIgnoreCase(_value);
         } else if ("CmdTargetField".equals(_name)) {
             this.targetField = _value;
-        } else {
+        } else if ("CmdIcon".equals(_name)) {
+            this.buttonIcon = _value;
+        }   else {
             super.setProperty(_name, _value);
         }
     }
@@ -126,5 +133,15 @@ public class FieldCommand
     public String getTargetField()
     {
         return this.targetField;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #buttonIcon}.
+     *
+     * @return value of instance variable {@link #buttonIcon}
+     */
+    public String getButtonIcon()
+    {
+        return this.buttonIcon;
     }
 }
