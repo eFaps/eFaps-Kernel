@@ -31,9 +31,9 @@ public class FieldCommand
     extends Field
 {
     /**
-     * Must the button rendered?
+     * Must the button rendered? Default: true
      */
-    private boolean renderButton;
+    private boolean renderButton = true;
 
     /**
      * Must the field appended?
