@@ -262,11 +262,13 @@ public class QueryBuilder
     {
         if (this.query == null) {
             this.query = new InstanceQuery(this.typeUUID);
-            final QAnd and = new QAnd();
-            for (final QAbstractAttrCompare compare : this.compares) {
-                and.addPart(compare);
+            if (!this.compares.isEmpty()) {
+                final QAnd and = new QAnd();
+                for (final QAbstractAttrCompare compare : this.compares) {
+                    and.addPart(compare);
+                }
+                this.query.setWhere(new QWhere(and));
             }
-            this.query.setWhere(new QWhere(and));
         }
         return this.query;
     }
