@@ -98,7 +98,7 @@ public class IntegerType
                 } else if (object != null) {
                     ret = Integer.parseInt(object.toString());
                 }
-                list.add((Integer) (object == null ? new Integer(0) : object));
+                list.add((Integer) (object == null ? new Integer(0) : ret));
             }
             ret = list;
         } else {
@@ -108,7 +108,7 @@ public class IntegerType
             } else if (object != null) {
                 ret = Integer.parseInt(object.toString());
             }
-            ret = (object == null) ? 0 : object;
+            ret = (object == null) ? 0 : ret;
         }
         return ret;
     }
