@@ -92,23 +92,25 @@ public class IntegerType
             ret = null;
         } else if (_objectList.size() > 1) {
             final List<Integer> list = new ArrayList<Integer>();
+            Integer temp = null;
             for (final Object object : _objectList) {
                 if (object instanceof Number) {
-                    ret = ((Number) object).intValue();
+                    temp = ((Number) object).intValue();
                 } else if (object != null) {
-                    ret = Integer.parseInt(object.toString());
+                    temp = Integer.parseInt(object.toString());
                 }
-                list.add((Integer) (object == null ? new Integer(0) : ret));
+                list.add(object == null ? new Integer(0) : temp);
             }
             ret = list;
         } else {
             final Object object = _objectList.get(0);
+            Integer temp = null;
             if (object instanceof Number) {
-                ret = ((Number) object).intValue();
+                temp = ((Number) object).intValue();
             } else if (object != null) {
-                ret = Integer.parseInt(object.toString());
+                temp = Integer.parseInt(object.toString());
             }
-            ret = (object == null) ? 0 : ret;
+            ret = (object == null) ? new Integer(0) : temp;
         }
         return ret;
     }
