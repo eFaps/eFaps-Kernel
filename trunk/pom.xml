@@ -34,7 +34,7 @@
     <packaging>jar</packaging>
     <groupId>org.efaps</groupId>
     <artifactId>efaps-kernel</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <description>
         eFaps is a framework used to map objects with or without attached files to
         a relational database and optional file systems (only for attaches files).
