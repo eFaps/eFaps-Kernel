@@ -24,7 +24,7 @@
 -->
 
 <suite name="eFaps Kernel Tests" verbose="1">
-
+<!--
     <test name="PostgreSQL" >
         <parameter name="bootstrap" value="postgresql"/>
         <classes>
@@ -42,5 +42,5 @@
             </packages>
         </classes>
     </test>
-
+ -->
 </suite>
