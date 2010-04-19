@@ -18,10 +18,13 @@
  * Last Changed By: $Author$
  */
 
+
+
 package org.efaps.importer;
 
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * This Class represents the Possibility to define default Values, for the Case
@@ -55,7 +58,8 @@ public class DefaultObject
     private String value = null;
 
     /**
-     * Defines the {@value} and adds a new default to the {@link #DEFAULTS}.
+     * Defines the {@link #value} and adds a new default to the
+     * {@link #DEFAULTS}.
      *
      * @param _type     string containing the Type of the Object
      * @param _name     string containing the Name of the Attribute
@@ -101,4 +105,5 @@ public class DefaultObject
     {
         this.link = _link;
     }
+
 }
