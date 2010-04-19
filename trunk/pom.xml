@@ -104,18 +104,16 @@
             <name>Maven eFaps Plug-In Site</name>
             <url>svn:https://eFaps.googlecode.com/svn/site/eFaps-Kernel</url>
         </site>
-        <repository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>efaps</id>
-            <name>eFaps Repository Released</name>
-            <url>svn:https://efaps.googlecode.com/svn/repo/released</url>
-        </repository>
         <snapshotRepository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>efaps</id>
-            <name>eFaps Repository Snapshot</name>
-            <url>svn:https://efaps.googlecode.com/svn/repo/snapshot</url>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Nexus Release Repository</name>
+            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
 
     <!-- correct encoding -->
