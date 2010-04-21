@@ -77,11 +77,11 @@ public class IntegerWithUoMType
         if ((_values == null) || (_values.length < 2) || (_values[0] == null))  {
             ret = null;
         } else  {
-            final Long value;
+            final Integer value;
             if ((_values[0] instanceof String) && (((String) _values[0]).length() > 0)) {
-                value = Long.parseLong((String) _values[0]);
+                value = Integer.parseInt((String) _values[0]);
             } else if (_values[0] instanceof Number) {
-                value = ((Number) _values[0]).longValue();
+                value = ((Number) _values[0]).intValue();
             } else  {
                 value = null;
             }
@@ -108,11 +108,11 @@ public class IntegerWithUoMType
     @Override()
     protected Object readValue(final Object _object)
     {
-        final Long ret;
+        final Integer ret;
         if (_object instanceof Number) {
-            ret = ((Number) _object).longValue();
+            ret = ((Number) _object).intValue();
         } else if (_object != null) {
-            ret = Long.parseLong(_object.toString());
+            ret = Integer.parseInt(_object.toString());
         } else  {
             ret = null;
         }

@@ -29,7 +29,7 @@ import org.efaps.admin.datamodel.Dimension.UoM;
  * @version $Id$
  */
 public class IntegerWithUoM
-    extends AbstractWithUoM<Long>
+    extends AbstractWithUoM<Integer>
 {
     /**
      * Initializes this attribute value for given <code>_value</code> and
@@ -38,7 +38,7 @@ public class IntegerWithUoM
      * @param _value    new value
      * @param _uom      link to the unit of measure instance
      */
-    public IntegerWithUoM(final Long _value,
+    public IntegerWithUoM(final Integer _value,
                           final UoM _uom)
     {
         super(_value, _uom);
