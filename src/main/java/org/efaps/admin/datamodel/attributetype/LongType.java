@@ -96,23 +96,25 @@ public class LongType
             ret = null;
         } else if (_objectList.size() > 1) {
             final List<Long> list = new ArrayList<Long>();
+            Long temp = null;
             for (final Object object : _objectList) {
                 if (object instanceof Number) {
-                    ret = ((Number) object).longValue();
+                    temp = ((Number) object).longValue();
                 } else if (object != null) {
-                    ret = Long.parseLong(object.toString());
+                    temp = Long.parseLong(object.toString());
                 }
-                list.add((Long) (object == null ? new Long(0) : object));
+                list.add(object == null ? new Long(0) : temp);
             }
             ret = list;
         } else {
             final Object object = _objectList.get(0);
+            Long temp = null;
             if (object instanceof Number) {
-                ret = ((Number) object).longValue();
+                temp = ((Number) object).longValue();
             } else if (object != null) {
-                ret = Long.parseLong(object.toString());
+                temp = Long.parseLong(object.toString());
             }
-            ret = object == null ? new Long(0) : object;
+            ret = object == null ? new Long(0) : temp;
         }
         return ret;
     }
