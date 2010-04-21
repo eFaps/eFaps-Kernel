@@ -33,9 +33,9 @@ import java.util.UUID;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.search.QAnd;
+import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.QEqual;
 import org.efaps.db.search.QNumberValue;
-import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.QWhere;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
@@ -294,7 +294,9 @@ public class InstanceQuery
                 this.where.setPart(new QAnd(this.where.getPart(), eqPart));
             }
         }
-        this.where.prepare(this);
+        if (this.where != null) {
+            this.where.prepare(this);
+        }
     }
 
     /**
@@ -317,7 +319,7 @@ public class InstanceQuery
         }
 
         final StringBuilder cmd = new StringBuilder()
-                .append(select.getSQL()).append(this.where.getSQL());
+                .append(select.getSQL()).append(this.where != null ? this.where.getSQL() : "");
 
         if (InstanceQuery.LOG.isDebugEnabled()) {
             InstanceQuery.LOG.debug(cmd.toString());
