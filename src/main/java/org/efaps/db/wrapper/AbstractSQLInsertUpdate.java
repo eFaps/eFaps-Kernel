@@ -156,10 +156,10 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
             public void set(final int _index, final PreparedStatement _stmt)
                 throws SQLException
             {
-                if (this.getValue() == null)  {
+                if (getValue() == null)  {
                     _stmt.setNull(_index, Types.DECIMAL);
                 } else  {
-                    _stmt.setBigDecimal(_index, this.getValue());
+                    _stmt.setBigDecimal(_index, getValue());
                 }
             }
         });
@@ -183,10 +183,10 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
             public void set(final int _index, final PreparedStatement _stmt)
                 throws SQLException
             {
-                if (this.getValue() == null)  {
+                if (getValue() == null)  {
                     _stmt.setNull(_index, Types.DECIMAL);
                 } else  {
-                    _stmt.setDouble(_index, this.getValue());
+                    _stmt.setDouble(_index, getValue());
                 }
             }
         });
@@ -210,10 +210,10 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
             public void set(final int _index, final PreparedStatement _stmt)
                 throws SQLException
             {
-                if (this.getValue() == null)  {
+                if (getValue() == null)  {
                     _stmt.setNull(_index, Types.VARCHAR);
                 } else  {
-                    _stmt.setString(_index, this.getValue());
+                    _stmt.setString(_index, getValue());
                 }
             }
         });
@@ -237,10 +237,10 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
             public void set(final int _index, final PreparedStatement _stmt)
                 throws SQLException
             {
-                if (this.getValue() == null)  {
+                if (getValue() == null)  {
                     _stmt.setNull(_index, Types.TIMESTAMP);
                 } else  {
-                    _stmt.setTimestamp(_index, this.getValue());
+                    _stmt.setTimestamp(_index, getValue());
                 }
             }
         });
@@ -264,10 +264,10 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
             public void set(final int _index, final PreparedStatement _stmt)
                 throws SQLException
             {
-                if (this.getValue() == null)  {
+                if (getValue() == null)  {
                     _stmt.setNull(_index, Types.BOOLEAN);
                 } else  {
-                    _stmt.setBoolean(_index, this.getValue());
+                    _stmt.setBoolean(_index, getValue());
                 }
             }
         });
@@ -291,10 +291,37 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
             public void set(final int _index, final PreparedStatement _stmt)
                 throws SQLException
             {
-                if (this.getValue() == null)  {
+                if (getValue() == null)  {
                     _stmt.setNull(_index, Types.BIGINT);
                 } else  {
-                    _stmt.setLong(_index, this.getValue());
+                    _stmt.setLong(_index, getValue());
+                }
+            }
+        });
+        return (STMT) this;
+    }
+
+    /**
+     * Defines a new column <code>_columnName</code> with {@link Long}
+     * <code>_value</code> within this SQL insert / update statement.
+     *
+     * @param _columnName   name of the column
+     * @param _value        value of the column
+     * @return this SQL statement
+     */
+    @SuppressWarnings("unchecked")
+    public STMT column(final String _columnName,
+                       final Integer _value)
+    {
+        this.columnWithValues.add(new AbstractSQLInsertUpdate.ColumnWithValue<Integer>(_columnName, _value) {
+            @Override()
+            public void set(final int _index, final PreparedStatement _stmt)
+                throws SQLException
+            {
+                if (getValue() == null)  {
+                    _stmt.setNull(_index, Types.BIGINT);
+                } else  {
+                    _stmt.setInt(_index, getValue());
                 }
             }
         });
