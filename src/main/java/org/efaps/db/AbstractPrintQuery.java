@@ -401,6 +401,27 @@ public abstract class AbstractPrintQuery
      * {@link #addPhrase(String, String)} the values will not be parsed! The
      * values will not be editable.
      *
+     * @param _selectBldrs selectBuilder to be added
+     * @return this PrintQuery
+     * @throws EFapsException   on error
+     */
+    public AbstractPrintQuery addSelect(final SelectBuilder... _selectBldrs)
+        throws EFapsException
+    {
+        for (final SelectBuilder selectBldr : _selectBldrs) {
+            addSelect(selectBldr.toString());
+        }
+        return this;
+    }
+
+    /**
+     * Add an select to the PrintQuery. A select is something like:
+     * <code>class[Emperador_Products_ClassFloorLaminate].linkto[SurfaceAttrId].attribute[Value]</code>
+     * <br>
+     * The use of the key words like "class" etc is mandatory. Contrary to
+     * {@link #addPhrase(String, String)} the values will not be parsed! The
+     * values will not be editable.
+     *
      * @param _selectStmts selectStatments to be added
      * @return this PrintQuery
      * @throws EFapsException   on error
@@ -430,6 +451,22 @@ public abstract class AbstractPrintQuery
         throws EFapsException
     {
         final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectStmt);
+        return oneselect == null ? null : (T) oneselect.getObject();
+    }
+
+    /**
+     * Get the object returned by the given select statement.
+     *
+     * @param <T>           class the return value will be casted to
+     * @param _selectBldr   select bldr the object is wanted for
+     * @return object for the select statement
+     * @throws EFapsException on error
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getSelect(final SelectBuilder _selectBldr)
+        throws EFapsException
+    {
+        final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectBldr.toString());
         return oneselect == null ? null : (T) oneselect.getObject();
     }
 

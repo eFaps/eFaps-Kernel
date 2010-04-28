@@ -28,6 +28,8 @@ import java.util.UUID;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAttribute;
+import org.efaps.ci.CIType;
 import org.efaps.db.search.QAbstractAttrCompare;
 import org.efaps.db.search.QAbstractValue;
 import org.efaps.db.search.QAnd;
@@ -86,6 +88,28 @@ public class QueryBuilder
     {
         this.typeUUID = _type.getUUID();
     }
+
+    /**
+     * @param _ciType  ciType this query is based on
+     */
+    public QueryBuilder(final CIType _ciType)
+    {
+        this(_ciType.getType());
+    }
+
+    /**
+     * @param _ciAttrName Name of the attribute
+     * @param _values    value to be included in the where
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QEqual addWhereAttrEqValue(final CIAttribute _ciAttrName,
+                                      final Object... _values)
+        throws EFapsException
+    {
+        return addWhereAttrEqValue(_ciAttrName.name, _values);
+    }
+
 
     /**
      * @param _attrName Name of the attribute
