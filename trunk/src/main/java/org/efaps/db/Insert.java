@@ -34,6 +34,7 @@ import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
+import org.efaps.ci.CIType;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.util.EFapsException;
@@ -76,6 +77,16 @@ public class Insert extends Update
     }
 
     /**
+     * @param _ciType  CIType to be inserted
+     * @see #Insert(Type)
+     * @throws EFapsException on error
+     */
+    public Insert(final CIType _ciType) throws EFapsException
+    {
+        this(_ciType.uuid);
+    }
+
+    /**
      * @param _uuid _uuid of the type to be inserted
      * @see #Insert(Type)
      * @throws EFapsException on error
@@ -84,6 +95,7 @@ public class Insert extends Update
     {
         this(Type.get(_uuid));
     }
+
     /**
      * Add all tables of the type to the expressions, because for the type an
      * insert must be made for all tables!!!
@@ -184,7 +196,7 @@ public class Insert extends Update
 
             setInstance(Instance.get(getInstance().getType(), id));
 
-            for (final Entry<SQLTable, Map<Attribute, Value>> entry : this.getExpr4Tables().entrySet()) {
+            for (final Entry<SQLTable, Map<Attribute, Value>> entry : getExpr4Tables().entrySet()) {
                 final SQLTable table = entry.getKey();
                 if ((table != mainTable) && !table.isReadOnly()) {
                     executeOneStatement(con, table, entry.getValue().values(), id);
