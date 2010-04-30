@@ -305,6 +305,7 @@ public final class Application
      * @param _versionFile version file which defines the application
      * @param _classpathElements class path elements (required to compile)
      * @param _eFapsDir root directory with the XML installation files
+     * @param _outputDir directory used as target for generated code
      * @param _includes list of includes; if <code>null</code>
      *            {@link #DEFAULT_INCLUDES} are used
      * @param _excludes list of excludes; if <code>null</code>
@@ -317,6 +318,7 @@ public final class Application
     public static Application getApplicationFromSource(final File _versionFile,
                                                        final List<String> _classpathElements,
                                                        final File _eFapsDir,
+                                                       final File _outputDir,
                                                        final List<String> _includes,
                                                        final List<String> _excludes,
                                                        final Map<String, String> _file2typeMapping)
@@ -334,6 +336,10 @@ public final class Application
             for (final String fileName : Application.getFiles(_eFapsDir, _includes, _excludes)) {
                 final String type = file2typeMapping.get(fileName.substring(fileName.lastIndexOf(".") + 1));
                 appl.addURL(new File(_eFapsDir, fileName).toURI().toURL(), type);
+            }
+            for (final String fileName : Application.getFiles(_outputDir, _includes, _excludes)) {
+                final String type = file2typeMapping.get(fileName.substring(fileName.lastIndexOf(".") + 1));
+                appl.addURL(new File(_outputDir, fileName).toURI().toURL(), type);
             }
         } catch (final IOException e) {
             throw new InstallationException("Could not open / read version file " + "'" + _versionFile + "'", e);
