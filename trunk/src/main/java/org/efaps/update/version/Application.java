@@ -337,9 +337,11 @@ public final class Application
                 final String type = file2typeMapping.get(fileName.substring(fileName.lastIndexOf(".") + 1));
                 appl.addURL(new File(_eFapsDir, fileName).toURI().toURL(), type);
             }
-            for (final String fileName : Application.getFiles(_outputDir, _includes, _excludes)) {
-                final String type = file2typeMapping.get(fileName.substring(fileName.lastIndexOf(".") + 1));
-                appl.addURL(new File(_outputDir, fileName).toURI().toURL(), type);
+            if (_outputDir.exists()) {
+                for (final String fileName : Application.getFiles(_outputDir, _includes, _excludes)) {
+                    final String type = file2typeMapping.get(fileName.substring(fileName.lastIndexOf(".") + 1));
+                    appl.addURL(new File(_outputDir, fileName).toURI().toURL(), type);
+                }
             }
         } catch (final IOException e) {
             throw new InstallationException("Could not open / read version file " + "'" + _versionFile + "'", e);
