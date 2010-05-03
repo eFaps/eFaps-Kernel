@@ -98,16 +98,16 @@ public class QueryBuilder
     }
 
     /**
-     * @param _ciAttrName Name of the attribute
+     * @param _ciAttr Name of the attribute
      * @param _values    value to be included in the where
      * @return QEqual
      * @throws EFapsException on error
      */
-    public QEqual addWhereAttrEqValue(final CIAttribute _ciAttrName,
+    public QEqual addWhereAttrEqValue(final CIAttribute _ciAttr,
                                       final Object... _values)
         throws EFapsException
     {
-        return addWhereAttrEqValue(_ciAttrName.name, _values);
+        return addWhereAttrEqValue(_ciAttr.name, _values);
     }
 
 
@@ -148,6 +148,20 @@ public class QueryBuilder
     }
 
     /**
+     * @param _ciAttr   CIAttribute of the attribute
+     * @param _value    value to be included in the where
+     * @return QLess
+     * @throws EFapsException on error
+     */
+    public QLess addWhereAttrLessValue(final CIAttribute _ciAttr,
+                                       final Object _value)
+        throws EFapsException
+    {
+        return addWhereAttrLessValue(_ciAttr.name, _value);
+    }
+
+
+    /**
      * @param _attrName name of the attribute
      * @param _value    value to be included in the where
      * @return QLess
@@ -177,6 +191,21 @@ public class QueryBuilder
         return ret;
     }
 
+
+    /**
+     * @param _ciAttr   CIAttribute of the attribute
+     * @param _value    value to be included in the where
+     * @return QLess
+     * @throws EFapsException on error
+     */
+    public QGreater addWhereAttrGreaterValue(final CIAttribute _ciAttr,
+                                             final Object _value)
+        throws EFapsException
+    {
+        return addWhereAttrGreaterValue(_ciAttr.name, _value);
+    }
+
+
     /**
      * @param _attrName name of the attribute
      * @param _value    value to be included in the where
@@ -184,7 +213,7 @@ public class QueryBuilder
      * @throws EFapsException on error
      */
     public QGreater addWhereAttrGreaterValue(final String _attrName,
-                                         final Object _value)
+                                             final Object _value)
         throws EFapsException
     {
         final QGreater ret = new QGreater(new QAttribute(_attrName), getValue(_value));
@@ -205,6 +234,19 @@ public class QueryBuilder
         final QGreater ret = new QGreater(new QAttribute(_attr), getValue(_value));
         this.compares.add(ret);
         return ret;
+    }
+
+    /**
+     * @param _ciAttr   CIAttribute of the attribute
+     * @param _value    value to be included in the where
+     * @return QLess
+     * @throws EFapsException on error
+     */
+    public QMatch addWhereAttrMatchValue(final CIAttribute _ciAttr,
+                                             final Object _value)
+        throws EFapsException
+    {
+        return addWhereAttrMatchValue(_ciAttr.name, _value);
     }
 
     /**

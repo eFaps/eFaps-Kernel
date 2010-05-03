@@ -34,6 +34,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
+import org.efaps.ci.CIAttribute;
 import org.efaps.db.print.OneSelect;
 import org.efaps.db.print.Phrase;
 import org.efaps.db.transaction.ConnectionResource;
@@ -93,6 +94,23 @@ public abstract class AbstractPrintQuery
      * takes time and should not be used by default.)
      */
     private boolean enforceSorted;
+
+    /**
+     * Add an attribute to the PrintQuery. It is used to get editable values
+     * from the eFaps DataBase.
+     *
+     * @param _attributes    Attribute to add
+     * @return this PrintQuery
+     * @throws EFapsException on error
+     */
+    public AbstractPrintQuery addAttribute(final CIAttribute... _attributes)
+        throws EFapsException
+    {
+        for (final CIAttribute attr : _attributes) {
+            addAttribute(attr.name);
+        }
+        return this;
+    }
 
 
     /**
@@ -154,6 +172,21 @@ public abstract class AbstractPrintQuery
         final OneSelect oneselect = this.attr2OneSelect.get(_attributeName);
         return oneselect == null ? null : oneselect.getInstances();
     }
+
+    /**
+     * Get the object returned by the given name of an attribute.
+     *
+     * @param <T>               class the return value will be casted to
+     * @param _attribute        attribute the object is wanted for
+     * @return object for the select statement
+     * @throws EFapsException on error
+     */
+    public <T> T getAttribute(final CIAttribute _attribute)
+        throws EFapsException
+    {
+        return this.<T>getAttribute(_attribute.name);
+    }
+
 
     /**
      * Get the object returned by the given name of an attribute.
