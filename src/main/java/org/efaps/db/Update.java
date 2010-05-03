@@ -30,9 +30,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
@@ -44,9 +41,12 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.ci.CIAttribute;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
@@ -216,6 +216,23 @@ public class Update
         throws EFapsException
     {
         return add(_attr, true, _values);
+    }
+
+    /**
+     * @param _attr     attribute to update
+     * @param _values    attribute value
+     * @throws EFapsException on error
+     * @return Status
+     */
+    public Status add(final CIAttribute _attr,
+                      final Object... _values)
+        throws EFapsException
+    {
+        final Attribute attr = getInstance().getType().getAttribute(_attr.name);
+        if (attr == null) {
+            throw new EFapsException(getClass(), "add.UnknownAttributeName");
+        }
+        return add(attr, _values);
     }
 
     /**
