@@ -42,6 +42,7 @@ import org.efaps.db.search.QEqual;
 import org.efaps.db.search.QGreater;
 import org.efaps.db.search.QLess;
 import org.efaps.db.search.QMatch;
+import org.efaps.db.search.QNotEqual;
 import org.efaps.db.search.QNumberValue;
 import org.efaps.db.search.QStringValue;
 import org.efaps.db.search.QWhere;
@@ -140,6 +141,56 @@ public class QueryBuilder
         throws EFapsException
     {
         final QEqual equal = new QEqual(new QAttribute(_attr));
+        this.compares.add(equal);
+        for (final Object value : _values) {
+            equal.addValue(getValue(value));
+        }
+        return equal;
+    }
+
+    /**
+     * @param _ciAttr Name of the attribute
+     * @param _values    value to be included in the where
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QNotEqual addWhereAttrNotEqValue(final CIAttribute _ciAttr,
+                                            final Object... _values)
+        throws EFapsException
+    {
+        return addWhereAttrNotEqValue(_ciAttr.name, _values);
+    }
+
+
+    /**
+     * @param _attrName Name of the attribute
+     * @param _values    value to be included in the where
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QNotEqual addWhereAttrNotEqValue(final String _attrName,
+                                            final Object... _values)
+        throws EFapsException
+    {
+        final QNotEqual equal = new QNotEqual(new QAttribute(_attrName));
+        this.compares.add(equal);
+        for (final Object value : _values) {
+            equal.addValue(getValue(value));
+        }
+        return equal;
+    }
+
+    /**
+     * @param _attr     attribute
+     * @param _values   value to be included in the where
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QNotEqual addWhereAttrNotEqValue(final Attribute _attr,
+                                            final Object... _values)
+        throws EFapsException
+    {
+        final QNotEqual equal = new QNotEqual(new QAttribute(_attr));
         this.compares.add(equal);
         for (final Object value : _values) {
             equal.addValue(getValue(value));
