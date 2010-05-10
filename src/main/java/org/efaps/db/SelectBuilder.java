@@ -22,6 +22,7 @@
 package org.efaps.db;
 
 import org.efaps.ci.CIAttribute;
+import org.efaps.ci.CIType;
 
 
 /**
@@ -36,6 +37,22 @@ public class SelectBuilder
      * StringBuilder use as the base for building the String.
      */
     private final StringBuilder bldr = new StringBuilder();
+
+    /**
+     * Standard constructor.
+     */
+    public SelectBuilder()
+    {
+    }
+
+    /**
+     * Constructor setting a SelectBuilder as bases for this SelectBuilder.
+     * @param _selectBuilder SelectBuilder to be used
+     */
+    public SelectBuilder(final SelectBuilder _selectBuilder)
+    {
+        this.bldr.append(_selectBuilder.toString());
+    }
 
 
     /**
@@ -55,6 +72,30 @@ public class SelectBuilder
     {
         addPoint();
         this.bldr.append("linkto[").append(_attribute).append("]");
+        return this;
+    }
+
+    /**
+     * @param _type         type to link from
+     * @param _attribute    attribute to link from
+     * @return this
+     */
+    public SelectBuilder linkfrom(final CIType _type,
+                                  final CIAttribute _attribute)
+    {
+        return linkfrom(_type.getType().getName(), _attribute.name);
+    }
+
+    /**
+     * @param _type         type to link from
+     * @param _attribute    attribute to linkto
+     * @return this
+     */
+    public SelectBuilder linkfrom(final String _type,
+                                  final String _attribute)
+    {
+        addPoint();
+        this.bldr.append("linkfrom[").append(_type).append("#").append(_attribute).append("]");
         return this;
     }
 
@@ -87,6 +128,91 @@ public class SelectBuilder
         if (this.bldr.length() > 0) {
             this.bldr.append(".");
         }
+    }
+
+    /**
+     * Add oid select part.
+     *
+     * @return this
+     */
+    public SelectBuilder oid()
+    {
+        addPoint();
+        this.bldr.append("oid");
+        return this;
+    }
+
+    /**
+     * Add type select part.
+     *
+     * @return this
+     */
+    public SelectBuilder type()
+    {
+        addPoint();
+        this.bldr.append("type");
+        return this;
+    }
+
+    /**
+     * Add label select part.
+     *
+     * @return this
+     */
+    public SelectBuilder label()
+    {
+        addPoint();
+        this.bldr.append("label");
+        return this;
+    }
+
+    /**
+     * Add id select part.
+     *
+     * @return this
+     */
+    public SelectBuilder id()
+    {
+        addPoint();
+        this.bldr.append("id");
+        return this;
+    }
+
+    /**
+     * Add uuid select part.
+     *
+     * @return this
+     */
+    public SelectBuilder uuid()
+    {
+        addPoint();
+        this.bldr.append("uuid");
+        return this;
+    }
+
+    /**
+     * Add uuid select part.
+     *
+     * @return this
+     */
+    public SelectBuilder clasS()
+    {
+        addPoint();
+        this.bldr.append("class");
+        return this;
+    }
+
+    /**
+     * Add format select part.
+     * @param _pattern pattern to be applied
+     *
+     * @return this
+     */
+    public SelectBuilder format(final String _pattern)
+    {
+        addPoint();
+        this.bldr.append("format[").append(_pattern).append("]");
+        return this;
     }
 
     /**
