@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
@@ -189,6 +190,31 @@ public class InstanceQuery
     }
 
     /**
+     * Get the index for a SQLTable if the table is not existing the table is
+     * added and a new index given.
+     *
+     * @param _sqlTable SQLTable the index is wanted for
+     * @return index of the SQLTable
+     */
+    public Integer getIndex4SqlTable(final SQLTable _sqlTable)
+    {
+        Integer ret;
+        if (this.sqlTable2Index.containsKey(_sqlTable)) {
+            ret = this.sqlTable2Index.get(_sqlTable);
+        } else {
+            Integer max = 0;
+            for (final Integer index : this.sqlTable2Index.values()) {
+                if (index > max) {
+                    max = index;
+                }
+            }
+            ret = max + 1;
+            this.sqlTable2Index.put(_sqlTable, ret);
+        }
+        return ret;
+    }
+
+    /**
      * setter method for the instance variable {@link #where}.
      * @param _where value for instance variable {@link #where}
      * @return this
@@ -316,6 +342,14 @@ public class InstanceQuery
         if (this.baseType.getMainTable().getSqlColType() != null) {
             select.column(0, this.baseType.getMainTable().getSqlColType());
             colIndex++;
+        }
+        // add child tables
+        if (this.sqlTable2Index.size() > 0) {
+            for (final Entry<SQLTable, Integer> entry : this.sqlTable2Index.entrySet()) {
+                if (entry.getValue() > 0) {
+                    select.leftJoin(entry.getKey().getSqlTable(), entry.getValue(), "ID", 0, "ID");
+                }
+            }
         }
 
         final StringBuilder cmd = new StringBuilder()

@@ -86,7 +86,7 @@ public class QAttribute
         if (this.attribute == null) {
             this.attribute =  _query.getBaseType().getAttribute(this.attributeName);
         }
-        this.tableIndex = _query.getSqlTable2Index().get(this.attribute.getTable());
+        this.tableIndex = _query.getIndex4SqlTable(this.attribute.getTable());
         return this;
     }
 
