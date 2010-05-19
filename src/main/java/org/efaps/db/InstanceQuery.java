@@ -258,7 +258,7 @@ public class InstanceQuery
     public boolean next()
     {
         if (this.iter == null) {
-            this.iter = this.instances.iterator();
+            this.iter = new ArrayList<Instance>(this.instances).iterator();
         }
         final boolean ret = this.iter.hasNext();
         if (ret) {
