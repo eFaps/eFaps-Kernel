@@ -357,7 +357,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.5.6</version>
+            <version>1.6.0</version>
         </dependency>
 
         <!-- JDBC driver -->
@@ -496,6 +496,12 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <groupId>jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
             <version>3.5.3</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
@@ -566,7 +572,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.6</version>
+            <version>1.6.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -614,7 +620,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.ow2.spec.ee</groupId>
             <artifactId>ow2-connector-1.5-spec</artifactId>
-            <version>1.0-M1</version>
+            <version>1.0.3</version>
             <scope>test</scope>
         </dependency>
         <!-- Needed indirectly for the transaction manager -->
