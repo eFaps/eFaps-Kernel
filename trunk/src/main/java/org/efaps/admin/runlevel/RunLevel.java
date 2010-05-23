@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.efaps.admin.common.Quartz;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
@@ -123,7 +124,6 @@ public final class RunLevel
     private RunLevel(final String _name)
         throws EFapsException
     {
-//        initialize(RunLevel.SQL_RUNLEVEL + " RUNLEVEL='" + _name + "'");
         initialize(RunLevel.SELECT_RUNLEVEL.getSQL() + " where RUNLEVEL='" + _name + "'");
     }
 
@@ -136,7 +136,6 @@ public final class RunLevel
     private RunLevel(final long _id)
         throws EFapsException
     {
-//        initialize(RunLevel.SQL_RUNLEVEL + " ID=" + _id);
         initialize(RunLevel.SELECT_RUNLEVEL.getSQL() + " where ID=" + _id);
     }
 
@@ -191,6 +190,7 @@ public final class RunLevel
                 cache.clear();
             }
         }
+        Quartz.getQuartz();
     }
 
     /**
@@ -405,7 +405,7 @@ public final class RunLevel
                     if (e.getCause() instanceof EFapsException) {
                         throw (EFapsException) e.getCause();
                     } else {
-                        throw new EFapsException(getClass(),"callMethod.InvocationTargetException",
+                        throw new EFapsException(getClass(), "callMethod.InvocationTargetException",
                                              null,
                                              e.getCause(),
                                              this.className,
