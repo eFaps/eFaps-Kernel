@@ -1002,6 +1002,15 @@ public final class Context
     }
 
     /**
+     * @return <code>true</code> if the context for the thread is set,
+     *          else <code>false</code>
+     */
+    public static boolean isActive()
+    {
+        return Context.THREADCONTEXT.get() != null;
+    }
+
+    /**
      * Is the status of transaction manager active?
      *
      * @return <i>true</i> if transaction manager is active, otherwise

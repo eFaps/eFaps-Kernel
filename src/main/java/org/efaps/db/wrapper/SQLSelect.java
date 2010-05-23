@@ -50,6 +50,11 @@ public class SQLSelect
     private final List<FromTable> fromTables = new ArrayList<FromTable>();
 
     /**
+     * Must the select be distinct
+     */
+    private boolean distinct = false;
+
+    /**
      * Appends a selected column.
      *
      * @param _name     name of the column
@@ -139,6 +144,9 @@ public class SQLSelect
     {
         final StringBuilder cmd = new StringBuilder()
                 .append("select ");
+        if (this.distinct) {
+            cmd.append(" distinct ");
+        }
         boolean first = true;
         for (final Column column : this.columns)  {
             if (first)  {
@@ -158,6 +166,17 @@ public class SQLSelect
         }
 
         return cmd.toString();
+    }
+
+    /**
+     * Must this SQLSelect be distinct.
+     * @param _distinct distinct
+     * @return this
+     */
+    public SQLSelect distinct(final boolean _distinct)
+    {
+        this.distinct = _distinct;
+        return this;
     }
 
     /**
@@ -296,14 +315,14 @@ public class SQLSelect
             }
             _cmd.append("left join ")
                 .append(Context.getDbType().getTableQuote())
-                .append(this.getTableName())
+                .append(getTableName())
                 .append(Context.getDbType().getTableQuote())
-                .append(" T").append(this.getTableIndex())
+                .append(" T").append(getTableIndex())
                 .append(" on T").append(this.joinTableIndex).append('.')
                 .append(Context.getDbType().getColumnQuote())
                 .append(this.joinColumnName)
                 .append(Context.getDbType().getColumnQuote())
-                .append("=T").append(this.getTableIndex()).append('.')
+                .append("=T").append(getTableIndex()).append('.')
                 .append(Context.getDbType().getColumnQuote())
                 .append(this.columnName)
                 .append(Context.getDbType().getColumnQuote());

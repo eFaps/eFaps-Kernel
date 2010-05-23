@@ -41,6 +41,7 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
 import org.efaps.db.databases.AbstractDatabase;
+import org.efaps.db.transaction.DelegatingUserTransaction;
 import org.efaps.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -303,9 +304,9 @@ public final class StartupDatabaseConnection
             throw new StartupException("Could not initialize JNDI", e);
         }
 
-        configureDBType(compCtx, _classDBType);
-        configureDataSource(compCtx, _classDSFactory, _propConnection);
-        configureTransactionManager(compCtx, _classTM, _timeout);
+        StartupDatabaseConnection.configureDBType(compCtx, _classDBType);
+        StartupDatabaseConnection.configureDataSource(compCtx, _classDSFactory, _propConnection);
+        StartupDatabaseConnection.configureTransactionManager(compCtx, _classTM, _timeout);
 
         // and reset eFaps context (to be sure..)
         org.efaps.db.Context.reset();
@@ -332,7 +333,7 @@ public final class StartupDatabaseConnection
             ref.add(new StringRefAddr(entry.getKey(), entry.getValue()));
         }
         try {
-            Util.bind(_compCtx, "env/" + RESOURCE_DATASOURCE, ref);
+            Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_DATASOURCE, ref);
         } catch (final NamingException e) {
             throw new StartupException("could not bind JDBC pooling class '" + _classDSFactory + "'", e);
         } catch (final Exception e) {
@@ -359,7 +360,7 @@ public final class StartupDatabaseConnection
             if (dbType == null) {
                 throw new StartupException("could not initaliase database type '" + _classDBType + "'");
             } else {
-                Util.bind(_compCtx, "env/" + RESOURCE_DBTYPE, dbType);
+                Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_DBTYPE, dbType);
             }
         } catch (final ClassNotFoundException e) {
             throw new StartupException("could not found database description class '" + _classDBType + "'", e);
@@ -396,11 +397,12 @@ public final class StartupDatabaseConnection
             } else {
                 if (_timeout != null) {
                     tm.setTransactionTimeout(_timeout);
-                    Util.bind(_compCtx, "env/" + RESOURCE_TRANSMANAGTIMEOUT, _timeout);
+                    Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_TRANSMANAGTIMEOUT, _timeout);
                 } else {
-                    Util.bind(_compCtx, "env/" + RESOURCE_TRANSMANAGTIMEOUT, 0);
+                    Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_TRANSMANAGTIMEOUT, 0);
                 }
-                Util.bind(_compCtx, "env/" + RESOURCE_TRANSMANAG, tm);
+                Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_TRANSMANAG, tm);
+                Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_USERTRANSACTION,  new DelegatingUserTransaction(tm));
             }
         } catch (final ClassNotFoundException e) {
             throw new StartupException("could not found transaction manager class '" + _classTM + "'", e);
@@ -466,10 +468,10 @@ public final class StartupDatabaseConnection
             throw new StartupException("Could not initialize JNDI", e);
         }
         try  {
-            Util.unbind(compCtx, "env/" + RESOURCE_DATASOURCE);
-            Util.unbind(compCtx, "env/" + RESOURCE_DBTYPE);
-            Util.unbind(compCtx, "env/" + RESOURCE_TRANSMANAGTIMEOUT);
-            Util.unbind(compCtx, "env/" + RESOURCE_TRANSMANAG);
+            Util.unbind(compCtx, "env/" + INamingBinds.RESOURCE_DATASOURCE);
+            Util.unbind(compCtx, "env/" + INamingBinds.RESOURCE_DBTYPE);
+            Util.unbind(compCtx, "env/" + INamingBinds.RESOURCE_TRANSMANAGTIMEOUT);
+            Util.unbind(compCtx, "env/" + INamingBinds.RESOURCE_TRANSMANAG);
         } catch (final NamingException e)  {
             throw new StartupException("unbind of the database connection failed", e);
         }
