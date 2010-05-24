@@ -21,6 +21,7 @@
 package org.efaps.admin.common;
 
 import java.util.Properties;
+import java.util.UUID;
 
 import org.efaps.init.INamingBinds;
 import org.efaps.util.EFapsException;
@@ -69,20 +70,33 @@ public final class Quartz
             props.put("org.quartz.threadPool.threadCount", "2");
             props.put("org.quartz.plugin.jobInitializer.class",
                             "org.efaps.admin.common.QuartzSchedulerPlugin");
+            props.put("org.quartz.scheduler.instanceName", "eFapsScheduler");
 
             schedFact.initialize(props);
-            final Scheduler sched =  schedFact.getScheduler();
+            Scheduler sched;
+            sched = schedFact.getScheduler("eFapsScheduler");
+            if (sched != null) {
+                sched.shutdown();
+            }
+            sched =  schedFact.getScheduler();
 
+            //Kernel-Configuration
+            final SystemConfiguration config = SystemConfiguration.get(
+                            UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+            if (config.getAttributeValueAsBoolean("SystemMessageTriggerActivated")) {
+                final int interval = config.getAttributeValueAsInteger("SystemMessageTriggerInterval");
+                final Trigger trigger = TriggerUtils.makeMinutelyTrigger(interval > 0 ? interval : 1);
+                trigger.setName("SystemMessageTrigger");
+                JobDetail jobDetail = sched.getJobDetail("SystemMessage", null);
+                if (jobDetail == null) {
+                    jobDetail = new JobDetail("SystemMessage", null, SystemMessage.class);
+                    sched.scheduleJob(jobDetail, trigger);
+                } else {
+                    trigger.setJobName("SystemMessage");
+                    sched.rescheduleJob("SystemMessageTrigger", null, trigger);
+                }
+            }
             sched.start();
-
-            final JobDetail jobDetail = new JobDetail("SystemMessage",
-                                            null,
-                                            SystemMessage.class);
-
-            final Trigger trigger = TriggerUtils.makeMinutelyTrigger(1);
-            trigger.setName("SystemMessageTrigger");
-
-            sched.scheduleJob(jobDetail, trigger);
         } catch (final SchedulerException e) {
             throw new EFapsException(Quartz.class, "Quartz.SchedulerException", e);
         }
