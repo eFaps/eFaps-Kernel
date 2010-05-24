@@ -66,7 +66,10 @@ public final class Quartz
                                 + INamingBinds.RESOURCE_USERTRANSACTION);
             props.put("org.quartz.scheduler.wrapJobExecutionInUserTransaction", "true");
             props.put("org.quartz.threadPool.class", "org.quartz.simpl.SimpleThreadPool");
-            props.put("org.quartz.threadPool.threadCount", "1");
+            props.put("org.quartz.threadPool.threadCount", "2");
+            props.put("org.quartz.plugin.jobInitializer.class",
+                            "org.efaps.admin.common.QuartzSchedulerPlugin");
+
             schedFact.initialize(props);
             final Scheduler sched =  schedFact.getScheduler();
 

@@ -44,36 +44,51 @@ public class DelegatingUserTransaction
     implements UserTransaction
 {
 
+    /**
+     * TransactionManager.
+     */
     private final TransactionManager transmanager;
 
+    /**
+     * Constructor.
+     * @param _manager TransactionManager
+     */
     public DelegatingUserTransaction(final TransactionManager _manager)
     {
         this.transmanager = _manager;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see javax.transaction.UserTransaction#begin()
+     * @throws NotSupportedException on error
+     * @throws SystemException on error
      */
     @Override
     public void begin()
         throws NotSupportedException, SystemException
     {
         try {
+            // Quartz brings on the first run his own Context.
             if (Context.isActive()) {
                 if (this.transmanager.getStatus() == Status.STATUS_NO_TRANSACTION) {
-                    this.transmanager.begin();
+                    Context.getThreadContext().close();
+                    Context.begin();
                 }
             } else {
                 Context.begin();
             }
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new SystemException(e.getMessage());
         }
     }
 
-    /* (non-Javadoc)
+    /**
+     * Commit.
      * @see javax.transaction.UserTransaction#commit()
+     * @throws HeuristicMixedException on error
+     * @throws HeuristicRollbackException on error
+     * @throws RollbackException on error
+     * @throws SystemException on error
      */
     @Override
     public void commit()
@@ -91,13 +106,14 @@ public class DelegatingUserTransaction
                 }
             }
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new SystemException(e.getMessage());
         }
     }
 
-    /* (non-Javadoc)
+    /**
      * @see javax.transaction.UserTransaction#getStatus()
+     * @return Status of the TransactionManager.
+     * @throws SystemException on error
      */
     @Override
     public int getStatus()
@@ -106,8 +122,10 @@ public class DelegatingUserTransaction
         return this.transmanager.getStatus();
     }
 
-    /* (non-Javadoc)
+    /**
+     * Rollback.
      * @see javax.transaction.UserTransaction#rollback()
+     * @throws SystemException on error
      */
     @Override
     public void rollback()
@@ -116,23 +134,26 @@ public class DelegatingUserTransaction
         try {
             Context.rollback();
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new SystemException(e.getMessage());
         }
     }
 
-    /* (non-Javadoc)
+    /**
+     * Set rollback.
      * @see javax.transaction.UserTransaction#setRollbackOnly()
+     * @throws SystemException on error
      */
     @Override
     public void setRollbackOnly()
-        throws IllegalStateException, SystemException
+        throws SystemException
     {
         this.transmanager.setRollbackOnly();
     }
 
-    /* (non-Javadoc)
+    /**
      * @see javax.transaction.UserTransaction#setTransactionTimeout(int)
+     * @param _timeOut TimeOut
+     * @throws SystemException on error
      */
     @Override
     public void setTransactionTimeout(final int _timeOut)
