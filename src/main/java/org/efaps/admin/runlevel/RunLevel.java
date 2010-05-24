@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.efaps.admin.common.Quartz;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
@@ -190,7 +189,6 @@ public final class RunLevel
                 cache.clear();
             }
         }
-        Quartz.getQuartz();
     }
 
     /**

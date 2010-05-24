@@ -23,6 +23,7 @@ package org.efaps.admin.common;
 
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
@@ -80,8 +81,8 @@ public class QuartzSchedulerPlugin
                 } else if (type.isKindOf(Type.get(EFapsClassNames.ADMIN_COMMON_QUARTZMONTHLY))) {
                     trigger = TriggerUtils.makeMonthlyTrigger(name, para1, para2, para3);
                 }
-
-                final Class<?> clazz = Class.forName(esjp);
+                final Class<?> clazz = Class.forName(esjp, false,
+                                new EFapsClassLoader(this.getClass().getClassLoader()));
                 final JobDetail jobDetail = new JobDetail(name + "_" + esjp, clazz);
                 if (trigger != null) {
                     _scheduler.scheduleJob(jobDetail, trigger);
