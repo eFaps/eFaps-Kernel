@@ -72,10 +72,10 @@ public class DelegatingUserTransaction
             if (Context.isActive()) {
                 if (this.transmanager.getStatus() == Status.STATUS_NO_TRANSACTION) {
                     Context.getThreadContext().close();
-                    Context.begin();
+                    Context.begin("Administrator");
                 }
             } else {
-                Context.begin();
+                Context.begin("Administrator");
             }
         } catch (final EFapsException e) {
             throw new SystemException(e.getMessage());
