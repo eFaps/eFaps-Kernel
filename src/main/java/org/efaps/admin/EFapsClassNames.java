@@ -202,6 +202,21 @@ public enum EFapsClassNames
     /** Admin_Common_Property. */
     ADMIN_COMMON_PROPERTY("f3d54a86-c323-43d8-9c78-284d61d955b3"),
 
+    /**Admin_Common_QuartzTriggerAbstract. */
+    ADMIN_COMMON_QUARTZABSTRACT("b1267287-1532-4a33-9197-144f06f4944c"),
+    /**Admin_Common_QuartzTriggerMinutely. */
+    ADMIN_COMMON_QUARTZMINUTELY("70fac71c-b2d2-49ec-aecb-bc0c7f77565e"),
+    /**Admin_Common_QuartzTriggerWeekly. */
+    ADMIN_COMMON_QUARTZWEEKLY("74ca424f-f787-47a8-80ac-59f7a136bd43"),
+    /**Admin_Common_QuartzTriggerSecondly. */
+    ADMIN_COMMON_QUARTZSECONDLY("891e3f87-7403-494a-b333-6c955335aa93"),
+    /**Admin_Common_QuartzTriggerMonthly. */
+    ADMIN_COMMON_QUARTZMONTHLY("009982f5-2bca-4ca6-90ba-78c13d5e6fac"),
+    /**Admin_Common_QuartzTriggerDaily. */
+    ADMIN_COMMON_QUARTZDAILY("d93c4682-f06d-43b0-8503-700f7ec3f8a7"),
+    /**Admin_Common_QuartzTriggerHourly. */
+    ADMIN_COMMON_QUARTZHOURLY("128f67b6-d227-4064-8e2c-0b73f0b57e10"),
+
     /** Admin_Help_Menu. **/
     ADMIN_HELP_MENU("34897a17-eadc-446c-8a98-3061fb7c5240"),
     /** Admin_Help_Menu2Menu. **/
