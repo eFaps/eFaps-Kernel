@@ -180,7 +180,7 @@ public class MessageStatusHolder
 
                 while (rs2.next()) {
                     final long id = rs2.getLong(1);
-                    final Integer count = rs.getInt(1);
+                    final Integer count = rs2.getInt(1);
                     read.put(id, count);
                 }
                 rs.close();
