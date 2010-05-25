@@ -170,7 +170,7 @@ public class MessageStatusHolder
 
                 while (rs.next()) {
                     final long id = rs.getLong(1);
-                    final Integer count = rs.getInt(1);
+                    final Integer count = rs.getInt(2);
                     unread.put(id, count);
                 }
                 rs.close();
@@ -180,10 +180,10 @@ public class MessageStatusHolder
 
                 while (rs2.next()) {
                     final long id = rs2.getLong(1);
-                    final Integer count = rs2.getInt(1);
+                    final Integer count = rs2.getInt(2);
                     read.put(id, count);
                 }
-                rs.close();
+                rs2.close();
                 stmt.close();
                 con.commit();
                 this.userID2UnRead = unread;
