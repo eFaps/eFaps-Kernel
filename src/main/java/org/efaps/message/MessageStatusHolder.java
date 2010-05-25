@@ -20,9 +20,9 @@
 
 package org.efaps.message;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -30,14 +30,15 @@ import java.util.UUID;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
-import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment!
+ * Holds the status of the messages including their count.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -46,25 +47,15 @@ public class MessageStatusHolder
     implements Job
 {
     /**
-     * Enum used for the status of message.
+     * Logging instance used in this class.
      */
-    public enum MsgStatus {
-        /**
-         * unread messages exist.
-         */
-        UNREAD,
-
-        /**
-         * read messages exist.
-         */
-        READ;
-    }
+    private static final Logger LOG = LoggerFactory.getLogger(MessageStatusHolder.class);
 
     /**
      * basis select.
      */
-    private static final String SELECT = new SQLSelect().distinct(true).column("USERID")
-        .from("T_CMSYSMSG2USER").getSQL();
+    private static final String SELECT = "SELECT DISTINCT userid, count(*)Ê"
+        + "FROM t_msg2user WHERE status = ? GROUP BY userid";
 
     /**
      * Cache used for the MessageStatus.
@@ -84,23 +75,27 @@ public class MessageStatusHolder
     }
 
     /**
-     * @param _userId user id the status is wanted for
-     * @return MsgStatus
-     */
-    public static MsgStatus getStatus(final Long _userId)
-    {
-        return MessageStatusHolder.CACHE.userID2Status.get(_userId);
-    }
-
-    /**
      * has the given user read messages.
      * @param _userId   user id the status is wanted for
      * @return true if unread exist
      */
     public static boolean hasReadMsg(final Long _userId)
     {
-        final MsgStatus status = MessageStatusHolder.CACHE.userID2Status.get(_userId);
-        return MessageStatusHolder.MsgStatus.READ.equals(status);
+        return MessageStatusHolder.CACHE.userID2Read.containsKey(_userId);
+    }
+
+    /**
+     * Count of read messages.
+     * @param _userId  user id the count is wanted for
+     * @return count of read messages
+     */
+    public static int getReadCount(final Long _userId)
+    {
+        int ret = 0;
+        if (MessageStatusHolder.CACHE.userID2Read.containsKey(_userId)) {
+            ret = MessageStatusHolder.CACHE.userID2Read.get(_userId);
+        }
+        return ret;
     }
 
     /**
@@ -110,8 +105,21 @@ public class MessageStatusHolder
      */
     public static boolean hasUnreadMsg(final Long _userId)
     {
-        final MsgStatus status = MessageStatusHolder.CACHE.userID2Status.get(_userId);
-        return MessageStatusHolder.MsgStatus.UNREAD.equals(status);
+        return MessageStatusHolder.CACHE.userID2UnRead.containsKey(_userId);
+    }
+
+    /**
+     * Count of unread messages.
+     * @param _userId  user id the count is wanted for
+     * @return count of unread messages
+     */
+    public static int getUnReadCount(final Long _userId)
+    {
+        int ret = 0;
+        if (MessageStatusHolder.CACHE.userID2UnRead.containsKey(_userId)) {
+            ret = MessageStatusHolder.CACHE.userID2UnRead.get(_userId);
+        }
+        return ret;
     }
 
     /**
@@ -123,17 +131,23 @@ public class MessageStatusHolder
          * The map holds all cached data instances by Id. Because of the
          * double-checked locking idiom, the instance variable is defined
          * <i>volatile</i>.
-         *
-         * @see #get(Long)
          */
-        private volatile Map<Long, MessageStatusHolder.MsgStatus> userID2Status = null;
+        private volatile Map<Long, Integer> userID2UnRead = null;
+
+        /**
+         * The map holds all cached data instances by Id. Because of the
+         * double-checked locking idiom, the instance variable is defined
+         * <i>volatile</i>.
+         */
+        private volatile Map<Long, Integer> userID2Read = null;
 
         /**
          * Constructor setting empty map.
          */
         private MsgCache()
         {
-            this.userID2Status = new HashMap<Long,  MessageStatusHolder.MsgStatus>();
+            this.userID2UnRead = new HashMap<Long,  Integer>();
+            this.userID2Read = new HashMap<Long,  Integer>();
         }
 
         /**
@@ -146,64 +160,47 @@ public class MessageStatusHolder
             try {
                 con = Context.getThreadContext().getConnectionResource();
 
-                final Map<Long, MessageStatusHolder.MsgStatus> map = new HashMap<Long, MessageStatusHolder.MsgStatus>();
+                final Map<Long, Integer> unread = new HashMap<Long, Integer>();
+                final Map<Long, Integer> read = new HashMap<Long, Integer>();
 
-                final String select = MessageStatusHolder.SELECT + " where STATUS = "
-                    + Status.find(UUID.fromString("87b82fee-69d3-4e45-aced-0d57c6a0cd1d"), "Unread").getId();
-                final Statement stmt = con.getConnection().createStatement();
+                final PreparedStatement stmt = con.getConnection().prepareStatement(MessageStatusHolder.SELECT);
+                stmt.setLong(1, Status.find(UUID.fromString("87b82fee-69d3-4e45-aced-0d57c6a0cd1d"), "Unread").getId());
 
-                final ResultSet rs = stmt.executeQuery(select);
+                final ResultSet rs = stmt.executeQuery();
 
                 while (rs.next()) {
                     final long id = rs.getLong(1);
-                    map.put(id, MessageStatusHolder.MsgStatus.UNREAD);
+                    final Integer count = rs.getInt(1);
+                    unread.put(id, count);
                 }
                 rs.close();
 
-                final StringBuilder bldr = new StringBuilder().append(MessageStatusHolder.SELECT)
-                    .append(" where STATUS = ")
-                    .append(Status.find(UUID.fromString("87b82fee-69d3-4e45-aced-0d57c6a0cd1d"), "Read").getId());
-                if (!map.isEmpty()) {
-                    bldr.append(" and USERID not in (");
-                    boolean first = true;
-                    for (final long id : map.keySet()) {
-                        if (first) {
-                            first = false;
-                        } else {
-                            bldr.append(",");
-                        }
-                        bldr.append(id);
-                    }
-                    bldr.append(")");
-                }
-
-                final ResultSet rs2 = stmt.executeQuery(bldr.toString());
+                stmt.setLong(1, Status.find(UUID.fromString("87b82fee-69d3-4e45-aced-0d57c6a0cd1d"), "Read").getId());
+                final ResultSet rs2 = stmt.executeQuery();
 
                 while (rs2.next()) {
                     final long id = rs2.getLong(1);
-                    map.put(id, MessageStatusHolder.MsgStatus.READ);
+                    final Integer count = rs.getInt(1);
+                    read.put(id, count);
                 }
                 rs.close();
                 stmt.close();
                 con.commit();
-                this.userID2Status = map;
+                this.userID2UnRead = unread;
+                this.userID2Read = read;
                 abort = false;
             } catch (final EFapsException e) {
-             // TODO Auto-generated catch block
-                e.printStackTrace();
+                MessageStatusHolder.LOG.error("EFapsException");
             } catch (final IllegalStateException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                MessageStatusHolder.LOG.error("IllegalStateException");
             } catch (final SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                MessageStatusHolder.LOG.error("SQLException");
             } finally {
                 if (abort && con != null) {
                     try {
                         con.abort();
                     } catch (final EFapsException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        MessageStatusHolder.LOG.error("EFapsException");
                     }
                 }
             }
