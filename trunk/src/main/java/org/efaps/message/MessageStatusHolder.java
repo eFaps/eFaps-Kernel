@@ -54,7 +54,7 @@ public class MessageStatusHolder
     /**
      * basis select.
      */
-    private static final String SELECT = "SELECT DISTINCT userid, count(*)Ê"
+    private static final String SELECT = "SELECT DISTINCT userid, count(*) "
         + "FROM t_msg2user WHERE status = ? GROUP BY userid";
 
     /**
