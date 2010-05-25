@@ -24,6 +24,7 @@ import java.util.Properties;
 import java.util.UUID;
 
 import org.efaps.init.INamingBinds;
+import org.efaps.message.MessageStatusHolder;
 import org.efaps.util.EFapsException;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -89,7 +90,7 @@ public final class Quartz
                 trigger.setName("SystemMessageTrigger");
                 JobDetail jobDetail = sched.getJobDetail("SystemMessage", null);
                 if (jobDetail == null) {
-                    jobDetail = new JobDetail("SystemMessage", null, SystemMessage.class);
+                    jobDetail = new JobDetail("SystemMessage", null, MessageStatusHolder.class);
                     sched.scheduleJob(jobDetail, trigger);
                 } else {
                     trigger.setJobName("SystemMessage");

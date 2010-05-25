@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.common;
+package org.efaps.message;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -42,7 +42,7 @@ import org.quartz.JobExecutionException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class SystemMessage
+public class MessageStatusHolder
     implements Job
 {
     /**
@@ -80,7 +80,7 @@ public class SystemMessage
     public void execute(final JobExecutionContext _context)
         throws JobExecutionException
     {
-        SystemMessage.CACHE.update();
+        MessageStatusHolder.CACHE.update();
     }
 
     /**
@@ -89,7 +89,7 @@ public class SystemMessage
      */
     public static MsgStatus getStatus(final Long _userId)
     {
-        return SystemMessage.CACHE.userID2Status.get(_userId);
+        return MessageStatusHolder.CACHE.userID2Status.get(_userId);
     }
 
     /**
@@ -99,8 +99,8 @@ public class SystemMessage
      */
     public static boolean hasReadMsg(final Long _userId)
     {
-        final MsgStatus status = SystemMessage.CACHE.userID2Status.get(_userId);
-        return SystemMessage.MsgStatus.READ.equals(status);
+        final MsgStatus status = MessageStatusHolder.CACHE.userID2Status.get(_userId);
+        return MessageStatusHolder.MsgStatus.READ.equals(status);
     }
 
     /**
@@ -110,8 +110,8 @@ public class SystemMessage
      */
     public static boolean hasUnreadMsg(final Long _userId)
     {
-        final MsgStatus status = SystemMessage.CACHE.userID2Status.get(_userId);
-        return SystemMessage.MsgStatus.UNREAD.equals(status);
+        final MsgStatus status = MessageStatusHolder.CACHE.userID2Status.get(_userId);
+        return MessageStatusHolder.MsgStatus.UNREAD.equals(status);
     }
 
     /**
@@ -126,14 +126,14 @@ public class SystemMessage
          *
          * @see #get(Long)
          */
-        private volatile Map<Long, SystemMessage.MsgStatus> userID2Status = null;
+        private volatile Map<Long, MessageStatusHolder.MsgStatus> userID2Status = null;
 
         /**
          * Constructor setting empty map.
          */
         private MsgCache()
         {
-            this.userID2Status = new HashMap<Long,  SystemMessage.MsgStatus>();
+            this.userID2Status = new HashMap<Long,  MessageStatusHolder.MsgStatus>();
         }
 
         /**
@@ -146,9 +146,9 @@ public class SystemMessage
             try {
                 con = Context.getThreadContext().getConnectionResource();
 
-                final Map<Long, SystemMessage.MsgStatus> map = new HashMap<Long, SystemMessage.MsgStatus>();
+                final Map<Long, MessageStatusHolder.MsgStatus> map = new HashMap<Long, MessageStatusHolder.MsgStatus>();
 
-                final String select = SystemMessage.SELECT + " where STATUS = "
+                final String select = MessageStatusHolder.SELECT + " where STATUS = "
                     + Status.find(UUID.fromString("87b82fee-69d3-4e45-aced-0d57c6a0cd1d"), "Unread").getId();
                 final Statement stmt = con.getConnection().createStatement();
 
@@ -156,11 +156,11 @@ public class SystemMessage
 
                 while (rs.next()) {
                     final long id = rs.getLong(1);
-                    map.put(id, SystemMessage.MsgStatus.UNREAD);
+                    map.put(id, MessageStatusHolder.MsgStatus.UNREAD);
                 }
                 rs.close();
 
-                final StringBuilder bldr = new StringBuilder().append(SystemMessage.SELECT)
+                final StringBuilder bldr = new StringBuilder().append(MessageStatusHolder.SELECT)
                     .append(" where STATUS = ")
                     .append(Status.find(UUID.fromString("87b82fee-69d3-4e45-aced-0d57c6a0cd1d"), "Read").getId());
                 if (!map.isEmpty()) {
@@ -181,7 +181,7 @@ public class SystemMessage
 
                 while (rs2.next()) {
                     final long id = rs2.getLong(1);
-                    map.put(id, SystemMessage.MsgStatus.READ);
+                    map.put(id, MessageStatusHolder.MsgStatus.READ);
                 }
                 rs.close();
                 stmt.close();

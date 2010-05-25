@@ -47,7 +47,7 @@ public interface INamingBinds
     /**
      * Resource name of the transaction manager.
      */
-    String RESOURCE_USERTRANSACTION = "eFaps/userTransaction";
+    String RESOURCE_USERTRANSACTION = "eFaps/usrTransaction";
 
     /**
      * Resource name of the transaction manager.
