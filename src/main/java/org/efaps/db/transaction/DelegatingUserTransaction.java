@@ -18,14 +18,12 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.db.transaction;
 
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
-import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
@@ -33,12 +31,12 @@ import javax.transaction.UserTransaction;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
-
 /**
  * Delegate a UserTransaction to the TransactionManager used by the Context.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: DelegatingUserTransaction.java 4534 2010-05-24 21:02:35Z
+ *          jan.moxter $
  */
 public class DelegatingUserTransaction
     implements UserTransaction
@@ -51,6 +49,7 @@ public class DelegatingUserTransaction
 
     /**
      * Constructor.
+     *
      * @param _manager TransactionManager
      */
     public DelegatingUserTransaction(final TransactionManager _manager)
@@ -68,22 +67,22 @@ public class DelegatingUserTransaction
         throws NotSupportedException, SystemException
     {
         try {
-            // Quartz brings on the first run his own Context.
-            if (Context.isActive()) {
-                if (this.transmanager.getStatus() == Status.STATUS_NO_TRANSACTION) {
-                    Context.getThreadContext().close();
-                    Context.begin("QuartzTrigger");
-                }
-            } else {
-                Context.begin("QuartzTrigger");
-            }
+            Context.begin("QuartzTrigger", false);
         } catch (final EFapsException e) {
+            try {
+                if (Context.isTMActive()) {
+                    Context.getThreadContext().close();
+                }
+            } catch (final EFapsException e1) {
+                throw new SystemException(e1.getMessage());
+            }
             throw new SystemException(e.getMessage());
         }
     }
 
     /**
      * Commit.
+     *
      * @see javax.transaction.UserTransaction#commit()
      * @throws HeuristicMixedException on error
      * @throws HeuristicRollbackException on error
@@ -98,7 +97,7 @@ public class DelegatingUserTransaction
                SystemException
     {
         try {
-            if (!Context.isTMNoTransaction() && Context.isActive()) {
+            if (!Context.isTMNoTransaction()) {
                 if (Context.isTMActive()) {
                     Context.commit();
                 } else {
@@ -124,6 +123,7 @@ public class DelegatingUserTransaction
 
     /**
      * Rollback.
+     *
      * @see javax.transaction.UserTransaction#rollback()
      * @throws SystemException on error
      */
@@ -140,6 +140,7 @@ public class DelegatingUserTransaction
 
     /**
      * Set rollback.
+     *
      * @see javax.transaction.UserTransaction#setRollbackOnly()
      * @throws SystemException on error
      */

@@ -124,8 +124,18 @@ public final class Context
      * for every Users which is connect to the WebApp Server. For the case that
      * a thread creates a child threat the context is inherited to this new
      * thread. This is needed e.g. in JasperReport for SubReports.
+     * @see #inherit
      */
-    private static InheritableThreadLocal<Context> THREADCONTEXT = new InheritableThreadLocal<Context>();
+    private static ThreadLocal<Context> INHERITTHREADCONTEXT = new InheritableThreadLocal<Context>();
+
+    /**
+     * Each thread has his own context object. The value is automatically
+     * assigned from the filter class. This allows to have a different Context
+     * for every Users which is connect to the WebApp Server. For the case that
+     * a thread creates a child threat a different context is created this is
+     * needed e.g. for background process form quartz.
+     */
+    private static ThreadLocal<Context> THREADCONTEXT = new ThreadLocal<Context>();
 
     /**
      * The instance variable stores all open instances of {@link Resource}.
@@ -237,6 +247,11 @@ public final class Context
     private String path;
 
     /**
+     * Must the ThreadContext be inherit or not.
+     */
+    private final boolean inherit;
+
+    /**
      * Private Constructor.
      *
      * @see #begin(String, Locale, Map, Map, Map)
@@ -246,16 +261,18 @@ public final class Context
      * @param _sessionAttributes attributes belonging to this session
      * @param _parameters parameters beloonging to this session
      * @param _fileParameters paramters for file up/download
+     * @param _inherit              must the context be inherited to child threads
      * @throws EFapsException on error
      */
     private Context(final Transaction _transaction,
                     final Locale _locale,
                     final Map<String, Object> _sessionAttributes,
                     final Map<String, String[]> _parameters,
-                    final Map<String, FileParameter> _fileParameters)
+                    final Map<String, FileParameter> _fileParameters,
+                    final boolean _inherit)
         throws EFapsException
     {
-
+        this.inherit = _inherit;
         this.transaction = _transaction;
 
         this.parameters = (_parameters == null) ? new HashMap<String, String[]>() : _parameters;
@@ -268,6 +285,20 @@ public final class Context
             Context.LOG.error("could not get a sql connection", e);
             // TODO: LOG + Exception
         }
+    }
+
+    /**
+     * @return ThreadLocal related to this context
+     */
+    private ThreadLocal<Context> getThreadLocal()
+    {
+        ThreadLocal<Context> ret;
+        if (this.inherit) {
+            ret = Context.INHERITTHREADCONTEXT;
+        } else {
+            ret = Context.THREADCONTEXT;
+        }
+        return ret;
     }
 
     /**
@@ -342,8 +373,8 @@ public final class Context
         }
 
         setConnection(null);
-        if ((Context.THREADCONTEXT.get() != null) && (Context.THREADCONTEXT.get() == this)) {
-            Context.THREADCONTEXT.set(null);
+        if ((getThreadLocal().get() != null) && (getThreadLocal().get() == this)) {
+            getThreadLocal().set(null);
         }
         // check if all JDBC connection are close...
         for (final ConnectionResource con : this.connectionStore) {
@@ -841,12 +872,15 @@ public final class Context
      *
      * @return defined context object of current thread
      * @throws EFapsException if no context object for current thread is defined
-     * @see #THREADCONTEXT
+     * @see #INHERITTHREADCONTEXT
      */
     public static Context getThreadContext()
         throws EFapsException
     {
-        final Context context = Context.THREADCONTEXT.get();
+        Context context = Context.THREADCONTEXT.get();
+        if (context == null) {
+            context = Context.INHERITTHREADCONTEXT.get();
+        }
         if (context == null) {
             throw new EFapsException(Context.class, "getThreadContext.NoContext4ThreadDefined");
         }
@@ -863,7 +897,7 @@ public final class Context
     public static Context begin()
         throws EFapsException
     {
-        return Context.begin(null, null, null, null, null);
+        return Context.begin(null, null, null, null, null, true);
     }
 
     /**
@@ -878,30 +912,50 @@ public final class Context
     public static Context begin(final String _userName)
         throws EFapsException
     {
-        return Context.begin(_userName, null, null, null, null);
+        return Context.begin(_userName, null, null, null, null, true);
+    }
+
+    /**
+     * Method to get a new Context.
+     *
+     * @see #begin(String, Locale, Map, Map, Map)
+     * @param _userName Naem of the user the Context must be created for
+     * @param _inherit              must the context be inherited to child threads
+     * @throws EFapsException on error
+     * @return new Context
+     *
+     */
+    public static Context begin(final String _userName,
+                                final boolean _inherit)
+        throws EFapsException
+    {
+        return Context.begin(_userName, null, null, null, null, _inherit);
     }
 
     /**
      * For current thread a new context object must be created.
      *
-     * @param _userName name of current user to set
-     * @param _locale locale instance (which language settings has the user)
-     * @param _sessionAttributes attributes for this session
-     * @param _parameters map with parameters for this thread context
-     * @param _fileParameters map with file parameters
+     * @param _userName             name of current user to set
+     * @param _locale               locale instance (which language settings has the user)
+     * @param _sessionAttributes    attributes for this session
+     * @param _parameters           map with parameters for this thread context
+     * @param _fileParameters       map with file parameters
+     * @param _inherit              must the context be inherited to child threads
      * @return new context of thread
      * @throws EFapsException if a new transaction could not be started or if
      *             current thread context is already set
-     * @see #THREADCONTEXT
+     * @see #INHERITTHREADCONTEXT
      */
     public static Context begin(final String _userName,
                                 final Locale _locale,
                                 final Map<String, Object> _sessionAttributes,
                                 final Map<String, String[]> _parameters,
-                                final Map<String, FileParameter> _fileParameters)
+                                final Map<String, FileParameter> _fileParameters,
+                                final boolean _inherit)
         throws EFapsException
     {
-        if (Context.THREADCONTEXT.get() != null) {
+        if ((_inherit && Context.INHERITTHREADCONTEXT.get() != null)
+                        || (!_inherit  && Context.THREADCONTEXT.get() != null)) {
             throw new EFapsException(Context.class, "begin.Context4ThreadAlreadSet");
         }
 
@@ -926,8 +980,12 @@ public final class Context
             throw new EFapsException(Context.class, "begin.getTransactionSystemException", e);
         }
         final Context context = new Context(transaction, (_locale == null) ? Locale.ENGLISH : _locale,
-                        _sessionAttributes, _parameters, _fileParameters);
-        Context.THREADCONTEXT.set(context);
+                        _sessionAttributes, _parameters, _fileParameters, _inherit);
+        if (_inherit) {
+            Context.INHERITTHREADCONTEXT.set(context);
+        } else {
+            Context.THREADCONTEXT.set(context);
+        }
 
         if (_userName != null) {
             context.person = Person.get(_userName);
@@ -999,15 +1057,6 @@ public final class Context
         } finally {
             Context.getThreadContext().close();
         }
-    }
-
-    /**
-     * @return <code>true</code> if the context for the thread is set,
-     *          else <code>false</code>
-     */
-    public static boolean isActive()
-    {
-        return Context.THREADCONTEXT.get() != null;
     }
 
     /**
