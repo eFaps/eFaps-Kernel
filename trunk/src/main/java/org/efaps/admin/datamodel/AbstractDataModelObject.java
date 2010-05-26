@@ -50,7 +50,7 @@ public abstract class AbstractDataModelObject extends AbstractAdminObject
      */
     public static void initialize() throws CacheReloadException
     {
-        Context.getDbType().initialize();
+        Context.getDbType().initialize(AbstractDataModelObject.class);
         AttributeType.initialize(AbstractDataModelObject.class);
         SQLTable.initialize(AbstractDataModelObject.class);
         Type.initialize(AbstractDataModelObject.class);

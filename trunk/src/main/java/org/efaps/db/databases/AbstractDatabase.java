@@ -123,7 +123,18 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      */
     public void initialize()
     {
-        this.cache.initialize(AbstractDatabase.class);
+        initialize(AbstractDatabase.class);
+    }
+
+    /**
+     * Initializes the {@link #cache} for the table informations
+     * with given initializer.
+     * @param _class initializer class
+     * @see #cache
+     */
+    public void initialize(final Class<?> _class)
+    {
+        this.cache.initialize(_class);
     }
 
     /**
