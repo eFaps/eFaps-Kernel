@@ -20,11 +20,14 @@
 
 package org.efaps.admin.common;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 
 import org.efaps.admin.EFapsClassNames;
@@ -238,6 +241,30 @@ public final class SystemConfiguration
         return this.attributes.containsKey(_key)
                         ? Integer.parseInt(this.attributes.get(_key))
                         : 0;
+    }
+
+    /**
+     * Returns for given <code>_key</code> the related integer attribute value.
+     * If no attribute is found <code>0</code> is returned.
+     *
+     * @param _key key of searched attribute
+     * @return Properties
+     * @throws EFapsException on error
+     * @see #attributes
+     */
+    public Properties getAttributeValueAsProperties(final String _key)
+        throws EFapsException
+    {
+        final Properties ret = new Properties();
+        if (this.attributes.containsKey(_key)) {
+            final String value = this.attributes.get(_key);
+            try {
+                ret.load(new StringReader(value));
+            } catch (final IOException e) {
+                throw new EFapsException(SystemConfiguration.class, "getAttributeValueAsProperties", e);
+            }
+        }
+        return ret;
     }
 
     /**

@@ -28,8 +28,8 @@ import java.util.Map;
 import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkout;
-import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +107,7 @@ public class EFapsClassLoader
         if (EFapsClassLoader.LOG.isDebugEnabled()) {
             EFapsClassLoader.LOG.debug("Loading Class '" + _resourceName + "' from Database");
         }
-        final byte[] x = this.read(_resourceName);
+        final byte[] x = read(_resourceName);
 
         if (x != null && EFapsClassLoader.HOLDCLASSESINCACHE) {
             EFapsClassLoader.LOADEDCLASSES.put(_resourceName, x);
@@ -130,15 +130,14 @@ public class EFapsClassLoader
         if (EFapsClassLoader.LOG.isDebugEnabled()) {
             EFapsClassLoader.LOG.debug("read '" + _resourceName + "'");
         }
-        final SearchQuery query = new SearchQuery();
+
         try {
-            query.setQueryTypes(this.classType.getName());
-            query.addSelect("ID");
-            query.addWhereExprEqValue("Name", _resourceName);
-            query.executeWithoutAccessCheck();
+            final QueryBuilder queryBuilder = new QueryBuilder(this.classType);
+            queryBuilder.addWhereAttrEqValue("Name", _resourceName);
+            final InstanceQuery query = queryBuilder.getQuery();
+            query.execute();
             if (query.next()) {
-                final Long id = (Long) query.get("ID");
-                final Checkout checkout = new Checkout(Instance.get(this.classType, id));
+                final Checkout checkout = new Checkout(query.getCurrentInstance());
                 final InputStream is = checkout.executeWithoutAccessCheck();
 
                 ret = new byte[is.available()];
