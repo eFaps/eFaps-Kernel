@@ -28,9 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
@@ -39,12 +36,15 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
  * @version $Id$
  */
-public final class AccessSet extends AbstractAdminObject
+public final class AccessSet
+    extends AbstractAdminObject
 {
     /**
      * Logging instance used in this class.
@@ -203,7 +203,8 @@ public final class AccessSet extends AbstractAdminObject
     /**
      * Cahce for AccessSets.
      */
-    private static class AccessSetCache extends Cache<AccessSet>
+    private static class AccessSetCache
+        extends Cache<AccessSet>
     {
         /**
          * {@inheritDoc}
@@ -219,10 +220,10 @@ public final class AccessSet extends AbstractAdminObject
             try {
                 con = Context.getThreadContext().getConnectionResource();
 
-                init4ReadAllAccessSets(con, _newCache4Id, _newCache4Name, _newCache4UUID);
-                init4ReadLinks2AccessTypes(con, _newCache4Id);
-                init4ReadLinks2DMTypes(con, _newCache4Id);
-                init4ReadLinks2Status(con, _newCache4Id);
+                AccessSet.AccessSetCache.init4ReadAllAccessSets(con, _newCache4Id, _newCache4Name, _newCache4UUID);
+                AccessSet.AccessSetCache.init4ReadLinks2AccessTypes(con, _newCache4Id);
+                AccessSet.AccessSetCache.init4ReadLinks2DMTypes(con, _newCache4Id);
+                AccessSet.AccessSetCache.init4ReadLinks2Status(con, _newCache4Id);
                 con.commit();
 
             } catch (final EFapsException e) {
@@ -278,6 +279,7 @@ public final class AccessSet extends AbstractAdminObject
                     try {
                         stmt.close();
                     } catch (final SQLException e) {
+                        AccessSet.LOG.debug(AccessSet.class + " - SQLException");
                     }
                 }
             }
@@ -327,6 +329,7 @@ public final class AccessSet extends AbstractAdminObject
                     try {
                         stmt.close();
                     } catch (final SQLException e) {
+                        AccessSet.LOG.debug(AccessSet.class + " - SQLException");
                     }
                 }
             }
@@ -377,6 +380,7 @@ public final class AccessSet extends AbstractAdminObject
                     try {
                         stmt.close();
                     } catch (final SQLException e) {
+                        AccessSet.LOG.debug(AccessSet.class + " - SQLException");
                     }
                 }
             }
@@ -428,10 +432,10 @@ public final class AccessSet extends AbstractAdminObject
                     try {
                         stmt.close();
                     } catch (final SQLException e) {
+                        AccessSet.LOG.debug(AccessSet.class + " - SQLException");
                     }
                 }
             }
         }
-
     }
 }

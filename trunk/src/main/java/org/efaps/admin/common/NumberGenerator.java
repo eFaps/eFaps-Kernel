@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Map;
 import java.util.UUID;
 
@@ -43,7 +44,8 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public final class NumberGenerator implements CacheObjectInterface
+public final class NumberGenerator
+    implements CacheObjectInterface
 {
 
     /**
@@ -136,10 +138,9 @@ public final class NumberGenerator implements CacheObjectInterface
         try {
             ret = Context.getDbType().nextSequence(Context.getThreadContext().getConnection(), getDBName());
         } catch (final SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(NumberGenerator.class, " getNextVal()", e);
         }
-        final DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance();
+        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance();
         formatter.applyPattern(this.format);
         return formatter.format(ret);
     }
@@ -157,8 +158,7 @@ public final class NumberGenerator implements CacheObjectInterface
         try {
             ret = Context.getDbType().nextSequence(Context.getThreadContext().getConnection(), getDBName());
         } catch (final SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(NumberGenerator.class, " getNextValAsLong()", e);
         }
         return ret;
     }
@@ -177,8 +177,7 @@ public final class NumberGenerator implements CacheObjectInterface
             Context.getDbType().setSequence(Context.getThreadContext().getConnection(), getDBName(),
                                             Long.valueOf(_value));
         } catch (final SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(NumberGenerator.class, "setVal()", e);
         }
     }
 
@@ -268,8 +267,6 @@ public final class NumberGenerator implements CacheObjectInterface
     {
         return NumberGenerator.CACHE.get(_uuid);
     }
-
-
 
     /**
      * Static getter method for the type hashtable {@link #CACHE}.

@@ -66,7 +66,8 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public class Attribute extends AbstractDataModelObject
+public class Attribute
+    extends AbstractDataModelObject
 {
 
     /**
@@ -668,7 +669,7 @@ public class Attribute extends AbstractDataModelObject
                     final ResultSet rs = stmt.executeQuery(Attribute.AttributeCache.SQL_SELECT);
                     while (rs.next()) {
                         final long id = rs.getLong(1);
-                        final String name = rs.getString(2);
+                        final String name = rs.getString(2).trim();
                         final long typeAttrId = rs.getLong(3);
                         final long tableId = rs.getLong(4);
                         final long typeId = rs.getLong(5);

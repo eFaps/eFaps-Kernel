@@ -91,7 +91,7 @@ public final class AccessType
      * @param _toCompare  object used to compare
      * @return <i>true</i> if equals, otherwise <i>false</i>
      */
-    @Override()
+    @Override
     public boolean equals(final Object _toCompare)
     {
         return (_toCompare != null)
