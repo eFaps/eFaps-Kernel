@@ -37,7 +37,8 @@ import org.quartz.spi.SchedulerPlugin;
 
 
 /**
- * TODO comment!
+ * Scheduler for quartz used to get the triggers and esjps for the jobs
+ * from the eFaps Database.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -46,8 +47,13 @@ public class QuartzSchedulerPlugin
     implements SchedulerPlugin
 {
 
-    /* (non-Javadoc)
+    /**
+     * On initialization the triggers and related esjp are loaded from the
+     * eFaps Database.
      * @see org.quartz.spi.SchedulerPlugin#initialize(java.lang.String, org.quartz.Scheduler)
+     * @param _name         Name of the scheduler
+     * @param _scheduler    scheduler
+     * @throws SchedulerException on error
      */
     @Override
     public void initialize(final String _name,
@@ -83,7 +89,9 @@ public class QuartzSchedulerPlugin
                 }
                 final Class<?> clazz = Class.forName(esjp, false,
                                 new EFapsClassLoader(this.getClass().getClassLoader()));
-                final JobDetail jobDetail = new JobDetail(name + "_" + esjp, clazz);
+                // class must be instantiated to force that related esjps are also loaded here
+                clazz.newInstance();
+                final JobDetail jobDetail = new JobDetail(name + "_" + esjp, Quartz.QUARTZGROUP, clazz);
                 if (trigger != null) {
                     _scheduler.scheduleJob(jobDetail, trigger);
                 }
@@ -92,27 +100,28 @@ public class QuartzSchedulerPlugin
             throw new SchedulerException(e);
         } catch (final EFapsException e) {
             throw new SchedulerException(e);
+        } catch (final InstantiationException e) {
+            throw new SchedulerException(e);
+        } catch (final IllegalAccessException e) {
+            throw new SchedulerException(e);
         }
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.quartz.spi.SchedulerPlugin#shutdown()
      */
     @Override
     public void shutdown()
     {
-        // TODO Auto-generated method stub
-
+        // nothing must be done here
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.quartz.spi.SchedulerPlugin#start()
      */
     @Override
     public void start()
     {
-        // TODO Auto-generated method stub
-
+     // nothing must be done here
     }
-
 }
