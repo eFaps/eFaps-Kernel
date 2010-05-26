@@ -32,7 +32,7 @@
     <packaging>jar</packaging>
     <groupId>org.efaps</groupId>
     <artifactId>efaps-kernel</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1-SNAPSHOT</version>
     <description>
         eFaps is a framework used to map objects with or without attached files to
 a relational database and optional file systems (only for attaches files). Configurable access control can be provided down to object and attribute level depending on implementation and use case. Depending on requirements, events (like triggers) allow to implement business logic and to separate business logic from user interface.
@@ -83,9 +83,9 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
 
     <!-- SubVersion Repository -->
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-Kernel/tags/V.1.1.0</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-Kernel/tags/V.1.1.0</developerConnection>
-        <url>http://efaps.googlecode.com/svn/eFaps-Kernel/tags/V.1.1.0</url>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-kernel/</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-kernel/</developerConnection>
+        <url>http://efaps.googlecode.com/svn/eFaps-kernel/</url>
     </scm>
 
     <!-- Distribution Repository -->
@@ -565,18 +565,18 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <artifactId>quartz</artifactId>
             <version>1.8.0</version>
             <exclusions>
-            	<exclusion>
-            		<artifactId>slf4j-api</artifactId>
-            		<groupId>org.slf4j</groupId>
-            	</exclusion>
-            	<exclusion>
-            		<artifactId>slf4j-log4j12</artifactId>
-            		<groupId>org.slf4j</groupId>
-            	</exclusion>
-            	<exclusion>
-            		<artifactId>jta</artifactId>
-            		<groupId>javax.transaction</groupId>
-            	</exclusion>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jta</artifactId>
+                    <groupId>javax.transaction</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 
