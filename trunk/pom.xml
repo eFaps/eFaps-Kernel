@@ -23,9 +23,7 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <!-- ************************************************************************
@@ -34,7 +32,7 @@
     <packaging>jar</packaging>
     <groupId>org.efaps</groupId>
     <artifactId>efaps-kernel</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.0</version>
     <description>
         eFaps is a framework used to map objects with or without attached files to
 a relational database and optional file systems (only for attaches files). Configurable access control can be provided down to object and attribute level depending on implementation and use case. Depending on requirements, events (like triggers) allow to implement business logic and to separate business logic from user interface.
@@ -85,9 +83,9 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
 
     <!-- SubVersion Repository -->
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-Kernel</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-Kernel</developerConnection>
-        <url>http://efaps.googlecode.com/svn/eFaps-Kernel</url>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-Kernel/tags/V.1.1.0</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-Kernel/tags/V.1.1.0</developerConnection>
+        <url>http://efaps.googlecode.com/svn/eFaps-Kernel/tags/V.1.1.0</url>
     </scm>
 
     <!-- Distribution Repository -->
@@ -232,7 +230,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     <minmemory>128m</minmemory>
                     <maxmemory>1g</maxmemory>
                     <level>private</level>
-                    <detectLinks/>
+                    <detectLinks />
                 </configuration>
             </plugin>
             <!-- source code -->
@@ -267,7 +265,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <configuration/>
+                <configuration />
             </plugin>
         </plugins>
     </reporting>
