@@ -54,7 +54,8 @@ import org.efaps.db.Checkout;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -149,10 +150,13 @@ public class ESJPCompiler
    * </li>
    * </ul>
    *
-   * @param _debug  String for the debug option
+   * @param _debug                  String for the debug option
+   * @param _addRuntimeClassPath    Must the classpath from the runtime added
+   *                                to the compiler, default: <code>false</code>
    * @throws InstallationException if the compile failed
    */
-    public void compile(final String _debug)
+    public void compile(final String _debug,
+                        final boolean _addRuntimeClassPath)
         throws InstallationException
     {
         readESJPPrograms();
@@ -182,6 +186,9 @@ public class ESJPCompiler
                 final StringBuilder classPath = new StringBuilder();
                 for (final String classPathElement : this.classPathElements)  {
                     classPath.append(classPathElement).append(sep);
+                }
+                if (_addRuntimeClassPath) {
+                    classPath.append(System.getProperty("java.class.path"));
                 }
                 optionList.addAll(Arrays.asList("-classpath", classPath.toString()));
             } else  {
@@ -243,15 +250,13 @@ public class ESJPCompiler
         throws InstallationException
     {
         try  {
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes(this.esjpType.getName());
-            query.addSelect("ID");
-            query.addSelect("Name");
-            query.executeWithoutAccessCheck();
-            while (query.next()) {
-                final String name = (String) query.get("Name");
-                final Long id = (Long) query.get("ID");
-
+            final QueryBuilder queryBldr = new QueryBuilder(this.esjpType);
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute("Name");
+            multi.executeWithoutAccessCheck();
+            while (multi.next()) {
+                final String name = multi.<String>getAttribute("Name");
+                final Long id = multi.getCurrentInstance().getId();
                 final File file = new File(File.separator,
                                            name.replaceAll("\\.", Matcher.quoteReplacement(File.separator))
                                                    + JavaFileObject.Kind.SOURCE.extension);
@@ -282,14 +287,13 @@ public class ESJPCompiler
         throws InstallationException
     {
         try  {
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes(this.classType.getName());
-            query.addSelect("ID");
-            query.addSelect("Name");
-            query.executeWithoutAccessCheck();
-            while (query.next()) {
-                final String name = (String) query.get("Name");
-                final Long id = (Long) query.get("ID");
+            final QueryBuilder queryBldr = new QueryBuilder(this.classType);
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute("Name");
+            multi.executeWithoutAccessCheck();
+            while (multi.next()) {
+                final String name = multi.<String>getAttribute("Name");
+                final Long id = multi.getCurrentInstance().getId();
                 this.class2id.put(name, id);
             }
         } catch (final EFapsException e) {

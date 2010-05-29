@@ -20,9 +20,6 @@
 
 package org.efaps.update.version;
 
-import static org.mozilla.javascript.Context.enter;
-import static org.mozilla.javascript.Context.javaToJS;
-
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 
@@ -39,18 +36,17 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.codehaus.groovy.control.CompilerConfiguration;
-import org.mozilla.javascript.ImporterTopLevel;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.Context;
 import org.efaps.update.Install;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
+import org.mozilla.javascript.ImporterTopLevel;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Defines one version of the application to install.
@@ -169,7 +165,7 @@ public class ApplicationVersion
 
         // Compile esjp's in the database (if the compile flag is set).
         if (this.compile) {
-            this.application.compileAll(_userName);
+            this.application.compileAll(_userName, true);
         }
     }
 
@@ -549,7 +545,7 @@ public class ApplicationVersion
         {
             try {
                 // create new javascript context
-                final org.mozilla.javascript.Context javaScriptContext = enter();
+                final org.mozilla.javascript.Context javaScriptContext = org.mozilla.javascript.Context.enter();
 
                 final Scriptable scope = new ImporterTopLevel(javaScriptContext);
 
@@ -559,12 +555,15 @@ public class ApplicationVersion
                 // define the scope javascript property
                 ScriptableObject.putProperty(scope, "javaScriptScope", scope);
 
-                ScriptableObject.putProperty(scope, "EFAPS_LOGGER", javaToJS(ApplicationVersion.LOG, scope));
-                ScriptableObject.putProperty(scope, "EFAPS_USERNAME", javaToJS(_userName, scope));
-                ScriptableObject.putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
+                ScriptableObject.putProperty(scope, "EFAPS_LOGGER",
+                                org.mozilla.javascript.Context.javaToJS(ApplicationVersion.LOG, scope));
+                ScriptableObject.putProperty(scope, "EFAPS_USERNAME",
+                                org.mozilla.javascript.Context.javaToJS(_userName, scope));
+                ScriptableObject.putProperty(scope, "EFAPS_PASSWORD",
+                                org.mozilla.javascript.Context.javaToJS(_userName, scope));
                 ScriptableObject.putProperty(scope,
                                              "EFAPS_ROOTURL",
-                                             javaToJS(getCompleteRootUrl(), scope));
+                                             org.mozilla.javascript.Context.javaToJS(getCompleteRootUrl(), scope));
 
                 // evaluate java script file (if defined)
                 if (getFileName() != null) {

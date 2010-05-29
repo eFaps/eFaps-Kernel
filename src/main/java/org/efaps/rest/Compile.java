@@ -112,8 +112,7 @@ public class Compile
                                       final String _name)
                 {
                     final boolean ret;
-                    if (new File(_dir, _name).isDirectory())
-                    {
+                    if (new File(_dir, _name).isDirectory()) {
                         ret = false;
                     } else {
                         final String name = _name.toLowerCase();
@@ -126,7 +125,7 @@ public class Compile
             for (final File file : files) {
                 classpathElements.add(file.getAbsolutePath());
             }
-            new ESJPCompiler(classpathElements).compile(null);
+            new ESJPCompiler(classpathElements).compile(null, false);
         }
     }
 }
