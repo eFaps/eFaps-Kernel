@@ -448,14 +448,17 @@ public final class Application
      * @param _userName name of logged in user for which the compile is done
      *            (could be also <code>null</code>)
      * @param _classpath class path elements
+     * @param _addRuntimeClassPath must the classpath from the runtime be added
+     *                  to the classpath also
      * @throws InstallationException if reload cache of compile failed
      * @see #compileAll(String)
      */
     public static void compileAll(final String _userName,
-                                  final List<String> _classpath)
+                                  final List<String> _classpath,
+                                  final boolean _addRuntimeClassPath)
         throws InstallationException
     {
-        (new Application((URL) null, _classpath)).compileAll(_userName);
+        (new Application((URL) null, _classpath)).compileAll(_userName, _addRuntimeClassPath);
     }
 
     /**
@@ -463,9 +466,12 @@ public final class Application
      *
      * @param _userName name of logged in user for which the compile is done
      *            (could be also <code>null</code>)
+     * @param _addRuntimeClassPath must the classpath from the runtime be added
+     *                  to the classpath also
      * @throws InstallationException if reload cache of compile failed
      */
-    public void compileAll(final String _userName)
+    public void compileAll(final String _userName,
+                           final boolean _addRuntimeClassPath)
         throws InstallationException
     {
         if (Application.LOG.isInfoEnabled()) {
@@ -476,7 +482,7 @@ public final class Application
 
         try {
             Context.begin(_userName);
-            (new ESJPCompiler(this.classpathElements)).compile(null);
+            (new ESJPCompiler(this.classpathElements)).compile(null, _addRuntimeClassPath);
             AbstractStaticSourceCompiler.compileAll(this.classpathElements);
             Context.commit();
         } catch (final EFapsException e) {
