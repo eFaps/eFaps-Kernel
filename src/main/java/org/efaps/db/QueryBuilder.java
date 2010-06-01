@@ -44,6 +44,7 @@ import org.efaps.db.search.QLess;
 import org.efaps.db.search.QMatch;
 import org.efaps.db.search.QNotEqual;
 import org.efaps.db.search.QNumberValue;
+import org.efaps.db.search.QOr;
 import org.efaps.db.search.QStringValue;
 import org.efaps.db.search.QWhere;
 import org.efaps.util.EFapsException;
@@ -73,6 +74,12 @@ public class QueryBuilder
      * Query this QueryBuilder will return.
      */
     private InstanceQuery query;
+
+    /**
+     * Is this QueryBuilder using or instead of and.
+     */
+    private boolean or = false;
+
 
     /**
      * @param _typeUUID     uuid of the type this query is based on
@@ -372,6 +379,28 @@ public class QueryBuilder
     }
 
     /**
+     * Getter method for the instance variable {@link #or}.
+     *
+     * @return value of instance variable {@link #or}
+     */
+    public boolean isOr()
+    {
+        return this.or;
+    }
+
+    /**
+     * Setter method for instance variable {@link #or}.
+     *
+     * @param _or value for instance variable {@link #or}
+     * @return this
+     */
+    public QueryBuilder setOr(final boolean _or)
+    {
+        this.or = _or;
+        return this;
+    }
+
+    /**
      * Get the constructed query.
      * @return the query
      */
@@ -380,7 +409,7 @@ public class QueryBuilder
         if (this.query == null) {
             this.query = new InstanceQuery(this.typeUUID);
             if (!this.compares.isEmpty()) {
-                final QAnd and = new QAnd();
+                final QAnd and = this.or ? new QOr() : new QAnd();
                 for (final QAbstractAttrCompare compare : this.compares) {
                     and.addPart(compare);
                 }
