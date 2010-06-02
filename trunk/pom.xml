@@ -332,7 +332,15 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     </suiteXmlFiles>
                 </configuration>
             </plugin>
+
+             <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
+                </configuration>
+            </plugin>
         </plugins>
+
         <!-- Needed for the upload of the site -->
         <extensions>
             <extension>
