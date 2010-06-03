@@ -21,6 +21,7 @@
 package org.efaps.admin.datamodel.ui;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
@@ -40,7 +41,8 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  *
  */
-public class DecimalWithUoMUI extends AbstractUI
+public class DecimalWithUoMUI
+    extends AbstractUI
 {
 
     /**
@@ -53,7 +55,9 @@ public class DecimalWithUoMUI extends AbstractUI
      * @throws EFapsException
      */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    public String getReadOnlyHtml(final FieldValue _fieldValue,
+                                  final TargetMode _mode)
+        throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
         final Field field = _fieldValue.getField();
@@ -61,14 +65,15 @@ public class DecimalWithUoMUI extends AbstractUI
 
         if (value instanceof Object[]) {
             final Object[] values =  (Object[]) value;
-            final DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(Context.getThreadContext()
+            final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
                             .getLocale());
             final String strValue = values[0] instanceof Number ? formatter.format(values[0]) : values[0].toString();
             final UoM uom = (UoM) values[1];
-            ret.append("<span name=\"").append(field.getName()).append("\" ").append(EFAPSTMPTAG).append(">")
-                   .append(strValue).append("</span>&nbsp;")
-                   .append("<span name=\"").append(field.getName()).append("UoM\" ").append(">")
-                   .append(uom.getName()).append("</span>");
+            ret.append("<span><span name=\"").append(field.getName()).append("\" ")
+                .append(UIInterface.EFAPSTMPTAG).append(">")
+                .append(strValue).append("</span>&nbsp;")
+                .append("<span name=\"").append(field.getName()).append("UoM\" ").append(">")
+                .append(uom.getName()).append("</span></span>");
         }
         return ret.toString();
     }
@@ -89,7 +94,7 @@ public class DecimalWithUoMUI extends AbstractUI
         if (value instanceof Object[]) {
             final Object[] values =  (Object[]) value;
             final DecimalFormat formatter
-                = (DecimalFormat) DecimalFormat.getInstance(Context.getThreadContext().getLocale());
+                = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext().getLocale());
             strValue = values[0] instanceof Number ? formatter.format(values[0]) : values[0].toString();
             uomValue = (UoM) values[1];
         }
@@ -99,10 +104,10 @@ public class DecimalWithUoMUI extends AbstractUI
                 .append("\" name=\"").append(field.getName())
                 .append("\" value=\"").append((value != null ? value : "*")).append("\" />");
         } else {
-            ret.append("<input type=\"text\" size=\"").append(field.getCols())
+            ret.append("<span><input type=\"text\" size=\"").append(field.getCols())
                 .append("\" name=\"").append(field.getName())
                 .append("\" value=\"").append(strValue != null ? strValue : "").append("\"")
-                .append(EFAPSTMPTAG).append("/>")
+                .append(UIInterface.EFAPSTMPTAG).append("/>")
                 .append("<select name=\"").append(_fieldValue.getField().getName()).append("UoM\" size=\"1\">");
 
             final Dimension dim = _fieldValue.getAttribute().getDimension();
@@ -113,7 +118,7 @@ public class DecimalWithUoMUI extends AbstractUI
                 }
                 ret.append("\">").append(uom.getName()).append("</option>");
             }
-            ret.append("</select>");
+            ret.append("</select></span>");
 
         }
         return ret.toString();
@@ -145,7 +150,7 @@ public class DecimalWithUoMUI extends AbstractUI
     {
         final Object ret;
         final DecimalFormat formatter
-            = (DecimalFormat) DecimalFormat.getInstance(Context.getThreadContext().getLocale());
+            = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext().getLocale());
         formatter.applyPattern(_pattern);
         if (_object instanceof Object[]) {
             final String tmp = formatter.format(((Object[]) _object)[0]);
