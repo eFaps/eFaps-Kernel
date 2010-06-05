@@ -144,7 +144,9 @@ public class ValueList
      * @throws Exception on error
      * @see {@link #makeSelect(AbstractQuery)}
      */
-    public String makeString(final Instance _callInstance, final AbstractQuery _query, final TargetMode _mode)
+    public String makeString(final Instance _callInstance,
+                             final AbstractQuery _query,
+                             final TargetMode _mode)
         throws Exception
     {
         final StringBuilder buf = new StringBuilder();
@@ -154,7 +156,7 @@ public class ValueList
                 case EXPRESSION:
                     final Attribute attr = _query.getAttribute(token.value);
                     final Object value = _query.get(token.value);
-                    buf.append((new FieldValue(null, attr, value, null)).getStringValue(_mode, _callInstance, null));
+                    buf.append((new FieldValue(null, attr, value, null, _callInstance)).getStringValue(_mode));
                     break;
                 case TEXT:
                     buf.append(token.value);

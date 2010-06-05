@@ -54,6 +54,14 @@ public enum EventType
     UPDATE_OVERRIDE    ("Admin_DataModel_Type_Trigger_UpdateOverride"),
     UPDATE_POST        ("Admin_DataModel_Type_Trigger_UpdatePost"),
     UPDATE_PRE         ("Admin_DataModel_Type_Trigger_UpdatePre"),
+
+    /**
+     * EventType to get the BigDecimal value for a rate.
+     */
+    RATE_VALUE         ("Admin_DataModel_AttributeRateEvent"),
+    /**
+     * Event Ttpe to get the values as a map for a range link.
+     */
     RANGE_VALUE        ("Admin_DataModel_AttributeRangeEvent"),
     /**
      * EventType to get a formated Value for a Field. It is executed after

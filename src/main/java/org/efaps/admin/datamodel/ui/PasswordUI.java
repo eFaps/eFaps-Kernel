@@ -20,7 +20,6 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
 
@@ -40,15 +39,11 @@ public class PasswordUI extends AbstractUI
     private static final long serialVersionUID = 1L;
 
     /**
-     * Method to get the Value for editing in an html document.
-     *
-     * @param _fieldValue Fieldvalue the representation is requested
-     * @param _mode target mode
-     * @return password field
-     * @throws EFapsException on error
+     * {@inheritDoc}
      */
     @Override
-    public String getEditHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    public String getEditHtml(final FieldValue _fieldValue)
+        throws EFapsException
     {
         final StringBuffer ret = new StringBuffer();
         final Field field = _fieldValue.getField();
@@ -56,5 +51,4 @@ public class PasswordUI extends AbstractUI
                         field.getName()).append("\" " + "value=\"\">");
         return ret.toString();
     }
-
 }

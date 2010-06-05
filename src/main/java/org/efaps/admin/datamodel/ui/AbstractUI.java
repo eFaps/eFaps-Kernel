@@ -23,7 +23,6 @@ package org.efaps.admin.datamodel.ui;
 import java.io.Serializable;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.util.EFapsException;
 
 /**
@@ -33,7 +32,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractUI implements UIInterface, Serializable
+public abstract class AbstractUI
+    implements UIInterface, Serializable
 {
     /**
      * Needed for serialization.
@@ -43,7 +43,8 @@ public abstract class AbstractUI implements UIInterface, Serializable
     /**
      * {@inheritDoc}
      */
-    public String getEditHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    public String getEditHtml(final FieldValue _fieldValuee)
+        throws EFapsException
     {
         return "edit";
     }
@@ -51,7 +52,8 @@ public abstract class AbstractUI implements UIInterface, Serializable
     /**
      * {@inheritDoc}
      */
-    public String getHiddenHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    public String getHiddenHtml(final FieldValue _fieldValue)
+        throws EFapsException
     {
         return "hidden";
     }
@@ -59,7 +61,8 @@ public abstract class AbstractUI implements UIInterface, Serializable
     /**
      * {@inheritDoc}
      */
-    public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    public String getReadOnlyHtml(final FieldValue _fieldValue)
+        throws EFapsException
     {
         return "read only";
     }
@@ -67,15 +70,17 @@ public abstract class AbstractUI implements UIInterface, Serializable
     /**
      * {@inheritDoc}
      */
-    public String getStringValue(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    public String getStringValue(final FieldValue _fieldValue)
+        throws EFapsException
     {
-        return getReadOnlyHtml(_fieldValue, _mode);
+        return getReadOnlyHtml(_fieldValue);
     }
 
     /**
      * {@inheritDoc}
      */
-    public Object getObject4Compare(final FieldValue _fieldValue) throws EFapsException
+    public Object getObject4Compare(final FieldValue _fieldValue)
+        throws EFapsException
     {
         return null;
     }
@@ -83,7 +88,8 @@ public abstract class AbstractUI implements UIInterface, Serializable
     /**
      * {@inheritDoc}
      */
-    public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2)
+    public int compare(final FieldValue _fieldValue,
+                       final FieldValue _fieldValue2)
     {
         return 0;
     }
@@ -91,7 +97,8 @@ public abstract class AbstractUI implements UIInterface, Serializable
     /**
      * {@inheritDoc}
      */
-    public String validateValue(final String _value, final Attribute _attribute)
+    public String validateValue(final String _value,
+                                final Attribute _attribute)
     {
         return null;
     }
@@ -99,7 +106,8 @@ public abstract class AbstractUI implements UIInterface, Serializable
     /**
      * {@inheritDoc}
      */
-    public Object format(final Object _object, final String _pattern) throws EFapsException
+    public Object format(final Object _object,
+                         final String _pattern) throws EFapsException
     {
         return _object;
     }

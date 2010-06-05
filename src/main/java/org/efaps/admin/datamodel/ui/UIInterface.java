@@ -21,7 +21,6 @@
 package org.efaps.admin.datamodel.ui;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.util.EFapsException;
 
 /**
@@ -33,7 +32,6 @@ import org.efaps.util.EFapsException;
  */
 public interface UIInterface
 {
-
     /**
      * Used as a temporary tag inside html. It is used to set e.g. the id or add
      * javascript during the rendering;
@@ -44,36 +42,30 @@ public interface UIInterface
      * Method to get the Value for creation in an html document.
      *
      * @param _fieldValue Fieldvalue the representation is requested
-     * @param _mode target mode
      * @return String representation of the object for creation
      * @throws EFapsException on error
      */
-    String getHiddenHtml(final FieldValue _fieldValue,
-                         TargetMode _mode)
+    String getHiddenHtml(final FieldValue _fieldValue)
         throws EFapsException;
 
     /**
      * Method to get the Value for editing in an html document.
      *
      * @param _fieldValue Fieldvalue the representation is requested
-     * @param _mode target mode
      * @return String representation of the object for editing
      * @throws EFapsException on error
      */
-    String getEditHtml(final FieldValue _fieldValue,
-                       TargetMode _mode)
+    String getEditHtml(final FieldValue _fieldValue)
         throws EFapsException;
 
     /**
      * Method to get the Value for viewing in an html document.
      *
      * @param _fieldValue Fieldvalue the representation is requested
-     * @param _mode target mode
      * @return String representation of the object for viewing
      * @throws EFapsException on error
      */
-    String getReadOnlyHtml(final FieldValue _fieldValue,
-                           TargetMode _mode)
+    String getReadOnlyHtml(final FieldValue _fieldValue)
         throws EFapsException;
 
     /**
@@ -81,12 +73,10 @@ public interface UIInterface
      * labels. In comparison to the Html-Methods it should not contain html.
      *
      * @param _fieldValue Fieldvalue the representation is requested
-     * @param _mode target mode
      * @return String representation of the object for viewing
      * @throws EFapsException on error
      */
-    String getStringValue(final FieldValue _fieldValue,
-                          TargetMode _mode)
+    String getStringValue(final FieldValue _fieldValue)
         throws EFapsException;
 
     /**

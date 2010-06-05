@@ -23,10 +23,13 @@ package org.efaps.update.event;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.efaps.admin.EFapsClassNames;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -95,7 +98,7 @@ public class Event
                  final String _method,
                  final String _index)
     {
-        this.name = (_name == null) ? _event.name : _name;
+        this.name = (_name == null) ? _event.name : _name + "." + _event.name;
         this.event = _event;
         this.program = _program;
         this.method = (_method == null) ? "execute" : _method;
@@ -124,23 +127,21 @@ public class Event
             final long typeID = _instance.getId();
             final long progID = getProgID(_typeName);
 
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes(this.event.name);
-            query.addWhereExprEqValue("Abstract", typeID);
-            query.addWhereExprEqValue("Name", this.name);
-            query.addSelect("OID");
+            final QueryBuilder queryBldr = new QueryBuilder(Type.get(this.event.name));
+            queryBldr.addWhereAttrEqValue("Abstract", typeID);
+            queryBldr.addWhereAttrEqValue("Name", this.name);
+            final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
 
             final Update update;
             if (query.next()) {
-                update = new Update((String) query.get("OID"));
+                update = new Update(query.getCurrentInstance());
             } else {
                 update = new Insert(this.event.name);
                 update.add("Abstract", typeID);
                 update.add("IndexPosition", this.index);
                 update.add("Name", this.name);
             }
-            query.close();
             update.add("JavaProg", progID);
             update.add("Method", this.method);
             update.executeWithoutAccessCheck();
@@ -166,15 +167,12 @@ public class Event
         throws EFapsException
     {
         long id = 0;
-
-        final SearchQuery query = new SearchQuery();
-        query.setQueryTypes("Admin_Program_Java");
-        query.addSelect("ID");
-        query.addWhereExprEqValue("Name", this.program);
-
+        final QueryBuilder queryBldr = new QueryBuilder(Type.get(EFapsClassNames.ADMIN_PROGRAM_JAVA));
+        queryBldr.addWhereAttrEqValue("Name", this.program);
+        final InstanceQuery query = queryBldr.getQuery();
         query.executeWithoutAccessCheck();
         if (query.next()) {
-            id = (Long) query.get("ID");
+            id = query.getCurrentInstance().getId();
         } else {
             Event.LOG.error("type[" + _typeName + "]." + "Program [" + this.program + "]: " + "' not found");
         }

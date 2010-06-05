@@ -20,7 +20,6 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
 import org.efaps.util.EFapsException;
@@ -31,24 +30,20 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class UserUI extends AbstractUI
+public class UserUI
+    extends AbstractUI
 {
-
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * Method to get the Value for viewing in an html document.
-     *
-     * @param _fieldValue Feildvalue the view must be evaluated for
-     * @param _mode target mode
-     * @throws EFapsException if value is not Person or Role
-     * @return STring with the value for the field
+     * {@inheritDoc}
      */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    public String getReadOnlyHtml(final FieldValue _fieldValue)
+        throws EFapsException
     {
         String ret = null;
         final Object value = _fieldValue.getValue();
@@ -65,14 +60,11 @@ public class UserUI extends AbstractUI
     }
 
     /**
-     * Method to compare the values.
-     *
-     * @param _fieldValue first Value
-     * @param _fieldValue2 second Value
-     * @return 0
+     * {@inheritDoc}
      */
     @Override
-    public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2)
+    public int compare(final FieldValue _fieldValue,
+                       final FieldValue _fieldValue2)
     {
         String value = null;
         if (_fieldValue.getValue() instanceof Person) {

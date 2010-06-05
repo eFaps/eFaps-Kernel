@@ -22,7 +22,6 @@ package org.efaps.admin.datamodel.ui;
 
 import java.util.List;
 
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
 
@@ -42,15 +41,10 @@ public class FormatedStringUI extends AbstractUI
     private static final long serialVersionUID = 1L;
 
     /**
-     * Method to get the Value for viewing in an html document.
-     *
-     * @param _fieldValue Fieldvalue the representation is requested
-     * @param _mode target mode
-     * @return value for field
-     *
+     * {@inheritDoc}
      */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode)
+    public String getReadOnlyHtml(final FieldValue _fieldValue)
     {
         final StringBuilder ret = new StringBuilder();
         final Field field = _fieldValue.getField();
@@ -73,9 +67,8 @@ public class FormatedStringUI extends AbstractUI
         } else {
             final String tmp = value != null ? value.toString() : "";
             if (tmp != null) {
-                ret.append("<span name=\"").append(field.getName()).append("\" ").append(EFAPSTMPTAG).append(">")
-                    .append(tmp)
-                    .append("</span>");
+                ret.append("<span name=\"").append(field.getName()).append("\" ").append(UIInterface.EFAPSTMPTAG)
+                    .append(">").append(tmp).append("</span>");
             }
         }
         return ret.toString();
@@ -85,7 +78,8 @@ public class FormatedStringUI extends AbstractUI
      * {@inheritDoc}
      */
     @Override
-    public String getEditHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    public String getEditHtml(final FieldValue _fieldValue)
+        throws EFapsException
     {
         return (String) (_fieldValue.getValue() == null ? "" : _fieldValue.getValue());
     }
