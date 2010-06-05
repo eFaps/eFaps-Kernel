@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+0 * Copyright 2003 - 2010 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,11 +52,10 @@ public class DecimalWithUoMUI
 
     /**
      * {@inheritDoc}
-     * @throws EFapsException
+     *
      */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue,
-                                  final TargetMode _mode)
+    public String getReadOnlyHtml(final FieldValue _fieldValue)
         throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
@@ -82,8 +81,7 @@ public class DecimalWithUoMUI
      * {@inheritDoc}
      */
     @Override()
-    public String getEditHtml(final FieldValue _fieldValue,
-                              final TargetMode _mode)
+    public String getEditHtml(final FieldValue _fieldValue)
         throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
@@ -99,7 +97,7 @@ public class DecimalWithUoMUI
             uomValue = (UoM) values[1];
         }
 
-        if (_mode.equals(TargetMode.SEARCH)) {
+        if (_fieldValue.getTargetMode().equals(TargetMode.SEARCH)) {
             ret.append("<input type=\"text\" size=\"").append(field.getCols())
                 .append("\" name=\"").append(field.getName())
                 .append("\" value=\"").append((value != null ? value : "*")).append("\" />");

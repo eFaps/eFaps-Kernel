@@ -22,7 +22,6 @@ package org.efaps.admin.datamodel.ui;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.util.EFapsException;
 
 /**
@@ -31,7 +30,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class TypeUI extends AbstractUI
+public class TypeUI
+    extends AbstractUI
 {
 
     /**
@@ -40,15 +40,11 @@ public class TypeUI extends AbstractUI
     private static final long serialVersionUID = 1L;
 
     /**
-     * Method to get the Value for view in an html document.
-     *
-     * @param _fieldValue Fieldvalue the representation is requested
-     * @param _mode target mode
-     * @return "create"
-     * @throws EFapsException on error
+     * {@inheritDoc}
      */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    public String getReadOnlyHtml(final FieldValue _fieldValue)
+        throws EFapsException
     {
         String ret = null;
 
@@ -66,14 +62,11 @@ public class TypeUI extends AbstractUI
     }
 
     /**
-     * Method to compare the values.
-     *
-     * @param _fieldValue first Value
-     * @param _fieldValue2 second Value
-     * @return 0
+     * {@inheritDoc}
      */
     @Override
-    public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2)
+    public int compare(final FieldValue _fieldValue,
+                       final FieldValue _fieldValue2)
     {
         String value = null;
         String value2 = null;
@@ -84,7 +77,6 @@ public class TypeUI extends AbstractUI
             value = (String) _fieldValue.getValue();
             value2 = (String) _fieldValue2.getValue();
         }
-
         return value.compareTo(value2);
     }
 }

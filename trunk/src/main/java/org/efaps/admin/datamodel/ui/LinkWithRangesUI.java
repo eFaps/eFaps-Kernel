@@ -43,7 +43,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class LinkWithRangesUI extends AbstractUI
+public class LinkWithRangesUI
+    extends AbstractUI
 {
 
     /**
@@ -52,25 +53,18 @@ public class LinkWithRangesUI extends AbstractUI
     private static final long serialVersionUID = 1L;
 
     /**
-     * Method to get the Value for viewing in an html document.
-     * @param _mode         target mode
-     * @param _fieldValue   Fieldvalue the representation is requested
-     * @return value for field
-     * @throws EFapsException on error
+     * {@inheritDoc}
      */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    public String getReadOnlyHtml(final FieldValue _fieldValue) throws EFapsException
     {
-
         final StringBuilder ret = new StringBuilder();
         final Attribute attribute = _fieldValue.getAttribute();
-
         if (_fieldValue.getValue() != null) {
             if (attribute.hasEvents(EventType.RANGE_VALUE)) {
-
                 for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE,
-                                                                   ParameterValues.UIOBJECT, _fieldValue,
-                                                                   ParameterValues.ACCESSMODE, _mode)) {
+                                                           ParameterValues.UIOBJECT, _fieldValue,
+                                                           ParameterValues.ACCESSMODE, _fieldValue.getTargetMode())) {
                     final TreeMap<?, ?> treemap = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES));
                     for (final Entry<?, ?> entry : treemap.entrySet()) {
                         if (entry.getValue().equals(_fieldValue.getValue().toString())) {
@@ -84,20 +78,15 @@ public class LinkWithRangesUI extends AbstractUI
     }
 
     /**
-     * Method to get the Value for viewing in an html document.
-     *
-     * @param _fieldValue Fieldvalue the representation is requested
-     * @param _mode         target mode
-     * @return dropdown with values
-     * @throws EFapsException
-     * @throws EFapsException on error
+     * {@inheritDoc}
      */
     @Override
-    public String getEditHtml(final FieldValue _fieldValue, final TargetMode _mode) throws EFapsException
+    public String getEditHtml(final FieldValue _fieldValue)
+        throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
         final Attribute attribute = _fieldValue.getAttribute();
-        if (_mode.equals(TargetMode.SEARCH)) {
+        if (_fieldValue.getTargetMode().equals(TargetMode.SEARCH)) {
             final Field field = _fieldValue.getField();
             ret.append("<input type=\"text\" ")
                 .append("size=\"").append(field.getCols())
@@ -106,20 +95,20 @@ public class LinkWithRangesUI extends AbstractUI
         } else {
             if (attribute.hasEvents(EventType.RANGE_VALUE)) {
                 for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE,
-                                                                   ParameterValues.UIOBJECT, _fieldValue,
-                                                                   ParameterValues.ACCESSMODE, _mode)) {
+                                                           ParameterValues.UIOBJECT, _fieldValue,
+                                                           ParameterValues.ACCESSMODE, _fieldValue.getTargetMode())) {
                     ret.append("<select name=\"").append(_fieldValue.getField().getName()).append("\" ")
-                        .append(EFAPSTMPTAG).append(" size=\"1\">");
+                        .append(UIInterface.EFAPSTMPTAG).append(" size=\"1\">");
                     final Iterator<?> iter = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES)).entrySet().iterator();
 
                     while (iter.hasNext()) {
                         final Entry<?, ?> entry = (Entry<?, ?>) iter.next();
                         ret.append("<option value=\"").append(entry.getValue());
                         if (_fieldValue.getValue() != null
-                                        && ((!_mode.equals(TargetMode.CREATE) && _fieldValue.getValue().toString()
-                                                        .equals(entry.getValue()))
-                                        || (_mode.equals(TargetMode.CREATE) && _fieldValue.getValue().toString()
-                                                        .equals(entry.getKey())))) {
+                                        && ((!_fieldValue.getTargetMode().equals(TargetMode.CREATE)
+                                                        && _fieldValue.getValue().toString().equals(entry.getValue()))
+                                        || (_fieldValue.getTargetMode().equals(TargetMode.CREATE)
+                                                        && _fieldValue.getValue().toString().equals(entry.getKey())))) {
                             ret.append("\" selected=\"selected");
                         }
                         ret.append("\">").append(entry.getKey()).append("</option>");

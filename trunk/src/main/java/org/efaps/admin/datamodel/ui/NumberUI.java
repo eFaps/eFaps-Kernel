@@ -21,6 +21,7 @@
 package org.efaps.admin.datamodel.ui;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.dbproperty.DBProperties;
@@ -33,36 +34,30 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class NumberUI extends StringUI
+public class NumberUI
+    extends StringUI
 {
-
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * Method to get the Object for use in case of comparison.
-     *
-     * @param _fieldValue Fieldvalue the representation is requested
-     * @return value
-     * @throws EFapsException on error
+     * {@inheritDoc}
      */
     @Override
-    public Object getObject4Compare(final FieldValue _fieldValue) throws EFapsException
+    public Object getObject4Compare(final FieldValue _fieldValue)
+        throws EFapsException
     {
         return _fieldValue.getValue();
     }
 
     /**
-     * Method to compare the values.
-     *
-     * @param _fieldValue first Value
-     * @param _fieldValue2 second Value
-     * @return 0
+     * {@inheritDoc}
      */
     @Override
-    public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2)
+    public int compare(final FieldValue _fieldValue,
+                       final FieldValue _fieldValue2)
     {
         int ret = 0;
         if (_fieldValue.getValue() instanceof Long && _fieldValue2.getValue() instanceof Long) {
@@ -81,7 +76,8 @@ public class NumberUI extends StringUI
      * {@inheritDoc}
      */
     @Override
-    public String validateValue(final String _value, final Attribute _attribute)
+    public String validateValue(final String _value,
+                                final Attribute _attribute)
     {
         String ret = null;
         try {
@@ -97,9 +93,11 @@ public class NumberUI extends StringUI
      * {@inheritDoc}
      */
     @Override
-    public Object format(final Object _object, final String _pattern) throws EFapsException
+    public Object format(final Object _object,
+                         final String _pattern)
+        throws EFapsException
     {
-        final DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(Context.getThreadContext()
+        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
                         .getLocale());
         formatter.applyPattern(_pattern);
         return formatter.format(_object);

@@ -46,16 +46,10 @@ public class StringWithUoMUI
     private static final long serialVersionUID = 1L;
 
     /**
-     * Method to get the Value for viewing in an html document.
-     *
-     * @param _fieldValue Fieldvalue the representation is requested
-     * @param _mode target mode
-     * @return value for field
-     *
+     * {@inheritDoc}
      */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue,
-                                  final TargetMode _mode)
+    public String getReadOnlyHtml(final FieldValue _fieldValue)
     {
         final StringBuilder ret = new StringBuilder();
         final Field field = _fieldValue.getField();
@@ -79,8 +73,7 @@ public class StringWithUoMUI
      * {@inheritDoc}
      */
     @Override
-    public String getEditHtml(final FieldValue _fieldValue,
-                              final TargetMode _mode)
+    public String getEditHtml(final FieldValue _fieldValue)
         throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
@@ -94,7 +87,7 @@ public class StringWithUoMUI
             uomValue = (UoM) values[1];
         }
 
-        if (_mode.equals(TargetMode.SEARCH)) {
+        if (_fieldValue.getTargetMode().equals(TargetMode.SEARCH)) {
             ret.append("<input type=\"text\"").append(" size=\"").append(field.getCols()).append("\" name=\"").append(
                            field.getName()).append("\" value=\"").append((value != null ? value : "*")).append("\" />");
         } else {
@@ -119,26 +112,17 @@ public class StringWithUoMUI
     }
 
     /**
-     * @see org.efaps.admin.datamodel.ui.UIInterface#getStringValue(org.efaps.admin.datamodel.ui.FieldValue, org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode)
-     * @param _fieldValue Fieldvalue the representation is requested
-     * @param _mode the target mode
-     * @return "String-Value"
-     * @throws EFapsException on error
+     * {@inheritDoc}
      */
     @Override
-    public String getStringValue(final FieldValue _fieldValue,
-                                 final TargetMode _mode)
+    public String getStringValue(final FieldValue _fieldValue)
         throws EFapsException
     {
         return _fieldValue.getValue() == null ? "" : _fieldValue.getValue().toString();
     }
 
     /**
-     * Method to compare the values.
-     *
-     * @param _fieldValue first Value
-     * @param _fieldValue2 second Value
-     * @return 0
+     * {@inheritDoc}
      */
     @Override
     public int compare(final FieldValue _fieldValue,

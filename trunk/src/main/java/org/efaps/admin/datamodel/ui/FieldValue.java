@@ -94,24 +94,35 @@ public class FieldValue implements Comparable<Object>
      * Stores he display mode for this field.
      */
     private Display display;
+
+     /**
+      *  instance for which this field is called (not the same
+      *  as the instance of the field...).
+      */
+    private Instance callInstance;
+
+
     /**
      * Construtor used to evaluate the value from the database by using one of
      * the getter methods for html.
      *
-     * @param _field field this value belongs to
-     * @param _attr attribute the value belongs to
-     * @param _value value of the FieldValue
-     * @param _instance Instance the Value belongs to
+     * @param _field            field this value belongs to
+     * @param _attr             attribute the value belongs to
+     * @param _value            value of the FieldValue
+     * @param _valueInstance     Instance the Value belongs to
+     * @param _callInstance     Instance that called Value for edit, view etc.
      */
     public FieldValue(final Field _field,
                       final Attribute _attr,
                       final Object _value,
-                      final Instance _instance)
+                      final Instance _valueInstance,
+                      final Instance _callInstance)
     {
         this.field = _field;
         this.attribute = _attr;
         this.value = _value;
-        this.instance = _instance;
+        this.instance = _valueInstance;
+        this.callInstance = _callInstance;
         this.ui = (_attr == null) ? _field.getClassUI() : _attr.getAttributeType().getUI();
 
     }
@@ -140,24 +151,20 @@ public class FieldValue implements Comparable<Object>
      *
      * @see #executeEvents
      * @param _mode         target mode
-     * @param _callInstance Instance that called the html code
-     * @param _instance instance that is part of the html code
      * @throws EFapsException on error
      * @return html code as a String
      */
-    public String getEditHtml(final TargetMode _mode,
-                              final Instance _callInstance,
-                              final Instance _instance)
+    public String getEditHtml(final TargetMode _mode)
         throws EFapsException
     {
         this.targetMode = _mode;
         this.display = Display.EDITABLE;
         String ret = null;
-        ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_VALUE);
+        ret = executeEvents(EventType.UI_FIELD_VALUE);
         if (ret == null) {
-            ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_FORMAT);
+            ret = executeEvents(EventType.UI_FIELD_FORMAT);
             if (ret == null && this.ui != null) {
-                ret = this.ui.getEditHtml(this, _mode);
+                ret = this.ui.getEditHtml(this);
             }
         }
         return ret;
@@ -168,24 +175,20 @@ public class FieldValue implements Comparable<Object>
      *
      * @see #executeEvents
      * @param _mode         target mode
-     * @param _callInstance Instance that called the html code
-     * @param _instance instance that is part of the html code
      * @throws EFapsException on error
      * @return html code as a String
      */
-    public String getReadOnlyHtml(final TargetMode _mode,
-                                  final Instance _callInstance,
-                                  final Instance _instance)
+    public String getReadOnlyHtml(final TargetMode _mode)
         throws EFapsException
     {
         this.targetMode = _mode;
         this.display = Display.READONLY;
         String ret = null;
-        ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_VALUE);
+        ret = executeEvents(EventType.UI_FIELD_VALUE);
         if (ret == null) {
-            ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_FORMAT);
+            ret = executeEvents(EventType.UI_FIELD_FORMAT);
             if (ret == null && this.ui != null) {
-                ret = this.ui.getReadOnlyHtml(this, _mode);
+                ret = this.ui.getReadOnlyHtml(this);
             }
         }
         return ret;
@@ -196,24 +199,20 @@ public class FieldValue implements Comparable<Object>
      *
      * @see #executeEvents
      * @param _mode         target mode
-     * @param _callInstance Instance that called the html code
-     * @param _instance instance that is part of the html code
      * @throws EFapsException on error
      * @return html code as a String
      */
-    public String getHiddenHtml(final TargetMode _mode,
-                                final Instance _callInstance,
-                                final Instance _instance)
+    public String getHiddenHtml(final TargetMode _mode)
         throws EFapsException
     {
         this.targetMode = _mode;
         this.display = Display.HIDDEN;
         String ret = null;
-        ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_VALUE);
+        ret = executeEvents(EventType.UI_FIELD_VALUE);
         if (ret == null) {
-            ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_FORMAT);
+            ret = executeEvents(EventType.UI_FIELD_FORMAT);
             if (ret == null && this.ui != null) {
-                ret = this.ui.getHiddenHtml(this, _mode);
+                ret = this.ui.getHiddenHtml(this);
             }
         }
         return ret;
@@ -224,25 +223,21 @@ public class FieldValue implements Comparable<Object>
      *
      * @see #executeEvents
      * @param _mode         target mode
-     * @param _callInstance Instance that called the value
-     * @param _instance     instance
      * @throws EFapsException on error
      * @return plain string
      * @throws EFapsException
      */
-    public String getStringValue(final TargetMode _mode,
-                                 final Instance _callInstance,
-                                 final Instance _instance)
+    public String getStringValue(final TargetMode _mode)
         throws EFapsException
     {
         this.targetMode = _mode;
         this.display = Display.NONE;
         String ret = null;
-        ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_VALUE);
+        ret = executeEvents(EventType.UI_FIELD_VALUE);
         if (ret == null) {
-            ret = executeEvents(_callInstance, _instance, EventType.UI_FIELD_FORMAT);
+            ret = executeEvents(EventType.UI_FIELD_FORMAT);
             if (ret == null && this.ui != null) {
-                ret = this.ui.getStringValue(this, _mode);
+                ret = this.ui.getStringValue(this);
             }
         }
         return ret;
@@ -250,18 +245,13 @@ public class FieldValue implements Comparable<Object>
 
     /**
      * Executes the field value events for a field.
-     * @param _callInstance instance for which this field is called (not the
-     *                      same as the instance of the field...)
-     * @param _instance     instance of the field (needed for table fields)
-     * @param _eventType    event type
+     * @param _eventType type of event to be executed
      * @throws EFapsException on error
      * @return string from called field value events or <code>null</code> if no
      *         field value event is defined
      *
      */
-    protected String executeEvents(final Instance _callInstance,
-                                   final Instance _instance,
-                                   final EventType _eventType)
+    protected String executeEvents(final EventType _eventType)
         throws EFapsException
     {
         String ret = null;
@@ -274,8 +264,8 @@ public class FieldValue implements Comparable<Object>
                 final Parameter parameter = new Parameter();
                 parameter.put(ParameterValues.ACCESSMODE, this.targetMode);
                 parameter.put(ParameterValues.UIOBJECT, this);
-                parameter.put(ParameterValues.CALL_INSTANCE, _callInstance);
-                parameter.put(ParameterValues.INSTANCE, _instance);
+                parameter.put(ParameterValues.CALL_INSTANCE, this.callInstance);
+                parameter.put(ParameterValues.INSTANCE, this.instance);
                 if (parameter.get(ParameterValues.PARAMETERS) == null) {
                     parameter.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
                 }
@@ -360,6 +350,16 @@ public class FieldValue implements Comparable<Object>
     public Instance getInstance()
     {
         return this.instance;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #callInstance}.
+     *
+     * @return value of instance variable {@link #callInstance}
+     */
+    public Instance getCallInstance()
+    {
+        return this.callInstance;
     }
 
     /**

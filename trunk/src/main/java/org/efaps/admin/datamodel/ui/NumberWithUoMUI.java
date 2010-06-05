@@ -21,6 +21,7 @@
 package org.efaps.admin.datamodel.ui;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.dbproperty.DBProperties;
@@ -34,7 +35,8 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  *
  */
-public class NumberWithUoMUI extends StringWithUoMUI
+public class NumberWithUoMUI
+    extends StringWithUoMUI
 {
 
     /**
@@ -46,7 +48,8 @@ public class NumberWithUoMUI extends StringWithUoMUI
      * {@inheritDoc}
      */
     @Override
-    public String validateValue(final String _value, final Attribute _attribute)
+    public String validateValue(final String _value,
+                                final Attribute _attribute)
     {
         String ret = null;
         try {
@@ -62,10 +65,12 @@ public class NumberWithUoMUI extends StringWithUoMUI
      * {@inheritDoc}
      */
     @Override
-    public Object format(final Object _object, final String _pattern) throws EFapsException
+    public Object format(final Object _object,
+                         final String _pattern)
+        throws EFapsException
     {
         final Object ret;
-        final DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(Context.getThreadContext()
+        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
                         .getLocale());
         formatter.applyPattern(_pattern);
         if (_object instanceof Object[]) {

@@ -37,24 +37,19 @@ import org.efaps.admin.ui.field.Field;
  * @author The eFaps Team
  * @version $Id$
  */
-public class BooleanUI extends AbstractUI
+public class BooleanUI
+    extends AbstractUI
 {
-
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * Method to get the Value for editing in an html document.
-     *
-     * @param _fieldValue   Fieldvalue the representation is requested
-     * @param _mode         target mode
-     * @return html with two radio buttons
-     *
+     * {@inheritDoc}
      */
     @Override
-    public String getEditHtml(final FieldValue _fieldValue, final TargetMode _mode)
+    public String getEditHtml(final FieldValue _fieldValue)
     {
         final StringBuilder ret = new StringBuilder();
         final Field field = _fieldValue.getField();
@@ -73,44 +68,39 @@ public class BooleanUI extends AbstractUI
             bool = null;
         }
 
-        if (_mode.equals(TargetMode.SEARCH)) {
-            ret.append("<script language=\"javascript\" type=\"text/javascript\">").append("var checked").append(
-                            field.getName()).append(";").append("function Clear").append(field.getName()).append(
-                            "(_btn) {").append("if (checked").append(field.getName()).append(" == _btn){").append(
-                            "_btn.checked = false;").append("checked").append(field.getName()).append(" = null;")
-                            .append("} else { ").append("checked").append(field.getName()).append(" = _btn; }").append(
-                                            "}").append("</script>").append("<input type=\"radio\" ").append(
-                                            (bool != null && bool) ? "checked=\"checked\" " : "").append("name=\"")
-                            .append(field.getName()).append("\" ").append("value=\"").append("TRUE").append(
-                                            "\" onclick=\"Clear").append(field.getName()).append("(this)\"/>").append(
-                                            getTrue(attribute)).append("<br/>").append("<input type=\"radio\" ")
-                            .append((bool != null && !bool) ? "checked=\"checked\" " : "").append("name=\"").append(
-                                            field.getName()).append("\" ").append("value=\"").append("FALSE").append(
-                                            "\" onclick=\"Clear").append(field.getName()).append("(this)\"/>").append(
-                                            getFalse(attribute));
+        if (_fieldValue.getTargetMode().equals(TargetMode.SEARCH)) {
+            ret.append("<script language=\"javascript\" type=\"text/javascript\">")
+                .append("var checked").append(field.getName()).append(";")
+                .append("function Clear").append(field.getName()).append("(_btn) {")
+                .append("if (checked").append(field.getName()).append(" == _btn){")
+                .append("_btn.checked = false;")
+                .append("checked").append(field.getName()).append(" = null;")
+                .append("} else { ")
+                .append("checked").append(field.getName()).append(" = _btn; }")
+                .append("}").append("</script>")
+                .append("<input type=\"radio\" ").append((bool != null && bool) ? "checked=\"checked\" " : "")
+                .append("name=\"").append(field.getName()).append("\" ").append("value=\"").append("TRUE")
+                .append("\" onclick=\"Clear").append(field.getName()).append("(this)\"/>")
+                .append(getTrue(attribute)).append("<br/>")
+                .append("<input type=\"radio\" ").append((bool != null && !bool) ? "checked=\"checked\" " : "")
+                .append("name=\"").append(field.getName()).append("\" ").append("value=\"").append("FALSE")
+                .append("\" onclick=\"Clear").append(field.getName()).append("(this)\"/>").append(getFalse(attribute));
         } else {
-
-            ret.append("<input type=\"radio\" ").append((bool != null && bool) ? "checked=\"checked\" " : "").append(
-                            "name=\"").append(field.getName()).append("\" ").append("value=\"").append("TRUE").append(
-                            "\"/>").append(getTrue(attribute)).append("<br/>");
-
-            ret.append("<input type=\"radio\" ").append((bool != null && !bool) ? "checked=\"checked\" " : "").append(
-                            "name=\"").append(field.getName()).append("\" ").append("value=\"").append("FALSE").append(
-                            "\"/>").append(getFalse(attribute));
+            ret.append("<input type=\"radio\" ").append((bool != null && bool) ? "checked=\"checked\" " : "")
+                .append("name=\"").append(field.getName()).append("\" ").append("value=\"").append("TRUE")
+                .append("\"/>").append(getTrue(attribute)).append("<br/>")
+                .append("<input type=\"radio\" ").append((bool != null && !bool) ? "checked=\"checked\" " : "")
+                .append("name=\"").append(field.getName()).append("\" ").append("value=\"").append("FALSE")
+                .append("\"/>").append(getFalse(attribute));
         }
         return ret.toString();
     }
 
     /**
-     * Method to get the Value for read only in an html document.
-     *
-     * @param _fieldValue Fieldvalue the representation is requested
-     * @param _mode         target mode
-     * @return html with two radio buttons
-     *
+     * {@inheritDoc}
      */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue, final TargetMode _mode)
+    public String getReadOnlyHtml(final FieldValue _fieldValue)
     {
         String ret = null;
         final Attribute attribute = _fieldValue.getAttribute();
@@ -126,10 +116,7 @@ public class BooleanUI extends AbstractUI
     }
 
     /**
-     * Method to get the Object for use in case of comparison.
-     *
-     * @param _fieldValue Fieldvalue the representation is requested
-     * @return String representation of the value
+     *  {@inheritDoc}
      */
     @Override
     public Object getObject4Compare(final FieldValue _fieldValue)
@@ -147,14 +134,11 @@ public class BooleanUI extends AbstractUI
     }
 
     /**
-     * Method to compare the values.
-     *
-     * @param _fieldValue first Value
-     * @param _fieldValue2 second Value
-     * @return 0 or -1
+     *  {@inheritDoc}
      */
     @Override
-    public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2)
+    public int compare(final FieldValue _fieldValue,
+                       final FieldValue _fieldValue2)
     {
         String value = null;
         String value2 = null;

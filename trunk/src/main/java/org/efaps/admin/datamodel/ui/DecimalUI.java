@@ -53,8 +53,7 @@ public class DecimalUI
      * {@inheritDoc}
      */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue,
-                                  final TargetMode _mode)
+    public String getReadOnlyHtml(final FieldValue _fieldValue)
         throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
@@ -97,8 +96,7 @@ public class DecimalUI
      * {@inheritDoc}
      */
     @Override
-    public String getHiddenHtml(final FieldValue _fieldValue,
-                                final TargetMode _mode)
+    public String getHiddenHtml(final FieldValue _fieldValue)
         throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
@@ -125,8 +123,7 @@ public class DecimalUI
      * @throws EFapsException
      */
     @Override
-    public String getEditHtml(final FieldValue _fieldValue,
-                              final TargetMode _mode)
+    public String getEditHtml(final FieldValue _fieldValue)
         throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
@@ -140,7 +137,7 @@ public class DecimalUI
         final String tmp = value != null
                         ? (value instanceof Number ? formatter.format(value) : value.toString())
                         : "";
-        if (_mode.equals(TargetMode.SEARCH)) {
+        if (_fieldValue.getTargetMode().equals(TargetMode.SEARCH)) {
             ret.append("<input type=\"text\"").append(" size=\"").append(field.getCols()).append("\" name=\"")
                             .append(field.getName()).append("\" value=\"")
                             .append((tmp != null ? tmp : "*")).append("\" />");
@@ -165,9 +162,11 @@ public class DecimalUI
         return ret.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String getStringValue(final FieldValue _fieldValue,
-                                 final TargetMode _mode)
+    public String getStringValue(final FieldValue _fieldValue)
         throws EFapsException
     {
         final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()

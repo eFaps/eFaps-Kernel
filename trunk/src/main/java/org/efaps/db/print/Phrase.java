@@ -88,8 +88,8 @@ public class Phrase
                     final OneSelect oneselect = this.selectStmt2OneSelect.get(token.getValue());
                     final Object value = oneselect.getObject();
                     if (oneselect.getAttribute() != null) {
-                        buf.append((new FieldValue(null, oneselect.getAttribute(), value, null))
-                                    .getStringValue(TargetMode.VIEW, _instance, null));
+                        buf.append((new FieldValue(null, oneselect.getAttribute(), value, _instance, null))
+                                    .getStringValue(TargetMode.VIEW));
                     } else if (value != null) {
                         buf.append(value);
                     }
