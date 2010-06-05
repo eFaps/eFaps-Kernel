@@ -361,6 +361,8 @@ public class TypeUpdate
 
             update.executeWithoutAccessCheck();
 
+            setPropertiesInDb(update.getInstance(), getProperties());
+
             for (final Event event : this.events) {
                 final Instance newInstance = event.updateInDB(update.getInstance(), this.name);
                 setPropertiesInDb(newInstance, event.getProperties());

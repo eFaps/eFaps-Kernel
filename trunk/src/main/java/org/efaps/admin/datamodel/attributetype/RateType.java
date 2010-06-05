@@ -143,9 +143,9 @@ public class RateType
      * {@inheritDoc}
      */
     @Override
-    public Object readValue(final Attribute attribute,
-                            final CachedResult rs,
-                            final List<Integer> indexes)
+    public Object readValue(final Attribute _attribute,
+                            final CachedResult _rs,
+                            final List<Integer> _indexes)
         throws Exception
     {
         // TODO Auto-generated method stub

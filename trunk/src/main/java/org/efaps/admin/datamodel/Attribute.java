@@ -40,10 +40,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.efaps.admin.datamodel.attributetype.RateType;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Context;
@@ -164,6 +166,13 @@ public class Attribute
      * UUID of the dimension belonging to this attribute.
      */
     private final String dimensionUUID;
+
+    /**
+     * Holds the Attributes this Attribute depend on.
+     * A TreeMap is used to have a fixed position of each attribute.
+     * (Needed e.g for printquery)
+     */
+    private final Map<String, Attribute> dependencies = new TreeMap<String, Attribute>();
 
     /**
      * This is the constructor for class {@link Attribute}. Every instance of
@@ -347,6 +356,16 @@ public class Attribute
     public Type getLink()
     {
         return this.link;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #dependencies}.
+     *
+     * @return value of instance variable {@link #dependencies}
+     */
+    public Map<String, Attribute> getDependencies()
+    {
+        return this.dependencies;
     }
 
     /**
@@ -559,16 +578,35 @@ public class Attribute
     /**
      * Method to initialize this Cache.
      * @param _class clas that called this method
+     * @throws CacheReloadException on error
      */
     public static void initialize(final Class<?> _class)
+        throws CacheReloadException
     {
         Attribute.CACHE.initialize(_class);
+        // initialize properties and links
+        for (final Attribute attr : Attribute.CACHE.getCache4Id().values()) {
+            // in case of a rate attribute the dependencies to the currencies must be given
+            if (attr.attributeType.getDbAttrType() instanceof RateType) {
+                attr.readFromDB4Properties();
+                if (attr.getProperties().containsKey("CurrencyAttribute4Rate")) {
+                    final String currAttrName = attr.getParent().getName() + "/"
+                                    + attr.getProperties().get("CurrencyAttribute4Rate");
+                    attr.dependencies.put("CurrencyAttribute4Rate", Attribute.get(currAttrName));
+
+                    final String tarCurrAttrName = attr.getParent().getName() + "/"
+                                    + attr.getProperties().get("TargetCurrencyAttribute4Rate");
+                    attr.dependencies.put("TargetCurrencyAttribute4Rate", Attribute.get(tarCurrAttrName));
+                }
+            }
+        }
     }
 
     /**
      * Method to initialize the Cache of this CacheObjectInterface.
+     * @throws CacheReloadException on error
      */
-    public static void initialize()
+    public static void initialize() throws CacheReloadException
     {
         Attribute.initialize(Attribute.class);
     }

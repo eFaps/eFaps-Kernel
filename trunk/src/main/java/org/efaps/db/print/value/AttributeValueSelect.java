@@ -21,6 +21,7 @@
 package org.efaps.db.print.value;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -121,14 +122,61 @@ public class AttributeValueSelect
         throws EFapsException
     {
         Object ret = this.attribute.readDBValue(_objectList);
-
         if (getChildValueSelect() != null) {
             if ("format".equals(getChildValueSelect().getValueType())) {
                 final FormatValueSelect format = (FormatValueSelect) getChildValueSelect();
                 ret = format.format(this.attribute, ret);
             }
         }
+        int i = this.attribute.getSqlColNames().size();
+        for (final Attribute attr : this.attribute.getDependencies().values()) {
+            final List<Object> tmpObjectList = new ArrayList<Object>();
+            for (final Object object : _objectList) {
+                final Object[] inner = new Object[attr.getSqlColNames().size()];
+                tmpObjectList.add(inner);
+                for (int j = 0; j < attr.getSqlColNames().size(); j++) {
+                    inner[j] = ((Object[]) object)[i + j];
+                }
+            }
+
+            final Object tmpRet  = attr.readDBValue(tmpObjectList);
+            if (ret instanceof List<?>) {
+                final Iterator<?> iter = ((List<?>) tmpRet).iterator();
+                for (Object object : (List<?>) ret) {
+                    object = getVal(object, iter.next());
+                }
+            } else {
+                ret = getVal(ret, tmpRet);
+            }
+            i++;
+        }
         return ret;
+    }
+
+    /**
+     * @param _existingVal alllready existing
+     * @param _toAdd to add
+     * @return objetc
+     */
+    private Object getVal(final Object _existingVal,
+                          final Object _toAdd)
+    {
+        final List<Object> tmpRetList = new ArrayList<Object>();
+        if (_existingVal instanceof Object[]) {
+            for (final Object object : ((Object[]) _existingVal)) {
+                tmpRetList.add(object);
+            }
+        } else {
+            tmpRetList.add(_existingVal);
+        }
+        if (_toAdd instanceof Object[]) {
+            for (final Object object : ((Object[]) _toAdd)) {
+                tmpRetList.add(object);
+            }
+        } else {
+            tmpRetList.add(_toAdd);
+        }
+        return tmpRetList.toArray();
     }
 
     /**
@@ -149,8 +197,15 @@ public class AttributeValueSelect
             getColIndexs().add(_colIndex + ret);
             ret++;
         }
+        // in case of dependencies for the attribute they must be selected also
+        for (final Attribute attr : this.attribute.getDependencies().values()) {
+            for (final String colName : attr.getSqlColNames()) {
+                _select.column(_tableIndex, colName);
+                getColIndexs().add(_colIndex + ret);
+                ret++;
+            }
+        }
         return ret;
-
     }
 
     /**
