@@ -45,7 +45,6 @@ import java.util.UUID;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.efaps.admin.datamodel.attributetype.RateType;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Context;
@@ -172,7 +171,7 @@ public class Attribute
      * A TreeMap is used to have a fixed position of each attribute.
      * (Needed e.g for printquery)
      */
-    private final Map<String, Attribute> dependencies = new TreeMap<String, Attribute>();
+    private Map<String, Attribute> dependencies;
 
     /**
      * This is the constructor for class {@link Attribute}. Every instance of
@@ -365,6 +364,16 @@ public class Attribute
      */
     public Map<String, Attribute> getDependencies()
     {
+        if (this.dependencies == null) {
+            this.dependencies = new TreeMap<String, Attribute>();
+            // in case of a rate attribute the dependencies to the currencies must be given
+            if (getProperties().containsKey("CurrencyAttribute4Rate")) {
+                this.dependencies.put("CurrencyAttribute4Rate",
+                                getParent().getAttribute(getProperties().get("CurrencyAttribute4Rate")));
+                this.dependencies.put("TargetCurrencyAttribute4Rate",
+                               getParent().getAttribute(getProperties().get("TargetCurrencyAttribute4Rate")));
+            }
+        }
         return this.dependencies;
     }
 
@@ -584,22 +593,6 @@ public class Attribute
         throws CacheReloadException
     {
         Attribute.CACHE.initialize(_class);
-        // initialize properties and links
-        for (final Attribute attr : Attribute.CACHE.getCache4Id().values()) {
-            // in case of a rate attribute the dependencies to the currencies must be given
-            if (attr.attributeType.getDbAttrType() instanceof RateType) {
-                attr.readFromDB4Properties();
-                if (attr.getProperties().containsKey("CurrencyAttribute4Rate")) {
-                    final String currAttrName = attr.getParent().getName() + "/"
-                                    + attr.getProperties().get("CurrencyAttribute4Rate");
-                    attr.dependencies.put("CurrencyAttribute4Rate", Attribute.get(currAttrName));
-
-                    final String tarCurrAttrName = attr.getParent().getName() + "/"
-                                    + attr.getProperties().get("TargetCurrencyAttribute4Rate");
-                    attr.dependencies.put("TargetCurrencyAttribute4Rate", Attribute.get(tarCurrAttrName));
-                }
-            }
-        }
     }
 
     /**
@@ -749,6 +742,8 @@ public class Attribute
                                 linkType.addLink(attr);
                             }
 
+                            attr.readFromDB4Properties();
+
                             if (typeAttr.getUUID().equals(DATAMODEL_ATTRIBUTESETATTRIBUTE.getUuid())) {
                                 attribute2setId.put(attr, parentSetId);
                             } else {
@@ -756,8 +751,6 @@ public class Attribute
                             }
                             _newCache4Id.put(attr.getId(), attr);
                             _newCache4Name.put(attr.getParent().getName() + "/" + attr.getName(), attr);
-
-                            attr.readFromDB4Properties();
                         }
                     }
                     rs.close();
