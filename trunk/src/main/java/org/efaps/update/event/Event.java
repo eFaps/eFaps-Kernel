@@ -98,7 +98,7 @@ public class Event
                  final String _method,
                  final String _index)
     {
-        this.name = (_name == null) ? _event.name : _name + "." + _event.name;
+        this.name = (_name == null) ? _event.name : _name;
         this.event = _event;
         this.program = _program;
         this.method = (_method == null) ? "execute" : _method;

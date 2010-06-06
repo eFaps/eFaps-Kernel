@@ -44,11 +44,27 @@ import org.efaps.util.EFapsException;
 public class RateUI
     extends AbstractUI
 {
+    /**
+     * Suffix for the field in case the numerator is used.
+     */
+    public static final String NUMERATORSUFFIX = "_eFapsRateNumerator";
 
     /**
-     * Needed foer serialization.
+     * Suffix for the field in case the denominator is used.
+     */
+    public static final String DENOMINATORSUFFIX = "_eFapsRateDenominator";
+
+    /**
+     * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Was the value for the rate inverted for the userinterface?
+     * The value is set by the Return from the esjp by using the
+     * <code>ReturnValue.TRUE</code>
+     */
+    private boolean inverted = false;
 
     /**
      * {@inheritDoc}
@@ -57,13 +73,31 @@ public class RateUI
     public String getReadOnlyHtml(final FieldValue _fieldValue)
         throws EFapsException
     {
-        final StringBuilder ret = new StringBuilder();
-        final Attribute attribute = _fieldValue.getAttribute();
         final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
                         .getLocale());
         if (_fieldValue.getAttribute() != null) {
             formatter.setMaximumFractionDigits(_fieldValue.getAttribute().getScale());
         }
+        final StringBuilder ret = new StringBuilder();
+        ret.append("<span name=\"").append(_fieldValue.getField().getName()).append("\" ")
+            .append(UIInterface.EFAPSTMPTAG).append(">")
+            .append(StringEscapeUtils.escapeHtml(formatter.format(getRate(_fieldValue))))
+            .append("</span>");
+        return ret.toString();
+    }
+
+
+    /**
+     * Get the Rate for the UserInterface.
+     * @param _fieldValue   FieldValue
+     * @return rate
+     * @throws EFapsException on error
+     */
+    protected BigDecimal getRate(final FieldValue _fieldValue)
+        throws EFapsException
+    {
+        final Attribute attribute = _fieldValue.getAttribute();
+        Object value = null;
         BigDecimal rate = BigDecimal.ONE;
         if (attribute.hasEvents(EventType.RATE_VALUE)) {
             final List<Return> returns = attribute.executeEvents(EventType.RATE_VALUE,
@@ -74,34 +108,52 @@ public class RateUI
                                                 ParameterValues.INSTANCE, _fieldValue.getInstance(),
                                                 ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
             for (final Return values : returns) {
-                rate =  (BigDecimal) values.get(ReturnValues.VALUES);
+                value = values.get(ReturnValues.VALUES);
+                this.inverted = values.get(ReturnValues.TRUE) != null;
             }
         } else {
-            final Object value = _fieldValue.getValue();
-            if (value instanceof Object[]) {
-                final Object[] values = (Object[]) value;
-
-                BigDecimal numerator;
-                if (values[0] instanceof BigDecimal) {
-                    numerator = (BigDecimal) values[0];
-                } else {
-                    numerator = DecimalType.parseLocalized(values[0].toString());
-                }
-                BigDecimal denominator;
-                if (values[1] instanceof BigDecimal) {
-                    denominator = (BigDecimal) values[1];
-                } else {
-                    denominator = DecimalType.parseLocalized(values[1].toString());
-                }
-                rate = numerator.divide(denominator,
-                                    numerator.scale() > denominator.scale() ? numerator.scale() : denominator.scale(),
-                                    BigDecimal.ROUND_UP);
-            }
+            value = _fieldValue.getValue();
         }
-        ret.append("<span name=\"").append(_fieldValue.getField().getName()).append("\" ")
-            .append(UIInterface.EFAPSTMPTAG).append(">")
-            .append(StringEscapeUtils.escapeHtml(formatter.format(rate)))
-            .append("</span>");
+        if (value instanceof Object[]) {
+            final Object[] values = (Object[]) value;
+
+            BigDecimal numerator;
+            if (values[0] instanceof BigDecimal) {
+                numerator = (BigDecimal) values[0];
+            } else {
+                numerator = DecimalType.parseLocalized(values[0].toString());
+            }
+            BigDecimal denominator;
+            if (values[1] instanceof BigDecimal) {
+                denominator = (BigDecimal) values[1];
+            } else {
+                denominator = DecimalType.parseLocalized(values[1].toString());
+            }
+            rate = numerator.divide(denominator,
+                                numerator.scale() > denominator.scale() ? numerator.scale() : denominator.scale(),
+                                BigDecimal.ROUND_UP);
+        }
+        return rate;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getEditHtml(final FieldValue _fieldValue)
+        throws EFapsException
+    {
+        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
+                        .getLocale());
+        if (_fieldValue.getAttribute() != null) {
+            formatter.setMaximumFractionDigits(_fieldValue.getAttribute().getScale());
+        }
+        final StringBuilder ret = new StringBuilder();
+        ret.append("<input type=\"text\" size=\"").append(_fieldValue.getField().getCols())
+            .append("\" name=\"").append(_fieldValue.getField().getName())
+            .append(this.inverted ? RateUI.DENOMINATORSUFFIX : RateUI.NUMERATORSUFFIX)
+            .append("\" value=\"").append(StringEscapeUtils.escapeHtml(formatter.format(getRate(_fieldValue))))
+            .append("\"").append(UIInterface.EFAPSTMPTAG).append("/>");
         return ret.toString();
     }
 }

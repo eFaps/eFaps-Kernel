@@ -172,16 +172,18 @@ public class CommandUpdate extends AbstractUpdate
             } else if ("target".equals(value)) {
                 if (_tags.size() == 2) {
                     final String subValue = _tags.get(1);
+                    final String name = _attributes.get("name") == null
+                            ? getValue("Name") + "." +  subValue : _attributes.get("name");
                     if ("evaluate".equals(subValue)) {
-                        this.events.add(new Event(_attributes.get("name"), EventType.UI_TABLE_EVALUATE,
+                        this.events.add(new Event(name, EventType.UI_TABLE_EVALUATE,
                                                   _attributes.get("program"), _attributes.get("method"),
                                                   _attributes.get("index")));
                     } else if ("execute".equals(subValue)) {
-                        this.events.add(new Event(_attributes.get("name"), EventType.UI_COMMAND_EXECUTE,
+                        this.events.add(new Event(name, EventType.UI_COMMAND_EXECUTE,
                                                   _attributes.get("program"), _attributes.get("method"),
                                                   _attributes.get("index")));
                     } else if ("instance".equals(subValue)) {
-                        this.events.add(new Event(_attributes.get("name"), EventType.UI_INSTANCEMANAGER,
+                        this.events.add(new Event(name, EventType.UI_INSTANCEMANAGER,
                                                   _attributes.get("program"), _attributes.get("method"),
                                                   _attributes.get("index")));
                     } else if ("command".equals(subValue)) {

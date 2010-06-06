@@ -61,7 +61,8 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public class Type extends AbstractDataModelObject
+public class Type
+    extends AbstractDataModelObject
 {
     /**
      * Enum for the different purpose of a type.
