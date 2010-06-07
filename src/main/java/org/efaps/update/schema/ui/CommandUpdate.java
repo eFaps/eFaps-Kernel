@@ -206,7 +206,7 @@ public class CommandUpdate extends AbstractUpdate
                                                   _attributes.get("program"), _attributes.get("method"),
                                                   _attributes.get("index")));
                     } else if ("validate".equals(subValue)) {
-                        this.events.add(new Event(_attributes.get("name"), EventType.UI_VALIDATE,
+                        this.events.add(new Event(name, EventType.UI_VALIDATE,
                                                   _attributes.get("program"), _attributes.get("method"),
                                                   _attributes.get("index")));
                     } else if ("help".equals(subValue)) {
