@@ -44,6 +44,7 @@ import org.efaps.db.print.value.LabelValueSelect;
 import org.efaps.db.print.value.OIDValueSelect;
 import org.efaps.db.print.value.TypeValueSelect;
 import org.efaps.db.print.value.UUIDValueSelect;
+import org.efaps.db.print.value.ValueValueSelect;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
@@ -427,6 +428,8 @@ public class OneSelect
                 currentSelect.addValueSelect(new UUIDValueSelect(currentSelect));
             } else if (part.equalsIgnoreCase("class")) {
                 currentSelect.addValueSelect(new ClassificationValueSelect(currentSelect));
+            } else if (part.equalsIgnoreCase("value")) {
+                currentSelect.addValueSelect(new ValueValueSelect(currentSelect));
             } else if (part.startsWith("format")) {
                 final Matcher matcher = formatPat.matcher(part);
                 if (matcher.find()) {

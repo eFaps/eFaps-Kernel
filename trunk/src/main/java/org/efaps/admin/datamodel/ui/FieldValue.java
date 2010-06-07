@@ -127,6 +127,7 @@ public class FieldValue implements Comparable<Object>
 
     }
 
+
     /**
      * Constructor used in case of comparison.
      *
@@ -416,6 +417,17 @@ public class FieldValue implements Comparable<Object>
     public TargetMode getTargetMode()
     {
         return this.targetMode;
+    }
+
+    /**
+     * Setter method for instance variable {@link #targetMode}.
+     *
+     * @param _targetMode value for instance variable {@link #targetMode}
+     */
+
+    public void setTargetMode(final TargetMode _targetMode)
+    {
+        this.targetMode = _targetMode;
     }
 
     /**

@@ -20,10 +20,12 @@
 
 package org.efaps.db.print.value;
 
+import java.math.BigDecimal;
+
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.attributetype.AbstractWithUoMType;
+import org.efaps.admin.datamodel.attributetype.DecimalType;
 import org.efaps.admin.datamodel.attributetype.RateType;
-import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.db.print.OneSelect;
 import org.efaps.util.EFapsException;
 
@@ -33,14 +35,14 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class LabelValueSelect
+public class ValueValueSelect
     extends AbstractValueSelect
 {
 
     /**
      * @param _oneSelect OneSelect
      */
-    public LabelValueSelect(final OneSelect _oneSelect)
+    public ValueValueSelect(final OneSelect _oneSelect)
     {
         super(_oneSelect);
     }
@@ -51,7 +53,7 @@ public class LabelValueSelect
     @Override
     public String getValueType()
     {
-        return "label";
+        return "value";
     }
 
     /**
@@ -60,34 +62,62 @@ public class LabelValueSelect
      * @return value
      * @throws EFapsException on error
      */
-    protected Object getLabel(final Attribute _attribute,
-                              final Object _object)
+    public Object get(final Attribute _attribute,
+                      final Object _object)
         throws EFapsException
     {
         final Object ret;
         if (_attribute.getAttributeType().getDbAttrType() instanceof RateType) {
-            ret = getRate(_attribute, _object);
-        }  else {
+            ret = getRate(_object);
+        } else if (_attribute.getAttributeType().getDbAttrType() instanceof AbstractWithUoMType) {
+            ret = getValueUOM(_object);
+        } else {
             ret = _object;
         }
         return ret;
     }
 
     /**
-     * @param _attribute Attribute this value is wanted for
      * @param _object object the rate is wanted for
      * @return Object
      * @throws EFapsException on error
      */
-    protected Object getRate(final Attribute _attribute,
-                             final Object _object)
+    protected Object getRate(final Object _object)
         throws EFapsException
     {
         Object ret = null;
         if (_object instanceof Object[]) {
-            final FieldValue fieldValue = new FieldValue(null, _attribute, _object, null, null);
-            fieldValue.setTargetMode(TargetMode.VIEW);
-            ret = fieldValue.getObject4Compare();
+            final Object[] values = (Object[]) _object;
+
+            BigDecimal numerator;
+            if (values[0] instanceof BigDecimal) {
+                numerator = (BigDecimal) values[0];
+            } else {
+                numerator = DecimalType.parseLocalized(values[0].toString());
+            }
+            BigDecimal denominator;
+            if (values[1] instanceof BigDecimal) {
+                denominator = (BigDecimal) values[1];
+            } else {
+                denominator = DecimalType.parseLocalized(values[1].toString());
+            }
+            ret = numerator.divide(denominator,
+                                numerator.scale() > denominator.scale() ? numerator.scale() : denominator.scale(),
+                                BigDecimal.ROUND_UP);
+        }
+        return ret;
+    }
+
+    /**
+     * @param _object object the value is wanted for
+     * @return Object
+     */
+    protected Object getValueUOM(final Object _object)
+    {
+        Object ret = null;
+        if (_object instanceof Object[]) {
+            final Object[] values = (Object[]) _object;
+            ret = values[0];
         }
         return ret;
     }
