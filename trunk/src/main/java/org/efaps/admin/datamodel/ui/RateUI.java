@@ -47,12 +47,7 @@ public class RateUI
     /**
      * Suffix for the field in case the numerator is used.
      */
-    public static final String NUMERATORSUFFIX = "_eFapsRateNumerator";
-
-    /**
-     * Suffix for the field in case the denominator is used.
-     */
-    public static final String DENOMINATORSUFFIX = "_eFapsRateDenominator";
+    public static final String INVERTEDSUFFIX = "_eFapsRateInverted";
 
     /**
      * Needed for serialization.
@@ -151,9 +146,81 @@ public class RateUI
         final StringBuilder ret = new StringBuilder();
         ret.append("<input type=\"text\" size=\"").append(_fieldValue.getField().getCols())
             .append("\" name=\"").append(_fieldValue.getField().getName())
-            .append(this.inverted ? RateUI.DENOMINATORSUFFIX : RateUI.NUMERATORSUFFIX)
             .append("\" value=\"").append(StringEscapeUtils.escapeHtml(formatter.format(getRate(_fieldValue))))
-            .append("\"").append(UIInterface.EFAPSTMPTAG).append("/>");
+            .append("\"").append(UIInterface.EFAPSTMPTAG).append("/>")
+            .append("<input type=\"hidden\" name=\"").append(_fieldValue.getField().getName())
+            .append(RateUI.INVERTEDSUFFIX).append("\" value=\"").append(this.inverted).append("\">");
         return ret.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStringValue(final FieldValue _fieldValue)
+        throws EFapsException
+    {
+        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
+                        .getLocale());
+        if (_fieldValue.getAttribute() != null) {
+            formatter.setMaximumFractionDigits(_fieldValue.getAttribute().getScale());
+        }
+        return formatter.format(getRate(_fieldValue));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getHiddenHtml(final FieldValue _fieldValue)
+        throws EFapsException
+    {
+        final StringBuilder ret = new StringBuilder();
+        ret.append("<input type=\"hidden\" size=\"").append(_fieldValue.getField().getCols())
+            .append("\" name=\"").append(_fieldValue.getField().getName())
+            .append("\" value=\"").append(getRate(_fieldValue))
+            .append("\"").append(UIInterface.EFAPSTMPTAG).append("/>")
+            .append("<input type=\"hidden\" name=\"").append(_fieldValue.getField().getName())
+            .append(RateUI.INVERTEDSUFFIX).append("\" value=\"").append(this.inverted).append("\">");
+        return ret.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int compare(final FieldValue _fieldValue,
+                       final FieldValue _fieldValue2)
+        throws EFapsException
+    {
+        final BigDecimal value;
+        if (_fieldValue.getValue() instanceof BigDecimal) {
+            value = (BigDecimal) _fieldValue.getValue();
+        } else {
+            value = getRate(_fieldValue);
+        }
+        final BigDecimal value2;
+        if (_fieldValue2.getValue() instanceof BigDecimal) {
+            value2 = (BigDecimal) _fieldValue2.getValue();
+        } else {
+            value2 = getRate(_fieldValue2);
+        }
+        return value.compareTo(value2);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object getObject4Compare(final FieldValue _fieldValue)
+        throws EFapsException
+    {
+        final BigDecimal value;
+        if (_fieldValue.getValue() instanceof BigDecimal) {
+            value = (BigDecimal) _fieldValue.getValue();
+        } else {
+            value = getRate(_fieldValue);
+        }
+        return value;
     }
 }

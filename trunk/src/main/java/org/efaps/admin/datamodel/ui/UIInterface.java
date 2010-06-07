@@ -95,9 +95,11 @@ public interface UIInterface
      * @param _fieldValue first Value
      * @param _fieldValue2 second Value
      * @return int
+     * @throws EFapsException on error
      */
     int compare(final FieldValue _fieldValue,
-                final FieldValue _fieldValue2);
+                final FieldValue _fieldValue2)
+        throws EFapsException;
 
     /**
      * Method is used to validate a string value given from an Userinterface.
@@ -107,9 +109,11 @@ public interface UIInterface
      * @return if the given value is valid for this type null must be returned,
      *         else the message that will be shown to the user as a snipplet
      *         must be returned
+     * @throws EFapsException on error
      */
     String validateValue(final String _value,
-                         final Attribute _attribute);
+                         final Attribute _attribute)
+        throws EFapsException;;
 
     /**
      * Method to format the given Object.

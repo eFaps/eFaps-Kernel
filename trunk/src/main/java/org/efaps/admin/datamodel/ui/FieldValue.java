@@ -333,7 +333,11 @@ public class FieldValue implements Comparable<Object>
             }
         } else {
             if (getClassUI().equals(target.getClassUI())) {
-                ret = getClassUI().compare(this, target);
+                try {
+                    ret = getClassUI().compare(this, target);
+                } catch (final EFapsException e) {
+                    FieldValue.LOG.error("Comparing FieldValue to another FieldValue threw an error", e);
+                }
             } else {
                 FieldValue.LOG.error("can't compare this Objects because they don't have the same ClassUI");
             }
