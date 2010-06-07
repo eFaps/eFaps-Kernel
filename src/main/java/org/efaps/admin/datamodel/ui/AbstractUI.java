@@ -87,9 +87,11 @@ public abstract class AbstractUI
 
     /**
      * {@inheritDoc}
+     * @throws EFapsException
      */
     public int compare(final FieldValue _fieldValue,
                        final FieldValue _fieldValue2)
+        throws EFapsException
     {
         return 0;
     }
@@ -99,6 +101,7 @@ public abstract class AbstractUI
      */
     public String validateValue(final String _value,
                                 final Attribute _attribute)
+        throws EFapsException
     {
         return null;
     }
@@ -107,7 +110,8 @@ public abstract class AbstractUI
      * {@inheritDoc}
      */
     public Object format(final Object _object,
-                         final String _pattern) throws EFapsException
+                         final String _pattern)
+        throws EFapsException
     {
         return _object;
     }
