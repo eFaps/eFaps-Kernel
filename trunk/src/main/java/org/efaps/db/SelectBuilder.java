@@ -155,6 +155,18 @@ public class SelectBuilder
     }
 
     /**
+     * Add type select part.
+     *
+     * @return this
+     */
+    public SelectBuilder value()
+    {
+        addPoint();
+        this.bldr.append("value");
+        return this;
+    }
+
+    /**
      * Add label select part.
      *
      * @return this
