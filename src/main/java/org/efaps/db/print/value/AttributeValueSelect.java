@@ -122,12 +122,6 @@ public class AttributeValueSelect
         throws EFapsException
     {
         Object ret = this.attribute.readDBValue(_objectList);
-        if (getChildValueSelect() != null) {
-            if ("format".equals(getChildValueSelect().getValueType())) {
-                final FormatValueSelect format = (FormatValueSelect) getChildValueSelect();
-                ret = format.format(this.attribute, ret);
-            }
-        }
         int i = this.attribute.getSqlColNames().size();
         for (final Attribute attr : this.attribute.getDependencies().values()) {
             final List<Object> tmpObjectList = new ArrayList<Object>();
@@ -149,6 +143,18 @@ public class AttributeValueSelect
                 ret = getVal(ret, tmpRet);
             }
             i++;
+        }
+        if (getChildValueSelect() != null) {
+            if ("format".equals(getChildValueSelect().getValueType())) {
+                final FormatValueSelect format = (FormatValueSelect) getChildValueSelect();
+                ret = format.format(this.attribute, ret);
+            } else if ("value".equals(getChildValueSelect().getValueType())) {
+                final ValueValueSelect value = (ValueValueSelect) getChildValueSelect();
+                ret = value.get(this.attribute, ret);
+            } else if ("label".equals(getChildValueSelect().getValueType())) {
+                final LabelValueSelect value = (LabelValueSelect) getChildValueSelect();
+                ret = value.getLabel(this.attribute, ret);
+            }
         }
         return ret;
     }
