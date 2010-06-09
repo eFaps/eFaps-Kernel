@@ -94,7 +94,7 @@ public class RateUI
         final Attribute attribute = _fieldValue.getAttribute();
         Object value = null;
         BigDecimal rate = BigDecimal.ONE;
-        if (attribute.hasEvents(EventType.RATE_VALUE)) {
+        if (attribute != null && attribute.hasEvents(EventType.RATE_VALUE)) {
             final List<Return> returns = attribute.executeEvents(EventType.RATE_VALUE,
                                                 ParameterValues.UIOBJECT, _fieldValue,
                                                 ParameterValues.ACCESSMODE, _fieldValue.getTargetMode(),
