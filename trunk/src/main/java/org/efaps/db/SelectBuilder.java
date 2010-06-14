@@ -207,10 +207,50 @@ public class SelectBuilder
      *
      * @return this
      */
-    public SelectBuilder clasS()
+    public SelectBuilder clazz()
     {
         addPoint();
         this.bldr.append("class");
+        return this;
+    }
+
+    /**
+     * @param _class attribute to be added
+     * @return this
+     */
+    public SelectBuilder clazz(final CIType _class)
+    {
+        return clazz(_class.getType().getName());
+    }
+
+    /**
+     * @param _class attribute to be added
+     * @return this
+     */
+    public SelectBuilder clazz(final String _class)
+    {
+        addPoint();
+        this.bldr.append("class[").append(_class).append("]");
+        return this;
+    }
+
+    /**
+     * @param _attribute attribute to be added
+     * @return this
+     */
+    public SelectBuilder attributeset(final CIAttribute _attribute)
+    {
+        return attribute(_attribute.name);
+    }
+
+    /**
+     * @param _attribute attribute to be added
+     * @return this
+     */
+    public SelectBuilder attributeset(final String _attribute)
+    {
+        addPoint();
+        this.bldr.append("attribute[").append(_attribute).append("]");
         return this;
     }
 
