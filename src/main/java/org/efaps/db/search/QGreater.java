@@ -50,7 +50,7 @@ public class QGreater
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart appendSQL(final StringBuilder _sql)
+    public QGreater appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);

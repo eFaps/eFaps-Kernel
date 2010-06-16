@@ -40,11 +40,14 @@ import org.efaps.db.search.QClassValue;
 import org.efaps.db.search.QDateTimeValue;
 import org.efaps.db.search.QEqual;
 import org.efaps.db.search.QGreater;
+import org.efaps.db.search.QIn;
 import org.efaps.db.search.QLess;
 import org.efaps.db.search.QMatch;
 import org.efaps.db.search.QNotEqual;
+import org.efaps.db.search.QNotIn;
 import org.efaps.db.search.QNumberValue;
 import org.efaps.db.search.QOr;
+import org.efaps.db.search.QSQLValue;
 import org.efaps.db.search.QStringValue;
 import org.efaps.db.search.QWhere;
 import org.efaps.util.EFapsException;
@@ -73,7 +76,7 @@ public class QueryBuilder
     /**
      * Query this QueryBuilder will return.
      */
-    private InstanceQuery query;
+    private AbstractObjectQuery<?> query;
 
     /**
      * Is this QueryBuilder using or instead of and.
@@ -353,6 +356,93 @@ public class QueryBuilder
         return ret;
     }
 
+    /**
+     * @param _ciAttr Name of the attribute
+     * @param _query    the query
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QIn addWhereAttrInQuery(final CIAttribute _ciAttr,
+                                   final AttributeQuery _query)
+        throws EFapsException
+    {
+        return addWhereAttrInQuery(_ciAttr.name, _query);
+    }
+
+    /**
+     * @param _attrName Name of the attribute
+     * @param _query    the query
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QIn addWhereAttrInQuery(final String _attrName,
+                                   final AttributeQuery _query)
+        throws EFapsException
+    {
+        final QIn in = new QIn(new QAttribute(_attrName), new QSQLValue(_query.getSQLStatement()));
+        this.compares.add(in);
+        return in;
+    }
+
+    /**
+     * @param _attr     attribute
+     * @param _query    the query
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QIn addWhereAttrEqValue(final Attribute _attr,
+                                      final AttributeQuery _query)
+        throws EFapsException
+    {
+        final QIn in = new QIn(new QAttribute(_attr), new QSQLValue(_query.getSQLStatement()));
+        this.compares.add(in);
+        return in;
+    }
+
+    /**
+     * @param _ciAttr Name of the attribute
+     * @param _query    the query
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QNotIn addWhereAttrNotInQuery(final CIAttribute _ciAttr,
+                                         final AttributeQuery _query)
+        throws EFapsException
+    {
+        return addWhereAttrNotInQuery(_ciAttr.name, _query);
+    }
+
+
+    /**
+     * @param _attrName Name of the attribute
+     * @param _query    the query
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QNotIn addWhereAttrNotInQuery(final String _attrName,
+                                      final AttributeQuery _query)
+        throws EFapsException
+    {
+        final QNotIn in = new QNotIn(new QAttribute(_attrName), new QSQLValue(_query.getSQLStatement()));
+        this.compares.add(in);
+        return in;
+    }
+
+    /**
+     * @param _attr     attribute
+     * @param _query    the query
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QNotIn addWhereAttrNotInQuery(final Attribute _attr,
+                                         final AttributeQuery _query)
+        throws EFapsException
+    {
+        final QNotIn in = new QNotIn(new QAttribute(_attr), new QSQLValue(_query.getSQLStatement()));
+        this.compares.add(in);
+        return in;
+    }
+
 
     /**
      * Get the QAbstractValue for a value.
@@ -416,7 +506,7 @@ public class QueryBuilder
                 this.query.setWhere(new QWhere(and));
             }
         }
-        return this.query;
+        return (InstanceQuery) this.query;
     }
 
     /**
@@ -428,5 +518,26 @@ public class QueryBuilder
         throws EFapsException
     {
         return new MultiPrintQuery(getQuery().execute());
+    }
+
+    /**
+     * Method to get an Attribute Query.
+     * @param _attribute attribute the value is wanted for,
+     *        if null the id attribute will be used automatically
+     * @return Attribute Query
+     */
+    public AttributeQuery getAttributeQuery(final Attribute _attribute)
+    {
+        if (this.query == null) {
+            this.query = new AttributeQuery(this.typeUUID, _attribute);
+            if (!this.compares.isEmpty()) {
+                final QAnd and = this.or ? new QOr() : new QAnd();
+                for (final QAbstractAttrCompare compare : this.compares) {
+                    and.addPart(compare);
+                }
+                this.query.setWhere(new QWhere(and));
+            }
+        }
+        return (AttributeQuery) this.query;
     }
 }

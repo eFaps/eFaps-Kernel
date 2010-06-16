@@ -135,7 +135,7 @@ public class Event
 
             final Update update;
             if (query.next()) {
-                update = new Update(query.getCurrentInstance());
+                update = new Update(query.getCurrentValue());
             } else {
                 update = new Insert(this.event.name);
                 update.add("Abstract", typeID);
@@ -172,7 +172,7 @@ public class Event
         final InstanceQuery query = queryBldr.getQuery();
         query.executeWithoutAccessCheck();
         if (query.next()) {
-            id = query.getCurrentInstance().getId();
+            id = query.getCurrentValue().getId();
         } else {
             Event.LOG.error("type[" + _typeName + "]." + "Program [" + this.program + "]: " + "' not found");
         }

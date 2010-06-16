@@ -24,7 +24,7 @@ package org.efaps.db.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.efaps.db.InstanceQuery;
+import org.efaps.db.AbstractObjectQuery;
 import org.efaps.util.EFapsException;
 
 
@@ -79,7 +79,7 @@ public class QAnd
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart appendSQL(final StringBuilder _sql)
+    public QAnd appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
         _sql.append("(");
@@ -100,8 +100,8 @@ public class QAnd
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart prepare(final InstanceQuery _query,
-                                final QAbstractPart _part)
+    public QAnd prepare(final AbstractObjectQuery<?> _query,
+                                 final QAbstractPart _part)
         throws EFapsException
     {
         for (final QAbstractPart part : this.parts) {

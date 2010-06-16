@@ -24,7 +24,7 @@ package org.efaps.db.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.efaps.db.InstanceQuery;
+import org.efaps.db.AbstractObjectQuery;
 import org.efaps.util.EFapsException;
 
 
@@ -93,7 +93,7 @@ public class QNotEqual
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart appendSQL(final StringBuilder _sql)
+    public QNotEqual appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
@@ -121,8 +121,8 @@ public class QNotEqual
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart prepare(final InstanceQuery _query,
-                                final QAbstractPart _part)
+    public QNotEqual prepare(final AbstractObjectQuery<?> _query,
+                                 final QAbstractPart _part)
         throws EFapsException
     {
         getAttribute().prepare(_query, this);

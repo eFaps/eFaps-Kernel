@@ -137,7 +137,7 @@ public class EFapsClassLoader
             final InstanceQuery query = queryBuilder.getQuery();
             query.execute();
             if (query.next()) {
-                final Checkout checkout = new Checkout(query.getCurrentInstance());
+                final Checkout checkout = new Checkout(query.getCurrentValue());
                 final InputStream is = checkout.executeWithoutAccessCheck();
 
                 ret = new byte[is.available()];

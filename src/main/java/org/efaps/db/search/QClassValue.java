@@ -62,7 +62,7 @@ public class QClassValue
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart appendSQL(final StringBuilder _sql)
+    public QClassValue appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
         _sql.append(this.clazz.getId());

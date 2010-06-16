@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.Map.Entry;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.transaction.ConnectionResource;
@@ -41,14 +42,21 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class InstanceQuery
-    extends AbstractObjectQuery<Instance>
+public class AttributeQuery
+    extends AbstractObjectQuery<Object>
 {
+
+    /**
+     * Attribute this query will return the value for.
+     */
+    private final Attribute attribute;
+
+
     /**
      * Constructor setting the type by his UUID.
      * @param _typeUUI UUID of the Type the query is based on
      */
-    public InstanceQuery(final UUID _typeUUI)
+    public AttributeQuery(final UUID _typeUUI)
     {
         this(Type.get(_typeUUI));
     }
@@ -57,9 +65,42 @@ public class InstanceQuery
      * Constructor setting the type.
      * @param _type TYpe the query is based on
      */
-    public InstanceQuery(final Type _type)
+    public AttributeQuery(final Type _type)
+    {
+        this(_type, _type.getAttribute("ID"));
+    }
+
+    /**
+     * Constructor setting the type by his UUID.
+     * @param _typeUUI UUID of the Type the query is based on
+     * @param _attribute    attribute the value is wanted for
+     */
+    public AttributeQuery(final UUID _typeUUI,
+                          final Attribute _attribute)
+    {
+        this(Type.get(_typeUUI), _attribute);
+    }
+
+    /**
+     * Constructor setting the type.
+     * @param _type         TYpe the query is based on
+     * @param _attribute    attribute the value is wanted for
+     */
+    public AttributeQuery(final Type _type,
+                          final Attribute _attribute)
     {
         super(_type);
+        this.attribute = _attribute == null ?  _type.getAttribute("ID") : _attribute;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #attribute}.
+     *
+     * @return value of instance variable {@link #attribute}
+     */
+    public Attribute getAttribute()
+    {
+        return this.attribute;
     }
 
     /**
@@ -69,7 +110,7 @@ public class InstanceQuery
      * TODO Accesscheck
      */
     @Override
-    public List<Instance> execute()
+    public List<Object> execute()
         throws EFapsException
     {
         return executeWithoutAccessCheck();
@@ -82,11 +123,11 @@ public class InstanceQuery
      * @throws EFapsException on error
      */
     @Override
-    public List<Instance> executeWithoutAccessCheck()
+    public List<Object> executeWithoutAccessCheck()
         throws EFapsException
     {
         prepareQuery();
-        executeOneCompleteStmt(createSQLStatement());
+        executeOneCompleteStmt(getSQLStatement());
         return getValues();
     }
 
@@ -95,19 +136,13 @@ public class InstanceQuery
      * @return StringBuilder containing the statement
      * @throws EFapsException on error
      */
-    private StringBuilder createSQLStatement()
+    public StringBuilder getSQLStatement()
         throws EFapsException
     {
         final SQLSelect select = new SQLSelect()
-            .column(0, "ID")
+            .column(0, this.attribute.getSqlColNames().get(0))
             .from(getBaseType().getMainTable().getSqlTable(), 0);
 
-        // if the main table has a column for the type it is selected also
-        int colIndex = 2;
-        if (getBaseType().getMainTable().getSqlColType() != null) {
-            select.column(0, getBaseType().getMainTable().getSqlColType());
-            colIndex++;
-        }
         // add child tables
         if (getSqlTable2Index().size() > 0) {
             for (final Entry<SQLTable, Integer> entry : getSqlTable2Index().entrySet()) {
@@ -125,6 +160,8 @@ public class InstanceQuery
         }
         return cmd;
     }
+
+
     /**
      * Execute the actual statement against the database.
      * @param _complStmt        Statment to be executed
@@ -148,12 +185,8 @@ public class InstanceQuery
             final ResultSet rs = stmt.executeQuery(_complStmt.toString());
             new ArrayList<Instance>();
             while (rs.next()) {
-                final long id = rs.getLong(1);
-                Long typeId = null;
-                if (getBaseType().getMainTable().getSqlColType() != null) {
-                    typeId = rs.getLong(2);
-                }
-                getValues().add(Instance.get(typeId == null ? getBaseType() : Type.get(typeId), id));
+                final Object object = rs.getObject(1);
+                getValues().add(object);
             }
             rs.close();
             stmt.close();
@@ -172,4 +205,5 @@ public class InstanceQuery
         }
         return ret;
     }
+
 }

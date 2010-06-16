@@ -53,7 +53,7 @@ public class QDateTimeValue
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart appendSQL(final StringBuilder _sql)
+    public QDateTimeValue appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
         _sql.append(" timestamp '").append(new DateTimeType().toString4Where(this.value)).append("'");
