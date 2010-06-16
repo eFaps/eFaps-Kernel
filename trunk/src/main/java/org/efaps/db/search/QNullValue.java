@@ -21,8 +21,6 @@
 
 package org.efaps.db.search;
 
-import org.efaps.db.AbstractObjectQuery;
-import org.efaps.util.EFapsException;
 
 
 /**
@@ -31,17 +29,16 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class QAbstractValue
-    extends QAbstractPart
+public class QNullValue
+    extends QAbstractValue
 {
     /**
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart prepare(final AbstractObjectQuery<?> _query,
-                                 final QAbstractPart _part)
-        throws EFapsException
+    public QNullValue appendSQL(final StringBuilder _sql)
     {
+        _sql.append("null");
         return this;
     }
 }

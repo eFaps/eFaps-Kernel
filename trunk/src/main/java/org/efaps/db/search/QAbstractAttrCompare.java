@@ -21,7 +21,7 @@
 
 package org.efaps.db.search;
 
-import org.efaps.db.InstanceQuery;
+import org.efaps.db.AbstractObjectQuery;
 import org.efaps.util.EFapsException;
 
 
@@ -107,8 +107,8 @@ public abstract class QAbstractAttrCompare
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart prepare(final InstanceQuery _query,
-                                final QAbstractPart _part)
+    public QAbstractPart prepare(final AbstractObjectQuery<?> _query,
+                                 final QAbstractPart _part)
         throws EFapsException
     {
         this.attribute.prepare(_query, this);

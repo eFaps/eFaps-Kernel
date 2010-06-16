@@ -22,8 +22,8 @@
 package org.efaps.db.search;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.Context;
-import org.efaps.db.InstanceQuery;
 
 
 /**
@@ -77,8 +77,8 @@ public class QAttribute
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart prepare(final InstanceQuery _query,
-                                final QAbstractPart _part)
+    public QAbstractPart prepare(final AbstractObjectQuery<?> _query,
+                                 final QAbstractPart _part)
     {
         if (_part instanceof QAbstractAttrCompare) {
             this.ignoreCase = ((QAbstractAttrCompare) _part).isIgnoreCase();

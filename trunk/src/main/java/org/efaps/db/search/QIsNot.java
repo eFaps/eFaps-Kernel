@@ -21,7 +21,6 @@
 
 package org.efaps.db.search;
 
-import org.efaps.db.AbstractObjectQuery;
 import org.efaps.util.EFapsException;
 
 
@@ -31,17 +30,30 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class QAbstractValue
-    extends QAbstractPart
+public class QIsNot
+    extends QAbstractAttrCompare
 {
+    /**
+     * Constructor setting attribute and value.
+     * @param _attribute Attribute to be checked for greater
+     * @param _value     value as criteria
+     */
+    public QIsNot(final QAttribute _attribute,
+               final QAbstractValue _value)
+    {
+        super(_attribute, _value);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart prepare(final AbstractObjectQuery<?> _query,
-                                 final QAbstractPart _part)
+    public QIsNot appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
+        getAttribute().appendSQL(_sql);
+        _sql.append(" IS NOT ");
+        getValue().appendSQL(_sql);
         return this;
     }
 }

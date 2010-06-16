@@ -21,8 +21,8 @@
 
 package org.efaps.db.search;
 
+import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.Context;
-import org.efaps.db.InstanceQuery;
 import org.efaps.util.EFapsException;
 
 
@@ -53,8 +53,8 @@ public class QStringValue
      *
      */
     @Override
-    public QAbstractPart prepare(final InstanceQuery _query,
-                                final QAbstractPart _part)
+    public QStringValue prepare(final AbstractObjectQuery<?> _query,
+                                 final QAbstractPart _part)
         throws EFapsException
     {
         if (_part instanceof QAbstractAttrCompare) {
@@ -71,7 +71,7 @@ public class QStringValue
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart appendSQL(final StringBuilder _sql)
+    public QStringValue appendSQL(final StringBuilder _sql)
     {
         _sql.append("'").append(this.value).append("'");
         return this;

@@ -21,7 +21,7 @@
 
 package org.efaps.db.search;
 
-import org.efaps.db.InstanceQuery;
+import org.efaps.db.AbstractObjectQuery;
 import org.efaps.util.EFapsException;
 
 
@@ -52,7 +52,7 @@ public abstract class QAbstractPart
      * @return this AbstractPart
      * @throws EFapsException on any error
      */
-    public abstract QAbstractPart prepare(final InstanceQuery _query,
-                                         final QAbstractPart _part)
+    public abstract QAbstractPart prepare(final AbstractObjectQuery<?> _query,
+                                          final QAbstractPart _part)
         throws EFapsException;
 }

@@ -26,8 +26,8 @@ import java.util.List;
 
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.Context;
-import org.efaps.db.InstanceQuery;
 import org.efaps.util.EFapsException;
 
 
@@ -94,7 +94,7 @@ public class QClassEqual
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart prepare(final InstanceQuery _query,
+    public QClassEqual prepare(final AbstractObjectQuery<?> _query,
                                  final QAbstractPart _part)
         throws EFapsException
     {
@@ -109,7 +109,7 @@ public class QClassEqual
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart appendSQL(final StringBuilder _sql)
+    public QClassEqual appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);

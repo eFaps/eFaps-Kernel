@@ -49,7 +49,7 @@ public class QBooleanValue
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart appendSQL(final StringBuilder _sql)
+    public QBooleanValue appendSQL(final StringBuilder _sql)
     {
         _sql.append(this.value ? "TRUE" : "FALSE");
         return this;
