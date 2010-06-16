@@ -82,6 +82,17 @@ public class AttributeQuery
     }
 
     /**
+     * Constructor setting the type by his UUID.
+     * @param _typeUUI          UUID of the Type the query is based on
+     * @param _attributeName    name of the  attribute the value is wanted for
+     */
+    public AttributeQuery(final UUID _typeUUI,
+                          final String _attributeName)
+    {
+        this(Type.get(_typeUUI), Type.get(_typeUUI).getAttribute(_attributeName));
+    }
+
+    /**
      * Constructor setting the type.
      * @param _type         TYpe the query is based on
      * @param _attribute    attribute the value is wanted for
