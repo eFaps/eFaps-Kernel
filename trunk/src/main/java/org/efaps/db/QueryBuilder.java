@@ -41,10 +41,13 @@ import org.efaps.db.search.QDateTimeValue;
 import org.efaps.db.search.QEqual;
 import org.efaps.db.search.QGreater;
 import org.efaps.db.search.QIn;
+import org.efaps.db.search.QIs;
+import org.efaps.db.search.QIsNot;
 import org.efaps.db.search.QLess;
 import org.efaps.db.search.QMatch;
 import org.efaps.db.search.QNotEqual;
 import org.efaps.db.search.QNotIn;
+import org.efaps.db.search.QNullValue;
 import org.efaps.db.search.QNumberValue;
 import org.efaps.db.search.QOr;
 import org.efaps.db.search.QSQLValue;
@@ -443,6 +446,80 @@ public class QueryBuilder
         return in;
     }
 
+    /**
+     * @param _ciAttr Name of the attribute
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QIs addWhereAttrIsNull(final CIAttribute _ciAttr)
+        throws EFapsException
+    {
+        return addWhereAttrIsNull(_ciAttr.name);
+    }
+
+
+    /**
+     * @param _attrName Name of the attribute
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QIs addWhereAttrIsNull(final String _attrName)
+        throws EFapsException
+    {
+        final QIs in = new QIs(new QAttribute(_attrName), new QNullValue());
+        this.compares.add(in);
+        return in;
+    }
+
+    /**
+     * @param _attr     attribute
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QIs addWhereAttrIsNull(final Attribute _attr)
+        throws EFapsException
+    {
+        final QIs in = new QIs(new QAttribute(_attr), new QNullValue());
+        this.compares.add(in);
+        return in;
+    }
+
+    /**
+     * @param _ciAttr Name of the attribute
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QIsNot addWhereAttrNotIsNull(final CIAttribute _ciAttr)
+        throws EFapsException
+    {
+        return addWhereAttrNotIsNull(_ciAttr.name);
+    }
+
+    /**
+     * @param _attrName Name of the attribute
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QIsNot addWhereAttrNotIsNull(final String _attrName)
+        throws EFapsException
+    {
+        final QIsNot in = new QIsNot(new QAttribute(_attrName), new QNullValue());
+        this.compares.add(in);
+        return in;
+    }
+
+    /**
+     * @param _attr     attribute
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QIsNot addWhereAttrNotIsNull(final Attribute _attr)
+        throws EFapsException
+    {
+        final QIsNot in = new QIsNot(new QAttribute(_attr), new QNullValue());
+        this.compares.add(in);
+        return in;
+    }
 
     /**
      * Get the QAbstractValue for a value.
@@ -454,7 +531,9 @@ public class QueryBuilder
         throws EFapsException
     {
         QAbstractValue ret = null;
-        if (_value instanceof Number) {
+        if (_value == null) {
+            ret = new QNullValue();
+        } else if (_value instanceof Number) {
             ret = new QNumberValue((Number) _value);
         } else if (_value instanceof String) {
             ret = new QStringValue((String) _value);
@@ -526,10 +605,21 @@ public class QueryBuilder
      *        if null the id attribute will be used automatically
      * @return Attribute Query
      */
-    public AttributeQuery getAttributeQuery(final Attribute _attribute)
+    public AttributeQuery getAttributeQuery(final CIAttribute _attribute)
+    {
+        return this.getAttributeQuery(_attribute.name);
+    }
+
+    /**
+     * Method to get an Attribute Query.
+     * @param _attributeName name of the attribute the value is wanted for,
+     *        if null the id attribute will be used automatically
+     * @return Attribute Query
+     */
+    public AttributeQuery getAttributeQuery(final String _attributeName)
     {
         if (this.query == null) {
-            this.query = new AttributeQuery(this.typeUUID, _attribute);
+            this.query = new AttributeQuery(this.typeUUID, _attributeName);
             if (!this.compares.isEmpty()) {
                 final QAnd and = this.or ? new QOr() : new QAnd();
                 for (final QAbstractAttrCompare compare : this.compares) {
