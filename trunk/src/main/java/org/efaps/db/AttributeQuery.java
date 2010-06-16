@@ -137,7 +137,6 @@ public class AttributeQuery
     public List<Object> executeWithoutAccessCheck()
         throws EFapsException
     {
-        prepareQuery();
         executeOneCompleteStmt(getSQLStatement());
         return getValues();
     }
@@ -150,6 +149,7 @@ public class AttributeQuery
     public StringBuilder getSQLStatement()
         throws EFapsException
     {
+        prepareQuery();
         final SQLSelect select = new SQLSelect()
             .column(0, this.attribute.getSqlColNames().get(0))
             .from(getBaseType().getMainTable().getSqlTable(), 0);
