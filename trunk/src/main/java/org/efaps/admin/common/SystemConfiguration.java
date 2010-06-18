@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
-import org.efaps.admin.EFapsClassNames;
+import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
@@ -326,9 +326,9 @@ public final class SystemConfiguration
                             _newCache4UUID.put(config.getUUID(), config);
                         }
                         final UUID uuidTmp = UUID.fromString(uuid);
-                        if (uuidTmp.equals(EFapsClassNames.CONFIG_ATTR.getUuid())) {
+                        if (uuidTmp.equals(CIAdminCommon.SystemConfigurationAttribute.uuid)) {
                             config.attributes.put(key, value);
-                        } else if (uuidTmp.equals(EFapsClassNames.CONFIG_LINK.getUuid())) {
+                        } else if (uuidTmp.equals(CIAdminCommon.SystemConfigurationLink.uuid)) {
                             config.links.put(key, value);
                         }
                     }

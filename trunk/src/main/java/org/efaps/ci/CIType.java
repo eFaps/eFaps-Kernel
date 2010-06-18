@@ -35,6 +35,7 @@ import java.util.UUID;
  */
 public abstract class CIType
 {
+    //CHECKSTYLE:OFF
     /**
      * ID attribute. Each type must have it.
      */
@@ -54,7 +55,7 @@ public abstract class CIType
      * UUID of this type.
      */
     public final UUID uuid;
-
+    //CHECKSTYLE:ON
     /**
      * Constructor setting the uuid.
      * @param _uuid UUID of this type
