@@ -29,6 +29,7 @@ package org.efaps.ci;
  */
 public class CIAttribute
 {
+    //CHECKSTYLE:OFF
     /**
      * Name of the attribute.
      */
@@ -38,7 +39,7 @@ public class CIAttribute
      * Type this attribute belongs to.
      */
     public final CIType ciType;
-
+    //CHECKSTYLE:ON
     /**
      * @param _type type this attribute belongs to
      * @param _name name of this attribute

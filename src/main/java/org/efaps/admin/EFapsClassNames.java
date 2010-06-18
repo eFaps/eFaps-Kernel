@@ -48,13 +48,6 @@ public enum EFapsClassNames
     /** Attribute type Status. */
     ATTRTYPE_STATUS("0161bcdb-45e9-4839-a709-3a1c56f8a76a"),
 
-    /** Admin_Common_SystemConfiguration. */
-    CONFIG("5fecab1b-f4a8-447d-ad64-cf5965fe5d3b"),
-    /** Admin_Common_SystemConfigurationAttribute. */
-    CONFIG_ATTR("21c731b4-e717-47dd-92a3-9a6cf731b164"),
-    /** Admin_Common_SystemConfigurationLink. */
-    CONFIG_LINK("227048fb-f7a5-4bf5-b620-c88e6c87eed7"),
-
     /** Admin_DataModel_Type. */
     DATAMODEL_TYPE("8770839d-60fd-4bb4-81fd-3903d4c916ec"),
     /** Admin_DataModel_TypeEventIsAllowedFor. */
