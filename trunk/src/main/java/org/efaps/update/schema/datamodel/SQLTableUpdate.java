@@ -469,62 +469,65 @@ public class SQLTableUpdate
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws InstallationException, EFapsException
+            throws InstallationException
         {
-            if (_step == UpdateLifecycle.SQL_CREATE_TABLE)  {
-                if (!this.view) {
-                    createSQLTable();
-                }
-                super.updateInDB(_step, _allLinkTypes);
-            } else if (_step == UpdateLifecycle.SQL_UPDATE_ID && !this.view)  {
-                updateColIdSQLTable();
-                super.updateInDB(_step, _allLinkTypes);
-            } else if (_step == UpdateLifecycle.SQL_UPDATE_TABLE && !this.view)  {
-                updateSQLTable();
-                super.updateInDB(_step, _allLinkTypes);
-            } else if (_step == UpdateLifecycle.SQL_RUN_SCRIPT)  {
-                executeSQLs();
-                super.updateInDB(_step, _allLinkTypes);
-            } else if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
-                if (getValue("Name") != null) {
-                    // search for the parent SQL table name instance (if defined)
-                    if (this.parent != null) {
-                        final SearchQuery query = new SearchQuery();
-                        query.setQueryTypes("Admin_DataModel_SQLTable");
-                        query.addWhereExprEqValue("Name", this.parent);
-                        query.addSelect("OID");
-                        query.executeWithoutAccessCheck();
-                        if (query.next()) {
-                            final Instance instance = Instance.get((String) query.get("OID"));
-                            addValue("DMTableMain", "" + instance.getId());
-                        }
-                        query.close();
+            try {
+                if (_step == UpdateLifecycle.SQL_CREATE_TABLE)  {
+                    if (!this.view) {
+                        createSQLTable();
                     }
                     super.updateInDB(_step, _allLinkTypes);
+                } else if (_step == UpdateLifecycle.SQL_UPDATE_ID && !this.view)  {
+                    updateColIdSQLTable();
+                    super.updateInDB(_step, _allLinkTypes);
+                } else if (_step == UpdateLifecycle.SQL_UPDATE_TABLE && !this.view)  {
+                    updateSQLTable();
+                    super.updateInDB(_step, _allLinkTypes);
+                } else if (_step == UpdateLifecycle.SQL_RUN_SCRIPT)  {
+                    executeSQLs();
+                    super.updateInDB(_step, _allLinkTypes);
+                } else if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+                    if (getValue("Name") != null) {
+                        // search for the parent SQL table name instance (if defined)
+                        if (this.parent != null) {
+                            final SearchQuery query = new SearchQuery();
+                            query.setQueryTypes("Admin_DataModel_SQLTable");
+                            query.addWhereExprEqValue("Name", this.parent);
+                            query.addSelect("OID");
+                            query.executeWithoutAccessCheck();
+                            if (query.next()) {
+                                final Instance instance = Instance.get((String) query.get("OID"));
+                                addValue("DMTableMain", "" + instance.getId());
+                            }
+                            query.close();
+                        }
+                        super.updateInDB(_step, _allLinkTypes);
+                    }
+                } else  {
+                    super.updateInDB(_step, _allLinkTypes);
                 }
-            } else  {
-                super.updateInDB(_step, _allLinkTypes);
+            } catch (final EFapsException e) {
+                throw new InstallationException(" SQLTable can not be updated", e);
             }
         }
 
         /**
          * Execute defined {@link #sqls SQL statements} in the database.
          *
-         * @throws EFapsException if SQL scripts could not be executed
+         * @throws InstallationException if SQL scripts could not be executed
          * @see #sqls
          * @see #updateInDB
          */
         protected void executeSQLs()
-            throws EFapsException
+            throws InstallationException
         {
             if (!this.sqls.isEmpty()) {
                 if (SQLTableUpdate.LOG.isInfoEnabled())  {
                     SQLTableUpdate.LOG.info("    Execute Script for DB SQL '" + getValue("SQLTable") + "'");
                 }
-
-                final Context context = Context.getThreadContext();
                 ConnectionResource con = null;
                 try {
+                    final Context context = Context.getThreadContext();
                     con = context.getConnectionResource();
                     if (this.view) {
                         final String tableName = getValue("SQLTable");
@@ -542,17 +545,16 @@ public class SQLTableUpdate
                     }
                     con.commit();
                 } catch (final EFapsException e) {
-                    SQLTableUpdate.LOG.error("SQLTableUpdate.executeSQL.EFapsException", e);
                     if (con != null) {
-                        con.abort();
+                        try {
+                            con.abort();
+                        } catch (final EFapsException e1) {
+                            throw new InstallationException("SQLTable can not be updated", e1);
+                        }
                     }
-                    throw e;
-                } catch (final Throwable e) {
-                    SQLTableUpdate.LOG.error("SQLTableUpdate.executeSQL.Throwable", e);
-                    if (con != null) {
-                        con.abort();
-                    }
-                    throw new EFapsException(getClass(), "executeSQL.Throwable", e);
+                    throw new InstallationException("SQLTable can not be updated", e);
+                } catch (final SQLException e) {
+                    throw new InstallationException("SQLTable can not be updated", e);
                 }
             }
         }

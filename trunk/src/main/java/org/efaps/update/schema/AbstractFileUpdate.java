@@ -123,7 +123,7 @@ public abstract class AbstractFileUpdate
         @Override()
         protected void updateInDB(final UpdateLifecycle _step,
                                   final Set<Link> _allLinkTypes)
-            throws InstallationException, EFapsException
+            throws InstallationException
         {
             super.updateInDB(_step, _allLinkTypes);
 

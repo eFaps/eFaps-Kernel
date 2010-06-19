@@ -216,17 +216,21 @@ public abstract class AbstractCollectionUpdate
          *
          * @param _step             current update step
          * @param _allLinkTypes     set of all type of links
-         * @throws EFapsException on error
+         * @throws InstallationException on error
          * @see #setFieldsInDB
          */
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws InstallationException, EFapsException
+            throws InstallationException
         {
             super.updateInDB(_step, _allLinkTypes);
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
-                setFieldsInDB();
+                try {
+                    setFieldsInDB();
+                } catch (final EFapsException e) {
+                    throw new InstallationException("error in setFieldsInDB", e);
+                }
             }
         }
 

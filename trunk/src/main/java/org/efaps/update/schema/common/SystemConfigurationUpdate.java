@@ -203,14 +203,17 @@ public class SystemConfigurationUpdate
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws InstallationException, EFapsException
+            throws InstallationException
         {
             super.updateInDB(_step, _allLinkTypes);
-
-            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
-                for (final AttributeDefinition attr : this.attributes) {
-                    attr.updateInDB(this.instance);
+            try {
+                if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+                    for (final AttributeDefinition attr : this.attributes) {
+                        attr.updateInDB(this.instance);
+                    }
                 }
+            } catch (final EFapsException e) {
+                throw new InstallationException(" Type can not be updated", e);
             }
         }
     }

@@ -160,7 +160,7 @@ public class StoreUpdate
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws InstallationException, EFapsException
+            throws InstallationException
         {
             super.updateInDB(_step, _allLinkTypes);
             if (_step == UpdateLifecycle.EFAPS_UPDATE) {
@@ -169,39 +169,42 @@ public class StoreUpdate
         }
 
         /**
-         * @throws EFapsException o error
-         *
+         * @throws InstallationException o error
          */
         private void setSourceInDB()
-            throws EFapsException
+            throws InstallationException
         {
-            boolean old = false;
-            final Update update;
-            final QueryBuilder queryBldr = new QueryBuilder(CIDB.Store2Resource);
-            queryBldr.addWhereAttrEqValue(CIDB.Store2Resource.From, this.instance.getId());
-            final MultiPrintQuery multi = queryBldr.getPrint();
-            final SelectBuilder sel = new SelectBuilder().linkto(CIDB.Store2Resource.To).oid();
-            multi.addSelect(sel);
-            multi.executeWithoutAccessCheck();
-            if (multi.next()) {
-                final Instance resourceInst = Instance.get(multi.<String> getSelect(sel));
-                update = new Update(resourceInst);
-                old = true;
-            } else {
-                update = new Insert(CIDB.Resource);
-            }
-            update.add(CIDB.Resource.Name, this.resource.clazz);
-            update.executeWithoutAccessCheck();
-            setPropertiesInDb(update.getInstance(), this.resource.getProperties());
+            try {
+                boolean old = false;
+                final Update update;
+                final QueryBuilder queryBldr = new QueryBuilder(CIDB.Store2Resource);
+                queryBldr.addWhereAttrEqValue(CIDB.Store2Resource.From, this.instance.getId());
+                final MultiPrintQuery multi = queryBldr.getPrint();
+                final SelectBuilder sel = new SelectBuilder().linkto(CIDB.Store2Resource.To).oid();
+                multi.addSelect(sel);
+                multi.executeWithoutAccessCheck();
+                if (multi.next()) {
+                    final Instance resourceInst = Instance.get(multi.<String> getSelect(sel));
+                    update = new Update(resourceInst);
+                    old = true;
+                } else {
+                    update = new Insert(CIDB.Resource);
+                }
+                update.add(CIDB.Resource.Name, this.resource.clazz);
+                update.executeWithoutAccessCheck();
+                setPropertiesInDb(update.getInstance(), this.resource.getProperties());
 
-            if (!old) {
-                final Insert insert = new Insert(CIDB.Store2Resource);
-                insert.add(CIDB.Store2Resource.From, ((Long) this.instance.getId()).toString());
-                insert.add(CIDB.Store2Resource.To, ((Long) update.getInstance().getId()).toString());
-                insert.executeWithoutAccessCheck();
-                insert.close();
+                if (!old) {
+                    final Insert insert = new Insert(CIDB.Store2Resource);
+                    insert.add(CIDB.Store2Resource.From, ((Long) this.instance.getId()).toString());
+                    insert.add(CIDB.Store2Resource.To, ((Long) update.getInstance().getId()).toString());
+                    insert.executeWithoutAccessCheck();
+                    insert.close();
+                }
+                update.close();
+            } catch (final EFapsException e) {
+                throw new InstallationException("source can not be set in the DB", e);
             }
-            update.close();
         }
     }
 }

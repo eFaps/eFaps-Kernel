@@ -120,40 +120,44 @@ public class DimensionUpdate
          * Otherwise the attribute is created for this type.
          *
          * @param _instance type instance to update with this attribute
-         * @throws EFapsException on error
+         * @throws InstallationException on error
          */
         protected void updateInDB(final Instance _instance)
-            throws EFapsException
+            throws InstallationException
         {
-            final SearchQuery query = new SearchQuery();
-            query.setExpand(_instance, "Admin_DataModel_UoM\\Dimension");
-            query.addWhereExprEqValue("Name", getValue("Name"));
-            query.addSelect("OID");
-            query.executeWithoutAccessCheck();
-            Update update;
+            try {
+                final SearchQuery query = new SearchQuery();
+                query.setExpand(_instance, "Admin_DataModel_UoM\\Dimension");
+                query.addWhereExprEqValue("Name", getValue("Name"));
+                query.addSelect("OID");
+                query.executeWithoutAccessCheck();
+                Update update;
 
-            if (query.next()) {
-                update = new Update((String) query.get("OID"));
-            } else {
-                update = new Insert("Admin_DataModel_UoM");
-                update.add("Dimension", "" + _instance.getId());
-                update.add("Name", getValue("Name"));
+                if (query.next()) {
+                    update = new Update((String) query.get("OID"));
+                } else {
+                    update = new Insert("Admin_DataModel_UoM");
+                    update.add("Dimension", "" + _instance.getId());
+                    update.add("Name", getValue("Name"));
+                }
+                query.close();
+
+                update.add("Numerator",  this.numerator);
+                update.add("Denominator",  this.denominator);
+
+                update.executeWithoutAccessCheck();
+
+                if (this.base) {
+                    final Update dimUp = new Update(_instance);
+                    dimUp.add("BaseUoM", "" + update.getInstance().getId());
+                    dimUp.executeWithoutAccessCheck();
+                    dimUp.close();
+                }
+
+                update.close();
+            } catch (final EFapsException e) {
+                throw new InstallationException("Dimension can not be updated in DB", e);
             }
-            query.close();
-
-            update.add("Numerator",  this.numerator);
-            update.add("Denominator",  this.denominator);
-
-            update.executeWithoutAccessCheck();
-
-            if (this.base) {
-                final Update dimUp = new Update(_instance);
-                dimUp.add("BaseUoM", "" + update.getInstance().getId());
-                dimUp.executeWithoutAccessCheck();
-                dimUp.close();
-            }
-
-            update.close();
         }
     }
 
@@ -232,7 +236,7 @@ public class DimensionUpdate
             } catch (final EFapsException e) {
                 throw new InstallationException("Description attribute could not be defined", e);
             }
-            LOG.info("    Insert " + _insert.getInstance().getType().getName() + " '" + name + "'");
+            AbstractUpdate.LOG.info("    Insert " + _insert.getInstance().getType().getName() + " '" + name + "'");
             try {
                 _insert.executeWithoutAccessCheck();
             } catch (final EFapsException e) {
@@ -253,10 +257,10 @@ public class DimensionUpdate
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws InstallationException, EFapsException
+            throws InstallationException
         {
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
-                this.addValue("Description", this.description);
+                addValue("Description", this.description);
             }
 
             super.updateInDB(_step, _allLinkTypes);
