@@ -29,11 +29,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.UUID;
 
-import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminProgram;
+import org.efaps.ci.CIType;
 import org.efaps.db.Checkin;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
@@ -81,6 +83,11 @@ public abstract class AbstractSourceImporter
     private final String programName;
 
     /**
+     * CIType.
+     */
+    private final CIType ciType;
+
+    /**
      * Constructor used to read the source code from given URL and extract the
      * class name.
      *
@@ -92,11 +99,11 @@ public abstract class AbstractSourceImporter
      * @see #evalUUID()
      * @see #evalRevision()
      */
-    public AbstractSourceImporter(final EFapsClassNames _type,
+    public AbstractSourceImporter(final CIType _type,
                                   final URL _url)
         throws InstallationException
     {
-        this.type = _type;
+        this.ciType = _type;
         this.url = _url;
         readCode();
         this.programName = evalProgramName();
@@ -181,20 +188,16 @@ public abstract class AbstractSourceImporter
         throws InstallationException
     {
         Instance instance = null;
-
         try {
-            final Type esjpType = Type.get(this.type);
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes(esjpType.getName());
-            query.addWhereExprEqValue("Name", this.programName);
-            query.addSelect("OID");
+            final QueryBuilder queryBldr = new QueryBuilder(this.ciType);
+            queryBldr.addWhereAttrEqValue(CIAdminProgram.Abstract.Name, this.programName);
+            final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (query.next()) {
-                instance = Instance.get((String) query.get("OID"));
+                instance = query.getCurrentValue();
             }
-            query.close();
         } catch (final EFapsException e)  {
-            throw new InstallationException("Could not found '" + this.type + "' '" + this.programName + "'", e);
+            throw new InstallationException("Could not found '" + this.ciType + "' '" + this.programName + "'", e);
         }
 
         return instance;
@@ -210,17 +213,16 @@ public abstract class AbstractSourceImporter
     protected Instance createInstance()
         throws InstallationException
     {
-        final Type esjpType = Type.get(this.type);
         final Insert insert;
         try {
-            insert = new Insert(esjpType);
+            insert = new Insert(this.ciType);
             insert.add("Name", this.programName);
             if (getEFapsUUID() != null) {
                 insert.add("UUID", getEFapsUUID().toString());
             }
             insert.execute();
         } catch (final EFapsException e)  {
-            throw new InstallationException("Could not create " + this.type + " " + getProgramName(), e);
+            throw new InstallationException("Could not create " + this.ciType + " " + getProgramName(), e);
         }
         return insert.getInstance();
     }

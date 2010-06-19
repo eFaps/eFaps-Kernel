@@ -47,8 +47,8 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
-import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Checkin;
 import org.efaps.db.Checkout;
 import org.efaps.db.Delete;
@@ -125,8 +125,8 @@ public class ESJPCompiler
      */
     public ESJPCompiler(final List<String> _classPathElements)
     {
-        this.esjpType = Type.get(EFapsClassNames.ADMIN_PROGRAM_JAVA);
-        this.classType = Type.get(EFapsClassNames.ADMIN_PROGRAM_JAVACLASS);
+        this.esjpType = CIAdminProgram.Java.getType();
+        this.classType =CIAdminProgram.JavaClass.getType();
         this.classPathElements = _classPathElements;
     }
 

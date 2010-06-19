@@ -20,11 +20,11 @@
 
 package org.efaps.update.schema.program;
 
-import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_XSL;
+
 
 import java.net.URL;
 
-import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.update.schema.program.staticsource.XSLImporter;
 import org.efaps.update.util.InstallationException;
 
@@ -45,7 +45,7 @@ public class XSLUpdate
      */
     protected XSLUpdate(final URL _url)
     {
-        super(_url, Type.get(ADMIN_PROGRAM_XSL).getName());
+        super(_url, CIAdminProgram.XSL.getType().getName());
     }
 
     /**

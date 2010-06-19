@@ -27,10 +27,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.common.SystemConfiguration;
+import org.efaps.ci.CIAdminProgram;
+import org.efaps.ci.CIType;
 import org.efaps.db.Checkout;
+import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
@@ -49,7 +51,8 @@ import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
  * @author The eFaps Team
  * @version $Id$
  */
-public class JavaScriptCompiler extends AbstractStaticSourceCompiler
+public class JavaScriptCompiler
+    extends AbstractStaticSourceCompiler
 {
     /**
      * Logger for this class.
@@ -60,11 +63,11 @@ public class JavaScriptCompiler extends AbstractStaticSourceCompiler
      * {@inheritDoc}
      */
     @Override
-    protected String getCompiledString(final String _oid)
+    protected String getCompiledString(final Instance _instance)
     {
         final SystemConfiguration kernelConfig = EFapsSystemConfiguration.KERNEL.get();
         final StringBuilder ret = new StringBuilder();
-        final Checkout checkout = new Checkout(_oid);
+        final Checkout checkout = new Checkout(_instance);
         try {
             final BufferedReader in = new BufferedReader(new InputStreamReader(checkout.execute(), "UTF-8"));
             if (JavaScriptCompiler.LOG.isDebugEnabled()) {
@@ -155,13 +158,13 @@ public class JavaScriptCompiler extends AbstractStaticSourceCompiler
                 ret.append(byteout.toString());
             }
         } catch (final EFapsException e) {
-            JavaScriptCompiler.LOG.error("error during checkout of Instance with oid:" + _oid, e);
+            JavaScriptCompiler.LOG.error("error during checkout of Instance:" + _instance, e);
             e.printStackTrace();
         } catch (final EvaluatorException e) {
             JavaScriptCompiler.LOG.error("error during the evaluation of the JavaScript of "
-                            + "Instance with oid:" + _oid, e);
+                            + "Instance:" + _instance, e);
         } catch (final IOException e) {
-            JavaScriptCompiler.LOG.error("error during reqding of the Inputstram of Instance with oid:" + _oid, e);
+            JavaScriptCompiler.LOG.error("error during reqding of the Inputstram of Instance:" + _instance, e);
         }
         ret.append("\n");
         if (JavaScriptCompiler.LOG.isDebugEnabled()) {
@@ -175,54 +178,52 @@ public class JavaScriptCompiler extends AbstractStaticSourceCompiler
      */
     @Override
     public AbstractSource getNewSource(final String _name,
-                                       final String _oid,
-                                       final long _id)
+                                       final Instance _instance)
     {
-        return new OneJavaScript(_name, _oid, _id);
+        return new OneJavaScript(_name, _instance);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected EFapsClassNames getClassName4Type()
+    protected CIType getClassName4Type()
     {
-        return EFapsClassNames.ADMIN_PROGRAM_JAVASCRIPT;
+        return CIAdminProgram.JavaScript;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected EFapsClassNames getClassName4Type2Type()
+    protected CIType getClassName4Type2Type()
     {
-        return EFapsClassNames.ADMIN_PROGRAM_JAVASCRIPT2JAVASCRIPT;
+        return  CIAdminProgram.JavaScript2JavaScript;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected EFapsClassNames getClassName4TypeCompiled()
+    protected CIType getClassName4TypeCompiled()
     {
-        return EFapsClassNames.ADMIN_PROGRAM_JAVASCRIPTCOMPILED;
+        return  CIAdminProgram.JavaScriptCompiled;
     }
 
     /**
      * Class to store a javascript during compelation.
      */
-    protected class OneJavaScript extends AbstractSource
+    protected class OneJavaScript
+        extends AbstractSource
     {
         /**
          * @param _name     Name of the JavaScript
-         * @param _oid      oid of the JavaScript
-         * @param _id       id of the JavaScript
+         * @param _instance Instance of the JavaScript
          */
         public OneJavaScript(final String _name,
-                             final String _oid,
-                             final long _id)
+                             final Instance _instance)
         {
-            super(_name, _oid, _id);
+            super(_name, _instance);
         }
     }
 }

@@ -26,13 +26,14 @@ import java.sql.Statement;
 
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.efaps.admin.EFapsClassNames.USER_JAASKEY;
+
 
 /**
  * @author The eFaps Team
@@ -116,7 +117,7 @@ public abstract class AbstractUserObject
         try {
             final Context context = Context.getThreadContext();
             rsrc = context.getConnectionResource();
-            final Type keyType = Type.get(USER_JAASKEY);
+            final Type keyType = CIAdminUser.JAASKey.getType();
 
             PreparedStatement stmt = null;
             final StringBuilder cmd = new StringBuilder();

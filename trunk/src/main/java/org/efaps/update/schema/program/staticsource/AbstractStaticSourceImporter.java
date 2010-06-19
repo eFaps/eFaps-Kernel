@@ -25,7 +25,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.efaps.admin.EFapsClassNames;
+import org.efaps.ci.CIType;
 import org.efaps.update.schema.program.AbstractSourceImporter;
 import org.efaps.update.util.InstallationException;
 
@@ -51,7 +51,7 @@ public abstract class AbstractStaticSourceImporter
      * @param _url      url to the source code
      * @throws InstallationException on error
      */
-    public AbstractStaticSourceImporter(final EFapsClassNames _type,
+    public AbstractStaticSourceImporter(final CIType _type,
                                         final URL _url)
         throws InstallationException
     {

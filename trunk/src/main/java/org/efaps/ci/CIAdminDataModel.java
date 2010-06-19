@@ -42,8 +42,6 @@ public class CIAdminDataModel
         }
     }
 
-
-
     public static final _Type Type = new _Type("8770839d-60fd-4bb4-81fd-3903d4c916ec");
 
     public static class _Type
@@ -58,7 +56,6 @@ public class CIAdminDataModel
         public final CIAttribute SQLCacheExpr = new CIAttribute(this, "SQLCacheExpr");
         public final CIAttribute ParentType = new CIAttribute(this, "ParentType");
     }
-
 
     public static final _Attribute Attribute = new _Attribute("518a9802-cf0e-4359-9b3c-880f71e1387f");
 
@@ -79,6 +76,7 @@ public class CIAdminDataModel
         public final CIAttribute DimensionUUID = new CIAttribute(this, "DimensionUUID");
 
     }
+
     public static final _AttributeSetAttribute AttributeSetAttribute = new _AttributeSetAttribute("518a9802-cf0e-4359-9b3c-880f71e1387f");
 
     public static class _AttributeSetAttribute
@@ -89,10 +87,22 @@ public class CIAdminDataModel
         {
             super(_uuid);
         }
+
         public final CIAttribute ParentAttributeSet = new CIAttribute(this, "ParentAttributeSet");
     }
 
+    public static final _AttributeSet AttributeSet = new _AttributeSet("a23b6c9f-5220-438f-93d0-f4651c3ba455");
 
+    public static class _AttributeSet
+        extends _Attribute
+    {
+
+        protected _AttributeSet(final String _uuid)
+        {
+            super(_uuid);
+        }
+
+    }
 
     public static final _Type2Store Type2Store = new _Type2Store("433f8358-dd69-4d53-9161-5ae9b0b51c57");
 
