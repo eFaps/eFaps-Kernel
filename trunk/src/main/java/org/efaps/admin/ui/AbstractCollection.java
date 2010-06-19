@@ -20,14 +20,7 @@
 
 package org.efaps.admin.ui;
 
-import static org.efaps.admin.EFapsClassNames.COLLECTION;
-import static org.efaps.admin.EFapsClassNames.FIELD;
-import static org.efaps.admin.EFapsClassNames.FIELDCLASSIFICATION;
-import static org.efaps.admin.EFapsClassNames.FIELDCOMMAND;
-import static org.efaps.admin.EFapsClassNames.FIELDGROUP;
-import static org.efaps.admin.EFapsClassNames.FIELDHEADING;
-import static org.efaps.admin.EFapsClassNames.FIELDSET;
-import static org.efaps.admin.EFapsClassNames.FIELDTABLE;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,8 +36,10 @@ import org.efaps.admin.ui.field.FieldGroup;
 import org.efaps.admin.ui.field.FieldHeading;
 import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
+import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -197,30 +192,31 @@ public abstract class AbstractCollection extends AbstractUserInterfaceObject
     private void readFromDB4Fields() throws CacheReloadException
     {
         try {
-            final Instance instance = Instance.get(Type.get(COLLECTION), getId());
-            final SearchQuery query = new SearchQuery();
-            query.setExpand(instance, Type.get(FIELD).getName() + "\\Collection");
-            query.addSelect("Type");
-            query.addSelect("ID");
-            query.addSelect("Name");
-            query.executeWithoutAccessCheck();
 
-            while (query.next()) {
-                final long id = (Long) query.get("ID");
-                final String name = (String) query.get("Name");
+            Instance.get(CIAdminUserInterface.Collection.getType(), getId());
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Field);
+            queryBldr.addWhereAttrEqValue(CIAdminUserInterface.Field.Collection, getId());
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute(CIAdminUserInterface.Field.Type,
+                               CIAdminUserInterface.Field.Name);
+            multi.executeWithoutAccessCheck();
+
+            while (multi.next()) {
+                final long id = multi.getCurrentInstance().getId();
+                final String name =  multi.<String>getAttribute(CIAdminUserInterface.Field.Name);
+                final Type type = multi.<Type>getAttribute(CIAdminUserInterface.Field.Type);
                 final Field field;
-                final Type type = (Type) query.get("Type");
-                if (FIELDCOMMAND.getUuid().equals(type.getUUID())) {
+                if (type.getUUID().equals(CIAdminUserInterface.FieldCommand.uuid)) {
                     field = new FieldCommand(id, null, name);
-                } else if (FIELDHEADING.getUuid().equals(type.getUUID())) {
+                } else if (type.getUUID().equals(CIAdminUserInterface.FieldHeading.uuid)) {
                     field = new FieldHeading(id, null, name);
-                } else if (FIELDTABLE.getUuid().equals(type.getUUID())) {
+                } else if (type.getUUID().equals(CIAdminUserInterface.FieldTable.uuid)) {
                     field = new FieldTable(id, null, name);
-                } else if (FIELDGROUP.getUuid().equals(type.getUUID())) {
+                } else if (type.getUUID().equals(CIAdminUserInterface.FieldGroup.uuid)) {
                     field = new FieldGroup(id, null, name);
-                } else if (FIELDSET.getUuid().equals(type.getUUID())) {
+                } else if (type.getUUID().equals(CIAdminUserInterface.FieldSet.uuid)) {
                     field = new FieldSet(id, null, name);
-                } else if (FIELDCLASSIFICATION.getUuid().equals(type.getUUID())) {
+                } else if (type.getUUID().equals(CIAdminUserInterface.FieldClassification.uuid)) {
                     field = new FieldClassification(id, null, name);
                 } else {
                     field = new Field(id, null, name);

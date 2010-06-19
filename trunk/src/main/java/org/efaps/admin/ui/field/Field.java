@@ -20,13 +20,10 @@
 
 package org.efaps.admin.ui.field;
 
-import static org.efaps.admin.EFapsClassNames.FIELD;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.ui.AbstractCollection;
@@ -35,7 +32,9 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.AbstractCommand.Target;
-import org.efaps.db.SearchQuery;
+import org.efaps.ci.CIAdminUserInterface;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
@@ -48,8 +47,10 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public class Field extends AbstractUserInterfaceObject
+public class Field
+    extends AbstractUserInterfaceObject
 {
+
     /**
      * Used to define the different display modes for the Userinterface.
      */
@@ -63,11 +64,6 @@ public class Field extends AbstractUserInterfaceObject
         /** the field will not be displayed. */
         NONE;
     }
-
-    /**
-     * The static variable defines the class name in eFaps.
-     */
-    public static final EFapsClassNames EFAPS_CLASSNAME = FIELD;
 
     /**
      * Logger for this class.
@@ -135,9 +131,9 @@ public class Field extends AbstractUserInterfaceObject
     private String filterDefault;
 
     /**
-     * String containing the attributes to be used for the filter.
-     * It may contain up to two attributes separated by a comma.
-     * This allows to filter by an attribute and display a phrase.
+     * String containing the attributes to be used for the filter. It may
+     * contain up to two attributes separated by a comma. This allows to filter
+     * by an attribute and display a phrase.
      */
     private String filterAttributes;
 
@@ -254,8 +250,8 @@ public class Field extends AbstractUserInterfaceObject
     /**
      * Map stores the target mode to display relations for this field.
      */
-    private final Map<AbstractUserInterfaceObject.TargetMode, Field.Display> mode2display
-                                                 = new HashMap<AbstractUserInterfaceObject.TargetMode, Field.Display>();
+    private final Map<AbstractUserInterfaceObject.TargetMode, Field.Display> mode2display =
+        new HashMap<AbstractUserInterfaceObject.TargetMode, Field.Display>();
 
     /**
      * Stores the select that returns the value for this field.
@@ -273,7 +269,7 @@ public class Field extends AbstractUserInterfaceObject
     private String phrase;
 
     /**
-     *  Stores the select that returns the value for the alternate OID.
+     * Stores the select that returns the value for the alternate OID.
      */
     private String selectAlternateOID;
 
@@ -297,7 +293,9 @@ public class Field extends AbstractUserInterfaceObject
      * @param _uuid UUID of the field instance
      * @param _name name of the field instance
      */
-    public Field(final long _id, final String _uuid, final String _name)
+    public Field(final long _id,
+                 final String _uuid,
+                 final String _name)
     {
         super(_id, _uuid, _name);
 
@@ -448,7 +446,6 @@ public class Field extends AbstractUserInterfaceObject
         return this.createValue;
     }
 
-
     /**
      * This is the getter method for instance variable {@link #label}.
      *
@@ -461,7 +458,7 @@ public class Field extends AbstractUserInterfaceObject
         return this.label;
     }
 
-        /**
+    /**
      * This is the getter method for instance variable {@link #rows}.
      *
      * @return the value of the instance variable {@link #rows}.
@@ -473,7 +470,7 @@ public class Field extends AbstractUserInterfaceObject
         return this.rows;
     }
 
-       /**
+    /**
      * This is the getter method for instance variable {@link #cols}.
      *
      * @return the value of the instance variable {@link #cols}.
@@ -507,7 +504,7 @@ public class Field extends AbstractUserInterfaceObject
         return this.hideLabel;
     }
 
-       /**
+    /**
      * This is the getter method for instance variable {@link #rowSpan}.
      *
      * @return the value of the instance variable {@link #rowSpan}.
@@ -602,7 +599,7 @@ public class Field extends AbstractUserInterfaceObject
         return this.showTypeIcon;
     }
 
-        /**
+    /**
      * This is the setter method for the instance variable {@link #classUI}.
      *
      * @return value of instance variable {@link #classUI}
@@ -693,8 +690,8 @@ public class Field extends AbstractUserInterfaceObject
     }
 
     /**
-     * Is this field editable in the given target mode. If not explicitly set
-     * in the definition following defaults apply:
+     * Is this field editable in the given target mode. If not explicitly set in
+     * the definition following defaults apply:
      * <ul>
      * <li>ModeConnect: false</li>
      * <li>ModeCreate: false</li>
@@ -704,7 +701,7 @@ public class Field extends AbstractUserInterfaceObject
      * <li>ModeSearch: false</li>
      * </ul>
      *
-     * @param _mode  target mode
+     * @param _mode target mode
      * @return true if editable in the given mode, else false
      */
     public boolean isEditableDisplay(final TargetMode _mode)
@@ -728,7 +725,7 @@ public class Field extends AbstractUserInterfaceObject
      * <li>ModeSearch: false</li>
      * </ul>
      *
-     * @param _mode  target mode
+     * @param _mode target mode
      * @return true if editable in the given mode, else false
      */
     public boolean isReadonlyDisplay(final TargetMode _mode)
@@ -744,8 +741,8 @@ public class Field extends AbstractUserInterfaceObject
     }
 
     /**
-     * Is this field hidden in the given target mode. If not explicitly set
-     * in the definition following defaults apply:
+     * Is this field hidden in the given target mode. If not explicitly set in
+     * the definition following defaults apply:
      * <ul>
      * <li>ModeConnect: false</li>
      * <li>ModeCreate: false</li>
@@ -755,7 +752,7 @@ public class Field extends AbstractUserInterfaceObject
      * <li>ModePrint: false</li>
      * </ul>
      *
-     * @param _mode  target mode
+     * @param _mode target mode
      * @return true if editable in the given mode, else false
      */
     public boolean isHiddenDisplay(final TargetMode _mode)
@@ -768,8 +765,8 @@ public class Field extends AbstractUserInterfaceObject
     }
 
     /**
-     * Is this field not displayed in the given target mode. If not explicitly set
-     * in the definition following defaults apply:
+     * Is this field not displayed in the given target mode. If not explicitly
+     * set in the definition following defaults apply:
      * <ul>
      * <li>ModeConnect: false</li>
      * <li>ModeCreate: true</li>
@@ -779,7 +776,7 @@ public class Field extends AbstractUserInterfaceObject
      * <li>ModePrint: false</li>
      * </ul>
      *
-     * @param _mode  target mode
+     * @param _mode target mode
      * @return true if editable in the given mode, else false
      */
     public boolean isNoneDisplay(final TargetMode _mode)
@@ -804,7 +801,7 @@ public class Field extends AbstractUserInterfaceObject
      * <li>ModeSearch: NONE</li>
      * </ul>
      *
-     * @param _mode  target mode
+     * @param _mode target mode
      * @return display for the given target mode
      */
     public Display getDisplay(final TargetMode _mode)
@@ -831,19 +828,18 @@ public class Field extends AbstractUserInterfaceObject
         AbstractCollection col = null;
 
         try {
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes(Type.get(FIELD).getName());
-            query.setExpandChildTypes(true);
-            query.addSelect("Collection");
-            query.addWhereExprEqValue("ID", _id);
-            query.executeWithoutAccessCheck();
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Field);
+            queryBldr.addWhereAttrEqValue(CIAdminUserInterface.Field.ID, _id);
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute(CIAdminUserInterface.Field.Collection);
+            multi.executeWithoutAccessCheck();
 
-            if (query.next()) {
-                col = Form.get(((Number) query.get("Collection")).longValue());
+            if (multi.next()) {
+                final Long colId = multi.<Long> getAttribute(CIAdminUserInterface.Field.Collection);
+                col = Form.get(colId);
                 if (col == null) {
-                    col = Table.get(((Number) query.get("Collection")).longValue());
+                    col = Table.get(colId);
                 }
-                query.close();
             }
         } catch (final EFapsException e) {
             Field.LOG.error("get(long)", e);
@@ -862,16 +858,16 @@ public class Field extends AbstractUserInterfaceObject
      * @throws EFapsException on error
      */
     @Override
-    protected void setLinkProperty(final EFapsClassNames _linkType, final long _toId, final EFapsClassNames _toType,
-                    final String _toName) throws EFapsException
+    protected void setLinkProperty(final Type _linkType,
+                                   final long _toId,
+                                   final Type _toType,
+                                   final String _toName)
+        throws EFapsException
     {
-        switch (_linkType) {
-            case LINK_ICON:
-                this.icon = RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + _toName);
-                break;
-            default:
-                super.setLinkProperty(_linkType, _toId, _toType, _toName);
-                break;
+        if (_linkType.isKindOf(CIAdminUserInterface.LinkIcon.getType())) {
+            this.icon = RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + _toName);
+        } else {
+            super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
     }
 
@@ -883,12 +879,14 @@ public class Field extends AbstractUserInterfaceObject
      * @throws CacheReloadException on problems with the cache
      */
     @Override
-    protected void setProperty(final String _name, final String _value) throws CacheReloadException
+    protected void setProperty(final String _name,
+                               final String _value)
+        throws CacheReloadException
     {
         if ("AlternateOID".equals(_name)) {
             this.alternateOID = _value;
         } else if ("Align".equals(_name)) {
-           this.align = _value;
+            this.align = _value;
         } else if ("ClassNameUI".equals(_name)) {
             try {
                 this.classUI = (UIInterface) Class.forName(_value).newInstance();
@@ -926,7 +924,7 @@ public class Field extends AbstractUserInterfaceObject
             this.filter = true;
             this.filterPickList = !"FREETEXT".equalsIgnoreCase(_value);
         } else if ("FilterRequired".equals(_name)) {
-            this.filterRequired  = "TRUE".equalsIgnoreCase(_value);
+            this.filterRequired = "TRUE".equalsIgnoreCase(_value);
         } else if ("FilterAttributes".equals(_name)) {
             this.filterAttributes = _value;
         } else if ("HideLabel".equals(_name)) {
@@ -950,7 +948,7 @@ public class Field extends AbstractUserInterfaceObject
         } else if ("ModeView".equals(_name)) {
             this.mode2display.put(TargetMode.VIEW, Field.Display.valueOf(_value.toUpperCase()));
         } else if ("Required".equals(_name)) {
-            this.required  = "true".equalsIgnoreCase(_value);
+            this.required = "true".equalsIgnoreCase(_value);
         } else if ("Rows".equals(_name)) {
             this.rows = Integer.parseInt(_value);
         } else if ("RowSpan".equals(_name)) {

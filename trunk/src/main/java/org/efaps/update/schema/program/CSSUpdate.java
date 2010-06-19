@@ -20,14 +20,11 @@
 
 package org.efaps.update.schema.program;
 
-import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_CSS;
-import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_CSS2CSS;
-
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.schema.program.staticsource.CSSImporter;
 import org.efaps.update.util.InstallationException;
@@ -47,8 +44,10 @@ public class CSSUpdate
     /**
      * Link from CSS extending CSS.
      */
-    private static final Link LINK2SUPER = new Link(Type.get(ADMIN_PROGRAM_CSS2CSS).getName(), "From", Type.get(
-                    ADMIN_PROGRAM_CSS).getName(), "To");
+    private static final Link LINK2SUPER = new Link(CIAdminProgram.CSS2CSS.getType().getName(),
+                                                    CIAdminProgram.CSS2CSS.From.name,
+                                                    CIAdminProgram.CSS.getType().getName(),
+                                                    CIAdminProgram.CSS2CSS.To.name);
 
     /**
      * Set off all links for this cssupdate.
@@ -65,7 +64,7 @@ public class CSSUpdate
      */
     protected CSSUpdate(final URL _url)
     {
-        super(_url, Type.get(ADMIN_PROGRAM_CSS).getName(), CSSUpdate.ALLLINKS);
+        super(_url, CIAdminProgram.CSS.getType().getName(), CSSUpdate.ALLLINKS);
     }
 
     /**
@@ -127,7 +126,7 @@ public class CSSUpdate
 
             if (this.sourceCode.getExtendSource() != null) {
                 addLink(CSSUpdate.LINK2SUPER,
-                             new LinkInstance(this.sourceCode.getExtendSource()));
+                                new LinkInstance(this.sourceCode.getExtendSource()));
             }
 
             if (this.instance == null) {

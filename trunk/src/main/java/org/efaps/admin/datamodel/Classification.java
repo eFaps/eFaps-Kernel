@@ -23,7 +23,7 @@ package org.efaps.admin.datamodel;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.efaps.admin.EFapsClassNames;
+import org.efaps.ci.CIAdminDataModel;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -261,18 +261,18 @@ public class Classification extends Type
      *
      */
     @Override
-    protected void setLinkProperty(final EFapsClassNames _linkType, final long _toId, final EFapsClassNames _toType,
-                    final String _toName) throws EFapsException
+    protected void setLinkProperty(final Type _linkType,
+                                   final long _toId,
+                                   final Type _toType,
+                                   final String _toName)
+        throws EFapsException
     {
-        switch (_linkType) {
-            case DATAMDOEL_TYPECLASSIFIES:
-                this.classifiesType = get(_toId);
-                break;
-            case DATAMDOEL_TYPECLASSIFYRELATION:
-                this.classifyRelation = get(_toId);
-                break;
-            default:
-                super.setLinkProperty(_linkType, _toId, _toType, _toName);
+        if (_linkType.isKindOf(CIAdminDataModel.TypeClassifies.getType())) {
+            this.classifiesType = Type.get(_toId);
+        } else if (_linkType.isKindOf(CIAdminDataModel.TypeClassifyRelation.getType())) {
+            this.classifyRelation = Type.get(_toId);
+        } else {
+            super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
     }
 

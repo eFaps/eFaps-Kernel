@@ -24,22 +24,20 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
-import org.efaps.admin.EFapsClassNames;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.db.Context;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
- * @version $Id$
- * TODO: description
+ * @version $Id$ TODO:
+ *          description
  */
 public class Table
     extends AbstractCollection
     implements Cloneable
 {
-    /**
-     * The static variable defines the class name in eFaps.
-     */
-    public static EFapsClassNames EFAPS_CLASSNAME = EFapsClassNames.TABLE;
 
     /**
      * Stores all instances of class {@link Table}.
@@ -51,9 +49,9 @@ public class Table
     /**
      * This is the constructor to set the id and the name.
      *
-     * @param _id       id of the new table
-     * @param _uuid     UUID of the new table
-     * @param _name     name of the new table
+     * @param _id id of the new table
+     * @param _uuid UUID of the new table
+     * @param _name name of the new table
      */
     public Table(final Long _id,
                  final String _uuid,
@@ -65,12 +63,12 @@ public class Table
     /**
      * The instance method returns the title of the table.
      *
-     * @param _context    context for this request
+     * @param _context context for this request
      * @return title of the form
      */
     public String getViewableName(final Context _context)
     {
-// TODO: method really required?
+        // TODO: method really required?
         String title = "";
         final ResourceBundle msgs = ResourceBundle.getBundle("org.efaps.properties.AttributeRessource",
                                                              _context.getLocale());
@@ -101,7 +99,7 @@ public class Table
      * Returns for given parameter <i>_id</i> the instance of class
      * {@link Table}.
      *
-     * @param _id     id to search in the cache
+     * @param _id id to search in the cache
      * @return instance of class {@link Table}
      * @see #CACHE
      */
@@ -114,7 +112,7 @@ public class Table
      * Returns for given parameter <i>_name</i> the instance of class
      * {@link Table}.
      *
-     * @param _name   name to search in the cache
+     * @param _name name to search in the cache
      * @return instance of class {@link Table}
      * @see #CACHE
      */
@@ -127,7 +125,7 @@ public class Table
      * Returns for given parameter <i>UUID</i> the instance of class
      * {@link Table}.
      *
-     * @param _uuid   UUID to search in the cache
+     * @param _uuid UUID to search in the cache
      * @return instance of class {@link Table}
      * @see #CACHE
      */
@@ -149,9 +147,20 @@ public class Table
     private static class TableCache
         extends UserInterfaceObjectCache<Table>
     {
+
         protected TableCache()
         {
             super(Table.class);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected Type getType()
+            throws EFapsException
+        {
+            return CIAdminUserInterface.Table.getType();
         }
     }
 }

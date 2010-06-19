@@ -25,13 +25,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Role;
+import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
@@ -43,14 +43,14 @@ import org.efaps.util.cache.CacheReloadException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractCommand extends AbstractUserInterfaceObject
+public abstract class AbstractCommand
+    extends AbstractUserInterfaceObject
 {
 
     /**
      * This enum is used to define the Sortdirection of a Field.
      */
-    public static enum SortDirection
-    {
+    public static enum SortDirection {
         /**
          * Sortdirection descending.
          */
@@ -107,13 +107,12 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
      * getEnum.
      */
     private static final Map<String, AbstractCommand.SortDirection> MAPPER
-                                                                = new HashMap<String, AbstractCommand.SortDirection>();
+        = new HashMap<String, AbstractCommand.SortDirection>();
 
     /**
      * This enum id used to define the different Targets a Command can have.
      */
-    public static enum Target
-    {
+    public static enum Target {
         /** The target of the href is the content frame. */
         CONTENT,
         /** The target of the href is the hidden frame. */
@@ -184,18 +183,14 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
     private boolean submit = false;
 
     /**
-     * Number of rows that must be committed.
-     * Special meanings:
+     * Number of rows that must be committed. Special meanings:
      * <ul>
      * <li>
-     * 0: the mechanism expects at least one. Default
-     * </li>
+     * 0: the mechanism expects at least one. Default</li>
      * <li>
-     * -1: the mechanism is deactivated.
-     * </li>
+     * -1: the mechanism is deactivated.</li>
      * <li>
-     * 1, 2, 3 ...: the exact number of selected rows will be checked.
-     * </li>
+     * 1, 2, 3 ...: the exact number of selected rows will be checked.</li>
      * </ul>
      *
      */
@@ -387,7 +382,9 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
      * @param _uuid uuid of the command to set
      * @see #label
      */
-    protected AbstractCommand(final long _id, final String _uuid, final String _name)
+    protected AbstractCommand(final long _id,
+                              final String _uuid,
+                              final String _name)
     {
         super(_id, _uuid, _name);
         this.label = _name + ".Label";
@@ -713,7 +710,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
         return this.windowHeight;
     }
 
-        /**
+    /**
      * This is the getter method for the instance variable {@link #windowWidth}.
      *
      * @return value of instance variable {@link #windowWidth}
@@ -862,36 +859,28 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
      * @throws EFapsException on error
      */
     @Override
-    protected void setLinkProperty(final EFapsClassNames _linkType,
+    protected void setLinkProperty(final Type _linkType,
                                    final long _toId,
-                                   final EFapsClassNames _toType,
+                                   final Type _toType,
                                    final String _toName)
         throws EFapsException
     {
-        switch (_linkType) {
-            case LINK_ICON:
-                this.icon = (RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + _toName));
-                break;
-            case LINK_TARGET_FORM:
-                this.targetForm = Form.get(_toId);
-                break;
-            case LINK_TARGET_MENU:
-                this.targetMenu = Menu.get(_toId);
-                break;
-            case LINK_TARGET_SEARCH:
-                this.targetSearch = Search.get(_toName);
-                break;
-            case LINK_TARGET_TABLE:
-                this.targetTable = Table.get(_toId);
-                break;
-            case LINK_TARGET_CMD:
-                this.targetCommand = Command.get(_toId);
-                break;
-            case LINK_TARGET_WIKI:
-                this.targeHelp = _toName;
-                break;
-            default:
-                super.setLinkProperty(_linkType, _toId, _toType, _toName);
+        if (_linkType.isKindOf(CIAdminUserInterface.LinkIcon.getType())) {
+            this.icon = RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + _toName);
+        } else if (_linkType.isKindOf(CIAdminUserInterface.LinkTargetForm.getType())) {
+            this.targetForm = Form.get(_toId);
+        } else if (_linkType.isKindOf(CIAdminUserInterface.LinkTargetMenu.getType())) {
+            this.targetMenu = Menu.get(_toId);
+        } else if (_linkType.isKindOf(CIAdminUserInterface.LinkTargetSearch.getType())) {
+            this.targetSearch = Search.get(_toId);
+        } else if (_linkType.isKindOf(CIAdminUserInterface.LinkTargetTable.getType())) {
+            this.targetTable = Table.get(_toId);
+        } else if (_linkType.isKindOf(CIAdminUserInterface.LinkTargetCommand.getType())) {
+            this.targetCommand = Command.get(_toId);
+        } else if (_linkType.isKindOf(CIAdminUserInterface.LinkTargetHelp.getType())) {
+            this.targeHelp = _toName;
+        } else {
+            super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
     }
 
@@ -903,7 +892,9 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject
      * @throws CacheReloadException on error during reload
      */
     @Override
-    protected void setProperty(final String _name, final String _value) throws CacheReloadException
+    protected void setProperty(final String _name,
+                               final String _value)
+        throws CacheReloadException
     {
         if ("AskUser".equals(_name)) {
             this.askUser = "true".equalsIgnoreCase(_value);

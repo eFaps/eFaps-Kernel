@@ -25,8 +25,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Checkout;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
@@ -72,7 +72,7 @@ public class EFapsClassLoader
     public EFapsClassLoader(final ClassLoader _parentClassLoader)
     {
         super(_parentClassLoader);
-        this.classType = Type.get(EFapsClassNames.ADMIN_PROGRAM_JAVACLASS);
+        this.classType = CIAdminProgram.JavaClass.getType();
     }
 
     /**

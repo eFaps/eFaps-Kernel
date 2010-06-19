@@ -21,9 +21,9 @@
 
 package org.efaps.admin.common;
 
-import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
@@ -61,7 +61,7 @@ public class QuartzSchedulerPlugin
         throws SchedulerException
     {
         try {
-            final QueryBuilder queryBldr = new QueryBuilder(Type.get(EFapsClassNames.ADMIN_COMMON_QUARTZABSTRACT));
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.QuartzTriggerAbstract);
             final MultiPrintQuery multi = queryBldr.getPrint();
             multi.addAttribute("Type", "Name", "Parameter1" , "Parameter2", "Parameter3");
             multi.addSelect("linkto[ESJPLink].attribute[FileName]");
@@ -74,17 +74,17 @@ public class QuartzSchedulerPlugin
                 final Integer para3 = multi.<Integer>getAttribute("Parameter3");
                 final String esjp = multi.<String>getSelect("linkto[ESJPLink].attribute[FileName]");
                 Trigger trigger = null;
-                if (type.isKindOf(Type.get(EFapsClassNames.ADMIN_COMMON_QUARTZSECONDLY))) {
+                if (type.isKindOf(CIAdminCommon.QuartzTriggerSecondly.getType())) {
                     trigger = TriggerUtils.makeSecondlyTrigger(name, para1, para2);
-                } else if (type.isKindOf(Type.get(EFapsClassNames.ADMIN_COMMON_QUARTZMINUTELY))) {
+                } else if (type.isKindOf(CIAdminCommon.QuartzTriggerMinutely.getType())) {
                     trigger = TriggerUtils.makeMinutelyTrigger(name, para1, para2);
-                } else if (type.isKindOf(Type.get(EFapsClassNames.ADMIN_COMMON_QUARTZHOURLY))) {
+                } else if (type.isKindOf(CIAdminCommon.QuartzTriggerHourly.getType())) {
                     trigger = TriggerUtils.makeHourlyTrigger(name, para1, para2);
-                } else if (type.isKindOf(Type.get(EFapsClassNames.ADMIN_COMMON_QUARTZDAILY))) {
+                } else if (type.isKindOf(CIAdminCommon.QuartzTriggerDaily.getType())) {
                     trigger = TriggerUtils.makeDailyTrigger(name, para1, para2);
-                } else if (type.isKindOf(Type.get(EFapsClassNames.ADMIN_COMMON_QUARTZWEEKLY))) {
+                } else if (type.isKindOf(CIAdminCommon.QuartzTriggerWeekly.getType())) {
                     trigger = TriggerUtils.makeWeeklyTrigger(name, para1, para2, para3);
-                } else if (type.isKindOf(Type.get(EFapsClassNames.ADMIN_COMMON_QUARTZMONTHLY))) {
+                } else if (type.isKindOf(CIAdminCommon.QuartzTriggerMonthly.getType())) {
                     trigger = TriggerUtils.makeMonthlyTrigger(name, para1, para2, para3);
                 }
                 final Class<?> clazz = Class.forName(esjp, false,

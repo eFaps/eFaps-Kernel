@@ -20,21 +20,18 @@
 
 package org.efaps.admin.ui.field;
 
-import org.efaps.admin.EFapsClassNames;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.Table;
+import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
  * @version $Id$
  */
-public class FieldTable extends Field
+public class FieldTable
+    extends Field
 {
-
-    /**
-     * The static variable defines the class name in eFaps.
-     */
-    public static final EFapsClassNames EFAPS_CLASSNAME = EFapsClassNames.FIELDTABLE;
 
     /**
      * The instance variable stores the target user interface table object which
@@ -47,34 +44,38 @@ public class FieldTable extends Field
 
     /**
      * Costructor.
-     * @param _id       id of this FieldTable
-     * @param _uuid     uuid of this FieldTable
-     * @param _name     name of this FieldTable
+     *
+     * @param _id id of this FieldTable
+     * @param _uuid uuid of this FieldTable
+     * @param _name name of this FieldTable
      */
-    public FieldTable(final long _id, final String _uuid, final String _name)
+    public FieldTable(final long _id,
+                      final String _uuid,
+                      final String _name)
     {
         super(_id, _uuid, _name);
     }
 
     /**
-     * @see org.efaps.admin.ui.field.Field#setLinkProperty(org.efaps.admin.EFapsClassNames, long, org.efaps.admin.EFapsClassNames, java.lang.String)
-     * @param _linkType     link type
-     * @param _toId         to id
-     * @param _toType       to type
-     * @param _toName       to name
+     * @see org.efaps.admin.ui.field.Field#setLinkProperty(org.efaps.admin.EFapsClassNames,
+     *      long, org.efaps.admin.EFapsClassNames, java.lang.String)
+     * @param _linkType link type
+     * @param _toId to id
+     * @param _toType to type
+     * @param _toName to name
      * @throws EFapsException on error
      */
     @Override
-    protected void setLinkProperty(final EFapsClassNames _linkType, final long _toId, final EFapsClassNames _toType,
-                    final String _toName) throws EFapsException
+    protected void setLinkProperty(final Type _linkType,
+                                   final long _toId,
+                                   final Type _toType,
+                                   final String _toName)
+        throws EFapsException
     {
-        switch (_linkType) {
-            case LINK_TARGET_TABLE:
-                this.targetTable = Table.get(_toId);
-                break;
-            default:
-                super.setLinkProperty(_linkType, _toId, _toType, _toName);
-                break;
+        if (_linkType.isKindOf(CIAdminUserInterface.LinkTargetTable.getType())) {
+            this.targetTable = Table.get(_toId);
+        } else {
+            super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
     }
 

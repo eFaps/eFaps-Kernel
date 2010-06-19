@@ -29,7 +29,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.UUID;
 
-import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
 import org.efaps.db.Insert;
@@ -53,11 +52,6 @@ public abstract class AbstractSourceImporter
      * @see #newCodeInputStream()
      */
     private static final String ENCODING = "UTF8";
-
-    /**
-     * Related type of the source.
-     */
-    private final EFapsClassNames type;
 
     /**
      * URL of the source file in file system (or in jar, ...).

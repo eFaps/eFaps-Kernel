@@ -20,18 +20,16 @@
 
 package org.efaps.admin.ui;
 
-import static org.efaps.admin.EFapsClassNames.MENU;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
-import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -180,17 +178,15 @@ public abstract class AbstractMenu extends AbstractCommand
     private void readFromDB4Childs() throws CacheReloadException
     {
         try {
-            final Instance menuInst = Instance.get(Type.get(MENU), getId());
-            final SearchQuery query = new SearchQuery();
-            query.setExpand(menuInst, "Admin_UI_Menu2Command\\FromMenu");
-            query.addSelect("ID");
-            query.addSelect("ToCommand");
-            query.executeWithoutAccessCheck();
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Menu2Command);
+            queryBldr.addWhereAttrEqValue(CIAdminUserInterface.Menu2Command.FromMenu, getId());
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute(CIAdminUserInterface.Menu2Command.ToCommand);
+            multi.executeWithoutAccessCheck();
 
-            while (query.next()) {
-                final long commandId = ((Number) query.get("ToCommand")).longValue();
-                final long sortId = (Long) query.get("ID");
-                add(sortId, commandId);
+            while (multi.next()) {
+                final long commandId = multi.getAttribute(CIAdminUserInterface.Menu2Command.ToCommand);
+                add(multi.getCurrentInstance().getId(), commandId);
             }
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read childs for menu '" + getName() + "'", e);

@@ -20,26 +20,11 @@
 
 package org.efaps.admin.event;
 
-import static org.efaps.admin.EFapsClassNames.COMMAND;
-import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTE;
-import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESETATTRIBUTE;
-import static org.efaps.admin.EFapsClassNames.DATAMODEL_TYPE;
-import static org.efaps.admin.EFapsClassNames.EVENT_DEFINITION;
-import static org.efaps.admin.EFapsClassNames.FIELD;
-import static org.efaps.admin.EFapsClassNames.FIELDCLASSIFICATION;
-import static org.efaps.admin.EFapsClassNames.FIELDCOMMAND;
-import static org.efaps.admin.EFapsClassNames.FIELDGROUP;
-import static org.efaps.admin.EFapsClassNames.FIELDHEADING;
-import static org.efaps.admin.EFapsClassNames.FIELDTABLE;
-import static org.efaps.admin.EFapsClassNames.MENU;
-import static org.efaps.admin.EFapsClassNames.PICKER;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
 import org.efaps.admin.AbstractAdminObject;
-import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -49,6 +34,11 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Picker;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.FieldTable;
+import org.efaps.ci.CIAdminCommon;
+import org.efaps.ci.CIAdminDataModel;
+import org.efaps.ci.CIAdminEvent;
+import org.efaps.ci.CIAdminProgram;
+import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
@@ -142,7 +132,7 @@ public final class EventDefinition
     private void setProperties(final Instance _instance)
         throws EFapsException
     {
-        final QueryBuilder queryBldr = new QueryBuilder(Type.get(EFapsClassNames.ADMIN_COMMON_PROPERTY));
+        final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.Property);
         queryBldr.addWhereAttrEqValue("Abstract", _instance.getId());
         final MultiPrintQuery multi = queryBldr.getPrint();
         multi.addAttribute("Name", "Value");
@@ -238,9 +228,14 @@ public final class EventDefinition
     public static void initialize()
         throws EFapsException
     {
-        final QueryBuilder queryBldr = new QueryBuilder(Type.get(EVENT_DEFINITION));
+        final QueryBuilder queryBldr = new QueryBuilder(CIAdminEvent.Definition);
         final MultiPrintQuery multi = queryBldr.getPrint();
-        multi.addAttribute("Type", "Name", "Abstract", "IndexPosition", "JavaProg", "Method");
+        multi.addAttribute(CIAdminEvent.Definition.Type,
+                           CIAdminEvent.Definition.Name,
+                           CIAdminEvent.Definition.Abstract,
+                           CIAdminEvent.Definition.IndexPosition,
+                           CIAdminEvent.Definition.JavaProg,
+                           CIAdminEvent.Definition.Method);
         multi.executeWithoutAccessCheck();
 
         if (EventDefinition.LOG.isDebugEnabled()) {
@@ -259,12 +254,12 @@ public final class EventDefinition
             String resName = null;
             try {
                 inst = multi.getCurrentInstance();
-                eventType = multi.<Type>getAttribute("Type");
-                eventName = multi.<String>getAttribute("Name");
-                eventPos = multi.<Integer>getAttribute("IndexPosition");
-                abstractID = multi.<Long>getAttribute("Abstract");
-                programId = multi.<Long>getAttribute("JavaProg");
-                method = multi.<String>getAttribute("Method");
+                eventType = multi.<Type>getAttribute(CIAdminEvent.Definition.Type);
+                eventName = multi.<String>getAttribute(CIAdminEvent.Definition.Name);
+                eventPos = multi.<Integer>getAttribute(CIAdminEvent.Definition.IndexPosition);
+                abstractID = multi.<Long>getAttribute(CIAdminEvent.Definition.Abstract);
+                programId = multi.<Long>getAttribute(CIAdminEvent.Definition.JavaProg);
+                method = multi.<String>getAttribute(CIAdminEvent.Definition.Method);
 
                 resName = EventDefinition.getClassName(programId);
 
@@ -279,8 +274,7 @@ public final class EventDefinition
                     EventDefinition.LOG.debug("   resName=" + resName);
                 }
 
-                final EFapsClassNames eFapsClass = EFapsClassNames.getEnum(EventDefinition.getTypeName(abstractID,
-                                inst, eventName));
+                final UUID typeUUId = EventDefinition.getTypeUUID(abstractID, inst, eventName);
 
                 EventType triggerEvent = null;
                 for (final EventType trigger : EventType.values()) {
@@ -294,7 +288,7 @@ public final class EventDefinition
                     }
                 }
 
-                if (eFapsClass == DATAMODEL_TYPE) {
+                if (typeUUId.equals(CIAdminDataModel.Type.uuid)) {
                     final Type type = Type.get(abstractID);
                     if (EventDefinition.LOG.isDebugEnabled()) {
                         EventDefinition.LOG.debug("    type=" + type);
@@ -303,7 +297,7 @@ public final class EventDefinition
                     type.addEvent(triggerEvent,
                                     new EventDefinition(inst, eventName, eventPos, resName, method));
 
-                } else if (eFapsClass == COMMAND) {
+                } else if (typeUUId.equals(CIAdminUserInterface.Command.uuid)) {
                     final Command command = Command.get(abstractID);
 
                     if (EventDefinition.LOG.isDebugEnabled()) {
@@ -311,8 +305,11 @@ public final class EventDefinition
                     }
                     command.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
 
-                } else if (eFapsClass == FIELD || eFapsClass == FIELDCOMMAND || eFapsClass == FIELDGROUP
-                                || eFapsClass == FIELDHEADING || eFapsClass == FIELDCLASSIFICATION) {
+                } else if (typeUUId.equals(CIAdminUserInterface.Field.uuid)
+                                || typeUUId.equals(CIAdminUserInterface.FieldCommand.uuid)
+                                || typeUUId.equals(CIAdminUserInterface.FieldGroup.uuid)
+                                || typeUUId.equals(CIAdminUserInterface.FieldHeading.uuid)
+                                || typeUUId.equals(CIAdminUserInterface.FieldClassification.uuid)) {
                     final Field field = Field.get(abstractID);
 
                     if (EventDefinition.LOG.isDebugEnabled()) {
@@ -321,7 +318,8 @@ public final class EventDefinition
 
                     field.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
 
-                } else if (eFapsClass == DATAMODEL_ATTRIBUTE || eFapsClass == DATAMODEL_ATTRIBUTESETATTRIBUTE) {
+                } else if (typeUUId.equals(CIAdminDataModel.Attribute.uuid)
+                                || typeUUId.equals(CIAdminDataModel.AttributeSetAttribute.uuid)) {
                     final Attribute attribute = Attribute.get(abstractID);
                     if (EventDefinition.LOG.isDebugEnabled()) {
                         EventDefinition.LOG.debug("      Attribute=" + attribute.getName());
@@ -329,7 +327,7 @@ public final class EventDefinition
 
                     attribute.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
 
-                } else if (eFapsClass == MENU) {
+                } else if (typeUUId.equals(CIAdminUserInterface.Menu.uuid)) {
                     final Menu menu = Menu.get(abstractID);
                     if (EventDefinition.LOG.isDebugEnabled()) {
                         EventDefinition.LOG.debug("      Menu=" + menu.getName());
@@ -337,7 +335,7 @@ public final class EventDefinition
 
                     menu.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
 
-                } else if (eFapsClass == FIELDTABLE) {
+                } else if (typeUUId.equals(CIAdminUserInterface.FieldTable.uuid)) {
 
                     final FieldTable fieldtable = FieldTable.get(abstractID);
 
@@ -347,7 +345,7 @@ public final class EventDefinition
 
                     fieldtable.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
 
-                } else if (eFapsClass == PICKER) {
+                } else if (typeUUId.equals(CIAdminUserInterface.Picker.uuid)) {
 
                     final Picker picker = Picker.get(abstractID);
 
@@ -382,11 +380,11 @@ public final class EventDefinition
         throws EFapsException
     {
         String ret = null;
-        final PrintQuery print = new PrintQuery(Type.get(EFapsClassNames.ADMIN_PROGRAM_JAVA), _programId);
-        print.addAttribute("Name");
+        final PrintQuery print = new PrintQuery(CIAdminProgram.Java.getType(), _programId);
+        print.addAttribute(CIAdminProgram.Java.Name);
 
         if (print.executeWithoutAccessCheck()) {
-            ret = print.getAttribute("Name");
+            ret = print.getAttribute(CIAdminProgram.Java.Name);
         } else {
             EventDefinition.LOG.error("Can't find the Name for the Program with ID: " + _programId);
         }
@@ -394,7 +392,7 @@ public final class EventDefinition
     }
 
     /**
-     * Get the Name of the Type from the Database.
+     * Get the UUID of the Type from the Database.
      *
      * @param _abstractID   ID the Typename must be resolved
      * @param _eventDefInst Instance of the event, only used for logging on error
@@ -402,7 +400,7 @@ public final class EventDefinition
      * @return NAem of the Type
      * @throws EFapsException on error
      */
-    private static UUID getTypeName(final long _abstractID,
+    private static UUID getTypeUUID(final long _abstractID,
                                     final Instance _eventDefInst,
                                     final String _eventName)
         throws EFapsException
