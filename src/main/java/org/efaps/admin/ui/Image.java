@@ -24,28 +24,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.efaps.admin.EFapsClassNames.IMAGE;
-
 /**
  * @author The eFaps Team
- * @version $Id$
- * TODO: description
+ * @version $Id$ TODO:
+ *          description
  */
-public class Image extends AbstractUserInterfaceObject
+public class Image
+    extends AbstractUserInterfaceObject
 {
-
-    /**
-     * The static variable defines the class name in eFaps.
-     */
-    public static final EFapsClassNames EFAPS_CLASSNAME = IMAGE;
 
     /**
      * Logging instance used in this class.
@@ -71,7 +65,9 @@ public class Image extends AbstractUserInterfaceObject
      * @param _uuid uuid of the command to set
      * @param _name name of the command to set
      */
-    public Image(final Long _id, final String _uuid, final String _name)
+    public Image(final Long _id,
+                 final String _uuid,
+                 final String _name)
     {
         super(_id, _uuid, _name);
     }
@@ -86,22 +82,24 @@ public class Image extends AbstractUserInterfaceObject
      * @throws EFapsException on error
      */
     @Override
-    protected void setLinkProperty(final EFapsClassNames _linkType, final long _toId, final EFapsClassNames _toType,
-                    final String _toName) throws EFapsException
+    protected void setLinkProperty(final Type _linkType,
+                                   final long _toId,
+                                   final Type _toType,
+                                   final String _toName)
+        throws EFapsException
     {
-        switch (_linkType) {
-            case LINK_ICONISTYPEICONFOR:
-                final Type type = Type.get(_toId);
-                if (type == null) {
-                    Image.LOG.error("Image '" + getName() + "' could not defined as type icon for type '" + _toName
-                                    + "'! Type does not exists!");
-                } else {
-                    Image.TYPE2IMAGE.put(type, this);
-                }
-                break;
-            default:
-                super.setLinkProperty(_linkType, _toId, _toType, _toName);
+        if (_linkType.isKindOf(CIAdminUserInterface.LinkIsTypeIconFor.getType())) {
+            final Type type = Type.get(_toId);
+            if (type == null) {
+                Image.LOG.error("Form '" + getName() + "' could not defined as type form for type '" + _toName
+                                + "'! Type does not " + "exists!");
+            } else {
+                Image.TYPE2IMAGE.put(type, this);
+            }
+        } else {
+            super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
+
     }
 
     /**
@@ -156,7 +154,7 @@ public class Image extends AbstractUserInterfaceObject
     public static Image get(final UUID _uuid)
             throws CacheReloadException
     {
-        return CACHE.get(_uuid);
+        return Image.CACHE.get(_uuid);
     }
 
     /**
@@ -172,7 +170,7 @@ public class Image extends AbstractUserInterfaceObject
     {
         Image ret = Image.TYPE2IMAGE.get(_type);
         if ((ret == null) && (_type != null) && (_type.getParentType() != null)) {
-            ret = getTypeIcon(_type.getParentType());
+            ret = Image.getTypeIcon(_type.getParentType());
         }
         return ret;
     }
@@ -190,7 +188,8 @@ public class Image extends AbstractUserInterfaceObject
     /**
      * Cache for Images.
      */
-    private static class ImageCache extends UserInterfaceObjectCache<Image>
+    private static class ImageCache
+        extends UserInterfaceObjectCache<Image>
     {
 
         /**
@@ -199,6 +198,16 @@ public class Image extends AbstractUserInterfaceObject
         protected ImageCache()
         {
             super(Image.class);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected Type getType()
+            throws EFapsException
+        {
+            return CIAdminUserInterface.Image.getType();
         }
     }
 }

@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
+import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -41,13 +41,7 @@ import org.efaps.update.event.Event;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
-import static org.efaps.admin.EFapsClassNames.FIELD;
-import static org.efaps.admin.EFapsClassNames.FIELDCLASSIFICATION;
-import static org.efaps.admin.EFapsClassNames.FIELDCOMMAND;
-import static org.efaps.admin.EFapsClassNames.FIELDGROUP;
-import static org.efaps.admin.EFapsClassNames.FIELDHEADING;
-import static org.efaps.admin.EFapsClassNames.FIELDSET;
-import static org.efaps.admin.EFapsClassNames.FIELDTABLE;
+
 
 /**
  * This class imports/updates a Form or a Table using the
@@ -232,7 +226,7 @@ public abstract class AbstractCollectionUpdate
         {
             super.updateInDB(_step, _allLinkTypes);
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
-                this.setFieldsInDB();
+                setFieldsInDB();
             }
         }
 
@@ -278,19 +272,19 @@ public abstract class AbstractCollectionUpdate
             for (final FieldDefinition field : this.fields) {
                 Insert insert;
                 if ("Command".equals(field.character)) {
-                    insert = new Insert(Type.get(FIELDCOMMAND));
+                    insert = new Insert(CIAdminUserInterface.FieldCommand);
                 } else if ("Target".equals(field.character)) {
-                    insert = new Insert(Type.get(FIELDTABLE));
+                    insert = new Insert(CIAdminUserInterface.FieldTable);
                 } else if ("Heading".equals(field.character)) {
-                    insert = new Insert(Type.get(FIELDHEADING));
+                    insert = new Insert(CIAdminUserInterface.FieldHeading);
                 } else if ("Group".equals(field.character)) {
-                    insert = new Insert(Type.get(FIELDGROUP));
+                    insert = new Insert(CIAdminUserInterface.FieldGroup);
                 } else if ("Set".equals(field.character)) {
-                    insert = new Insert(Type.get(FIELDSET));
+                    insert = new Insert(CIAdminUserInterface.FieldSet);
                 } else if ("Classification".equals(field.character)) {
-                    insert = new Insert(Type.get(FIELDCLASSIFICATION));
+                    insert = new Insert(CIAdminUserInterface.FieldClassification);
                 } else {
-                    insert = new Insert(Type.get(FIELD));
+                    insert = new Insert(CIAdminUserInterface.Field);
                 }
 
                 insert.add("Collection", "" + this.instance.getId());

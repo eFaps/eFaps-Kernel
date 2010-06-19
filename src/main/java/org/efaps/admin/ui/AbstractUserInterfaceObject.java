@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.efaps.admin.AbstractAdminObject;
-import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -43,9 +42,11 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.user.AbstractUserObject;
 import org.efaps.admin.user.Company;
 import org.efaps.admin.user.Role;
+import org.efaps.ci.CIAdmin;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
@@ -266,7 +267,8 @@ public abstract class AbstractUserInterfaceObject
      *
      * @param <UIObj>
      */
-    protected static class UserInterfaceObjectCache<UIObj extends AbstractUserInterfaceObject> extends Cache<UIObj>
+    protected abstract static class UserInterfaceObjectCache<UIObj extends AbstractUserInterfaceObject>
+        extends Cache<UIObj>
     {
 
         /**
@@ -299,25 +301,11 @@ public abstract class AbstractUserInterfaceObject
         }
 
         /**
-         * Get the <code>EFapsClassName</code> of this
-         * <code>UserInterfaceObject</code>.
-         *
-         * @return <code>EFapsClassName</code>
+         * @return type to be used
          * @throws EFapsException on error
          */
-        private EFapsClassNames getEFapsClassName() throws EFapsException
-        {
-            final Class<UIObj> uiObjClass = this.callerClass;
-            try {
-                return ((EFapsClassNames) uiObjClass.getField("EFAPS_CLASSNAME").get(null));
-            } catch (final NoSuchFieldException e) {
-                throw new EFapsException(AbstractUserInterfaceObject.UserInterfaceObjectCache.class,
-                                "getEFapsClassName.EFapsClassNameNotExist", e, uiObjClass.getName());
-            } catch (final IllegalAccessException e) {
-                throw new EFapsException(AbstractUserInterfaceObject.UserInterfaceObjectCache.class,
-                                "getEFapsClassName.EFapsClassNameNotAccessable", e, uiObjClass.getName());
-            }
-        }
+        protected abstract Type getType()
+            throws EFapsException;
 
         /**
          * {@inheritDoc}
@@ -329,17 +317,16 @@ public abstract class AbstractUserInterfaceObject
 
             final Class<UIObj> uiObjClass = this.callerClass;
             try {
-                if (Type.get(getEFapsClassName()) != null) {
-                    final SearchQuery query = new SearchQuery();
-                    query.setQueryTypes(Type.get(getEFapsClassName()).getName());
-                    query.addSelect("ID");
-                    query.addSelect("Name");
-                    query.addSelect("UUID");
-                    query.executeWithoutAccessCheck();
-                    while (query.next()) {
-                        final long id = (Long) query.get("ID");
-                        final String name = (String) query.get("Name");
-                        final String uuid = (String) query.get("UUID");
+                if (getType() != null) {
+                    final QueryBuilder queryBldr = new QueryBuilder(getType());
+                    final MultiPrintQuery multi = queryBldr.getPrint();
+                    multi.addAttribute(CIAdmin.Abstract.Name,
+                                       CIAdmin.Abstract.UUID);
+                    multi.executeWithoutAccessCheck();
+                    while (multi.next()) {
+                        final long id = multi.getCurrentInstance().getId();
+                        final String name = multi.<String>getAttribute(CIAdmin.Abstract.Name);
+                        final String uuid = multi.<String>getAttribute(CIAdmin.Abstract.UUID);
                         final Constructor<UIObj> uiObj = uiObjClass.getConstructor(Long.class, String.class,
                                         String.class);
                         final UIObj uiObj2 = uiObj.newInstance(id, uuid, name);

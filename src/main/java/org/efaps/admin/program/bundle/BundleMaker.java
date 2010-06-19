@@ -20,8 +20,6 @@
 
 package org.efaps.admin.program.bundle;
 
-import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_STATICCOMPILED;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,8 +28,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.efaps.admin.datamodel.Type;
-import org.efaps.db.SearchQuery;
+import org.efaps.ci.CIAdminProgram;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.AutomaticCache;
 import org.efaps.util.cache.CacheObjectInterface;
@@ -288,17 +287,14 @@ public final class BundleMaker
             throws CacheReloadException
         {
             try {
-
-                final SearchQuery query = new SearchQuery();
-                query.setQueryTypes(Type.get(ADMIN_PROGRAM_STATICCOMPILED).getName());
-                query.setExpandChildTypes(true);
-                query.addSelect("OID");
-                query.addSelect("Name");
-                query.execute();
-                while (query.next()) {
-                    final String name = (String) query.get("Name");
-                    final String oid = (String) query.get("OID");
-                    final StaticCompiledSource source = new StaticCompiledSource(oid, name);
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.StaticCompiled);
+                final MultiPrintQuery multi = queryBldr.getPrint();
+                multi.addAttribute(CIAdminProgram.StaticCompiled.Name);
+                multi.execute();
+                while (multi.next()) {
+                    final String name = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.Name);
+                    final StaticCompiledSource source = new StaticCompiledSource(multi.getCurrentInstance().getOid(),
+                                    name);
                     _cache4Name.put(source.getName(), source);
                 }
             } catch (final EFapsException e) {

@@ -20,11 +20,10 @@
 
 package org.efaps.admin.ui;
 
-import static org.efaps.admin.EFapsClassNames.SEARCH;
-
 import java.util.UUID;
 
-import org.efaps.admin.EFapsClassNames;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -33,13 +32,9 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  *
  */
-public class Search extends AbstractMenu
+public class Search
+    extends AbstractMenu
 {
-
-     /**
-     * The static variable defines the class name in eFaps.
-     */
-    public static EFapsClassNames EFAPS_CLASSNAME = SEARCH;
 
     /**
      * Stores all instances of class {@link Search}.
@@ -62,7 +57,9 @@ public class Search extends AbstractMenu
      * @param _uuid uuid for this search
      * @param _name search name
      */
-    public Search(final Long _id, final String _uuid, final String _name)
+    public Search(final Long _id,
+                  final String _uuid,
+                  final String _name)
     {
         super(_id, _uuid, _name);
     }
@@ -75,7 +72,8 @@ public class Search extends AbstractMenu
      * @throws CacheReloadException
      */
     @Override
-    protected void add(final long _sortId, final long _id)
+    protected void add(final long _sortId,
+                       final long _id)
     {
         final Command command = Command.get(_id);
         if (command == null) {
@@ -94,19 +92,19 @@ public class Search extends AbstractMenu
      * @throws EFapsException on error
      */
     @Override
-    protected void setLinkProperty(final EFapsClassNames _linkType, final long _toId, final EFapsClassNames _toType,
-                    final String _toName)
-            throws EFapsException
+    protected void setLinkProperty(final Type _linkType,
+                                   final long _toId,
+                                   final Type _toType,
+                                   final String _toName)
+        throws EFapsException
     {
-        switch (_linkType) {
-            case LINK_DEFAULT_SEARCHCOMMAND:
-                this.defaultCommand = Command.get(_toId);
-                if (this.defaultCommand == null) {
-                    this.defaultCommand = Menu.get(_toId);
-                }
-                break;
-            default:
-                super.setLinkProperty(_linkType, _toId, _toType, _toName);
+        if (_linkType.isKindOf(CIAdminUserInterface.LinkDefaultSearchCommand.getType())) {
+            this.defaultCommand = Command.get(_toId);
+            if (this.defaultCommand == null) {
+                this.defaultCommand = Menu.get(_toId);
+            }
+        } else {
+            super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
     }
 
@@ -178,7 +176,8 @@ public class Search extends AbstractMenu
     /**
      * Cache for Searches.
      */
-    private static class SearchCache extends UserInterfaceObjectCache<Search>
+    private static class SearchCache
+        extends UserInterfaceObjectCache<Search>
     {
 
         /**
@@ -187,6 +186,16 @@ public class Search extends AbstractMenu
         protected SearchCache()
         {
             super(Search.class);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected Type getType()
+            throws EFapsException
+        {
+            return CIAdminUserInterface.Search.getType();
         }
     }
 }

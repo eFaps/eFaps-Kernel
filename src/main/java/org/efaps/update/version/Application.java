@@ -20,8 +20,6 @@
 
 package org.efaps.update.version;
 
-import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -42,6 +40,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.tools.ant.DirectoryScanner;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.runlevel.RunLevel;
+import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
@@ -638,7 +637,7 @@ public final class Application
                                 final Long _version)
         throws InstallationException
     {
-        final Type versionType = Type.get(ADMIN_COMMON_VERSION);
+        final Type versionType = CIAdminCommon.Version.getType();
 
         if (versionType != null) {
             try {

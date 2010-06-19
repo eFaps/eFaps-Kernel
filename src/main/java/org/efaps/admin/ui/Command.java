@@ -22,9 +22,11 @@ package org.efaps.admin.ui;
 
 import java.util.UUID;
 
-import org.efaps.admin.EFapsClassNames;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminUserInterface;
+import org.efaps.util.EFapsException;
 
-import static org.efaps.admin.EFapsClassNames.COMMAND;
+
 
 /**
  * @author The eFaps Team
@@ -34,10 +36,6 @@ import static org.efaps.admin.EFapsClassNames.COMMAND;
 public class Command
     extends AbstractCommand
 {
-    /**
-     * The static variable defines the class name in eFaps.
-     */
-    public static final EFapsClassNames EFAPS_CLASSNAME = COMMAND;
 
     /**
      * Cache for the commands.
@@ -113,6 +111,16 @@ public class Command
         protected CommandCache()
         {
             super(Command.class);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected Type getType()
+            throws EFapsException
+        {
+            return CIAdminUserInterface.Command.getType();
         }
     }
 }

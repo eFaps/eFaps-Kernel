@@ -18,7 +18,10 @@
  * Last Changed By: $Author$
  */
 
+
 package org.efaps.ci;
+
+
 
 
 /**
@@ -28,28 +31,21 @@ package org.efaps.ci;
  * @version $Id$
  */
 //CHECKSTYLE:OFF
-public class CIAdmin
+public class CIAdminEvent
 {
+    public static final _Definition Definition = new _Definition("9c1d52f4-94d6-4f95-ab81-bed23884cf03");
 
-    public static final _Abstract Abstract = new _Abstract("2a869f46-0ec7-4afb-98e7-8b1125e1c43c");
-
-    public static class _Abstract
-        extends CIType
+    public static class _Definition
+        extends CIAdmin._Abstract
     {
 
-        protected _Abstract(final String _uuid)
+        protected _Definition(final String _uuid)
         {
             super(_uuid);
         }
-
-        public final CIAttribute Name = new CIAttribute(this, "Name");
-        public final CIAttribute UUID = new CIAttribute(this, "UUID");
-        public final CIAttribute Revision = new CIAttribute(this, "Revision");
-        public final CIAttribute Purpose = new CIAttribute(this, "Purpose");
-        public final CIAttribute Creator = new CIAttribute(this, "Creator");
-        public final CIAttribute Created = new CIAttribute(this, "Created");
-        public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
-        public final CIAttribute Modified = new CIAttribute(this, "Modified");
+        public final CIAttribute IndexPosition = new CIAttribute(this, "IndexPosition");
+        public final CIAttribute Abstract = new CIAttribute(this, "Abstract");
+        public final CIAttribute Method = new CIAttribute(this, "Method");
+        public final CIAttribute JavaProg = new CIAttribute(this, "JavaProg");
     }
-
 }

@@ -20,32 +20,25 @@
 
 package org.efaps.admin.ui;
 
-import static org.efaps.admin.EFapsClassNames.MENU;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
  * @version $Id$
  *
  */
-public class Menu extends AbstractMenu
+public class Menu
+    extends AbstractMenu
 {
-
-    /**
-     * The static variable defines the class name in eFaps.
-     */
-    public static final EFapsClassNames EFAPS_CLASSNAME = MENU;
 
     /**
      * Logging instance used in this class.
@@ -67,11 +60,13 @@ public class Menu extends AbstractMenu
     /**
      * Constructor to set the id and name of the menu object.
      *
-     * @param _id   id of the command to set
+     * @param _id id of the command to set
      * @param _uuid uuid of this command
      * @param _name name of the command to set
      */
-    public Menu(final Long _id, final String _uuid, final String _name)
+    public Menu(final Long _id,
+                final String _uuid,
+                final String _name)
     {
         super(_id, _uuid, _name);
     }
@@ -84,7 +79,8 @@ public class Menu extends AbstractMenu
      * @throws CacheReloadException
      */
     @Override
-    protected void add(final long _sortId, final long _id)
+    protected void add(final long _sortId,
+                       final long _id)
     {
         final Command command = Command.get(_id);
         if (command == null) {
@@ -105,22 +101,22 @@ public class Menu extends AbstractMenu
      * @throws EFapsException on error
      */
     @Override
-    protected void setLinkProperty(final EFapsClassNames _linkType, final long _toId, final EFapsClassNames _toType,
-                    final String _toName)
-            throws EFapsException
+    protected void setLinkProperty(final Type _linkType,
+                                   final long _toId,
+                                   final Type _toType,
+                                   final String _toName)
+        throws EFapsException
     {
-        switch (_linkType) {
-            case LINK_MENUISTYPETREEFOR:
-                final Type type = Type.get(_toId);
-                if (type == null) {
-                    Menu.LOG.error("Menu '" + getName() + "' could not defined as type " + "tree menu for type '"
-                                    + _toName + "'! Type does not " + "exists!");
-                } else {
-                    Menu.TYPE2MENUS.put(type, this);
-                }
-                break;
-            default:
-                super.setLinkProperty(_linkType, _toId, _toType, _toName);
+        if (_linkType.isKindOf(CIAdminUserInterface.LinkIsTypeTreeFor.getType())) {
+            final Type type = Type.get(_toId);
+            if (type == null) {
+                Menu.LOG.error("Menu '" + getName() + "' could not defined as type " + "tree menu for type '"
+                                + _toName + "'! Type does not " + "exists!");
+            } else {
+                Menu.TYPE2MENUS.put(type, this);
+            }
+        } else {
+            super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
     }
 
@@ -181,7 +177,7 @@ public class Menu extends AbstractMenu
     {
         Menu ret = Menu.TYPE2MENUS.get(_type);
         if ((ret == null) && (_type.getParentType() != null)) {
-            ret = getTypeTreeMenu(_type.getParentType());
+            ret = Menu.getTypeTreeMenu(_type.getParentType());
         }
         return ret;
     }
@@ -199,7 +195,8 @@ public class Menu extends AbstractMenu
     /**
      * Cache for Menus.
      */
-    private static class MenuCache extends UserInterfaceObjectCache<Menu>
+    private static class MenuCache
+        extends UserInterfaceObjectCache<Menu>
     {
 
         /**
@@ -208,6 +205,16 @@ public class Menu extends AbstractMenu
         protected MenuCache()
         {
             super(Menu.class);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected Type getType()
+            throws EFapsException
+        {
+            return CIAdminUserInterface.Menu.getType();
         }
     }
 }

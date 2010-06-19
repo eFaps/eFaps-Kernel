@@ -24,28 +24,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.efaps.admin.EFapsClassNames.FORM;
-
 /**
  * @author The eFaps TEam
- * @version $Id$
- * TODO: description
+ * @version $Id$ TODO:
+ *          description
  */
-public class Form extends AbstractCollection
+public class Form
+    extends AbstractCollection
 {
-
-    /**
-     * The static variable defines the class name in eFaps.
-     */
-    public static final EFapsClassNames EFAPS_CLASSNAME = FORM;
 
     /**
      * Logging instance used in this class.
@@ -62,7 +56,9 @@ public class Form extends AbstractCollection
     /**
    *
    */
-    public Form(final Long _id, final String _uuid, final String _name)
+    public Form(final Long _id,
+                final String _uuid,
+                final String _name)
     {
         super(_id, _uuid, _name);
     }
@@ -77,21 +73,22 @@ public class Form extends AbstractCollection
      * @throws EFapsException on error
      */
     @Override
-    protected void setLinkProperty(final EFapsClassNames _linkType, final long _toId, final EFapsClassNames _toType,
-                    final String _toName) throws EFapsException
+    protected void setLinkProperty(final Type _linkType,
+                                   final long _toId,
+                                   final Type _toType,
+                                   final String _toName)
+        throws EFapsException
     {
-        switch (_linkType) {
-            case LINK_MENUISTYPEFORMFOR:
-                final Type type = Type.get(_toId);
-                if (type == null) {
-                    Form.LOG.error("Form '" + getName() + "' could not defined as type form for type '" + _toName
-                                    + "'! Type does not " + "exists!");
-                } else {
-                    Form.TYPE2FORMS.put(type, this);
-                }
-                break;
-            default:
-                super.setLinkProperty(_linkType, _toId, _toType, _toName);
+        if (_linkType.isKindOf(CIAdminUserInterface.LinkIsTypeTreeFor.getType())) {
+            final Type type = Type.get(_toId);
+            if (type == null) {
+                Form.LOG.error("Form '" + getName() + "' could not defined as type form for type '" + _toName
+                                + "'! Type does not " + "exists!");
+            } else {
+                Form.TYPE2FORMS.put(type, this);
+            }
+        } else {
+            super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
     }
 
@@ -134,31 +131,28 @@ public class Form extends AbstractCollection
      */
     public static Form get(final UUID _uuid)
     {
-        return CACHE.get(_uuid);
+        return Form.CACHE.get(_uuid);
     }
 
     /**
-     * Returns for given type the type form. If no type form is
-     * defined for the type, it is searched if for parent type a menu is
-     * defined.
+     * Returns for given type the type form. If no type form is defined for the
+     * type, it is searched if for parent type a menu is defined.
      *
      * @param _type type for which the type form is searched
-     * @return type form for given type if found; otherwise
-     *         <code>null</code>.
+     * @return type form for given type if found; otherwise <code>null</code>.
      */
     public static Form getTypeForm(final Type _type)
     {
         Form ret = Form.TYPE2FORMS.get(_type);
         if ((ret == null)) {
             if (_type.getParentType() != null) {
-                ret = getTypeForm(_type.getParentType());
+                ret = Form.getTypeForm(_type.getParentType());
             } else if (_type instanceof Classification && ((Classification) _type).getParentClassification() != null) {
-                ret = getTypeForm(((Classification) _type).getParentClassification());
+                ret = Form.getTypeForm(((Classification) _type).getParentClassification());
             }
         }
         return ret;
     }
-
 
     /**
      * Static getter method for the type hashtable {@link #CACHE}.
@@ -170,12 +164,23 @@ public class Form extends AbstractCollection
         return Form.CACHE;
     }
 
-    private static class FormCache extends UserInterfaceObjectCache<Form>
+    private static class FormCache
+        extends UserInterfaceObjectCache<Form>
     {
 
         protected FormCache()
         {
             super(Form.class);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected Type getType()
+            throws EFapsException
+        {
+            return CIAdminUserInterface.Form.getType();
         }
     }
 }

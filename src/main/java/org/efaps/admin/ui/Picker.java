@@ -22,22 +22,18 @@ package org.efaps.admin.ui;
 
 import java.util.UUID;
 
-import org.efaps.admin.EFapsClassNames;
-
-import static org.efaps.admin.EFapsClassNames.PICKER;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminUserInterface;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
- * @version $Id$
- * TODO: description
+ * @version $Id$ TODO:
+ *          description
  */
 public class Picker
     extends AbstractCollection
 {
-    /**
-     * The static variable defines the class name in eFaps.
-     */
-    public static final EFapsClassNames EFAPS_CLASSNAME = PICKER;
 
     /**
      * Cache for the Pickers.
@@ -45,9 +41,9 @@ public class Picker
     private static final PickerCache CACHE = new PickerCache();
 
     /**
-     * @param _id     ID
-     * @param _uuid   UUID
-     * @param _name   Name
+     * @param _id ID
+     * @param _uuid UUID
+     * @param _name Name
      */
     public Picker(final Long _id,
                   final String _uuid,
@@ -111,12 +107,23 @@ public class Picker
     private static class PickerCache
         extends UserInterfaceObjectCache<Picker>
     {
+
         /**
          *
          */
         protected PickerCache()
         {
             super(Picker.class);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected Type getType()
+            throws EFapsException
+        {
+            return CIAdminUserInterface.Picker.getType();
         }
     }
 }

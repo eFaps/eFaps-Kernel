@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
 import org.efaps.admin.datamodel.attributetype.CompanyLinkType;
@@ -45,6 +44,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.ci.CIAdminDataModel;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
@@ -64,22 +64,23 @@ import org.slf4j.LoggerFactory;
 public class Type
     extends AbstractDataModelObject
 {
+
     /**
      * Enum for the different purpose of a type.
      */
-    public enum Purpose
-    {
-        /** Abstract purpose.*/
-        ABSTRACT (1),
-        /** classification purpose.*/
-        CLASSIFICATION (2);
+    public enum Purpose {
+        /** Abstract purpose. */
+        ABSTRACT(1),
+        /** classification purpose. */
+        CLASSIFICATION(2);
 
         /** id of this purpose. */
         private final int id;
 
         /**
          * Constructor setting the id.
-         *  @param _id id of this purpose
+         *
+         * @param _id id of this purpose
          */
         private Purpose(final int _id)
         {
@@ -87,7 +88,7 @@ public class Type
         }
 
         /**
-         *  Getter method for instance variable {@link #id}.
+         * Getter method for instance variable {@link #id}.
          *
          * @return id of this purpose
          */
@@ -108,14 +109,14 @@ public class Type
      * @see #initialise
      */
     private static final String SQL_SELECT =
-                "   select "
-                + "  ID,"
-                + "  UUID,"
-                + "  NAME,"
-                + "  PURPOSE,"
-                + "  PARENTDMTYPE,"
-                + "  SQLCACHEEXPR "
-                + "from V_ADMINTYPE";
+                    "   select "
+                                    + "  ID,"
+                                    + "  UUID,"
+                                    + "  NAME,"
+                                    + "  PURPOSE,"
+                                    + "  PARENTDMTYPE,"
+                                    + "  SQLCACHEEXPR "
+                                    + "from V_ADMINTYPE";
 
     /**
      * Stores all instances of type.
@@ -144,7 +145,7 @@ public class Type
      */
     private final Set<Classification> classifiedByTypes = new HashSet<Classification>();
 
-        /**
+    /**
      * The instance variables stores all attributes for this type object.
      *
      * @see #getAttributes()
@@ -217,23 +218,22 @@ public class Type
     private boolean abstractBool;
 
     /**
-     * Stores the name of attribute that contains the status of this
-     * type. (if exist)
+     * Stores the name of attribute that contains the status of this type. (if
+     * exist)
      */
     private String statusAttributeName;
 
     /**
-     * Stores the name of attribute that contains the company of this
-     * type. (if exist)
+     * Stores the name of attribute that contains the company of this type. (if
+     * exist)
      */
     private String companyAttributeName;
 
     /**
-     * Stores the name of attribute that contains the type of this
-     * type. (if exist)
+     * Stores the name of attribute that contains the type of this type. (if
+     * exist)
      */
     private String typeAttributeName;
-
 
     /**
      * This is the constructor for class Type. Every instance of class Type must
@@ -257,7 +257,7 @@ public class Type
         }
     }
 
-  /**
+    /**
      * Getter method for instance variable {@link #abstractBool}.
      *
      * @return value of instance variable {@link #abstractBool}
@@ -280,8 +280,8 @@ public class Type
     /**
      * Add an attribute to this type and all child types of this type.
      *
-     * @param _attribute    attribute to add
-     * @param _inherited    is the attribute inherited or form this type
+     * @param _attribute attribute to add
+     * @param _inherited is the attribute inherited or form this type
      */
     protected void addAttribute(final Attribute _attribute,
                                 final boolean _inherited)
@@ -320,12 +320,12 @@ public class Type
         }
     }
 
-  /**
+    /**
      * Adds link from an attribute to this type. The link is also registered
      * under the name of all child types of the attribute.
      *
-     * @param _attr attribute with the link to this type
-     * TODO: description of algorithm
+     * @param _attr attribute with the link to this type TODO: description of
+     *            algorithm
      */
     protected void addLink(final Attribute _attr)
     {
@@ -352,6 +352,7 @@ public class Type
 
     /**
      * Method to evaluate if the status must be checked on an accesscheck.
+     *
      * @return true if {@link #statusAttribute} !=null , else false
      */
     public boolean isCheckStatus()
@@ -361,6 +362,7 @@ public class Type
 
     /**
      * Method to evaluate if this type depends on companies.
+     *
      * @return true if {@link #companyAttribute} !=null , else false
      */
     public boolean isCompanyDepended()
@@ -486,9 +488,10 @@ public class Type
 
     /**
      * Method to check the access right for a list of instances.
-     * @param _instances    list of instances
-     * @param _accessType   access type
-     * @throws EFapsException   on error
+     *
+     * @param _instances list of instances
+     * @param _accessType access type
+     * @throws EFapsException on error
      * @return Map of instances to boolean
      */
     @SuppressWarnings("unchecked")
@@ -545,26 +548,23 @@ public class Type
      *
      */
     @Override
-    protected void setLinkProperty(final EFapsClassNames _linkType,
+    protected void setLinkProperty(final Type _linkType,
                                    final long _toId,
-                                   final EFapsClassNames _toType,
+                                   final Type _toType,
                                    final String _toName)
         throws EFapsException
     {
-        switch (_linkType) {
-            case DATAMODEL_TYPEEVENTISALLOWEDFOR:
-                final Type eventType = Type.get(_toId);
-                this.allowedEventTypes.add(eventType);
-                break;
-            case DATAMODEL_TYPE2STORE:
-                this.storeId = _toId;
-                break;
-            default:
-                super.setLinkProperty(_linkType, _toId, _toType, _toName);
+        if (_linkType.isKindOf(CIAdminDataModel.Type2Store.getType())) {
+            this.storeId = _toId;
+        } else if (_linkType.isKindOf(CIAdminDataModel.TypeEventIsAllowedFor.getType())) {
+            final Type eventType = Type.get(_toId);
+            this.allowedEventTypes.add(eventType);
+        } else {
+            super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
     }
 
-  /**
+    /**
      * The instance method sets a new property value.
      *
      * @param _name name of the property
@@ -619,7 +619,7 @@ public class Type
         }
     }
 
-  /**
+    /**
      * For the given type it is tested if a store is defined for the type.
      *
      * @return <i>true</i> if a store resource is defined for the type,
@@ -661,6 +661,7 @@ public class Type
     {
         this.classifiedByTypes.add(_classification);
     }
+
     /**
      * Getter method for instance variable {@link #classifiedByTypes}.
      *
@@ -791,9 +792,9 @@ public class Type
         return ret;
     }
 
-
     /**
      * Method to get the key to the label.
+     *
      * @return key to the label
      */
     public String getLabelKey()
@@ -804,6 +805,7 @@ public class Type
 
     /**
      * Method to get the translated label for this Status.
+     *
      * @return translated Label
      */
     public String getLabel()
@@ -902,19 +904,6 @@ public class Type
     }
 
     /**
-     * Returns for given parameter <i>_className</i> the instance of class
-     * {@link Type}.
-     *
-     * @param _className classname of the type to get
-     * @return instance of class {@link Type}
-     * @throws CacheReloadException
-     */
-    public static Type get(final EFapsClassNames _className)
-    {
-        return Type.CACHE.get(_className.getUuid());
-    }
-
-    /**
      * Static getter method for the type hashtable {@link #CACHE}.
      *
      * @return value of static variable {@link #CACHE}
@@ -927,10 +916,11 @@ public class Type
     /**
      * Cache for Types.
      */
-    private static class TypeCache extends Cache<Type>
+    private static class TypeCache
+        extends Cache<Type>
     {
 
-    /**
+        /**
          * @see org.efaps.util.cache.Cache#readCache(java.util.Map,
          *      java.util.Map, java.util.Map)
          * @param _cache4Id Cache for id

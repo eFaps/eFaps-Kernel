@@ -30,9 +30,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -44,6 +41,8 @@ import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
@@ -122,8 +121,11 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
      * @param _toName to name
      * @throws EFapsException on error
      */
-    protected void setLinkProperty(final EFapsClassNames _linkType, final long _toId, final EFapsClassNames _toType,
-                    final String _toName) throws EFapsException
+    protected void setLinkProperty(final Type _linkType,
+                                   final long _toId,
+                                   final Type _toType,
+                                   final String _toName)
+        throws EFapsException
     {
     }
 
@@ -321,9 +323,8 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
                 final String toName = resultset.getString(4);
                 final Type conType = Type.get(conTypeId);
                 final Type toType = Type.get(toTypeId);
-                if (EFapsClassNames.getEnum(conType.getUUID()) != null) {
-                    setLinkProperty(EFapsClassNames.getEnum(conType.getUUID()), toId, EFapsClassNames.getEnum(toType
-                                    .getUUID()), toName.trim());
+                if (conType != null && toType != null) {
+                    setLinkProperty(conType, toId, toType, toName.trim());
                 }
             }
             resultset.close();

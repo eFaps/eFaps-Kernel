@@ -20,8 +20,6 @@
 
 package org.efaps.update;
 
-import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -37,6 +35,7 @@ import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.schema.datamodel.SQLTableUpdate;
@@ -253,7 +252,7 @@ public class Install
         throws InstallationException
     {
         final Map<String, Long> versions = new HashMap<String, Long>();
-        final Type versionType = Type.get(ADMIN_COMMON_VERSION);
+        final Type versionType = CIAdminCommon.Version.getType();
         if (versionType != null) {
             try  {
                 final SearchQuery query = new SearchQuery();
