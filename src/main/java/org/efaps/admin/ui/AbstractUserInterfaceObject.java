@@ -45,6 +45,7 @@ import org.efaps.admin.user.Role;
 import org.efaps.ci.CIAdmin;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
@@ -59,17 +60,18 @@ import org.efaps.util.cache.CacheReloadException;
  * and the Triggers for the <code>UserInterfaceObjects</code> are handled.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: AbstractUserInterfaceObject.java 4820 2010-06-19 01:37:58Z
+ *          jan.moxter $
  */
 public abstract class AbstractUserInterfaceObject
     extends AbstractAdminObject
 {
+
     /**
      * This enum id used to define the different Modes a Target of a Command can
      * have, like create, edit etc.
      */
-    public static enum TargetMode
-    {
+    public static enum TargetMode {
         /** TargetMode for connect. */
         CONNECT,
         /** TargetMode for connect. */
@@ -102,7 +104,9 @@ public abstract class AbstractUserInterfaceObject
      * @param _uuid uuid to set (as String)
      * @param _name name to set
      */
-    protected AbstractUserInterfaceObject(final long _id, final String _uuid, final String _name)
+    protected AbstractUserInterfaceObject(final long _id,
+                                          final String _uuid,
+                                          final String _name)
     {
         super(_id, _uuid, _name);
     }
@@ -116,7 +120,8 @@ public abstract class AbstractUserInterfaceObject
      * @see #readFromDB4Access
      * @throws CacheReloadException on error during reload
      */
-    protected void readFromDB() throws CacheReloadException
+    protected void readFromDB()
+        throws CacheReloadException
     {
         readFromDB4Properties();
         readFromDB4Links();
@@ -125,11 +130,10 @@ public abstract class AbstractUserInterfaceObject
 
     /**
      * The instance method reads the access for this user interface object.
-     *
-     * TODO: use SearchQuery
      * @throws CacheReloadException on error during reload
      */
-    private void readFromDB4Access() throws CacheReloadException
+    private void readFromDB4Access()
+        throws CacheReloadException
     {
         Statement stmt = null;
         try {
@@ -180,7 +184,9 @@ public abstract class AbstractUserInterfaceObject
      *         returned
      * @throws EFapsException on error
      */
-    public boolean hasAccess(final TargetMode _targetMode, final Instance _instance) throws EFapsException
+    public boolean hasAccess(final TargetMode _targetMode,
+                             final Instance _instance)
+        throws EFapsException
     {
         boolean ret = false;
         if (getAccess().isEmpty()) {
@@ -198,7 +204,8 @@ public abstract class AbstractUserInterfaceObject
                     }
                 }
             }
-            // second it must be checked for the others, if no companies had to be checked or
+            // second it must be checked for the others, if no companies had to
+            // be checked or
             // if the check on companies was positiv
             if ((!company && !checked) || (company && checked)) {
                 for (final AbstractUserObject userObject : getAccess()) {
@@ -244,7 +251,8 @@ public abstract class AbstractUserInterfaceObject
      *
      * @throws CacheReloadException on error
      */
-    public static void initialize() throws CacheReloadException
+    public static void initialize()
+        throws CacheReloadException
     {
         Image.getCache().initialize(AbstractUserInterfaceObject.class);
         Command.getCache().initialize(AbstractUserInterfaceObject.class);
@@ -293,7 +301,8 @@ public abstract class AbstractUserInterfaceObject
          *
          * @throws CacheReloadException on error during reload
          */
-        protected void readFromDB() throws CacheReloadException
+        protected void readFromDB()
+            throws CacheReloadException
         {
             for (final UIObj uiObj : getCache4Id().values()) {
                 uiObj.readFromDB();
@@ -311,22 +320,27 @@ public abstract class AbstractUserInterfaceObject
          * {@inheritDoc}
          */
         @Override()
-        protected void readCache(final Map<Long, UIObj> _cache4Id, final Map<String, UIObj> _cache4Name,
-                        final Map<UUID, UIObj> _cache4UUID) throws CacheReloadException
+        protected void readCache(final Map<Long, UIObj> _cache4Id,
+                                 final Map<String, UIObj> _cache4Name,
+                                 final Map<UUID, UIObj> _cache4UUID)
+            throws CacheReloadException
         {
 
             final Class<UIObj> uiObjClass = this.callerClass;
             try {
                 if (getType() != null) {
                     final QueryBuilder queryBldr = new QueryBuilder(getType());
-                    final MultiPrintQuery multi = queryBldr.getPrint();
+                    final InstanceQuery query = queryBldr.getQuery();
+                    query.setIncludeChildTypes(false);
+                    final List<Instance> instances = query.execute();
+                    final MultiPrintQuery multi = new MultiPrintQuery(instances);
                     multi.addAttribute(CIAdmin.Abstract.Name,
                                        CIAdmin.Abstract.UUID);
                     multi.executeWithoutAccessCheck();
                     while (multi.next()) {
                         final long id = multi.getCurrentInstance().getId();
-                        final String name = multi.<String>getAttribute(CIAdmin.Abstract.Name);
-                        final String uuid = multi.<String>getAttribute(CIAdmin.Abstract.UUID);
+                        final String name = multi.<String> getAttribute(CIAdmin.Abstract.Name);
+                        final String uuid = multi.<String> getAttribute(CIAdmin.Abstract.UUID);
                         final Constructor<UIObj> uiObj = uiObjClass.getConstructor(Long.class, String.class,
                                         String.class);
                         final UIObj uiObj2 = uiObj.newInstance(id, uuid, name);
