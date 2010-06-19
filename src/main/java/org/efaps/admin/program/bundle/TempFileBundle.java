@@ -33,133 +33,187 @@ import org.efaps.db.Checkout;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO description
+ * Makes a bundle of files and zipps them.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
-public class TempFileBundle implements BundleInterface {
+public class TempFileBundle
+    implements BundleInterface
+{
+    /**
+     * Temporary folder.
+     */
+    private static File TMPFOLDER;
 
-  private static File TMPFOLDER;
+    /**
+     * Filed.
+     */
+    private File file = null;
 
-  private File file = null;
+    /**
+     * zipped file.
+     */
+    private File gzipFile = null;
 
-  private File gzipFile = null;
+    /**
+     * Time in miliseconds when this file was created.
+     */
+    private final long created;
 
-  private final long created;
+    /**
+     * TYpe of the content.
+     */
+    private String contentType = "text/plain";
 
-  private String contentType = "text/plain";
+    /**
+     * List of oids included in this bundle.
+     */
+    private List<String> oids;
 
-  private List<String> oids;
+    /**
+     * Key to this bundle.
+     */
+    private String key;
 
-  private String key;
-
-  public TempFileBundle() {
-    this.created = System.currentTimeMillis();
-  }
-
-  public synchronized InputStream getInputStream(final boolean _gziped)
-                                                                       throws EFapsException {
-    InputStream ret = null;
-    try {
-      if (_gziped) {
-        if (this.gzipFile == null) {
-          this.gzipFile = setFile(true);
-        }
-        ret = new FileInputStream(this.gzipFile);
-      } else {
-        if (this.file == null) {
-          this.file = setFile(false);
-        }
-        ret = new FileInputStream(this.file);
-      }
-    } catch (final FileNotFoundException e) {
-      throw new EFapsException(this.getClass(), "getInputStream", e);
+    /**
+     * Constructor.
+     */
+    public TempFileBundle()
+    {
+        this.created = System.currentTimeMillis();
     }
-    return ret;
-  }
 
-  public long getCreationTime() {
-    return this.created;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #contentType}.
-   *
-   * @return value of instance variable {@link #contentType}
-   */
-  public String getContentType() {
-    return this.contentType;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #contentType}.
-   *
-   * @param _contentType
-   *                the contentType to set
-   */
-  public void setContentType(final String _contentType) {
-    this.contentType = _contentType;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #oids}.
-   *
-   * @return value of instance variable {@link #oids}
-   */
-  public List<String> getOids() {
-    return this.oids;
-  }
-
-  private File setFile(final boolean _gziped) throws EFapsException {
-    final String filename = (_gziped ? this.key + "GZIP" : this.key);
-    final File ret = new File(getTempFolder(), filename);
-
-    try {
-      final FileOutputStream out = new FileOutputStream(ret);
-      final byte[] buffer = new byte[1024];
-      int bytesRead;
-      if (_gziped) {
-        final GZIPOutputStream zout = new GZIPOutputStream(out);
-        for (final String oid : this.oids) {
-          final Checkout checkout = new Checkout(oid);
-          final InputStream bis = checkout.execute();
-          while ((bytesRead = bis.read(buffer)) != -1) {
-            zout.write(buffer, 0, bytesRead);
-          }
+    /**
+     * {@inheritDoc}
+     */
+    public synchronized InputStream getInputStream(final boolean _gziped)
+        throws EFapsException
+    {
+        InputStream ret = null;
+        try {
+            if (_gziped) {
+                if (this.gzipFile == null) {
+                    this.gzipFile = setFile(true);
+                }
+                ret = new FileInputStream(this.gzipFile);
+            } else {
+                if (this.file == null) {
+                    this.file = setFile(false);
+                }
+                ret = new FileInputStream(this.file);
+            }
+        } catch (final FileNotFoundException e) {
+            throw new EFapsException(this.getClass(), "getInputStream", e);
         }
-        zout.close();
-      } else {
-        for (final String oid : this.oids) {
-          final Checkout checkout = new Checkout(oid);
-          final InputStream bis = checkout.execute();
-          while ((bytesRead = bis.read(buffer)) != -1) {
-            out.write(buffer, 0, bytesRead);
-          }
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public long getCreationTime()
+    {
+        return this.created;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #contentType}.
+     *
+     * @return value of instance variable {@link #contentType}
+     */
+    public String getContentType()
+    {
+        return this.contentType;
+    }
+
+    /**
+     * This is the setter method for the instance variable {@link #contentType}.
+     *
+     * @param _contentType the contentType to set
+     */
+    public void setContentType(final String _contentType)
+    {
+        this.contentType = _contentType;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #oids}.
+     *
+     * @return value of instance variable {@link #oids}
+     */
+    public List<String> getOids()
+    {
+        return this.oids;
+    }
+
+    /**
+     * @param _gziped zip the file
+     * @return File
+     * @throws EFapsException on error
+     */
+    private File setFile(final boolean _gziped)
+        throws EFapsException
+    {
+        final String filename = (_gziped ? this.key + "GZIP" : this.key);
+        final File ret = new File(TempFileBundle.getTempFolder(), filename);
+
+        try {
+            final FileOutputStream out = new FileOutputStream(ret);
+            final byte[] buffer = new byte[1024];
+            int bytesRead;
+            if (_gziped) {
+                final GZIPOutputStream zout = new GZIPOutputStream(out);
+                for (final String oid : this.oids) {
+                    final Checkout checkout = new Checkout(oid);
+                    final InputStream bis = checkout.execute();
+                    while ((bytesRead = bis.read(buffer)) != -1) {
+                        zout.write(buffer, 0, bytesRead);
+                    }
+                }
+                zout.close();
+            } else {
+                for (final String oid : this.oids) {
+                    final Checkout checkout = new Checkout(oid);
+                    final InputStream bis = checkout.execute();
+                    while ((bytesRead = bis.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
+                    }
+                }
+            }
+            out.close();
+        } catch (final IOException e) {
+            throw new EFapsException(this.getClass(), "setFile", e, filename);
         }
-      }
-      out.close();
-    } catch (final IOException e) {
-      throw new EFapsException(this.getClass(), "setFile", e, filename);
+        return ret;
     }
-    return ret;
-  }
 
-  public static File getTempFolder() throws EFapsException {
-    try {
-      if (TMPFOLDER == null) {
-        final File tmp = File.createTempFile("eFapsTemp", null).getParentFile();
-        TMPFOLDER = new File(tmp.getAbsolutePath() + "/eFapsTemp");
-        TMPFOLDER.mkdir();
-      }
-    } catch (final IOException e) {
-      throw new EFapsException(TempFileBundle.class, "getTempFolder", e);
+    /**
+     * @return the temporary folder
+     * @throws EFapsException on error
+     */
+    public static File getTempFolder()
+        throws EFapsException
+    {
+        try {
+            if (TempFileBundle.TMPFOLDER == null) {
+                final File tmp = File.createTempFile("eFapsTemp", null).getParentFile();
+                TempFileBundle.TMPFOLDER = new File(tmp.getAbsolutePath() + "/eFapsTemp");
+                TempFileBundle.TMPFOLDER.mkdir();
+            }
+        } catch (final IOException e) {
+            throw new EFapsException(TempFileBundle.class, "getTempFolder", e);
+        }
+        return TempFileBundle.TMPFOLDER;
     }
-    return TMPFOLDER;
-  }
 
-  public void setKey(final String _key, final List<String> _oids) {
-    this.key = _key;
-    this.oids = _oids;
-  }
+    /**
+     * {@inheritDoc}
+     */
+    public void setKey(final String _key,
+                       final List<String> _oids)
+    {
+        this.key = _key;
+        this.oids = _oids;
+    }
 }

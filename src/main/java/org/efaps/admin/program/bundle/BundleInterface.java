@@ -26,18 +26,33 @@ import java.util.List;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO description
+ * Interface for bundles.
  *
  * @author The eFaps Team
  * @version $Id$
  */
 public interface BundleInterface
 {
+    /**
+     * @param _gziped zipped or not
+     * @return InputStream with the content
+     * @throws EFapsException on error
+     */
     InputStream getInputStream(final boolean _gziped) throws EFapsException;
 
+    /**
+     * @return mime type of the content
+     */
     String getContentType();
 
+    /**
+     * @return time in miliseconds of the creation of the file.
+     */
     long getCreationTime();
 
+    /**
+     * @param _key key
+     * @param _oids list of oids
+     */
     void setKey(final String _key, final List<String> _oids);
 }

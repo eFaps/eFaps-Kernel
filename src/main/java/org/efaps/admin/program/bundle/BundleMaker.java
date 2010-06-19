@@ -263,16 +263,11 @@ public final class BundleMaker
         {
             return this.oid;
         }
-
-        /**
-         * Method to initialize the Cache of this CacheObjectInterface.
-         */
-        public static void initialize()
-        {
-            BundleMaker.CACHE.initialize(BundleMaker.class);
-        }
     }
 
+    /**
+     * Cache.
+     */
     private static final class StaticCompiledSourceCache
         extends AutomaticCache<BundleMaker.StaticCompiledSource>
     {
