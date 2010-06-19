@@ -344,6 +344,18 @@ public class CIAdminUserInterface
             super(_uuid);
         }
     }
+    public static final _LinkIsTypeFormFor LinkIsTypeFormFor = new _LinkIsTypeFormFor("3daa3a22-9399-4716-a670-2adaacfb6be4");
+
+    public static class _LinkIsTypeFormFor
+        extends _Link
+    {
+
+        protected _LinkIsTypeFormFor(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
 
     public static final _File File = new _File("74b91e57-e5a3-43df-b0e4-43815ad79fec");
 

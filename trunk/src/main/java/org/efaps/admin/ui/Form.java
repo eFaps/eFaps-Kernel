@@ -79,7 +79,7 @@ public class Form
                                    final String _toName)
         throws EFapsException
     {
-        if (_linkType.isKindOf(CIAdminUserInterface.LinkIsTypeTreeFor.getType())) {
+        if (_linkType.isKindOf(CIAdminUserInterface.LinkIsTypeFormFor.getType())) {
             final Type type = Type.get(_toId);
             if (type == null) {
                 Form.LOG.error("Form '" + getName() + "' could not defined as type form for type '" + _toName
