@@ -77,7 +77,7 @@ public class CIAdminDataModel
 
     }
 
-    public static final _AttributeSetAttribute AttributeSetAttribute = new _AttributeSetAttribute("518a9802-cf0e-4359-9b3c-880f71e1387f");
+    public static final _AttributeSetAttribute AttributeSetAttribute = new _AttributeSetAttribute("f601ffc5-819c-41a0-8663-3e1b0fb35a9b");
 
     public static class _AttributeSetAttribute
         extends _Attribute
