@@ -40,18 +40,18 @@ import org.efaps.util.EFapsException;
 
 /**
  * Handles the import / update of status groups for eFaps read from a XML
- * configuration item file.
- * Remark:
- * The StatusGroupDefinition is actual just a normal Admin_DataModel_Type and
- * the stati belonging to it are instances of this Type. That leads to the
- * problem that if a StatusGroupUpdate is executed in one version the
- * cache for the Types must be reloaded.
+ * configuration item file. Remark: The StatusGroupDefinition is actual just a
+ * normal Admin_DataModel_Type and the stati belonging to it are instances of
+ * this Type. That leads to the problem that if a StatusGroupUpdate is executed
+ * in one version the cache for the Types must be reloaded.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class StatusGroupUpdate extends AbstractUpdate
+public class StatusGroupUpdate
+    extends AbstractUpdate
 {
+
     /**
      * Default constructor to initialize this status group instance for given
      * <code>_url</code>.
@@ -77,6 +77,7 @@ public class StatusGroupUpdate extends AbstractUpdate
      */
     public class StatusDefintion
     {
+
         /**
          * Key of this status.
          */
@@ -107,7 +108,8 @@ public class StatusGroupUpdate extends AbstractUpdate
          * @param _typeName name of the type
          * @throws EFapsException on error during insert
          */
-        public void updateInDB(final String _typeName) throws EFapsException
+        public void updateInDB(final String _typeName)
+            throws EFapsException
         {
             final SearchQuery query = new SearchQuery();
             query.setQueryTypes(_typeName);
@@ -129,8 +131,10 @@ public class StatusGroupUpdate extends AbstractUpdate
     /**
      * Class for the definition of the type.
      */
-    public class StatusGroupDefinition extends AbstractDefinition
+    public class StatusGroupDefinition
+        extends AbstractDefinition
     {
+
         /**
          * Name of the parent type.
          */
@@ -148,12 +152,14 @@ public class StatusGroupUpdate extends AbstractUpdate
 
         /**
          *
-         * @param _tags         current path as list of single tags
-         * @param _attributes   attributes for current path
-         * @param _text         content for current path
+         * @param _tags current path as list of single tags
+         * @param _attributes attributes for current path
+         * @param _text content for current path
          */
         @Override()
-        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
         {
             final String value = _tags.get(0);
             if ("status".equals(value)) {
@@ -176,7 +182,7 @@ public class StatusGroupUpdate extends AbstractUpdate
          * defined, the parent type id is set to <code>null</code>). After the
          * type is updated (or inserted if needed), all statis must be updated.
          *
-         * @param _step         current step in the Update Lifecycle
+         * @param _step current step in the Update Lifecycle
          * @param _allLinkTypes set of all links
          * @throws InstallationException on error
          * @see #parentType
@@ -185,44 +191,49 @@ public class StatusGroupUpdate extends AbstractUpdate
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws InstallationException, EFapsException
+            throws InstallationException
         {
-            if (_step == UpdateLifecycle.STATUSGROUP_CREATE)  {
-                super.updateInDB(UpdateLifecycle.EFAPS_CREATE, _allLinkTypes);
-            }
+            try {
+                if (_step == UpdateLifecycle.STATUSGROUP_CREATE) {
+                    super.updateInDB(UpdateLifecycle.EFAPS_CREATE, _allLinkTypes);
+                }
 
-            if (_step == UpdateLifecycle.STATUSGROUP_UPDATE)  {
-                // set the id of the parent type (if defined)
-                if ((this.parentType != null) && (this.parentType.length() > 0)) {
-                    final SearchQuery query = new SearchQuery();
-                    query.setQueryTypes("Admin_DataModel_Type");
-                    query.addWhereExprEqValue("Name", this.parentType);
-                    query.addSelect("OID");
-                    query.executeWithoutAccessCheck();
-                    if (query.next()) {
-                        final Instance instance = Instance.get((String) query.get("OID"));
-                        addValue("ParentType", "" + instance.getId());
+                if (_step == UpdateLifecycle.STATUSGROUP_UPDATE) {
+                    // set the id of the parent type (if defined)
+                    if ((this.parentType != null) && (this.parentType.length() > 0)) {
+                        final SearchQuery query = new SearchQuery();
+                        query.setQueryTypes("Admin_DataModel_Type");
+                        query.addWhereExprEqValue("Name", this.parentType);
+                        query.addSelect("OID");
+                        query.executeWithoutAccessCheck();
+                        if (query.next()) {
+                            final Instance instance = Instance.get((String) query.get("OID"));
+                            addValue("ParentType", "" + instance.getId());
+                        } else {
+                            addValue("ParentType", null);
+                        }
+                        query.close();
                     } else {
                         addValue("ParentType", null);
                     }
-                    query.close();
-                } else {
-                    addValue("ParentType", null);
+                    super.updateInDB(UpdateLifecycle.EFAPS_UPDATE, _allLinkTypes);
                 }
-                super.updateInDB(UpdateLifecycle.EFAPS_UPDATE, _allLinkTypes);
-            }
 
-            if (_step == UpdateLifecycle.STATUS_CREATE)  {
-                // before the Stati can be created it must be checked if the type (StatusGroup)
-                // is already cached.
-                if (Type.get(getValue("Name")) == null) {
-                    Type.initialize(StatusGroupUpdate.class);
-                    Dimension.initialize(StatusGroupUpdate.class);
-                    Attribute.initialize(StatusGroupUpdate.class);
+                if (_step == UpdateLifecycle.STATUS_CREATE) {
+                    // before the Stati can be created it must be checked if the
+                    // type (StatusGroup)
+                    // is already cached.
+                    if (Type.get(getValue("Name")) == null) {
+                        Type.initialize(StatusGroupUpdate.class);
+                        Dimension.initialize(StatusGroupUpdate.class);
+                        Attribute.initialize(StatusGroupUpdate.class);
+                    }
+                    for (final StatusDefintion status : this.stati) {
+                        status.updateInDB(getValue("Name"));
+                    }
                 }
-                for (final StatusDefintion status : this.stati) {
-                    status.updateInDB(getValue("Name"));
-                }
+            } catch (final EFapsException e) {
+                throw new InstallationException(" SQLTable can not be updated", e);
             }
         }
     }

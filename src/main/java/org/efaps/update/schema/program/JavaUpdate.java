@@ -27,7 +27,6 @@ import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.schema.program.esjp.ESJPImporter;
 import org.efaps.update.util.InstallationException;
-import org.efaps.util.EFapsException;
 
 /**
  * Handles the import / update of ESJP's (eFaps stored Java Programs) for eFaps
@@ -121,12 +120,11 @@ public class JavaUpdate
          * @param _step             current update step
          * @param _allLinkTypes     all link types to update
          * @throws InstallationException on error
-         * @throws EFapsException on error
          */
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws InstallationException, EFapsException
+            throws InstallationException
         {
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
                 if (AbstractUpdate.LOG.isInfoEnabled() && (this.javaCode.getProgramName() != null)) {

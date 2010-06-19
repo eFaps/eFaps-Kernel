@@ -20,7 +20,6 @@
 
 package org.efaps.update.schema.datamodel;
 
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,6 +46,7 @@ import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Handles the import / update of types for eFaps read from a XML configuration
  * item file.
@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
 public class TypeUpdate
     extends AbstractUpdate
 {
+
     /**
      * Logging instance used to give logging information of this class.
      */
@@ -122,8 +123,10 @@ public class TypeUpdate
     /**
      * The class defines an attribute of a type.
      */
-    public class AttributeDefinition extends AbstractDefinition
+    public class AttributeDefinition
+        extends AbstractDefinition
     {
+
         /** Name of the attribute. */
         private String name = null;
 
@@ -146,16 +149,17 @@ public class TypeUpdate
         private String defaultValue = null;
 
         /**
-         * UUID of the Dimension for this Attribute.
-         * (Used in conjunction with e.g. IntegerWithUoM).
+         * UUID of the Dimension for this Attribute. (Used in conjunction with
+         * e.g. IntegerWithUoM).
          */
         private String dimensionUUID;
 
         /**
-         * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List, java.util.Map, java.lang.String)
-         * @param _tags         list of the tags
-         * @param _attributes   attributes
-         * @param _text         text
+         * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List,
+         *      java.util.Map, java.lang.String)
+         * @param _tags list of the tags
+         * @param _attributes attributes
+         * @param _text text
          */
         @Override
         protected void readXML(final List<String> _tags,
@@ -201,7 +205,7 @@ public class TypeUpdate
             }
         }
 
-    /**
+        /**
          * @see org.efaps.update.AbstractUpdate.AbstractDefinition#addEvent(org.efaps.update.event.Event)
          * @param _event Event to add
          */
@@ -301,13 +305,12 @@ public class TypeUpdate
          *
          * @param _instance type instance to update with this attribute
          * @param _typeName name of the type to update
-         * @param _setID    id to set
+         * @param _setID id to set
          * @param _attrInstanceId
          * @throws EFapsException on error
          * @see #getAttrTypeId
          * @see #getSqlTableId
-         * @see #getTypeLinkId
-         * TODO:  throw Exception is not allowed
+         * @see #getTypeLinkId TODO: throw Exception is not allowed
          */
         protected void updateInDB(final Instance _instance,
                                   final String _typeName,
@@ -372,6 +375,7 @@ public class TypeUpdate
         /**
          * Makes a search query to return the id of the attribute type defined
          * in {@link #type}.
+         *
          * @param _typeName name of the type
          * @return id of the attribute type
          * @throws EFapsException on error
@@ -397,6 +401,7 @@ public class TypeUpdate
         /**
          * Makes a search query to return the id of the SQL table defined in
          * {@link #sqlTable}.
+         *
          * @param _typeName name of the type
          * @throws EFapsException on error
          * @return id of the SQL table
@@ -422,12 +427,14 @@ public class TypeUpdate
         /**
          * Makes a search query to return the id of the SQL table defined in
          * {@link #typeLink}.
+         *
          * @param _typeName name of the type
          * @throws EFapsException on error
          * @return id of the linked type (or 0 if no type link is defined)
          * @see #typeLink
          */
-        private long getTypeLinkId(final String _typeName) throws EFapsException
+        private long getTypeLinkId(final String _typeName)
+            throws EFapsException
         {
             long typeLinkId = 0;
             if ((this.typeLink != null) && (this.typeLink.length() > 0)) {
@@ -465,7 +472,8 @@ public class TypeUpdate
     /**
      * Class for the definition of a Attribute Set.
      */
-    public class AttributeSetDefinition extends TypeUpdate.AttributeDefinition
+    public class AttributeSetDefinition
+        extends TypeUpdate.AttributeDefinition
     {
 
         /**
@@ -486,9 +494,9 @@ public class TypeUpdate
         private String parentType;
 
         /**
-         * @param _tags         current path as list of single tags
-         * @param _attributes   attributes for current path
-         * @param _text         content for current path
+         * @param _tags current path as list of single tags
+         * @param _attributes attributes for current path
+         * @param _text content for current path
          */
         @Override()
         public void readXML(final List<String> _tags,
@@ -521,8 +529,8 @@ public class TypeUpdate
         /**
          * Method to get the id of the parent type.
          *
-         * @param _typeName     name of the type
-         * @return  id of the parent type
+         * @param _typeName name of the type
+         * @return id of the parent type
          * @throws EFapsException on error
          */
         protected long getParentTypeId(final String _typeName)
@@ -545,8 +553,8 @@ public class TypeUpdate
         /**
          * Set the values in the eFaps Database.
          *
-         * @param _instance     instance to be updated
-         * @param _typeName     name of the type
+         * @param _instance instance to be updated
+         * @param _typeName name of the type
          * @throws EFapsException on error
          */
         public void updateInDB(final Instance _instance,
@@ -631,7 +639,7 @@ public class TypeUpdate
          * @see #addAttribute
          */
         private final List<TypeUpdate.AttributeSetDefinition> attributeSets
-                                            = new ArrayList<TypeUpdate.AttributeSetDefinition>();
+            = new ArrayList<TypeUpdate.AttributeSetDefinition>();
 
         /**
          * Current read attribute definition instance.
@@ -647,12 +655,12 @@ public class TypeUpdate
          */
         private AttributeSetDefinition curAttrSet = null;
 
-
         /**
-         * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List, java.util.Map, java.lang.String)
-         * @param _tags         tags
-         * @param _attributes   attributes
-         * @param _text         text
+         * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List,
+         *      java.util.Map, java.lang.String)
+         * @param _tags tags
+         * @param _attributes attributes
+         * @param _text text
          */
         @Override
         protected void readXML(final List<String> _tags,
@@ -692,9 +700,9 @@ public class TypeUpdate
                 addLink(TypeUpdate.LINK2ALLOWEDEVENT, new LinkInstance(_attributes.get("type")));
             } else if ("classifies".equals(value)) {
                 addLink(TypeUpdate.LINK2CLASSIFIES,
-                        new LinkInstance(_attributes.get(Classification.Keys.TYPE.getValue())));
+                                new LinkInstance(_attributes.get(Classification.Keys.TYPE.getValue())));
                 addLink(TypeUpdate.LINK2CLASSIFYREL,
-                        new LinkInstance(_attributes.get(Classification.Keys.RELTYPE.getValue())));
+                                new LinkInstance(_attributes.get(Classification.Keys.RELTYPE.getValue())));
                 getProperties().put(Classification.Keys.RELTYPEATTR.getValue(),
                                     _attributes.get(Classification.Keys.RELTYPEATTR.getValue()));
                 getProperties().put(Classification.Keys.RELLINKATTR.getValue(),
@@ -726,50 +734,54 @@ public class TypeUpdate
          * type is updated (or inserted if needed), all attributes must be
          * updated.
          *
-         * @param _step             lifecycle step
-         * @param _allLinkTypes     set of all links
+         * @param _step lifecycle step
+         * @param _allLinkTypes set of all links
          * @throws InstallationException on error
-         * @throws EFapsException on error
+         *
          * @see #parentType
          * @see #attributes
          */
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws InstallationException, EFapsException
+            throws InstallationException
         {
-            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
-                // set the id of the parent type (if defined)
-                if ((this.parentType != null) && (this.parentType.length() > 0)) {
-                    final SearchQuery query = new SearchQuery();
-                    query.setQueryTypes("Admin_DataModel_Type");
-                    query.addWhereExprEqValue("Name", this.parentType);
-                    query.addSelect("OID");
-                    query.executeWithoutAccessCheck();
-                    if (query.next()) {
-                        final Instance instance = Instance.get((String) query.get("OID"));
-                        addValue("ParentType", "" + instance.getId());
+            try {
+                if (_step == UpdateLifecycle.EFAPS_UPDATE) {
+                    // set the id of the parent type (if defined)
+                    if ((this.parentType != null) && (this.parentType.length() > 0)) {
+                        final SearchQuery query = new SearchQuery();
+                        query.setQueryTypes("Admin_DataModel_Type");
+                        query.addWhereExprEqValue("Name", this.parentType);
+                        query.addSelect("OID");
+                        query.executeWithoutAccessCheck();
+                        if (query.next()) {
+                            final Instance instance = Instance.get((String) query.get("OID"));
+                            addValue("ParentType", "" + instance.getId());
+                        } else {
+                            addValue("ParentType", null);
+                        }
+                        query.close();
                     } else {
                         addValue("ParentType", null);
                     }
-                    query.close();
-                } else {
-                    addValue("ParentType", null);
-                }
-            }
-
-            super.updateInDB(_step, _allLinkTypes);
-
-            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
-                for (final AttributeDefinition attr : this.attributes) {
-                    attr.updateInDB(this.instance, getValue("Name"), 0);
                 }
 
-                for (final AttributeSetDefinition attrSet : this.attributeSets) {
-                    attrSet.updateInDB(this.instance, getValue("Name"));
-                }
+                super.updateInDB(_step, _allLinkTypes);
 
-                removeObsoleteAttributes();
+                if (_step == UpdateLifecycle.EFAPS_UPDATE) {
+                    for (final AttributeDefinition attr : this.attributes) {
+                        attr.updateInDB(this.instance, getValue("Name"), 0);
+                    }
+
+                    for (final AttributeSetDefinition attrSet : this.attributeSets) {
+                        attrSet.updateInDB(this.instance, getValue("Name"));
+                    }
+
+                    removeObsoleteAttributes();
+                }
+            } catch (final EFapsException e) {
+                throw new InstallationException(" Type can not be updated", e);
             }
         }
 

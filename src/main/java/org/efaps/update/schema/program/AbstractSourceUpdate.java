@@ -26,7 +26,6 @@ import java.net.URL;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
 import org.efaps.db.Checkin;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
@@ -133,7 +132,7 @@ public abstract class AbstractSourceUpdate
         @Override()
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
-            throws InstallationException, EFapsException
+            throws InstallationException
         {
             // on update the revision must be set before the super method is called
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
@@ -150,8 +149,9 @@ public abstract class AbstractSourceUpdate
                                                       in.available());
                     in.close();
                 } catch (final IOException e) {
-                    throw new EFapsException(getClass(), "updateInDB.IOException",
-                               e, getValue("Name"));
+                    throw new InstallationException("updateInDB.IOException", e);
+                } catch (final EFapsException e) {
+                    throw new InstallationException("EFapsException", e);
                 }
             }
         }
