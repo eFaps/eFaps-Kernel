@@ -26,8 +26,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import org.efaps.admin.EFapsClassNames;
+import org.efaps.ci.CIAdminProgram;
+import org.efaps.ci.CIType;
 import org.efaps.db.Checkout;
+import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,35 +55,38 @@ public class CSSCompiler
      * {@inheritDoc}
      */
     @Override
-    protected EFapsClassNames getClassName4Type()
+    protected CIType getClassName4Type()
     {
-        return EFapsClassNames.ADMIN_PROGRAM_CSS;
+        return CIAdminProgram.CSS;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected EFapsClassNames getClassName4Type2Type()
+    protected CIType getClassName4Type2Type()
     {
-        return EFapsClassNames.ADMIN_PROGRAM_CSS2CSS;
+        return CIAdminProgram.CSS2CSS;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected EFapsClassNames getClassName4TypeCompiled()
+    protected CIType getClassName4TypeCompiled()
     {
-        return EFapsClassNames.ADMIN_PROGRAM_CSSCOMPILED;
+        return  CIAdminProgram.CSSCompiled;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override()
-    protected String getCompiledString(final String _oid)
+    protected String getCompiledString(final Instance _instance)
     {
         String ret = "";
         try {
-            final Checkout checkout = new Checkout(_oid);
+            final Checkout checkout = new Checkout(_instance);
             final BufferedReader in = new BufferedReader(new InputStreamReader(checkout.execute(), "UTF-8"));
 
             final CssCompressor compressor = new CssCompressor(in);
@@ -96,33 +101,35 @@ public class CSSCompiler
             ret += "\n";
 
         } catch (final EFapsException e) {
-            CSSCompiler.LOG.error("error during checkout of Instance with oid:" + _oid, e);
+            CSSCompiler.LOG.error("error during checkout of Instance:" + _instance, e);
             e.printStackTrace();
         } catch (final IOException e) {
-            CSSCompiler.LOG.error("error during reqding of the Inputstram of Instance with oid:" + _oid, e);
+            CSSCompiler.LOG.error("error during reqding of the Inputstram of Instance with oid:" + _instance, e);
         }
         return ret;
-
-    }
-
-    @Override
-    public AbstractSource getNewSource(final String _name, final String _oid, final long _id)
-    {
-        return new OneCSS(_name, _oid, _id);
     }
 
     /**
-     * TODO description
-     *
-     * @author jmox
-     * @version $Id$
+     * {@inheritDoc}
      */
-    protected class OneCSS extends AbstractSource
+    @Override
+    public AbstractSource getNewSource(final String _name,
+                                       final Instance _instance)
+    {
+        return new OneCSS(_name, _instance);
+    }
+
+    /**
+     * Class represents on stylesheet.
+     */
+    protected class OneCSS
+        extends AbstractSource
     {
 
-        public OneCSS(final String _name, final String _oid, final long _id)
+        public OneCSS(final String _name,
+                      final Instance _instance)
         {
-            super(_name, _oid, _id);
+            super(_name, _instance);
         }
     }
 

@@ -22,7 +22,7 @@ package org.efaps.update.schema.program.staticsource;
 
 import java.net.URL;
 
-import org.efaps.admin.EFapsClassNames;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.update.util.InstallationException;
 
 /**
@@ -45,6 +45,6 @@ public class XSLImporter
     public XSLImporter(final URL _url)
         throws InstallationException
     {
-        super(EFapsClassNames.ADMIN_PROGRAM_XSL, _url);
+        super(CIAdminProgram.XSL, _url);
     }
 }

@@ -20,8 +20,6 @@
 
 package org.efaps.admin.user;
 
-import static org.efaps.admin.EFapsClassNames.USER_ATTRIBUTEABSTRACT;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,30 +27,31 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Insert;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
 /**
  * This class represents a set of UserAttribute related to a User.<br>
  * For each User a set of UserAttribute can be made to store user-related
- * content. e.g. Color of the UserInterface etc. The Class will read all
- * Already in the eFpas-DataBase existing UserAttribute and store them in a
- * map. A new or altered UserAttribute which is created/altered during the
- * Session will only be stored in the map and not into the eFaps-DataBase. To
- * store the UserAttribute into the eFapsDataBase the method
- * {@link #storeInDb()} must be called explicitly.
+ * content. e.g. Color of the UserInterface etc. The Class will read all Already
+ * in the eFpas-DataBase existing UserAttribute and store them in a map. A new
+ * or altered UserAttribute which is created/altered during the Session will
+ * only be stored in the map and not into the eFaps-DataBase. To store the
+ * UserAttribute into the eFapsDataBase the method {@link #storeInDb()} must be
+ * called explicitly.
  *
  * @author The eFasp Team
- * @version $Id$
+ * @version $Id: UserAttributesSet.java 3924 2010-03-31 15:40:15Z
+ *          miguel.a.aranya $
  */
-public class UserAttributesSet implements Serializable
+public class UserAttributesSet
+    implements Serializable
 {
-    /**
-     * Needed for serialization.
-     */
-    private static final long serialVersionUID = 1L;
 
     /**
      * This static variable is the Key used to store the UserAttribtues into the
@@ -61,11 +60,22 @@ public class UserAttributesSet implements Serializable
     public static final String CONTEXTMAPKEY = "eFapsUserAttributes";
 
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * this static Map contains the name-to=UserAttribute Relation used by the
+     * enumeration.
+     */
+    private static final Map<String, UserAttributesSet.UserAttributesDefinition> MAPPER
+        = new HashMap<String, UserAttributesSet.UserAttributesDefinition>();
+
+    /**
      * This enumeration is used to get a relation to the necessary types in the
      * eFaps database for the attribute set.
      */
-    public enum UserAttributesDefinition
-    {
+    public enum UserAttributesDefinition {
         /**
          *
          */
@@ -89,9 +99,9 @@ public class UserAttributesSet implements Serializable
         /**
          * Initializes the relationship definition for an user attribute set.
          *
-         * @param _name             name of type (relationship)
-         * @param _keyAttribute     name of the key attribute
-         * @param _value            name of the value attribute
+         * @param _name name of type (relationship)
+         * @param _keyAttribute name of the key attribute
+         * @param _value name of the value attribute
          */
         private UserAttributesDefinition(final String _name,
                                          final String _keyAttribute,
@@ -100,17 +110,10 @@ public class UserAttributesSet implements Serializable
             this.name = _name;
             this.keyAttribute = _keyAttribute;
             this.valueAttribute = _value;
-            MAPPER.put(_name, this);
+            UserAttributesSet.MAPPER.put(_name, this);
         }
 
     }
-
-    /**
-     * this static Map contains the name-to=UserAttribute Relation used by the
-     * enumeration.
-     */
-    private static final Map<String, UserAttributesSet.UserAttributesDefinition> MAPPER
-        = new HashMap<String, UserAttributesSet.UserAttributesDefinition>();
 
     /**
      * instance map to store a Key-to-UserAttribute Relation.
@@ -127,9 +130,9 @@ public class UserAttributesSet implements Serializable
      * Constructor using the constructor {@link #UserAttributesSet(long)}
      * through searching the person id for the given name.
      *
-     * @param _userName     name of the user this attribute set will belong to
+     * @param _userName name of the user this attribute set will belong to
      * @throws EFapsException if user attribute set could not be fetched from
-     *                        eFaps database
+     *             eFaps database
      */
     public UserAttributesSet(final String _userName)
         throws EFapsException
@@ -142,7 +145,7 @@ public class UserAttributesSet implements Serializable
      * set belongs to and fetching the user attributes for this {@link #userId}
      * from the eFaps database..
      *
-     * @param _userId   id of the user this user attribute set will belong to
+     * @param _userId id of the user this user attribute set will belong to
      * @throws EFapsException if attribute set could not be read from eFaps
      * @see #readUserAttributes()
      */
@@ -157,7 +160,7 @@ public class UserAttributesSet implements Serializable
      * Initialize this user attribute set.
      *
      * @throws EFapsException if this attribute set could not be read from the
-     *                        eFaps database
+     *             eFaps database
      * @see #readUserAttributes()
      */
     public void initialise()
@@ -170,7 +173,7 @@ public class UserAttributesSet implements Serializable
      * Check if this user attribute set contains an attribute for given
      * <code>_key</code>.
      *
-     * @param _key  key to check if this user attribute set contains it
+     * @param _key key to check if this user attribute set contains it
      * @return <i>true</i> if the key was found; otherwise <i>false</i>
      */
     public boolean containsKey(final String _key)
@@ -181,7 +184,7 @@ public class UserAttributesSet implements Serializable
     /**
      * Returns the value for a key as a String.
      *
-     * @param _key  key for the searched value
+     * @param _key key for the searched value
      * @return string of the value if exist; otherwise <code>null</code>
      */
     public String getString(final String _key)
@@ -195,18 +198,19 @@ public class UserAttributesSet implements Serializable
 
     /**
      * Sets a key-value pair for the attribute set of this attribute set. It
-     * uses {@link #set(String, String, UserAttributesDefinition)}
-     * to set the the relationship information. It will search in the
-     * {@link #MAPPER} to retrieve the definition of the attribute. If found it
-     * will use the found one, else it will use the a default
+     * uses {@link #set(String, String, UserAttributesDefinition)} to set the
+     * the relationship information. It will search in the {@link #MAPPER} to
+     * retrieve the definition of the attribute. If found it will use the found
+     * one, else it will use the a default
      * {@link UserAttributesDefinition#ATTRIBUTE}.
      *
-     * @param _key      key to be set
-     * @param _value    value to be set
+     * @param _key key to be set
+     * @param _value value to be set
      * @throws EFapsException if <code>_key</code> or <code>_value</code> is
-     *                        <code>null</code>
+     *             <code>null</code>
      */
-    public void set(final String _key, final String _value)
+    public void set(final String _key,
+                    final String _value)
         throws EFapsException
     {
         if (UserAttributesSet.MAPPER.containsKey(_key)) {
@@ -217,16 +221,16 @@ public class UserAttributesSet implements Serializable
     }
 
     /**
-     * Sets a key-value pair into the attribute set of an user. The method
-     * will search for the key and if the key already exists it will update the
-     * user attribute in this set. If the key does not exist a new user
-     * attribute will be added to this set.
+     * Sets a key-value pair into the attribute set of an user. The method will
+     * search for the key and if the key already exists it will update the user
+     * attribute in this set. If the key does not exist a new user attribute
+     * will be added to this set.
      *
-     * @param _key          key to be set
-     * @param _value        value to be set
-     * @param _definition   type of the key-value pair
+     * @param _key key to be set
+     * @param _value value to be set
+     * @param _definition type of the key-value pair
      * @throws EFapsException if <code>_key</code> or <code>_value</code> is
-     *                        <code>null</code>
+     *             <code>null</code>
      */
     public void set(final String _key,
                     final String _value,
@@ -259,30 +263,28 @@ public class UserAttributesSet implements Serializable
 
         for (final Entry<String, UserAttribute> entry : this.attributes.entrySet()) {
             if (entry.getValue().isUpdate()) {
-                final SearchQuery query = new SearchQuery();
-                query.setQueryTypes(entry.getValue().getType());
-                query.addSelect("OID");
-                query.addWhereExprEqValue("UserLink", this.userId.toString());
+                final QueryBuilder queryBldr = new QueryBuilder(Type.get(entry.getValue().getType()));
+                queryBldr.addWhereAttrEqValue("UserLink", this.userId.toString());
                 if (UserAttributesSet.MAPPER.get(entry.getValue().getType()).keyAttribute != null) {
-                    query.addWhereExprEqValue(UserAttributesSet.MAPPER.get(entry.getValue().getType()).keyAttribute,
+                    queryBldr.addWhereAttrEqValue(UserAttributesSet.MAPPER.get(entry.getValue().getType()).keyAttribute,
                                               entry.getKey());
                 }
+                final InstanceQuery query = queryBldr.getQuery();
                 query.execute();
                 Update update;
                 if (query.next()) {
-                    update = new Update(query.get("OID").toString());
+                    update = new Update(query.getCurrentValue());
                 } else {
                     update = new Insert(entry.getValue().getType());
                     if (UserAttributesSet.MAPPER.get(entry.getValue().getType()).keyAttribute != null) {
                         update.add(UserAttributesSet.MAPPER.get(entry.getValue().getType()).keyAttribute,
-                                   entry.getKey());
+                                        entry.getKey());
                     }
                     update.add("UserLink", this.userId.toString());
                 }
                 update.add("Value", entry.getValue().getValue());
                 update.execute();
                 update.close();
-                query.close();
             }
         }
         this.attributes.clear();
@@ -299,29 +301,27 @@ public class UserAttributesSet implements Serializable
     private void readUserAttributes()
         throws EFapsException
     {
-        final Set<Type> types = Type.get(USER_ATTRIBUTEABSTRACT).getChildTypes();
+        final Set<Type> types = CIAdminUser.AttributeAbstract.getType().getChildTypes();
         for (final Type type : types) {
             if (UserAttributesSet.MAPPER.containsKey(type.getName())) {
                 final UserAttributesDefinition definition = UserAttributesSet.MAPPER.get(type.getName());
-                final SearchQuery query = new SearchQuery();
-
-                query.setQueryTypes(definition.name);
-
-                query.addSelect(definition.valueAttribute);
+                final QueryBuilder queryBldr = new QueryBuilder(Type.get(definition.name));
+                queryBldr.addWhereAttrEqValue("UserLink", this.userId);
+                final MultiPrintQuery multi = queryBldr.getPrint();
+                multi.addAttribute(definition.valueAttribute);
                 if (definition.keyAttribute != null) {
-                    query.addSelect(definition.keyAttribute);
+                    multi.addAttribute(definition.keyAttribute);
                 }
-                query.addWhereExprEqValue("UserLink", this.userId);
-                query.execute();
-                while (query.next()) {
+                while (multi.next()) {
                     String key;
                     if (definition.keyAttribute == null) {
                         key = definition.name;
                     } else {
-                        key = query.get(definition.keyAttribute).toString().trim();
+                        key = multi.getAttribute(definition.keyAttribute).toString().trim();
                     }
-                    this.attributes.put(key, new UserAttribute(definition.name, query.get(definition.valueAttribute)
-                                    .toString().trim(), false));
+                    this.attributes.put(key,
+                                    new UserAttribute(definition.name, multi.getAttribute(definition.valueAttribute)
+                                                    .toString().trim(), false));
                 }
             }
         }
@@ -331,8 +331,10 @@ public class UserAttributesSet implements Serializable
      * Each instance of this class represents one UserAttribute for this user
      * attribute set.
      */
-    private class UserAttribute implements Serializable
+    private class UserAttribute
+        implements Serializable
     {
+
         /**
          * Needed for serialization.
          */
@@ -355,10 +357,9 @@ public class UserAttributesSet implements Serializable
 
         /**
          *
-         * @param _type     type of this user attribute set
-         * @param _value    value of this user attribute set
-         * @param _update   <i>true</i> if the attribute must be updated in
-         *                  eFaps
+         * @param _type type of this user attribute set
+         * @param _value value of this user attribute set
+         * @param _update <i>true</i> if the attribute must be updated in eFaps
          */
         public UserAttribute(final String _type,
                              final String _value,

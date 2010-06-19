@@ -25,7 +25,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.efaps.admin.EFapsClassNames;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.update.schema.program.AbstractSourceImporter;
 import org.efaps.update.util.InstallationException;
 
@@ -50,7 +50,7 @@ public class ESJPImporter
     public ESJPImporter(final URL _url)
         throws InstallationException
     {
-        super(EFapsClassNames.ADMIN_PROGRAM_JAVA, _url);
+        super(CIAdminProgram.Java, _url);
     }
 
     /**

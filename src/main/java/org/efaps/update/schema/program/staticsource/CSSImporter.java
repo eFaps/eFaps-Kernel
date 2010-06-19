@@ -22,7 +22,7 @@ package org.efaps.update.schema.program.staticsource;
 
 import java.net.URL;
 
-import org.efaps.admin.EFapsClassNames;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.update.util.InstallationException;
 
 /**
@@ -41,6 +41,6 @@ public class CSSImporter
     public CSSImporter(final URL _url)
         throws InstallationException
     {
-        super(EFapsClassNames.ADMIN_PROGRAM_CSS, _url);
+        super(CIAdminProgram.CSS, _url);
     }
 }

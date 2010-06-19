@@ -20,16 +20,6 @@
 
 package org.efaps.admin.datamodel;
 
-import static org.efaps.admin.EFapsClassNames.ATTRTYPE_CREATOR_LINK;
-import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK;
-import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK_WITH_RANGES;
-import static org.efaps.admin.EFapsClassNames.ATTRTYPE_MODIFIER_LINK;
-import static org.efaps.admin.EFapsClassNames.ATTRTYPE_PERSON_LINK;
-import static org.efaps.admin.EFapsClassNames.ATTRTYPE_STATUS;
-import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESET;
-import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESETATTRIBUTE;
-import static org.efaps.admin.EFapsClassNames.USER_PERSON;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -47,6 +37,8 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
+import org.efaps.ci.CIAdminDataModel;
+import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.ColumnInformation;
 import org.efaps.db.query.CachedResult;
@@ -70,6 +62,49 @@ import org.slf4j.LoggerFactory;
 public class Attribute
     extends AbstractDataModelObject
 {
+
+    /**
+     * ENUM used to access the different attribute types.
+     */
+    public enum AttributeTypeDef {
+        /** Attribute type Link. */
+        ATTRTYPE_LINK("440f472f-7be2-41d3-baec-4a2f0e4e5b31"),
+        /** Attribute type Link with Ranges. */
+        ATTRTYPE_LINK_WITH_RANGES("9d6b2e3e-68ce-4509-a5f0-eae42323a696"),
+        /** Attribute type PersonLink. */
+        ATTRTYPE_PERSON_LINK("7b8f98de-1967-44e0-b174-027349868a61"),
+        /** Attribute type Creator Link. */
+        ATTRTYPE_CREATOR_LINK("76122fe9-8fde-4dd4-a229-e48af0fb4083"),
+        /** Attribute type Modifier Link. */
+        ATTRTYPE_MODIFIER_LINK("447a7c87-8395-48c4-b2ed-d4e96d46332c"),
+        /** Attribute type Multi Line Array. */
+        ATTRTYPE_MULTILINEARRAY("adb13c3d-9506-4da2-8d75-b54c76779c6c"),
+        /** Attribute type Status. */
+        ATTRTYPE_STATUS("0161bcdb-45e9-4839-a709-3a1c56f8a76a");
+
+        /**
+         * Stored the UUID for the given type.
+         */
+        private final UUID uuid;
+
+        /**
+         * Private Constructor.
+         *
+         * @param _uuid UUID to set
+         */
+        private AttributeTypeDef(final String _uuid)
+        {
+            this.uuid = UUID.fromString(_uuid);
+        }
+
+        /**
+         * @return the uuid
+         */
+        public UUID getUuid()
+        {
+            return this.uuid;
+        }
+    }
 
     /**
      * Logging instance used in this class.
@@ -716,7 +751,7 @@ public class Attribute
 
                         final Type typeAttr = Type.get(typeAttrId);
 
-                        if (typeAttr.getUUID().equals(DATAMODEL_ATTRIBUTESET.getUuid())) {
+                        if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSet.uuid)) {
                             final AttributeSet set = new AttributeSet(id, type, name, AttributeType.get(attrTypeId),
                                             sqlCol, tableId, typeLinkId);
                             id2Set.put(id, set);
@@ -726,25 +761,25 @@ public class Attribute
                                                                  dimensionUUID);
                             attr.setParent(type);
                             final UUID uuid = attr.getAttributeType().getUUID();
-                            if (uuid.equals(ATTRTYPE_LINK.getUuid())
-                                            || uuid.equals(ATTRTYPE_LINK_WITH_RANGES.getUuid())
-                                            || uuid.equals(ATTRTYPE_STATUS.getUuid())) {
+                            if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_LINK.getUuid())
+                                         || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_LINK_WITH_RANGES.getUuid())
+                                         || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_STATUS.getUuid())) {
                                 final Type linkType = Type.get(typeLinkId);
                                 attr.setLink(linkType);
                                 linkType.addLink(attr);
                             // in case of a PersonLink, CreatorLink or ModifierLink a link to Admin_User_Person
                             // must be set
-                            } else if (uuid.equals(ATTRTYPE_CREATOR_LINK.getUuid())
-                                            || uuid.equals(ATTRTYPE_MODIFIER_LINK.getUuid())
-                                            || uuid.equals(ATTRTYPE_PERSON_LINK.getUuid())) {
-                                final Type linkType = Type.get(USER_PERSON);
+                            } else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_CREATOR_LINK.getUuid())
+                                            || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_MODIFIER_LINK.getUuid())
+                                            || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_PERSON_LINK.getUuid())) {
+                                final Type linkType = CIAdminUser.Person.getType();
                                 attr.setLink(linkType);
                                 linkType.addLink(attr);
                             }
 
                             attr.readFromDB4Properties();
 
-                            if (typeAttr.getUUID().equals(DATAMODEL_ATTRIBUTESETATTRIBUTE.getUuid())) {
+                            if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSetAttribute.uuid)) {
                                 attribute2setId.put(attr, parentSetId);
                             } else {
                                 type.addAttribute(attr, false);

@@ -36,6 +36,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.Update;
@@ -51,9 +52,7 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.efaps.admin.EFapsClassNames.USER_PERSON;
-import static org.efaps.admin.EFapsClassNames.USER_PERSON2GROUP;
-import static org.efaps.admin.EFapsClassNames.USER_PERSON2ROLE;
+
 
 /**
  * Class represents the instance of a person/user in eFaps.
@@ -515,19 +514,19 @@ public final class Person extends AbstractUserObject
         throws EFapsException
     {
         boolean ret = false;
-        final PrintQuery query = new PrintQuery(Type.get(USER_PERSON), getId());
-        query.addAttribute("Password");
-        query.addAttribute("LastLogin");
-        query.addAttribute("LoginTry");
-        query.addAttribute("LoginTriesCounter");
-        query.addAttribute("Status");
+        final PrintQuery query = new PrintQuery(CIAdminUser.Person.getType(), getId());
+        query.addAttribute(CIAdminUser.Person.Password,
+                           CIAdminUser.Person.LastLogin,
+                           CIAdminUser.Person.LoginTry,
+                           CIAdminUser.Person.LoginTriesCounter,
+                           CIAdminUser.Person.Status);
         if (query.execute()) {
-            final String pwd = query.<String>getAttribute("Password");
+            final String pwd = query.<String>getAttribute(CIAdminUser.Person.Password);
             if (_passwd.equals(pwd)) {
-                ret = query.<Boolean>getAttribute("Status");
+                ret = query.<Boolean>getAttribute(CIAdminUser.Person.Status);
             } else {
-                setFalseLogin(query.<DateTime>getAttribute("LoginTry"),
-                              query.<Long>getAttribute("LoginTriesCounter").intValue());
+                setFalseLogin(query.<DateTime>getAttribute(CIAdminUser.Person.LoginTry),
+                              query.<Integer>getAttribute(CIAdminUser.Person.LoginTriesCounter));
             }
         }
         return ret;
@@ -625,14 +624,14 @@ public final class Person extends AbstractUserObject
      */
     public void setPassword(final String _newPasswd) throws EFapsException
     {
-        final Type type = Type.get(USER_PERSON);
+        final Type type = CIAdminUser.Person.getType();
 
         if (_newPasswd.length() == 0) {
             throw new EFapsException(getClass(), "PassWordLength", 1, _newPasswd.length());
         }
         final Update update = new Update(type, "" + getId());
 
-        final Status status = update.add("Password", _newPasswd);
+        final Status status = update.add(CIAdminUser.Person.Password, _newPasswd);
 
         if ((status.isOk())) {
             update.execute();
@@ -652,11 +651,11 @@ public final class Person extends AbstractUserObject
     public String getPassword()
         throws EFapsException
     {
-        final PrintQuery query = new PrintQuery(Type.get(USER_PERSON), getId());
-        query.addAttribute("Password");
+        final PrintQuery query = new PrintQuery(CIAdminUser.Person.getType(), getId());
+        query.addAttribute(CIAdminUser.Person.Password);
         final String ret;
         if (query.execute()) {
-            ret = query.<String>getAttribute("Password");
+            ret = query.<String>getAttribute(CIAdminUser.Person.Password);
         } else  {
             ret = null;
         }
@@ -919,7 +918,7 @@ public final class Person extends AbstractUserObject
                                final Role _role)
         throws EFapsException
     {
-        assignToUserObjectInDb(Type.get(USER_PERSON2ROLE), _jaasSystem, _role);
+        assignToUserObjectInDb(CIAdminUser.Person2Role.getType(), _jaasSystem, _role);
     }
 
     /**
@@ -934,7 +933,7 @@ public final class Person extends AbstractUserObject
                                  final Role _role)
         throws EFapsException
     {
-        unassignFromUserObjectInDb(Type.get(USER_PERSON2ROLE), _jaasSystem, _role);
+        unassignFromUserObjectInDb(CIAdminUser.Person2Role.getType(), _jaasSystem, _role);
     }
 
     /**
@@ -1048,7 +1047,7 @@ public final class Person extends AbstractUserObject
                                 final Group _group)
         throws EFapsException
     {
-        assignToUserObjectInDb(Type.get(USER_PERSON2GROUP), _jaasSystem, _group);
+        assignToUserObjectInDb(CIAdminUser.Person2Group.getType(), _jaasSystem, _group);
     }
 
     /**
@@ -1063,7 +1062,7 @@ public final class Person extends AbstractUserObject
                                   final Group _group)
         throws EFapsException
     {
-        unassignFromUserObjectInDb(Type.get(USER_PERSON2GROUP), _jaasSystem, _group);
+        unassignFromUserObjectInDb(CIAdminUser.Person2Group.getType(), _jaasSystem, _group);
     }
 
     /**
@@ -1182,9 +1181,13 @@ public final class Person extends AbstractUserObject
      */
     public static Person get(final long _id) throws EFapsException
     {
-        Person ret = getCache().get(_id);
+        Person ret = Person.getCache().get(_id);
         if (ret == null) {
-            ret = getFromDB("select " + "V_USERPERSON.ID," + "V_USERPERSON.NAME, " + "STATUS " + "from V_USERPERSON "
+            ret = Person.getFromDB("select "
+                            + "V_USERPERSON.ID,"
+                            + "V_USERPERSON.NAME, "
+                            + "STATUS "
+                            + "from V_USERPERSON "
                             + "where V_USERPERSON.ID=" + _id);
         }
         return ret;
@@ -1202,9 +1205,13 @@ public final class Person extends AbstractUserObject
      */
     public static Person get(final String _name) throws EFapsException
     {
-        Person ret = getCache().get(_name);
+        Person ret = Person.getCache().get(_name);
         if (ret == null) {
-            ret = getFromDB("select " + "V_USERPERSON.ID," + "V_USERPERSON.NAME, " + "STATUS " + "from V_USERPERSON "
+            ret = Person.getFromDB("select "
+                            + "V_USERPERSON.ID,"
+                            + "V_USERPERSON.NAME, "
+                            + "STATUS "
+                            + "from V_USERPERSON "
                             + "where V_USERPERSON.NAME='" + _name + "'");
         }
         return ret;
@@ -1241,7 +1248,7 @@ public final class Person extends AbstractUserObject
                     final String name = resultset.getString(2);
                     final boolean status = resultset.getBoolean(3);
                     ret = new Person(id, name.trim(), status);
-                    getCache().addObject(ret);
+                    Person.getCache().addObject(ret);
                 }
                 resultset.close();
             } catch (final SQLException e) {
@@ -1325,7 +1332,7 @@ public final class Person extends AbstractUserObject
                 rsrc.abort();
             }
         }
-        return get(personId);
+        return Person.get(personId);
     }
 
     /**
@@ -1344,7 +1351,7 @@ public final class Person extends AbstractUserObject
         throws EFapsException
     {
         long persId = 0;
-        final Type persType = Type.get(USER_PERSON);
+        final Type persType = CIAdminUser.Person.getType();
         ConnectionResource rsrc = null;
         try {
             final Context context = Context.getThreadContext();
@@ -1430,7 +1437,7 @@ public final class Person extends AbstractUserObject
             }
         }
 
-        final Person ret = get(persId);
+        final Person ret = Person.get(persId);
         ret.assignToJAASSystem(_jaasSystem, _jaasKey);
         return ret;
     }

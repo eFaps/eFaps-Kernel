@@ -20,8 +20,10 @@
 
 package org.efaps.update.schema.program.staticsource;
 
-import org.efaps.admin.EFapsClassNames;
+import org.efaps.ci.CIAdminProgram;
+import org.efaps.ci.CIType;
 import org.efaps.db.Checkout;
+import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 import org.efaps.wikiutil.export.html.WEMHtml;
 import org.efaps.wikiutil.parser.gwiki.GWikiParser;
@@ -41,45 +43,42 @@ public class WikiCompiler
      * {@inheritDoc}
      */
     @Override
-    protected EFapsClassNames getClassName4Type()
+    protected CIType getClassName4Type()
     {
-        return EFapsClassNames.ADMIN_PROGRAM_WIKI;
+        return CIAdminProgram.Wiki;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected EFapsClassNames getClassName4Type2Type()
+    protected CIType getClassName4Type2Type()
     {
-        return EFapsClassNames.ADMIN_PROGRAM_WIKI2WIKI;
+        return CIAdminProgram.Wiki2Wiki;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected EFapsClassNames getClassName4TypeCompiled()
+    protected CIType getClassName4TypeCompiled()
     {
-        return EFapsClassNames.ADMIN_PROGRAM_WIKICOMPILED;
+        return CIAdminProgram.WikiCompiled;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected String getCompiledString(final String _oid)
+    protected String getCompiledString(final Instance _instance)
+        throws EFapsException
     {
-        final Checkout checkout = new Checkout(_oid);
+        final Checkout checkout = new Checkout(_instance);
         final WEMHtml wemhtml = new WEMHtml();
         try {
             GWikiParser.parse(wemhtml, checkout.execute(), "UTF-8");
         } catch (final ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(WikiCompiler.class, "ParseException", e);
         }
         return wemhtml.getHtml();
     }
@@ -89,10 +88,9 @@ public class WikiCompiler
       */
     @Override
     protected AbstractSource getNewSource(final String _name,
-                                          final String _oid,
-                                          final long _id)
+                                          final Instance _instance)
     {
-        return new OneWiki(_name, _oid, _id);
+        return new OneWiki(_name, _instance);
     }
 
     /**
@@ -106,14 +104,12 @@ public class WikiCompiler
         /**
          * Constructor.
          * @param _name name
-         * @param _oid  OID
-         * @param _id   ID
+         * @param _instance  Instance
          */
         public OneWiki(final String _name,
-                       final String _oid,
-                       final long _id)
+                       final Instance _instance)
         {
-            super(_name, _oid, _id);
+            super(_name, _instance);
         }
     }
 }

@@ -32,7 +32,7 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
-import org.efaps.admin.EFapsClassNames;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.update.schema.program.AbstractSourceImporter;
 import org.efaps.update.util.InstallationException;
 import org.xml.sax.SAXException;
@@ -58,7 +58,7 @@ public class JasperReportImporter
     public JasperReportImporter(final URL _url)
         throws InstallationException
     {
-        super(EFapsClassNames.ADMIN_PROGRAM_JASPERREPORT, _url);
+        super(CIAdminProgram.JasperReport, _url);
     }
 
     /**
@@ -72,14 +72,11 @@ public class JasperReportImporter
         try {
             this.jasperDesign = new JRXmlLoader(JRXmlDigesterFactory.createDigester()).loadXML(newCodeInputStream());
         } catch (final ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new InstallationException("source code for " + getUrl() + "could not be parsed", e);
         } catch (final SAXException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new InstallationException("source code for " + getUrl() + "could not parsed", e);
         } catch (final JRException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new InstallationException("source code for " + getUrl() + "could not encoded", e);
         } catch (final UnsupportedEncodingException e) {
             throw new InstallationException("source code for " + getUrl() + "could not encoded", e);
         }

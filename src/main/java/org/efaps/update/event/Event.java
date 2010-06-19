@@ -23,9 +23,9 @@ package org.efaps.update.event;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
@@ -167,8 +167,8 @@ public class Event
         throws EFapsException
     {
         long id = 0;
-        final QueryBuilder queryBldr = new QueryBuilder(Type.get(EFapsClassNames.ADMIN_PROGRAM_JAVA));
-        queryBldr.addWhereAttrEqValue("Name", this.program);
+        final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.Java);
+        queryBldr.addWhereAttrEqValue(CIAdminProgram.Java.Name, this.program);
         final InstanceQuery query = queryBldr.getQuery();
         query.executeWithoutAccessCheck();
         if (query.next()) {

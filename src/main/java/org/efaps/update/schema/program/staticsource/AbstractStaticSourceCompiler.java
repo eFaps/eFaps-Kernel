@@ -27,12 +27,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.efaps.admin.EFapsClassNames;
-import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminProgram;
+import org.efaps.ci.CIType;
 import org.efaps.db.Checkin;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.schema.program.jasperreport.JasperReportCompiler;
 import org.efaps.util.EFapsException;
@@ -89,21 +90,21 @@ public abstract class AbstractStaticSourceCompiler
                 AbstractStaticSourceCompiler.LOG.info("compiling " + onesource.getName());
             }
 
-            final List<String> supers = getSuper(onesource.getOid());
+            final List<Instance> supers = getSuper(onesource.getInstance());
             final StringBuilder builder = new StringBuilder();
             while (!supers.isEmpty()) {
                 builder.append(getCompiledString(supers.get(supers.size() - 1)));
                 supers.remove(supers.size() - 1);
             }
-            builder.append(getCompiledString(onesource.getOid()));
+            builder.append(getCompiledString(onesource.getInstance()));
             final Update update;
             if (compiled.containsKey(onesource.getName())) {
                 update = new Update(compiled.get(onesource.getName()));
             } else {
-                update = new Insert(Type.get(getClassName4TypeCompiled()));
+                update = new Insert(getClassName4TypeCompiled());
             }
             update.add("Name", onesource.getName());
-            update.add("ProgramLink", "" + onesource.getId());
+            update.add("ProgramLink", "" + onesource.getInstance());
             update.executeWithoutAccessCheck();
             final Instance instance = update.getInstance();
             update.close();
@@ -130,41 +131,43 @@ public abstract class AbstractStaticSourceCompiler
      *
      * @return UUID for the CompiledType
      */
-    protected abstract EFapsClassNames getClassName4TypeCompiled();
+    protected abstract CIType getClassName4TypeCompiled();
 
     /**
      * Get the UUID for the Type.
      *
      * @return UUID for the Type
      */
-    protected abstract EFapsClassNames getClassName4Type();
+    protected abstract CIType getClassName4Type();
 
     /**
      * Get the UUID for the Type2Type.
      *
      * @return UUID for the Type2Type
      */
-    protected abstract EFapsClassNames getClassName4Type2Type();
+    protected abstract CIType getClassName4Type2Type();
 
     /**
      * Get a new AbstractSource to instantiate.
      *
      * @see #AbstractSource
      * @see #readSources()
-     * @param _name name of the source
-     * @param _oid oid of the source
-     * @param _id id of the source
+     * @param _name     name of the source
+     * @param _instance Instance of the source
      * @return AbstractSource
      */
-    protected abstract AbstractSource getNewSource(final String _name, final String _oid, final long _id);
+    protected abstract AbstractSource getNewSource(final String _name,
+                                                   final Instance _instance);
 
     /**
      * Get the compiled String for the Instance with OID _oid.
      *
-     * @param _oid oid of the instance the compiled String will be returned
-     * @return a compiled String of the Instance Oid
+     * @param _instance the instance the compiled String will be returned
+     * @return a compiled String of the Instance
+     * @throws EFapsException on error
      */
-    protected abstract String getCompiledString(final String _oid);
+    protected abstract String getCompiledString(final Instance _instance)
+        throws EFapsException;
 
     /**
      * This method reads all compiled Sources from the eFaps-DataBase and
@@ -173,18 +176,17 @@ public abstract class AbstractStaticSourceCompiler
      * @return Map with name to oid of the compiled source
      * @throws EFapsException on error
      */
-    protected Map<String, String> readCompiledSources() throws EFapsException
+    protected Map<String, String> readCompiledSources()
+        throws EFapsException
     {
         final Map<String, String> ret = new HashMap<String, String>();
-        final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(Type.get(getClassName4TypeCompiled()).getName());
-        query.addSelect("OID");
-        query.addSelect("Name");
-        query.executeWithoutAccessCheck();
-        while (query.next()) {
-            final String name = (String) query.get("Name");
-            final String oid = (String) query.get("OID");
-            ret.put(name, oid);
+        final QueryBuilder queryBldr = new QueryBuilder(getClassName4TypeCompiled());
+        final MultiPrintQuery multi = queryBldr.getPrint();
+        multi.addAttribute(CIAdminProgram.StaticCompiled.Name);
+        multi.executeWithoutAccessCheck();
+        while (multi.next()) {
+            final String name = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.Name);
+            ret.put(name, multi.getCurrentInstance().getOid());
         }
         return ret;
     }
@@ -196,20 +198,17 @@ public abstract class AbstractStaticSourceCompiler
      * @return List with AbstractSources
      * @throws EFapsException on error
      */
-    protected List<AbstractSource> readSources() throws EFapsException
+    protected List<AbstractSource> readSources()
+        throws EFapsException
     {
         final List<AbstractSource> ret = new ArrayList<AbstractSource>();
-        final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(Type.get(getClassName4Type()).getName());
-        query.addSelect("ID");
-        query.addSelect("OID");
-        query.addSelect("Name");
-        query.executeWithoutAccessCheck();
-        while (query.next()) {
-            final String name = (String) query.get("Name");
-            final String oid = (String) query.get("OID");
-            final Long id = (Long) query.get("ID");
-            ret.add(getNewSource(name, oid, id));
+        final QueryBuilder queryBldr = new QueryBuilder(getClassName4Type());
+        final MultiPrintQuery multi = queryBldr.getPrint();
+        multi.addAttribute(CIAdminProgram.Abstract.Name);
+        multi.executeWithoutAccessCheck();
+        while (multi.next()) {
+            final String name = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.Name);
+            ret.add(getNewSource(name, multi.getCurrentInstance()));
         }
         return ret;
     }
@@ -218,21 +217,24 @@ public abstract class AbstractStaticSourceCompiler
      * Recursive method that searches the SuperSource for the current Instance
      * identified by the oid.
      *
-     * @param _oid OId of the Instance the Super Instance will be searched
+     * @param _instance Instance the Super Instance will be searched
      * @return List of SuperSources in reverse order
      * @throws EFapsException error
      */
-    protected List<String> getSuper(final String _oid) throws EFapsException
+    protected List<Instance> getSuper(final Instance _instance)
+        throws EFapsException
     {
-        final List<String> ret = new ArrayList<String>();
-        final SearchQuery query = new SearchQuery();
-        query.setExpand(_oid, Type.get(getClassName4Type2Type()).getName() + "\\From");
-        query.addSelect("To");
-        query.execute();
-        if (query.next()) {
-            final String tooid = Type.get(getClassName4Type()).getId() + "." + query.get("To");
-            ret.add(tooid);
-            ret.addAll(getSuper(tooid));
+        final List<Instance> ret = new ArrayList<Instance>();
+        final QueryBuilder queryBldr = new QueryBuilder(getClassName4Type2Type());
+        queryBldr.addWhereAttrEqValue(CIAdminProgram.Program2Program.From, _instance.getId());
+        final MultiPrintQuery multi = queryBldr.getPrint();
+        multi.addAttribute(CIAdminProgram.Program2Program.To);
+        multi.execute();
+        if (multi.next()) {
+            final Instance instance = Instance.get(getClassName4Type().getType(),
+                                             multi.<Long>getAttribute(CIAdminProgram.Program2Program.To));
+            ret.add(instance);
+            ret.addAll(getSuper(instance));
         }
         return ret;
     }
@@ -242,34 +244,27 @@ public abstract class AbstractStaticSourceCompiler
      */
     protected abstract class AbstractSource
     {
-
         /**
          * Stores the name of this source.
          */
         private final String name;
 
         /**
-         * Stores the oid of this source.
+         * Instance of this source.
          */
-        private final String oid;
-
-        /**
-         * Stores the id of this source.
-         */
-        private final long id;
+        private final Instance instance;
 
         /**
          * Constructor setting all instance variables.
          *
-         * @param _name name of the source
-         * @param _oid oid of the source
-         * @param _id id of the source
+         * @param _name     name of the source
+         * @param _instance Instance of the source
          */
-        public AbstractSource(final String _name, final String _oid, final long _id)
+        public AbstractSource(final String _name,
+                              final Instance _instance)
         {
             this.name = _name;
-            this.oid = _oid;
-            this.id = _id;
+            this.instance = _instance;
         }
 
         /**
@@ -283,23 +278,13 @@ public abstract class AbstractStaticSourceCompiler
         }
 
         /**
-         * This is the getter method for the instance variable {@link #oid}.
+         * This is the getter method for the instance variable {@link #instance}.
          *
-         * @return value of instance variable {@link #oid}
+         * @return value of instance variable {@link #instance}
          */
-        public String getOid()
+        public Instance getInstance()
         {
-            return this.oid;
-        }
-
-        /**
-         * This is the getter method for the instance variable {@link #id}.
-         *
-         * @return value of instance variable {@link #id}
-         */
-        public long getId()
-        {
-            return this.id;
+            return this.instance;
         }
     }
 }

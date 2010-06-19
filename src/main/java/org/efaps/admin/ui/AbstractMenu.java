@@ -37,7 +37,8 @@ import org.efaps.util.cache.CacheReloadException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractMenu extends AbstractCommand
+public abstract class AbstractMenu
+    extends AbstractCommand
 {
 
     /**
@@ -56,7 +57,9 @@ public abstract class AbstractMenu extends AbstractCommand
      * @param _uuid UUID of the command to set
      * @param _name name of the command to set
      */
-    protected AbstractMenu(final long _id, final String _uuid, final String _name)
+    protected AbstractMenu(final long _id,
+                           final String _uuid,
+                           final String _name)
     {
         super(_id, _uuid, _name);
     }
@@ -68,7 +71,8 @@ public abstract class AbstractMenu extends AbstractCommand
      * @param _sortId id used to sort
      * @param _id id of the sub command / menu to add
      */
-    protected abstract void add(final long _sortId, final long _id);
+    protected abstract void add(final long _sortId,
+                                final long _id);
 
     /**
      * Add a command to the menu structure.
@@ -76,7 +80,8 @@ public abstract class AbstractMenu extends AbstractCommand
      * @param _sortId id used to sort
      * @param _command command to add
      */
-    public void add(final long _sortId, final AbstractCommand _command)
+    public void add(final long _sortId,
+                    final AbstractCommand _command)
     {
         this.commands.put(_sortId, _command);
     }
@@ -106,7 +111,9 @@ public abstract class AbstractMenu extends AbstractCommand
      * @throws EFapsException on error
      */
     @Override
-    public boolean hasAccess(final TargetMode _targetMode, final Instance _instance) throws EFapsException
+    public boolean hasAccess(final TargetMode _targetMode,
+                             final Instance _instance)
+        throws EFapsException
     {
         boolean ret = super.hasAccess(_targetMode, _instance);
 
@@ -161,7 +168,8 @@ public abstract class AbstractMenu extends AbstractCommand
      * @throws CacheReloadException on error during load
      */
     @Override
-    protected void readFromDB() throws CacheReloadException
+    protected void readFromDB()
+        throws CacheReloadException
     {
         super.readFromDB();
         readFromDB4Childs();
@@ -175,7 +183,8 @@ public abstract class AbstractMenu extends AbstractCommand
      * @see #add(long)
      * @throws CacheReloadException on error during load
      */
-    private void readFromDB4Childs() throws CacheReloadException
+    private void readFromDB4Childs()
+        throws CacheReloadException
     {
         try {
             final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Menu2Command);
@@ -185,7 +194,7 @@ public abstract class AbstractMenu extends AbstractCommand
             multi.executeWithoutAccessCheck();
 
             while (multi.next()) {
-                final long commandId = multi.getAttribute(CIAdminUserInterface.Menu2Command.ToCommand);
+                final long commandId = multi.<Long> getAttribute(CIAdminUserInterface.Menu2Command.ToCommand);
                 add(multi.getCurrentInstance().getId(), commandId);
             }
         } catch (final EFapsException e) {

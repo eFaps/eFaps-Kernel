@@ -37,10 +37,8 @@ import net.sf.jasperreports.engine.xml.JRXmlDigester;
 import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
-import org.xml.sax.SAXException;
-
-import org.efaps.admin.EFapsClassNames;
-import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminProgram;
+import org.efaps.ci.CIType;
 import org.efaps.db.Checkin;
 import org.efaps.db.Checkout;
 import org.efaps.db.Insert;
@@ -48,16 +46,19 @@ import org.efaps.db.Instance;
 import org.efaps.db.Update;
 import org.efaps.update.schema.program.staticsource.AbstractStaticSourceCompiler;
 import org.efaps.util.EFapsException;
+import org.xml.sax.SAXException;
 
 /**
  * Class serves as the compiler for JasperReports.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: JasperReportCompiler.java 3932 2010-03-31 20:40:50Z jan.moxter
+ *          $
  */
 public class JasperReportCompiler
     extends AbstractStaticSourceCompiler
 {
+
     /**
      * Stores the list of classpath needed to compile (if needed).
      */
@@ -65,6 +66,7 @@ public class JasperReportCompiler
 
     /**
      * Constructor setting the classpath elements.
+     *
      * @param _classPathElements elemnts for the classpath
      */
     public JasperReportCompiler(final List<String> _classPathElements)
@@ -72,12 +74,12 @@ public class JasperReportCompiler
         this.classPathElements = _classPathElements;
     }
 
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public void compile() throws EFapsException
+    public void compile()
+        throws EFapsException
     {
 
         final Map<String, String> compiled = readCompiledSources();
@@ -86,37 +88,40 @@ public class JasperReportCompiler
 
         for (final AbstractSource onesource : allsource) {
 
-            if (LOG.isInfoEnabled()) {
-                LOG.info("compiling " + onesource.getName());
+            if (AbstractStaticSourceCompiler.LOG.isInfoEnabled()) {
+                AbstractStaticSourceCompiler.LOG.info("compiling " + onesource.getName());
             }
 
             final Update update;
             if (compiled.containsKey(onesource.getName())) {
                 update = new Update(compiled.get(onesource.getName()));
             } else {
-                update = new Insert(Type.get(getClassName4TypeCompiled()));
+                update = new Insert(getClassName4TypeCompiled());
             }
             update.add("Name", onesource.getName());
-            update.add("ProgramLink", "" + onesource.getId());
+            update.add("ProgramLink", "" + onesource.getInstance().getId());
             update.executeWithoutAccessCheck();
             final Instance instance = update.getInstance();
             update.close();
-            compileJasperReport(Instance.get(onesource.getOid()), instance);
+            compileJasperReport(onesource.getInstance(), instance);
         }
     }
 
     /**
      * Method to compile one JasperReport.
-     * @param _instSource   instance of the source
+     *
+     * @param _instSource instance of the source
      * @param _instCompiled instance of the compiled source
      * @throws EFapsException on error
      */
-    private void compileJasperReport(final Instance _instSource, final Instance _instCompiled) throws EFapsException
+    private void compileJasperReport(final Instance _instSource,
+                                     final Instance _instCompiled)
+        throws EFapsException
     {
         final Checkout checkout = new Checkout(_instSource);
         checkout.preprocess();
         final InputStream source = checkout.execute();
-        //make the classPath
+        // make the classPath
         final String sep = System.getProperty("os.name").startsWith("Windows") ? ";" : ":";
         final StringBuilder classPath = new StringBuilder();
         for (final String classPathElement : this.classPathElements) {
@@ -142,80 +147,76 @@ public class JasperReportCompiler
             out.close();
             in.close();
         } catch (final ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(JasperReportCompiler.class, "ParserConfigurationException", e);
         } catch (final SAXException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(JasperReportCompiler.class, "SAXException", e);
         } catch (final JRException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(JasperReportCompiler.class, "JRException", e);
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(JasperReportCompiler.class, "IOException", e);
         }
     }
 
     /**
-     * Not needed in this case.
-     * @see org.efaps.admin.program.staticsource.AbstractStaticSourceCompiler#getCompiledString(java.lang.String)
-     * @param _oid oid
-     * @return null
+     * Not needed in this case. {@inheritDoc}
      */
     @Override
-    protected String getCompiledString(final String _oid)
+    protected String getCompiledString(final Instance _instance)
     {
         return null;
     }
 
-   /**
+    /**
      * {@inheritDoc}
      */
     @Override
-    protected EFapsClassNames getClassName4Type()
+    protected CIType getClassName4Type()
     {
-        return EFapsClassNames.ADMIN_PROGRAM_JASPERREPORT;
+        return CIAdminProgram.JasperReport;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected EFapsClassNames getClassName4Type2Type()
+    protected CIType getClassName4Type2Type()
     {
-        return EFapsClassNames.ADMIN_PROGRAM_JASPERREPORT2JASPERREPORT;
+        return CIAdminProgram.JasperReport2JasperReport;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected EFapsClassNames getClassName4TypeCompiled()
+    protected CIType getClassName4TypeCompiled()
     {
-        return EFapsClassNames.ADMIN_PROGRAM_JASPERREPORTCOMPILED;
+        return CIAdminProgram.JasperReportCompiled;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public AbstractSource getNewSource(final String _name, final String _oid, final long _id)
+    public AbstractSource getNewSource(final String _name,
+                                       final Instance _instance)
     {
-        return new OneJasperReport(_name, _oid, _id);
+        return new OneJasperReport(_name, _instance);
     }
 
     /**
      */
-    protected class OneJasperReport extends AbstractSource
+    protected class OneJasperReport
+        extends AbstractSource
     {
+
         /**
          * @param _name name
-         * @param _oid  oid
-         * @param _id   id
+         * @param _instance Instance
          */
-        public OneJasperReport(final String _name, final String _oid, final long _id)
+        public OneJasperReport(final String _name,
+                               final Instance _instance)
         {
-            super(_name, _oid, _id);
+            super(_name, _instance);
         }
     }
 }
