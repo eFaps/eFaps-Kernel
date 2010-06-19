@@ -621,7 +621,7 @@ public abstract class AbstractUpdate implements IUpdate
          */
         protected void updateInDB(final UpdateLifecycle _step,
                                   final Set<AbstractUpdate.Link> _allLinkTypes)
-            throws EFapsException, InstallationException
+            throws InstallationException
         {
             if (_step == UpdateLifecycle.EFAPS_CREATE)  {
                 searchInstance();
@@ -641,30 +641,33 @@ public abstract class AbstractUpdate implements IUpdate
                 }
 
             } else if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
-
-                final String name = this.values.get("Name");
-                final Update update = new Update(this.instance);
-                if (this.instance.getType().getAttribute("Revision") != null) {
-                    update.add("Revision", AbstractUpdate.this.fileRevision);
-                }
-                for (final Map.Entry<String, String> entry : this.values.entrySet()) {
-                    update.add(entry.getKey(), entry.getValue());
-                }
-                if (AbstractUpdate.LOG.isInfoEnabled() && (name != null)) {
-                    AbstractUpdate.LOG.info("    Update " + this.instance.getType().getName() + " '" + name + "'");
-                }
-                update.executeWithoutAccessCheck();
-
-                if (_allLinkTypes != null) {
-                    for (final Link linkType : _allLinkTypes) {
-                        setLinksInDB(this.instance, linkType, this.links.get(linkType));
+                try {
+                    final String name = this.values.get("Name");
+                    final Update update = new Update(this.instance);
+                    if (this.instance.getType().getAttribute("Revision") != null) {
+                        update.add("Revision", AbstractUpdate.this.fileRevision);
                     }
-                }
-                setPropertiesInDb(this.instance, this.properties);
+                    for (final Map.Entry<String, String> entry : this.values.entrySet()) {
+                        update.add(entry.getKey(), entry.getValue());
+                    }
+                    if (AbstractUpdate.LOG.isInfoEnabled() && (name != null)) {
+                        AbstractUpdate.LOG.info("    Update " + this.instance.getType().getName() + " '" + name + "'");
+                    }
+                    update.executeWithoutAccessCheck();
 
-                for (final Event event : this.events) {
-                    final Instance newInstance = event.updateInDB(this.instance, getValue("Name"));
-                    setPropertiesInDb(newInstance, event.getProperties());
+                    if (_allLinkTypes != null) {
+                        for (final Link linkType : _allLinkTypes) {
+                            setLinksInDB(this.instance, linkType, this.links.get(linkType));
+                        }
+                    }
+                    setPropertiesInDb(this.instance, this.properties);
+
+                    for (final Event event : this.events) {
+                        final Instance newInstance = event.updateInDB(this.instance, getValue("Name"));
+                        setPropertiesInDb(newInstance, event.getProperties());
+                    }
+                } catch (final EFapsException e) {
+                    throw new InstallationException("update did not work", e);
                 }
             }
         }
