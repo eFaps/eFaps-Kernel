@@ -288,7 +288,7 @@ public final class EventDefinition
                     }
                 }
 
-                if (typeUUId.equals(CIAdminDataModel.Type.uuid)) {
+                if (CIAdminDataModel.Type.uuid.equals(typeUUId)) {
                     final Type type = Type.get(abstractID);
                     if (EventDefinition.LOG.isDebugEnabled()) {
                         EventDefinition.LOG.debug("    type=" + type);
@@ -297,7 +297,7 @@ public final class EventDefinition
                     type.addEvent(triggerEvent,
                                     new EventDefinition(inst, eventName, eventPos, resName, method));
 
-                } else if (typeUUId.equals(CIAdminUserInterface.Command.uuid)) {
+                } else if (CIAdminUserInterface.Command.uuid.equals(typeUUId)) {
                     final Command command = Command.get(abstractID);
 
                     if (EventDefinition.LOG.isDebugEnabled()) {
@@ -305,11 +305,11 @@ public final class EventDefinition
                     }
                     command.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
 
-                } else if (typeUUId.equals(CIAdminUserInterface.Field.uuid)
-                                || typeUUId.equals(CIAdminUserInterface.FieldCommand.uuid)
-                                || typeUUId.equals(CIAdminUserInterface.FieldGroup.uuid)
-                                || typeUUId.equals(CIAdminUserInterface.FieldHeading.uuid)
-                                || typeUUId.equals(CIAdminUserInterface.FieldClassification.uuid)) {
+                } else if (CIAdminUserInterface.Field.uuid.equals(typeUUId)
+                                || CIAdminUserInterface.FieldCommand.uuid.equals(typeUUId)
+                                || CIAdminUserInterface.FieldGroup.uuid.equals(typeUUId)
+                                || CIAdminUserInterface.FieldHeading.uuid.equals(typeUUId)
+                                || CIAdminUserInterface.FieldClassification.uuid.equals(typeUUId)) {
                     final Field field = Field.get(abstractID);
 
                     if (EventDefinition.LOG.isDebugEnabled()) {
@@ -318,8 +318,8 @@ public final class EventDefinition
 
                     field.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
 
-                } else if (typeUUId.equals(CIAdminDataModel.Attribute.uuid)
-                                || typeUUId.equals(CIAdminDataModel.AttributeSetAttribute.uuid)) {
+                } else if (CIAdminDataModel.Attribute.uuid.equals(typeUUId)
+                                || CIAdminDataModel.AttributeSetAttribute.uuid.equals(typeUUId)) {
                     final Attribute attribute = Attribute.get(abstractID);
                     if (EventDefinition.LOG.isDebugEnabled()) {
                         EventDefinition.LOG.debug("      Attribute=" + attribute.getName());
@@ -327,7 +327,7 @@ public final class EventDefinition
 
                     attribute.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
 
-                } else if (typeUUId.equals(CIAdminUserInterface.Menu.uuid)) {
+                } else if (CIAdminUserInterface.Menu.uuid.equals(typeUUId)) {
                     final Menu menu = Menu.get(abstractID);
                     if (EventDefinition.LOG.isDebugEnabled()) {
                         EventDefinition.LOG.debug("      Menu=" + menu.getName());
@@ -335,7 +335,7 @@ public final class EventDefinition
 
                     menu.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
 
-                } else if (typeUUId.equals(CIAdminUserInterface.FieldTable.uuid)) {
+                } else if (CIAdminUserInterface.FieldTable.uuid.equals(typeUUId)) {
 
                     final FieldTable fieldtable = FieldTable.get(abstractID);
 
@@ -345,7 +345,7 @@ public final class EventDefinition
 
                     fieldtable.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
 
-                } else if (typeUUId.equals(CIAdminUserInterface.Picker.uuid)) {
+                } else if (CIAdminUserInterface.Picker.uuid.equals(typeUUId)) {
 
                     final Picker picker = Picker.get(abstractID);
 
