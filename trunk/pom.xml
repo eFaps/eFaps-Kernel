@@ -499,9 +499,9 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
 
         <!-- JasperReport as a flexible reporting tool -->
         <dependency>
-            <groupId>jasperreports</groupId>
+            <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>3.5.3</version>
+            <version>3.7.3</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -517,13 +517,19 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>ar.com.fdvs</groupId>
             <artifactId>DynamicJasper</artifactId>
-            <version>3.0.9</version>
+            <version>3.0.13</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jasperreports</artifactId>
+                    <groupId>jasperreports</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- needed and marked optional in jasper report -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.2-FINAL</version>
+            <version>3.6</version>
             <exclusions>
                 <exclusion>
                     <groupId>log4j</groupId>
@@ -571,7 +577,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>1.8.0</version>
+            <version>1.8.2</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-api</artifactId>
