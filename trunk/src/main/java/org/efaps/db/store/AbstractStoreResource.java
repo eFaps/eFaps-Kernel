@@ -144,9 +144,7 @@ public abstract class AbstractStoreResource
                 }
             }
         } catch (final IOException e)  {
-e.printStackTrace();
-        } catch (final EFapsException e)  {
-            throw e;
+            throw new EFapsException(AbstractStoreResource.class, "read.IOException", e);
         } finally  {
             if (in != null)  {
                 try  {
@@ -320,7 +318,6 @@ e.printStackTrace();
          * @see #beforeClose()
          * @see #afterClose()
          * @throws IOException on error
-         * TODO:  Java6 change IOException with throwable paramter
          */
         @Override()
         public void close()
@@ -332,14 +329,13 @@ e.printStackTrace();
                 this.store.commit();
                 afterClose();
             } catch (final EFapsException e)  {
-                throw new IOException("commit of store not possible" + e.toString());
+                throw new IOException("commit of store not possible", e);
             } finally  {
                 if (this.store.isOpened())  {
                     try  {
                         this.store.abort();
                     } catch (final EFapsException e)  {
-                        throw new IOException("store resource could not be aborted"
-                                + e.toString());
+                        throw new IOException("store resource could not be aborted", e);
                     }
                 }
             }

@@ -130,7 +130,7 @@ public class JDBCStoreResource
             res = Context.getThreadContext().getConnectionResource();
 
             final StringBuffer cmd = new StringBuffer().append("update ")
-                .append(this.table).append(" ").append("set ")
+                .append(this.table).append(" set ")
                 .append(this.blobColumn).append("=? ")
                 .append("where ").append(this.keyColumn).append("=").append(getFileId());
 
@@ -149,8 +149,7 @@ public class JDBCStoreResource
         } catch (final SQLException e) {
             res.abort();
             JDBCStoreResource.LOG.error("write of content failed", e);
-            throw new EFapsException(JDBCStoreResource.class,
-                                     "write.SQLException", e);
+            throw new EFapsException(JDBCStoreResource.class, "write.SQLException", e);
         }
         return size;
     }
@@ -168,7 +167,8 @@ public class JDBCStoreResource
      * @return input stream of the file with the content
      * @throws EFapsException on error
      */
-    public InputStream read() throws EFapsException
+    public InputStream read()
+        throws EFapsException
     {
         StoreResourceInputStream in = null;
         ConnectionResource res = null;
@@ -192,6 +192,7 @@ public class JDBCStoreResource
                                                           resultSet.getBlob(1));
                 }
             }
+            res.commit();
         } catch (final IOException e) {
             JDBCStoreResource.LOG.error("read of content failed", e);
             throw new EFapsException(JDBCStoreResource.class, "read.SQLException", e);
@@ -327,7 +328,8 @@ public class JDBCStoreResource
      *
      * TODO:  avaible must be long! (because of max integer value!)
      */
-    private class BlobInputStream extends InputStream
+    private class BlobInputStream
+        extends InputStream
     {
         /**
          * Stores the blob for this input stream.
@@ -443,9 +445,9 @@ public class JDBCStoreResource
          * @param _in       binary input stream (from the blob)
          * @throws IOException on error
          */
-        JDBCStoreResourceInputStream(final AbstractStoreResource _storeRes,
-                                     final ConnectionResource _res,
-                                     final InputStream _in)
+        protected JDBCStoreResourceInputStream(final AbstractStoreResource _storeRes,
+                                               final ConnectionResource _res,
+                                               final InputStream _in)
             throws IOException
         {
             super(_storeRes, _in);
@@ -453,7 +455,6 @@ public class JDBCStoreResource
         }
 
         /**
-         * TODO:  Java6 change IOException with throwable parameter
          * @throws IOException on error
          */
         @Override
@@ -462,9 +463,11 @@ public class JDBCStoreResource
         {
             super.beforeClose();
             try {
-                this.res.commit();
+                if (this.res.isOpened()) {
+                    this.res.commit();
+                }
             } catch (final EFapsException e) {
-                throw new IOException("commit of connection resource not possible" + e.toString());
+                throw new IOException("commit of connection resource not possible", e);
             }
         }
     }
