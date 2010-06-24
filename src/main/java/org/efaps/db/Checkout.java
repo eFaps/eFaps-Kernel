@@ -26,12 +26,10 @@ import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.store.Resource;
+import org.efaps.db.store.Store;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_LENGTH;
-import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_NAME;
 
 /**
  * The class is used to checkout a file from a given attribute of an object.
@@ -96,24 +94,19 @@ public class Checkout
         throws EFapsException
     {
         final Type type = getInstance().getType();
-        final String fileNameTmp = type.getProperty(PROPERTY_ATTR_FILE_NAME);
-        final String size = type.getProperty(PROPERTY_ATTR_FILE_LENGTH);
+        final String fileNameTmp = type.getProperty(Store.PROPERTY_ATTR_FILE_NAME);
+        final String size = type.getProperty(Store.PROPERTY_ATTR_FILE_LENGTH);
 
-        final SearchQuery query = new SearchQuery();
-        query.setObject(getInstance());
-        query.addSelect(fileNameTmp);
-        query.addSelect(size);
-        // try {
-        query.executeWithoutAccessCheck();
-        if (query.next()) {
-            final Object value = query.get(fileNameTmp);
+        final PrintQuery print = new PrintQuery(getInstance());
+        print.addAttribute(fileNameTmp, size);
+        if (print.executeWithoutAccessCheck()) {
+            final Object value = print.getAttribute(fileNameTmp);
             if (value != null) {
                 this.fileName = value.toString();
-                final Long filelength = (Long) query.get(size);
+                final Long filelength = print.<Long>getAttribute(size);
                 this.fileLength = filelength;
             }
         }
-        query.close();
     }
 
     /**
@@ -251,6 +244,7 @@ public class Checkout
         try {
             storeRsrc = Context.getThreadContext().getStoreResource(getInstance());
             in = storeRsrc.read();
+            storeRsrc.commit();
         } catch (final EFapsException e) {
             Checkout.LOG.error("could not checkout " + super.getInstance(), e);
             throw e;
