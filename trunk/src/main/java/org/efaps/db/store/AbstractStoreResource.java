@@ -326,7 +326,9 @@ public abstract class AbstractStoreResource
             try  {
                 super.close();
                 beforeClose();
-                this.store.commit();
+                if (this.store.isOpened()) {
+                    this.store.commit();
+                }
                 afterClose();
             } catch (final EFapsException e)  {
                 throw new IOException("commit of store not possible", e);

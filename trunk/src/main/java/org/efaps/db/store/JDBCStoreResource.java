@@ -192,7 +192,6 @@ public class JDBCStoreResource
                                                           resultSet.getBlob(1));
                 }
             }
-            res.commit();
         } catch (final IOException e) {
             JDBCStoreResource.LOG.error("read of content failed", e);
             throw new EFapsException(JDBCStoreResource.class, "read.SQLException", e);
