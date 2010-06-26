@@ -23,30 +23,23 @@ package org.efaps.update.schema.program.jasperreport;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRProperties;
-import net.sf.jasperreports.engine.xml.JRXmlDigester;
-import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
+import org.efaps.admin.program.jasper.JasperUtil;
 import org.efaps.ci.CIAdminProgram;
 import org.efaps.ci.CIType;
 import org.efaps.db.Checkin;
-import org.efaps.db.Checkout;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.Update;
 import org.efaps.update.schema.program.staticsource.AbstractStaticSourceCompiler;
 import org.efaps.util.EFapsException;
-import org.xml.sax.SAXException;
 
 /**
  * Class serves as the compiler for JasperReports.
@@ -118,9 +111,6 @@ public class JasperReportCompiler
                                      final Instance _instCompiled)
         throws EFapsException
     {
-        final Checkout checkout = new Checkout(_instSource);
-        checkout.preprocess();
-        final InputStream source = checkout.execute();
         // make the classPath
         final String sep = System.getProperty("os.name").startsWith("Windows") ? ";" : ":";
         final StringBuilder classPath = new StringBuilder();
@@ -132,11 +122,7 @@ public class JasperReportCompiler
                                  "org.efaps.update.schema.program.jasperreport.JasperGroovyCompiler");
 
         try {
-            final JRXmlDigester digester = JRXmlDigesterFactory.createDigester();
-
-            final JRXmlLoader loader = new JRXmlLoader(digester);
-
-            final JasperDesign jasperDesign = loader.loadXML(source);
+            final JasperDesign jasperDesign = JasperUtil.getJasperDesign(_instSource);
 
             final ByteArrayOutputStream out = new ByteArrayOutputStream();
             JasperCompileManager.compileReportToStream(jasperDesign, out);
@@ -146,10 +132,6 @@ public class JasperReportCompiler
             checkin.executeWithoutAccessCheck(jasperDesign.getName() + ".jasper", in, in.available());
             out.close();
             in.close();
-        } catch (final ParserConfigurationException e) {
-            throw new EFapsException(JasperReportCompiler.class, "ParserConfigurationException", e);
-        } catch (final SAXException e) {
-            throw new EFapsException(JasperReportCompiler.class, "SAXException", e);
         } catch (final JRException e) {
             throw new EFapsException(JasperReportCompiler.class, "JRException", e);
         } catch (final IOException e) {

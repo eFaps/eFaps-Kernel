@@ -33,6 +33,7 @@ import javax.ws.rs.core.Response;
 
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.update.schema.program.esjp.ESJPCompiler;
+import org.efaps.update.schema.program.jasperreport.JasperReportCompiler;
 import org.efaps.update.schema.program.staticsource.CSSCompiler;
 import org.efaps.update.schema.program.staticsource.JavaScriptCompiler;
 import org.efaps.update.schema.program.staticsource.WikiCompiler;
@@ -58,6 +59,7 @@ public class Compile
 
     /**
      * Called to copmile java, css etc.
+     *
      * @param _type type tobe compiled
      * @return Response
      */
@@ -69,7 +71,7 @@ public class Compile
         try {
             if ("java".equalsIgnoreCase(_type)) {
                 Compile.LOG.info("==Compiling Java==");
-                compileJava();
+                new ESJPCompiler(getClassPathElements()).compile(null, false);
             } else if ("css".equalsIgnoreCase(_type)) {
                 Compile.LOG.info("==Compiling CSS==");
                 new CSSCompiler().compile();
@@ -79,6 +81,9 @@ public class Compile
             } else if ("wiki".equalsIgnoreCase(_type)) {
                 Compile.LOG.info("==Compiling Wiki==");
                 new WikiCompiler().compile();
+            } else if ("jasper".equalsIgnoreCase(_type)) {
+                Compile.LOG.info("==Compiling JasperReports==");
+                new JasperReportCompiler(getClassPathElements()).compile();
             }
             success = true;
             Compile.LOG.info("===Ending Compiler via REST===");
@@ -91,13 +96,11 @@ public class Compile
     }
 
     /**
-     * Compile Java.
-     * @throws InstallationException on error
+     * @return lsit of classpath elements
      */
-    private void compileJava()
-        throws InstallationException
+    private List<String> getClassPathElements()
     {
-        // Kernel-Configuration
+        final List<String> ret = new ArrayList<String>();
         final SystemConfiguration config = SystemConfiguration.get(
                         UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
         final String paths = config.getAttributeValue("ClassPaths");
@@ -121,11 +124,10 @@ public class Compile
                     return ret;
                 }
             });
-            final List<String> classpathElements = new ArrayList<String>();
             for (final File file : files) {
-                classpathElements.add(file.getAbsolutePath());
+                ret.add(file.getAbsolutePath());
             }
-            new ESJPCompiler(classpathElements).compile(null, false);
         }
+        return ret;
     }
 }
