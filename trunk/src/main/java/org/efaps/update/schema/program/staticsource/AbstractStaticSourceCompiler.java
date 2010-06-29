@@ -104,7 +104,7 @@ public abstract class AbstractStaticSourceCompiler
                 update = new Insert(getClassName4TypeCompiled());
             }
             update.add("Name", onesource.getName());
-            update.add("ProgramLink", "" + onesource.getInstance());
+            update.add("ProgramLink", "" + onesource.getInstance().getId());
             update.executeWithoutAccessCheck();
             final Instance instance = update.getInstance();
             update.close();
