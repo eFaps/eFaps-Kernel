@@ -312,6 +312,7 @@ public class UserAttributesSet
                 if (definition.keyAttribute != null) {
                     multi.addAttribute(definition.keyAttribute);
                 }
+                multi.executeWithoutAccessCheck();
                 while (multi.next()) {
                     String key;
                     if (definition.keyAttribute == null) {
