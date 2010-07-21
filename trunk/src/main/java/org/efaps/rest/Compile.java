@@ -39,26 +39,20 @@ import org.efaps.update.schema.program.staticsource.JavaScriptCompiler;
 import org.efaps.update.schema.program.staticsource.WikiCompiler;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment!
+ * Rest API to compile the different program froms eFaps.
  *
  * @author The eFaps Team
  * @version $Id$
  */
 @Path("/compile")
 public class Compile
+    extends AbstractRest
 {
 
     /**
-     * Logging instance used to give logging information of this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(Compile.class);
-
-    /**
-     * Called to copmile java, css etc.
+     * Called to compile java, css etc.
      *
      * @param _type type tobe compiled
      * @return Response
@@ -66,31 +60,33 @@ public class Compile
     @GET
     public Response compile(@QueryParam("type") final String _type)
     {
-        Compile.LOG.info("===Starting Compiler via REST===");
         boolean success = false;
         try {
-            if ("java".equalsIgnoreCase(_type)) {
-                Compile.LOG.info("==Compiling Java==");
-                new ESJPCompiler(getClassPathElements()).compile(null, false);
-            } else if ("css".equalsIgnoreCase(_type)) {
-                Compile.LOG.info("==Compiling CSS==");
-                new CSSCompiler().compile();
-            } else if ("js".equalsIgnoreCase(_type)) {
-                Compile.LOG.info("==Compiling Javascript==");
-                new JavaScriptCompiler().compile();
-            } else if ("wiki".equalsIgnoreCase(_type)) {
-                Compile.LOG.info("==Compiling Wiki==");
-                new WikiCompiler().compile();
-            } else if ("jasper".equalsIgnoreCase(_type)) {
-                Compile.LOG.info("==Compiling JasperReports==");
-                new JasperReportCompiler(getClassPathElements()).compile();
+            if (hasAccess()) {
+                AbstractRest.LOG.info("===Starting Compiler via REST===");
+                if ("java".equalsIgnoreCase(_type)) {
+                    AbstractRest.LOG.info("==Compiling Java==");
+                    new ESJPCompiler(getClassPathElements()).compile(null, false);
+                } else if ("css".equalsIgnoreCase(_type)) {
+                    AbstractRest.LOG.info("==Compiling CSS==");
+                    new CSSCompiler().compile();
+                } else if ("js".equalsIgnoreCase(_type)) {
+                    AbstractRest.LOG.info("==Compiling Javascript==");
+                    new JavaScriptCompiler().compile();
+                } else if ("wiki".equalsIgnoreCase(_type)) {
+                    AbstractRest.LOG.info("==Compiling Wiki==");
+                    new WikiCompiler().compile();
+                } else if ("jasper".equalsIgnoreCase(_type)) {
+                    AbstractRest.LOG.info("==Compiling JasperReports==");
+                    new JasperReportCompiler(getClassPathElements()).compile();
+                }
+                success = true;
+                AbstractRest.LOG.info("===Ending Compiler via REST===");
             }
-            success = true;
-            Compile.LOG.info("===Ending Compiler via REST===");
         } catch (final InstallationException e) {
-            Compile.LOG.error("InstallationException", e);
+            AbstractRest.LOG.error("InstallationException", e);
         } catch (final EFapsException e) {
-            Compile.LOG.error("EFapsException", e);
+            AbstractRest.LOG.error("EFapsException", e);
         }
         return success ? Response.ok().build() : Response.noContent().build();
     }
