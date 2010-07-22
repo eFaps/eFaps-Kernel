@@ -21,6 +21,7 @@
 package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -60,7 +61,7 @@ public class BooleanType
         throws SQLException
     {
         checkSQLColumnSize(_attribute, 1);
-        _insertUpdate.column(_attribute.getSqlColNames().get(0), this.eval(_value));
+        _insertUpdate.column(_attribute.getSqlColNames().get(0), eval(_value));
     }
 
     /**
@@ -88,9 +89,7 @@ public class BooleanType
     }
 
     /**
-     * TODO: test that only one value is given for indexes
-     *
-     * @throws SQLException if value could not be read
+     * {@inheritDoc}
      */
     public Object readValue(final Attribute _attribute,
                             final CachedResult _rs,
@@ -113,16 +112,37 @@ public class BooleanType
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
     {
-        Boolean ret = null;
-        final Object obj = _objectList.get(0);
-        if (obj instanceof Boolean) {
-            ret = (Boolean) obj;
-        } else if (obj instanceof Number) {
-            final Integer intvalue = ((Number) obj).intValue();
-            if ((intvalue != null) && (intvalue != 0)) {
-                ret = true;
-            } else {
-                ret = false;
+        Object ret = null;
+        if (_objectList.size() < 1) {
+            ret = null;
+        } else if (_objectList.size() > 1) {
+            final List<Object> list = new ArrayList<Object>();
+            for (final Object object : _objectList) {
+                Object obj = Boolean.FALSE;
+                if (object instanceof Boolean) {
+                    obj = object;
+                } else if (object instanceof Number) {
+                    final Integer intvalue = ((Number) object).intValue();
+                    if ((intvalue != null) && (intvalue != 0)) {
+                        obj = Boolean.TRUE;
+                    } else {
+                        obj = Boolean.FALSE;
+                    }
+                }
+                list.add(obj);
+            }
+            ret = list;
+        } else {
+            final Object object = _objectList.get(0);
+            if (object instanceof Boolean) {
+                ret = object;
+            } else if (object instanceof Number) {
+                final Integer intvalue = ((Number) object).intValue();
+                if ((intvalue != null) && (intvalue != 0)) {
+                    ret = Boolean.TRUE;
+                } else {
+                    ret = Boolean.FALSE;
+                }
             }
         }
         return ret;

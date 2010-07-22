@@ -77,10 +77,7 @@ public class StringType
     }
 
     /**
-     * @see org.efaps.admin.datamodel.IAttributeType#readValue(org.efaps.db.query.CachedResult, java.util.List)
-     * @param _rs       CachedResult
-     * @param _indexes  indexsx
-     * @return Object
+     * {@inheritDoc}
      */
     public Object readValue(final Attribute _attribute,
                             final CachedResult _rs,
