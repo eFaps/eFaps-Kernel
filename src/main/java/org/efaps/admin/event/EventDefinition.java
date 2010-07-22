@@ -309,7 +309,8 @@ public final class EventDefinition
                                 || CIAdminUserInterface.FieldCommand.uuid.equals(typeUUId)
                                 || CIAdminUserInterface.FieldGroup.uuid.equals(typeUUId)
                                 || CIAdminUserInterface.FieldHeading.uuid.equals(typeUUId)
-                                || CIAdminUserInterface.FieldClassification.uuid.equals(typeUUId)) {
+                                || CIAdminUserInterface.FieldClassification.uuid.equals(typeUUId)
+                                || CIAdminUserInterface.FieldSet.uuid.equals(typeUUId)) {
                     final Field field = Field.get(abstractID);
 
                     if (EventDefinition.LOG.isDebugEnabled()) {
