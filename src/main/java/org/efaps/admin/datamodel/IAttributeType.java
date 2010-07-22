@@ -89,7 +89,9 @@ public interface IAttributeType
      * @param _indexes      index in the result set
      * @throws Exception on error
      * @return Object
+     * TODO: remove for 2.0
      */
+    @Deprecated
     Object readValue(final Attribute _attribute,
                      final CachedResult _rs,
                      final List<Integer> _indexes)
