@@ -501,7 +501,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>3.7.3</version>
+            <version>3.7.4</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
