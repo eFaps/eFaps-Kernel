@@ -32,10 +32,14 @@ import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
+import org.efaps.ci.CIAdminDataModel;
+import org.efaps.ci.CIType;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.db.store.Store;
 import org.efaps.update.AbstractUpdate;
@@ -321,45 +325,41 @@ public class TypeUpdate
             final long sqlTableId = getSqlTableId(_typeName);
             final long typeLinkId = getTypeLinkId(_typeName);
 
-            final String typeTmp;
+            final CIType typeTmp;
             if (_setID > 0) {
-                typeTmp = "Admin_DataModel_AttributeSetAttribute";
+                typeTmp = CIAdminDataModel.AttributeSetAttribute;
             } else {
-                typeTmp = "Admin_DataModel_Attribute";
+                typeTmp = CIAdminDataModel.Attribute;
             }
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes(typeTmp);
-            query.addWhereExprEqValue("Name", this.name);
-            query.addWhereExprEqValue("ParentType", _instance.getId());
-            query.addSelect("OID");
+            final QueryBuilder queryBldr = new QueryBuilder(typeTmp);
+            queryBldr.addWhereAttrEqValue(CIAdminDataModel.Attribute.Name, this.name);
+            queryBldr.addWhereAttrEqValue(CIAdminDataModel.Attribute.ParentType, _instance.getId());
+            final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             Update update;
-
             if (query.next()) {
-                update = new Update((String) query.get("OID"));
+                update = new Update(query.getCurrentValue());
             } else {
                 update = new Insert(typeTmp);
-                update.add("ParentType", "" + _instance.getId());
-                update.add("Name", this.name);
+                update.add(CIAdminDataModel.Attribute.ParentType, _instance.getId());
+                update.add(CIAdminDataModel.Attribute.Name, this.name);
             }
-            query.close();
-
-            update.add("AttributeType", "" + attrTypeId);
-            update.add("Table", "" + sqlTableId);
-            update.add("SQLColumn", this.sqlColumn);
+            update.add(CIAdminDataModel.Attribute.AttributeType, attrTypeId);
+            update.add(CIAdminDataModel.Attribute.Table, sqlTableId);
+            update.add(CIAdminDataModel.Attribute.SQLColumn, this.sqlColumn);
             if (typeLinkId == 0) {
-                update.add("TypeLink", (String) null);
+                update.add(CIAdminDataModel.Attribute.TypeLink, (String) null);
             } else {
-                update.add("TypeLink", "" + typeLinkId);
+                update.add(CIAdminDataModel.Attribute.TypeLink, typeLinkId);
             }
             if (this.defaultValue != null) {
-                update.add("DefaultValue", this.defaultValue);
+                update.add(CIAdminDataModel.Attribute.DefaultValue, this.defaultValue);
             }
             if (this.dimensionUUID != null) {
-                update.add("DimensionUUID", this.dimensionUUID);
+                update.add(CIAdminDataModel.Attribute.DimensionUUID, this.dimensionUUID);
             }
             if (_setID != 0) {
-                update.add("ParentAttributeSet", "" + _setID);
+                update.add(CIAdminDataModel.AttributeSetAttribute.ParentAttributeSet, _setID);
             }
 
             update.executeWithoutAccessCheck();
@@ -384,18 +384,15 @@ public class TypeUpdate
         protected long getAttrTypeId(final String _typeName)
             throws EFapsException
         {
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes("Admin_DataModel_AttributeType");
-            query.addWhereExprEqValue("Name", this.type);
-            query.addSelect("OID");
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.AttributeType);
+            queryBldr.addWhereAttrEqValue(CIAdminDataModel.AttributeType.Name, this.type);
+            final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (!query.next()) {
                 TypeUpdate.LOG.error("type[" + _typeName + "]." + "attribute[" + this.name + "]: " + "attribute type '"
                                 + this.type + "' not found");
             }
-            final long attrTypeId = (Instance.get((String) query.get("OID"))).getId();
-            query.close();
-            return attrTypeId;
+            return query.getCurrentValue().getId();
         }
 
         /**
@@ -410,18 +407,15 @@ public class TypeUpdate
         protected long getSqlTableId(final String _typeName)
             throws EFapsException
         {
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes("Admin_DataModel_SQLTable");
-            query.addWhereExprEqValue("Name", this.sqlTable);
-            query.addSelect("OID");
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.SQLTable);
+            queryBldr.addWhereAttrEqValue(CIAdminDataModel.SQLTable.Name, this.sqlTable);
+            final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (!query.next()) {
                 TypeUpdate.LOG.error("type[" + _typeName + "]." + "attribute[" + this.name + "]: " + "SQL table '"
                                 + this.sqlTable + "' not found");
             }
-            final long sqlTableId = (Instance.get((String) query.get("OID"))).getId();
-            query.close();
-            return sqlTableId;
+            return query.getCurrentValue().getId();
         }
 
         /**
@@ -438,18 +432,16 @@ public class TypeUpdate
         {
             long typeLinkId = 0;
             if ((this.typeLink != null) && (this.typeLink.length() > 0)) {
-                final SearchQuery query = new SearchQuery();
-                query.setQueryTypes("Admin_DataModel_Type");
-                query.addWhereExprEqValue("Name", this.typeLink);
-                query.addSelect("ID");
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.Type);
+                queryBldr.addWhereAttrEqValue(CIAdminDataModel.Type.Name, this.typeLink);
+                final InstanceQuery query = queryBldr.getQuery();
                 query.executeWithoutAccessCheck();
                 if (query.next()) {
-                    typeLinkId = (Long) query.get("ID");
+                    typeLinkId = query.getCurrentValue().getId();
                 } else {
                     TypeUpdate.LOG.error("type[" + _typeName + "]." + "attribute[" + this.name + "]: " + " Type '"
                                     + this.typeLink + "' as link not found");
                 }
-                query.close();
             }
             return typeLinkId;
         }
@@ -494,6 +486,11 @@ public class TypeUpdate
         private String parentType;
 
         /**
+         * UUID of this attributeSet..
+         */
+        private String uuid;
+
+        /**
          * @param _tags current path as list of single tags
          * @param _attributes attributes for current path
          * @param _text content for current path
@@ -508,6 +505,8 @@ public class TypeUpdate
                 setName(_text);
             } else if ("type".equals(value)) {
                 setType(_text);
+            } else if ("uuid".equals(value)) {
+                this.uuid = _text;
             } else if ("parent".equals(value)) {
                 this.parentType = _text;
             } else if ("sqltable".equals(value)) {
@@ -536,18 +535,15 @@ public class TypeUpdate
         protected long getParentTypeId(final String _typeName)
             throws EFapsException
         {
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes("Admin_DataModel_Type");
-            query.addWhereExprEqValue("Name", _typeName);
-            query.addSelect("OID");
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.Type);
+            queryBldr.addWhereAttrEqValue(CIAdminDataModel.Type.Name, _typeName);
+            final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (!query.next()) {
                 TypeUpdate.LOG.error("type[" + _typeName + "]." + "attribute[" + getName() + "]: " + "Parent TYpe '"
                                 + this.parentType + "' not found");
             }
-            final long typeId = (Instance.get((String) query.get("OID"))).getId();
-            query.close();
-            return typeId;
+            return query.getCurrentValue().getId();
         }
 
         /**
@@ -572,27 +568,25 @@ public class TypeUpdate
             final long sqlTableId = getSqlTableId(_typeName);
 
             // create/update the attributSet
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes("Admin_DataModel_AttributeSet");
-            query.addWhereExprEqValue("Name", getName());
-            query.addWhereExprEqValue("ParentType", _instance.getId());
-            query.addSelect("OID");
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.AttributeSet);
+            queryBldr.addWhereAttrEqValue(CIAdminDataModel.AttributeSet.Name, getName());
+            queryBldr.addWhereAttrEqValue(CIAdminDataModel.AttributeSet.ParentType,  _instance.getId());
+            final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             Update update = null;
             if (query.next()) {
-                update = new Update((String) query.get("OID"));
+                update = new Update(query.getCurrentValue());
             } else {
-                update = new Insert("Admin_DataModel_AttributeSet");
-                update.add("ParentType", "" + _instance.getId());
-                update.add("Name", getName());
+                update = new Insert(CIAdminDataModel.AttributeSet);
+                update.add(CIAdminDataModel.AttributeSet.ParentType, "" + _instance.getId());
+                update.add(CIAdminDataModel.AttributeSet.Name, getName());
             }
-            query.close();
-
-            update.add("AttributeType", "" + attrTypeId);
-            update.add("Table", "" + sqlTableId);
-            update.add("SQLColumn", getSqlColumn());
+            update.add(CIAdminDataModel.AttributeSet.AttributeType, "" + attrTypeId);
+            update.add(CIAdminDataModel.AttributeSet.Table, "" + sqlTableId);
+            update.add(CIAdminDataModel.AttributeSet.SQLColumn, getSqlColumn());
+            update.add(CIAdminDataModel.AttributeSet.DimensionUUID, this.uuid);
             if (parentTypeId > 0) {
-                update.add("TypeLink", "" + parentTypeId);
+                update.add(CIAdminDataModel.AttributeSet.TypeLink, "" + parentTypeId);
             }
 
             update.executeWithoutAccessCheck();
@@ -750,18 +744,16 @@ public class TypeUpdate
                 if (_step == UpdateLifecycle.EFAPS_UPDATE) {
                     // set the id of the parent type (if defined)
                     if ((this.parentType != null) && (this.parentType.length() > 0)) {
-                        final SearchQuery query = new SearchQuery();
-                        query.setQueryTypes("Admin_DataModel_Type");
-                        query.addWhereExprEqValue("Name", this.parentType);
-                        query.addSelect("OID");
+                        final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.Type);
+                        queryBldr.addWhereAttrEqValue(CIAdminDataModel.Type.Name, this.parentType);
+                        final InstanceQuery query = queryBldr.getQuery();
                         query.executeWithoutAccessCheck();
                         if (query.next()) {
-                            final Instance instance = Instance.get((String) query.get("OID"));
+                            final Instance instance = query.getCurrentValue();
                             addValue("ParentType", "" + instance.getId());
                         } else {
                             addValue("ParentType", null);
                         }
-                        query.close();
                     } else {
                         addValue("ParentType", null);
                     }
@@ -801,14 +793,14 @@ public class TypeUpdate
                     attrNames.add(subAttr.name);
                 }
             }
-            final SearchQuery query = new SearchQuery();
-            query.setExpand(this.instance, "Admin_DataModel_Attribute\\ParentType");
-            query.addSelect("Name");
-            query.addSelect("OID");
-            query.executeWithoutAccessCheck();
-            while (query.next()) {
-                if (!attrNames.contains(query.get("Name"))) {
-                    final Delete delete = new Delete(Instance.get((String) query.get("OID")));
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.Attribute);
+            queryBldr.addWhereAttrEqValue(CIAdminDataModel.Attribute.ParentType, this.instance.getId());
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute(CIAdminDataModel.Attribute.Name);
+            multi.executeWithoutAccessCheck();
+            while (multi.next()) {
+                if (!attrNames.contains(multi.getAttribute(CIAdminDataModel.Attribute.Name))) {
+                    final Delete delete = new Delete(multi.getCurrentInstance());
                     delete.executeWithoutAccessCheck();
                 }
             }

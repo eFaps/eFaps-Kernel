@@ -753,7 +753,7 @@ public class Attribute
 
                         if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSet.uuid)) {
                             final AttributeSet set = new AttributeSet(id, type, name, AttributeType.get(attrTypeId),
-                                            sqlCol, tableId, typeLinkId);
+                                            sqlCol, tableId, typeLinkId, dimensionUUID);
                             id2Set.put(id, set);
                         } else {
                             final Attribute attr = new Attribute(id, name, sqlCol, SQLTable.get(tableId),

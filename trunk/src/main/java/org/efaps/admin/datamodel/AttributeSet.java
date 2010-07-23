@@ -61,6 +61,7 @@ public class AttributeSet
      * @param _sqlColNames      name of the sql column
      * @param _tableId          id of the table
      * @param _typeLinkId       id of the type link
+     * @param _uuid             UUID of this AttributeSet as String
      * @throws EFapsException on error
      */
     protected AttributeSet(final long _id,
@@ -69,10 +70,11 @@ public class AttributeSet
                            final AttributeType _attributeType,
                            final String _sqlColNames,
                            final long _tableId,
-                           final long _typeLinkId)
+                           final long _typeLinkId,
+                           final String _uuid)
         throws EFapsException
     {
-        super(_id, null, AttributeSet.evaluateName(_type.getName(), _name));
+        super(_id, _uuid, AttributeSet.evaluateName(_type.getName(), _name));
 
         this.attributeName = (_name == null) ? null : _name.trim();
 

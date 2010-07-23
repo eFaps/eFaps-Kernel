@@ -67,7 +67,7 @@ public class CIAdminDataModel
         {
             super(_uuid);
         }
-
+        public final CIAttribute AttributeType = new CIAttribute(this, "AttributeType");
         public final CIAttribute SQLColumn = new CIAttribute(this, "SQLColumn");
         public final CIAttribute Table = new CIAttribute(this, "Table");
         public final CIAttribute ParentType = new CIAttribute(this, "ParentType");
@@ -103,6 +103,42 @@ public class CIAdminDataModel
         }
 
     }
+
+
+    public static final _AttributeType AttributeType = new _AttributeType("c482e3d3-8387-4406-a1c2-b0e708af78f3");
+
+    public static class _AttributeType
+        extends CIAdminDataModel._Abstract
+    {
+
+        protected _AttributeType(final String _uuid)
+        {
+            super(_uuid);
+        }
+
+        public final CIAttribute Classname = new CIAttribute(this, "Classname");
+        public final CIAttribute ClassnameUI = new CIAttribute(this, "ClassnameUI");
+        public final CIAttribute AlwaysUpdate = new CIAttribute(this, "AlwaysUpdate");
+        public final CIAttribute CreateUpdate = new CIAttribute(this, "CreateUpdate");
+    }
+
+    public static final _SQLTable SQLTable = new _SQLTable("ebf29cc2-cf42-4cd0-9b6e-92d9b644062b");
+
+    public static class _SQLTable
+        extends CIAdminDataModel._Abstract
+    {
+
+        protected _SQLTable(final String _uuid)
+        {
+            super(_uuid);
+        }
+
+        public final CIAttribute SQLTable = new CIAttribute(this, "SQLTable");
+        public final CIAttribute SQLColumnID = new CIAttribute(this, "SQLColumnID");
+        public final CIAttribute SQLColumnType = new CIAttribute(this, "SQLColumnType");
+        public final CIAttribute DMTableMain = new CIAttribute(this, "DMTableMain");
+    }
+
 
     public static final _Type2Store Type2Store = new _Type2Store("433f8358-dd69-4d53-9161-5ae9b0b51c57");
 
