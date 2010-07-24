@@ -89,6 +89,12 @@ public class OneSelect
     private final List<Long> idList = new ArrayList<Long>();
 
     /**
+     * If this OneSelect is a FromSelect the relation Ids are stored in this
+     * List.
+     */
+    private final List<Long> relIdList = new ArrayList<Long>();
+
+    /**
      * table index for this table. It will finally contain the index of
      * the table the attribute belongs to.
      */
@@ -209,6 +215,10 @@ public class OneSelect
         final ResultSetMetaData metaData = _rs.getMetaData();
         // store the ids also
         this.idList.add(_rs.getLong(1));
+
+        if (getFromSelect() != null) {
+            this.relIdList.add(_rs.getLong(2));
+        }
         Object object = null;
         AbstractValueSelect tmpValueSelect;
         if (this.valueSelect ==  null) {
@@ -456,6 +466,36 @@ public class OneSelect
     }
 
     /**
+     * Get an object from a n to 1 Relation.Therefore the given object
+     * is used to filter only the valid values from the by the Database
+     * returned objects.
+     * @param _object Object used as filter (must be an <code>Long</code> Id)
+     * @return  Object
+     * @throws EFapsException on error
+     */
+    private Object getObject(final Object _object) throws EFapsException
+    {
+        Object ret = null;
+        // inside a fromobject the correct value must be set
+        if (_object instanceof Long && this.fromSelect != null) {
+            final List<Object> tmpList = new ArrayList<Object>();
+            final Long id = (Long) _object;
+            final Iterator<Long> relIter = this.relIdList.iterator();
+            final Iterator<Object> objIter = this.objectList.iterator();
+            while (relIter.hasNext()) {
+                final Long rel = relIter.next();
+                if (rel.equals(id)) {
+                    tmpList.add(objIter.next());
+                }
+            }
+            ret = this.valueSelect.getValue(tmpList);
+        } else {
+            ret = getObject();
+        }
+        return ret;
+    }
+
+    /**
      * Method to get the Object for this OneSelect.
      * @return  object for this OneSelect
      * @throws EFapsException on error
@@ -465,7 +505,7 @@ public class OneSelect
         Object ret = null;
         if (this.valueSelect == null) {
             if (this.fromSelect.hasResult()) {
-                ret = this.fromSelect.getMainOneSelect().getObject();
+                ret = this.fromSelect.getMainOneSelect().getObject(this.currentObject);
             }
         } else {
             // if the currentObject is not null it means that the values are
