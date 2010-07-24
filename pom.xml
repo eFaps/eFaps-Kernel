@@ -32,7 +32,7 @@
     <packaging>jar</packaging>
     <groupId>org.efaps</groupId>
     <artifactId>efaps-kernel</artifactId>
-    <version>1.2.6</version>
+    <version>1.2.7-SNAPSHOT</version>
     <description>
         eFaps is a framework used to map objects with or without attached files to
 a relational database and optional file systems (only for attaches files). Configurable access control can be provided down to object and attribute level depending on implementation and use case. Depending on requirements, events (like triggers) allow to implement business logic and to separate business logic from user interface.
@@ -83,9 +83,9 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
 
     <!-- SubVersion Repository -->
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-kernel/tags/V1.2.6</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-kernel/tags/V1.2.6</developerConnection>
-        <url>http://efaps.googlecode.com/svn/eFaps-kernel/tags/V1.2.6</url>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-kernel/</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-kernel/</developerConnection>
+        <url>http://efaps.googlecode.com/svn/eFaps-kernel/</url>
     </scm>
 
     <!-- Distribution Repository -->
