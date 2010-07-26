@@ -532,11 +532,13 @@ public abstract class AbstractPrintQuery
      *
      * @param _selectStmt   selectstatement the attribute is wanted for
      * @return  Attribute for the select statement
+     * @throws EFapsException on error
      */
     public boolean isList4Select(final String _selectStmt)
+        throws EFapsException
     {
         final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectStmt);
-        return oneselect.isMulitple();
+        return oneselect.isMultiple();
     }
 
     /**

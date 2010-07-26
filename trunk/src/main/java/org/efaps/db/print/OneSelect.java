@@ -575,13 +575,38 @@ public class OneSelect
 
     /**
      * Method to determine if this OneSelect does return more than one value.
+     * @param _object Object used as filter (must be an <code>Long</code> Id)
      * @return true if more than one value is returned, else false
+     * @throws EFapsException on error
      */
-    public boolean isMulitple()
+    private boolean isMultiple(final Object _object)
+        throws EFapsException
+    {
+        boolean ret;
+        if (_object instanceof Long && this.fromSelect != null) {
+            final Object object = getObject(_object);
+            if (object instanceof List<?>) {
+                ret = true;
+            } else {
+                ret = false;
+            }
+        } else {
+            ret = isMultiple();
+        }
+        return ret;
+    }
+
+    /**
+     * Method to determine if this OneSelect does return more than one value.
+     * @return true if more than one value is returned, else false
+     * @throws EFapsException on error
+     */
+    public boolean isMultiple()
+        throws EFapsException
     {
         boolean ret;
         if (this.valueSelect == null) {
-            ret = this.fromSelect.getMainOneSelect().isMulitple();
+            ret = this.fromSelect.getMainOneSelect().isMultiple(this.currentObject);
         } else {
             ret = this.objectList.size() > 1;
         }

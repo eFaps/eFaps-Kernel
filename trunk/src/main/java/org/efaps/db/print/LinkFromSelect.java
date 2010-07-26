@@ -136,7 +136,7 @@ public class LinkFromSelect
 
         final StringBuilder whereBldr = new StringBuilder();
         whereBldr.append(" where T0.").append(attr.getSqlColNames().get(0)).append(" in (");
-        if (_parentOnesel.isMulitple()) {
+        if (_parentOnesel.isMultiple()) {
             boolean first = true;
             final List<?> ids = (List<?>) _parentOnesel.getObject();
             for (final Object id : ids) {
