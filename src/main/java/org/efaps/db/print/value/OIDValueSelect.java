@@ -23,13 +23,14 @@ package org.efaps.db.print.value;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.print.OneSelect;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
+ * Value Select to Select the OID of an instance.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -37,6 +38,10 @@ import org.efaps.util.EFapsException;
 public class OIDValueSelect
     extends AbstractValueSelect
 {
+    /**
+     * Attribute belonging to this IDValueSelect.
+     */
+    private Attribute attribute;
 
     /**
      * Type belonging to this OIDValueSelect.
@@ -75,6 +80,7 @@ public class OIDValueSelect
                 ret++;
             }
         }
+        this.attribute = _type.getAttribute("OID");
         return ret;
     }
 
@@ -127,6 +133,14 @@ public class OIDValueSelect
         return "oid";
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override()
+    public Attribute getAttribute()
+    {
+        return this.attribute;
+    }
 
     /**
      * Getter method for the instance variable {@link #type}.
