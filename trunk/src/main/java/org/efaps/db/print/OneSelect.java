@@ -226,6 +226,9 @@ public class OneSelect
         } else {
             tmpValueSelect = this.valueSelect;
         }
+        if (tmpValueSelect.getParentSelectPart() != null) {
+            tmpValueSelect.getParentSelectPart().addObject(_rs);
+        }
 
         if (tmpValueSelect.getColIndexs().size() > 1) {
             final Object[] objArray = new Object[tmpValueSelect.getColIndexs().size()];
@@ -524,13 +527,21 @@ public class OneSelect
      *
      * @return Collection of Insatcne
      */
+    @SuppressWarnings("unchecked")
     public List<Instance> getInstances()
     {
         final List<Instance> ret = new ArrayList<Instance>();
         if (this.valueSelect == null) {
             ret.addAll(this.fromSelect.getMainOneSelect().getInstances());
         } else {
-            for (final Long id : this.idList) {
+            List<Long> idTmp;
+            if (this.valueSelect.getParentSelectPart() != null
+                            && this.valueSelect.getParentSelectPart() instanceof LinkToSelectPart) {
+                idTmp = (List<Long>) this.valueSelect.getParentSelectPart().getObject();
+            } else {
+                idTmp = this.idList;
+            }
+            for (final Long id : idTmp) {
                 ret.add(Instance.get(this.valueSelect.getAttribute().getParent(), id.toString()));
             }
         }

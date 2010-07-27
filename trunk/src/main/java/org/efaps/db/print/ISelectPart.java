@@ -20,6 +20,9 @@
 
 package org.efaps.db.print;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.wrapper.SQLSelect;
 
@@ -48,4 +51,18 @@ public interface ISelectPart
      * @return type
      */
     Type getType();
+
+    /**
+     * Add an Object.
+     * @param _rs ResultSet
+     * @throws SQLException on error
+     */
+    void addObject(final ResultSet _rs)
+        throws SQLException;
+
+    /**
+     * Get the Object that was added using {@link #addObject(ResultSet)}.
+     * @return Object
+     */
+    Object getObject();
 }

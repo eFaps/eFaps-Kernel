@@ -25,13 +25,13 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.wrapper.SQLSelect;
 
 /**
- * TODO comment!
+ * Select Part that connects a child tablt ot his parent table.
  *
  * @author The eFaps Team
  * @version $Id$
  */
 public class ChildTableSelectPart
-    implements ISelectPart
+    extends AbstractSelectPart
 {
 
     /**
@@ -79,5 +79,4 @@ public class ChildTableSelectPart
         }
         return ret;
     }
-
 }

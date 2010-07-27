@@ -25,12 +25,15 @@ import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.print.ISelectPart;
 import org.efaps.db.print.OneSelect;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
+ * Abstract class used as base for all different types of ValueSelect.
+ * A ValueSelct represents the part of a SQL-Statament that actual selects
+ * a value.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -60,6 +63,11 @@ public abstract class AbstractValueSelect
     private final OneSelect oneSelect;
 
     /**
+     * SelectPart this ValueSelect is connected to.
+     */
+    private ISelectPart parentSelectPart;
+
+    /**
      * Constructor setting the OneSelect this valueselect belongs to.
      *
      * @param _oneSelect OneSelect
@@ -67,6 +75,9 @@ public abstract class AbstractValueSelect
     public AbstractValueSelect(final OneSelect _oneSelect)
     {
         this.oneSelect = _oneSelect;
+        if (!this.oneSelect.getSelectParts().isEmpty()) {
+            this.parentSelectPart = this.oneSelect.getSelectParts().get(this.oneSelect.getSelectParts().size() - 1);
+        }
     }
 
     /**
@@ -77,6 +88,16 @@ public abstract class AbstractValueSelect
     public AbstractValueSelect getParent()
     {
         return this.parent;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #parentSelectPart}.
+     *
+     * @return value of instance variable {@link #parentSelectPart}
+     */
+    public ISelectPart getParentSelectPart()
+    {
+        return this.parentSelectPart;
     }
 
     /**

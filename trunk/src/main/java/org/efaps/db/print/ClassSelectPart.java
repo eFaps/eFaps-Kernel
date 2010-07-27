@@ -31,7 +31,7 @@ import org.efaps.db.wrapper.SQLSelect;
  * @version $Id$
  */
 public class ClassSelectPart
-    implements ISelectPart
+    extends AbstractSelectPart
 {
 
     /**
@@ -44,7 +44,7 @@ public class ClassSelectPart
      */
     public ClassSelectPart(final String _classification)
     {
-        this.classification = (Classification) Classification.get(_classification);
+        this.classification = (Classification) Type.get(_classification);
     }
 
     /**

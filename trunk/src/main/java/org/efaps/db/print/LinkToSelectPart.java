@@ -20,6 +20,11 @@
 
 package org.efaps.db.print;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.wrapper.SQLSelect;
@@ -31,7 +36,7 @@ import org.efaps.db.wrapper.SQLSelect;
  * @version $Id$
  */
 public class LinkToSelectPart
-    implements ISelectPart
+    extends AbstractSelectPart
 {
     /**
      * Name of the Attribute the link to is based on.
@@ -42,6 +47,17 @@ public class LinkToSelectPart
      * Type the {@link #attrName} belongs to.
      */
     private final Type type;
+
+    /**
+     * index of the id Column.
+     */
+    private int idColumnIndex;
+
+    /**
+     * List of ids retrieved from the ResultSet returned
+     * from the eFaps database. It represent one row in a result set.
+     */
+    private final List<Long> idList = new ArrayList<Long>();
 
     /**
      * @param _attrName attribute name
@@ -80,6 +96,8 @@ public class LinkToSelectPart
             ret = _oneSelect.getNewTableIndex(tableName, column, relIndex);
             _select.leftJoin(tableName, ret, "ID", relIndex, column);
         }
+        _select.column(ret, "ID");
+        this.idColumnIndex = _select.getColumns().size();
         return ret;
     }
 
@@ -89,5 +107,24 @@ public class LinkToSelectPart
     public Type getType()
     {
         return this.type.getAttribute(this.attrName).getLink();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addObject(final ResultSet _rs)
+        throws SQLException
+    {
+        this.idList.add(_rs.getLong(this.idColumnIndex));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object getObject()
+    {
+        return this.idList;
     }
 }
