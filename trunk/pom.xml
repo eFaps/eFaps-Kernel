@@ -346,7 +346,6 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <extension>
                 <groupId>org.jvnet.wagon-svn</groupId>
                 <artifactId>wagon-svn</artifactId>
-                <version>1.9</version>
             </extension>
         </extensions>
     </build>
