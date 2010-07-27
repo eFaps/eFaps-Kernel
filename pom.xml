@@ -32,7 +32,7 @@
     <packaging>jar</packaging>
     <groupId>org.efaps</groupId>
     <artifactId>efaps-kernel</artifactId>
-    <version>1.2.9-SNAPSHOT</version>
+    <version>1.2.8</version>
     <description>
         eFaps is a framework used to map objects with or without attached files to
 a relational database and optional file systems (only for attaches files). Configurable access control can be provided down to object and attribute level depending on implementation and use case. Depending on requirements, events (like triggers) allow to implement business logic and to separate business logic from user interface.
@@ -83,9 +83,9 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
 
     <!-- SubVersion Repository -->
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-kernel/</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-kernel/</developerConnection>
-        <url>http://efaps.googlecode.com/svn/eFaps-kernel/</url>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-kernel/tags/V1.2.8</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-kernel/tags/V1.2.8</developerConnection>
+        <url>http://efaps.googlecode.com/svn/eFaps-kernel/tags/V1.2.8</url>
     </scm>
 
     <!-- Distribution Repository -->
@@ -201,6 +201,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.1</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -338,6 +339,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 <configuration>
                     <mavenExecutorId>forked-path</mavenExecutorId>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>2.1.1</version>
             </plugin>
         </plugins>
 
