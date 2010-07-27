@@ -21,6 +21,7 @@
 package org.efaps.db.print;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +36,10 @@ import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
+ * Select Part for <code>linkfrom[TYPERNAME#ATTRIBUTENAME]</code>.
  *
  * @author The eFaps Team
  * @version $Id$
- */
-/**
- * Select Part for <code>linkfrom[TYPERNAME#ATTRIBUTENAME]</code>.
  */
 public class LinkFromSelect
     extends AbstractPrintQuery
@@ -81,8 +79,21 @@ public class LinkFromSelect
 
             public int join(final OneSelect _oneselect, final SQLSelect _select, final int _relIndex)
             {
-                // TODO Auto-generated method stub
+                // nothing to join here
                 return 0;
+            }
+
+            @Override
+            public void addObject(final ResultSet _rs)
+                throws SQLException
+            {
+                // no objects must be added
+            }
+
+            @Override
+            public Object getObject()
+            {
+                return null;
             }
         });
     }
