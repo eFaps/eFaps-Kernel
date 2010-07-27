@@ -44,7 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment!
+ * Abstract class all print queries are based on.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -94,6 +94,11 @@ public abstract class AbstractPrintQuery
      * takes time and should not be used by default.)
      */
     private boolean enforceSorted;
+
+    /**
+     * Index of the type column.
+     */
+    private int typeColumnIndex = 0;
 
     /**
      * Add an attribute to the PrintQuery. It is used to get editable values
@@ -607,16 +612,19 @@ public abstract class AbstractPrintQuery
      */
     private StringBuilder createSQLStatement()
     {
+
         final SQLSelect select = new SQLSelect()
             .column(0, "ID")
             .from(getMainType().getMainTable().getSqlTable(), 0);
         for (final OneSelect oneSel : this.allSelects) {
             oneSel.append2SQLFrom(select);
         }
+
+        int colIndex = select.getColumns().size() + 1;
         // if the main table has a column for the type it is selected also
-        int colIndex = 2;
         if (getMainType().getMainTable().getSqlColType() != null) {
             select.column(0, getMainType().getMainTable().getSqlColType());
+            this.typeColumnIndex = colIndex;
             colIndex++;
         }
 
@@ -680,7 +688,7 @@ public abstract class AbstractPrintQuery
             while (rs.next()) {
                 final Instance instance;
                 if (getMainType().getMainTable().getSqlColType() != null) {
-                    instance = Instance.get(Type.get(rs.getLong(2)), rs.getLong(1));
+                    instance = Instance.get(Type.get(rs.getLong(this.typeColumnIndex)), rs.getLong(1));
                 } else {
                     instance = Instance.get(getMainType(), rs.getLong(1));
                 }

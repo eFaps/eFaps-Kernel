@@ -50,7 +50,8 @@ public class SQLSelect
     private final List<FromTable> fromTables = new ArrayList<FromTable>();
 
     /**
-     * Must the select be distinct
+     * Must the select be distinct.
+     *
      */
     private boolean distinct = false;
 
@@ -84,6 +85,16 @@ public class SQLSelect
     }
 
     /**
+     * Getter method for the instance variable {@link #columns}.
+     *
+     * @return value of instance variable {@link #columns}
+     */
+    public List<Column> getColumns()
+    {
+        return this.columns;
+    }
+
+    /**
      * Appends a table as from selected table.
      *
      * @param _name     name of the table
@@ -109,6 +120,16 @@ public class SQLSelect
     {
         this.fromTables.add(new FromTable(_tableName, _tableIndex));
         return this;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #fromTables}.
+     *
+     * @return value of instance variable {@link #fromTables}
+     */
+    public List<FromTable> getFromTables()
+    {
+        return this.fromTables;
     }
 
     /**
