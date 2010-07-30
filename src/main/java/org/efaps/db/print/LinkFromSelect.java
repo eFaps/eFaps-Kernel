@@ -140,7 +140,8 @@ public class LinkFromSelect
         // on a from  select only one table is the base
         getAllSelects().get(0).append2SQLFrom(select);
 
-        int colIndex = 3;
+        int colIndex = select.getColumns().size() + 1;
+
         for (final OneSelect oneSel : getAllSelects()) {
             colIndex += oneSel.append2SQLSelect(select, colIndex);
         }
