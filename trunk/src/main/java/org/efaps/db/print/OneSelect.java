@@ -217,7 +217,9 @@ public class OneSelect
         this.idList.add(_rs.getLong(1));
 
         if (getFromSelect() != null) {
-            this.relIdList.add(_rs.getLong(2));
+            final int column = "id".equals(this.valueSelect.getValueType())
+                                    ? this.valueSelect.getColIndexs().get(0) : 2;
+            this.relIdList.add(_rs.getLong(column));
         }
         Object object = null;
         AbstractValueSelect tmpValueSelect;
