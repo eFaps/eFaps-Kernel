@@ -260,7 +260,6 @@ public class UserAttributesSet
     public void storeInDb()
         throws EFapsException
     {
-
         for (final Entry<String, UserAttribute> entry : this.attributes.entrySet()) {
             if (entry.getValue().isUpdate()) {
                 final QueryBuilder queryBldr = new QueryBuilder(Type.get(entry.getValue().getType()));
@@ -301,6 +300,11 @@ public class UserAttributesSet
     private void readUserAttributes()
         throws EFapsException
     {
+        // if the MAPPER is empty it must be initialized
+        if (UserAttributesSet.MAPPER.isEmpty()) {
+            UserAttributesSet.UserAttributesDefinition.values();
+        }
+
         final Set<Type> types = CIAdminUser.AttributeAbstract.getType().getChildTypes();
         for (final Type type : types) {
             if (UserAttributesSet.MAPPER.containsKey(type.getName())) {
