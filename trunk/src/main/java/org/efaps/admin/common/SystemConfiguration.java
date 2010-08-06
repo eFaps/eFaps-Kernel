@@ -400,7 +400,7 @@ public final class SystemConfiguration
                             config.attributes.put(key, value);
                         } else if (uuidTmp.equals(CIAdminCommon.SystemConfigurationLink.uuid)) {
                             config.links.put(key, value);
-                        } else if (uuidTmp.equals(CIAdminCommon.SystemConfigurationObjectAttribute)) {
+                        } else if (uuidTmp.equals(CIAdminCommon.SystemConfigurationObjectAttribute.uuid)) {
                             config.objectAttributes.put(key, value);
                         }
                     }
