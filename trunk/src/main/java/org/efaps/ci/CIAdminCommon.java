@@ -40,11 +40,13 @@ public class CIAdminCommon
         {
             super(_uuid);
         }
+
         public final CIAttribute Creator = new CIAttribute(this, "Creator");
         public final CIAttribute Created = new CIAttribute(this, "Created");
         public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
         public final CIAttribute Modified = new CIAttribute(this, "Modified");
     }
+
     public static final _Property Property = new _Property("f3d54a86-c323-43d8-9c78-284d61d955b3");
 
     public static class _Property
@@ -55,6 +57,7 @@ public class CIAdminCommon
         {
             super(_uuid);
         }
+
         public final CIAttribute Name = new CIAttribute(this, "Name");
         public final CIAttribute Value = new CIAttribute(this, "Value");
         public final CIAttribute Abstract = new CIAttribute(this, "Abstract");
@@ -86,6 +89,7 @@ public class CIAdminCommon
             super(_uuid);
         }
 
+        public final CIAttribute AbstractLink = new CIAttribute(this, "AbstractLink");
         public final CIAttribute Key = new CIAttribute(this, "Key");
         public final CIAttribute Value = new CIAttribute(this, "Value");
         public final CIAttribute Description = new CIAttribute(this, "Description");
@@ -108,7 +112,7 @@ public class CIAdminCommon
             super(_uuid);
         }
 
-        public final CIAttribute AbstractLink = new CIAttribute(this, "AbstractLink");
+        public final CIAttribute Link = new CIAttribute(this, "Link");
 
     }
 
@@ -125,7 +129,24 @@ public class CIAdminCommon
             super(_uuid);
         }
 
-        public final CIAttribute AbstractLink = new CIAttribute(this, "AbstractLink");
+        public final CIAttribute Link = new CIAttribute(this, "Link");
+
+    }
+
+    public static final _SystemConfigurationLink SystemConfigurationObjectAttribute = new _SystemConfigurationLink(
+                    "ccf64cd1-ac38-4194-b44e-5706f12ae150");
+
+    public static class SystemConfigurationObjectAttribute
+        extends _SystemConfigurationAbstract
+
+    {
+
+        protected SystemConfigurationObjectAttribute(final String _uuid)
+        {
+            super(_uuid);
+        }
+
+        public final CIAttribute Link = new CIAttribute(this, "Link");
 
     }
 
