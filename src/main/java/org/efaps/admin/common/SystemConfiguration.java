@@ -103,6 +103,11 @@ public final class SystemConfiguration
     private final Map<String, String> links = new HashMap<String, String>();
 
     /**
+     * Map with all object attributes for this system configuration.
+     */
+    private final Map<String, String> objectAttributes = new HashMap<String, String>();
+
+    /**
      * Constructor setting instance variables.
      *
      * @param _id id of the SystemConfiguration
@@ -201,6 +206,71 @@ public final class SystemConfiguration
     }
 
     /**
+     * Returns for given <code>Instance</code> the related attribute value. If no
+     * attribute value is found <code>null</code> is returned.
+     *
+     * @param _instance Instance of searched objectattribute
+     * @return found attribute value; if not found <code>null</code>
+     * @see #objectAttributes
+     */
+    public String getObjectAttributeValue(final Instance _instance)
+    {
+        return this.objectAttributes.get(_instance.getOid());
+    }
+
+    /**
+     * Returns for given <code>OID</code> the related attribute value. If no
+     * attribute value is found <code>null</code> is returned.
+     *
+     * @param _oid OID of searched objectattribute
+     * @return found attribute value; if not found <code>null</code>
+     * @see #objectAttributes
+     */
+    public String getObjectAttributeValue(final String _oid)
+    {
+        return this.objectAttributes.get(_oid);
+    }
+
+    /**
+     * Returns for given <code>Instance</code> the related value as Properties.
+     * If no attribute is found an empty Properties is returned.
+     *
+     * @param _instance Instance of searched attribute
+     * @return Properties
+     * @throws EFapsException on error
+     * @see #objectAttributes
+     */
+    public Properties getObjectAttributeValueAsProperties(final Instance _instance)
+        throws EFapsException
+    {
+        return getObjectAttributeValueAsProperties(_instance.getOid());
+    }
+
+    /**
+     * Returns for given <code>OID</code> the related value as Properties.
+     * If no attribute is found an empty Properties is returned.
+     *
+     * @param _key key of searched attribute
+     * @return Properties
+     * @throws EFapsException on error
+     * @see #objectAttributes
+     */
+    public Properties getObjectAttributeValueAsProperties(final String _key)
+        throws EFapsException
+    {
+        final Properties ret = new Properties();
+        if (this.objectAttributes.containsKey(_key)) {
+            final String value = this.objectAttributes.get(_key);
+            try {
+                ret.load(new StringReader(value));
+            } catch (final IOException e) {
+                throw new EFapsException(SystemConfiguration.class, "getObjectAttributeValueAsProperties", e);
+            }
+        }
+        return ret;
+    }
+
+    /**
      * Returns for given <code>_key</code> the related attribute value. If no
      * attribute value is found <code>null</code> is returned.
      *
@@ -244,8 +314,8 @@ public final class SystemConfiguration
     }
 
     /**
-     * Returns for given <code>_key</code> the related integer attribute value.
-     * If no attribute is found <code>0</code> is returned.
+     * Returns for given <code>_key</code> the related value as Properties.
+     * If no attribute is found an empty Properties is returned.
      *
      * @param _key key of searched attribute
      * @return Properties
@@ -295,7 +365,7 @@ public final class SystemConfiguration
          *            configuration
          * @throws CacheReloadException if cache could not be reloaded
          */
-        @Override()
+        @Override
         protected void readCache(final Map<Long, SystemConfiguration> _newCache4Id,
                                  final Map<String, SystemConfiguration> _newCache4Name,
                                  final Map<UUID, SystemConfiguration> _newCache4UUID)
@@ -330,6 +400,8 @@ public final class SystemConfiguration
                             config.attributes.put(key, value);
                         } else if (uuidTmp.equals(CIAdminCommon.SystemConfigurationLink.uuid)) {
                             config.links.put(key, value);
+                        } else if (uuidTmp.equals(CIAdminCommon.SystemConfigurationObjectAttribute)) {
+                            config.objectAttributes.put(key, value);
                         }
                     }
                     rs.close();
