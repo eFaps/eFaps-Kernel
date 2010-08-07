@@ -19,7 +19,7 @@
  */
 
 
-package org.efaps.db.search;
+package org.efaps.db.search.section;
 
 import org.efaps.db.AbstractObjectQuery;
 import org.efaps.util.EFapsException;
@@ -31,28 +31,42 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class QAbstractPart
+public class QLimitSection
+    extends AbstractQSection
 {
 
     /**
-     * Method adds the sql statement parts to the given StringBuilder.
-     *
-     * @param _sql StringBuilder to append to
-     * @return this AbstractPart
-     * @throws EFapsException on any error
+     * Limit of the SLQ statement.
      */
-    public abstract QAbstractPart appendSQL(final StringBuilder _sql)
-        throws EFapsException;
+    private final int limit;
 
     /**
-     * Method is executed to prepare the different parts for execution
-     * of the sql statement.
-     * @param _query    query the part belong to
-     * @param _part     Part this part is nested in
-     * @return this AbstractPart
-     * @throws EFapsException on any error
+     * @param _limit    Limit of the SLQ statement
      */
-    public abstract QAbstractPart prepare(final AbstractObjectQuery<?> _query,
-                                          final QAbstractPart _part)
-        throws EFapsException;
+    public QLimitSection(final Integer _limit)
+    {
+        this.limit = _limit;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public StringBuilder getSQL()
+        throws EFapsException
+    {
+        final StringBuilder ret = new StringBuilder();
+        ret.append(" limit ").append(this.limit);
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void prepare(final AbstractObjectQuery<?> _query)
+        throws EFapsException
+    {
+        // nothing must be done
+    }
 }

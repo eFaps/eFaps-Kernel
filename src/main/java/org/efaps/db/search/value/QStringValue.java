@@ -19,10 +19,13 @@
  */
 
 
-package org.efaps.db.search;
+package org.efaps.db.search.value;
 
 import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.Context;
+import org.efaps.db.search.AbstractQPart;
+import org.efaps.db.search.compare.AbstractQAttrCompare;
+import org.efaps.db.search.compare.QMatch;
 import org.efaps.util.EFapsException;
 
 
@@ -33,7 +36,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class QStringValue
-    extends QAbstractValue
+    extends AbstractQValue
 {
     /**
      * Value for this StringValue.
@@ -54,14 +57,14 @@ public class QStringValue
      */
     @Override
     public QStringValue prepare(final AbstractObjectQuery<?> _query,
-                                 final QAbstractPart _part)
+                                 final AbstractQPart _part)
         throws EFapsException
     {
-        if (_part instanceof QAbstractAttrCompare) {
+        if (_part instanceof AbstractQAttrCompare) {
             if (_part instanceof QMatch) {
                 this.value = this.value.replace("*", "%");
             }
-            if (((QAbstractAttrCompare) _part).isIgnoreCase()) {
+            if (((AbstractQAttrCompare) _part).isIgnoreCase()) {
                 this.value = this.value.toUpperCase(Context.getThreadContext().getLocale());
             }
         }

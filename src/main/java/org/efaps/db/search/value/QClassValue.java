@@ -19,42 +19,53 @@
  */
 
 
-package org.efaps.db.search;
+package org.efaps.db.search.value;
 
+import org.efaps.admin.datamodel.Classification;
 import org.efaps.util.EFapsException;
 
 
 /**
- * TODO comment!
+ * Used as the Value in the {@link org.efaps.db.search.compare.QClassEqual} part.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class QIn
-    extends QAbstractAttrCompare
+public class QClassValue
+    extends AbstractQValue
 {
+
     /**
-     * Constructor setting attribute and value.
-     * @param _attribute Attribute to be checked for greater
-     * @param _value     value as criteria
+     * Classification of this Value.
      */
-    public QIn(final QAttribute _attribute,
-               final QAbstractValue _value)
+    private final Classification clazz;
+
+    /**
+     * @param _clazz Classification
+     */
+    public QClassValue(final Classification _clazz)
     {
-        super(_attribute, _value);
+        this.clazz = _clazz;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #clazz}.
+     *
+     * @return value of instance variable {@link #clazz}
+     */
+    public Classification getClassification()
+    {
+        return this.clazz;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public QIn appendSQL(final StringBuilder _sql)
+    public QClassValue appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
-        getAttribute().appendSQL(_sql);
-        _sql.append(" IN (");
-        getValue().appendSQL(_sql);
-        _sql.append(")");
+        _sql.append(this.clazz.getId());
         return this;
     }
 }

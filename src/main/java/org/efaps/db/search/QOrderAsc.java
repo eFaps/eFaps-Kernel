@@ -21,6 +21,7 @@
 
 package org.efaps.db.search;
 
+import org.efaps.db.AbstractObjectQuery;
 import org.efaps.util.EFapsException;
 
 
@@ -30,30 +31,53 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class QIs
-    extends QAbstractAttrCompare
+public class QOrderAsc
+    extends AbstractQPart
 {
     /**
-     * Constructor setting attribute and value.
-     * @param _attribute Attribute to be checked for greater
-     * @param _value     value as criteria
+     * The attribute used for this order element.
      */
-    public QIs(final QAttribute _attribute,
-               final QAbstractValue _value)
+    private final QAttribute attribute;
+
+    /**
+     * @param _attribute QAttribute
+     */
+    public QOrderAsc(final QAttribute _attribute)
     {
-        super(_attribute, _value);
+        this.attribute = _attribute;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public QIs appendSQL(final StringBuilder _sql)
+    public AbstractQPart appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
-        _sql.append(" IS ");
-        getValue().appendSQL(_sql);
+        _sql.append(" asc ");
         return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AbstractQPart prepare(final AbstractObjectQuery<?> _query,
+                                 final AbstractQPart _part)
+        throws EFapsException
+    {
+        getAttribute().prepare(_query, this);
+        return this;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #attribute}.
+     *
+     * @return value of instance variable {@link #attribute}
+     */
+    public QAttribute getAttribute()
+    {
+        return this.attribute;
     }
 }

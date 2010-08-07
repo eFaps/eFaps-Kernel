@@ -19,48 +19,40 @@
  */
 
 
-package org.efaps.db.search;
-
-import org.efaps.util.EFapsException;
+package org.efaps.db.search.value;
 
 
 
 /**
- * TODO comment!
+ * A boolean value.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class QOr
-    extends QAnd
+public class QBooleanValue
+    extends AbstractQValue
 {
+
     /**
-     * Constructor setting the parts of this OR.
-     * @param _parts parts for this and
+     * Number of this Value.
      */
-    public QOr(final AbstractQPart... _parts)
+    private final Boolean value;
+
+    /**
+     * @param _value value
+     */
+    public QBooleanValue(final Boolean _value)
     {
-       super(_parts);
+        this.value = _value;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public QOr appendSQL(final StringBuilder _sql)
-        throws EFapsException
+    public QBooleanValue appendSQL(final StringBuilder _sql)
     {
-        _sql.append("(");
-        boolean first = true;
-        for (final AbstractQPart part : getParts()) {
-            if (first) {
-                first = false;
-            } else {
-                _sql.append(" OR ");
-            }
-            part.appendSQL(_sql);
-        }
-        _sql.append(")");
+        _sql.append(this.value ? "TRUE" : "FALSE");
         return this;
     }
 }

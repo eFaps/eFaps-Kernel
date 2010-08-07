@@ -19,7 +19,7 @@
  */
 
 
-package org.efaps.db.search;
+package org.efaps.db.search.value;
 
 import org.efaps.util.EFapsException;
 
@@ -30,31 +30,31 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class QNotIn
-    extends QAbstractAttrCompare
+public class QSQLValue
+    extends AbstractQValue
 {
+
     /**
-     * Constructor setting attribute and value.
-     * @param _attribute Attribute to be checked for greater
-     * @param _value     value as criteria
+     * sql statement.
      */
-    public QNotIn(final QAttribute _attribute,
-               final QAbstractValue _value)
+    private final CharSequence sql;
+
+    /**
+     * @param _sql sql
+     */
+    public QSQLValue(final CharSequence _sql)
     {
-        super(_attribute, _value);
+        this.sql = _sql;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public QNotIn appendSQL(final StringBuilder _sql)
+    public QSQLValue appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
-        getAttribute().appendSQL(_sql);
-        _sql.append(" NOT IN (");
-        getValue().appendSQL(_sql);
-        _sql.append(")");
+        _sql.append(this.sql);
         return this;
     }
 }

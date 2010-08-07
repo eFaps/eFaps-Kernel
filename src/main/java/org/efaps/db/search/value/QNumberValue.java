@@ -19,7 +19,8 @@
  */
 
 
-package org.efaps.db.search;
+package org.efaps.db.search.value;
+
 
 
 /**
@@ -28,30 +29,30 @@ package org.efaps.db.search;
  * @author The eFaps Team
  * @version $Id$
  */
-public class QBooleanValue
-    extends QAbstractValue
+public class QNumberValue
+    extends AbstractQValue
 {
 
     /**
      * Number of this Value.
      */
-    private final Boolean value;
+    private final Number number;
 
     /**
      * @param _value value
      */
-    public QBooleanValue(final Boolean _value)
+    public QNumberValue(final Number _value)
     {
-        this.value = _value;
+        this.number = _value;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public QBooleanValue appendSQL(final StringBuilder _sql)
+    public QNumberValue appendSQL(final StringBuilder _sql)
     {
-        _sql.append(this.value ? "TRUE" : "FALSE");
+        _sql.append(this.number);
         return this;
     }
 }

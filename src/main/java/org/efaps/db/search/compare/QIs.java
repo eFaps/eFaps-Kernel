@@ -19,8 +19,10 @@
  */
 
 
-package org.efaps.db.search;
+package org.efaps.db.search.compare;
 
+import org.efaps.db.search.QAttribute;
+import org.efaps.db.search.value.AbstractQValue;
 import org.efaps.util.EFapsException;
 
 
@@ -30,16 +32,16 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class QIsNot
-    extends QAbstractAttrCompare
+public class QIs
+    extends AbstractQAttrCompare
 {
     /**
      * Constructor setting attribute and value.
      * @param _attribute Attribute to be checked for greater
      * @param _value     value as criteria
      */
-    public QIsNot(final QAttribute _attribute,
-               final QAbstractValue _value)
+    public QIs(final QAttribute _attribute,
+               final AbstractQValue _value)
     {
         super(_attribute, _value);
     }
@@ -48,11 +50,11 @@ public class QIsNot
      * {@inheritDoc}
      */
     @Override
-    public QIsNot appendSQL(final StringBuilder _sql)
+    public QIs appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
-        _sql.append(" IS NOT ");
+        _sql.append(" IS ");
         getValue().appendSQL(_sql);
         return this;
     }

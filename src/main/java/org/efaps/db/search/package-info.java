@@ -18,27 +18,10 @@
  * Last Changed By: $Author$
  */
 
-
+/**
+ * Classes are used a parts in the process of creating an SQL statement
+ * that will be executed against a eFaps connected database during a
+ * search or query process.
+ */
 package org.efaps.db.search;
 
-
-
-/**
- * TODO comment!
- *
- * @author The eFaps Team
- * @version $Id$
- */
-public class QNullValue
-    extends QAbstractValue
-{
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public QNullValue appendSQL(final StringBuilder _sql)
-    {
-        _sql.append("null");
-        return this;
-    }
-}

@@ -19,43 +19,35 @@
  */
 
 
-package org.efaps.db.search;
+package org.efaps.db.search.section;
 
+import org.efaps.db.AbstractObjectQuery;
 import org.efaps.util.EFapsException;
 
 
-
 /**
- * TODO comment!
+ * Represent a section of a SQL Statement. Sections are: <br/>
+ * SELECT, WHERE, ORDER BY
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class QLess
-    extends QAbstractAttrCompare
+public abstract class AbstractQSection
 {
+    /**
+     * Get the Sql section as a StringBuilder.
+     * @return the sql statement for this AbstractQSection
+     * @throws EFapsException on error
+     */
+    public abstract StringBuilder getSQL()
+        throws EFapsException;
 
     /**
-     * Constructor setting attribute and value.
-     * @param _attribute Attribute to be checked for greater
-     * @param _value     value as criteria
+     * Prepare this section.
+     * @param _query Query this AbstractQSection belongs to
+     * @throws EFapsException on error
      */
-    public QLess(final QAttribute _attribute,
-                   final QAbstractValue _value)
-    {
-        super(_attribute, _value);
-    }
+    public abstract void prepare(final AbstractObjectQuery<?> _query)
+        throws EFapsException;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public QLess appendSQL(final StringBuilder _sql)
-        throws EFapsException
-    {
-        getAttribute().appendSQL(_sql);
-        _sql.append(" < ");
-        getValue().appendSQL(_sql);
-        return this;
-    }
 }

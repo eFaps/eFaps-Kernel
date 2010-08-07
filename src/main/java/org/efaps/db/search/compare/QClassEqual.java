@@ -19,7 +19,7 @@
  */
 
 
-package org.efaps.db.search;
+package org.efaps.db.search.compare;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,17 +28,21 @@ import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.Context;
+import org.efaps.db.search.AbstractQPart;
+import org.efaps.db.search.QAttribute;
+import org.efaps.db.search.value.AbstractQValue;
+import org.efaps.db.search.value.QClassValue;
 import org.efaps.util.EFapsException;
 
 
 /**
- * TODO comment!
+ * Compare that a classification id is equal to the given value.
  *
  * @author The eFaps Team
  * @version $Id$
  */
 public class QClassEqual
-    extends QAbstractAttrCompare
+    extends AbstractQAttrCompare
 {
 
    /**
@@ -64,7 +68,7 @@ public class QClassEqual
      * @return null if list is empty else first value
      */
     @Override
-    public QAbstractValue getValue()
+    public AbstractQValue getValue()
     {
         return this.values.isEmpty() ? null : this.values.get(0);
     }
@@ -84,7 +88,7 @@ public class QClassEqual
      * @param _value value to be include
      * @return this
      */
-    public QAbstractPart addValue(final QClassValue _value)
+    public AbstractQPart addValue(final QClassValue _value)
     {
         this.values.add(_value);
         return this;
@@ -95,7 +99,7 @@ public class QClassEqual
      */
     @Override
     public QClassEqual prepare(final AbstractObjectQuery<?> _query,
-                                 final QAbstractPart _part)
+                                 final AbstractQPart _part)
         throws EFapsException
     {
         getAttribute().prepare(_query, this);

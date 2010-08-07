@@ -19,10 +19,9 @@
  */
 
 
-package org.efaps.db.search;
+package org.efaps.db.search.value;
 
-import org.efaps.admin.datamodel.Classification;
-import org.efaps.util.EFapsException;
+
 
 
 /**
@@ -31,41 +30,16 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class QClassValue
-    extends QAbstractValue
+public class QNullValue
+    extends AbstractQValue
 {
-
-    /**
-     * Classification of this Value.
-     */
-    private final Classification clazz;
-
-    /**
-     * @param _clazz Classification
-     */
-    public QClassValue(final Classification _clazz)
-    {
-        this.clazz = _clazz;
-    }
-
-    /**
-     * Getter method for the instance variable {@link #clazz}.
-     *
-     * @return value of instance variable {@link #clazz}
-     */
-    public Classification getClassification()
-    {
-        return this.clazz;
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public QClassValue appendSQL(final StringBuilder _sql)
-        throws EFapsException
+    public QNullValue appendSQL(final StringBuilder _sql)
     {
-        _sql.append(this.clazz.getId());
+        _sql.append("null");
         return this;
     }
 }
