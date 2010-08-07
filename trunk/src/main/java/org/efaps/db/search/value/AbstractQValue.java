@@ -19,42 +19,30 @@
  */
 
 
-package org.efaps.db.search;
+package org.efaps.db.search.value;
 
+import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.search.AbstractQPart;
 import org.efaps.util.EFapsException;
 
 
 /**
- * TODO comment!
+ * Value is in comparasion.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class QSQLValue
-    extends QAbstractValue
+public abstract class AbstractQValue
+    extends AbstractQPart
 {
-
-    /**
-     * sql statement.
-     */
-    private final CharSequence sql;
-
-    /**
-     * @param _sql sql
-     */
-    public QSQLValue(final CharSequence _sql)
-    {
-        this.sql = _sql;
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public QSQLValue appendSQL(final StringBuilder _sql)
+    public AbstractQPart prepare(final AbstractObjectQuery<?> _query,
+                                 final AbstractQPart _part)
         throws EFapsException
     {
-        _sql.append(this.sql);
         return this;
     }
 }

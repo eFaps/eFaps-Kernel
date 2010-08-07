@@ -19,8 +19,10 @@
  */
 
 
-package org.efaps.db.search;
+package org.efaps.db.search.compare;
 
+import org.efaps.db.search.QAttribute;
+import org.efaps.db.search.value.AbstractQValue;
 import org.efaps.util.EFapsException;
 
 
@@ -31,36 +33,31 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class QOr
-    extends QAnd
+public class QLess
+    extends AbstractQAttrCompare
 {
+
     /**
-     * Constructor setting the parts of this OR.
-     * @param _parts parts for this and
+     * Constructor setting attribute and value.
+     * @param _attribute Attribute to be checked for greater
+     * @param _value     value as criteria
      */
-    public QOr(final AbstractQPart... _parts)
+    public QLess(final QAttribute _attribute,
+                   final AbstractQValue _value)
     {
-       super(_parts);
+        super(_attribute, _value);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public QOr appendSQL(final StringBuilder _sql)
+    public QLess appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
-        _sql.append("(");
-        boolean first = true;
-        for (final AbstractQPart part : getParts()) {
-            if (first) {
-                first = false;
-            } else {
-                _sql.append(" OR ");
-            }
-            part.appendSQL(_sql);
-        }
-        _sql.append(")");
+        getAttribute().appendSQL(_sql);
+        _sql.append(" < ");
+        getValue().appendSQL(_sql);
         return this;
     }
 }

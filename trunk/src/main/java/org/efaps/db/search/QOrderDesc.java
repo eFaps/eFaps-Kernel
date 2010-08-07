@@ -21,7 +21,6 @@
 
 package org.efaps.db.search;
 
-import org.efaps.db.AbstractObjectQuery;
 import org.efaps.util.EFapsException;
 
 
@@ -31,17 +30,28 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class QAbstractValue
-    extends QAbstractPart
+public class QOrderDesc
+    extends QOrderAsc
 {
+
+    /**
+     * @param _attribute QAttribute
+     */
+    public QOrderDesc(final QAttribute _attribute)
+    {
+        super(_attribute);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart prepare(final AbstractObjectQuery<?> _query,
-                                 final QAbstractPart _part)
+    public AbstractQPart appendSQL(final StringBuilder _sql)
         throws EFapsException
     {
+        getAttribute().appendSQL(_sql);
+        _sql.append(" desc ");
         return this;
     }
+
 }

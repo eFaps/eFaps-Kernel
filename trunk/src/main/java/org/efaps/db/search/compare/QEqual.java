@@ -19,12 +19,15 @@
  */
 
 
-package org.efaps.db.search;
+package org.efaps.db.search.compare;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.search.AbstractQPart;
+import org.efaps.db.search.QAttribute;
+import org.efaps.db.search.value.AbstractQValue;
 import org.efaps.util.EFapsException;
 
 
@@ -35,13 +38,13 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class QEqual
-    extends QAbstractAttrCompare
+    extends AbstractQAttrCompare
 {
 
    /**
     * The values the given attribute must be equal to.
     */
-    private final List<QAbstractValue> values = new ArrayList<QAbstractValue>();
+    private final List<AbstractQValue> values = new ArrayList<AbstractQValue>();
 
     /**
      * Constructor setting attribute and value.
@@ -49,10 +52,10 @@ public class QEqual
      * @param _values    values as criteria
      */
     public QEqual(final QAttribute _attribute,
-                  final QAbstractValue... _values)
+                  final AbstractQValue... _values)
     {
         super(_attribute, null);
-        for (final QAbstractValue value : _values) {
+        for (final AbstractQValue value : _values) {
             this.values.add(value);
         }
     }
@@ -63,7 +66,7 @@ public class QEqual
      * @return null if list is empty else first value
      */
     @Override
-    public QAbstractValue getValue()
+    public AbstractQValue getValue()
     {
         return this.values.isEmpty() ? null : this.values.get(0);
     }
@@ -73,7 +76,7 @@ public class QEqual
      *
      * @return value of instance variable {@link #values}
      */
-    public List<QAbstractValue> getValues()
+    public List<AbstractQValue> getValues()
     {
         return this.values;
     }
@@ -83,7 +86,7 @@ public class QEqual
      * @param _value value to be include
      * @return this
      */
-    public QAbstractPart addValue(final QAbstractValue _value)
+    public AbstractQPart addValue(final AbstractQValue _value)
     {
         this.values.add(_value);
         return this;
@@ -100,7 +103,7 @@ public class QEqual
         if (this.values.size() > 1) {
             _sql.append(" IN ( ");
             boolean first = true;
-            for (final QAbstractValue value : this.values) {
+            for (final AbstractQValue value : this.values) {
                 if (first) {
                     first = false;
                 } else {
@@ -122,11 +125,11 @@ public class QEqual
      */
     @Override
     public QEqual prepare(final AbstractObjectQuery<?> _query,
-                                 final QAbstractPart _part)
+                                 final AbstractQPart _part)
         throws EFapsException
     {
         getAttribute().prepare(_query, this);
-        for (final QAbstractValue value : this.values) {
+        for (final AbstractQValue value : this.values) {
             value.prepare(_query, this);
         }
         return this;

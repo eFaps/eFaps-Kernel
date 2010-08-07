@@ -24,16 +24,17 @@ package org.efaps.db.search;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.Context;
+import org.efaps.db.search.compare.AbstractQAttrCompare;
 
 
 /**
- * TODO comment!
+ * Represents the Attribute in the Query.
  *
  * @author The eFaps Team
  * @version $Id$
  */
 public class QAttribute
-    extends QAbstractPart
+    extends AbstractQPart
 {
 
     /**
@@ -77,11 +78,11 @@ public class QAttribute
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart prepare(final AbstractObjectQuery<?> _query,
-                                 final QAbstractPart _part)
+    public AbstractQPart prepare(final AbstractObjectQuery<?> _query,
+                                 final AbstractQPart _part)
     {
-        if (_part instanceof QAbstractAttrCompare) {
-            this.ignoreCase = ((QAbstractAttrCompare) _part).isIgnoreCase();
+        if (_part instanceof AbstractQAttrCompare) {
+            this.ignoreCase = ((AbstractQAttrCompare) _part).isIgnoreCase();
         }
         if (this.attribute == null) {
             this.attribute =  _query.getBaseType().getAttribute(this.attributeName);
@@ -94,7 +95,7 @@ public class QAttribute
      * {@inheritDoc}
      */
     @Override
-    public QAbstractPart appendSQL(final StringBuilder _sql)
+    public AbstractQPart appendSQL(final StringBuilder _sql)
     {
         if (this.ignoreCase) {
             _sql.append("UPPER(");

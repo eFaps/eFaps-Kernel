@@ -19,9 +19,10 @@
  */
 
 
-package org.efaps.db.search;
+package org.efaps.db.search.section;
 
 import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.search.AbstractQPart;
 import org.efaps.util.EFapsException;
 
 
@@ -32,18 +33,19 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class QWhere
+public class QWhereSection
+    extends AbstractQSection
 {
 
     /**
      * Base part for this Where.
      */
-    private QAbstractPart part;
+    private AbstractQPart part;
 
     /**
      * @param _part part for this where
      */
-    public QWhere(final QAbstractPart _part)
+    public QWhereSection(final AbstractQPart _part)
     {
         this.part = _part;
     }
@@ -53,7 +55,7 @@ public class QWhere
      *
      * @return value of instance variable {@link #part}
      */
-    public QAbstractPart getPart()
+    public AbstractQPart getPart()
     {
         return this.part;
     }
@@ -64,7 +66,7 @@ public class QWhere
      * @param _part value for instance variable {@link #part}
      */
 
-    public void setPart(final QAbstractPart _part)
+    public void setPart(final AbstractQPart _part)
     {
         this.part = _part;
     }
@@ -73,6 +75,7 @@ public class QWhere
      * @return the sql statement for this where
      * @throws EFapsException on error
      */
+    @Override
     public StringBuilder getSQL()
         throws EFapsException
     {
@@ -86,6 +89,7 @@ public class QWhere
      * @param _query Query this Where belongs to
      * @throws EFapsException on error
      */
+    @Override
     public void prepare(final AbstractObjectQuery<?> _query)
         throws EFapsException
     {

@@ -19,35 +19,36 @@
  */
 
 
-package org.efaps.db.search;
+package org.efaps.db.search.section;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.search.AbstractQPart;
 import org.efaps.util.EFapsException;
 
 
 /**
- * Represents a SQL "AND".
+ * Comparison for max value.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class QAnd
-    extends AbstractQPart
+public class QOrderBySection
+     extends AbstractQSection
 {
+
     /**
-     * List of parts that will be connected by "AND".
+     * List of attributes this will be ordered.
      */
     private final List<AbstractQPart> parts = new ArrayList<AbstractQPart>();
 
-
     /**
-     * Constructor setting the parts of this AND.
-     * @param _parts parts for this and
+     * Constructor adding Attributes.
+     * @param _parts Array of AbstractQPart
      */
-    public QAnd(final AbstractQPart... _parts)
+    public QOrderBySection(final AbstractQPart... _parts)
     {
         for (final AbstractQPart part : _parts) {
             this.parts.add(part);
@@ -55,58 +56,47 @@ public class QAnd
     }
 
     /**
-     * Add a part to be included in the and.
-     * @param _part part to be include
-     * @return this
-     */
-    public AbstractQPart addPart(final AbstractQPart _part)
-    {
-        this.parts.add(_part);
-        return this;
-    }
-
-    /**
-     * Getter method for the instance variable {@link #parts}.
-     *
-     * @return value of instance variable {@link #parts}
-     */
-    protected List<AbstractQPart> getParts()
-    {
-        return this.parts;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
-    public QAnd appendSQL(final StringBuilder _sql)
+    public StringBuilder getSQL()
         throws EFapsException
     {
-        _sql.append("(");
+        final StringBuilder sql = new StringBuilder();
+        sql.append(" ORDER BY ");
         boolean first = true;
         for (final AbstractQPart part : this.parts) {
             if (first) {
                 first = false;
             } else {
-                _sql.append(" AND ");
+                sql.append(" , ");
             }
-            part.appendSQL(_sql);
+            part.appendSQL(sql);
         }
-        _sql.append(")");
-        return this;
+        return sql;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public QAnd prepare(final AbstractObjectQuery<?> _query,
-                                 final AbstractQPart _part)
+    public void prepare(final AbstractObjectQuery<?> _query)
         throws EFapsException
     {
         for (final AbstractQPart part : this.parts) {
-            part.prepare(_query, this);
+            part.prepare(_query, null);
         }
+    }
+
+    /**
+     * Add an attribute to the list of attributes the query will be ordered by.
+     *
+     * @param _part AbstractQPart to be added
+     * @return this
+     */
+    public QOrderBySection addPart(final AbstractQPart _part)
+    {
+        this.parts.add(_part);
         return this;
     }
 }
