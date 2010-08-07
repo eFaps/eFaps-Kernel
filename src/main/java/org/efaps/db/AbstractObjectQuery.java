@@ -31,9 +31,11 @@ import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.search.QAnd;
 import org.efaps.db.search.QAttribute;
-import org.efaps.db.search.QEqual;
-import org.efaps.db.search.QNumberValue;
-import org.efaps.db.search.QWhere;
+import org.efaps.db.search.compare.QEqual;
+import org.efaps.db.search.section.QLimitSection;
+import org.efaps.db.search.section.QOrderBySection;
+import org.efaps.db.search.section.QWhereSection;
+import org.efaps.db.search.value.QNumberValue;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,49 +55,51 @@ public abstract class AbstractObjectQuery<T>
      */
     protected static final Logger LOG = LoggerFactory.getLogger(AbstractObjectQuery.class);
 
-
     /**
      * Must this query be executed company depended.
      * (if the type is company dependend)
      */
     private boolean companyDepended = true;
 
-
     /**
      * Base type this query is searching on.
      */
     private final Type baseType;
 
-
     /**
      * The where criteria for this search.
      */
-    private QWhere where;
+    private QWhereSection where;
 
+    /**
+     * Order by clause for this query.
+     */
+    private QOrderBySection orderBy;
+
+    /**
+     * Limit for this Query.
+     */
+    private QLimitSection limit;
 
     /**
      * Should the child types be also be included in this search?
      */
     private boolean includeChildTypes = true;
 
-
     /**
      * Map to store the table to index relation.
      */
     private final Map<SQLTable, Integer> sqlTable2Index = new HashMap<SQLTable, Integer>();
-
 
     /**
      * List contains the values returned from the query.
      */
     private final List<T> values = new ArrayList<T>();
 
-
     /**
      * Iterator for the instances.
      */
     private Iterator<T> iter;
-
 
     /**
      * Variable holds the current instance.
@@ -124,7 +128,6 @@ public abstract class AbstractObjectQuery<T>
      */
     public abstract List<T> executeWithoutAccessCheck()
         throws EFapsException;
-
 
     /**
      * Getter method for the instance variable {@link #companyDepended}.
@@ -172,7 +175,6 @@ public abstract class AbstractObjectQuery<T>
         this.includeChildTypes = _includeChildTypes;
         return this;
     }
-
 
     /**
      * Getter method for the instance variable {@link #baseType}.
@@ -224,23 +226,74 @@ public abstract class AbstractObjectQuery<T>
      * @param _where value for instance variable {@link #where}
      * @return this
      */
-    public AbstractObjectQuery<T> setWhere(final QWhere _where)
+    public AbstractObjectQuery<T> setWhere(final QWhereSection _where)
     {
         this.where = _where;
         return this;
     }
-
 
     /**
      * Getter method for the instance variable {@link #where}.
      *
      * @return value of instance variable {@link #where}
      */
-    public QWhere getWhere()
+    public QWhereSection getWhere()
     {
         return this.where;
     }
 
+    /**
+     * Getter method for the instance variable {@link #orderBy}.
+     *
+     * @return value of instance variable {@link #orderBy}
+     */
+    public QOrderBySection getOrderBy()
+    {
+        return this.orderBy;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #orderBy}.
+     *
+     * @param _orderBy value for instance variable {@link #orderBy}
+     */
+
+    public void setOrderBy(final QOrderBySection _orderBy)
+    {
+        this.orderBy = _orderBy;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #limit}.
+     *
+     * @return value of instance variable {@link #limit}
+     */
+    public QLimitSection getLimit()
+    {
+        return this.limit;
+    }
+
+    /**
+     * Setter method for instance variable {@link #limit}.
+     *
+     * @param _limit value for instance variable {@link #limit}
+     */
+    public void setLimit(final int _limit)
+    {
+        this.limit = new QLimitSection(_limit);
+    }
+
+    /**
+     * Setter method for instance variable {@link #limit}.
+     *
+     * @param _limit value for instance variable {@link #limit}
+     */
+
+    public void setLimit(final QLimitSection _limit)
+    {
+        this.limit = _limit;
+    }
 
     /**
      * Move the current instance to the next instance in the list.
@@ -294,7 +347,7 @@ public abstract class AbstractObjectQuery<T>
                 }
             }
             if (this.where == null) {
-                this.where = new QWhere(eqPart);
+                this.where = new QWhereSection(eqPart);
             } else {
                 this.where.setPart(new QAnd(this.where.getPart(), eqPart));
             }
@@ -306,13 +359,20 @@ public abstract class AbstractObjectQuery<T>
             final QEqual eqPart = new QEqual(new QAttribute(this.baseType.getCompanyAttribute()),
                                            new QNumberValue(Context.getThreadContext().getCompany().getId()));
             if (this.where == null) {
-                this.where = new QWhere(eqPart);
+                this.where = new QWhereSection(eqPart);
             } else {
                 this.where.setPart(new QAnd(this.where.getPart(), eqPart));
             }
         }
         if (this.where != null) {
             this.where.prepare(this);
+        }
+        if (this.orderBy != null) {
+            this.orderBy.prepare(this);
+        }
+
+        if (this.limit != null) {
+            this.limit.prepare(this);
         }
     }
 }

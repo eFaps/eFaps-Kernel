@@ -22,6 +22,7 @@
 package org.efaps.db;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ import org.efaps.util.EFapsException;
 
 
 /**
- * TODO comment!
+ * Query that returns a list of instances.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -118,7 +119,10 @@ public class InstanceQuery
         }
 
         final StringBuilder cmd = new StringBuilder()
-                .append(select.getSQL()).append(getWhere() != null ? getWhere().getSQL() : "");
+            .append(select.getSQL())
+            .append(getWhere() != null ? getWhere().getSQL() : "")
+            .append(getOrderBy() != null ? getOrderBy().getSQL() : "")
+            .append(getLimit() != null ? getLimit().getSQL() : "");
 
         if (AbstractObjectQuery.LOG.isDebugEnabled()) {
             AbstractObjectQuery.LOG.debug(cmd.toString());
@@ -146,6 +150,7 @@ public class InstanceQuery
             final Statement stmt = con.getConnection().createStatement();
 
             final ResultSet rs = stmt.executeQuery(_complStmt.toString());
+
             new ArrayList<Instance>();
             while (rs.next()) {
                 final long id = rs.getLong(1);
@@ -158,17 +163,12 @@ public class InstanceQuery
             rs.close();
             stmt.close();
             con.commit();
-        } catch (final EFapsException e) {
-            if (con != null) {
+        } catch (final SQLException e) {
+            throw new EFapsException(InstanceQuery.class, "executeOneCompleteStmt", e);
+        } finally {
+            if (con != null && con.isOpened()) {
                 con.abort();
             }
-            throw e;
-        } catch (final Throwable e) {
-            if (con != null) {
-                con.abort();
-            }
-            // TODO: exception eintragen!
-            throw new EFapsException(getClass(), "executeOneCompleteStmt.Throwable", e);
         }
         return ret;
     }

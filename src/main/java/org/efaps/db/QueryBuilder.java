@@ -30,29 +30,33 @@ import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAttribute;
 import org.efaps.ci.CIType;
-import org.efaps.db.search.QAbstractAttrCompare;
-import org.efaps.db.search.QAbstractValue;
+import org.efaps.db.search.AbstractQPart;
 import org.efaps.db.search.QAnd;
 import org.efaps.db.search.QAttribute;
-import org.efaps.db.search.QBooleanValue;
-import org.efaps.db.search.QClassEqual;
-import org.efaps.db.search.QClassValue;
-import org.efaps.db.search.QDateTimeValue;
-import org.efaps.db.search.QEqual;
-import org.efaps.db.search.QGreater;
-import org.efaps.db.search.QIn;
-import org.efaps.db.search.QIs;
-import org.efaps.db.search.QIsNot;
-import org.efaps.db.search.QLess;
-import org.efaps.db.search.QMatch;
-import org.efaps.db.search.QNotEqual;
-import org.efaps.db.search.QNotIn;
-import org.efaps.db.search.QNullValue;
-import org.efaps.db.search.QNumberValue;
 import org.efaps.db.search.QOr;
-import org.efaps.db.search.QSQLValue;
-import org.efaps.db.search.QStringValue;
-import org.efaps.db.search.QWhere;
+import org.efaps.db.search.QOrderAsc;
+import org.efaps.db.search.QOrderDesc;
+import org.efaps.db.search.compare.AbstractQAttrCompare;
+import org.efaps.db.search.compare.QClassEqual;
+import org.efaps.db.search.compare.QEqual;
+import org.efaps.db.search.compare.QGreater;
+import org.efaps.db.search.compare.QIn;
+import org.efaps.db.search.compare.QIs;
+import org.efaps.db.search.compare.QIsNot;
+import org.efaps.db.search.compare.QLess;
+import org.efaps.db.search.compare.QMatch;
+import org.efaps.db.search.compare.QNotEqual;
+import org.efaps.db.search.compare.QNotIn;
+import org.efaps.db.search.section.QOrderBySection;
+import org.efaps.db.search.section.QWhereSection;
+import org.efaps.db.search.value.AbstractQValue;
+import org.efaps.db.search.value.QBooleanValue;
+import org.efaps.db.search.value.QClassValue;
+import org.efaps.db.search.value.QDateTimeValue;
+import org.efaps.db.search.value.QNullValue;
+import org.efaps.db.search.value.QNumberValue;
+import org.efaps.db.search.value.QSQLValue;
+import org.efaps.db.search.value.QStringValue;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 
@@ -69,7 +73,12 @@ public class QueryBuilder
     /**
      * List of compares that will be included in this query.
      */
-    private final List<QAbstractAttrCompare> compares = new ArrayList<QAbstractAttrCompare>();
+    private final List<AbstractQAttrCompare> compares = new ArrayList<AbstractQAttrCompare>();
+
+    /**
+     * List of parts that will be included in this order of this query.
+     */
+    private final List<AbstractQPart> orders = new ArrayList<AbstractQPart>();
 
     /**
      * UUID of th etype used for the instance query.
@@ -85,7 +94,6 @@ public class QueryBuilder
      * Is this QueryBuilder using or instead of and.
      */
     private boolean or = false;
-
 
     /**
      * @param _typeUUID     uuid of the type this query is based on
@@ -173,7 +181,6 @@ public class QueryBuilder
     {
         return addWhereAttrNotEqValue(_ciAttr.name, _values);
     }
-
 
     /**
      * @param _attrName Name of the attribute
@@ -522,15 +529,77 @@ public class QueryBuilder
     }
 
     /**
+     * @param _ciAttr CIAttribute to be orderd by.
+     * @return QOrderBySection
+     */
+    public QOrderAsc addOrderByAttributeAsc(final CIAttribute _ciAttr)
+    {
+        return addOrderByAttributeAsc(_ciAttr.name);
+    }
+
+    /**
+     * @param _attrName Name of the Attributes to be orderd by.
+     * @return QOrderBySection
+     */
+    public QOrderAsc addOrderByAttributeAsc(final String _attrName)
+    {
+        final QOrderAsc asc = new QOrderAsc(new QAttribute(_attrName));
+        this.orders.add(asc);
+        return asc;
+    }
+
+    /**
+     * @param _attr Attribute to be orderd by.
+     * @return QOrderBySection
+     */
+    public QOrderAsc addOrderByAttributeAsc(final Attribute _attr)
+    {
+        final QOrderAsc asc = new QOrderAsc(new QAttribute(_attr));
+        this.orders.add(asc);
+        return asc;
+    }
+
+    /**
+     * @param _ciAttr CIAttribute to be orderd by.
+     * @return QOrderBySection
+     */
+    public QOrderDesc addOrderByAttributeDesc(final CIAttribute _ciAttr)
+    {
+        return addOrderByAttributeDesc(_ciAttr.name);
+    }
+
+    /**
+     * @param _attrName Name of the Attributes to be orderd by.
+     * @return QOrderBySection
+     */
+    public QOrderDesc addOrderByAttributeDesc(final String _attrName)
+    {
+        final QOrderDesc desc = new QOrderDesc(new QAttribute(_attrName));
+        this.orders.add(desc);
+        return desc;
+    }
+
+    /**
+     * @param _attr Attribute to be orderd by.
+     * @return QOrderBySection
+     */
+    public QOrderDesc addOrderByAttributeDesc(final Attribute _attr)
+    {
+        final QOrderDesc desc = new QOrderDesc(new QAttribute(_attr));
+        this.orders.add(desc);
+        return desc;
+    }
+
+    /**
      * Get the QAbstractValue for a value.
      * @param _value    value the QAbstractValue is wanted for
      * @return  QAbstractValue
      * @throws EFapsException on error
      */
-    private QAbstractValue getValue(final Object _value)
+    private AbstractQValue getValue(final Object _value)
         throws EFapsException
     {
-        QAbstractValue ret = null;
+        AbstractQValue ret = null;
         if (_value == null) {
             ret = new QNullValue();
         } else if (_value instanceof Number) {
@@ -579,10 +648,15 @@ public class QueryBuilder
             this.query = new InstanceQuery(this.typeUUID);
             if (!this.compares.isEmpty()) {
                 final QAnd and = this.or ? new QOr() : new QAnd();
-                for (final QAbstractAttrCompare compare : this.compares) {
+                for (final AbstractQAttrCompare compare : this.compares) {
                     and.addPart(compare);
                 }
-                this.query.setWhere(new QWhere(and));
+                this.query.setWhere(new QWhereSection(and));
+            }
+            if (!this.orders.isEmpty()) {
+                final QOrderBySection orderBy = new QOrderBySection(
+                                this.orders.toArray(new AbstractQPart[this.orders.size()]));
+                this.query.setOrderBy(orderBy);
             }
         }
         return (InstanceQuery) this.query;
@@ -622,10 +696,10 @@ public class QueryBuilder
             this.query = new AttributeQuery(this.typeUUID, _attributeName);
             if (!this.compares.isEmpty()) {
                 final QAnd and = this.or ? new QOr() : new QAnd();
-                for (final QAbstractAttrCompare compare : this.compares) {
+                for (final AbstractQAttrCompare compare : this.compares) {
                     and.addPart(compare);
                 }
-                this.query.setWhere(new QWhere(and));
+                this.query.setWhere(new QWhereSection(and));
             }
         }
         return (AttributeQuery) this.query;
