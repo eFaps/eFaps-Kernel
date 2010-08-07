@@ -22,6 +22,7 @@
 package org.efaps.db;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ import org.efaps.util.EFapsException;
 
 
 /**
- * TODO comment!
+ * Query is used as a nested query for an attribute.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -50,7 +51,6 @@ public class AttributeQuery
      * Attribute this query will return the value for.
      */
     private final Attribute attribute;
-
 
     /**
      * Constructor setting the type by his UUID.
@@ -164,14 +164,15 @@ public class AttributeQuery
         }
 
         final StringBuilder cmd = new StringBuilder()
-                .append(select.getSQL()).append(getWhere() != null ? getWhere().getSQL() : "");
+            .append(select.getSQL())
+            .append(getWhere() != null ? getWhere().getSQL() : "")
+            .append(getLimit() != null ? getLimit().getSQL() : "");
 
         if (AbstractObjectQuery.LOG.isDebugEnabled()) {
             AbstractObjectQuery.LOG.debug(cmd.toString());
         }
         return cmd;
     }
-
 
     /**
      * Execute the actual statement against the database.
@@ -202,19 +203,13 @@ public class AttributeQuery
             rs.close();
             stmt.close();
             con.commit();
-        } catch (final EFapsException e) {
-            if (con != null) {
+        } catch (final SQLException e) {
+            throw new EFapsException(AttributeQuery.class, "executeOneCompleteStmt", e);
+        } finally {
+            if (con != null && con.isOpened()) {
                 con.abort();
             }
-            throw e;
-        } catch (final Throwable e) {
-            if (con != null) {
-                con.abort();
-            }
-            // TODO: exception eintragen!
-            throw new EFapsException(getClass(), "executeOneCompleteStmt.Throwable", e);
         }
         return ret;
     }
-
 }
