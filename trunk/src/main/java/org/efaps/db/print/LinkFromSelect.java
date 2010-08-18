@@ -31,6 +31,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.AbstractPrintQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.db.InstanceQuery;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -77,7 +78,9 @@ public class LinkFromSelect
                 return LinkFromSelect.this.type;
             }
 
-            public int join(final OneSelect _oneselect, final SQLSelect _select, final int _relIndex)
+            public int join(final OneSelect _oneselect,
+                            final SQLSelect _select,
+                            final int _relIndex)
             {
                 // nothing to join here
                 return 0;
@@ -114,7 +117,8 @@ public class LinkFromSelect
      * @throws EFapsException on error
      * @return true if statement didi return values, else false
      */
-    public boolean execute(final OneSelect _onesel) throws EFapsException
+    public boolean execute(final OneSelect _onesel)
+        throws EFapsException
     {
         this.hasResult = executeOneCompleteStmt(createSQLStatement(_onesel), getAllSelects());
         return this.hasResult;
@@ -212,7 +216,7 @@ public class LinkFromSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     protected boolean executeOneCompleteStmt(final StringBuilder _complStmt,
                                              final List<OneSelect> _oneSelects)
         throws EFapsException
@@ -240,17 +244,12 @@ public class LinkFromSelect
             rs.close();
             stmt.close();
             con.commit();
-        } catch (final EFapsException e) {
-            if (con != null) {
+        } catch (final SQLException e) {
+            throw new EFapsException(InstanceQuery.class, "executeOneCompleteStmt", e);
+        } finally {
+            if (con != null && con.isOpened()) {
                 con.abort();
             }
-            throw e;
-        } catch (final Throwable e) {
-            if (con != null) {
-                con.abort();
-            }
-            // TODO: exception eintragen!
-            throw new EFapsException(getClass(), "executeOneCompleteStmt.Throwable");
         }
         return ret;
     }
@@ -280,30 +279,27 @@ public class LinkFromSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Instance getCurrentInstance()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public List<Instance> getInstanceList()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Type getMainType()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 }
