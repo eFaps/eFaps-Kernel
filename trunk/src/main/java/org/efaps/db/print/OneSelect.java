@@ -489,8 +489,9 @@ public class OneSelect
             final Iterator<Object> objIter = this.objectList.iterator();
             while (relIter.hasNext()) {
                 final Long rel = relIter.next();
+                final Object obj = objIter.next();
                 if (rel.equals(id)) {
-                    tmpList.add(objIter.next());
+                    tmpList.add(obj);
                 }
             }
             ret = this.valueSelect.getValue(tmpList);
