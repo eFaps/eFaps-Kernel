@@ -22,6 +22,7 @@ package org.efaps.db;
 
 import java.io.StringReader;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -711,17 +712,12 @@ public abstract class AbstractPrintQuery
             rs.close();
             stmt.close();
             con.commit();
-        } catch (final EFapsException e) {
-            if (con != null) {
+        } catch (final SQLException e) {
+            throw new EFapsException(InstanceQuery.class, "executeOneCompleteStmt", e);
+        } finally {
+            if (con != null && con.isOpened()) {
                 con.abort();
             }
-            throw e;
-        } catch (final Throwable e) {
-            if (con != null) {
-                con.abort();
-            }
-            // TODO: exception eintragen!
-            throw new EFapsException(getClass(), "executeOneCompleteStmt.Throwable", e);
         }
         return ret;
     }
