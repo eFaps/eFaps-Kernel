@@ -24,8 +24,10 @@ package org.efaps.admin.common;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.ci.CIAdminCommon;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.db.SelectBuilder;
 import org.efaps.util.EFapsException;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -46,7 +48,6 @@ import org.quartz.spi.SchedulerPlugin;
 public class QuartzSchedulerPlugin
     implements SchedulerPlugin
 {
-
     /**
      * On initialization the triggers and related esjp are loaded from the
      * eFaps Database.
@@ -63,16 +64,22 @@ public class QuartzSchedulerPlugin
         try {
             final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.QuartzTriggerAbstract);
             final MultiPrintQuery multi = queryBldr.getPrint();
-            multi.addAttribute("Type", "Name", "Parameter1" , "Parameter2", "Parameter3");
-            multi.addSelect("linkto[ESJPLink].attribute[FileName]");
+            multi.addAttribute(CIAdminCommon.QuartzTriggerAbstract.Type,
+                               CIAdminCommon.QuartzTriggerAbstract.Name,
+                               CIAdminCommon.QuartzTriggerAbstract.Parameter1,
+                               CIAdminCommon.QuartzTriggerAbstract.Parameter2,
+                               CIAdminCommon.QuartzTriggerAbstract.Parameter3);
+            final SelectBuilder sel = new SelectBuilder().linkto(CIAdminCommon.QuartzTriggerAbstract.ESJPLink)
+                .attribute(CIAdminProgram.Java.FileName);
+            multi.addSelect(sel);
             multi.execute();
             while (multi.next()) {
-                final Type type = multi.<Type>getAttribute("Type");
-                final String name = multi.<String>getAttribute("Name");
-                final Integer para1 = multi.<Integer>getAttribute("Parameter1");
-                final Integer para2 = multi.<Integer>getAttribute("Parameter2");
-                final Integer para3 = multi.<Integer>getAttribute("Parameter3");
-                final String esjp = multi.<String>getSelect("linkto[ESJPLink].attribute[FileName]");
+                final Type type = multi.<Type>getAttribute(CIAdminCommon.QuartzTriggerAbstract.Type);
+                final String name = multi.<String>getAttribute(CIAdminCommon.QuartzTriggerAbstract.Name);
+                final Integer para1 = multi.<Integer>getAttribute(CIAdminCommon.QuartzTriggerAbstract.Parameter1);
+                final Integer para2 = multi.<Integer>getAttribute(CIAdminCommon.QuartzTriggerAbstract.Parameter2);
+                final Integer para3 = multi.<Integer>getAttribute(CIAdminCommon.QuartzTriggerAbstract.Parameter3);
+                final String esjp = multi.<String>getSelect(sel);
                 Trigger trigger = null;
                 if (type.isKindOf(CIAdminCommon.QuartzTriggerSecondly.getType())) {
                     trigger = TriggerUtils.makeSecondlyTrigger(name, para1, para2);
