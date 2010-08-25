@@ -22,6 +22,8 @@
 package org.efaps.db.search.section;
 
 import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 
 
@@ -52,21 +54,22 @@ public class QLimitSection
      * {@inheritDoc}
      */
     @Override
-    public StringBuilder getSQL()
+    public QLimitSection appendSQL(final SQLSelect _select)
         throws EFapsException
     {
-        final StringBuilder ret = new StringBuilder();
-        ret.append(" limit ").append(this.limit);
-        return ret;
+
+        _select.addPart(SQLPart.LIMIT).addValuePart(this.limit);
+        return this;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void prepare(final AbstractObjectQuery<?> _query)
+    public QLimitSection prepare(final AbstractObjectQuery<?> _query)
         throws EFapsException
     {
         // nothing must be done
+        return this;
     }
 }
