@@ -29,6 +29,9 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This is class is used to handle the interface between JAAS and eFaps that
  * enables a User to change his Password <br>
@@ -42,6 +45,11 @@ import javax.security.auth.login.LoginException;
  */
 public class SetPasswordHandler
 {
+    /**
+     * Logging instance used to give logging information of this class.
+     */
+    private static Logger LOG = LoggerFactory.getLogger(SetPasswordHandler.class);
+
     /**
      * The name of the application used to create a new login context. The
      * default value is <code>eFaps</code>.
@@ -62,6 +70,14 @@ public class SetPasswordHandler
         }
     }
 
+    /**
+     * Set the password.
+     * @param _name         Username
+     * @param _newpasswd    new passowrd
+     * @param _oldpasswd    old passowrd
+     * @return true if successful
+     * @throws LoginException on error
+     */
     public boolean setPassword(final String _name,
                                final String _newpasswd,
                                final String _oldpasswd)
@@ -77,6 +93,9 @@ public class SetPasswordHandler
         return ret;
     }
 
+    /**
+     * Callbackhandler.
+     */
     protected class SetPasswordCallbackHandler
         implements CallbackHandler
     {
@@ -117,13 +136,19 @@ public class SetPasswordHandler
         protected SetPasswordCallbackHandler(final ActionCallback.Mode _mode,
                                              final String _name,
                                              final String _newpasswd,
-                                             final String _oldpasswd) {
+                                             final String _oldpasswd)
+        {
             this.mode = _mode;
             this.name = _name;
             this.oldpassword = _oldpasswd;
             this.newpassword = _newpasswd;
         }
 
+        /**
+         * hanlde the callbacks.
+         * @param _callbacks callbacks to be handled
+         * @throws UnsupportedCallbackException on error
+         */
         public void handle(final Callback[] _callbacks)
             throws UnsupportedCallbackException
         {
@@ -143,7 +168,8 @@ public class SetPasswordHandler
                         pc.setPassword(this.newpassword.toCharArray());
                     }
                 } else if (_callbacks[i] instanceof TextOutputCallback) {
-// do nothing, TextOutputCallBack's are ignored!
+                    SetPasswordHandler.LOG.debug("ignored handler: " + _callbacks[i]);
+                    // do nothing, TextOutputCallBack's are ignored!
                 } else {
                     throw new UnsupportedCallbackException(_callbacks[i], "Unrecognized Callback");
                 }
