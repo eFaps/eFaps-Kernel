@@ -18,13 +18,13 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.db.search.compare;
 
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.value.AbstractQValue;
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
-
 
 /**
  * TODO comment!
@@ -50,11 +50,11 @@ public class QIs
      * {@inheritDoc}
      */
     @Override
-    public QIs appendSQL(final StringBuilder _sql)
+    public QIs appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
-        _sql.append(" IS ");
+        _sql.addPart(SQLPart.IS);
         getValue().appendSQL(_sql);
         return this;
     }
