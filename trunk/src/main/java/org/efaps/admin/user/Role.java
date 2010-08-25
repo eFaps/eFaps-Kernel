@@ -28,6 +28,7 @@ import java.util.UUID;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
@@ -51,7 +52,11 @@ public final class Role
     /**
      * This is the SQL select statement to select all roles from the database.
      */
-    private static final String SQL_SELECT = "select ID, UUID, NAME, STATUS from V_USERROLE";
+    private static final String SQL_SELECT = new SQLSelect().column("ID")
+                                                            .column("UUID")
+                                                            .column("NAME")
+                                                            .column("STATUS")
+                                                            .from("V_USERROLE").getSQL();
 
     /**
      * Stores all instances of class {@link Role}.
@@ -85,10 +90,9 @@ public final class Role
      *         <i>false</i>
      * @see Person#isAssigned(Role)
      */
-    @Override()
+    @Override
     public boolean hasChildPerson(final Person _person)
     {
-// TODO: child roles
         return _person.isAssigned(this);
     }
 
@@ -112,7 +116,6 @@ public final class Role
     public static Role get(final long _id)
         throws CacheReloadException
     {
-// TODO: rewrite to use context instance
         return Role.CACHE.get(_id);
     }
 
@@ -128,7 +131,6 @@ public final class Role
     public static Role get(final String _name)
         throws CacheReloadException
     {
-// TODO: rewrite to use context instance
         return Role.CACHE.get(_name);
     }
 
@@ -202,7 +204,7 @@ public final class Role
                 rsrc.abort();
             }
         }
-        return get(roleId);
+        return Role.get(roleId);
     }
 
     /**
@@ -230,7 +232,7 @@ public final class Role
          * @param _cache4UUID cache with UUID as key
          * @throws CacheReloadException on error during reading the date
          */
-        @Override()
+        @Override
         protected void readCache(final Map<Long, Role> _cache4Id,
                                  final Map<String, Role> _cache4Name,
                                  final Map<UUID, Role> _cache4UUID)

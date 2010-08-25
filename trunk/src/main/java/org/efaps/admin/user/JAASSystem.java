@@ -345,7 +345,7 @@ public final class JAASSystem
          *                      system
          * @throws CacheReloadException if cache could not be reloaded
          */
-        @Override()
+        @Override
         protected void readCache(final Map<Long, JAASSystem> _cache4Id,
                                  final Map<String, JAASSystem> _cache4Name,
                                  final Map<UUID, JAASSystem> _cache4UUID)
@@ -382,27 +382,27 @@ public final class JAASSystem
                             @SuppressWarnings("unchecked")
                             final Class<Principal> forName = (Class<Principal>) Class.forName(personClassName.trim());
                             system.personJAASPrincipleClass = forName;
-                            system.personMethodKey = getMethod(system.personJAASPrincipleClass,
+                            system.personMethodKey = JAASSystem.getMethod(system.personJAASPrincipleClass,
                                                                personMethodKey,
                                                                "person key", name, id);
-                            system.personMethodName = getMethod(system.personJAASPrincipleClass,
+                            system.personMethodName = JAASSystem.getMethod(system.personJAASPrincipleClass,
                                                                 personMethodName,
                                                                 "person name", name, id);
-                            Method method = getMethod(system.personJAASPrincipleClass,
+                            Method method = JAASSystem.getMethod(system.personJAASPrincipleClass,
                                                       personMethodFirstName,
                                                       "person first name", name, id);
                             if (method != null) {
                                 system.personMethodAttributes.put(Person.AttrName.FIRSTNAME,
                                                                   method);
                             }
-                            method = getMethod(system.personJAASPrincipleClass,
+                            method = JAASSystem.getMethod(system.personJAASPrincipleClass,
                                                personMethodLastName,
                                                "person last name", name, id);
                             if (method != null) {
                                 system.personMethodAttributes.put(Person.AttrName.LASTNAME,
                                                                   method);
                             }
-                            method = getMethod(system.personJAASPrincipleClass,
+                            method = JAASSystem.getMethod(system.personJAASPrincipleClass,
                                                personMethodEmail,
                                                "person email", name, id);
                             if (method != null) {
@@ -413,7 +413,7 @@ public final class JAASSystem
                                 @SuppressWarnings("unchecked")
                                 final Class<Principal> fn = (Class<Principal>) Class.forName(roleClassName.trim());
                                 system.roleJAASPrincipleClass = fn;
-                                system.roleMethodKey = getMethod(system.roleJAASPrincipleClass,
+                                system.roleMethodKey = JAASSystem.getMethod(system.roleJAASPrincipleClass,
                                                                  roleMethodKey,
                                                                  "role key", name, id);
                             }
@@ -421,7 +421,7 @@ public final class JAASSystem
                                 @SuppressWarnings("unchecked")
                                 final Class<Principal> fn = (Class<Principal>) Class.forName(groupClassName.trim());
                                 system.groupJAASPrincipleClass = fn;
-                                system.groupMethodKey = getMethod(system.groupJAASPrincipleClass,
+                                system.groupMethodKey = JAASSystem.getMethod(system.groupJAASPrincipleClass,
                                                                   groupMethodKey,
                                                                   "group key", name, id);
                             }

@@ -42,6 +42,7 @@ import org.efaps.db.PrintQuery;
 import org.efaps.db.Update;
 import org.efaps.db.Update.Status;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.jaas.AppAccessHandler;
 import org.efaps.util.ChronologyType;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
@@ -52,22 +53,21 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 /**
  * Class represents the instance of a person/user in eFaps.
  *
  * @author The eFasp Team
  * @version $Id$
  */
-public final class Person extends AbstractUserObject
+public final class Person
+    extends AbstractUserObject
 {
+
     /**
      * Enum for all known and updated attributes from a person. Only this could
      * be defined which are in the SQL table T_USERPERSON.
      */
-    public enum AttrName
-    {
+    public enum AttrName {
         /** Attribute Name for the First Name of the person. */
         FIRSTNAME("FIRSTNAME"),
         /** Attribute Name for the Last Name of the person. */
@@ -79,7 +79,7 @@ public final class Person extends AbstractUserObject
         /** Attribute Name for the Locale of the person. */
         LOCALE("LOCALE"),
          /** Attribute Name for the language of the person. */
-        LANGUAGE("LANG", true);
+         LANGUAGE("LANG", true);
 
         /**
          * The name of the depending SQL column for an attribute in the table.
@@ -107,7 +107,8 @@ public final class Person extends AbstractUserObject
          * @param _sqlColumn name of the column in the table
          * @param _integer is the column a integer column
          */
-        private AttrName(final String _sqlColumn, final boolean _integer)
+        private AttrName(final String _sqlColumn,
+                         final boolean _integer)
         {
             this.sqlColumn = _sqlColumn;
             this.integer = _integer;
@@ -178,7 +179,9 @@ public final class Person extends AbstractUserObject
      * @param _name name of the person to set
      * @param _status status of the person to set
      */
-    private Person(final long _id, final String _name, final boolean _status)
+    private Person(final long _id,
+                   final String _name,
+                   final boolean _status)
     {
         super(_id, null, _name, _status);
     }
@@ -255,7 +258,6 @@ public final class Person extends AbstractUserObject
         return this.companies.contains(_company);
     }
 
-
     /**
      * All assigned roles in {@link #roles} and groups in {@link #groups} are
      * removed in the cache from this person instance. This is needed if the
@@ -276,7 +278,8 @@ public final class Person extends AbstractUserObject
      * @param _value new value to set
      * @see #attrValues
      */
-    private void setAttrValue(final AttrName _attrName, final String _value)
+    private void setAttrValue(final AttrName _attrName,
+                              final String _value)
     {
         synchronized (this.attrValues) {
             this.attrValues.put(_attrName, _value);
@@ -335,8 +338,9 @@ public final class Person extends AbstractUserObject
     }
 
     /**
-     * Method to get the Language of the UserInterface for this Person.
-     * Default is english.
+     * Method to get the Language of the UserInterface for this Person. Default
+     * is english.
+     *
      * @return iso code of a language
      */
     public String getLanguage()
@@ -395,7 +399,8 @@ public final class Person extends AbstractUserObject
      * @param _attrName name of attribute to update
      * @param _value new value to set directly
      */
-    public void updateAttrValue(final AttrName _attrName, final String _value)
+    public void updateAttrValue(final AttrName _attrName,
+                                final String _value)
     {
         this.updateAttrValue(_attrName, _value, _value);
     }
@@ -411,7 +416,9 @@ public final class Person extends AbstractUserObject
      * @see #attrUpdated
      * @see #attrValues
      */
-    public void updateAttrValue(final AttrName _attrName, final String _value, final String _updateValue)
+    public void updateAttrValue(final AttrName _attrName,
+                                final String _value,
+                                final String _updateValue)
     {
         synchronized (this.attrUpdated) {
             synchronized (this.attrValues) {
@@ -432,7 +439,8 @@ public final class Person extends AbstractUserObject
      * @see #updateAttrValue
      *
      */
-    public void commitAttrValuesInDB() throws EFapsException
+    public void commitAttrValuesInDB()
+        throws EFapsException
     {
         synchronized (this.attrUpdated) {
             if (this.attrUpdated.size() > 0) {
@@ -526,7 +534,7 @@ public final class Person extends AbstractUserObject
                 ret = query.<Boolean>getAttribute(CIAdminUser.Person.Status);
             } else {
                 setFalseLogin(query.<DateTime>getAttribute(CIAdminUser.Person.LoginTry),
-                              query.<Integer>getAttribute(CIAdminUser.Person.LoginTriesCounter));
+                                query.<Integer>getAttribute(CIAdminUser.Person.LoginTriesCounter));
             }
         }
         return ret;
@@ -573,7 +581,8 @@ public final class Person extends AbstractUserObject
      * @param _tries number or tries
      * @throws EFapsException on error
      */
-    private void updateFalseLoginDB(final int _tries) throws EFapsException
+    private void updateFalseLoginDB(final int _tries)
+        throws EFapsException
     {
         ConnectionResource rsrc = null;
         try {
@@ -622,7 +631,8 @@ public final class Person extends AbstractUserObject
      * @param _newPasswd new Password to set
      * @throws EFapsException on error
      */
-    public void setPassword(final String _newPasswd) throws EFapsException
+    public void setPassword(final String _newPasswd)
+        throws EFapsException
     {
         final Type type = CIAdminUser.Person.getType();
 
@@ -633,7 +643,7 @@ public final class Person extends AbstractUserObject
 
         final Status status = update.add(CIAdminUser.Person.Password, _newPasswd);
 
-        if ((status.isOk())) {
+        if (status.isOk()) {
             update.execute();
             update.close();
         } else {
@@ -656,7 +666,7 @@ public final class Person extends AbstractUserObject
         final String ret;
         if (query.execute()) {
             ret = query.<String>getAttribute(CIAdminUser.Person.Password);
-        } else  {
+        } else {
             ret = null;
         }
         return ret;
@@ -680,12 +690,11 @@ public final class Person extends AbstractUserObject
         this.companies.addAll(getCompaniesFromDB(null));
     }
 
-
     /**
      * All attributes from this person are read from the database.
      *
      * @throws EFapsException if the attributes for this person could not be
-     *                        read
+     *             read
      */
     private void readFromDBAttributes()
         throws EFapsException
@@ -732,13 +741,12 @@ public final class Person extends AbstractUserObject
     }
 
     /**
-     * The method reads directly from the database all stored companies for
-     * this person. The found roles are returned as instance of {@link Set}.
+     * The method reads directly from the database all stored companies for this
+     * person. The found roles are returned as instance of {@link Set}.
      *
-     * @param _jaasSystem   JAAS system for which the roles must get from
-     *                      eFaps (if value is <code>null</code>, all companies
-     *                      independent from the related JAAS system are
-     *                      returned)
+     * @param _jaasSystem JAAS system for which the roles must get from eFaps
+     *            (if value is <code>null</code>, all companies independent from
+     *            the related JAAS system are returned)
      * @return set of all found companies for given JAAS system
      * @throws EFapsException on error
      */
@@ -755,7 +763,7 @@ public final class Person extends AbstractUserObject
             try {
                 final StringBuilder cmd = new StringBuilder();
                 cmd.append("select ").append("USERABSTRACTTO ").append("from V_USERPERSON2COMPANY ")
-                    .append("where USERABSTRACTFROM=").append(getId());
+                                .append("where USERABSTRACTFROM=").append(getId());
 
                 if (_jaasSystem != null) {
                     cmd.append(" and JAASSYSID=").append(_jaasSystem.getId());
@@ -788,7 +796,6 @@ public final class Person extends AbstractUserObject
         return ret;
     }
 
-
     /**
      * The method reads directly from the database all stores roles for the this
      * person. The found roles are returned as instance of {@link java.util.Set}
@@ -798,7 +805,8 @@ public final class Person extends AbstractUserObject
      * @see #getRolesFromDB(JAASSystem);
      * @throws EFapsException on error
      */
-    public Set<Role> getRolesFromDB() throws EFapsException
+    public Set<Role> getRolesFromDB()
+        throws EFapsException
     {
         return getRolesFromDB((JAASSystem) null);
     }
@@ -808,10 +816,9 @@ public final class Person extends AbstractUserObject
      * person. The found roles are returned as instance of {@link java.util.Set}
      * .
      *
-     * @param _jaasSystem   JAAS system for which the roles are searched in
-     *                      eFaps (if value is <code>null</code>, all roles
-     *                      independent from the related JAAS system are
-     *                      returned)
+     * @param _jaasSystem JAAS system for which the roles are searched in eFaps
+     *            (if value is <code>null</code>, all roles independent from the
+     *            related JAAS system are returned)
      * @return set of all found roles for given JAAS system
      * @throws EFapsException on error
      */
@@ -837,8 +844,13 @@ public final class Person extends AbstractUserObject
 
                 stmt = rsrc.getConnection().createStatement();
                 final ResultSet resultset = stmt.executeQuery(cmd.toString());
+                final Set<String> roleNames = AppAccessHandler.getLoginRoles();
                 while (resultset.next()) {
-                    ret.add(Role.get(resultset.getLong(1)));
+                    final Role role = Role.get(resultset.getLong(1));
+                    if (!AppAccessHandler.excludeMode()
+                                    || (AppAccessHandler.excludeMode() && roleNames.contains(role.getName()))) {
+                        ret.add(role);
+                    }
                 }
                 resultset.close();
 
@@ -909,9 +921,10 @@ public final class Person extends AbstractUserObject
     /**
      * For this person, a role is assigned for the given JAAS system.
      *
-     * @param _jaasSystem   JAAS system for which the role is assigned
-     * @param _role         role to assign
-     * @see AbstractUserObject#assignToUserObjectInDb(Type, JAASSystem, AbstractUserObject)
+     * @param _jaasSystem JAAS system for which the role is assigned
+     * @param _role role to assign
+     * @see AbstractUserObject#assignToUserObjectInDb(Type, JAASSystem,
+     *      AbstractUserObject)
      * @throws EFapsException on error
      */
     public void assignRoleInDb(final JAASSystem _jaasSystem,
@@ -924,9 +937,10 @@ public final class Person extends AbstractUserObject
     /**
      * The given role is unassigned for the given JAAS system from this person.
      *
-     * @param _jaasSystem   JAAS system for which the role is assigned
-     * @param _role         role to unassign
-     * @see AbstractUserObject#unassignFromUserObjectInDb(Type, JAASSystem, AbstractUserObject)
+     * @param _jaasSystem JAAS system for which the role is assigned
+     * @param _role role to unassign
+     * @see AbstractUserObject#unassignFromUserObjectInDb(Type, JAASSystem,
+     *      AbstractUserObject)
      * @throws EFapsException on error
      */
     public void unassignRoleInDb(final JAASSystem _jaasSystem,
@@ -940,10 +954,9 @@ public final class Person extends AbstractUserObject
      * The method reads directly from eFaps all stored groups for the this
      * person. The found groups are returned as instance of {@link Set}.
      *
-     * @param _jaasSystem   JAAS system for which the groups must fetched from
-     *                      eFaps (if value is <code>null</code>, all groups
-     *                      independent from the related JAAS system are
-     *                      returned)
+     * @param _jaasSystem JAAS system for which the groups must fetched from
+     *            eFaps (if value is <code>null</code>, all groups independent
+     *            from the related JAAS system are returned)
      * @throws EFapsException on error
      * @return set of all found groups for given JAAS system
      */
@@ -997,13 +1010,15 @@ public final class Person extends AbstractUserObject
      * The depending groups for the user are set for the given JAAS system. All
      * groups are added to the loaded groups in the cache of this person.
      *
-     * @param _jaasSystem   JAAS system for which the roles are set
-     * @param _groups       set of groups to set for the JAAS system
+     * @param _jaasSystem JAAS system for which the roles are set
+     * @param _groups set of groups to set for the JAAS system
      * @see #assignGroupInDb(JAASSystem, Group)
      * @see #unassignGroupInDb(JAASSystem, Group)
      * @throws EFapsException from calling methods
      */
-    public void setGroups(final JAASSystem _jaasSystem, final Set<Group> _groups) throws EFapsException
+    public void setGroups(final JAASSystem _jaasSystem,
+                          final Set<Group> _groups)
+        throws EFapsException
     {
         if (_jaasSystem == null) {
             throw new EFapsException(getClass(), "setGroups.nojaasSystem", getName());
@@ -1038,8 +1053,8 @@ public final class Person extends AbstractUserObject
     /**
      * For this person, a group is assigned for the given JAAS system.
      *
-     * @param _jaasSystem JAAS  system for which the group is assigned
-     * @param _group            group to assign
+     * @param _jaasSystem JAAS system for which the group is assigned
+     * @param _group group to assign
      * @throws EFapsException on error
      * @see AbstractUserObject#assignToUserObjectInDb
      */
@@ -1053,8 +1068,8 @@ public final class Person extends AbstractUserObject
     /**
      * The given group is unassigned for the given JAAS system from this person.
      *
-     * @param _jaasSystem   JAAS system for which the role is assigned
-     * @param _group        group to unassign
+     * @param _jaasSystem JAAS system for which the role is assigned
+     * @param _group group to unassign
      * @throws EFapsException on error
      * @see AbstractUserObject#unassignFromUserObjectInDb
      */
@@ -1162,11 +1177,11 @@ public final class Person extends AbstractUserObject
     public String toString()
     {
         return new ToStringBuilder(this)
-            .appendSuper(super.toString())
-            .append("attrValues", this.attrValues)
-            .append("roles", this.roles)
-            .append("groups", this.groups)
-            .toString();
+                        .appendSuper(super.toString())
+                        .append("attrValues", this.attrValues)
+                        .append("roles", this.roles)
+                        .append("groups", this.groups)
+                        .toString();
     }
 
     /**
@@ -1179,7 +1194,8 @@ public final class Person extends AbstractUserObject
      * @see #CACHE
      * @see #getFromDB
      */
-    public static Person get(final long _id) throws EFapsException
+    public static Person get(final long _id)
+        throws EFapsException
     {
         Person ret = Person.getCache().get(_id);
         if (ret == null) {
@@ -1203,7 +1219,8 @@ public final class Person extends AbstractUserObject
      * @see #CACHE
      * @see #getFromDB
      */
-    public static Person get(final String _name) throws EFapsException
+    public static Person get(final String _name)
+        throws EFapsException
     {
         Person ret = Person.getCache().get(_name);
         if (ret == null) {
@@ -1336,11 +1353,10 @@ public final class Person extends AbstractUserObject
     }
 
     /**
-     * @param _jaasSystem   JAAS system which want to create a new person in
-     *                      eFaps
-     * @param _jaasKey      key of the person in the JAAS system
-     * @param _userName     name in the eFaps system (used as proposal,
-     *                      it's tested for uniqueness and changed if needed!)
+     * @param _jaasSystem JAAS system which want to create a new person in eFaps
+     * @param _jaasKey key of the person in the JAAS system
+     * @param _userName name in the eFaps system (used as proposal, it's tested
+     *            for uniqueness and changed if needed!)
      * @return new created person
      * @throws EFapsException if person could not be created in eFaps
      * @see #assignToJAASSystem
@@ -1508,9 +1524,9 @@ public final class Person extends AbstractUserObject
          * stored inside the session and is growing dynamically during the
          * session.
          *
-         * @param _cache4Id     not used
-         * @param _cache4Name   not used
-         * @param _cache4UUID   not used
+         * @param _cache4Id not used
+         * @param _cache4Name not used
+         * @param _cache4UUID not used
          */
         @Override()
         protected void readCache(final Map<Long, Person> _cache4Id,
