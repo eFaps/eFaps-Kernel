@@ -27,13 +27,13 @@ import java.util.List;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.AbstractObjectQuery;
-import org.efaps.db.Context;
 import org.efaps.db.search.AbstractQPart;
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.value.AbstractQValue;
 import org.efaps.db.search.value.QClassValue;
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
-
 
 /**
  * Compare that a classification id is equal to the given value.
@@ -113,41 +113,36 @@ public class QClassEqual
      * {@inheritDoc}
      */
     @Override
-    public QClassEqual appendSQL(final StringBuilder _sql)
+    public QClassEqual appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
         final Classification clazz = this.values.get(0).getClassification();
         final Type relType = clazz.getClassifyRelationType();
-        _sql.append(" in ( select ")
-            .append(Context.getDbType().getColumnQuote())
-            .append(relType.getAttribute(clazz.getRelLinkAttributeName()).getSqlColNames().get(0))
-            .append(Context.getDbType().getColumnQuote())
-            .append(" from ")
-            .append(Context.getDbType().getTableQuote())
-            .append(relType.getMainTable().getSqlTable())
-            .append(Context.getDbType().getTableQuote())
-            .append(" where ")
-            .append(Context.getDbType().getTableQuote())
-            .append(relType.getAttribute(clazz.getRelTypeAttributeName()).getSqlColNames().get(0))
-            .append(Context.getDbType().getTableQuote());
+        _sql.addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN).addPart(SQLPart.SELECT)
+            .addColumnPart(null, relType.getAttribute(clazz.getRelLinkAttributeName()).getSqlColNames().get(0))
+            .addPart(SQLPart.FROM)
+            .addTablePart(relType.getMainTable().getSqlTable(), null)
+            .addPart(SQLPart.WHERE)
+            .addColumnPart(null, relType.getAttribute(clazz.getRelTypeAttributeName()).getSqlColNames().get(0));
+
         if (this.values.size() > 1) {
-            _sql.append(" in ( ");
+            _sql.addPart(SQLPart.WHERE).addPart(SQLPart.PARENTHESIS_OPEN);
             boolean first = true;
             for (final QClassValue value : this.values) {
                 if (first) {
                     first = false;
                 } else {
-                    _sql.append(",");
+                    _sql.addPart(SQLPart.COMMA);
                 }
                 value.appendSQL(_sql);
             }
-            _sql.append(" )");
+            _sql.addPart(SQLPart.PARENTHESIS_CLOSE);
         } else {
-            _sql.append(" = ");
+            _sql.addPart(SQLPart.EQUAL);
             getValue().appendSQL(_sql);
         }
-        _sql.append(" )");
+        _sql.addPart(SQLPart.PARENTHESIS_CLOSE);
         return this;
     }
 }

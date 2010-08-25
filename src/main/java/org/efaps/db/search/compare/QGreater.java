@@ -18,14 +18,13 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.db.search.compare;
 
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.value.AbstractQValue;
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
-
-
 
 /**
  * TODO comment!
@@ -52,11 +51,11 @@ public class QGreater
      * {@inheritDoc}
      */
     @Override
-    public QGreater appendSQL(final StringBuilder _sql)
+    public QGreater appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
-        _sql.append(" > ");
+        _sql.addPart(SQLPart.GREATER);
         getValue().appendSQL(_sql);
         return this;
     }

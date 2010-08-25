@@ -18,15 +18,14 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.db.search.compare;
 
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.value.AbstractQValue;
 import org.efaps.db.search.value.QStringValue;
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
-
-
 
 /**
  * TODO comment!
@@ -52,14 +51,14 @@ public class QMatch
      * {@inheritDoc}
      */
     @Override
-    public QMatch appendSQL(final StringBuilder _sql)
+    public QMatch appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
         if (getValue() instanceof QStringValue) {
-            _sql.append(" like ");
+            _sql.addPart(SQLPart.LIKE);
         } else {
-            _sql.append(" = ");
+            _sql.addPart(SQLPart.EQUAL);
         }
         getValue().appendSQL(_sql);
         return this;

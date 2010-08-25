@@ -18,13 +18,13 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.db.search.compare;
 
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.value.AbstractQValue;
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
-
 
 /**
  * TODO comment!
@@ -50,11 +50,11 @@ public class QIsNot
      * {@inheritDoc}
      */
     @Override
-    public QIsNot appendSQL(final StringBuilder _sql)
+    public QIsNot appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
-        _sql.append(" IS NOT ");
+        _sql.addPart(SQLPart.IS).addPart(SQLPart.NOT);
         getValue().appendSQL(_sql);
         return this;
     }

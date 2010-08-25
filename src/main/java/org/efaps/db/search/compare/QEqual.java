@@ -18,7 +18,6 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.db.search.compare;
 
 import java.util.ArrayList;
@@ -28,6 +27,8 @@ import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.search.AbstractQPart;
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.value.AbstractQValue;
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 
 
@@ -96,29 +97,28 @@ public class QEqual
      * {@inheritDoc}
      */
     @Override
-    public QEqual appendSQL(final StringBuilder _sql)
+    public QEqual appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
         if (this.values.size() > 1) {
-            _sql.append(" IN ( ");
+            _sql.addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
             boolean first = true;
             for (final AbstractQValue value : this.values) {
                 if (first) {
                     first = false;
                 } else {
-                    _sql.append(",");
+                    _sql.addPart(SQLPart.COMMA);
                 }
                 value.appendSQL(_sql);
             }
-            _sql.append(" )");
+            _sql.addPart(SQLPart.PARENTHESIS_CLOSE);
         } else {
-            _sql.append(" = ");
+            _sql.addPart(SQLPart.EQUAL);
             getValue().appendSQL(_sql);
         }
         return this;
     }
-
 
     /**
      * {@inheritDoc}

@@ -18,13 +18,13 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.db.search.compare;
 
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.value.AbstractQValue;
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
-
 
 /**
  * TODO comment!
@@ -50,13 +50,13 @@ public class QNotIn
      * {@inheritDoc}
      */
     @Override
-    public QNotIn appendSQL(final StringBuilder _sql)
+    public QNotIn appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
-        _sql.append(" NOT IN (");
+        _sql.addPart(SQLPart.NOT).addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
         getValue().appendSQL(_sql);
-        _sql.append(")");
+        _sql.addPart(SQLPart.PARENTHESIS_CLOSE);
         return this;
     }
 }
