@@ -56,7 +56,7 @@ public class QIn
         getAttribute().appendSQL(_sql);
         _sql.addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
         getValue().appendSQL(_sql);
-        _sql.addPart(SQLPart.PARENTHESIS_OPEN);
+        _sql.addPart(SQLPart.PARENTHESIS_CLOSE);
         return this;
     }
 }
