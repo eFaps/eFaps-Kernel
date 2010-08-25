@@ -31,9 +31,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.TableInformation;
 import org.efaps.db.wrapper.SQLInsert;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.cache.Cache;
@@ -47,9 +49,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author The eFaps Team
  * @version $Id$
- * @param <DB>  derived DB class
+ * @param <T>  derived DB class
  */
-public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
+public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
 {
     /**
      * Logging instance used in this class.
@@ -304,7 +306,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @return this instance
      * @throws SQLException if delete of the sequence failed
      */
-    public abstract DB deleteView(final Connection _con,
+    public abstract T deleteView(final Connection _con,
                                   final String _name)
         throws SQLException;
 
@@ -400,7 +402,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * TODO: really neeeded? not referenced anymore...
      */
     @SuppressWarnings("unchecked")
-    public DB createView(final Connection _con,
+    public T createView(final Connection _con,
                          final String _view)
         throws SQLException
     {
@@ -411,7 +413,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
         } finally {
             stmt.close();
         }
-        return (DB) this;
+        return (T) this;
     }
 
     /**
@@ -426,7 +428,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @return this instance
      * @throws SQLException on error
      */
-    public abstract DB createSequence(final Connection _con,
+    public abstract T createSequence(final Connection _con,
                                       final String _name,
                                       final long _startValue)
         throws SQLException;
@@ -439,7 +441,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @return this instance
      * @throws SQLException if delete of the sequence failed
      */
-    public abstract DB deleteSequence(final Connection _con,
+    public abstract T deleteSequence(final Connection _con,
                                       final String _name)
         throws SQLException;
 
@@ -479,7 +481,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @return this instance
      * @throws SQLException on error
      */
-    public abstract DB setSequence(final Connection _con,
+    public abstract T setSequence(final Connection _con,
                                    final String _name,
                                    final long _value)
         throws SQLException;
@@ -492,7 +494,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @return this instance
      * @throws SQLException if the create of the table failed
      */
-    public abstract DB createTable(final Connection _con,
+    public abstract T createTable(final Connection _con,
                                    final String _table)
         throws SQLException;
 
@@ -508,7 +510,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @return this instance
      * @throws InstallationException if the update of the table failed
      */
-    public DB defineTableParent(final Connection _con,
+    public T defineTableParent(final Connection _con,
                                 final String _table,
                                 final String _parentTable)
         throws InstallationException
@@ -524,7 +526,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @return this instance
      * @throws SQLException if the update of the table failed
      */
-    public abstract DB defineTableAutoIncrement(final Connection _con,
+    public abstract T defineTableAutoIncrement(final Connection _con,
                                                 final String _table)
         throws SQLException;
 
@@ -544,7 +546,8 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @return this instance
      * @throws SQLException if the column could not be added to the tables
      */
-    public DB addTableColumn(final Connection _con,
+    //CHECKSTYLE:OFF
+    public T addTableColumn(final Connection _con,
                              final String _tableName,
                              final String _columnName,
                              final ColumnType _columnType,
@@ -554,6 +557,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
                              final boolean _isNotNull)
         throws SQLException
     {
+    //CHECKSTYLE:ON
         final StringBuilder cmd = new StringBuilder();
         cmd.append("alter table ").append(getTableQuote()).append(_tableName).append(getTableQuote()).append(' ')
            .append("add ").append(getColumnQuote()).append(_columnName).append(getColumnQuote()).append(' ')
@@ -586,7 +590,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
         }
 
         @SuppressWarnings("unchecked")
-        final DB ret = (DB) this;
+        final T ret = (T) this;
         return ret;
     }
 
@@ -602,7 +606,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @return this instance
      * @throws SQLException if the unique key could not be created
      */
-    public DB addUniqueKey(final Connection _con,
+    public T addUniqueKey(final Connection _con,
                            final String _tableName,
                            final String _uniqueKeyName,
                            final String _columns)
@@ -627,7 +631,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
         }
 
         @SuppressWarnings("unchecked")
-        final DB ret = (DB) this;
+        final T ret = (T) this;
         return ret;
     }
 
@@ -646,7 +650,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
      * @throws InstallationException if foreign key could not be defined for
      *                               SQL table
      */
-    public DB addForeignKey(final Connection _con,
+    public T addForeignKey(final Connection _con,
                             final String _tableName,
                             final String _foreignKeyName,
                             final String _key,
@@ -682,7 +686,7 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
         }
 
         @SuppressWarnings("unchecked")
-        final DB ret = (DB) this;
+        final T ret = (T) this;
         return ret;
     }
 
@@ -739,6 +743,24 @@ public abstract class AbstractDatabase<DB extends AbstractDatabase<?>>
     public String getColumnQuote()
     {
         return "";
+    }
+
+    /**
+     * @param _part Part the SQL is needed for
+     * @return String
+     */
+    public String getSQLPart(final SQLSelect.SQLPart _part)
+    {
+        return _part.getDefaultValue();
+    }
+
+    /**
+     * @param _value STring value to be escaped
+     * @return escaped value in "'"
+     */
+    public String escapeForWhere(final String _value)
+    {
+        return "'" + StringEscapeUtils.escapeSql(_value) + "'";
     }
 
     /**
