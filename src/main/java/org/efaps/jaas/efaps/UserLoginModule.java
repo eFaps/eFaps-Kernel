@@ -60,7 +60,7 @@ public class UserLoginModule
      * The string stores the name of the JAAS system. The default value is
      * <b>eFaps</b>, but could changed with {@link #setJaasSystem}
      */
-    private String jaasSystem = "eFaps";
+    private String jaasSystemName = "eFaps";
 
     /**
      * Has our own <code>commit()</code> returned successfully?
@@ -74,15 +74,21 @@ public class UserLoginModule
     private Subject subject = null;
 
     // initial state
+    /**
+     * CallbackHandler.
+     */
     private CallbackHandler callbackHandler;
 
+    /**
+     * Principal for the Login Context.
+     */
     private Principal principal = null;
 
     /**
-     * @param _subject
-     * @param _callbackHandler
-     * @param _sharedState
-     * @param _options
+     * @param _subject          Subject
+     * @param _callbackHandler  CallBackHandler
+     * @param _sharedState      Mapping of states
+     * @param _options          additional options
      */
     public final void initialize(final Subject _subject,
                                  final CallbackHandler _callbackHandler,
@@ -95,14 +101,14 @@ public class UserLoginModule
         this.subject = _subject;
         this.callbackHandler = _callbackHandler;
 
-        final String jaasSystem = (String) _options.get("jaasSystem");
-        if (jaasSystem != null) {
-            this.jaasSystem = jaasSystem;
+        final String jaasSystemTmp = (String) _options.get("jaasSystem");
+        if (jaasSystemTmp != null) {
+            this.jaasSystemName = jaasSystemTmp;
         }
     }
 
     /**
-     * This instance method is used for two different use cases:
+     * This instance method is used for two different use cases.
      * <ul>
      * <li>the login of a User, it checks if for the given user the password is
      *     correct</li>
@@ -112,18 +118,12 @@ public class UserLoginModule
      *
      * @return <i>true</i> if user name and password is correct and exists,
      *         otherwise <i>false</i> is returned
-     * @throws FailedLoginException
-     *                 if login is not allowed with given user name and password
-     *                 (if user does not exists or password is not correct)
      * @throws LoginException
      *                 if an error occurs while calling the callback handler or
      *                 the {@link #checkLogin} method
      * @throws LoginException
      *                 if user or password could not be get from the callback
      *                 handler
-     * @throws UpdateException
-     *                 if the new Password could not be set by the Update, due to
-     *                 some restriction
      */
     public final boolean login()
         throws LoginException
@@ -158,7 +158,7 @@ public class UserLoginModule
 
         if (userName != null) {
             try {
-                final Person person = Person.getWithJAASKey(JAASSystem.getJAASSystem(this.jaasSystem), userName);
+                final Person person = Person.getWithJAASKey(JAASSystem.getJAASSystem(this.jaasSystemName), userName);
                 if (person != null) {
                     if (!person.checkPassword(password)) {
                         throw new FailedLoginException("Username or password is incorrect");
@@ -168,7 +168,7 @@ public class UserLoginModule
                     if (mode.equals(ActionCallback.Mode.SET_PASSWORD)) {
                         try {
                             person.setPassword(newPassword);
-                        } catch (final Exception e) {
+                        } catch (final EFapsException e) {
                             throw new UpdateException();
                         }
                     }
@@ -187,10 +187,11 @@ public class UserLoginModule
 
     /**
      * Adds the principal person and all found roles for the given JAAS system
-     * {@link #jaasSystem} related to the person.
+     * {@link #jaasSystemName} related to the person.
      *
      * @return <i>true</i> if authentification was successful, otherwise
      *         <i>false</i>
+     * @throws LoginException on error
      */
     public final boolean commit()
         throws LoginException
@@ -208,7 +209,7 @@ public class UserLoginModule
                 this.subject.getPrincipals().add(this.principal);
 
                 try {
-                    final JAASSystem jaasSystem = JAASSystem.getJAASSystem(this.jaasSystem);
+                    final JAASSystem jaasSystem = JAASSystem.getJAASSystem(this.jaasSystemName);
                     final Person person = Person.getWithJAASKey(jaasSystem, this.principal.getName());
                     if (person != null) {
                         final Set<Role> roles = person.getRolesFromDB(jaasSystem);
@@ -233,7 +234,8 @@ public class UserLoginModule
     }
 
     /**
-     *
+     * Abort the login.
+     * @return true if abort was successful
      */
     public final boolean abort()
     {
@@ -276,8 +278,12 @@ public class UserLoginModule
      * This class is used to throw an error which indicates that an Update was
      * not successful.
      */
-    public class UpdateException extends LoginException
+    public class UpdateException
+        extends LoginException
     {
+        /**
+         * Needed foer serialization.
+         */
         private static final long serialVersionUID = 1L;
     }
 }

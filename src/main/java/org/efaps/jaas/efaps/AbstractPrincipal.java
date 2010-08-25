@@ -37,6 +37,7 @@ public abstract class AbstractPrincipal
      * Unique identifier used to serialize.
      */
     private static final long serialVersionUID = -385332126547580688L;
+
     /**
      * The instance variable stores the name of the principal.
      *
@@ -73,7 +74,7 @@ public abstract class AbstractPrincipal
      * @return value of {@link #name}
      * @see #name
      */
-    @Override()
+    @Override
     public String toString()
     {
         return this.name;
@@ -87,7 +88,7 @@ public abstract class AbstractPrincipal
      * @return hashcode of the name string
      * @see #name
      */
-    @Override()
+    @Override
     public int hashCode()
     {
         return this.name.hashCode();

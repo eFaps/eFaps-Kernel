@@ -22,8 +22,8 @@ package org.efaps.jaas.efaps;
 
 /**
  * The class implements the {@link java.security.Principal} interface for a
- * user. The class is used from the {@link UserLoginModule} class to implement
- * a JAAS login module and set the user principals.
+ * user. The class is used from the {@link UserLoginModule} class to implement a
+ * JAAS login module and set the user principals.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -31,6 +31,7 @@ package org.efaps.jaas.efaps;
 public final class PersonPrincipal
     extends AbstractPrincipal
 {
+
     /**
      * Unique identifier used to serialize.
      */
@@ -41,7 +42,7 @@ public final class PersonPrincipal
      *
      * @param _name name of the user
      */
-    PersonPrincipal(final String _name)
+    protected PersonPrincipal(final String _name)
     {
         super(_name);
     }
@@ -53,9 +54,10 @@ public final class PersonPrincipal
      * @return returns <i>true</i> if the other object is from this class and
      *         has the same name (method equals is used), otherwise <i>false</i>
      */
-    @Override()
+    //CHECKSTYLE:OFF
+    @Override
     public boolean equals(final Object _another)
     {
-        return (_another instanceof PersonPrincipal && ((PersonPrincipal) _another).getName().equals(getName()));
+        return _another instanceof PersonPrincipal && ((PersonPrincipal) _another).getName().equals(getName());
     }
 }

@@ -41,7 +41,7 @@ public final class GroupPrincipal
      *
      * @param _name name of the user
      */
-    GroupPrincipal(final String _name)
+    protected GroupPrincipal(final String _name)
     {
         super(_name);
     }
@@ -53,9 +53,10 @@ public final class GroupPrincipal
      * @return returns <i>true</i> if the other object is from this class and
      *         has the same name (method equals is used), otherwise <i>false</i>
      */
-    @Override()
+    //CHECKSTYLE:OFF
+    @Override
     public boolean equals(final Object _another)
     {
-        return (_another instanceof GroupPrincipal && ((GroupPrincipal) _another).getName().equals(getName()));
+        return _another instanceof GroupPrincipal && ((GroupPrincipal) _another).getName().equals(getName());
     }
 }
