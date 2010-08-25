@@ -139,13 +139,13 @@ public class Table
      *
      * @return value of static variable {@link #CACHE}
      */
-    protected static UserInterfaceObjectCache<Table> getCache()
+    protected static AbstractUserInterfaceObjectCache<Table> getCache()
     {
         return Table.CACHE;
     }
 
     private static class TableCache
-        extends UserInterfaceObjectCache<Table>
+        extends AbstractUserInterfaceObjectCache<Table>
     {
 
         protected TableCache()

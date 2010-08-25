@@ -96,7 +96,7 @@ public class Picker
      *
      * @return value of static variable {@link #CACHE}
      */
-    protected static UserInterfaceObjectCache<Picker> getCache()
+    protected static AbstractUserInterfaceObjectCache<Picker> getCache()
     {
         return Picker.CACHE;
     }
@@ -105,7 +105,7 @@ public class Picker
      * Cache for Picker.
      */
     private static class PickerCache
-        extends UserInterfaceObjectCache<Picker>
+        extends AbstractUserInterfaceObjectCache<Picker>
     {
 
         /**

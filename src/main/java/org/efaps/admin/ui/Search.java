@@ -168,7 +168,7 @@ public class Search
      *
      * @return value of static variable {@link #CACHE}
      */
-    protected static UserInterfaceObjectCache<Search> getCache()
+    protected static AbstractUserInterfaceObjectCache<Search> getCache()
     {
         return Search.CACHE;
     }
@@ -177,7 +177,7 @@ public class Search
      * Cache for Searches.
      */
     private static class SearchCache
-        extends UserInterfaceObjectCache<Search>
+        extends AbstractUserInterfaceObjectCache<Search>
     {
 
         /**

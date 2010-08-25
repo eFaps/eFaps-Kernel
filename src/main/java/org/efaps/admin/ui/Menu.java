@@ -187,7 +187,7 @@ public class Menu
      *
      * @return value of static variable {@link #CACHE}
      */
-    protected static UserInterfaceObjectCache<Menu> getCache()
+    protected static AbstractUserInterfaceObjectCache<Menu> getCache()
     {
         return Menu.CACHE;
     }
@@ -196,7 +196,7 @@ public class Menu
      * Cache for Menus.
      */
     private static class MenuCache
-        extends UserInterfaceObjectCache<Menu>
+        extends AbstractUserInterfaceObjectCache<Menu>
     {
 
         /**

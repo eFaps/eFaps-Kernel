@@ -180,7 +180,7 @@ public class Image
      *
      * @return value of static variable {@link #CACHE}
      */
-    protected static UserInterfaceObjectCache<Image> getCache()
+    protected static AbstractUserInterfaceObjectCache<Image> getCache()
     {
         return Image.CACHE;
     }
@@ -189,7 +189,7 @@ public class Image
      * Cache for Images.
      */
     private static class ImageCache
-        extends UserInterfaceObjectCache<Image>
+        extends AbstractUserInterfaceObjectCache<Image>
     {
 
         /**
