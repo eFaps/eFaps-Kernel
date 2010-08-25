@@ -23,6 +23,8 @@ package org.efaps.db.search.section;
 
 import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.search.AbstractQPart;
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 
 
@@ -76,13 +78,12 @@ public class QWhereSection
      * @throws EFapsException on error
      */
     @Override
-    public StringBuilder getSQL()
+    public QWhereSection appendSQL(final SQLSelect _select)
         throws EFapsException
     {
-        final StringBuilder ret = new StringBuilder();
-        ret.append(" where ");
-        this.part.appendSQL(ret);
-        return ret;
+        _select.addPart(SQLPart.WHERE);
+        this.part.appendSQL(_select);
+        return this;
     }
 
     /**
@@ -90,9 +91,10 @@ public class QWhereSection
      * @throws EFapsException on error
      */
     @Override
-    public void prepare(final AbstractObjectQuery<?> _query)
+    public QWhereSection prepare(final AbstractObjectQuery<?> _query)
         throws EFapsException
     {
         this.part.prepare(_query, null);
+        return this;
     }
 }

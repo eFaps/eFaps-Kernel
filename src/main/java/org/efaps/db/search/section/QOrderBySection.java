@@ -26,6 +26,8 @@ import java.util.List;
 
 import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.search.AbstractQPart;
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 
 
@@ -59,33 +61,33 @@ public class QOrderBySection
      * {@inheritDoc}
      */
     @Override
-    public StringBuilder getSQL()
+    public QOrderBySection appendSQL(final SQLSelect _select)
         throws EFapsException
     {
-        final StringBuilder sql = new StringBuilder();
-        sql.append(" ORDER BY ");
+        _select.addPart(SQLPart.ORDERBY);
         boolean first = true;
         for (final AbstractQPart part : this.parts) {
             if (first) {
                 first = false;
             } else {
-                sql.append(" , ");
+                _select.addPart(SQLPart.COMMA);
             }
-            part.appendSQL(sql);
+            part.appendSQL(_select);
         }
-        return sql;
+        return this;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void prepare(final AbstractObjectQuery<?> _query)
+    public QOrderBySection prepare(final AbstractObjectQuery<?> _query)
         throws EFapsException
     {
         for (final AbstractQPart part : this.parts) {
             part.prepare(_query, null);
         }
+        return this;
     }
 
     /**

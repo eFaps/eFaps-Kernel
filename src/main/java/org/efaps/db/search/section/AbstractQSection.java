@@ -22,6 +22,7 @@
 package org.efaps.db.search.section;
 
 import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
 
@@ -35,19 +36,22 @@ import org.efaps.util.EFapsException;
 public abstract class AbstractQSection
 {
     /**
-     * Get the Sql section as a StringBuilder.
-     * @return the sql statement for this AbstractQSection
+     * Append to the SQLSelect.
+     * @param _select SQLSelect to be appended to
+     * @return this
      * @throws EFapsException on error
+     *
      */
-    public abstract StringBuilder getSQL()
+    public abstract AbstractQSection appendSQL(SQLSelect _select)
         throws EFapsException;
 
     /**
      * Prepare this section.
      * @param _query Query this AbstractQSection belongs to
      * @throws EFapsException on error
+     * @return this
      */
-    public abstract void prepare(final AbstractObjectQuery<?> _query)
+    public abstract AbstractQSection prepare(final AbstractObjectQuery<?> _query)
         throws EFapsException;
 
 }
