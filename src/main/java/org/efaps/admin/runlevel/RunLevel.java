@@ -115,6 +115,11 @@ public final class RunLevel
     private RunLevel parent;
 
     /**
+     * Name of this RunLevel.
+     */
+    private String name;
+
+    /**
      * Initializes this run level instance depending on the <code>_name</code>.
      *
      * @param _name   name of the run level
@@ -123,6 +128,7 @@ public final class RunLevel
     private RunLevel(final String _name)
         throws EFapsException
     {
+        this.name = _name;
         initialize(RunLevel.SELECT_RUNLEVEL.getSQL() + " where RUNLEVEL='" + _name + "'");
     }
 
@@ -150,6 +156,14 @@ public final class RunLevel
     {
         RunLevel.ALL_RUNLEVELS.clear();
         RunLevel.RUNLEVEL = new RunLevel(_runLevel);
+    }
+
+    /**
+     * @return Return the name of the currenct active RunLevel.
+     */
+    public static String getName4Current()
+    {
+        return RunLevel.RUNLEVEL == null ? null : RunLevel.RUNLEVEL.name;
     }
 
     /**
