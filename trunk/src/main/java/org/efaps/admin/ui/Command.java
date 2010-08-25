@@ -61,7 +61,7 @@ public class Command
      *
      * @return value of static variable {@link #CACHE}
      */
-    protected static UserInterfaceObjectCache<Command> getCache()
+    protected static AbstractUserInterfaceObjectCache<Command> getCache()
     {
         return Command.CACHE;
     }
@@ -106,7 +106,7 @@ public class Command
     }
 
     private static class CommandCache
-        extends UserInterfaceObjectCache<Command>
+        extends AbstractUserInterfaceObjectCache<Command>
     {
         protected CommandCache()
         {

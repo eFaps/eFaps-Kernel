@@ -48,6 +48,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.jaas.AppAccessHandler;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
@@ -146,19 +147,22 @@ public abstract class AbstractUserInterfaceObject
                 final long userId = resultset.getLong(1);
                 final AbstractUserObject userObject = AbstractUserObject.getUserObject(userId);
                 if (userObject == null) {
-                    throw new Exception("user " + userId + " does not exists!");
+                    throw new CacheReloadException("user " + userId + " does not exists!");
                 } else {
                     getAccess().add(userObject);
                 }
             }
             resultset.close();
-        } catch (final Exception e) {
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read access for " + "'" + getName() + "'", e);
+        } catch (final EFapsException e) {
             throw new CacheReloadException("could not read access for " + "'" + getName() + "'", e);
         } finally {
             if (stmt != null) {
                 try {
                     stmt.close();
                 } catch (final SQLException e) {
+                    throw new CacheReloadException("could not read access for " + "'" + getName() + "'", e);
                 }
             }
         }
@@ -189,7 +193,7 @@ public abstract class AbstractUserInterfaceObject
         throws EFapsException
     {
         boolean ret = false;
-        if (getAccess().isEmpty()) {
+        if (getAccess().isEmpty() && !AppAccessHandler.excludeMode()) {
             ret = true;
         } else {
             // first must be checked for the company
@@ -273,23 +277,23 @@ public abstract class AbstractUserInterfaceObject
     /**
      * Inner Class to store the UserInterfaces in a Cache.
      *
-     * @param <UIObj>
+     * @param <T>
      */
-    protected abstract static class UserInterfaceObjectCache<UIObj extends AbstractUserInterfaceObject>
-        extends Cache<UIObj>
+    protected abstract static class AbstractUserInterfaceObjectCache<T extends AbstractUserInterfaceObject>
+        extends Cache<T>
     {
 
         /**
          * Stores the caller class.
          */
-        private final Class<UIObj> callerClass;
+        private final Class<T> callerClass;
 
         /**
          * Constructor.
          *
          * @param _callerClass callerClass
          */
-        protected UserInterfaceObjectCache(final Class<UIObj> _callerClass)
+        protected AbstractUserInterfaceObjectCache(final Class<T> _callerClass)
         {
             this.callerClass = _callerClass;
         }
@@ -304,7 +308,7 @@ public abstract class AbstractUserInterfaceObject
         protected void readFromDB()
             throws CacheReloadException
         {
-            for (final UIObj uiObj : getCache4Id().values()) {
+            for (final T uiObj : getCache4Id().values()) {
                 uiObj.readFromDB();
             }
         }
@@ -319,14 +323,14 @@ public abstract class AbstractUserInterfaceObject
         /**
          * {@inheritDoc}
          */
-        @Override()
-        protected void readCache(final Map<Long, UIObj> _cache4Id,
-                                 final Map<String, UIObj> _cache4Name,
-                                 final Map<UUID, UIObj> _cache4UUID)
+        @Override
+        protected void readCache(final Map<Long, T> _cache4Id,
+                                 final Map<String, T> _cache4Name,
+                                 final Map<UUID, T> _cache4UUID)
             throws CacheReloadException
         {
 
-            final Class<UIObj> uiObjClass = this.callerClass;
+            final Class<T> uiObjClass = this.callerClass;
             try {
                 if (getType() != null) {
                     final QueryBuilder queryBldr = new QueryBuilder(getType());
@@ -341,9 +345,9 @@ public abstract class AbstractUserInterfaceObject
                         final long id = multi.getCurrentInstance().getId();
                         final String name = multi.<String> getAttribute(CIAdmin.Abstract.Name);
                         final String uuid = multi.<String> getAttribute(CIAdmin.Abstract.UUID);
-                        final Constructor<UIObj> uiObj = uiObjClass.getConstructor(Long.class, String.class,
+                        final Constructor<T> uiObj = uiObjClass.getConstructor(Long.class, String.class,
                                         String.class);
-                        final UIObj uiObj2 = uiObj.newInstance(id, uuid, name);
+                        final T uiObj2 = uiObj.newInstance(id, uuid, name);
                         _cache4Id.put(uiObj2.getId(), uiObj2);
                         _cache4Name.put(uiObj2.getName(), uiObj2);
                         _cache4UUID.put(uiObj2.getUUID(), uiObj2);

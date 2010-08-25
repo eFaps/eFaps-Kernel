@@ -159,13 +159,13 @@ public class Form
      *
      * @return value of static variable {@link #CACHE}
      */
-    protected static UserInterfaceObjectCache<Form> getCache()
+    protected static AbstractUserInterfaceObjectCache<Form> getCache()
     {
         return Form.CACHE;
     }
 
     private static class FormCache
-        extends UserInterfaceObjectCache<Form>
+        extends AbstractUserInterfaceObjectCache<Form>
     {
 
         protected FormCache()
