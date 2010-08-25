@@ -66,11 +66,11 @@ public class LoginHandler
      *
      * @see #checkLogin(String, String)
      */
-    private String application = "eFaps";
+    private String applicationName = "eFaps";
 
     /**
      * Constructor to initialize the login handler. If <i>null</i> is given to
-     * the application name, the default value defined in {@link #application}
+     * the application name, the default value defined in {@link #applicationName}
      * is used.
      *
      * @param _application  application name of the JAAS configuration
@@ -78,7 +78,7 @@ public class LoginHandler
     public LoginHandler(final String _application)
     {
         if (_application != null) {
-            this.application = _application;
+            this.applicationName = _application;
         }
     }
 
@@ -102,9 +102,8 @@ public class LoginHandler
     {
         Person person = null;
         try {
-            final LoginContext login = new LoginContext(
-                    getApplication(),
-                    new LoginCallbackHandler(ActionCallback.Mode.LOGIN, _name, _passwd));
+            final LoginCallbackHandler callback = new LoginCallbackHandler(ActionCallback.Mode.LOGIN, _name, _passwd);
+            final LoginContext login = new LoginContext(getApplicationName(), callback);
             login.login();
 
             person = getPerson(login);
@@ -148,17 +147,16 @@ public class LoginHandler
         throws EFapsException
     {
         Person person = null;
-        for (JAASSystem system : JAASSystem.getAllJAASSystems()) {
+        for (final JAASSystem system : JAASSystem.getAllJAASSystems()) {
             final Set<?> users = _login.getSubject().getPrincipals(system.getPersonJAASPrincipleClass());
 
-            for (Object persObj : users) {
+            for (final Object persObj : users) {
                 try {
                     final String persKey = (String) system.getPersonMethodKey().invoke(persObj);
 
                     final Person foundPerson = Person.getWithJAASKey(system, persKey);
                     if (foundPerson == null) {
-// TODO: muss noch gemacht werden!!! da funkt halt was nicht...
-// person.assignToJAASSystem(system, persKey);
+                        person.assignToJAASSystem(system, persKey);
                     } else if (person == null) {
                         person = foundPerson;
                     } else if (person.getId() != foundPerson.getId()) {
@@ -168,17 +166,17 @@ public class LoginHandler
                             + person.getId() + ") and person " + "'"
                             + foundPerson.getName() + "' " + "(id = " + foundPerson.getId()
                             + ").");
-// TODO: throw exception!!
+                        throw new EFapsException(LoginHandler.class, "notFound", persKey);
                     }
                 } catch (final IllegalAccessException e) {
                     LoginHandler.LOG.error("could not execute person key method for system " + system.getName(), e);
-// TODO: throw exception!!
+                    throw new EFapsException(LoginHandler.class, "IllegalAccessException", e);
                 } catch (final IllegalArgumentException e) {
                     LoginHandler.LOG.error("could not execute person key method for system " + system.getName(), e);
-// TODO: throw exception!!
+                    throw new EFapsException(LoginHandler.class, "IllegalArgumentException", e);
                 } catch (final InvocationTargetException e) {
                     LoginHandler.LOG.error("could not execute person key method for system " + system.getName(), e);
-// TODO: throw exception!!
+                    throw new EFapsException(LoginHandler.class, "InvocationTargetException", e);
                 }
             }
         }
@@ -200,7 +198,7 @@ public class LoginHandler
     {
         Person person = null;
 
-        for (JAASSystem system : JAASSystem.getAllJAASSystems()) {
+        for (final JAASSystem system : JAASSystem.getAllJAASSystems()) {
             final Set<?> users = _login.getSubject().getPrincipals(system.getPersonJAASPrincipleClass());
             for (final Object persObj : users) {
                 try {
@@ -214,13 +212,13 @@ public class LoginHandler
                     }
                 } catch (final IllegalAccessException e) {
                     LoginHandler.LOG.error("could not execute a person method for system " + system.getName(), e);
-// TODO: throw exception!!
+                    throw new EFapsException(LoginHandler.class, "IllegalAccessException", e);
                 } catch (final IllegalArgumentException e) {
                     LoginHandler.LOG.error("could not execute a person method for system " + system.getName(), e);
-// TODO: throw exception!!
+                    throw new EFapsException(LoginHandler.class, "IllegalArgumentException", e);
                 } catch (final InvocationTargetException e) {
                     LoginHandler.LOG.error("could not execute a person method for system " + system.getName(), e);
-// TODO: throw exception!!
+                    throw new EFapsException(LoginHandler.class, "InvocationTargetException", e);
                 }
             }
         }
@@ -252,13 +250,13 @@ public class LoginHandler
                     }
                 } catch (final IllegalAccessException e) {
                     LoginHandler.LOG.error("could not execute a person method for system " + system.getName(), e);
-// TODO: throw exception!!
+                    throw new EFapsException(LoginHandler.class, "IllegalAccessException", e);
                 } catch (final IllegalArgumentException e) {
                     LoginHandler.LOG.error("could not execute a person method for system " + system.getName(), e);
-// TODO: throw exception!!
+                    throw new EFapsException(LoginHandler.class, "IllegalArgumentException", e);
                 } catch (final InvocationTargetException e) {
                     LoginHandler.LOG.error("could not execute a person method for system " + system.getName(), e);
-// TODO: throw exception!!
+                    throw new EFapsException(LoginHandler.class, "InvocationTargetException", e);
                 }
             }
         }
@@ -281,11 +279,9 @@ public class LoginHandler
     {
         for (final JAASSystem system : JAASSystem.getAllJAASSystems()) {
             if (system.getRoleJAASPrincipleClass() != null) {
-                final Set<?> rolesJaas =
-                    _login.getSubject().getPrincipals(
-                        system.getRoleJAASPrincipleClass());
+                final Set<?> rolesJaas = _login.getSubject().getPrincipals(system.getRoleJAASPrincipleClass());
                 final Set<Role> rolesEfaps = new HashSet<Role>();
-                for (Object roleObj : rolesJaas) {
+                for (final Object roleObj : rolesJaas) {
                     try {
                         final String roleKey = (String) system.getRoleMethodKey().invoke(roleObj);
                         final Role roleEfaps = Role.getWithJAASKey(system, roleKey);
@@ -344,14 +340,14 @@ public class LoginHandler
     }
 
     /**
-     * This is the getter method for instance variable {@link #application}.
+     * This is the getter method for instance variable {@link #applicationName}.
      *
-     * @return the value of the instance variable {@link #application}.
-     * @see #application
+     * @return the value of the instance variable {@link #applicationName}.
+     * @see #applicationName
      */
-    public String getApplication()
+    public String getApplicationName()
     {
-        return this.application;
+        return this.applicationName;
     }
 
     /**

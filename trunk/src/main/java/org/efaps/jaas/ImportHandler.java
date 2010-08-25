@@ -110,15 +110,15 @@ public class ImportHandler
     {
         try {
             final LoginContext login =  new LoginContext(
-                    getApplication(),
+                    getApplicationName(),
                     new LoginCallbackHandler(ActionCallback.Mode.ALL_PERSONS, null, null));
             login.login();
-            for (JAASSystem system : JAASSystem.getAllJAASSystems()) {
+            for (final JAASSystem system : JAASSystem.getAllJAASSystems()) {
                 if (ImportHandler.LOG.isDebugEnabled()) {
                     ImportHandler.LOG.debug("check JAAS system '" + system + "'");
                 }
                 final Set<?> users = login.getSubject().getPrincipals(system.getPersonJAASPrincipleClass());
-                for (Object persObj : users) {
+                for (final Object persObj : users) {
                     if (ImportHandler.LOG.isDebugEnabled()) {
                         ImportHandler.LOG.debug("- check person '" + persObj + "'");
                     }
@@ -183,13 +183,13 @@ public class ImportHandler
      */
     protected void updatePersons()
     {
-        for (PersonMapper persMapper : this.persMappers) {
+        for (final PersonMapper persMapper : this.persMappers) {
             if (ImportHandler.LOG.isDebugEnabled()) {
                 ImportHandler.LOG.debug("update person '" + persMapper.name + "'");
             }
             try {
                 final LoginContext login =
-                    new LoginContext(getApplication(), new LoginCallbackHandler(
+                    new LoginContext(getApplicationName(), new LoginCallbackHandler(
                             ActionCallback.Mode.PERSON_INFORMATION, persMapper.name, null));
                 login.login();
 

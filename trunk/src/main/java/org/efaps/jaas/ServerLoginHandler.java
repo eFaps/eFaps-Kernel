@@ -20,7 +20,6 @@
 
 package org.efaps.jaas;
 
-import java.io.IOException;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -44,9 +43,8 @@ public class ServerLoginHandler
 {
     /**
      * @see CallbackHandler#handle(javax.security.auth.callback.Callback[])
-     * @param _callbacks
-     * @throws IOException
-     * @throws UnsupportedCallbackException
+     * @param _callbacks CallBacks
+     * @throws UnsupportedCallbackException on error
      */
     public void handle(final Callback[] _callbacks)
         throws UnsupportedCallbackException
@@ -60,9 +58,9 @@ public class ServerLoginHandler
                     name = ((NameCallback) _callbacks[i]).getDefaultName();
                 }
             } else if (_callbacks[i] instanceof PasswordCallback) {
-                pwdCallback = ((PasswordCallback) _callbacks[i]);
+                pwdCallback = (PasswordCallback) _callbacks[i];
             } else if (_callbacks[i] instanceof AuthorizeCallback) {
-                final AuthorizeCallback authCallback = ((AuthorizeCallback) _callbacks[i]);
+                final AuthorizeCallback authCallback = (AuthorizeCallback) _callbacks[i];
                 final String authenId = authCallback.getAuthenticationID();
                 final String authorId = authCallback.getAuthorizationID();
                 if (authenId.equals(authorId)) {
@@ -77,11 +75,10 @@ public class ServerLoginHandler
                 if (person != null) {
                     pwdCallback.setPassword(person.getPassword().toCharArray());
                 } else {
-// TODO: fehler schmeissen
+                    throw new UnsupportedCallbackException(pwdCallback);
                 }
             } catch (final EFapsException e) {
-// TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new UnsupportedCallbackException(pwdCallback);
             }
         }
     }

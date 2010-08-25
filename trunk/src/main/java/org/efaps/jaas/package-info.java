@@ -20,6 +20,9 @@
 
 /**
  * Package for the JAAS integration for eFaps.
+ *
+ * @author The eFaps Team
+ * @version $Id$
  */
 package org.efaps.jaas;
 
