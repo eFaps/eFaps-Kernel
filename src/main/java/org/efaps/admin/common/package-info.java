@@ -21,6 +21,9 @@
 /**
  * This package contains classes for commonly used objects inside eFaps e.g.
  * NumberGenerator, SystemConfiguration etc..
+ *
+ * @author The eFaps Team
+ * @version $Id$
  */
 package org.efaps.admin.common;
 

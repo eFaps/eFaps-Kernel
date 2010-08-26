@@ -28,9 +28,9 @@ import java.text.NumberFormat;
 import java.util.Map;
 import java.util.UUID;
 
-import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheObjectInterface;
@@ -52,9 +52,14 @@ public final class NumberGenerator
      * Select statement that will be executed against the database
      * on reading the cache.
      */
-    private static String SQL_SELECT = "select t1.ID, NAME, UUID, FORMAT"
-        + " from T_CMNUMGEN t1 "
-        + " join T_CMABSTRACT t2 on t1.id=t2.id";
+    private static String SQL_SELECT = new SQLSelect()
+                                                .column(0, "ID")
+                                                .column(0, "NAME")
+                                                .column(0, "UUID")
+                                                .column(1, "FORMAT")
+                                                .from("T_ACCESSSET")
+                                                .leftJoin("T_CMABSTRACT", 0, "ID", 1, "ID")
+                                                .getSQL();
 
     /**
      * Stores all instances of type.
@@ -181,10 +186,10 @@ public final class NumberGenerator
         }
     }
 
-
     /**
      * {@inheritDoc}
      */
+    @Override
     public long getId()
     {
         return this.id;
@@ -193,6 +198,7 @@ public final class NumberGenerator
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getName()
     {
         return this.name;
@@ -201,6 +207,7 @@ public final class NumberGenerator
     /**
      * {@inheritDoc}
      */
+    @Override
     public UUID getUUID()
     {
         return this.uuid;
@@ -230,7 +237,7 @@ public final class NumberGenerator
     }
 
     /**
-     * Returns for given parameter <i>_id</i> the instance of class {@link Type}
+     * Returns for given parameter <i>_id</i> the instance of class Type.
      * .
      *
      * @param _id id of the type to get

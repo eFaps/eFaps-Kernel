@@ -36,8 +36,6 @@ import org.quartz.Trigger;
 import org.quartz.TriggerUtils;
 import org.quartz.spi.SchedulerPlugin;
 
-
-
 /**
  * Scheduler for quartz used to get the triggers and esjps for the jobs
  * from the eFaps Database.
