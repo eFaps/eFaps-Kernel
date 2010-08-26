@@ -51,7 +51,7 @@ public class TypeValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public int append2SQLSelect(final Type _type,
                                 final SQLSelect _select,
                                 final int _tableIndex,
@@ -70,7 +70,7 @@ public class TypeValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Object getValue(final Object _currentObject)
         throws EFapsException
     {
@@ -99,7 +99,7 @@ public class TypeValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public String getValueType()
     {
         return "type";
