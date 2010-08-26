@@ -125,7 +125,7 @@ public final class RunLevel
         throws EFapsException
     {
         this.name = _name;
-        initialize(RunLevel.SELECT_RUNLEVEL.addPart(SQLPart.WHERE).addColumnPart(0, "RUNLEVEL")
+        initialize(RunLevel.SELECT_RUNLEVEL.getCopy().addPart(SQLPart.WHERE).addColumnPart(0, "RUNLEVEL")
                         .addPart(SQLPart.EQUAL).addEscapedValuePart(_name).getSQL());
     }
 
@@ -138,7 +138,7 @@ public final class RunLevel
     private RunLevel(final long _id)
         throws EFapsException
     {
-        initialize(RunLevel.SELECT_RUNLEVEL.addPart(SQLPart.WHERE).addColumnPart(0, "ID")
+        initialize(RunLevel.SELECT_RUNLEVEL.getCopy().addPart(SQLPart.WHERE).addColumnPart(0, "ID")
                         .addPart(SQLPart.EQUAL).addValuePart(_id).getSQL());
     }
 
@@ -269,7 +269,7 @@ public final class RunLevel
                 rs.close();
 
                 // read all methods for one run level
-                rs = stmt.executeQuery(RunLevel.SELECT_DEF_PRE
+                rs = stmt.executeQuery(RunLevel.SELECT_DEF_PRE.getCopy()
                                 .addPart(SQLPart.WHERE)
                                 .addColumnPart(0, "RUNLEVELID")
                                 .addPart(SQLPart.EQUAL)
