@@ -28,7 +28,8 @@ import org.efaps.util.cache.CacheReloadException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class FieldClassification extends Field
+public class FieldClassification
+    extends Field
 {
 
     /**
@@ -43,7 +44,9 @@ public class FieldClassification extends Field
      * @param _uuid     UUID of the field instance
      * @param _name     name of the field instance
      */
-    public FieldClassification(final long _id, final String _uuid, final String _name)
+    public FieldClassification(final long _id,
+                               final String _uuid,
+                               final String _name)
     {
         super(_id, _uuid, _name);
     }
@@ -65,8 +68,9 @@ public class FieldClassification extends Field
      * @throws CacheReloadException on error
      */
     @Override
-    protected void setProperty(final String _name, final String _value)
-            throws CacheReloadException
+    protected void setProperty(final String _name,
+                               final String _value)
+        throws CacheReloadException
     {
         if ("Classification".equals(_name)) {
             this.classificationName = _value;

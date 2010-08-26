@@ -87,7 +87,7 @@ public class FieldCommand
      * @param _value    value of the property
      * @throws CacheReloadException from called super property method
      */
-    @Override()
+    @Override
     protected void setProperty(final String _name,
                                final String _value)
         throws CacheReloadException

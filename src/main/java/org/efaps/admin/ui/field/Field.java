@@ -27,7 +27,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.ui.AbstractCollection;
-import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractUserInterfaceObject;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Table;
@@ -302,8 +301,9 @@ public class Field
     }
 
     /**
-     * Test, if the value of instance variable {@link AbstractCommand.target} is
-     * equal to {@link AbstractCommand.TARGET_CONTENT}.
+     * Test, if the value of instance variable
+     * {@link org.efaps.admin.ui.AbstractCommand.target} is
+     * equal to {@link org.efaps.admin.ui.AbstractCommand.TARGET_CONTENT}.
      *
      * @return <i>true</i> if value is equal, otherwise false
      * @see #target
@@ -315,8 +315,9 @@ public class Field
     }
 
     /**
-     * Test, if the value of instance variable {@link AbstractCommand.target} is
-     * equal to {@link AbstractCommand.TARGET_POPUP}.
+     * Test, if the value of instance variable
+     * {@link org.efaps.admin.ui.AbstractCommand.target} is
+     * equal to {@link org.efaps.admin.ui.AbstractCommand.TARGET_POPUP}.
      *
      * @return <i>true</i> if value is equal, otherwise false
      * @see #target
@@ -328,8 +329,9 @@ public class Field
     }
 
     /**
-     * Test, if the value of instance variable {@link AbstractCommand.target} is
-     * equal to {@link AbstractCommand.TARGET_HIDDEN}.
+     * Test, if the value of instance variable
+     * {@link org.efaps.admin.ui.AbstractCommand.target} is
+     * equal to {@link org.efaps.admin.ui.AbstractCommand.TARGET_HIDDEN}.
      *
      * @return <i>true</i> if value is equal, otherwise false
      * @see #target
