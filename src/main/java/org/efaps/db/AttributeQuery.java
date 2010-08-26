@@ -146,7 +146,7 @@ public class AttributeQuery
      * @return StringBuilder containing the statement
      * @throws EFapsException on error
      */
-    public StringBuilder getSQLStatement()
+    public String getSQLStatement()
         throws EFapsException
     {
         prepareQuery();
@@ -162,16 +162,13 @@ public class AttributeQuery
                 }
             }
         }
-
-        final StringBuilder cmd = new StringBuilder()
-            .append(select.getSQL())
-            .append(getWhere() != null ? getWhere().getSQL() : "")
-            .append(getLimit() != null ? getLimit().getSQL() : "");
+        select.addSection(getWhere());
+        select.addSection(getLimit());
 
         if (AbstractObjectQuery.LOG.isDebugEnabled()) {
-            AbstractObjectQuery.LOG.debug(cmd.toString());
+            AbstractObjectQuery.LOG.debug(select.getSQL());
         }
-        return cmd;
+        return select.getSQL();
     }
 
     /**
@@ -180,7 +177,7 @@ public class AttributeQuery
      * @return true if executed with success
      * @throws EFapsException on error
      */
-    protected boolean executeOneCompleteStmt(final StringBuilder _complStmt)
+    protected boolean executeOneCompleteStmt(final String _complStmt)
         throws EFapsException
     {
         final boolean ret = false;
