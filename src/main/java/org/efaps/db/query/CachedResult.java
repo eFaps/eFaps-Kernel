@@ -47,6 +47,7 @@ import org.joda.time.chrono.ISOChronology;
  * @version $Id$
  * TODO: description
  */
+@Deprecated
 public class CachedResult
 {
     /**

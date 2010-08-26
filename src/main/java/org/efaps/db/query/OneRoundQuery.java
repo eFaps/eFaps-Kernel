@@ -45,7 +45,9 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  * TODO: description
+ * @deprecated will be removed with version 2.0
  */
+@Deprecated
 public class OneRoundQuery
 {
 
@@ -331,7 +333,6 @@ public class OneRoundQuery
     public Object getMultiLineValue() throws Exception
     {
 
-        Object ret = null;
         final Map<Integer, String> indexes = new HashMap<Integer, String>();
 
         for (final SQLTableMapping2Attributes sql2attr : this.sqlTableMappings.values()) {
