@@ -18,31 +18,11 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.program.esjp;
-
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 /**
- * Annotation for the Usecase of an esjp.
+ * The esjp classes. <b>e</b>Faps <b>s</b>tored <b>j</b>ava <b>p</b>rograms.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-@Documented
-@Retention(RUNTIME)
-@Target(TYPE)
-@Inherited
-public @interface EFapsUseCase
-{
+package org.efaps.admin.program.esjp;
 
-    /**
-     * Values.
-     */
-    String[] value();
-}

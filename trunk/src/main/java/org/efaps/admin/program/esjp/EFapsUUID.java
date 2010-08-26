@@ -31,13 +31,17 @@ import java.lang.annotation.Target;
 /**
  * Annotation for the UUID of an esjp.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
 @Documented
 @Retention(RUNTIME)
 @Target(TYPE)
 @Inherited
-public @interface EFapsUUID {
-  String value();
+public @interface EFapsUUID
+{
+    /**
+     * Value.
+     */
+    String value();
 }
