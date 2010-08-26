@@ -40,6 +40,7 @@ import org.efaps.db.print.OneSelect;
 import org.efaps.db.print.Phrase;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -611,7 +612,7 @@ public abstract class AbstractPrintQuery
      *
      * @return StringBuilder containing the SQL statement
      */
-    private StringBuilder createSQLStatement()
+    private String createSQLStatement()
     {
 
         final SQLSelect select = new SQLSelect()
@@ -635,27 +636,22 @@ public abstract class AbstractPrintQuery
             }
         }
 
-        final StringBuilder whereBldr = new StringBuilder();
-        whereBldr.append(" where T0.ID in (");
+        select.addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
         boolean first = true;
         for (final Instance instance : getInstanceList()) {
             if (first) {
                 first = false;
             } else {
-                whereBldr.append(",");
+                select.addPart(SQLPart.COMMA);
             }
-            whereBldr.append(instance.getId());
+            select.addValuePart(instance.getId());
         }
-        whereBldr.append(")");
-
-        final StringBuilder cmd = new StringBuilder()
-                .append(select.getSQL())
-                .append(whereBldr);
+        select.addPart(SQLPart.PARENTHESIS_CLOSE);
 
         if (AbstractPrintQuery.LOG.isDebugEnabled()) {
-            AbstractPrintQuery.LOG.debug(cmd.toString());
+            AbstractPrintQuery.LOG.debug(select.getSQL());
         }
-        return cmd;
+        return select.getSQL();
     }
 
     /**
@@ -667,7 +663,7 @@ public abstract class AbstractPrintQuery
      * @return true if the query contains values, else false
      * @throws EFapsException on error
      */
-    protected boolean executeOneCompleteStmt(final StringBuilder _complStmt,
+    protected boolean executeOneCompleteStmt(final String _complStmt,
                                              final List<OneSelect> _oneSelects)
         throws EFapsException
     {
