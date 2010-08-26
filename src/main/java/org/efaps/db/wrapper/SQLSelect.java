@@ -39,6 +39,8 @@ public class SQLSelect
      * Simple SQLpart.
      */
     public enum SQLPart {
+        /** all. */
+        ALL("all"),
         /** and. */
         AND("and"),
         /** asc. */
@@ -93,6 +95,8 @@ public class SQLSelect
         TIMESTAMP("timestamp"),
         /** TRUE. */
         TRUE("TRUE"),
+        /** union. */
+        UNION("union"),
         /** !=. */
         UNEQUAL("!="),
         /** upper. */
@@ -257,7 +261,7 @@ public class SQLSelect
     public String getSQL()
     {
         final StringBuilder cmd = new StringBuilder().append(" ")
-                        .append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.SELECT)).append(" ");
+            .append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.SELECT)).append(" ");
         if (this.distinct) {
             cmd.append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.DISTINCT)).append(" ");
         }
