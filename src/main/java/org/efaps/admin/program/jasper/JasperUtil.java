@@ -254,7 +254,7 @@ public final class JasperUtil
         for (final Iterator iterator = _dynReport.getColumns().iterator(); iterator.hasNext();) {
             final AbstractColumn column = (AbstractColumn) iterator.next();
             if (column instanceof PercentageColumn) {
-                final PercentageColumn percentageColumn = ((PercentageColumn) column);
+                final PercentageColumn percentageColumn = (PercentageColumn) column;
                 for (final Iterator iterator2 = _dynReport.getColumnsGroups().iterator(); iterator2.hasNext();) {
                     final DJGroup djGroup = (DJGroup) iterator2.next();
                     final JRDesignGroup jrGroup = LayoutUtils.getJRDesignGroup(_dynDesign, _layoutManager, djGroup);
