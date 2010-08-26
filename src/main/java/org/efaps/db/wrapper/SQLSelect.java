@@ -289,6 +289,19 @@ public class SQLSelect
         return this;
     }
 
+    /**
+     * @return get a new instance of this SQLSelect
+     */
+    public SQLSelect getCopy()
+    {
+        final SQLSelect select = new SQLSelect();
+        select.columns.addAll(this.columns);
+        select.parts.addAll(this.parts);
+        select.fromTables.addAll(this.fromTables);
+        select.distinct = this.distinct;
+        return select;
+    }
+
     @Override
     public String toString()
     {
