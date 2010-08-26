@@ -21,7 +21,7 @@
 package org.efaps.db;
 
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.access.AccessTypeEnums;
@@ -33,9 +33,9 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.db.store.Resource;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLDelete;
+import org.efaps.db.wrapper.SQLDelete.DeleteDefintion;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The class is used as interface to the eFaps kernel to delete one object.
@@ -45,11 +45,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Delete
 {
-    /**
-     * Logging instance used in this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(Delete.class);
-
     /**
      * The instance variable stores the instance for which this update is made.
      *
@@ -155,50 +150,27 @@ public class Delete
     public void executeWithoutTrigger()
         throws EFapsException
     {
-        final   Context context = Context.getThreadContext();
+        final Context context = Context.getThreadContext();
         ConnectionResource con = null;
 
         try {
             con = context.getConnectionResource();
-
-            Statement stmt = null;
             try {
-                stmt = con.getConnection().createStatement();
-
+                final List<DeleteDefintion> defs = new ArrayList<DeleteDefintion>();
                 final SQLTable mainTable = getInstance().getType().getMainTable();
                 for (final SQLTable curTable : getInstance().getType().getTables()) {
                     if ((curTable != mainTable) && !curTable.isReadOnly()) {
-                        final StringBuilder buf = new StringBuilder()
-                            .append("delete from ").append(curTable.getSqlTable()).append(" ")
-                            .append("where ").append(curTable.getSqlColId()).append("=")
-                            .append(getInstance().getId()).append("");
-                        if (Delete.LOG.isTraceEnabled()) {
-                            Delete.LOG.trace(buf.toString());
-                        }
-                        stmt.addBatch(buf.toString());
+                        defs.add(new DeleteDefintion(curTable.getSqlTable(),
+                                        curTable.getSqlColId(), getInstance().getId()));
                     }
                 }
-                final StringBuilder buf = new StringBuilder()
-                    .append("delete from ").append(mainTable.getSqlTable()).append(" ")
-                    .append("where ").append(mainTable.getSqlColId()).append("=")
-                    .append(getInstance().getId()).append("");
-                if (Delete.LOG.isTraceEnabled()) {
-                    Delete.LOG.trace(buf.toString());
-                }
-                stmt.addBatch(buf.toString());
+                defs.add(new DeleteDefintion(mainTable.getSqlTable(), mainTable.getSqlColId(), getInstance().getId()));
+                final SQLDelete delete = Context.getDbType().newDelete(defs.toArray(new DeleteDefintion[defs.size()]));
+                delete.execute(con.getConnection());
 
-                stmt.executeBatch();
             } catch (final SQLException e) {
                 throw new EFapsException(getClass(),
                                          "executeWithoutAccessCheck.SQLException", e, this.instance);
-            } finally {
-                try {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                } catch (final SQLException e) {
-                    Delete.LOG.warn("Catched SQLException in class:" + Delete.class);
-                }
             }
             con.commit();
         } finally {
