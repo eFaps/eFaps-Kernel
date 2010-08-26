@@ -38,6 +38,8 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.AbstractUserInterfaceObject;
 import org.efaps.db.Context;
+import org.efaps.db.wrapper.SQLPart;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
@@ -48,7 +50,8 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractAdminObject implements CacheObjectInterface
+public abstract class AbstractAdminObject
+    implements CacheObjectInterface
 {
 
     /**
@@ -91,9 +94,6 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
      */
     private final Map<EventType, List<EventDefinition>> events = new HashMap<EventType, List<EventDefinition>>();
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // constructors
-
     /**
      * Constructor to set instance variables {@link #id}, {@link #uuid} and
      * {@link #name} of this administrational object.
@@ -105,7 +105,9 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
      * @see #uuid
      * @see #name
      */
-    protected AbstractAdminObject(final long _id, final String _uuid, final String _name)
+    protected AbstractAdminObject(final long _id,
+                                  final String _uuid,
+                                  final String _name)
     {
         this.id = _id;
         this.uuid = (_uuid == null) ? null : UUID.fromString(_uuid.trim());
@@ -138,7 +140,9 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
      * @see #properties
      * @throws CacheReloadException on error
      */
-    protected void setProperty(final String _name, final String _value) throws CacheReloadException
+    protected void setProperty(final String _name,
+                               final String _value)
+        throws CacheReloadException
     {
         getProperties().put(_name, _value);
     }
@@ -201,7 +205,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
      */
     public boolean hasEvents(final EventType _eventtype)
     {
-        return (this.events.get(_eventtype) != null);
+        return this.events.get(_eventtype) != null;
     }
 
     /**
@@ -215,7 +219,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
      * @throws EFapsException on error
      */
     public List<Return> executeEvents(final EventType _eventtype, final Object... _args)
-            throws EFapsException
+        throws EFapsException
     {
         final List<Return> ret = new ArrayList<Return>();
         if (hasEvents(_eventtype)) {
@@ -243,7 +247,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
      * @throws EFapsException on error
      */
     public List<Return> executeEvents(final EventType _eventtype, final Parameter _param)
-            throws EFapsException
+        throws EFapsException
     {
         final List<Return> ret = new ArrayList<Return>();
         if (hasEvents(_eventtype)) {
@@ -271,8 +275,16 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
         Statement stmt = null;
         try {
             stmt = Context.getThreadContext().getConnection().createStatement();
-            final ResultSet rs = stmt.executeQuery("select " + "T_CMPROPERTY.NAME," + "T_CMPROPERTY.VALUE "
-                            + "from T_CMPROPERTY " + "where T_CMPROPERTY.ABSTRACT=" + getId() + "");
+            final SQLSelect select = new SQLSelect()
+                                            .column("NAME")
+                                            .column("VALUE")
+                                            .from("T_CMPROPERTY")
+                                            .addPart(SQLPart.WHERE)
+                                            .addColumnPart(null, "ABSTRACT")
+                                            .addPart(SQLPart.EQUAL)
+                                            .addValuePart(getId());
+
+            final ResultSet rs = stmt.executeQuery(select.getSQL());
             while (rs.next()) {
                 final String nameStr = rs.getString(1).trim();
                 final String value = rs.getString(2).trim();
@@ -307,14 +319,19 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
         Statement stmt = null;
         try {
             stmt = Context.getThreadContext().getConnection().createStatement();
-            final ResultSet resultset = stmt.executeQuery("select "
-                            + "T_CMABSTRACT2ABSTRACT.TYPEID,"
-                            + "T_CMABSTRACT2ABSTRACT.TOID,"
-                            + "T_CMABSTRACT.TYPEID,"
-                            + "T_CMABSTRACT.NAME "
-                            + "from T_CMABSTRACT2ABSTRACT, T_CMABSTRACT "
-                            + "where T_CMABSTRACT2ABSTRACT.FROMID=" + getId()
-                            + " and T_CMABSTRACT2ABSTRACT.TOID=T_CMABSTRACT.ID");
+            final SQLSelect select = new SQLSelect()
+                                            .column(0, "TYPEID")
+                                            .column(0, "TOID")
+                                            .column(1, "TYPEID")
+                                            .column(1, "NAME")
+                                            .from("T_CMABSTRACT2ABSTRACT")
+                                            .leftJoin("T_CMABSTRACT", 1, "ID", 0, "ID")
+                                            .addPart(SQLPart.WHERE)
+                                            .addColumnPart(0, "FROMID")
+                                            .addPart(SQLPart.EQUAL)
+                                            .addValuePart(getId());
+
+            final ResultSet resultset = stmt.executeQuery(select.getSQL());
 
             while (resultset.next()) {
                 final long conTypeId = resultset.getLong(1);
@@ -328,7 +345,9 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
                 }
             }
             resultset.close();
+            //CHECKSTYLE:OFF
         } catch (final Exception e) {
+            //CHECKSTYLE:ON
             throw new CacheReloadException("could not read db links for " + "'" + getName() + "'", e);
         } finally {
             if (stmt != null) {
@@ -409,5 +428,4 @@ public abstract class AbstractAdminObject implements CacheObjectInterface
         return new ToStringBuilder(this).append("name", getName()).append("uuid", getUUID()).append("id", getId())
                         .append("properties", getProperties()).append("events", this.events).toString();
     }
-
 }
