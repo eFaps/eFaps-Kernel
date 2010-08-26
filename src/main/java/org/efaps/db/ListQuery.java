@@ -39,7 +39,9 @@ import org.efaps.util.EFapsException;
  * TODO:  description
  * @author The eFaps Team
  * @version $Id$
+ * @deprecated will be removed for 2.0
  */
+@Deprecated
 public class ListQuery
     extends AbstractQuery
 {
@@ -76,7 +78,7 @@ public class ListQuery
 
     // ///////////////////////////////////////////////////////////////////////////
     // instance methods
-
+    @Deprecated
     @Override
     public void execute() throws EFapsException
     {
