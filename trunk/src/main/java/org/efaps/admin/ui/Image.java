@@ -137,7 +137,7 @@ public class Image
      * @see #getCache
      */
     public static Image get(final String _name)
-            throws CacheReloadException
+        throws CacheReloadException
     {
         return Image.CACHE.get(_name);
     }
@@ -152,7 +152,7 @@ public class Image
      * @see #getCache
      */
     public static Image get(final UUID _uuid)
-            throws CacheReloadException
+        throws CacheReloadException
     {
         return Image.CACHE.get(_uuid);
     }

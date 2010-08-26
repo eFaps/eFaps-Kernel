@@ -25,7 +25,6 @@ import java.util.UUID;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author The eFaps Team
@@ -69,7 +68,6 @@ public class Search
      *
      * @param _sortId id used to sort
      * @param _id command / menu id
-     * @throws CacheReloadException
      */
     @Override
     protected void add(final long _sortId,
@@ -120,16 +118,12 @@ public class Search
         return this.defaultCommand;
     }
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // static methods
-
     /**
      * Returns for given parameter <i>_id</i> the instance of class {@link Form}
      * .
      *
      * @param _id id to search in the cache
      * @return instance of class {@link Form}
-     * @throws CacheReloadException
      * @see #getCache
      */
     public static Search get(final long _id)

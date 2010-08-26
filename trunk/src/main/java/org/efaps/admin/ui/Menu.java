@@ -27,7 +27,6 @@ import java.util.UUID;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +75,6 @@ public class Menu
      *
      * @param _sortId id used to sort
      * @param _id command / menu id
-     * @throws CacheReloadException
      */
     @Override
     protected void add(final long _sortId,
@@ -120,15 +118,12 @@ public class Menu
         }
     }
 
-    // ///////////////////////////////////////////////////////////////////////////
-
     /**
      * Returns for given parameter <i>_id</i> the instance of class {@link Menu}
      * .
      *
      * @param _id id to search in the cache
      * @return instance of class {@link Menu}
-     * @throws CacheReloadException
      * @see #getCache
      */
     public static Menu get(final long _id)
@@ -142,7 +137,6 @@ public class Menu
      *
      * @param _name name to search in the cache
      * @return instance of class {@link Menu}
-     * @throws CacheReloadException
      * @see #getCache
      */
     public static Menu get(final String _name)
@@ -156,7 +150,6 @@ public class Menu
      *
      * @param _uuid UUID to search in the cache
      * @return instance of class {@link Menu}
-     * @throws CacheReloadException
      * @see #getCache
      */
     public static Menu get(final UUID _uuid)

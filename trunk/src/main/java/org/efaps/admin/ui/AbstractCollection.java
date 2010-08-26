@@ -48,7 +48,8 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  *
  */
-public abstract class AbstractCollection extends AbstractUserInterfaceObject
+public abstract class AbstractCollection
+    extends AbstractUserInterfaceObject
 {
     /**
      * Instance variable for all field expressions.
@@ -111,7 +112,8 @@ public abstract class AbstractCollection extends AbstractUserInterfaceObject
         this.fieldName2Field.put(_field.getName(), _field);
         if (_field.getReference() != null && _field.getReference().length() > 0) {
             final String ref = _field.getReference();
-            int index, end = 0;
+            int index;
+            int end = 0;
             while ((index = ref.indexOf("$<", end)) > 0) {
                 index += 2;
                 end = ref.indexOf(">", index);

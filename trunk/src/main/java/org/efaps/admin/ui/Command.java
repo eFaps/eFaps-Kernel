@@ -26,8 +26,6 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
 
-
-
 /**
  * @author The eFaps Team
  * @version $Id$
@@ -105,9 +103,16 @@ public class Command
         return Command.CACHE.get(_name);
     }
 
+    /**
+     * Cache for Commands.
+     */
     private static class CommandCache
         extends AbstractUserInterfaceObjectCache<Command>
     {
+
+        /**
+         *
+         */
         protected CommandCache()
         {
             super(Command.class);

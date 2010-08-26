@@ -901,7 +901,7 @@ public abstract class AbstractCommand
         } else if ("DefaultSelected".equals(_name)) {
             this.defaultSelected = "true".equalsIgnoreCase(_value);
         } else if ("HRef".equals(_name)) {
-            this.reference = (RequestHandler.replaceMacrosInUrl(_value));
+            this.reference = RequestHandler.replaceMacrosInUrl(_value);
         } else if ("Label".equals(_name)) {
             this.label = _value;
         } else if ("Submit".equals(_name)) {
@@ -910,37 +910,37 @@ public abstract class AbstractCommand
             this.submitSelectedRows = Integer.parseInt(_value);
         } else if ("Target".equals(_name)) {
             if ("content".equals(_value)) {
-                this.target = (AbstractCommand.Target.CONTENT);
+                this.target = AbstractCommand.Target.CONTENT;
             } else if ("hidden".equals(_value)) {
-                this.target = (AbstractCommand.Target.HIDDEN);
+                this.target = AbstractCommand.Target.HIDDEN;
             } else if ("popup".equals(_value)) {
-                this.target = (AbstractCommand.Target.POPUP);
+                this.target = AbstractCommand.Target.POPUP;
             } else if ("modal".equals(_value)) {
-                this.target = (AbstractCommand.Target.MODAL);
+                this.target = AbstractCommand.Target.MODAL;
             }
         } else if ("TargetBottomHeight".equals(_name)) {
-            this.targetBottomHeight = (Integer.parseInt(_value));
+            this.targetBottomHeight = Integer.parseInt(_value);
         } else if ("TargetCmdRevise".equals(_name)) {
-            this.targetCmdRevise = ("TRUE".equalsIgnoreCase(_value));
+            this.targetCmdRevise = "TRUE".equalsIgnoreCase(_value);
         } else if ("TargetConnectAttribute".equals(_name)) {
-            this.targetConnectAttribute = (Attribute.get(_value));
+            this.targetConnectAttribute = Attribute.get(_value);
         } else if ("TargetCreateType".equals(_name)) {
-            this.targetCreateType = (Type.get(_value));
+            this.targetCreateType = Type.get(_value);
         } else if ("TargetCreateClassifications".equals(_name)) {
             setTargetCreateClassifications(_value);
         } else if ("TargetDefaultMenu".equals(_name)) {
             this.targetDefaultMenu = "none".equalsIgnoreCase(_value);
         } else if ("TargetMode".equals(_name)) {
             if ("create".equals(_value)) {
-                this.targetMode = (TargetMode.CREATE);
+                this.targetMode = TargetMode.CREATE;
             } else if ("edit".equals(_value)) {
-                this.targetMode = (TargetMode.EDIT);
+                this.targetMode = TargetMode.EDIT;
             } else if ("connect".equals(_value)) {
-                this.targetMode = (TargetMode.CONNECT);
+                this.targetMode = TargetMode.CONNECT;
             } else if ("search".equals(_value)) {
-                this.targetMode = (TargetMode.SEARCH);
+                this.targetMode = TargetMode.SEARCH;
             } else if ("view".equals(_value)) {
-                this.targetMode = (TargetMode.VIEW);
+                this.targetMode = TargetMode.VIEW;
             }
         } else if ("TargetShowCheckBoxes".equals(_name)) {
             this.targetShowCheckBoxes = "true".equalsIgnoreCase(_value);
@@ -962,9 +962,9 @@ public abstract class AbstractCommand
         } else if ("TargetStructurBrowserField".equals(_name)) {
             this.targetStructurBrowserField = _value.trim();
         } else if ("WindowHeight".equals(_name)) {
-            this.windowHeight = (Integer.parseInt(_value));
+            this.windowHeight = Integer.parseInt(_value);
         } else if ("WindowWidth".equals(_name)) {
-            this.windowWidth = (Integer.parseInt(_value));
+            this.windowWidth = Integer.parseInt(_value);
         } else {
             super.setProperty(_name, _value);
         }

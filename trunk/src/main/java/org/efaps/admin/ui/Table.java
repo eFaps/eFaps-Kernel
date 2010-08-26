@@ -20,13 +20,10 @@
 
 package org.efaps.admin.ui;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUserInterface;
-import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**
@@ -58,25 +55,6 @@ public class Table
                  final String _name)
     {
         super(_id, _uuid, _name);
-    }
-
-    /**
-     * The instance method returns the title of the table.
-     *
-     * @param _context context for this request
-     * @return title of the form
-     */
-    public String getViewableName(final Context _context)
-    {
-        // TODO: method really required?
-        String title = "";
-        final ResourceBundle msgs = ResourceBundle.getBundle("org.efaps.properties.AttributeRessource",
-                                                             _context.getLocale());
-        try {
-            title = msgs.getString("Table.Title." + getName());
-        } catch (final MissingResourceException e) {
-        }
-        return title;
     }
 
     /**
@@ -144,10 +122,16 @@ public class Table
         return Table.CACHE;
     }
 
+    /**
+     * Cache for Tables.
+     */
     private static class TableCache
         extends AbstractUserInterfaceObjectCache<Table>
     {
 
+        /**
+         *
+         */
         protected TableCache()
         {
             super(Table.class);
