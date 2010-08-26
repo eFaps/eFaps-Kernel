@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 
 
@@ -79,20 +81,20 @@ public class QAnd
      * {@inheritDoc}
      */
     @Override
-    public QAnd appendSQL(final StringBuilder _sql)
+    public QAnd appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
-        _sql.append("(");
+        _sql.addPart(SQLPart.PARENTHESIS_OPEN);
         boolean first = true;
         for (final AbstractQPart part : this.parts) {
             if (first) {
                 first = false;
             } else {
-                _sql.append(" AND ");
+                _sql.addPart(SQLPart.AND);
             }
             part.appendSQL(_sql);
         }
-        _sql.append(")");
+        _sql.addPart(SQLPart.PARENTHESIS_CLOSE);
         return this;
     }
 

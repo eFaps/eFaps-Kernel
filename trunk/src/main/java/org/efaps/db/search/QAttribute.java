@@ -23,8 +23,9 @@ package org.efaps.db.search;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.AbstractObjectQuery;
-import org.efaps.db.Context;
 import org.efaps.db.search.compare.AbstractQAttrCompare;
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 
 
 /**
@@ -95,19 +96,14 @@ public class QAttribute
      * {@inheritDoc}
      */
     @Override
-    public AbstractQPart appendSQL(final StringBuilder _sql)
+    public AbstractQPart appendSQL(final SQLSelect _sql)
     {
         if (this.ignoreCase) {
-            _sql.append("UPPER(");
+            _sql.addPart(SQLPart.UPPER).addPart(SQLPart.PARENTHESIS_OPEN);
         }
-        if (this.tableIndex != null)  {
-            _sql.append('T').append(this.tableIndex).append('.');
-        }
-        _sql.append(Context.getDbType().getTableQuote())
-            .append(this.attribute.getSqlColNames().get(0))
-            .append(Context.getDbType().getTableQuote());
+        _sql.addColumnPart(this.tableIndex, this.attribute.getSqlColNames().get(0));
         if (this.ignoreCase) {
-            _sql.append(")");
+            _sql.addPart(SQLPart.PARENTHESIS_CLOSE);
         }
         return this;
     }

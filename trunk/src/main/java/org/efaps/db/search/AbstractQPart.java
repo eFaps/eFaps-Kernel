@@ -22,8 +22,8 @@
 package org.efaps.db.search;
 
 import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-
 
 /**
  * Part of a statement.
@@ -41,7 +41,7 @@ public abstract class AbstractQPart
      * @return this AbstractPart
      * @throws EFapsException on any error
      */
-    public abstract AbstractQPart appendSQL(final StringBuilder _sql)
+    public abstract AbstractQPart appendSQL(final SQLSelect _sql)
         throws EFapsException;
 
     /**

@@ -21,6 +21,8 @@
 
 package org.efaps.db.search;
 
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 
 
@@ -47,20 +49,20 @@ public class QOr
      * {@inheritDoc}
      */
     @Override
-    public QOr appendSQL(final StringBuilder _sql)
+    public QOr appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
-        _sql.append("(");
+        _sql.addPart(SQLPart.PARENTHESIS_OPEN);
         boolean first = true;
         for (final AbstractQPart part : getParts()) {
             if (first) {
                 first = false;
             } else {
-                _sql.append(" OR ");
+                _sql.addPart(SQLPart.OR);
             }
             part.appendSQL(_sql);
         }
-        _sql.append(")");
+        _sql.addPart(SQLPart.PARENTHESIS_CLOSE);
         return this;
     }
 }
