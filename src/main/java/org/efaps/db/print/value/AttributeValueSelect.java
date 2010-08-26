@@ -86,7 +86,7 @@ public class AttributeValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Attribute getAttribute()
     {
         return this.attribute;
@@ -105,7 +105,7 @@ public class AttributeValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Object getValue(final Object _object)
         throws EFapsException
     {
@@ -117,7 +117,7 @@ public class AttributeValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Object getValue(final List<Object> _objectList)
         throws EFapsException
     {
@@ -169,14 +169,14 @@ public class AttributeValueSelect
     {
         final List<Object> tmpRetList = new ArrayList<Object>();
         if (_existingVal instanceof Object[]) {
-            for (final Object object : ((Object[]) _existingVal)) {
+            for (final Object object : (Object[]) _existingVal) {
                 tmpRetList.add(object);
             }
         } else {
             tmpRetList.add(_existingVal);
         }
         if (_toAdd instanceof Object[]) {
-            for (final Object object : ((Object[]) _toAdd)) {
+            for (final Object object : (Object[]) _toAdd) {
                 tmpRetList.add(object);
             }
         } else {
@@ -188,7 +188,7 @@ public class AttributeValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public int append2SQLSelect(final Type _type,
                                 final SQLSelect _select,
                                 final int _tableIndex,
@@ -217,7 +217,7 @@ public class AttributeValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public String getValueType()
     {
         return "attribute";

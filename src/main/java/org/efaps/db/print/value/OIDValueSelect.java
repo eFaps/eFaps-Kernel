@@ -59,7 +59,7 @@ public class OIDValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public int append2SQLSelect(final Type _type,
                                 final SQLSelect _select,
                                 final int _tableIndex,
@@ -87,7 +87,7 @@ public class OIDValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Object getValue(final Object _object)
         throws EFapsException
     {
@@ -113,7 +113,7 @@ public class OIDValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Object getValue(final List<Object> _objectList)
         throws EFapsException
     {
@@ -127,7 +127,7 @@ public class OIDValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public String getValueType()
     {
         return "oid";
@@ -136,7 +136,7 @@ public class OIDValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Attribute getAttribute()
     {
         return this.attribute;

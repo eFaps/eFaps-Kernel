@@ -21,6 +21,7 @@
 package org.efaps.db.print.value;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +38,8 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.print.OneSelect;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 
 /**
@@ -149,9 +152,11 @@ public class ClassificationValueSelect
     /**
      * Method to get the values for the instances.
      *
+     * @param _oid oid of the current instance
      * @throws EFapsException on error
      */
-    private void getValues4Instances(final String _oid) throws EFapsException
+    private void getValues4Instances(final String _oid)
+        throws EFapsException
     {
         // group the instance by type
         // check if the current instance is the list (happens if this
@@ -160,12 +165,12 @@ public class ClassificationValueSelect
         final Instance currentInst = Instance.get(_oid);
         final List<Instance> instances = new ArrayList<Instance>();
         if (getOneSelect().getQuery().getInstanceList().contains(currentInst)) {
-           instances.addAll(getOneSelect().getQuery().getInstanceList());
+            instances.addAll(getOneSelect().getQuery().getInstanceList());
         } else {
             for (final Object object : getOneSelect().getObjectList()) {
-               final String oid =  (String) super.getValue(object);
-                   instances.add(Instance.get(oid));
-              }
+                final String oid =  (String) super.getValue(object);
+                instances.add(Instance.get(oid));
+            }
         }
 
         for (final Instance instance : instances) {
@@ -181,7 +186,7 @@ public class ClassificationValueSelect
 
         // make one union part for every type
         for (final Entry<Type, List<Instance>> entry : type2instance.entrySet()) {
-            final StringBuilder selBldr = new StringBuilder();
+
             boolean union = false;
             final Set<Classification> classTypes = new HashSet<Classification>();
             Type curr = entry.getKey();
@@ -190,37 +195,50 @@ public class ClassificationValueSelect
                 curr = curr.getParentType();
             }
             classTypes.addAll(curr.getClassifiedByTypes());
+            final SQLSelect unionSelect = new SQLSelect();
             for (final Classification clazz : classTypes) {
+
                 final Attribute typeAttr = clazz.getClassifyRelationType()
                                 .getAttribute(clazz.getRelTypeAttributeName());
                 final Attribute linkAttr = clazz.getClassifyRelationType()
                                 .getAttribute(clazz.getRelLinkAttributeName());
+                final SQLSelect select;
                 if (union) {
-                    selBldr.append(" union all ");
+                    unionSelect.addPart(SQLPart.UNION).addPart(SQLPart.ALL);
+                    select = new SQLSelect();
                 } else {
+                    select = unionSelect;
                     union = true;
                 }
-                selBldr.append(" select T0.ID,T0.").append(linkAttr.getSqlColNames().get(0)).append(",T0.")
-                    .append(typeAttr.getSqlColNames().get(0))
-                    .append(" from ").append(clazz.getClassifyRelationType().getMainTable().getSqlTable()).append(" T0")
-                    .append(" where T0.").append(linkAttr.getSqlColNames().get(0)).append(" in (");
+                select.column(0, "ID")
+                    .column(0, linkAttr.getSqlColNames().get(0))
+                    .column(0, typeAttr.getSqlColNames().get(0))
+                    .from(clazz.getClassifyRelationType().getMainTable().getSqlTable(), 0)
+                    .addPart(SQLPart.WHERE)
+                    .addColumnPart(0, linkAttr.getSqlColNames().get(0))
+                    .addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
+
                 boolean first = true;
                 for (final Instance instance : entry.getValue()) {
                     if (first) {
                         first = false;
                     } else {
-                        selBldr.append(",");
+                        select.addPart(SQLPart.COMMA);
                     }
-                    selBldr.append(instance.getId());
+                    select.addValuePart(instance.getId());
                 }
-                selBldr.append(")");
+                select.addPart(SQLPart.PARENTHESIS_CLOSE);
                 if (clazz.getClassifyRelationType().getMainTable().getSqlColType() != null) {
-                    selBldr.append(" and TO.").append(clazz.getClassifyRelationType().getMainTable().getSqlColType())
-                        .append("=").append(clazz.getClassifyRelationType().getId());
+                    select.addPart(SQLPart.AND)
+                        .addColumnPart(0, clazz.getClassifyRelationType().getMainTable().getSqlColType())
+                        .addPart(SQLPart.EQUAL).addValuePart(clazz.getClassifyRelationType().getId());
+                }
+                if (union) {
+                    unionSelect.addNestedSelectPart(select.getSQL());
                 }
             }
             if (classTypes.size() > 0) {
-                executeOneCompleteStmt(selBldr, entry.getValue());
+                executeOneCompleteStmt(unionSelect.getSQL(), entry.getValue());
             }
         }
     }
@@ -233,7 +251,7 @@ public class ClassificationValueSelect
      * @return true it values where found
      * @throws EFapsException on error
      */
-    protected boolean executeOneCompleteStmt(final StringBuilder _complStmt,
+    protected boolean executeOneCompleteStmt(final String _complStmt,
                                              final List<Instance> _instances)
         throws EFapsException
     {
@@ -264,19 +282,13 @@ public class ClassificationValueSelect
             rs.close();
             stmt.close();
             con.commit();
-        } catch (final EFapsException e) {
-            if (con != null) {
+        } catch (final SQLException e) {
+            throw new EFapsException(ClassificationValueSelect.class, "executeOneCompleteStmt", e);
+        } finally {
+            if (con != null && con.isOpened()) {
                 con.abort();
             }
-            throw e;
-        } catch (final Throwable e) {
-            if (con != null) {
-                con.abort();
-            }
-            // TODO: exception eintragen!
-            throw new EFapsException(getClass(), "executeOneCompleteStmt.Throwable", e);
         }
         return ret;
     }
-
 }

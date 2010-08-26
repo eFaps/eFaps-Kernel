@@ -33,7 +33,8 @@ import org.efaps.db.wrapper.SQLSelect;
  * @author The eFaps Team
  * @version $Id$
  */
-public class IDValueSelect extends AbstractValueSelect
+public class IDValueSelect
+    extends AbstractValueSelect
 {
     /**
      * Attribute belonging to this IDValueSelect.
@@ -51,7 +52,7 @@ public class IDValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public int append2SQLSelect(final Type _type,
                                 final SQLSelect _select,
                                 final int _tableIndex,
@@ -70,7 +71,7 @@ public class IDValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Attribute getAttribute()
     {
         return this.attribute;
@@ -79,7 +80,7 @@ public class IDValueSelect extends AbstractValueSelect
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public String getValueType()
     {
         return "id";
