@@ -34,6 +34,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 
 /**
@@ -128,10 +129,10 @@ public class LinkFromSelect
      * Method to create on Statement out of the different parts.
      *
      * @param _parentOnesel instance
-     * @return StringBuilder containing the SQL statement
+     * @return String containing the SQL statement
      * @throws EFapsException on error
      */
-    private StringBuilder createSQLStatement(final OneSelect _parentOnesel)
+    private String createSQLStatement(final OneSelect _parentOnesel)
         throws EFapsException
     {
         final Attribute attr = this.type.getAttribute(this.attrName);
@@ -149,9 +150,10 @@ public class LinkFromSelect
         for (final OneSelect oneSel : getAllSelects()) {
             colIndex += oneSel.append2SQLSelect(select, colIndex);
         }
+        select.addPart(SQLPart.WHERE)
+            .addColumnPart(0, attr.getSqlColNames().get(0))
+            .addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
 
-        final StringBuilder whereBldr = new StringBuilder();
-        whereBldr.append(" where T0.").append(attr.getSqlColNames().get(0)).append(" in (");
         if (_parentOnesel.isMultiple()) {
             boolean first = true;
             final List<?> ids = (List<?>) _parentOnesel.getObject();
@@ -159,43 +161,42 @@ public class LinkFromSelect
                 if (first) {
                     first = false;
                 } else {
-                    whereBldr.append(",");
+                    select.addPart(SQLPart.COMMA);
                 }
-                whereBldr.append(id);
+                select.addValuePart(id);
             }
         } else {
-            whereBldr.append(_parentOnesel.getObject());
+            select.addValuePart(_parentOnesel.getObject());
         }
+        select.addPart(SQLPart.PARENTHESIS_CLOSE);
 
-        whereBldr.append(")");
         _parentOnesel.setValueSelect(null);
 
         // in a subquery the type must also be set
         if (this.type.getMainTable().getSqlColType() != null) {
-            whereBldr.append(" and T0.").append(this.type.getMainTable().getSqlColType()).append(" in (");
+            select.addPart(SQLPart.AND)
+                .addColumnPart(0, this.type.getMainTable().getSqlColType())
+                .addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
             boolean first = true;
             if (this.type.isAbstract()) {
                 for (final Type atype : getAllChildTypes(this.type)) {
                     if (first) {
                         first = false;
                     } else {
-                        whereBldr.append(",");
+                        select.addPart(SQLPart.COMMA);
                     }
-                    whereBldr.append(atype.getId());
+                    select.addValuePart(atype.getId());
                 }
             } else {
-                whereBldr.append(this.type.getId());
+                select.addValuePart(this.type.getId());
             }
-            whereBldr.append(") ");
+            select.addPart(SQLPart.PARENTHESIS_CLOSE);
         }
 
-        final StringBuilder cmd = new StringBuilder()
-                .append(select.getSQL())
-                .append(whereBldr);
         if (AbstractPrintQuery.LOG.isDebugEnabled()) {
-            AbstractPrintQuery.LOG.debug(cmd.toString());
+            AbstractPrintQuery.LOG.debug(select.getSQL());
         }
-        return cmd;
+        return select.getSQL();
     }
 
     /**
@@ -217,7 +218,7 @@ public class LinkFromSelect
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeOneCompleteStmt(final StringBuilder _complStmt,
+    protected boolean executeOneCompleteStmt(final String _complStmt,
                                              final List<OneSelect> _oneSelects)
         throws EFapsException
     {

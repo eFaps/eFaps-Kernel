@@ -50,6 +50,7 @@ public class ClassSelectPart
     /**
      * {@inheritDoc}
      */
+    @Override
     public int join(final OneSelect _oneSelect,
                     final SQLSelect _select,
                     final int _relIndex)
@@ -69,6 +70,7 @@ public class ClassSelectPart
     /**
      * {@inheritDoc}
      */
+    @Override
     public Type getType()
     {
         return this.classification;

@@ -58,6 +58,7 @@ public class ChildTableSelectPart
     /**
      * {@inheritDoc}
      */
+    @Override
     public Type getType()
     {
         return this.type;
@@ -66,6 +67,7 @@ public class ChildTableSelectPart
     /**
      * {@inheritDoc}
      */
+    @Override
     public int join(final OneSelect _oneSelect,
                     final SQLSelect _select,
                     final int _relIndex)

@@ -19,6 +19,7 @@
  */
 
 package org.efaps.db.print;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -34,7 +35,6 @@ import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.AbstractPrintQuery;
 import org.efaps.db.Instance;
-import org.efaps.db.PrintQuery;
 import org.efaps.db.print.value.AbstractValueSelect;
 import org.efaps.db.print.value.AttributeValueSelect;
 import org.efaps.db.print.value.ClassificationValueSelect;
@@ -53,7 +53,7 @@ import org.efaps.util.EFapsException;
  * This class is used as a part of one complete statement to be executed
  * against the eFaps database. It will normally return the object for one
  * attribute. The OneSelect can consist from only one attribute or of a
- * series of {@link PrintQuery.ISelectPart}
+ * series of PrintQuery.ISelectPart
  *
  * @author The eFaps Team
  * @version $Id$

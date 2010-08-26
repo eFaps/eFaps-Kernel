@@ -20,6 +20,9 @@
 
 /**
  * Parts that are used in the construction of SQL Queries.
+ *
+ * @author The eFaps Team
+ * @version $Id$
  */
 package org.efaps.db.print;
 
