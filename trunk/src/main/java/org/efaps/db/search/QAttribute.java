@@ -24,8 +24,8 @@ package org.efaps.db.search;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.search.compare.AbstractQAttrCompare;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.SQLSelect.SQLPart;
 
 
 /**

@@ -22,8 +22,8 @@
 package org.efaps.db.search.section;
 
 import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 
 

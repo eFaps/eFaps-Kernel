@@ -21,8 +21,8 @@
 
 package org.efaps.db.search.value;
 
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.SQLSelect.SQLPart;
 
 /**
  * A boolean value.

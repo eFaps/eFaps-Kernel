@@ -23,8 +23,8 @@ package org.efaps.db.search.section;
 
 import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.search.AbstractQPart;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 
 
@@ -74,8 +74,7 @@ public class QWhereSection
     }
 
     /**
-     * @return the sql statement for this where
-     * @throws EFapsException on error
+     * {@inheritDoc}
      */
     @Override
     public QWhereSection appendSQL(final SQLSelect _select)
@@ -87,8 +86,7 @@ public class QWhereSection
     }
 
     /**
-     * @param _query Query this Where belongs to
-     * @throws EFapsException on error
+     * {@inheritDoc}
      */
     @Override
     public QWhereSection prepare(final AbstractObjectQuery<?> _query)
