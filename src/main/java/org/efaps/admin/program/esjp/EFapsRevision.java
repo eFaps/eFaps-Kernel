@@ -31,13 +31,18 @@ import java.lang.annotation.Target;
 /**
  * Annotation for the Revision of an esjp.
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  */
 @Documented
 @Retention(RUNTIME)
 @Target(TYPE)
 @Inherited
-public @interface EFapsRevision {
-  String value();
+public @interface EFapsRevision
+{
+
+    /**
+     * Value.
+     */
+    String value();
 }

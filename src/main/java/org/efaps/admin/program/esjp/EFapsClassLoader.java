@@ -81,7 +81,7 @@ public class EFapsClassLoader
      * @return Class
      * @throws ClassNotFoundException if class was not found
      */
-    @Override()
+    @Override
     public Class<?> findClass(final String _name)
         throws ClassNotFoundException
     {
