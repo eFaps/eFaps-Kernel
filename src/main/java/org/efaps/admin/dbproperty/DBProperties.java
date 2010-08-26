@@ -27,13 +27,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class reads the Properties for eFaps from the connected Database and
@@ -172,17 +173,33 @@ public class DBProperties
             DBProperties.PROPERTIESCACHE.clear();
         }
 
-        final String sqlStmt = " select distinct PROPKEY, DEFAULTV,'" + DBProperties.DEFAULT + "' as LANG, SEQUENCE "
-                        + " from T_ADPROP "
-                        + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID  "
-                        + " order by SEQUENCE";
+        final String sqlStmt = new SQLSelect()
+                                    .distinct(true)
+                                    .column(0, "PROPKEY")
+                                    .column(0, "DEFAULTV")
+                                    .column(0, "PROPKEY")
+                                    .column(1, "SEQUENCE")
+                                    .from("T_ADPROP", 0)
+                                    .leftJoin("T_ADPROPBUN", 1, "ID", 0, "BUNDLEID")
+                                    .addPart(SQLPart.ORDERBY)
+                                    .addColumnPart(1,  "SEQUENCE").toString();
 
         DBProperties.initializeCache(sqlStmt);
 
-        final String sqlStmt2 = "select distinct PROPKEY, VALUE, LANG, SEQUENCE from T_ADPROP "
-                        + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID "
-                        + " inner join T_ADPROPLOC on T_ADPROPLOC.PROPID = T_ADPROP.ID "
-                        + " inner join T_ADLANG on T_ADLANG.ID = T_ADPROPLOC.LANGID " + " order by LANG, SEQUENCE";
+        final String sqlStmt2 = new SQLSelect()
+                                    .distinct(true)
+                                    .column(0, "PROPKEY")
+                                    .column(2, "VALUE")
+                                    .column(3, "LANG")
+                                    .column(1, "SEQUENCE")
+                                    .from("T_ADPROP", 0)
+                                    .leftJoin("T_ADPROPBUN", 1, "ID", 0, "BUNDLEID")
+                                    .leftJoin("T_ADPROPLOC", 2, "PROPID", 0, "ID")
+                                    .leftJoin("T_ADLANG", 3, "ID", 2, "LANGID")
+                                    .addPart(SQLPart.ORDERBY)
+                                    .addColumnPart(3,  "LANG")
+                                    .addPart(SQLPart.COMMA)
+                                    .addColumnPart(1,  "SEQUENCE").toString();
 
         DBProperties.initializeCache(sqlStmt2);
     }
@@ -204,7 +221,6 @@ public class DBProperties
      */
     private static void initializeCache(final String _sqlstmt)
     {
-        String value;
         String language = "";
 
         Map<String, String> map = null;
@@ -214,7 +230,11 @@ public class DBProperties
 
             final ResultSet resultset = stmt.executeQuery(_sqlstmt);
             while (resultset.next()) {
-                value = resultset.getString(2);
+                final String propKey = resultset.getString(1).trim();
+                final String langTmp = resultset.getString(3).trim();
+                if (langTmp.equals(propKey)) {
+                    language = DBProperties.DEFAULT;
+                }
                 if (!language.equals(resultset.getString(3).trim())) {
                     language = resultset.getString(3).trim();
                     map = DBProperties.PROPERTIESCACHE.get(language);
@@ -223,7 +243,7 @@ public class DBProperties
                         DBProperties.PROPERTIESCACHE.put(language, map);
                     }
                 }
-                map.put(resultset.getString("PROPKEY").trim(), value.trim());
+                map.put(propKey, resultset.getString(2).trim());
             }
             DBProperties.INITIALIZED = true;
             resultset.close();
