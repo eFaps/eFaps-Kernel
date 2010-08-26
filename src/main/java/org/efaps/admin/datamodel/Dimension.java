@@ -55,26 +55,26 @@ public class Dimension
      *
      * @see #initialise
      */
-    private static final String SQL_SELECT_DIM  = new SQLSelect()
+    private static final SQLSelect SQL_SELECT_DIM  = new SQLSelect()
                                                         .column("ID")
                                                         .column("NAME")
                                                         .column("UUID")
                                                         .column("DESCR")
                                                         .column("BASEUOM")
-                                                        .from("T_DMDIM").getSQL();
+                                                        .from("T_DMDIM");
 
     /**
      * This is the sql select statement to select all UoM from the database.
      *
      * @see #initialise
      */
-    private static final String SQL_SELECT_UOM  = new SQLSelect()
+    private static final SQLSelect SQL_SELECT_UOM  = new SQLSelect()
                                                         .column("ID")
                                                         .column("DIMID")
                                                         .column("NAME")
                                                         .column("NUMERATOR")
                                                         .column("DENOMINATOR")
-                                                        .from("T_DMUOM").getSQL();
+                                                        .from("T_DMUOM");
 
     /**
      * Stores all instances of type.
@@ -394,7 +394,7 @@ public class Dimension
 
                     stmt = con.getConnection().createStatement();
 
-                    final ResultSet rs = stmt.executeQuery(Dimension.SQL_SELECT_DIM);
+                    final ResultSet rs = stmt.executeQuery(Dimension.SQL_SELECT_DIM.getSQL());
                     while (rs.next()) {
                         final long id = rs.getLong(1);
                         final String name = rs.getString(2).trim();
@@ -425,7 +425,7 @@ public class Dimension
 
                     stmt2 = con.getConnection().createStatement();
 
-                    final ResultSet rs = stmt2.executeQuery(Dimension.SQL_SELECT_UOM);
+                    final ResultSet rs = stmt2.executeQuery(Dimension.SQL_SELECT_UOM.getSQL());
                     while (rs.next()) {
                         final long id = rs.getLong(1);
                         final long dimId = rs.getLong(2);

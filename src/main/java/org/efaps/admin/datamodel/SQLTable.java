@@ -52,7 +52,7 @@ public final class SQLTable
      * This is the SQL select statement to select all SQL tables from the
      * database.
      */
-    private static final String SQL_SELECT = new SQLSelect()
+    private static final SQLSelect SQL_SELECT = new SQLSelect()
                                                     .column("ID")
                                                     .column("UUID")
                                                     .column("NAME")
@@ -60,8 +60,7 @@ public final class SQLTable
                                                     .column("SQLCOLUMNID")
                                                     .column("SQLCOLUMNTYPE")
                                                     .column("DMTABLEMAIN")
-                                                    .from("V_ADMINSQLTABLE").getSQL();
-
+                                                    .from("V_ADMINSQLTABLE");
 
     /**
      * Stores all instances of SQLTable.
@@ -347,7 +346,7 @@ public final class SQLTable
 
                     stmt = con.getConnection().createStatement();
 
-                    final ResultSet rs = stmt.executeQuery(SQLTable.SQL_SELECT);
+                    final ResultSet rs = stmt.executeQuery(SQLTable.SQL_SELECT.getSQL());
                     while (rs.next()) {
                         final long id = rs.getLong(1);
                         final SQLTable table = new SQLTable(con.getConnection(),

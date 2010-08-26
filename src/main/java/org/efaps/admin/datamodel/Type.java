@@ -109,14 +109,14 @@ public class Type
      *
      * @see #initialise
      */
-    private static final String SQL_SELECT = new SQLSelect()
+    private static final SQLSelect SQL_SELECT = new SQLSelect()
                                                     .column("ID")
                                                     .column("UUID")
                                                     .column("NAME")
                                                     .column("PURPOSE")
                                                     .column("PARENTDMTYPE")
                                                     .column("SQLCACHEEXPR")
-                                                    .from("V_ADMINTYPE").getSQL();
+                                                    .from("V_ADMINTYPE");
 
 
     /**
@@ -947,7 +947,7 @@ public class Type
 
                     stmt = con.getConnection().createStatement();
 
-                    final ResultSet rs = stmt.executeQuery(Type.SQL_SELECT);
+                    final ResultSet rs = stmt.executeQuery(Type.SQL_SELECT.getSQL());
                     while (rs.next()) {
                         final long id = rs.getLong(1);
                         final String uuid = rs.getString(2).trim();

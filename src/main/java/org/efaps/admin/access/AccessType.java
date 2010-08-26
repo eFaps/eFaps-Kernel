@@ -55,11 +55,11 @@ public final class AccessType
      * This is the sql select statement to select all access types from the
      * database.
      */
-    private static final String SQL_SELECT = new SQLSelect()
+    private static final SQLSelect SQL_SELECT = new SQLSelect()
                                                 .column("ID")
                                                 .column("UUID")
                                                 .column("NAME")
-                                                .from("T_ACCESSTYPE").getSQL();
+                                                .from("T_ACCESSTYPE");
 
     /**
      * Stores all instances of class {@link AccessType}.
@@ -186,7 +186,7 @@ public final class AccessType
 
                     stmt = con.getConnection().createStatement();
 
-                    final ResultSet rs = stmt.executeQuery(AccessType.SQL_SELECT);
+                    final ResultSet rs = stmt.executeQuery(AccessType.SQL_SELECT.getSQL());
                     while (rs.next())  {
                         final long id                       = rs.getLong(1);
                         final String uuid                   = rs.getString(2);

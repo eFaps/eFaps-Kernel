@@ -52,12 +52,12 @@ public final class Company
     /**
      * This is the sql select statement to select all roles from the database.
      */
-    private static final String SQL_SELECT = new SQLSelect()
+    private static final SQLSelect SQL_SELECT = new SQLSelect()
                                                         .column("ID")
                                                         .column("UUID")
                                                         .column("NAME")
                                                         .column("STATUS")
-                                                        .from("V_USERCOMPANY").getSQL();
+                                                        .from("V_USERCOMPANY");
 
     /**
      * Stores all instances of class {@link Company}.
@@ -185,7 +185,7 @@ public final class Company
 
                     stmt = con.getConnection().createStatement();
 
-                    final ResultSet resulset = stmt.executeQuery(Company.SQL_SELECT);
+                    final ResultSet resulset = stmt.executeQuery(Company.SQL_SELECT.getSQL());
                     while (resulset.next()) {
                         final long id = resulset.getLong(1);
                         final String uuid = resulset.getString(2);

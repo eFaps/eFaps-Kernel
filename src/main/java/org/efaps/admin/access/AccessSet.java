@@ -58,11 +58,11 @@ public final class AccessSet
      *
      * @see #init4ReadAllAccessSets
      */
-    private static final String SQL_SELECT = new SQLSelect()
+    private static final SQLSelect SQL_SELECT = new SQLSelect()
                                                     .column("ID")
                                                     .column("UUID")
                                                     .column("NAME")
-                                                    .from("T_ACCESSSET").getSQL();
+                                                    .from("T_ACCESSSET");
 
     /**
      * This is the sql select statement to select the links from all access sets
@@ -70,10 +70,10 @@ public final class AccessSet
      *
      * @see #init4ReadLinks2AccessTypes
      */
-    private static final String SQL_SET2TYPE = new SQLSelect()
+    private static final SQLSelect SQL_SET2TYPE = new SQLSelect()
                                                         .column("ACCESSSET")
                                                         .column("ACCESSTYPE")
-                                                        .from("T_ACCESSSET2TYPE").getSQL();
+                                                        .from("T_ACCESSSET2TYPE");
 
 
     /**
@@ -82,10 +82,10 @@ public final class AccessSet
      *
      * @see #init4ReadLinks2DMTypes
      */
-    private static final String SQL_SET2DMTYPE = new SQLSelect()
+    private static final SQLSelect SQL_SET2DMTYPE = new SQLSelect()
                                                         .column("ACCESSSET")
                                                         .column("DMTYPE")
-                                                        .from("T_ACCESSSET2DMTYPE").getSQL();
+                                                        .from("T_ACCESSSET2DMTYPE");
 
     /**
      * This is the sql select statement to select the links from all access sets
@@ -93,10 +93,10 @@ public final class AccessSet
      *
      * @see #init4ReadLinks2DMTypes
      */
-    private static final String SQL_SET2STATUS  = new SQLSelect()
+    private static final SQLSelect SQL_SET2STATUS  = new SQLSelect()
                                                         .column("ACCESSSET")
                                                         .column("ACCESSSTATUS")
-                                                        .from("T_ACCESSSET2STATUS").getSQL();
+                                                        .from("T_ACCESSSET2STATUS");
 
     /**
      * Cache for AccesSets.
@@ -272,7 +272,7 @@ public final class AccessSet
 
                 stmt = _con.getConnection().createStatement();
 
-                final ResultSet rs = stmt.executeQuery(AccessSet.SQL_SELECT);
+                final ResultSet rs = stmt.executeQuery(AccessSet.SQL_SELECT.getSQL());
                 while (rs.next()) {
                     final long id = rs.getLong(1);
                     final String uuid = rs.getString(2);
@@ -315,7 +315,7 @@ public final class AccessSet
 
                 stmt = _con.getConnection().createStatement();
 
-                final ResultSet rs = stmt.executeQuery(AccessSet.SQL_SET2TYPE);
+                final ResultSet rs = stmt.executeQuery(AccessSet.SQL_SET2TYPE.getSQL());
                 while (rs.next()) {
                     final long accessSetId = rs.getLong(1);
                     final long accessTypeId = rs.getLong(2);
@@ -366,7 +366,7 @@ public final class AccessSet
 
                 stmt = _con.getConnection().createStatement();
 
-                final ResultSet rs = stmt.executeQuery(AccessSet.SQL_SET2DMTYPE);
+                final ResultSet rs = stmt.executeQuery(AccessSet.SQL_SET2DMTYPE.getSQL());
                 while (rs.next()) {
                     final long accessSetId = rs.getLong(1);
                     final long dataModelTypeId = rs.getLong(2);
@@ -419,7 +419,7 @@ public final class AccessSet
 
                 stmt = _con.getConnection().createStatement();
 
-                final ResultSet rs = stmt.executeQuery(AccessSet.SQL_SET2STATUS);
+                final ResultSet rs = stmt.executeQuery(AccessSet.SQL_SET2STATUS.getSQL());
                 while (rs.next()) {
                     final long accessSetId = rs.getLong(1);
                     final long statusId = rs.getLong(2);

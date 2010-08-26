@@ -54,7 +54,7 @@ public class AttributeType
      * This is the SQL select statement to select all attribute types from the
      * database.
      */
-    private static final String SQL_SELECT  = new SQLSelect()
+    private static final SQLSelect SQL_SELECT  = new SQLSelect()
                                                     .column("ID")
                                                     .column("NAME")
                                                     .column("UUID")
@@ -62,7 +62,7 @@ public class AttributeType
                                                     .column("CLASSNAMEUI")
                                                     .column("ALWAYSUPDATE")
                                                     .column("CREATEUPDATE")
-                                                    .from("V_DMATTRIBUTETYPE").getSQL();
+                                                    .from("V_DMATTRIBUTETYPE");
 
     /**
      * Stores all instances of class {@link AttributeType}.
@@ -296,7 +296,7 @@ public class AttributeType
                 Statement stmt = null;
                 try {
                     stmt = con.getConnection().createStatement();
-                    final ResultSet rs = stmt.executeQuery(AttributeType.SQL_SELECT);
+                    final ResultSet rs = stmt.executeQuery(AttributeType.SQL_SELECT.getSQL());
                     while (rs.next()) {
                         final long id = rs.getLong(1);
                         final String name = rs.getString(2).trim();
