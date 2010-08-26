@@ -45,7 +45,8 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public class Insert extends Update
+public class Insert
+    extends Update
 {
 
     /**
@@ -178,7 +179,8 @@ public class Insert extends Update
      *             not exists, etc...)
      */
     @Override
-    public void executeWithoutTrigger() throws EFapsException
+    public void executeWithoutTrigger()
+        throws EFapsException
     {
         final Context context = Context.getThreadContext();
         ConnectionResource con = null;
@@ -203,16 +205,10 @@ public class Insert extends Update
                 }
             }
             con.commit();
-        } catch (final EFapsException e) {
-            if (con != null) {
+        } finally {
+            if (con != null && con.isOpened()) {
                 con.abort();
             }
-            throw e;
-        } catch (final Throwable e) {
-            if (con != null) {
-                con.abort();
-            }
-            throw new EFapsException(getClass(), "executeWithoutAccessCheck.Throwable");
         }
     }
 
@@ -225,7 +221,7 @@ public class Insert extends Update
      *
      * @param _con      connection resource
      * @param _table    sql table used to insert
-     * @param _expressions expressions
+     * @param _values   values to be inserted
      * @param _id       new created id
      * @return new created id if parameter <i>_id</i> is set to <code>0</code>
      * @see #createOneStatement
@@ -241,7 +237,7 @@ public class Insert extends Update
         try {
             final SQLInsert insert = Context.getDbType().newInsert(_table.getSqlTable(),
                                                                    _table.getSqlColId(),
-                                                                   (_id == 0));
+                                                                   _id == 0);
 
             if (_id != 0) {
                 insert.column(_table.getSqlColId(), _id);
