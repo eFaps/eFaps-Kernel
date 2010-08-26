@@ -94,7 +94,7 @@ public final class Group
      *         <i>false</i>
      * @see Person#isAssigned(Group)
      */
-    @Override()
+    @Override
     public boolean hasChildPerson(final Person _person)
     {
 // TODO: child groups
@@ -121,7 +121,6 @@ public final class Group
      */
     public static Group get(final long _id)
     {
-// TODO: rewrite to use context instance
         return Group.CACHE.get(_id);
     }
 
@@ -135,7 +134,6 @@ public final class Group
      */
     public static Group get(final String _name)
     {
-// TODO: rewrite to use context instance
         return Group.CACHE.get(_name);
     }
 
@@ -179,7 +177,6 @@ public final class Group
             } catch (final SQLException e) {
                 Group.LOG.error("search for group for JAAS system '" + _jaasSystem.getName() + "' "
                         + "with key '" + _jaasKey + "' is not possible", e);
-// TODO: exception in properties
                 throw new EFapsException(Group.class, "getWithJAASKey.SQLException", e,
                                          _jaasSystem.getName(), _jaasKey);
             } finally {
@@ -195,7 +192,7 @@ public final class Group
                 rsrc.abort();
             }
         }
-        return get(groupId);
+        return Group.get(groupId);
     }
 
     /**
@@ -216,7 +213,7 @@ public final class Group
          *                      caching
          * @throws CacheReloadException if reload of the cache failed
          */
-        @Override()
+        @Override
         protected void readCache(final Map<Long, Group> _cache4Id,
                                  final Map<String, Group> _cache4Name,
                                  final Map<UUID, Group> _cache4UUID)

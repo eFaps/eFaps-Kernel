@@ -28,6 +28,7 @@ import java.util.UUID;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
@@ -51,7 +52,12 @@ public final class Company
     /**
      * This is the sql select statement to select all roles from the database.
      */
-    private static final String SQL_SELECT = "select ID, UUID, NAME, STATUS from V_USERCOMPANY";
+    private static final String SQL_SELECT = new SQLSelect()
+                                                        .column("ID")
+                                                        .column("UUID")
+                                                        .column("NAME")
+                                                        .column("STATUS")
+                                                        .from("V_USERCOMPANY").getSQL();
 
     /**
      * Stores all instances of class {@link Company}.
