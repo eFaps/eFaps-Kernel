@@ -65,7 +65,7 @@ public class LinkWithRangesUI
                 for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE,
                                                            ParameterValues.UIOBJECT, _fieldValue,
                                                            ParameterValues.ACCESSMODE, _fieldValue.getTargetMode())) {
-                    final TreeMap<?, ?> treemap = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES));
+                    final TreeMap<?, ?> treemap = (TreeMap<?, ?>) values.get(ReturnValues.VALUES);
                     for (final Entry<?, ?> entry : treemap.entrySet()) {
                         if (entry.getValue().equals(_fieldValue.getValue().toString())) {
                             ret.append(entry.getKey().toString());

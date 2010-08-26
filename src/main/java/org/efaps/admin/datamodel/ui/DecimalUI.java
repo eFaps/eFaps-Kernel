@@ -140,7 +140,7 @@ public class DecimalUI
         if (_fieldValue.getTargetMode().equals(TargetMode.SEARCH)) {
             ret.append("<input type=\"text\"").append(" size=\"").append(field.getCols()).append("\" name=\"")
                             .append(field.getName()).append("\" value=\"")
-                            .append((tmp != null ? tmp : "*")).append("\" />");
+                            .append(tmp != null ? tmp : "*").append("\" />");
         } else {
             if (field.getRows() > 1) {
                 ret.append("<textarea type=\"text\"")

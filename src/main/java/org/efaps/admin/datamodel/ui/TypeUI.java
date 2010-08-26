@@ -49,7 +49,7 @@ public class TypeUI
         String ret = null;
 
         if (_fieldValue.getValue() instanceof Type) {
-            final Type value = ((Type) _fieldValue.getValue());
+            final Type value = (Type) _fieldValue.getValue();
 
             final String name = value.getName();
 
