@@ -22,8 +22,8 @@
 package org.efaps.db.search.value;
 
 import org.efaps.admin.datamodel.attributetype.DateTimeType;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 

@@ -21,6 +21,7 @@
 
 package org.efaps.db.search.value;
 
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 
 /**
@@ -38,7 +39,7 @@ public class QNullValue
     @Override
     public QNullValue appendSQL(final SQLSelect _sql)
     {
-        _sql.addPart(SQLSelect.SQLPart.NULL);
+        _sql.addPart(SQLPart.NULL);
         return this;
     }
 }

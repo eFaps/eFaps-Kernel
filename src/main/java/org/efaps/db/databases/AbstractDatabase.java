@@ -35,7 +35,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.TableInformation;
 import org.efaps.db.wrapper.SQLInsert;
-import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.cache.Cache;
@@ -749,7 +749,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @param _part Part the SQL is needed for
      * @return String
      */
-    public String getSQLPart(final SQLSelect.SQLPart _part)
+    public String getSQLPart(final SQLPart _part)
     {
         return _part.getDefaultValue();
     }

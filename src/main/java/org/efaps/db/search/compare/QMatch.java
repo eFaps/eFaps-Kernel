@@ -23,8 +23,8 @@ package org.efaps.db.search.compare;
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.value.AbstractQValue;
 import org.efaps.db.search.value.QStringValue;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 
 /**
