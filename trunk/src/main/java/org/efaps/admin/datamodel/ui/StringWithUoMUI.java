@@ -89,7 +89,7 @@ public class StringWithUoMUI
 
         if (_fieldValue.getTargetMode().equals(TargetMode.SEARCH)) {
             ret.append("<input type=\"text\"").append(" size=\"").append(field.getCols()).append("\" name=\"").append(
-                           field.getName()).append("\" value=\"").append((value != null ? value : "*")).append("\" />");
+                           field.getName()).append("\" value=\"").append(value != null ? value : "*").append("\" />");
         } else {
             ret.append("<span><input type=\"text\" size=\"").append(field.getCols())
                 .append("\" name=\"").append(field.getName())

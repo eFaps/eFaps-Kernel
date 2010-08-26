@@ -110,7 +110,7 @@ public class StringUI
         final Object value = _fieldValue.getValue();
         if (_fieldValue.getTargetMode().equals(TargetMode.SEARCH)) {
             ret.append("<input type=\"text\"").append(" size=\"").append(field.getCols()).append("\" name=\"")
-                .append(field.getName()).append("\" value=\"").append((value != null ? value : "*")).append("\" />");
+                .append(field.getName()).append("\" value=\"").append(value != null ? value : "*").append("\" />");
         } else {
             if (field.getRows() > 1) {
                 ret.append("<textarea type=\"text\"")

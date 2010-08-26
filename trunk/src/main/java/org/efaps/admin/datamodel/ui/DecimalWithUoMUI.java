@@ -80,7 +80,7 @@ public class DecimalWithUoMUI
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public String getEditHtml(final FieldValue _fieldValue)
         throws EFapsException
     {
@@ -100,7 +100,7 @@ public class DecimalWithUoMUI
         if (_fieldValue.getTargetMode().equals(TargetMode.SEARCH)) {
             ret.append("<input type=\"text\" size=\"").append(field.getCols())
                 .append("\" name=\"").append(field.getName())
-                .append("\" value=\"").append((value != null ? value : "*")).append("\" />");
+                .append("\" value=\"").append(value != null ? value : "*").append("\" />");
         } else {
             ret.append("<span><input type=\"text\" size=\"").append(field.getCols())
                 .append("\" name=\"").append(field.getName())
@@ -125,7 +125,7 @@ public class DecimalWithUoMUI
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public String validateValue(final String _value,
                                 final Attribute _attribute)
     {
@@ -141,7 +141,7 @@ public class DecimalWithUoMUI
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Object format(final Object _object,
                          final String _pattern)
         throws EFapsException
