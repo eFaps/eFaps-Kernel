@@ -34,6 +34,7 @@ import java.util.UUID;
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
@@ -58,20 +59,20 @@ public final class JAASSystem
      * This is the SQL select statement to select all JAAS systems from the
      * database.
      */
-    private static final String SQL_SELECT = "select "
-                                                  + "ID,"
-                                                  + "NAME,"
-                                                  + "CLASSNAMEPERSON,"
-                                                  + "METHODPERSONKEY,"
-                                                  + "METHODPERSONNAME,"
-                                                  + "METHODPERSONFIRSTNAME,"
-                                                  + "METHODPERSONLASTNAME,"
-                                                  + "METHODPERSONEMAIL,"
-                                                  + "CLASSNAMEROLE,"
-                                                  + "METHODROLEKEY,"
-                                                  + "CLASSNAMEGROUP,"
-                                                  + "METHODGROUPKEY "
-                                             + "from V_USERJAASSYSTEM";
+    private static final String SQL_SELECT = new SQLSelect()
+                                                        .column("ID")
+                                                        .column("NAME")
+                                                        .column("CLASSNAMEPERSON")
+                                                        .column("METHODPERSONKEY")
+                                                        .column("METHODPERSONNAME")
+                                                        .column("METHODPERSONFIRSTNAME")
+                                                        .column("METHODPERSONLASTNAME")
+                                                        .column("METHODPERSONEMAIL")
+                                                        .column("CLASSNAMEROLE")
+                                                        .column("METHODROLEKEY")
+                                                        .column("CLASSNAMEGROUP")
+                                                        .column("METHODGROUPKEY")
+                                                        .from("V_USERJAASSYSTEM").toString();
 
     /**
      * Stores all instances of class {@link JAASSystem}.
