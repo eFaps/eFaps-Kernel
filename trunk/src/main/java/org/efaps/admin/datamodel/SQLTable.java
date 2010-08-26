@@ -33,6 +33,7 @@ import java.util.UUID;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.TableInformation;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
@@ -51,14 +52,16 @@ public final class SQLTable
      * This is the SQL select statement to select all SQL tables from the
      * database.
      */
-    private static final String SQL_SELECT = "select ID,"
-                                + "UUID,"
-                                + "NAME,"
-                                + "SQLTABLE,"
-                                + "SQLCOLUMNID,"
-                                + "SQLCOLUMNTYPE,"
-                                + "DMTABLEMAIN "
-                                + "from V_ADMINSQLTABLE";
+    private static final String SQL_SELECT = new SQLSelect()
+                                                    .column("ID")
+                                                    .column("UUID")
+                                                    .column("NAME")
+                                                    .column("SQLTABLE")
+                                                    .column("SQLCOLUMNID")
+                                                    .column("SQLCOLUMNTYPE")
+                                                    .column("DMTABLEMAIN")
+                                                    .from("V_ADMINSQLTABLE").getSQL();
+
 
     /**
      * Stores all instances of SQLTable.
@@ -171,7 +174,7 @@ public final class SQLTable
      * @param _value value of the property
      * @throws CacheReloadException on error
      */
-    @Override()
+    @Override
     protected void setProperty(final String _name,
                                final String _value)
         throws CacheReloadException
@@ -328,7 +331,7 @@ public final class SQLTable
         /**
          * {@inheritDoc}
          */
-        @Override()
+        @Override
         protected void readCache(final Map<Long, SQLTable> _cache4Id,
                                  final Map<String, SQLTable> _cache4Name,
                                  final Map<UUID, SQLTable> _cache4UUID)

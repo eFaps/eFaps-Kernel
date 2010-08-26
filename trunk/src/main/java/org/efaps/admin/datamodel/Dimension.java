@@ -32,6 +32,7 @@ import java.util.UUID;
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
@@ -54,14 +55,26 @@ public class Dimension
      *
      * @see #initialise
      */
-    private static final String SQL_SELECT_DIM = "select ID, NAME, UUID, DESCR, BASEUOM from T_DMDIM";
+    private static final String SQL_SELECT_DIM  = new SQLSelect()
+                                                        .column("ID")
+                                                        .column("NAME")
+                                                        .column("UUID")
+                                                        .column("DESCR")
+                                                        .column("BASEUOM")
+                                                        .from("T_DMDIM").getSQL();
 
     /**
      * This is the sql select statement to select all UoM from the database.
      *
      * @see #initialise
      */
-    private static final String SQL_SELECT_UOM = "select ID, DIMID, NAME, NUMERATOR, DENOMINATOR  from T_DMUOM";
+    private static final String SQL_SELECT_UOM  = new SQLSelect()
+                                                        .column("ID")
+                                                        .column("DIMID")
+                                                        .column("NAME")
+                                                        .column("NUMERATOR")
+                                                        .column("DENOMINATOR")
+                                                        .from("T_DMUOM").getSQL();
 
     /**
      * Stores all instances of type.

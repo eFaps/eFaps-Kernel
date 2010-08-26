@@ -64,6 +64,7 @@ public class AttributeSet
      * @param _uuid             UUID of this AttributeSet as String
      * @throws EFapsException on error
      */
+    //CHECKSTYLE:OFF
     protected AttributeSet(final long _id,
                            final Type _type,
                            final String _name,
@@ -74,6 +75,7 @@ public class AttributeSet
                            final String _uuid)
         throws EFapsException
     {
+        //CHECKSTYLE:ON
         super(_id, _uuid, AttributeSet.evaluateName(_type.getName(), _name));
 
         this.attributeName = (_name == null) ? null : _name.trim();
