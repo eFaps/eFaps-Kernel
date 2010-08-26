@@ -32,6 +32,7 @@ import java.util.Map;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
@@ -68,9 +69,9 @@ public final class RunLevel
      * @see #RunLevel(String)
      */
     private static final SQLSelect SELECT_RUNLEVEL = new SQLSelect()
-                                                    .column("ID")
-                                                    .column("PARENT")
-                                                .from("T_RUNLEVEL");
+                                                            .column(0, "ID")
+                                                            .column(0, "PARENT")
+                                                            .from("T_RUNLEVEL", 0);
 
     /**
      * SQL select statement to select a RunLevel from the database.
@@ -78,15 +79,10 @@ public final class RunLevel
      * @see #initialize(String)
      */
     private static final SQLSelect SELECT_DEF_PRE = new SQLSelect()
-                                                    .column("CLASS")
-                                                    .column("METHOD")
-                                                    .column("PARAMETER")
-                                                .from("T_RUNLEVELDEF");
-
-    /**
-     * Order part of the SQL select statement.
-     */
-    private static final String SQL_DEF_POST  = " order by PRIORITY";
+                                                            .column(0, "CLASS")
+                                                            .column(0, "METHOD")
+                                                            .column(0, "PARAMETER")
+                                                            .from("T_RUNLEVELDEF", 0);
 
     /**
      * Current RunLevel.
@@ -129,7 +125,8 @@ public final class RunLevel
         throws EFapsException
     {
         this.name = _name;
-        initialize(RunLevel.SELECT_RUNLEVEL.getSQL() + " where RUNLEVEL='" + _name + "'");
+        initialize(RunLevel.SELECT_RUNLEVEL.addPart(SQLPart.WHERE).addColumnPart(0, "RUNLEVEL")
+                        .addPart(SQLPart.EQUAL).addEscapedValuePart(_name).getSQL());
     }
 
     /**
@@ -141,7 +138,8 @@ public final class RunLevel
     private RunLevel(final long _id)
         throws EFapsException
     {
-        initialize(RunLevel.SELECT_RUNLEVEL.getSQL() + " where ID=" + _id);
+        initialize(RunLevel.SELECT_RUNLEVEL.addPart(SQLPart.WHERE).addColumnPart(0, "ID")
+                        .addPart(SQLPart.EQUAL).addValuePart(_id).getSQL());
     }
 
     /**
@@ -182,8 +180,7 @@ public final class RunLevel
             return Context.getDbType().existsTable(Context.getThreadContext().getConnection(),
                                                    RunLevel.TABLE_TESTS);
         } catch (final SQLException e) {
-            throw new EFapsException(RunLevel.class,
-                                     "isInitialisable.SQLException", e);
+            throw new EFapsException(RunLevel.class, "isInitialisable.SQLException", e);
         }
     }
 
@@ -272,8 +269,19 @@ public final class RunLevel
                 rs.close();
 
                 // read all methods for one run level
-                rs = stmt.executeQuery(RunLevel.SELECT_DEF_PRE.getSQL()
-                        + " where RUNLEVELID=" + this.id + RunLevel.SQL_DEF_POST);
+                rs = stmt.executeQuery(RunLevel.SELECT_DEF_PRE
+                                .addPart(SQLPart.WHERE)
+                                .addColumnPart(0, "RUNLEVELID")
+                                .addPart(SQLPart.EQUAL)
+                                .addValuePart(this.id)
+                                .addPart(SQLPart.ORDERBY)
+                                .addColumnPart(0, "PRIORITY").getSQL());
+
+                /**
+                 * Order part of the SQL select statement.
+                 */
+                //private static final String SQL_DEF_POST  = " order by PRIORITY";
+
                 while (rs.next()) {
                     if (rs.getString(3) != null) {
                         this.cacheMethods.add(new CacheMethod(rs.getString(1).trim(),
