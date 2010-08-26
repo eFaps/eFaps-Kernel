@@ -54,6 +54,8 @@ public enum SQLPart {
     FALSE("FALSE"),
     /** in. */
     IN("in"),
+    /** Renders as default: "inner". */
+    INNER("inner"),
     /** Renders as default: "insert". */
     INSERT("insert"),
     /** Renders as default: "into". */
