@@ -21,6 +21,8 @@
 
 package org.efaps.db.search;
 
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 
 
@@ -46,12 +48,11 @@ public class QOrderDesc
      * {@inheritDoc}
      */
     @Override
-    public AbstractQPart appendSQL(final StringBuilder _sql)
+    public AbstractQPart appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
-        _sql.append(" desc ");
+        _sql.addPart(SQLPart.DESC);
         return this;
     }
-
 }
