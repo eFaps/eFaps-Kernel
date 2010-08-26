@@ -84,46 +84,48 @@ public class SQLUpdate
         throws SQLException
     {
         final StringBuilder cmd = new StringBuilder()
-            .append("update ")
+            .append(Context.getDbType().getSQLPart(SQLPart.UPDATE)).append(" ")
             .append(Context.getDbType().getTableQuote())
-            .append(this.getTableName())
-            .append(Context.getDbType().getTableQuote())
-            .append(" set ");
+            .append(getTableName())
+            .append(Context.getDbType().getTableQuote()).append(" ")
+            .append(Context.getDbType().getSQLPart(SQLPart.SET)).append(" ");
 
         // append SQL values
         boolean first = true;
-        for (final ColumnWithSQLValue col : this.getColumnWithSQLValues())  {
+        for (final ColumnWithSQLValue col : getColumnWithSQLValues())  {
             if (first)  {
                 first = false;
             } else  {
-                cmd.append(',');
+                cmd.append(Context.getDbType().getSQLPart(SQLPart.COMMA));
             }
             cmd.append(Context.getDbType().getColumnQuote())
                 .append(col.getColumnName())
                 .append(Context.getDbType().getColumnQuote())
-                .append("=")
+                .append(Context.getDbType().getSQLPart(SQLPart.EQUAL))
                 .append(col.getSqlValue());
         }
 
         // append values
-        for (final ColumnWithValue<?> col : this.getColumnWithValues())  {
+        for (final AbstractColumnWithValue<?> col : getColumnWithValues())  {
             if (first)  {
                 first = false;
             } else  {
-                cmd.append(',');
+                cmd.append(Context.getDbType().getSQLPart(SQLPart.COMMA));
             }
             cmd.append(Context.getDbType().getColumnQuote())
                 .append(col.getColumnName())
                 .append(Context.getDbType().getColumnQuote())
-                .append("=?");
+                .append(Context.getDbType().getSQLPart(SQLPart.EQUAL))
+                .append("?");
         }
 
         // append where clause
-        cmd.append(" where ")
+        cmd.append(" ").append(Context.getDbType().getSQLPart(SQLPart.WHERE)).append(" ")
             .append(Context.getDbType().getColumnQuote())
-            .append(this.getIdColumn())
+            .append(getIdColumn())
             .append(Context.getDbType().getColumnQuote())
-            .append("=?");
+            .append(Context.getDbType().getSQLPart(SQLPart.EQUAL))
+            .append("?");
 
         if (SQLUpdate.LOG.isDebugEnabled()) {
             SQLUpdate.LOG.debug(cmd.toString());
@@ -131,7 +133,7 @@ public class SQLUpdate
 
         final PreparedStatement stmt = _con.prepareStatement(cmd.toString());
         int index = 1;
-        for (final ColumnWithValue<?> col : this.getColumnWithValues())  {
+        for (final AbstractColumnWithValue<?> col : getColumnWithValues())  {
             if (SQLUpdate.LOG.isDebugEnabled()) {
                 SQLUpdate.LOG.debug("    " + index + " = " + col.getValue());
             }
@@ -146,7 +148,7 @@ public class SQLUpdate
         try  {
             final int rows = stmt.executeUpdate();
             if (rows == 0) {
-                throw new SQLException("Object for SQL table '" + this.getTableName()
+                throw new SQLException("Object for SQL table '" + getTableName()
                         + "' with id '" + this.id + "' does not exists and was not updated.");
             }
         } finally  {

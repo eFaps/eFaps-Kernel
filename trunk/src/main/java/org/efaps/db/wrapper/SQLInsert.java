@@ -91,27 +91,31 @@ public class SQLInsert
 
         Long ret = null;
         if (this.newId && !supGenKey)  {
-            ret = Context.getDbType().getNewId(_con, this.getTableName(), this.getIdColumn());
-            this.column(this.getIdColumn(), ret);
+            ret = Context.getDbType().getNewId(_con, getTableName(), getIdColumn());
+            this.column(getIdColumn(), ret);
         }
 
         final StringBuilder cmd = new StringBuilder()
-            .append("insert into ")
+            .append(Context.getDbType().getSQLPart(SQLPart.INSERT))
+            .append(" ")
+            .append(Context.getDbType().getSQLPart(SQLPart.INTO))
+            .append(" ")
             .append(Context.getDbType().getTableQuote())
-            .append(this.getTableName())
+            .append(getTableName())
             .append(Context.getDbType().getTableQuote())
-            .append(" (");
+            .append(" ")
+            .append(Context.getDbType().getSQLPart(SQLPart.PARENTHESIS_OPEN));
 
         final StringBuilder val = new StringBuilder();
 
         // append SQL values
         boolean first = true;
-        for (final ColumnWithSQLValue col : this.getColumnWithSQLValues())  {
+        for (final ColumnWithSQLValue col : getColumnWithSQLValues())  {
             if (first)  {
                 first = false;
             } else  {
-                cmd.append(',');
-                val.append(',');
+                cmd.append(Context.getDbType().getSQLPart(SQLPart.COMMA));
+                val.append(Context.getDbType().getSQLPart(SQLPart.COMMA));
             }
             cmd.append(Context.getDbType().getColumnQuote())
                 .append(col.getColumnName())
@@ -120,20 +124,23 @@ public class SQLInsert
         }
 
         // append values
-        for (final ColumnWithValue<?> col : this.getColumnWithValues())  {
+        for (final AbstractColumnWithValue<?> col : getColumnWithValues())  {
             if (first)  {
                 first = false;
             } else  {
-                cmd.append(',');
-                val.append(',');
+                cmd.append(Context.getDbType().getSQLPart(SQLPart.COMMA));
+                val.append(Context.getDbType().getSQLPart(SQLPart.COMMA));
             }
             cmd.append(Context.getDbType().getColumnQuote())
                 .append(col.getColumnName())
                 .append(Context.getDbType().getColumnQuote());
             val.append('?');
         }
-
-        cmd.append(") values (").append(val).append(')');
+        cmd.append(Context.getDbType().getSQLPart(SQLPart.PARENTHESIS_CLOSE))
+            .append(Context.getDbType().getSQLPart(SQLPart.VALUES))
+            .append(Context.getDbType().getSQLPart(SQLPart.PARENTHESIS_OPEN))
+            .append(val)
+            .append(Context.getDbType().getSQLPart(SQLPart.PARENTHESIS_CLOSE));
 
         if (SQLInsert.LOG.isDebugEnabled()) {
             SQLInsert.LOG.debug(cmd.toString());
@@ -151,7 +158,7 @@ public class SQLInsert
         }
 
         int index = 1;
-        for (final ColumnWithValue<?> col : this.getColumnWithValues())  {
+        for (final AbstractColumnWithValue<?> col : getColumnWithValues())  {
             if (SQLInsert.LOG.isDebugEnabled()) {
                 SQLInsert.LOG.debug("    " + index + " = " + col.getValue());
             }
@@ -161,7 +168,7 @@ public class SQLInsert
         try {
             final int rows = stmt.executeUpdate();
             if (rows == 0) {
-                throw new SQLException("Object for SQL table '" + this.getTableName()
+                throw new SQLException("Object for SQL table '" + getTableName()
                         + "' does not exists and was not inserted.");
             }
 

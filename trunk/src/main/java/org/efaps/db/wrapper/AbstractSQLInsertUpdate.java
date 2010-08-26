@@ -57,7 +57,7 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
      *
      * @see #columnWithSQLValue(String, String)
      */
-    private final List<ColumnWithValue<?>> columnWithValues = new ArrayList<ColumnWithValue<?>>();
+    private final List<AbstractColumnWithValue<?>> columnWithValues = new ArrayList<AbstractColumnWithValue<?>>();
 
     /**
      * Columns to insert or update.
@@ -107,7 +107,7 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
      * @return columns with values
      * @see #columnWithValues
      */
-    protected final List<ColumnWithValue<?>> getColumnWithValues()
+    protected final List<AbstractColumnWithValue<?>> getColumnWithValues()
     {
         return this.columnWithValues;
     }
@@ -151,8 +151,8 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
     public STMT column(final String _columnName,
                        final BigDecimal _value)
     {
-        this.columnWithValues.add(new AbstractSQLInsertUpdate.ColumnWithValue<BigDecimal>(_columnName, _value) {
-            @Override()
+        this.columnWithValues.add(new AbstractSQLInsertUpdate.AbstractColumnWithValue<BigDecimal>(_columnName, _value) {
+            @Override
             public void set(final int _index, final PreparedStatement _stmt)
                 throws SQLException
             {
@@ -178,8 +178,8 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
     public STMT column(final String _columnName,
                        final Double _value)
     {
-        this.columnWithValues.add(new AbstractSQLInsertUpdate.ColumnWithValue<Double>(_columnName, _value) {
-            @Override()
+        this.columnWithValues.add(new AbstractSQLInsertUpdate.AbstractColumnWithValue<Double>(_columnName, _value) {
+            @Override
             public void set(final int _index, final PreparedStatement _stmt)
                 throws SQLException
             {
@@ -205,8 +205,8 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
     public STMT column(final String _columnName,
                        final String _value)
     {
-        this.columnWithValues.add(new AbstractSQLInsertUpdate.ColumnWithValue<String>(_columnName, _value) {
-            @Override()
+        this.columnWithValues.add(new AbstractSQLInsertUpdate.AbstractColumnWithValue<String>(_columnName, _value) {
+            @Override
             public void set(final int _index, final PreparedStatement _stmt)
                 throws SQLException
             {
@@ -232,8 +232,8 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
     public STMT column(final String _columnName,
                        final Timestamp _value)
     {
-        this.columnWithValues.add(new AbstractSQLInsertUpdate.ColumnWithValue<Timestamp>(_columnName, _value) {
-            @Override()
+        this.columnWithValues.add(new AbstractSQLInsertUpdate.AbstractColumnWithValue<Timestamp>(_columnName, _value) {
+            @Override
             public void set(final int _index, final PreparedStatement _stmt)
                 throws SQLException
             {
@@ -259,8 +259,8 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
     public STMT column(final String _columnName,
                        final boolean _value)
     {
-        this.columnWithValues.add(new AbstractSQLInsertUpdate.ColumnWithValue<Boolean>(_columnName, _value) {
-            @Override()
+        this.columnWithValues.add(new AbstractSQLInsertUpdate.AbstractColumnWithValue<Boolean>(_columnName, _value) {
+            @Override
             public void set(final int _index, final PreparedStatement _stmt)
                 throws SQLException
             {
@@ -286,8 +286,8 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
     public STMT column(final String _columnName,
                        final Long _value)
     {
-        this.columnWithValues.add(new AbstractSQLInsertUpdate.ColumnWithValue<Long>(_columnName, _value) {
-            @Override()
+        this.columnWithValues.add(new AbstractSQLInsertUpdate.AbstractColumnWithValue<Long>(_columnName, _value) {
+            @Override
             public void set(final int _index, final PreparedStatement _stmt)
                 throws SQLException
             {
@@ -313,8 +313,8 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
     public STMT column(final String _columnName,
                        final Integer _value)
     {
-        this.columnWithValues.add(new AbstractSQLInsertUpdate.ColumnWithValue<Integer>(_columnName, _value) {
-            @Override()
+        this.columnWithValues.add(new AbstractSQLInsertUpdate.AbstractColumnWithValue<Integer>(_columnName, _value) {
+            @Override
             public void set(final int _index, final PreparedStatement _stmt)
                 throws SQLException
             {
@@ -400,7 +400,7 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
      *
      * @param <VALUE>   class of the value
      */
-    protected abstract static class ColumnWithValue<VALUE>
+    protected abstract static class AbstractColumnWithValue<VALUE>
         extends AbstractSQLInsertUpdate.AbstractColumn
     {
         /**
@@ -415,8 +415,8 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
          * @param _columnName   column name
          * @param _value        value
          */
-        private ColumnWithValue(final String _columnName,
-                                final VALUE _value)
+        private AbstractColumnWithValue(final String _columnName,
+                                        final VALUE _value)
         {
             super(_columnName);
             this.value = _value;
