@@ -21,7 +21,8 @@
 
 package org.efaps.db.search.value;
 
-
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 
 /**
  * A boolean value.
@@ -50,9 +51,9 @@ public class QBooleanValue
      * {@inheritDoc}
      */
     @Override
-    public QBooleanValue appendSQL(final StringBuilder _sql)
+    public QBooleanValue appendSQL(final SQLSelect _sql)
     {
-        _sql.append(this.value ? "TRUE" : "FALSE");
+        _sql.addPart(this.value ?  SQLPart.TRUE : SQLPart.FALSE);
         return this;
     }
 }
