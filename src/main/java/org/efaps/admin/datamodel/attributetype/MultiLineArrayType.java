@@ -32,23 +32,32 @@ import org.efaps.db.query.CachedResult;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment
+ * TODO comment!
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class MultiLineArrayType extends AbstractType implements IMultipleAttributeType
+public class MultiLineArrayType
+    extends AbstractType
+    implements IMultipleAttributeType
 {
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final CachedResult _rs,
                             final List<Integer> _indexes)
         throws Exception
     {
-        // TODO Auto-generated method stub
+        // not used in this class
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Map<String, List<Object>> readValues(final CachedResult _rs,
                                                 final Map<Integer, String> _index2expression)
     {
@@ -73,17 +82,14 @@ public class MultiLineArrayType extends AbstractType implements IMultipleAttribu
     }
 
     /**
-     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
-     * @param objectList
-     * @return
-     * @throws EFapsException
+     * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
-                            final List<Object> objectList)
+                            final List<Object> _objectList)
         throws EFapsException
     {
-        // TODO Auto-generated method stub
+        // not used in this case
         return null;
     }
-
 }

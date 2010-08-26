@@ -68,11 +68,9 @@ public abstract class AbstractWithUoMType
     }
 
     /**
-     * @param _attribute    related eFaps attribute
-     * @param _objectList   list of objects
-     * @return DateTime
-     * TODO throw error if more than one value is given
+     * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
     {

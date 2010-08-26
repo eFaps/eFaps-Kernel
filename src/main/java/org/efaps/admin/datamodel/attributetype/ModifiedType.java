@@ -40,12 +40,14 @@ public class ModifiedType
      * {@link org.efaps.db.databases.AbstractDatabase#getCurrentTimeStamp()} to
      * the SQL statement.
      *
-     * @param _insertUpdate insert / update statement
-     * @param _values       values are ignored because current time is set
+     *  @param _insertUpdate SQL insert / update statement
+     * @param _attribute    SQL update statement
+     * @param _values       new object value to set; values are localized and
+     *                      are coming from the user interface
      * @throws SQLException if SQL columns for the attribute are not correctly
      *                      defined
      */
-    @Override()
+    @Override
     protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
                            final Attribute _attribute,
                            final Object... _values)

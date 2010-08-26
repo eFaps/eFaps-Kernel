@@ -29,15 +29,13 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractFileType extends AbstractType
+public abstract class AbstractFileType
+    extends AbstractType
 {
     /**
-     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
-     * @param _objectList List of Objects
-     * @return nothing, because error will be thrown
-     * @throws EFapsException allways
-     *
+     * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
         throws EFapsException

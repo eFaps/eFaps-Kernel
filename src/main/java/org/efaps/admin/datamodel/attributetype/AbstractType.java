@@ -37,14 +37,9 @@ public abstract class AbstractType
     implements IAttributeType
 {
     /**
-     *
-     * @param _insert       SQL insert statement
-     * @param _attribute    attribute which is updated
-     * @param _values       new object value to set; values are localized and
-     *                      are coming from the user interface
-     * @throws SQLException if the insert preparation failed
-     * @see #prepare(AbstractSQLInsertUpdate, Attribute, Object...)
+     * {@inheritDoc}
      */
+    @Override
     public void prepareInsert(final SQLInsert _insert,
                               final Attribute _attribute,
                               final Object... _values)
@@ -54,14 +49,9 @@ public abstract class AbstractType
     }
 
     /**
-     *
-     * @param _update       SQL update statement
-     * @param _attribute    attribute which is updated
-     * @param _values       new object value to set; values are localized and
-     *                      are coming from the user interface
-     * @throws SQLException if the update preparation failed
-     * @see #prepare(AbstractSQLInsertUpdate, Attribute, Object...)
+     * {@inheritDoc}
      */
+    @Override
     public void prepareUpdate(final SQLUpdate _update,
                               final Attribute _attribute,
                               final Object... _values)
@@ -71,7 +61,6 @@ public abstract class AbstractType
     }
 
     /**
-     *
      *
      * @param _insertUpdate SQL insert / update statement
      * @param _attribute    SQL update statement

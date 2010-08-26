@@ -41,17 +41,9 @@ public class LongType
     extends AbstractType
 {
     /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
-     * @throws SQLException on error
-     */
-    /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
                            final Attribute _attribute,
                            final Object... _values)
@@ -61,6 +53,11 @@ public class LongType
         _insertUpdate.column(_attribute.getSqlColNames().get(0), eval(_values));
     }
 
+    /**
+     * Evaluate the value.
+     * @param _values value to be evaluated
+     * @return Long value
+     */
     protected Long eval(final Object... _values)
     {
         final Long ret;
@@ -70,7 +67,7 @@ public class LongType
         } else if ((_values[0] instanceof String) && !"".equals(_values[0])) {
             ret = Long.parseLong((String) _values[0]);
         } else if (_values[0] instanceof Number) {
-            ret = (((Number) _values[0]).longValue());
+            ret = ((Number) _values[0]).longValue();
         } else  {
             ret = null;
         }
@@ -78,6 +75,10 @@ public class LongType
         return ret;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final CachedResult _rs,
                             final List<Integer> _indexes)
@@ -88,6 +89,7 @@ public class LongType
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
     {

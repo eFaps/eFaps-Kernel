@@ -44,7 +44,7 @@ public class CompanyLinkType
      * @throws SQLException if not exact one SQL column for the attribute is
      *                      defined of the company id could not be fetched
      */
-    @Override()
+    @Override
     protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
                            final Attribute _attribute,
                            final Object... _values)

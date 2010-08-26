@@ -24,6 +24,7 @@ package org.efaps.admin.datamodel.attributetype;
  * @author The eFaps Team
  * @version $Id$
  */
-public class LinkType extends AbstractLinkType
+public class LinkType
+    extends AbstractLinkType
 {
 }

@@ -18,30 +18,11 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.datamodel.attributetype;
-
-import java.util.List;
-
-import org.efaps.admin.datamodel.Attribute;
-import org.efaps.db.query.CachedResult;
-
 /**
+ * Each class represents an attribute type used in eFaps.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class BlobType
-    extends AbstractFileType
-{
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object readValue(final Attribute _attribute,
-                            final CachedResult _rs,
-                            final List<Integer> _index)
-        throws Exception
-    {
-        return _rs.getString(_index.get(0).intValue());
-    }
-}
+package org.efaps.admin.datamodel.attributetype;
+

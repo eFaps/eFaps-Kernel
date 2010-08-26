@@ -46,7 +46,7 @@ public class DecimalType extends AbstractType
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
                         final Attribute _attribute,
                         final Object... _values)
@@ -57,7 +57,10 @@ public class DecimalType extends AbstractType
     }
 
     /**
-     *{@inheritDoc}
+     * Evaluate the value.
+     * @param _values value to be evaluated
+     * @return BigDecimal value
+     * @throws SQLException on error
      */
     protected BigDecimal eval(final Object... _values)
         throws SQLException
@@ -75,7 +78,7 @@ public class DecimalType extends AbstractType
         } else if (_values[0] instanceof BigDecimal) {
             ret = (BigDecimal) _values[0];
         } else if (_values[0] instanceof Number) {
-            ret = (new BigDecimal(((Number) _values[0]).toString()));
+            ret = new BigDecimal(((Number) _values[0]).toString());
         } else  {
             ret = null;
         }
@@ -84,8 +87,9 @@ public class DecimalType extends AbstractType
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final CachedResult _rs,
                             final List<Integer> _indexes)
@@ -95,8 +99,9 @@ public class DecimalType extends AbstractType
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
     {

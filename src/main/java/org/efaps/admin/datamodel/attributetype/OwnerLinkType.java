@@ -41,14 +41,13 @@ public class OwnerLinkType
      * The instance method sets the value in the insert statement to the id of
      * the current context user.
      *
-     * @param _insertUpdate     insert / update SQL statement
-     * @param _values           values to updated; ignored, because always set
-     *                          to current person
-     * @throws SQLException if SQL columns are not exact one for related
-     *                      attribute or if the current context person id could
-     *                      not be fetched
+     * @param _insertUpdate SQL insert / update statement
+     * @param _attribute    SQL update statement
+     * @param _values       new object value to set; values are localized and
+     *                      are coming from the user interface
+     * @throws SQLException on error
      */
-    @Override()
+    @Override
     protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
                            final Attribute _attribute,
                            final Object... _values)

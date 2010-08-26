@@ -42,7 +42,7 @@ public class IntegerType
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
                         final Attribute _attribute,
                         final Object... _values)
@@ -53,9 +53,9 @@ public class IntegerType
     }
 
     /**
-     *
-     * @param _value    values to parse
-     * @return
+     * Evaluate the value.
+     * @param _value value to be evaluated
+     * @return Long value
      */
     protected Long eval(final Object[] _value)
     {
@@ -74,6 +74,10 @@ public class IntegerType
         return ret;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final CachedResult _rs,
                             final List<Integer> _indexes)
@@ -84,6 +88,7 @@ public class IntegerType
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
     {

@@ -46,7 +46,7 @@ public class OIDType
      * @param _values       ignored
      * @throws SQLException always because update is not allowed
      */
-    @Override()
+    @Override
     public void prepareUpdate(final SQLUpdate _update,
                               final Attribute _attribute,
                               final Object... _values)
@@ -56,13 +56,9 @@ public class OIDType
     }
 
     /**
-     * The oid (object id) is the type id, than a point and the id itself. If in
-     * the attribute the attribute has no defined type id SQL column name, the
-     * type from the attribute is used (this means, the type itself is not
-     * derived and has no childs).
-     *
+     * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Object readValue(final Attribute _attribute,
                             final CachedResult _rs,
                             final List<Integer> _indexes)
@@ -80,9 +76,16 @@ public class OIDType
     }
 
     /**
-     * {@inheritDoc}
+     * The oid (object id) is the type id, than a point and the id itself. If in
+     * the attribute the attribute has no defined type id SQL column name, the
+     * type from the attribute is used (this means, the type itself is not
+     * derived and has no childs).
+     *
+     * @param _attribute    related attribute which is read
+     * @param _objectList   list of objects from the eFaps Database
+     * @return Object as needed for eFaps
      */
-    @Override()
+    @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
     {

@@ -39,14 +39,9 @@ public class CreatorLinkType
     extends PersonLinkType
 {
     /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
-     * @throws SQLException on error
+     * {@inheritDoc}
      */
-    @Override()
+    @Override
     public void prepareInsert(final SQLInsert _insert,
                               final Attribute _attribute,
                               final Object... _values)
@@ -62,14 +57,9 @@ public class CreatorLinkType
     }
 
     /**
-     * An update of a creator link is not allowed and therefore a
-     * {@link SQLException} is always thrown.
-     *
-     * @param _update   update SQL statement
-     * @param _values   ignored because update is not allowed
-     * @throws SQLException always because update is not allowed
+     * {@inheritDoc}
      */
-    @Override()
+    @Override
     public void prepareUpdate(final SQLUpdate _update,
                               final Attribute _attribute,
                               final Object... _values)

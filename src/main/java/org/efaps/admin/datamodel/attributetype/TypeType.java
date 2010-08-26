@@ -39,16 +39,9 @@ public class TypeType
     extends AbstractType
 {
     /**
-     * A {@link SQLException} is always thrown because an update of a type is
-     * not allowed.
-     *
-     * @param _update       update SQL statement
-     * @param _attribute    related eFaps attribute; ignored, because update is
-     *                      not allowed
-     * @param _values       values ignored, because update not allowed
-     * @throws SQLException always, because update is not allowed
+     * {@inheritDoc}
      */
-    @Override()
+    @Override
     public void prepareUpdate(final SQLUpdate _update,
                               final Attribute _attribute,
                               final Object... _values)
@@ -58,10 +51,9 @@ public class TypeType
     }
 
     /**
-     * The method reads from a SQL result set the value for the type. If no
-     * type SQL column is given in the type description, the value is read
-     * directly from the attribute.
+     * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final CachedResult _rs,
                             final List<Integer> _indexes)
@@ -77,15 +69,9 @@ public class TypeType
     }
 
     /**
-     * The method reads from a SQL result set the value for the type. If no
-     * type SQL column is given in the type description, the value is read
-     * directly from the attribute.
-     *
-     * @param _attribute    related eFaps attribute
-     * @param _objectList   list of objects
-     * @return evaluated type instance
-     * TODO throw error if more than one value is given
+     * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
     {
