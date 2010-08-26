@@ -24,7 +24,6 @@ package org.efaps.db.print;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-
 /**
  * Abstract Select Part.
  *
@@ -47,6 +46,7 @@ public abstract class AbstractSelectPart
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object getObject()
     {
         return null;

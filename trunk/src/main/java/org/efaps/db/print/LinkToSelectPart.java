@@ -73,6 +73,7 @@ public class LinkToSelectPart
     /**
      * {@inheritDoc}
      */
+    @Override
     public int join(final OneSelect _oneSelect,
                     final SQLSelect _select,
                     final int _relIndex)
@@ -104,6 +105,7 @@ public class LinkToSelectPart
     /**
      * {@inheritDoc}
      */
+    @Override
     public Type getType()
     {
         return this.type.getAttribute(this.attrName).getLink();
