@@ -278,7 +278,7 @@ public final class EventDefinition
 
                 EventType triggerEvent = null;
                 for (final EventType trigger : EventType.values()) {
-                    final Type triggerClass = Type.get(trigger.name);
+                    final Type triggerClass = Type.get(trigger.getName());
                     if (eventType.isKindOf(triggerClass)) {
                         if (EventDefinition.LOG.isDebugEnabled()) {
                             EventDefinition.LOG.debug("     found trigger " + trigger + ":" + triggerClass);

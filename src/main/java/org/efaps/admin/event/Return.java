@@ -110,7 +110,7 @@ public class Return
      *
      * @return string representation of this parameter instance.
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)
