@@ -87,6 +87,8 @@ public class SQLSelect
         PARENTHESIS_OPEN("("),
         /** select. */
         SELECT("select"),
+        /** .*/
+        SPACE(" "),
         /** timestamp. */
         TIMESTAMP("timestamp"),
         /** TRUE. */
@@ -519,7 +521,7 @@ public class SQLSelect
                 _cmd.append(' ');
             }
             _cmd.append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.LEFT))
-                .append(" ").append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.LEFT)).append(" ")
+                .append(" ").append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.JOIN)).append(" ")
                 .append(Context.getDbType().getTableQuote())
                 .append(getTableName())
                 .append(Context.getDbType().getTableQuote())
