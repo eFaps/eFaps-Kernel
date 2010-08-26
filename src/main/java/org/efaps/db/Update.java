@@ -94,7 +94,9 @@ public class Update
      * @param _id       id to be updated
      * @throws EFapsException on error
      */
-    public Update(final Type _type, final String _id) throws EFapsException
+    public Update(final Type _type,
+                  final String _id)
+        throws EFapsException
     {
         this(Instance.get(_type, _id));
     }
@@ -104,7 +106,9 @@ public class Update
      * @param _id       id to be updated
      * @throws EFapsException on error
      */
-    public Update(final String _type, final String _id) throws EFapsException
+    public Update(final String _type,
+                  final String _id)
+        throws EFapsException
     {
         this(Type.get(_type), _id);
     }
@@ -113,7 +117,8 @@ public class Update
      * @param _oid OID of the instance to be updated.
      * @throws EFapsException on error
      */
-    public Update(final String _oid) throws EFapsException
+    public Update(final String _oid)
+        throws EFapsException
     {
         this(Instance.get(_oid));
     }
@@ -122,7 +127,8 @@ public class Update
      * @param _instance  instance to be updated.
      * @throws EFapsException on error
      */
-    public Update(final Instance _instance) throws EFapsException
+    public Update(final Instance _instance)
+        throws EFapsException
     {
         setInstance(_instance);
         addAlwaysUpdateAttributes();
@@ -135,7 +141,8 @@ public class Update
      * Add all attributes of the type which must be always updated.
      *  @throws EFapsException on error
      */
-    protected void addAlwaysUpdateAttributes() throws EFapsException
+    protected void addAlwaysUpdateAttributes()
+        throws EFapsException
     {
         final Iterator<?> iter = getInstance().getType().getAttributes().entrySet().iterator();
         while (iter.hasNext()) {
@@ -154,7 +161,8 @@ public class Update
      * @see #statement
      * @throws EFapsException on error
      */
-    public void close() throws EFapsException
+    public void close()
+        throws EFapsException
     {
     }
 
@@ -167,7 +175,8 @@ public class Update
      * @return true if a trigger was found and executed, otherwise false
      * @throws EFapsException on error
      */
-    protected boolean executeEvents(final EventType _eventtype) throws EFapsException
+    protected boolean executeEvents(final EventType _eventtype)
+        throws EFapsException
     {
         boolean ret = false;
         final List<EventDefinition> triggers = getInstance().getType().getEvents(_eventtype);
@@ -251,7 +260,7 @@ public class Update
         if (_attr.hasEvents(EventType.VALIDATE)) {
             final List<Return> returns = _attr.executeEvents(EventType.VALIDATE, ParameterValues.NEW_VALUES, _value);
             for (final Return retu : returns) {
-                if ((retu.get(ReturnValues.TRUE) == null)) {
+                if (retu.get(ReturnValues.TRUE) == null) {
                     ret = new Status(retu.get(ReturnValues.VALUES), _attr, _value);
                     break;
                 }
@@ -280,7 +289,8 @@ public class Update
      * @return is it unique
      * @throws EFapsException on error
      */
-    protected boolean test4Unique() throws EFapsException
+    protected boolean test4Unique()
+        throws EFapsException
     {
         return test4Unique(getType());
     }
@@ -291,32 +301,27 @@ public class Update
      * @return is the type unique
      * @throws EFapsException on error
      */
-    private boolean test4Unique(final Type _type) throws EFapsException
+    private boolean test4Unique(final Type _type)
+        throws EFapsException
     {
         boolean ret = false;
 
         if (_type.getUniqueKeys() != null) {
             for (final org.efaps.admin.datamodel.UniqueKey uk : _type.getUniqueKeys()) {
-
-                final SearchQuery query = new SearchQuery();
-                query.setQueryTypes(_type.getName());
-                query.setExpandChildTypes(true);
-
+                final QueryBuilder queryBldr = new QueryBuilder(_type);
                 boolean testNeeded = false;
                 for (final Attribute attr : uk.getAttributes()) {
                     final Value value = this.attr2values.get(attr.getName());
                     if (value != null) {
-                        query.addWhereAttrEqValue(attr, value.values[0].toString());
+                        queryBldr.addWhereAttrEqValue(attr, value.values[0]);
                         testNeeded = true;
                     }
                 }
                 if (testNeeded) {
-                    query.addSelect("ID");
+                    final InstanceQuery query = queryBldr.getQuery();
                     query.executeWithoutAccessCheck();
-
                     while (query.next()) {
-                        final long id = (Long) query.get("ID");
-                        if (id != getInstance().getId()) {
+                        if (!query.getCurrentValue().equals(getInstance())) {
                             ret = true;
                             break;
                         }
@@ -334,7 +339,8 @@ public class Update
      * @throws EFapsException thrown from {@link #executeWithoutAccessCheck}
      * @see #executeWithoutAccessCheck
      */
-    public void execute() throws EFapsException
+    public void execute()
+        throws EFapsException
     {
         final boolean hasAccess = getType().hasAccess(getInstance(), AccessTypeEnums.MODIFY.getAccessType());
 
@@ -359,7 +365,8 @@ public class Update
      *             the Status is invalid
      * @see #executeWithoutTrigger
      */
-    public void executeWithoutAccessCheck() throws EFapsException
+    public void executeWithoutAccessCheck()
+        throws EFapsException
     {
         if (Update.STATUSOK.getStati().isEmpty()) {
 
@@ -381,7 +388,8 @@ public class Update
      * @throws EFapsException if update not possible (unique key, object does
      *             not exists, etc...)
      */
-    public void executeWithoutTrigger() throws EFapsException
+    public void executeWithoutTrigger()
+        throws EFapsException
     {
         if (Update.STATUSOK.getStati().isEmpty()) {
 
@@ -514,7 +522,9 @@ public class Update
          * @param _attribute    attribute
          * @param _value        value
          */
-        public Status(final Object _returnvalue, final Attribute _attribute, final Object _value)
+        public Status(final Object _returnvalue,
+                      final Attribute _attribute,
+                      final Object _value)
         {
             this.returnValue = _returnvalue;
             this.value = _value;
@@ -604,12 +614,25 @@ public class Update
         }
     }
 
-    protected static class Value
+    /**
+     * Represents one value for an attribte that will be updated.
+     */
+    protected static final class Value
     {
-        final Attribute attribute;
+        /**
+         * Attribute the value belongs to.
+         */
+        private final Attribute attribute;
 
-        final Object[] values;
+        /**
+         * Values for the Attribute.
+         */
+        private final Object[] values;
 
+        /**
+         * @param _attribute    Attribute the value belongs to
+         * @param _values       Valuers for the Attribute
+         */
         private Value(final Attribute _attribute,
                       final Object... _values)
         {
