@@ -247,7 +247,7 @@ public class Insert
             }
 
             for (final Update.Value value : _values) {
-                value.attribute.prepareDBInsert(insert, value.getValues());
+                value.getAttribute().prepareDBInsert(insert, value.getValues());
             }
 
             final Long bck = insert.execute(_con.getConnection());
