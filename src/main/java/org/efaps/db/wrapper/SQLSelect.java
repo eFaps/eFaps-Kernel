@@ -36,99 +36,6 @@ import org.efaps.util.EFapsException;
 public class SQLSelect
 {
     /**
-     * Simple SQLpart.
-     */
-    public enum SQLPart {
-        /** all. */
-        ALL("all"),
-        /** and. */
-        AND("and"),
-        /** asc. */
-        ASC("asc"),
-        /** ,. */
-        COMMA(","),
-        /** distinct. */
-        DISTINCT("distinct"),
-        /** desc. */
-        DESC("desc"),
-        /** from. */
-        FROM("from"),
-        /** =. */
-        EQUAL("="),
-        /** >. */
-        GREATER(">"),
-        /** FALSE. */
-        FALSE("FALSE"),
-        /** in. */
-        IN("in"),
-        /** is. */
-        IS("is"),
-        /** left. */
-        JOIN("join"),
-        /** left. */
-        LEFT("left"),
-        /** <. */
-        LESS("<"),
-        /** like. */
-        LIKE("like"),
-        /** limit. */
-        LIMIT("limit"),
-        /** null. */
-        NULL("null"),
-        /** not. */
-        NOT("not"),
-        /** on. */
-        ON("on"),
-        /** or. */
-        OR("or"),
-        /** order by. */
-        ORDERBY("order by"),
-        /** ). */
-        PARENTHESIS_CLOSE(")"),
-        /** (. */
-        PARENTHESIS_OPEN("("),
-        /** select. */
-        SELECT("select"),
-        /** .*/
-        SPACE(" "),
-        /** timestamp. */
-        TIMESTAMP("timestamp"),
-        /** TRUE. */
-        TRUE("TRUE"),
-        /** union. */
-        UNION("union"),
-        /** !=. */
-        UNEQUAL("!="),
-        /** upper. */
-        UPPER("upper"),
-        /** where. */
-        WHERE("where");
-
-        /**
-         * Default Value.
-         */
-        private final String defaultValue;
-
-        /**
-         * @param _default default value
-         */
-        private SQLPart(final String _default)
-        {
-            this.defaultValue = _default;
-        }
-
-        /**
-         * Getter method for the instance variable {@link #defaultValue}.
-         *
-         * @return value of instance variable {@link #defaultValue}
-         */
-        public String getDefaultValue()
-        {
-            return this.defaultValue;
-        }
-    }
-
-    /**
      * Parts that will be added to the created SQL Statement.
      */
     private final List<SQLSelectPart> parts = new ArrayList<SQLSelectPart>();
@@ -261,20 +168,20 @@ public class SQLSelect
     public String getSQL()
     {
         final StringBuilder cmd = new StringBuilder().append(" ")
-            .append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.SELECT)).append(" ");
+            .append(Context.getDbType().getSQLPart(SQLPart.SELECT)).append(" ");
         if (this.distinct) {
-            cmd.append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.DISTINCT)).append(" ");
+            cmd.append(Context.getDbType().getSQLPart(SQLPart.DISTINCT)).append(" ");
         }
         boolean first = true;
         for (final Column column : this.columns) {
             if (first) {
                 first = false;
             } else {
-                cmd.append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.COMMA));
+                cmd.append(Context.getDbType().getSQLPart(SQLPart.COMMA));
             }
             column.appendSQL(cmd);
         }
-        cmd.append(" ").append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.FROM)).append(" ");
+        cmd.append(" ").append(Context.getDbType().getSQLPart(SQLPart.FROM)).append(" ");
         first = true;
         for (final FromTable fromTable : this.fromTables) {
             fromTable.appendSQL(first, cmd);
@@ -453,7 +360,7 @@ public class SQLSelect
                               final StringBuilder _cmd)
         {
             if (!_first) {
-                _cmd.append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.COMMA));
+                _cmd.append(Context.getDbType().getSQLPart(SQLPart.COMMA));
             }
             _cmd.append(Context.getDbType().getTableQuote())
                 .append(this.tableName)
@@ -524,18 +431,18 @@ public class SQLSelect
             if (!_first) {
                 _cmd.append(' ');
             }
-            _cmd.append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.LEFT))
-                .append(" ").append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.JOIN)).append(" ")
+            _cmd.append(Context.getDbType().getSQLPart(SQLPart.LEFT))
+                .append(" ").append(Context.getDbType().getSQLPart(SQLPart.JOIN)).append(" ")
                 .append(Context.getDbType().getTableQuote())
                 .append(getTableName())
                 .append(Context.getDbType().getTableQuote())
                 .append(" T").append(getTableIndex()).append(" ")
-                .append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.ON))
+                .append(Context.getDbType().getSQLPart(SQLPart.ON))
                 .append(" T").append(this.joinTableIndex).append('.')
                 .append(Context.getDbType().getColumnQuote())
                 .append(this.joinColumnName)
                 .append(Context.getDbType().getColumnQuote())
-                .append(Context.getDbType().getSQLPart(SQLSelect.SQLPart.EQUAL))
+                .append(Context.getDbType().getSQLPart(SQLPart.EQUAL))
                 .append("T").append(getTableIndex()).append('.')
                 .append(Context.getDbType().getColumnQuote())
                 .append(this.columnName)
