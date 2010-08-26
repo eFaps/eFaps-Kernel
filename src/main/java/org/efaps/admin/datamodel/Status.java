@@ -53,12 +53,12 @@ public final class Status implements CacheObjectInterface
      *
      * @see StatusGroupCache#readCache(Map, Map, Map)
      */
-    private static final SQLSelect SELECT = new SQLSelect()
+    private static final String SELECT = new SQLSelect()
                                             .column("ID")
                                             .column("TYPEID")
                                             .column("KEY")
                                             .column("DESCR")
-                                        .from("T_DMSTATUS");
+                                            .from("T_DMSTATUS").getSQL();
 
     /**
      * Logging instance used in this class.
@@ -330,7 +330,7 @@ public final class Status implements CacheObjectInterface
 
                     stmt = con.getConnection().createStatement();
 
-                    final ResultSet rs = stmt.executeQuery(Status.SELECT.getSQL());
+                    final ResultSet rs = stmt.executeQuery(Status.SELECT);
                     while (rs.next()) {
                         final long id = rs.getLong(1);
                         final long typeid = rs.getLong(2);
