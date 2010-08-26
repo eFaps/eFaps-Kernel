@@ -34,9 +34,12 @@ import java.util.UUID;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.TableInformation;
+import org.efaps.db.wrapper.SQLDelete;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLPart;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLUpdate;
+import org.efaps.db.wrapper.SQLDelete.DeleteDefintion;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
@@ -188,7 +191,6 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         return new SQLInsert(_tableName, _idCol, _newId);
     }
 
-
     /**
      *
      * @param _tableName    name of the table to insert
@@ -201,6 +203,23 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                                final long _id)
     {
         return new SQLUpdate(_tableName, _idCol, _id);
+    }
+
+    /**
+     * @param _definition deleteDefinitions
+     * @return new SQLDelete
+     */
+    public SQLDelete newDelete(final DeleteDefintion... _definition)
+    {
+        return new SQLDelete(_definition);
+    }
+
+    /**
+     * @return new SQL select statement
+     */
+    public SQLSelect newSelect()
+    {
+        return new SQLSelect();
     }
 
     /**

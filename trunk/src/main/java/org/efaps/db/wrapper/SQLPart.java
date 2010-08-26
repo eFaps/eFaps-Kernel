@@ -42,6 +42,8 @@ public enum SQLPart {
     DISTINCT("distinct"),
     /** desc. */
     DESC("desc"),
+    /** Renders as default: "delete". */
+    DELETE("delete"),
     /** from. */
     FROM("from"),
     /** =. */
