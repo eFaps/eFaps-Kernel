@@ -54,11 +54,11 @@ public final class NumberGenerator
      */
     private static String SQL_SELECT = new SQLSelect()
                                                 .column(0, "ID")
-                                                .column(0, "NAME")
-                                                .column(0, "UUID")
-                                                .column(1, "FORMAT")
-                                                .from("T_ACCESSSET")
-                                                .leftJoin("T_CMABSTRACT", 0, "ID", 1, "ID")
+                                                .column(1, "NAME")
+                                                .column(1, "UUID")
+                                                .column(0, "FORMAT")
+                                                .from("T_CMNUMGEN", 0)
+                                                .leftJoin("T_CMABSTRACT", 1, "ID", 0, "ID")
                                                 .getSQL();
 
     /**
