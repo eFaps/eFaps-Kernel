@@ -36,23 +36,33 @@ public enum EventType
     ACCESSCHECK        ("Admin_DataModel_TypeAccessCheckEvent"),
     /** EventType executed instead the checkin of a type. */
     CHECKIN_OVERRIDE   ("Admin_DataModel_Type_Trigger_CheckinOverride"),
+    /** EventType executed after the checkin of a type. */
     CHECKIN_POST       ("Admin_DataModel_Type_Trigger_CheckinPost"),
+    /** EventType executed before the checkin of a type. */
     CHECKIN_PRE        ("Admin_DataModel_Type_Trigger_CheckinPre"),
     /** EventType executed instead the checkout of a type. */
     CHECKOUT_OVERRIDE  ("Admin_DataModel_Type_Trigger_CheckoutOverride"),
+    /** EventType executed after the checkout of a type. */
     CHECKOUT_POST      ("Admin_DataModel_Type_Trigger_CheckoutPost"),
+    /** EventType executed before the checkout of a type. */
     CHECKOUT_PRE       ("Admin_DataModel_Type_Trigger_CheckoutPre"),
     /** EventType executed instead the deletion of a type. */
     DELETE_OVERRIDE    ("Admin_DataModel_Type_Trigger_DeleteOverride"),
+    /** EventType executed after the deletion of a type. */
     DELETE_POST        ("Admin_DataModel_Type_Trigger_DeletePost"),
+    /** EventType executed before the deletion of a type. */
     DELETE_PRE         ("Admin_DataModel_Type_Trigger_DeletePre"),
     /** EventType executed instead the insert of a type. */
     INSERT_OVERRIDE    ("Admin_DataModel_Type_Trigger_InsertOverride"),
+    /** EventType executed after the insert of a type. */
     INSERT_POST        ("Admin_DataModel_Type_Trigger_InsertPost"),
+    /** EventType executed before the insert of a type. */
     INSERT_PRE         ("Admin_DataModel_Type_Trigger_InsertPre"),
     /** EventType executed instead the update of a type. */
     UPDATE_OVERRIDE    ("Admin_DataModel_Type_Trigger_UpdateOverride"),
+    /** EventType executed after the update of a type. */
     UPDATE_POST        ("Admin_DataModel_Type_Trigger_UpdatePost"),
+    /** EventType executed before the update of a type. */
     UPDATE_PRE         ("Admin_DataModel_Type_Trigger_UpdatePre"),
 
     /**
@@ -89,17 +99,46 @@ public enum EventType
      * edit etc.
      */
     UI_ACCESSCHECK        ("Admin_UI_AbstractAccessCheckEvent"),
+    /**
+     * EventType executed from an command.
+     */
     UI_COMMAND_EXECUTE    ("Admin_UI_CommandExecuteEvent"),
+    /**
+     * EventType executed to validate a form.
+     */
     UI_VALIDATE           ("Admin_UI_ValidateEvent"),
+    /**
+     * EventType for checking the access to a field (depending on mode: create
+     * edit etc.
+     */
     UI_INSTANCEMANAGER    ("Admin_UI_InstanceManagerEvent"),
     /** EventType for evaluating the values for a table. */
     UI_TABLE_EVALUATE ("Admin_UI_TableEvaluateEvent"),
+    /**
+     * EventType used to validate the values for an attribute.
+     */
     VALIDATE              ("Admin_DataModel_AttributeValidateEvent");
 
-    public final String name;
+    /**
+     * Name of the Event.
+     */
+    private final String name;
 
+    /**
+     * @param _name name for the event
+     */
     private EventType(final String _name)
     {
         this.name = _name;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #name}.
+     *
+     * @return value of instance variable {@link #name}
+     */
+    public String getName()
+    {
+        return this.name;
     }
 }
