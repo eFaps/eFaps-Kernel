@@ -87,6 +87,7 @@ public class TempFileBundle
     /**
      * {@inheritDoc}
      */
+    @Override
     public synchronized InputStream getInputStream(final boolean _gziped)
         throws EFapsException
     {
@@ -112,6 +113,7 @@ public class TempFileBundle
     /**
      * {@inheritDoc}
      */
+    @Override
     public long getCreationTime()
     {
         return this.created;
@@ -155,7 +157,7 @@ public class TempFileBundle
     private File setFile(final boolean _gziped)
         throws EFapsException
     {
-        final String filename = (_gziped ? this.key + "GZIP" : this.key);
+        final String filename = _gziped ? this.key + "GZIP" : this.key;
         final File ret = new File(TempFileBundle.getTempFolder(), filename);
 
         try {
@@ -210,6 +212,7 @@ public class TempFileBundle
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setKey(final String _key,
                        final List<String> _oids)
     {
