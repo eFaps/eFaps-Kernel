@@ -21,8 +21,8 @@
 
 package org.efaps.db.search.value;
 
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-
 
 /**
  * TODO comment!
@@ -51,10 +51,10 @@ public class QSQLValue
      * {@inheritDoc}
      */
     @Override
-    public QSQLValue appendSQL(final StringBuilder _sql)
+    public QSQLValue appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
-        _sql.append(this.sql);
+        _sql.addNestedSelectPart(this.sql);
         return this;
     }
 }

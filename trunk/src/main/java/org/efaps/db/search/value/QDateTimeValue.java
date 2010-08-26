@@ -22,9 +22,10 @@
 package org.efaps.db.search.value;
 
 import org.efaps.admin.datamodel.attributetype.DateTimeType;
+import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.db.wrapper.SQLSelect.SQLPart;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
-
 
 /**
  * A DateTime value.
@@ -53,10 +54,10 @@ public class QDateTimeValue
      * {@inheritDoc}
      */
     @Override
-    public QDateTimeValue appendSQL(final StringBuilder _sql)
+    public QDateTimeValue appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
-        _sql.append(" timestamp '").append(new DateTimeType().toString4Where(this.value)).append("'");
+        _sql.addPart(SQLPart.TIMESTAMP).addEscapedValuePart(new DateTimeType().toString4Where(this.value));
         return this;
     }
 }

@@ -26,8 +26,8 @@ import org.efaps.db.Context;
 import org.efaps.db.search.AbstractQPart;
 import org.efaps.db.search.compare.AbstractQAttrCompare;
 import org.efaps.db.search.compare.QMatch;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-
 
 /**
  * TODO comment!
@@ -70,13 +70,14 @@ public class QStringValue
         }
         return this;
     }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public QStringValue appendSQL(final StringBuilder _sql)
+    public QStringValue appendSQL(final SQLSelect _sql)
     {
-        _sql.append("'").append(this.value).append("'");
+        _sql.addEscapedValuePart(this.value);
         return this;
     }
 }

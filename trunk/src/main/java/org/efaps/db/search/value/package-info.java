@@ -18,41 +18,11 @@
  * Last Changed By: $Author$
  */
 
-
-package org.efaps.db.search.value;
-
-import org.efaps.db.wrapper.SQLSelect;
-
 /**
- * TODO comment!
+ * Values used in a search query executed against the DataBase.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class QNumberValue
-    extends AbstractQValue
-{
+package org.efaps.db.search.value;
 
-    /**
-     * Number of this Value.
-     */
-    private final Number number;
-
-    /**
-     * @param _value value
-     */
-    public QNumberValue(final Number _value)
-    {
-        this.number = _value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public QNumberValue appendSQL(final SQLSelect _sql)
-    {
-        _sql.addValuePart(this.number);
-        return this;
-    }
-}

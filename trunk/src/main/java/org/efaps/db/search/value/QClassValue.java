@@ -18,12 +18,11 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.db.search.value;
 
 import org.efaps.admin.datamodel.Classification;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-
 
 /**
  * Used as the Value in the {@link org.efaps.db.search.compare.QClassEqual} part.
@@ -62,10 +61,10 @@ public class QClassValue
      * {@inheritDoc}
      */
     @Override
-    public QClassValue appendSQL(final StringBuilder _sql)
+    public QClassValue appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
-        _sql.append(this.clazz.getId());
+        _sql.addValuePart(this.clazz.getId());
         return this;
     }
 }
