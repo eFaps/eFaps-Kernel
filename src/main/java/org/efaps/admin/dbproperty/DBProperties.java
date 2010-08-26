@@ -193,9 +193,9 @@ public class DBProperties
                                     .column(3, "LANG")
                                     .column(1, "SEQUENCE")
                                     .from("T_ADPROP", 0)
-                                    .leftJoin("T_ADPROPBUN", 1, "ID", 0, "BUNDLEID")
-                                    .leftJoin("T_ADPROPLOC", 2, "PROPID", 0, "ID")
-                                    .leftJoin("T_ADLANG", 3, "ID", 2, "LANGID")
+                                    .innerJoin("T_ADPROPBUN", 1, "ID", 0, "BUNDLEID")
+                                    .innerJoin("T_ADPROPLOC", 2, "PROPID", 0, "ID")
+                                    .innerJoin("T_ADLANG", 3, "ID", 2, "LANGID")
                                     .addPart(SQLPart.ORDERBY)
                                     .addColumnPart(3,  "LANG")
                                     .addPart(SQLPart.COMMA)
@@ -234,14 +234,13 @@ public class DBProperties
                 final String langTmp = resultset.getString(3).trim();
                 if (langTmp.equals(propKey)) {
                     language = DBProperties.DEFAULT;
+                } else {
+                    language = langTmp;
                 }
-                if (!language.equals(resultset.getString(3).trim())) {
-                    language = resultset.getString(3).trim();
-                    map = DBProperties.PROPERTIESCACHE.get(language);
-                    if (map == null) {
-                        map = new HashMap<String, String>();
-                        DBProperties.PROPERTIESCACHE.put(language, map);
-                    }
+                map = DBProperties.PROPERTIESCACHE.get(language);
+                if (map == null) {
+                    map = new HashMap<String, String>();
+                    DBProperties.PROPERTIESCACHE.put(language, map);
                 }
                 map.put(propKey, resultset.getString(2).trim());
             }
