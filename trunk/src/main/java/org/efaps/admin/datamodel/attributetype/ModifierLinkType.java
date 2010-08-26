@@ -41,13 +41,14 @@ public class ModifierLinkType
      * The instance method appends the SQL columns with always with the id of
      * the current context user as value.
      *
-     * @param _insertUpdate insert / update statement
-     * @param _values       values; ignored, because always set to current
-     *                      logged in person
+     * @param _insertUpdate SQL insert / update statement
+     * @param _attribute    SQL update statement
+     * @param _values       new object value to set; values are localized and
+     *                      are coming from the user interface
      * @throws SQLException if SQL columns for the attribute are not correctly
      *                      defined
      */
-    @Override()
+    @Override
     protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
                            final Attribute _attribute,
                            final Object... _values)

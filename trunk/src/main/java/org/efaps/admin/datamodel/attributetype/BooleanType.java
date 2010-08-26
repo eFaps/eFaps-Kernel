@@ -54,7 +54,7 @@ public class BooleanType
      * @throws SQLException if size of the SQL columns of
      *                      <code>_attribute</code> is not correct
      */
-    @Override()
+    @Override
     public void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
                         final Attribute _attribute,
                         final Object... _value)
@@ -91,6 +91,7 @@ public class BooleanType
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final CachedResult _rs,
                             final List<Integer> _indexes)

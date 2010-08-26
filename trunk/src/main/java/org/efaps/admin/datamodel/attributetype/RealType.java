@@ -39,14 +39,9 @@ public class RealType
     extends AbstractType
 {
     /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractLinkType#update(java.lang.Object, java.sql.PreparedStatement, int)
-     * @param _object   object
-     * @param _stmt     SQL statement to update the value
-     * @param _index    index in the SQL statement to update the value
-     * @return number of indexes used in the method, if the return value is null an error should be thrown
-     * @throws SQLException on error
+     * {@inheritDoc}
      */
-    @Override()
+    @Override
     protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
                            final Attribute _attribute,
                            final Object... _values)
@@ -56,6 +51,11 @@ public class RealType
         _insertUpdate.column(_attribute.getSqlColNames().get(0), eval(_values));
     }
 
+    /**
+     * Evaluate the value.
+     * @param _value value to be evaluated
+     * @return Long value
+     */
     protected Double eval(final Object[] _value)
     {
         final Double ret;
@@ -63,9 +63,9 @@ public class RealType
         if (_value == null) {
             ret = null;
         } else if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
-            ret = (Double.parseDouble((String) _value[0]));
+            ret = Double.parseDouble((String) _value[0]);
         } else if (_value[0] instanceof Number) {
-            ret = (((Number) _value[0]).doubleValue());
+            ret = ((Number) _value[0]).doubleValue();
         } else  {
             ret = null;
         }
@@ -73,6 +73,10 @@ public class RealType
         return ret;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final CachedResult _rs,
                             final List<Integer> _indexes)
@@ -81,12 +85,10 @@ public class RealType
     }
 
     /**
-     * @param _attribute    related eFaps attribute
-     * @param _objectList   list of objects
-     * @return double value (if a {@link Number} value is defined on the first
-     *         index); otherwise <code>null</code>
-     * TODO throw error if more than one value is given
+   /**
+     * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
     {

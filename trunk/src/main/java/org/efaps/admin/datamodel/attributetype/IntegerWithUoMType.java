@@ -43,7 +43,7 @@ public class IntegerWithUoMType
      * It must be overwritten, because this type has at least two columns.
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
                         final Attribute _attribute,
                         final Object... _values)
@@ -101,11 +101,9 @@ public class IntegerWithUoMType
     }
 
     /**
-     * @see org.efaps.admin.datamodel.attributetype.AbstractWithUoMType#readValue(org.efaps.db.query.CachedResult, int)
-     * @param _object    Object to read
-     * @return the value as Integer
+     * {@inheritDoc}
      */
-    @Override()
+    @Override
     protected Object readValue(final Object _object)
     {
         final Integer ret;

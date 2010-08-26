@@ -48,6 +48,7 @@ public class DateTimeType
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final CachedResult _rs,
                             final List<Integer> _indexes)
@@ -58,6 +59,7 @@ public class DateTimeType
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
     {
@@ -75,7 +77,7 @@ public class DateTimeType
         for (final Object object : _objectList) {
             if (object instanceof Timestamp || object instanceof Date) {
                 ret.add(new DateTime(object, chron));
-            } else if (ret != null){
+            } else if (ret != null) {
                 ret.add(new DateTime());
             }
         }
@@ -83,12 +85,9 @@ public class DateTimeType
     }
 
     /**
-     *
-     * @param _insertUpdate     insert / update statement
-     * @throws SQLException if SQL columns for the attribute are not correctly
-     *                      defined
+     * {@inheritDoc}
      */
-    @Override()
+    @Override
     protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
                            final Attribute _attribute,
                            final Object... _values)
@@ -135,6 +134,4 @@ public class DateTimeType
         }
         return ret;
     }
-
-
 }

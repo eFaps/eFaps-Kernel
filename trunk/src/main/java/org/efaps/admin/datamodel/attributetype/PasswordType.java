@@ -67,22 +67,19 @@ public class PasswordType
      * The localized string and the internal string value are equal. So the
      * internal value can be set directly with method {@link #setValue}.
      *
-     * @param _value new value to set
+     * @param _values new value to set
+     * @return String
      */
-    @Override()
+    @Override
     protected String eval(final Object... _values)
     {
-        return this.decryptEncrypt(super.eval(_values), false);
+        return decryptEncrypt(super.eval(_values), false);
     }
 
     /**
-     * Read the value from the cache.
-     *
-     * @param _rs cached result
-     * @param _indexes indexs
-     * @return value
+     * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Object readValue(final Attribute _attribute,
                             final CachedResult _rs,
                             final List<Integer> _indexes)
@@ -96,13 +93,9 @@ public class PasswordType
     }
 
     /**
-     * 'Reads' the passwords from the list of objects
-     * ({@link #decryptEncrypt(String, boolean) decrypts} them).
-     *
-     * @param _objectList   list of objects read
-     * @return list of decrypted passwords
+     * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
     {
@@ -140,7 +133,7 @@ public class PasswordType
                 final char[] password = "password".toCharArray();
                 // Salt
                 final byte[] salt = { (byte) 0xA9, (byte) 0x9B, (byte) 0xC8, (byte) 0x32, (byte) 0x56, (byte) 0x34,
-                                (byte) 0xE3, (byte) 0x03 };
+                                      (byte) 0xE3, (byte) 0x03 };
                 // Iteration count
                 final int count = 19;
 

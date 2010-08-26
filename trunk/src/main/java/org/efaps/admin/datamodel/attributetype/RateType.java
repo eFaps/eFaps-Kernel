@@ -46,7 +46,7 @@ public class RateType
      * It must be overwritten, because this type has at least two columns.
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
                         final Attribute _attribute,
                         final Object... _values)

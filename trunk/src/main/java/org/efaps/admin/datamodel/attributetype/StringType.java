@@ -42,7 +42,7 @@ public class StringType
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
                            final Attribute _attribute,
                            final Object... _values)
@@ -79,11 +79,12 @@ public class StringType
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final CachedResult _rs,
                             final List<Integer> _indexes)
     {
-        String value = (_rs.getString(_indexes.get(0).intValue()));
+        String value = _rs.getString(_indexes.get(0).intValue());
         if (value != null) {
             value = value.trim();
         }
@@ -93,6 +94,7 @@ public class StringType
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
     {

@@ -37,10 +37,9 @@ public class PersonLinkType
     extends AbstractLinkType
 {
     /**
-     * @param _rs
-     * @param _index
+     * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Object readValue(final Attribute _attribute,
                             final CachedResult _rs,
                             final List<Integer> _indexes)
@@ -60,22 +59,17 @@ public class PersonLinkType
                 if (ret == null) {
                     ret = Role.get(id);
                 }
-            } catch (final Exception e) {
+            } catch (final EFapsException e) {
                 e.printStackTrace();
             }
         }
-
         return ret;
     }
 
     /**
-     * @see org.efaps.admin.datamodel.IAttributeType#readValue(java.util.List)
-     * @param _objectList List of Objects
-     * @return DateTime
-     * @throws EFapsException on error
-     * TODO: throw error if more than one value is given
+     * {@inheritDoc}
      */
-    @Override()
+    @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
         throws EFapsException

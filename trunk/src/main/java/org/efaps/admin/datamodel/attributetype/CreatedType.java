@@ -42,11 +42,12 @@ public class CreatedType
      * the SQL statement.
      *
      * @param _insert   insert statement
+     * @param _attribute    attribute which is updated
      * @param _values   ignored, because always set to current time
      * @throws SQLException if SQL columns for the attribute are not correctly
      *                      defined
      */
-    @Override()
+    @Override
     public void prepareInsert(final SQLInsert _insert,
                               final Attribute _attribute,
                               final Object... _values)
@@ -60,11 +61,13 @@ public class CreatedType
      * An update of a type is not allowed and therefore a {@link SQLException}
      * is always thrown.
      *
-     * @param _update   update SQL statement; ignored
-     * @param _values   ignored
-     * @throws SQLException always because update is not allowed
+     * @param _update       SQL update statement
+     * @param _attribute    attribute which is updated
+     * @param _values       new object value to set; values are localized and
+     *                      are coming from the user interface
+     * @throws SQLException allways, because not allowed
      */
-    @Override()
+    @Override
     public void prepareUpdate(final SQLUpdate _update,
                               final Attribute _attribute,
                               final Object... _values)
