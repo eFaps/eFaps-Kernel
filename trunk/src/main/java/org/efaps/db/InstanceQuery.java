@@ -96,7 +96,7 @@ public class InstanceQuery
      * @return StringBuilder containing the statement
      * @throws EFapsException on error
      */
-    private StringBuilder createSQLStatement()
+    private String createSQLStatement()
         throws EFapsException
     {
         final SQLSelect select = new SQLSelect()
@@ -117,25 +117,23 @@ public class InstanceQuery
                 }
             }
         }
-
-        final StringBuilder cmd = new StringBuilder()
-            .append(select.getSQL())
-            .append(getWhere() != null ? getWhere().getSQL() : "")
-            .append(getOrderBy() != null ? getOrderBy().getSQL() : "")
-            .append(getLimit() != null ? getLimit().getSQL() : "");
+        select.addSection(getWhere());
+        select.addSection(getOrderBy());
+        select.addSection(getLimit());
 
         if (AbstractObjectQuery.LOG.isDebugEnabled()) {
-            AbstractObjectQuery.LOG.debug(cmd.toString());
+            AbstractObjectQuery.LOG.debug(select.getSQL());
         }
-        return cmd;
+        return select.getSQL();
     }
+
     /**
      * Execute the actual statement against the database.
      * @param _complStmt        Statment to be executed
      * @return true if executed with success
      * @throws EFapsException on error
      */
-    protected boolean executeOneCompleteStmt(final StringBuilder _complStmt)
+    protected boolean executeOneCompleteStmt(final String _complStmt)
         throws EFapsException
     {
         final boolean ret = false;
