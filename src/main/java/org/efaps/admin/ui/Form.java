@@ -28,7 +28,6 @@ import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +45,9 @@ public class Form
      */
     private static final Logger LOG = LoggerFactory.getLogger(Menu.class);
 
+    /**
+     * Cache for this class.
+     */
     private static final FormCache CACHE = new FormCache();
 
     /**
@@ -53,9 +55,12 @@ public class Form
      */
     private static final Map<Type, Form> TYPE2FORMS = new HashMap<Type, Form>();
 
+
     /**
-   *
-   */
+     * @param _id       id
+     * @param _uuid     UUID
+     * @param _name     name
+     */
     public Form(final Long _id,
                 final String _uuid,
                 final String _name)
@@ -98,7 +103,6 @@ public class Form
      *
      * @param _id id to search in the cache
      * @return instance of class {@link Form}
-     * @throws CacheReloadException
      * @see #getCache
      */
     public static Form get(final long _id)
@@ -112,7 +116,6 @@ public class Form
      *
      * @param _name name to search in the cache
      * @return instance of class {@link Form}
-     * @throws CacheReloadException
      * @see #getCache
      */
     public static Form get(final String _name)
@@ -126,7 +129,6 @@ public class Form
      *
      * @param _uuid UUID to search in the cache
      * @return instance of class {@link Form}
-     * @throws CacheReloadException
      * @see #getCache
      */
     public static Form get(final UUID _uuid)
@@ -144,7 +146,7 @@ public class Form
     public static Form getTypeForm(final Type _type)
     {
         Form ret = Form.TYPE2FORMS.get(_type);
-        if ((ret == null)) {
+        if (ret == null) {
             if (_type.getParentType() != null) {
                 ret = Form.getTypeForm(_type.getParentType());
             } else if (_type instanceof Classification && ((Classification) _type).getParentClassification() != null) {
@@ -164,10 +166,16 @@ public class Form
         return Form.CACHE;
     }
 
+    /**
+     * Cache for Forms.
+     */
     private static class FormCache
         extends AbstractUserInterfaceObjectCache<Form>
     {
 
+        /**
+         *
+         */
         protected FormCache()
         {
             super(Form.class);

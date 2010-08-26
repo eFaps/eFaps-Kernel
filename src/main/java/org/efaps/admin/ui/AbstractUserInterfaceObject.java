@@ -41,7 +41,6 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.user.AbstractUserObject;
 import org.efaps.admin.user.Company;
-import org.efaps.admin.user.Role;
 import org.efaps.ci.CIAdmin;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -243,7 +242,6 @@ public abstract class AbstractUserInterfaceObject
      *
      * @return value of the HashSet instance variable {@link #access}
      * @see #access
-     * @see #add(Role)
      */
     protected Set<AbstractUserObject> getAccess()
     {

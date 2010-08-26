@@ -28,8 +28,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
- * @version $Id$ TODO:
- *          description
+ * @version $Id$
  */
 public class Picker
     extends AbstractCollection
