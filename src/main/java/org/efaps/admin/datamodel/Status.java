@@ -282,6 +282,7 @@ public final class Status implements CacheObjectInterface
         /**
          * {@inheritDoc}
          */
+        @Override
         public long getId()
         {
             return this.type.getId();
@@ -290,6 +291,7 @@ public final class Status implements CacheObjectInterface
         /**
          * {@inheritDoc}
          */
+        @Override
         public String getName()
         {
             return this.type.getName();
@@ -298,6 +300,7 @@ public final class Status implements CacheObjectInterface
         /**
          * {@inheritDoc}
          */
+        @Override
         public UUID getUUID()
         {
             return this.type.getUUID();
@@ -312,7 +315,7 @@ public final class Status implements CacheObjectInterface
         /**
          * {@inheritDoc}
          */
-        @Override()
+        @Override
         protected void readCache(final Map<Long, Status.StatusGroup> _cache4Id,
                                  final Map<String, Status.StatusGroup> _cache4Name,
                                  final Map<UUID, Status.StatusGroup> _cache4UUID)

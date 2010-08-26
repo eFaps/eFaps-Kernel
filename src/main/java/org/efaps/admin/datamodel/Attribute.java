@@ -275,6 +275,7 @@ public class Attribute
      * @param _size             Size
      * @param _scale            Scale
      */
+    //CHECKSTYLE:OFF
     private Attribute(final long _id,
                       final String _name,
                       final SQLTable _sqlTable,
@@ -285,6 +286,7 @@ public class Attribute
                       final int _size,
                       final int _scale)
     {
+        //CHECKSTYLE:ON
         super(_id, null, _name);
         this.sqlTable = _sqlTable;
         this.attributeType = _attributeType;
@@ -559,7 +561,7 @@ public class Attribute
      */
     public boolean hasUoM()
     {
-        return (this.dimensionUUID != null);
+        return this.dimensionUUID != null;
     }
 
     /**
@@ -598,7 +600,9 @@ public class Attribute
      * @param _indexes  indexes within the cached result for the value
      * @return found value
      * @throws Exception if values could not be read from the cached result
+     * @deprecated to be remove with 2.0
      */
+    @Deprecated
     public Object readDBValue(final CachedResult _rs,
                               final List<Integer> _indexes)
         throws Exception

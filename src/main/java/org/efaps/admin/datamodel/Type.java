@@ -48,6 +48,7 @@ import org.efaps.ci.CIAdminDataModel;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
@@ -108,15 +109,15 @@ public class Type
      *
      * @see #initialise
      */
-    private static final String SQL_SELECT =
-                    "   select "
-                                    + "  ID,"
-                                    + "  UUID,"
-                                    + "  NAME,"
-                                    + "  PURPOSE,"
-                                    + "  PARENTDMTYPE,"
-                                    + "  SQLCACHEEXPR "
-                                    + "from V_ADMINTYPE";
+    private static final String SQL_SELECT = new SQLSelect()
+                                                    .column("ID")
+                                                    .column("UUID")
+                                                    .column("NAME")
+                                                    .column("PURPOSE")
+                                                    .column("PARENTDMTYPE")
+                                                    .column("SQLCACHEEXPR")
+                                                    .from("V_ADMINTYPE").getSQL();
+
 
     /**
      * Stores all instances of type.

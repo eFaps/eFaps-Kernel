@@ -30,6 +30,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
@@ -53,8 +54,15 @@ public class AttributeType
      * This is the SQL select statement to select all attribute types from the
      * database.
      */
-    private static final String SQL_SELECT = "select ID,NAME,UUID,CLASSNAME,CLASSNAMEUI,"
-                    + "ALWAYSUPDATE,CREATEUPDATE from V_DMATTRIBUTETYPE";
+    private static final String SQL_SELECT  = new SQLSelect()
+                                                    .column("ID")
+                                                    .column("NAME")
+                                                    .column("UUID")
+                                                    .column("CLASSNAME")
+                                                    .column("CLASSNAMEUI")
+                                                    .column("ALWAYSUPDATE")
+                                                    .column("CREATEUPDATE")
+                                                    .from("V_DMATTRIBUTETYPE").getSQL();
 
     /**
      * Stores all instances of class {@link AttributeType}.
@@ -203,7 +211,7 @@ public class AttributeType
     /**
      * @return string representation of this attribute type
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)
@@ -275,7 +283,7 @@ public class AttributeType
          *                      type instance which will be used as cache
          * @throws CacheReloadException if cache could not be reloaded
          */
-        @Override()
+        @Override
         protected void readCache(final Map<Long, AttributeType> _cache4Id,
                                  final Map<String, AttributeType> _cache4Name,
                                  final Map<UUID, AttributeType> _cache4UUID)

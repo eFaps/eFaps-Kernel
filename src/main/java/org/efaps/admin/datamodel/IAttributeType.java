@@ -90,6 +90,7 @@ public interface IAttributeType
      * @throws Exception on error
      * @return Object
      * TODO: remove for 2.0
+     * @deprecated will be removed with 2.0 because it is used only in deprecated SearchQuery
      */
     @Deprecated
     Object readValue(final Attribute _attribute,
