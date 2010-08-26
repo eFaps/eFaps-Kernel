@@ -29,19 +29,20 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.event.EventType;
+import org.efaps.ci.CIAdminCommon;
+import org.efaps.ci.CIAdminEvent;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.event.Event;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
-
-
 
 /**
  * This class imports/updates a Form or a Table using the
@@ -55,6 +56,7 @@ import org.efaps.util.EFapsException;
 public abstract class AbstractCollectionUpdate
     extends AbstractUpdate
 {
+
     /** Link from field to icon. */
     private static final Link LINKFIELD2ICON = new Link("Admin_UI_LinkIcon", "From", "Admin_UI_Image", "To");
 
@@ -65,15 +67,16 @@ public abstract class AbstractCollectionUpdate
      * @param _url URL of the file
      * @param _typeName name of the type
      */
-    protected AbstractCollectionUpdate(final URL _url, final String _typeName)
+    protected AbstractCollectionUpdate(final URL _url,
+                                       final String _typeName)
     {
         super(_url, _typeName);
     }
 
     /**
-     * @param _url              url of the file
-     * @param _typeName         name of the type
-     * @param _allLinkTypes     set of all links
+     * @param _url url of the file
+     * @param _typeName name of the type
+     * @param _allLinkTypes set of all links
      */
     protected AbstractCollectionUpdate(final URL _url,
                                        final String _typeName,
@@ -97,7 +100,8 @@ public abstract class AbstractCollectionUpdate
     /**
      * Class for defining a field.
      */
-    private final class FieldDefinition extends AbstractDefinition
+    private final class FieldDefinition
+        extends AbstractDefinition
     {
 
         /** Name of the field. */
@@ -111,23 +115,23 @@ public abstract class AbstractCollectionUpdate
 
         /**
          *
-         * @param _name         Name of the field
-         * @param _character    charachter of the field
+         * @param _name Name of the field
+         * @param _character charachter of the field
          */
-        private FieldDefinition(final String _name, final String _character)
+        private FieldDefinition(final String _name,
+                                final String _character)
         {
             this.name = _name;
             this.character = _character;
         }
 
         /**
-         * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List, java.util.Map, java.lang.String)
-         * @param _tags         tags
-         * @param _attributes   attributes
-         * @param _text         text
+         * {@inheritDoc}
          */
         @Override
-        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
         {
             final String value = _tags.get(0);
             if ("evaluate".equals(value)) {
@@ -175,13 +179,15 @@ public abstract class AbstractCollectionUpdate
      * Class used to define a collection.
      *
      */
-    protected class Definition extends AbstractDefinition
+    protected class Definition
+        extends AbstractDefinition
     {
+
         /** All fields for the collection are stored in this variable. */
         private final List<AbstractCollectionUpdate.FieldDefinition> fields
                                                             = new ArrayList<AbstractCollectionUpdate.FieldDefinition>();
 
-        /**
+  /**
          * Current read field definition.
          *
          * @see #readXML(List, Map, String)
@@ -189,13 +195,16 @@ public abstract class AbstractCollectionUpdate
         private FieldDefinition curField = null;
 
         /**
-         * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List, java.util.Map, java.lang.String)
-         * @param _tags         tags
-         * @param _attributes   attributes
-         * @param _text         text
+         * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List,
+         *      java.util.Map, java.lang.String)
+         * @param _tags tags
+         * @param _attributes attributes
+         * @param _text text
          */
         @Override
-        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
         {
             final String value = _tags.get(0);
             if ("field".equals(value)) {
@@ -214,18 +223,18 @@ public abstract class AbstractCollectionUpdate
          * Updates / creates the instance in the database. Only the fields are
          * also updated for collection defined through this definition.
          *
-         * @param _step             current update step
-         * @param _allLinkTypes     set of all type of links
+         * @param _step current update step
+         * @param _allLinkTypes set of all type of links
          * @throws InstallationException on error
          * @see #setFieldsInDB
          */
-        @Override()
+        @Override
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
             throws InstallationException
         {
             super.updateInDB(_step, _allLinkTypes);
-            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+            if (_step == UpdateLifecycle.EFAPS_UPDATE) {
                 try {
                     setFieldsInDB();
                 } catch (final EFapsException e) {
@@ -237,40 +246,42 @@ public abstract class AbstractCollectionUpdate
         /**
          * The fields for this collection are created and / or updated in the
          * database.
-         * TODO the deletion of existing fields is nested! Thats not the best idea.
+         * TODO the deletion of existing fields is nested! Thats not
+         * the best idea.
+         *
          * @throws EFapsException on error
          */
-        protected void setFieldsInDB() throws EFapsException
+        protected void setFieldsInDB()
+            throws EFapsException
         {
             // cleanup fields (remove all fields from table)
-            final SearchQuery query = new SearchQuery();
-            query.setExpand(this.instance, "Admin_UI_Field\\Collection");
-            query.addSelect("OID");
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Field);
+            queryBldr.addWhereAttrEqValue(CIAdminUserInterface.Field.Collection, this.instance.getId());
+            final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             while (query.next()) {
-                final Instance field = Instance.get((String) query.get("OID"));
+                final Instance field = query.getCurrentValue();
                 setPropertiesInDb(field, null);
                 removeLinksInDB(field, AbstractCollectionUpdate.LINKFIELD2ICON);
                 removeLinksInDB(field, AbstractCollectionUpdate.LINK2TARGETTABLE);
-                //remove events
-                final SearchQuery eventQuery = new SearchQuery();
-                eventQuery.setExpand(field, "Admin_Event_Definition\\Abstract");
-                eventQuery.addSelect("OID");
+                // remove events
+                final QueryBuilder eventQueryBldr = new QueryBuilder(CIAdminEvent.Definition);
+                eventQueryBldr.addWhereAttrEqValue(CIAdminEvent.Definition.Abstract, field.getId());
+                final InstanceQuery eventQuery = eventQueryBldr.getQuery();
                 eventQuery.execute();
                 while (eventQuery.next()) {
-                    final Instance event = Instance.get((String) eventQuery.get("OID"));
-                    final SearchQuery propQuery = new SearchQuery();
-                    propQuery.setExpand(event, "Admin_Common_Property\\Abstract");
-                    propQuery.addSelect("OID");
+                    final Instance event = eventQuery.getCurrentValue();
+                    final QueryBuilder propQueryBldr = new QueryBuilder(CIAdminCommon.Property);
+                    propQueryBldr.addWhereAttrEqValue(CIAdminCommon.Property.Abstract, event.getId());
+                    final InstanceQuery propQuery = propQueryBldr.getQuery();
                     propQuery.execute();
                     while (propQuery.next()) {
-                        (new Delete((String) propQuery.get("OID"))).executeWithoutAccessCheck();
+                        new Delete(propQuery.getCurrentValue()).executeWithoutAccessCheck();
                     }
-                    (new Delete(event)).executeWithoutAccessCheck();
+                    new Delete(event).executeWithoutAccessCheck();
                 }
-                (new Delete(field)).executeWithoutAccessCheck();
+                new Delete(field).executeWithoutAccessCheck();
             }
-            query.close();
 
             // append new fields
             for (final FieldDefinition field : this.fields) {
@@ -304,7 +315,7 @@ public abstract class AbstractCollectionUpdate
 
                 // link to table
                 setLinksInDB(insert.getInstance(), AbstractCollectionUpdate.LINK2TARGETTABLE,
-                             field.getLinks(AbstractCollectionUpdate.LINK2TARGETTABLE));
+                                field.getLinks(AbstractCollectionUpdate.LINK2TARGETTABLE));
 
                 // append events
                 for (final Event event : field.getEvents()) {
@@ -331,7 +342,7 @@ public abstract class AbstractCollectionUpdate
          *
          * @return string representation of this definition of a column
          */
-        @Override()
+        @Override
         public String toString()
         {
             return new ToStringBuilder(this).appendSuper(super.toString()).append("fields", this.fields).toString();
