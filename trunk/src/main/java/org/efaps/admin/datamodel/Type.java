@@ -957,9 +957,8 @@ public class Type
                         String sqlCacheExpr = rs.getString(6);
                         sqlCacheExpr = sqlCacheExpr != null ? sqlCacheExpr.trim() : null;
                         if (Type.LOG.isDebugEnabled()) {
-                            Type.LOG.debug("read type '" + name + "' (id = " + id + ")");
+                            Type.LOG.debug("read type '" + name + "' (id = " + id + ") (purpose = " + purpose + ")");
                         }
-
                         Type type;
                         if (purpose == Type.Purpose.ABSTRACT.getId()) {
                             type = new Type(id, uuid, name);

@@ -325,7 +325,7 @@ public abstract class AbstractAdminObject
                                             .column(1, "TYPEID")
                                             .column(1, "NAME")
                                             .from("T_CMABSTRACT2ABSTRACT", 0)
-                                            .leftJoin("T_CMABSTRACT", 1, "ID", 0, "ID")
+                                            .leftJoin("T_CMABSTRACT", 1, "ID", 0, "TOID")
                                             .addPart(SQLPart.WHERE)
                                             .addColumnPart(0, "FROMID")
                                             .addPart(SQLPart.EQUAL)
