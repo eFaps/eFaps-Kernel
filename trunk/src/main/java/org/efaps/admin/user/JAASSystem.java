@@ -59,7 +59,7 @@ public final class JAASSystem
      * This is the SQL select statement to select all JAAS systems from the
      * database.
      */
-    private static final String SQL_SELECT = new SQLSelect()
+    private static final SQLSelect SQL_SELECT = new SQLSelect()
                                                         .column("ID")
                                                         .column("NAME")
                                                         .column("CLASSNAMEPERSON")
@@ -72,7 +72,7 @@ public final class JAASSystem
                                                         .column("METHODROLEKEY")
                                                         .column("CLASSNAMEGROUP")
                                                         .column("METHODGROUPKEY")
-                                                        .from("V_USERJAASSYSTEM").toString();
+                                                        .from("V_USERJAASSYSTEM");
 
     /**
      * Stores all instances of class {@link JAASSystem}.
@@ -361,7 +361,7 @@ public final class JAASSystem
 
                     stmt = con.getConnection().createStatement();
 
-                    final ResultSet resultset = stmt.executeQuery(JAASSystem.SQL_SELECT);
+                    final ResultSet resultset = stmt.executeQuery(JAASSystem.SQL_SELECT.getSQL());
                     while (resultset.next()) {
                         final long id = resultset.getLong(1);
                         final String name = resultset.getString(2).trim();

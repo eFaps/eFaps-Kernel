@@ -52,14 +52,13 @@ public final class NumberGenerator
      * Select statement that will be executed against the database
      * on reading the cache.
      */
-    private static String SQL_SELECT = new SQLSelect()
+    private static SQLSelect SQL_SELECT = new SQLSelect()
                                                 .column(0, "ID")
                                                 .column(1, "NAME")
                                                 .column(1, "UUID")
                                                 .column(0, "FORMAT")
                                                 .from("T_CMNUMGEN", 0)
-                                                .leftJoin("T_CMABSTRACT", 1, "ID", 0, "ID")
-                                                .getSQL();
+                                                .leftJoin("T_CMABSTRACT", 1, "ID", 0, "ID");
 
     /**
      * Stores all instances of type.
@@ -309,7 +308,7 @@ public final class NumberGenerator
 
                     stmt = con.getConnection().createStatement();
 
-                    final ResultSet rs = stmt.executeQuery(NumberGenerator.SQL_SELECT);
+                    final ResultSet rs = stmt.executeQuery(NumberGenerator.SQL_SELECT.getSQL());
                     while (rs.next()) {
                         final long id = rs.getLong(1);
                         final String name = rs.getString(2).trim();

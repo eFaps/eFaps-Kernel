@@ -57,14 +57,14 @@ public final class SystemConfiguration
      *
      * @see SystemConfigurationCache#readCache(Map, Map, Map)
      */
-    private static final String SELECT = new SQLSelect()
+    private static final SQLSelect SELECT = new SQLSelect()
                                                 .column("CONFIGID")
                                                 .column("CONFIGNAME")
                                                 .column("CONFIGUUID")
                                                 .column("KEY")
                                                 .column("VALUE")
                                                 .column("UUID")
-                                                .from("V_CMSYSCONF").getSQL();
+                                                .from("V_CMSYSCONF");
 
     /**
      * Caches all instances of {@link SystemConfiguration}.
@@ -378,7 +378,7 @@ public final class SystemConfiguration
                 Statement stmt = null;
                 try {
                     stmt = con.getConnection().createStatement();
-                    final ResultSet rs = stmt.executeQuery(SystemConfiguration.SELECT);
+                    final ResultSet rs = stmt.executeQuery(SystemConfiguration.SELECT.getSQL());
                     long id = 0;
                     SystemConfiguration config = null;
                     while (rs.next()) {
