@@ -33,6 +33,7 @@ import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
@@ -57,7 +58,11 @@ public final class AccessSet
      *
      * @see #init4ReadAllAccessSets
      */
-    private static final String SQL_SELECT = "select ID, UUID, NAME from T_ACCESSSET";
+    private static final String SQL_SELECT = new SQLSelect()
+                                                    .column("ID")
+                                                    .column("UUID")
+                                                    .column("NAME")
+                                                    .from("T_ACCESSSET").getSQL();
 
     /**
      * This is the sql select statement to select the links from all access sets
@@ -65,7 +70,11 @@ public final class AccessSet
      *
      * @see #init4ReadLinks2AccessTypes
      */
-    private static final String SQL_SET2TYPE = "select ACCESSSET, ACCESSTYPE from T_ACCESSSET2TYPE";
+    private static final String SQL_SET2TYPE = new SQLSelect()
+                                                        .column("ACCESSSET")
+                                                        .column("ACCESSTYPE")
+                                                        .from("T_ACCESSSET2TYPE").getSQL();
+
 
     /**
      * This is the sql select statement to select the links from all access sets
@@ -73,8 +82,10 @@ public final class AccessSet
      *
      * @see #init4ReadLinks2DMTypes
      */
-    private static final String SQL_SET2DMTYPE = "select  ACCESSSET, DMTYPE from T_ACCESSSET2DMTYPE";
-
+    private static final String SQL_SET2DMTYPE = new SQLSelect()
+                                                        .column("ACCESSSET")
+                                                        .column("DMTYPE")
+                                                        .from("T_ACCESSSET2DMTYPE").getSQL();
 
     /**
      * This is the sql select statement to select the links from all access sets
@@ -82,7 +93,10 @@ public final class AccessSet
      *
      * @see #init4ReadLinks2DMTypes
      */
-    private static final String SQL_SET2STATUS = "select ACCESSSET, ACCESSSTATUS from T_ACCESSSET2STATUS";
+    private static final String SQL_SET2STATUS  = new SQLSelect()
+                                                        .column("ACCESSSET")
+                                                        .column("ACCESSSTATUS")
+                                                        .from("T_ACCESSSET2STATUS").getSQL();
 
     /**
      * Cache for AccesSets.

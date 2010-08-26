@@ -29,6 +29,7 @@ import java.util.UUID;
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
@@ -54,11 +55,11 @@ public final class AccessType
      * This is the sql select statement to select all access types from the
      * database.
      */
-    private static final String SQL_SELECT  = "select "
-                                                    + "ID,"
-                                                    + "UUID,"
-                                                    + "NAME "
-                                             + "from T_ACCESSTYPE";
+    private static final String SQL_SELECT = new SQLSelect()
+                                                .column("ID")
+                                                .column("UUID")
+                                                .column("NAME")
+                                                .from("T_ACCESSTYPE").getSQL();
 
     /**
      * Stores all instances of class {@link AccessType}.
@@ -97,6 +98,16 @@ public final class AccessType
         return (_toCompare != null)
                 && (_toCompare instanceof AccessType)
                 && (((AccessType) _toCompare).getId() == getId());
+    }
+
+    /**
+     * @see java.lang.Object#hashCode()
+     * @return int hashCode
+     */
+    @Override
+    public int hashCode()
+    {
+        return (new Long(getId())).hashCode();
     }
 
     /**
@@ -160,7 +171,7 @@ public final class AccessType
          *                          access type
          * @throws CacheReloadException if cache could not be reloaded
          */
-        @Override()
+        @Override
         protected void readCache(final Map<Long, AccessType> _newCache4Id,
                                  final Map<String, AccessType> _newCache4Name,
                                  final Map<UUID, AccessType> _newCache4UUID)
