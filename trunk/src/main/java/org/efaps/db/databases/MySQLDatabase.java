@@ -119,7 +119,7 @@ public class MySQLDatabase
      * @see org.efaps.db.databases.AbstractDatabase#getCurrentTimeStamp()
      * @return "current_timestamp"
      */
-    @Override()
+    @Override
     public String getCurrentTimeStamp()
     {
         return "current_timestamp";
@@ -141,7 +141,7 @@ public class MySQLDatabase
      * @param _con sql connection
      * @throws SQLException on error while executing sql statements
      */
-    @Override()
+    @Override
     public void deleteAll(final Connection _con)
         throws SQLException
     {
@@ -229,7 +229,7 @@ public class MySQLDatabase
      * @return this MySQL DB definition instance
      * @throws SQLException if the table could not be created
      */
-    @Override()
+    @Override
     public MySQLDatabase createTable(final Connection _con,
                                      final String _table)
         throws SQLException
@@ -252,7 +252,7 @@ public class MySQLDatabase
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public MySQLDatabase defineTableAutoIncrement(final Connection _con,
                                                   final String _table)
         throws SQLException
@@ -278,7 +278,7 @@ public class MySQLDatabase
      *         database
      * @see AbstractDatabase#supportsGetGeneratedKeys()
      */
-    @Override()
+    @Override
     public boolean supportsGetGeneratedKeys()
     {
         return true;
@@ -290,7 +290,7 @@ public class MySQLDatabase
      * @return always <i>true</i> because supported by MySQL database
      * @see AbstractDatabase#supportsBinaryInputStream()
      */
-    @Override()
+    @Override
     public boolean supportsBinaryInputStream()
     {
         return true;
@@ -302,7 +302,7 @@ public class MySQLDatabase
      *
      * @return always single reversed apostrophe
      */
-    @Override()
+    @Override
     public String getTableQuote()
     {
         return "`";
@@ -314,7 +314,7 @@ public class MySQLDatabase
      *
      * @return always single reversed apostrophe
      */
-    @Override()
+    @Override
     public String getColumnQuote()
     {
         return "`";
@@ -338,7 +338,7 @@ public class MySQLDatabase
      * @see #setSequence(Connection, String, long)
      * @see #PREFIX_SEQUENCE
      */
-    @Override()
+    @Override
     public MySQLDatabase createSequence(final Connection _con,
                                         final String _name,
                                         final long _startValue)
@@ -366,7 +366,7 @@ public class MySQLDatabase
      *                      table) could not be deleted
      * @see #PREFIX_SEQUENCE
      */
-    @Override()
+    @Override
     public MySQLDatabase deleteSequence(final Connection _con,
                                         final String _name)
         throws SQLException
@@ -397,7 +397,7 @@ public class MySQLDatabase
      * @see #existsTable(Connection, String)
      * @see #PREFIX_SEQUENCE
      */
-    @Override()
+    @Override
     public boolean existsSequence(final Connection _con,
                                   final String _name)
         throws SQLException
@@ -419,7 +419,7 @@ public class MySQLDatabase
      *                      fetched
      * @see #PREFIX_SEQUENCE
      */
-    @Override()
+    @Override
     public long nextSequence(final Connection _con,
                              final String _name)
         throws SQLException
@@ -467,7 +467,7 @@ public class MySQLDatabase
      *                      for the table
      * @see #PREFIX_SEQUENCE
      */
-    @Override()
+    @Override
     public MySQLDatabase setSequence(final Connection _con,
                                      final String _name,
                                      final long _value)
@@ -519,7 +519,7 @@ public class MySQLDatabase
      * @throws SQLException if unique keys could not be fetched
      * @see #SQL_UNIQUE_KEYS
      */
-    @Override()
+    @Override
     protected void initTableInfoUniqueKeys(final Connection _con,
                                            final String _sql,
                                            final Map<String, TableInformation> _cache4Name)
@@ -540,7 +540,7 @@ public class MySQLDatabase
      * @throws SQLException if foreign keys could not be fetched
      * @see #SQL_FOREIGN_KEYS
      */
-    @Override()
+    @Override
     protected void initTableInfoForeignKeys(final Connection _con,
                                             final String _sql,
                                             final Map<String, TableInformation> _cache4Name)
