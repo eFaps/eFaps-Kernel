@@ -33,7 +33,8 @@ import org.efaps.util.cache.CacheReloadException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class Classification extends Type
+public class Classification
+    extends Type
 {
 
     /**
@@ -122,7 +123,9 @@ public class Classification extends Type
      * @param _name     name of this Classification
      * @throws CacheReloadException on error
      */
-    protected Classification(final long _id, final String _uuid, final String _name)
+    protected Classification(final long _id,
+                             final String _uuid,
+                             final String _name)
         throws CacheReloadException
     {
         super(_id, _uuid, _name);
@@ -285,7 +288,9 @@ public class Classification extends Type
      * @throws CacheReloadException on error
      */
     @Override
-    protected void setProperty(final String _name, final String _value) throws CacheReloadException
+    protected void setProperty(final String _name,
+                               final String _value)
+        throws CacheReloadException
     {
         if (_name.equals(Classification.Keys.LINKATTR.value)) {
             this.linkAttributeName = _value;
