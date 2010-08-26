@@ -98,7 +98,7 @@ public class Event
                  final String _method,
                  final String _index)
     {
-        this.name = (_name == null) ? _event.name : _name;
+        this.name = (_name == null) ? _event.getName() : _name;
         this.event = _event;
         this.program = _program;
         this.method = (_method == null) ? "execute" : _method;
@@ -127,7 +127,7 @@ public class Event
             final long typeID = _instance.getId();
             final long progID = getProgID(_typeName);
 
-            final QueryBuilder queryBldr = new QueryBuilder(Type.get(this.event.name));
+            final QueryBuilder queryBldr = new QueryBuilder(Type.get(this.event.getName()));
             queryBldr.addWhereAttrEqValue("Abstract", typeID);
             queryBldr.addWhereAttrEqValue("Name", this.name);
             final InstanceQuery query = queryBldr.getQuery();
@@ -137,7 +137,7 @@ public class Event
             if (query.next()) {
                 update = new Update(query.getCurrentValue());
             } else {
-                update = new Insert(this.event.name);
+                update = new Insert(this.event.getName());
                 update.add("Abstract", typeID);
                 update.add("IndexPosition", this.index);
                 update.add("Name", this.name);
