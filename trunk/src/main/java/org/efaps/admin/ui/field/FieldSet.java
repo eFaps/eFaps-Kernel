@@ -26,7 +26,7 @@ import java.util.List;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- * TODO comment
+ * TODO comment!
  *
  * @author The eFaps Team
  * @version $Id$
@@ -34,6 +34,9 @@ import org.efaps.util.cache.CacheReloadException;
 public class FieldSet
     extends Field
 {
+    /**
+     * Order of this FieldSet.
+     */
     private final List<String> order = new ArrayList<String>();
 
     /**
@@ -58,10 +61,10 @@ public class FieldSet
      * @param _value    value of the property
      * @throws CacheReloadException from called super property method
      */
-    @Override()
+    @Override
     protected void setProperty(final String _name,
                                final String _value)
-    throws CacheReloadException
+        throws CacheReloadException
     {
         if ("Order".equals(_name)) {
             final String[] values = _value.split("\\|");
@@ -73,6 +76,11 @@ public class FieldSet
         }
     }
 
+    /**
+     * Getter method for the instance variable {@link #order}.
+     *
+     * @return value of instance variable {@link #order}
+     */
     public List<String> getOrder()
     {
         return this.order;
