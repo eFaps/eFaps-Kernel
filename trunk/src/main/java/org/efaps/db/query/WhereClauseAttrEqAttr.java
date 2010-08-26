@@ -29,6 +29,7 @@ import org.efaps.db.AbstractQuery;
  * @author The eFaps Team
  * @version $Id$
  */
+@Deprecated
 public class WhereClauseAttrEqAttr
     implements WhereClause
 {
