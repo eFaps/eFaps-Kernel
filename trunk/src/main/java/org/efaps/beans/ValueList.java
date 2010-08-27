@@ -27,6 +27,7 @@ import java.util.Set;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.db.AbstractPrintQuery;
 import org.efaps.db.AbstractQuery;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
@@ -125,11 +126,31 @@ public class ValueList
      * @param _query AbstractQuery the expressions should be added
      * @throws EFapsException on error
      * @see {@link #makeString(AbstractQuery)}
+     * @deprecated will be removed 2.0
      */
+    @Deprecated
     public void makeSelect(final AbstractQuery _query) throws EFapsException
     {
         for (final String expression : getExpressions()) {
             _query.addSelect(expression);
+        }
+    }
+
+    /**
+     * This method adds the expressions of this ValueList to the given query.
+     *
+     * @param _print PrintQuery the expressions should be added
+     * @throws EFapsException on error
+     * @see {@link #makeString(AbstractQuery)}
+     */
+    public void makeSelect(final AbstractPrintQuery _print) throws EFapsException
+    {
+        for (final String expression : getExpressions()) {
+            if (expression.contains("[")) {
+                _print.addSelect(expression);
+            } else {
+                _print.addAttribute(expression);
+            }
         }
     }
 
@@ -143,7 +164,9 @@ public class ValueList
      * @return String with the actuall Value of this ValueList
      * @throws Exception on error
      * @see {@link #makeSelect(AbstractQuery)}
+     * @deprecated will be removed 2.0
      */
+    @Deprecated
     public String makeString(final Instance _callInstance,
                              final AbstractQuery _query,
                              final TargetMode _mode)
@@ -156,6 +179,49 @@ public class ValueList
                 case EXPRESSION:
                     final Attribute attr = _query.getAttribute(token.value);
                     final Object value = _query.get(token.value);
+                    buf.append((new FieldValue(null, attr, value, null, _callInstance)).getStringValue(_mode));
+                    break;
+                case TEXT:
+                    buf.append(token.value);
+                    break;
+                default:
+                    break;
+            }
+        }
+        return buf.toString();
+    }
+
+    /**
+     * This method retrieves the Values from the given PrintQuery and
+     * combines them with the Text partes.
+     *
+     * @param _callInstance instance on which the query was called
+     * @param _print        AbstractPrintQuery the ValueString should be retrieved
+     * @param _mode         target mode
+     * @return String with the actuall Value of this ValueList
+     * @throws Exception on error
+     * @see {@link #makeSelect(AbstractQuery)}
+     *
+     */
+    public String makeString(final Instance _callInstance,
+                             final AbstractPrintQuery _print,
+                             final TargetMode _mode)
+        throws Exception
+    {
+        final StringBuilder buf = new StringBuilder();
+
+        for (final Token token : this.tokens) {
+            switch (token.type) {
+                case EXPRESSION:
+                    final Attribute attr;
+                    final Object value;
+                    if (token.value.contains("[")) {
+                        attr = _print.getAttribute4Select(token.value);
+                        value = _print.getSelect(token.value);
+                    } else {
+                        attr = _print.getAttribute4Attribute(token.value);
+                        value = _print.getAttribute(token.value);
+                    }
                     buf.append((new FieldValue(null, attr, value, null, _callInstance)).getStringValue(_mode));
                     break;
                 case TEXT:
@@ -200,7 +266,8 @@ public class ValueList
          * @param _type TokenType
          * @param _value Value for the token
          */
-        private Token(final TokenType _type, final String _value)
+        private Token(final TokenType _type,
+                      final String _value)
         {
             this.type = _type;
             this.value = _value;
