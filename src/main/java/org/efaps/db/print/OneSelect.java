@@ -348,7 +348,7 @@ public class OneSelect
                     }
                 }
             }
-            if (attr != null && !attr.getTable().equals(type.getMainTable())) {
+            if (attr != null && attr.getTable()!= null && !attr.getTable().equals(type.getMainTable())) {
                 final ChildTableSelectPart childtable = new ChildTableSelectPart(type, attr.getTable());
                 this.selectParts.add(childtable);
             }
