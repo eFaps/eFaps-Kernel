@@ -29,9 +29,10 @@ import java.util.Set;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdminDataModel;
 import org.efaps.db.Insert;
-import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
@@ -111,14 +112,13 @@ public class StatusGroupUpdate
         public void updateInDB(final String _typeName)
             throws EFapsException
         {
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes(_typeName);
-            query.addWhereExprEqValue("Key", this.key);
-            query.addSelect("OID");
+            final QueryBuilder queryBldr = new QueryBuilder(Type.get(_typeName));
+            queryBldr.addWhereAttrEqValue("Key", this.key);
+            final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             final Update update;
             if (query.next()) {
-                update = new Update(Instance.get((String) query.get("OID")));
+                update = new Update(query.getCurrentValue());
             } else {
                 update = new Insert(_typeName);
             }
@@ -201,18 +201,15 @@ public class StatusGroupUpdate
                 if (_step == UpdateLifecycle.STATUSGROUP_UPDATE) {
                     // set the id of the parent type (if defined)
                     if ((this.parentType != null) && (this.parentType.length() > 0)) {
-                        final SearchQuery query = new SearchQuery();
-                        query.setQueryTypes("Admin_DataModel_Type");
-                        query.addWhereExprEqValue("Name", this.parentType);
-                        query.addSelect("OID");
+                        final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.Type);
+                        queryBldr.addWhereAttrEqValue(CIAdminDataModel.Type.Name, this.parentType);
+                        final InstanceQuery query = queryBldr.getQuery();
                         query.executeWithoutAccessCheck();
                         if (query.next()) {
-                            final Instance instance = Instance.get((String) query.get("OID"));
-                            addValue("ParentType", "" + instance.getId());
+                            addValue("ParentType", "" + query.getCurrentValue().getId());
                         } else {
                             addValue("ParentType", null);
                         }
-                        query.close();
                     } else {
                         addValue("ParentType", null);
                     }
