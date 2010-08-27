@@ -43,7 +43,8 @@ import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.update.FileType;
 import org.efaps.update.Install;
 import org.efaps.update.schema.program.esjp.ESJPCompiler;
@@ -645,24 +646,23 @@ public final class Application
 
                 // store cached versions
                 for (final Long version : this.notStoredVersions) {
-                    final Insert insert = new Insert(versionType.getName());
-                    insert.add("Name", this.application);
-                    insert.add("Revision", "" + version);
+                    final Insert insert = new Insert(versionType);
+                    insert.add(CIAdminCommon.Version.Name, this.application);
+                    insert.add(CIAdminCommon.Version.Revision, version);
                     insert.execute();
                 }
                 this.notStoredVersions.clear();
 
-                final SearchQuery query = new SearchQuery();
-                query.setQueryTypes(versionType.getName());
-                query.addWhereExprEqValue("Name", this.application);
-                query.addWhereExprEqValue("Revision", _version);
-                query.addSelect("OID");
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.Version);
+                queryBldr.addWhereAttrEqValue(CIAdminCommon.Version.Name, this.application);
+                queryBldr.addWhereAttrEqValue(CIAdminCommon.Version.Revision, _version);
+                final InstanceQuery query = queryBldr.getQuery();
                 query.execute();
                 if (!query.next()) {
                     // store current version
-                    final Insert insert = new Insert(versionType.getName());
-                    insert.add("Name", this.application);
-                    insert.add("Revision", "" + _version);
+                    final Insert insert = new Insert(CIAdminCommon.Version);
+                    insert.add(CIAdminCommon.Version.Name, this.application);
+                    insert.add(CIAdminCommon.Version.Revision, _version);
                     insert.execute();
                 }
                 Context.commit();
