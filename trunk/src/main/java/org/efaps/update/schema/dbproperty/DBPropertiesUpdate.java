@@ -33,9 +33,12 @@ import java.util.Properties;
 import java.util.Map.Entry;
 
 import org.apache.commons.jexl.JexlContext;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdmin;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.IUpdate;
 import org.efaps.update.UpdateLifecycle;
@@ -55,7 +58,8 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public class DBPropertiesUpdate implements IUpdate
+public class DBPropertiesUpdate
+    implements IUpdate
 {
     /**
      * name for the Type.
@@ -90,7 +94,7 @@ public class DBPropertiesUpdate implements IUpdate
     /**
      * the ID of the Bundle.
      */
-    private String bundleid;
+    private long bundleid;
 
     /**
      * Sequence of the Bundle.
@@ -132,22 +136,19 @@ public class DBPropertiesUpdate implements IUpdate
      * @param _language Language
      * @return ID of the Language
      */
-    private String getLanguageId(final String _language)
+    private Long getLanguageId(final String _language)
     {
-        String ret = null;
-        final SearchQuery query = new SearchQuery();
+        Long ret = null;
         try {
-            query.setQueryTypes("Admin_Language");
-            query.addSelect("ID");
-            query.addWhereExprEqValue("Language", _language);
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdmin.Language);
+            queryBldr.addWhereAttrEqValue(CIAdmin.Language.Language, _language);
+            final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (query.next()) {
-                ret = query.get("ID").toString();
+                ret = query.getCurrentValue().getId();
             } else {
                 ret = insertNewLanguage(_language);
             }
-            query.close();
-
         } catch (final EFapsException e) {
             DBPropertiesUpdate.LOG.error("getLanguageId()", e);
         }
@@ -160,18 +161,16 @@ public class DBPropertiesUpdate implements IUpdate
      * @param _language language to be inserted
      * @return ID of the new language
      */
-    private String insertNewLanguage(final String _language)
+    private long insertNewLanguage(final String _language)
     {
-        String ret = null;
+        Long ret = null;
         try {
-            final Insert insert = new Insert("Admin_Language");
-            insert.add("Language", _language);
+            final Insert insert = new Insert(CIAdmin.Language);
+            insert.add(CIAdmin.Language.Language, _language);
             insert.executeWithoutAccessCheck();
             ret = insert.getId();
             insert.close();
         } catch (final EFapsException e) {
-            DBPropertiesUpdate.LOG.error("insertNewLanguage()", e);
-        } catch (final Exception e) {
             DBPropertiesUpdate.LOG.error("insertNewLanguage()", e);
         }
         return ret;
@@ -182,9 +181,9 @@ public class DBPropertiesUpdate implements IUpdate
      *
      * @return ID of the new Bundle
      */
-    private String insertNewBundle()
+    private long insertNewBundle()
     {
-        String ret = null;
+        Long ret = null;
         try {
             final Insert insert = new Insert(DBPropertiesUpdate.TYPE_PROPERTIES_BUNDLE);
             insert.add("Name", this.bundlename);
@@ -196,8 +195,6 @@ public class DBPropertiesUpdate implements IUpdate
             insert.close();
 
         } catch (final EFapsException e) {
-            DBPropertiesUpdate.LOG.error("insertNewBundle()", e);
-        } catch (final Exception e) {
             DBPropertiesUpdate.LOG.error("insertNewBundle()", e);
         }
         return ret;
@@ -220,11 +217,11 @@ public class DBPropertiesUpdate implements IUpdate
 
             while (iter.hasNext()) {
                 final Entry<Object, Object> element = iter.next();
-                final String oid = getExistingKey(element.getKey().toString());
-                if (oid == null) {
+                final Instance existing = getExistingKey(element.getKey().toString());
+                if (existing == null) {
                     insertNewProp(element.getKey().toString(), element.getValue().toString());
                 } else {
-                    updateDefault(oid, element.getValue().toString());
+                    updateDefault(existing, element.getValue().toString());
                 }
             }
 
@@ -244,11 +241,7 @@ public class DBPropertiesUpdate implements IUpdate
     private void importFromProperties(final URL _url,
                                       final String _language)
     {
-        String propOID;
-        String propID;
-        String localOID;
         try {
-
             final InputStream propInFile = _url.openStream();
             final Properties props = new Properties();
             props.load(propInFile);
@@ -256,19 +249,16 @@ public class DBPropertiesUpdate implements IUpdate
 
             while (iter.hasNext()) {
                 final Entry<Object, Object> element = iter.next();
-                propOID = getExistingKey(element.getKey().toString());
-
-                if (propOID == null) {
-                    propID = insertNewProp(element.getKey().toString(), element.getValue().toString());
-                } else {
-                    propID = ((Long) Instance.get(propOID).getId()).toString();
+                Instance propInstance = getExistingKey(element.getKey().toString());
+                if (propInstance == null || !propInstance.isValid()) {
+                    propInstance = insertNewProp(element.getKey().toString(), element.getValue().toString());
                 }
 
-                localOID = getExistingLocale(propID, _language);
-                if (localOID == null) {
-                    insertNewLocal(propID, element.getValue().toString(), _language);
+                final Instance localInstance = getExistingLocale(propInstance.getId(), _language);
+                if (localInstance == null || !localInstance.isValid()) {
+                    insertNewLocal(propInstance.getId(), element.getValue().toString(), _language);
                 } else {
-                    updateLocale(localOID, element.getValue().toString());
+                    updateLocale(localInstance, element.getValue().toString());
                 }
             }
 
@@ -284,21 +274,19 @@ public class DBPropertiesUpdate implements IUpdate
      * @param _language     Language of the property
      * @return OID of the value, otherwise null
      */
-    private String getExistingLocale(final String _propertyid,
-                                     final String _language)
+    private Instance getExistingLocale(final long _propertyid,
+                                       final String _language)
     {
-        String ret = null;
+        Instance ret = null;
         try {
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes(DBPropertiesUpdate.TYPE_PROPERTIES_LOCAL);
-            query.addSelect("OID");
-            query.addWhereExprEqValue("PropertyID", _propertyid);
-            query.addWhereExprEqValue("LanguageID", getLanguageId(_language));
+            final QueryBuilder queryBldr = new QueryBuilder(Type.get(DBPropertiesUpdate.TYPE_PROPERTIES_LOCAL));
+            queryBldr.addWhereAttrEqValue("PropertyID", _propertyid);
+            queryBldr.addWhereAttrEqValue("LanguageID", getLanguageId(_language));
+            final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (query.next()) {
-                ret = (String) query.get("OID");
+                ret = query.getCurrentValue();
             }
-            query.close();
         } catch (final EFapsException e) {
             DBPropertiesUpdate.LOG.error("getExistingLocale(String)", e);
         }
@@ -312,7 +300,7 @@ public class DBPropertiesUpdate implements IUpdate
      * @param _value        Value of the Property
      * @param _language     Language of the property
      */
-    private void insertNewLocal(final String _propertyid,
+    private void insertNewLocal(final long _propertyid,
                                 final String _value,
                                 final String _language)
     {
@@ -323,10 +311,7 @@ public class DBPropertiesUpdate implements IUpdate
             insert.add("LanguageID", getLanguageId(_language));
             insert.executeWithoutAccessCheck();
             insert.close();
-
         } catch (final EFapsException e) {
-            DBPropertiesUpdate.LOG.error("insertNewLocal(String)", e);
-        } catch (final Exception e) {
             DBPropertiesUpdate.LOG.error("insertNewLocal(String)", e);
         }
     }
@@ -334,23 +319,19 @@ public class DBPropertiesUpdate implements IUpdate
     /**
      * Update a localized Value.
      *
-     * @param _oid OID, of the localized Value
+     * @param _localeInst OID, of the localized Value
      * @param _value Value
      */
-    private void updateLocale(final String _oid,
+    private void updateLocale(final Instance _localeInst,
                               final String _value)
     {
         try {
-            final Update update = new Update(_oid);
+            final Update update = new Update(_localeInst);
             update.add("Value", _value);
             update.execute();
-
         } catch (final EFapsException e) {
             DBPropertiesUpdate.LOG.error("updateLocale(String, String)", e);
-        } catch (final Exception e) {
-            DBPropertiesUpdate.LOG.error("updateLocale(String, String)", e);
         }
-
     }
 
     /**
@@ -359,21 +340,18 @@ public class DBPropertiesUpdate implements IUpdate
      * @param _key Key to search for
      * @return OID of the key, otherwise null
      */
-    private String getExistingKey(final String _key)
+    private Instance getExistingKey(final String _key)
     {
-        String ret = null;
+        Instance ret = null;
         try {
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes(DBPropertiesUpdate.TYPE_PROPERTIES);
-            query.addSelect("OID");
-            query.addWhereExprEqValue("Key", _key);
-            query.addWhereExprEqValue("BundleID", this.bundleid);
+            final QueryBuilder queryBldr = new QueryBuilder(Type.get(DBPropertiesUpdate.TYPE_PROPERTIES));
+            queryBldr.addWhereAttrEqValue("Key", _key);
+            queryBldr.addWhereAttrEqValue("BundleID", this.bundleid);
+            final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (query.next()) {
-                ret = (String) query.get("OID");
+                ret = query.getCurrentValue();
             }
-
-            query.close();
         } catch (final EFapsException e) {
             DBPropertiesUpdate.LOG.error("getExisting()", e);
         }
@@ -383,20 +361,17 @@ public class DBPropertiesUpdate implements IUpdate
     /**
      * Update a Default.
      *
-     * @param _oid      OID of the value to update
+     * @param _inst      OID of the value to update
      * @param _value    value
      */
-    private void updateDefault(final String _oid,
+    private void updateDefault(final Instance _inst,
                                final String _value)
     {
         try {
-            final Update update = new Update(_oid);
+            final Update update = new Update(_inst);
             update.add("Default", _value);
             update.execute();
-
         } catch (final EFapsException e) {
-            DBPropertiesUpdate.LOG.error("updateDefault(String, String)", e);
-        } catch (final Exception e) {
             DBPropertiesUpdate.LOG.error("updateDefault(String, String)", e);
         }
     }
@@ -408,22 +383,20 @@ public class DBPropertiesUpdate implements IUpdate
      * @param _value    value to insert
      * @return ID of the new Property
      */
-    private String insertNewProp(final String _key,
+    private Instance insertNewProp(final String _key,
                                  final String _value)
     {
-        String ret = null;
+        Instance ret = null;
         try {
             final Insert insert = new Insert(DBPropertiesUpdate.TYPE_PROPERTIES);
             insert.add("BundleID", this.bundleid);
             insert.add("Key", _key);
             insert.add("Default", _value);
             insert.executeWithoutAccessCheck();
-            ret = insert.getId();
+            ret = insert.getInstance();
             insert.close();
 
         } catch (final EFapsException e) {
-            DBPropertiesUpdate.LOG.error("InsertNew(String, String)", e);
-        } catch (final Exception e) {
             DBPropertiesUpdate.LOG.error("InsertNew(String, String)", e);
         }
         return ret;
@@ -435,20 +408,17 @@ public class DBPropertiesUpdate implements IUpdate
      * @param _uuid UUID of the Bundle
      * @return ID of the Bundle if existing, else null
      */
-    private String getExistingBundle(final String _uuid)
+    private Long getExistingBundle(final String _uuid)
     {
-        String ret = null;
+        Long ret = null;
         try {
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes(DBPropertiesUpdate.TYPE_PROPERTIES_BUNDLE);
-            query.addSelect("ID");
-            query.addWhereExprEqValue("UUID", _uuid);
+            final QueryBuilder queryBldr = new QueryBuilder(Type.get(DBPropertiesUpdate.TYPE_PROPERTIES_BUNDLE));
+            queryBldr.addWhereAttrEqValue("UUID", _uuid);
+            final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (query.next()) {
-                ret = query.get("ID").toString();
+                ret = query.getCurrentValue().getId();
             }
-            query.close();
-
         } catch (final EFapsException e) {
             DBPropertiesUpdate.LOG.error("getExistingBundle(String)", e);
         }
@@ -458,6 +428,7 @@ public class DBPropertiesUpdate implements IUpdate
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFileApplication()
     {
         return this.fileApplication;
@@ -466,6 +437,7 @@ public class DBPropertiesUpdate implements IUpdate
     /**
      * {@inheritDoc}
      */
+    @Override
     public void updateInDB(final JexlContext _jexlContext,
                            final UpdateLifecycle _step)
         throws InstallationException
@@ -476,7 +448,7 @@ public class DBPropertiesUpdate implements IUpdate
                 DBPropertiesUpdate.LOG.info("Importing Properties '" + this.bundlename + "'");
             }
 
-            final String bundleID = getExistingBundle(this.bundeluuid);
+            final Long bundleID = getExistingBundle(this.bundeluuid);
 
             if (bundleID == null) {
                 this.bundleid = insertNewBundle();
@@ -502,6 +474,7 @@ public class DBPropertiesUpdate implements IUpdate
     /**
      * {@inheritDoc}
      */
+    @Override
     public void readXML(final List<String> _tags,
                         final Map<String, String> _attributes,
                         final String _text)

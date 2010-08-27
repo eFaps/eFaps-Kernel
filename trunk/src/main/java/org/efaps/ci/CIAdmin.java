@@ -20,14 +20,13 @@
 
 package org.efaps.ci;
 
-
 /**
  * TODO comment!
  *
  * @author The eFaps Team
  * @version $Id$
  */
-//CHECKSTYLE:OFF
+// CHECKSTYLE:OFF
 public class CIAdmin
 {
 
@@ -50,6 +49,21 @@ public class CIAdmin
         public final CIAttribute Created = new CIAttribute(this, "Created");
         public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
         public final CIAttribute Modified = new CIAttribute(this, "Modified");
+    }
+
+    public static final _Langauge Language = new _Langauge("56851b99-c5fe-41f5-9e95-d7d94137acc1");
+
+    public static class _Langauge
+        extends CIType
+    {
+
+        protected _Langauge(final String _uuid)
+        {
+            super(_uuid);
+        }
+
+        public final CIAttribute Language = new CIAttribute(this, "Language");
+
     }
 
 }
