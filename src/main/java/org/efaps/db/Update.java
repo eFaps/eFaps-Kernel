@@ -106,6 +106,18 @@ public class Update
      * @param _id       id to be updated
      * @throws EFapsException on error
      */
+    public Update(final Type _type,
+                  final long _id)
+        throws EFapsException
+    {
+        this(Instance.get(_type, _id));
+    }
+
+    /**
+     * @param _type     Type to be updated
+     * @param _id       id to be updated
+     * @throws EFapsException on error
+     */
     public Update(final String _type,
                   final String _id)
         throws EFapsException
