@@ -20,6 +20,7 @@
 
 package org.efaps.update;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -34,15 +35,16 @@ import java.util.Set;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Context;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.update.schema.datamodel.SQLTableUpdate;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * TODO description.
@@ -252,22 +254,19 @@ public class Install
         throws InstallationException
     {
         final Map<String, Long> versions = new HashMap<String, Long>();
-        final Type versionType = CIAdminCommon.Version.getType();
-        if (versionType != null) {
+        if (CIAdminCommon.Version.getType() != null) {
             try  {
-                final SearchQuery query = new SearchQuery();
-                query.setQueryTypes(versionType.getName());
-                query.addSelect("Name");
-                query.addSelect("Revision");
-                query.executeWithoutAccessCheck();
-                while (query.next()) {
-                    final String name = (String) query.get("Name");
-                    final Long revision = (Long) query.get("Revision");
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.Version);
+                final MultiPrintQuery multi = queryBldr.getPrint();
+                multi.addAttribute(CIAdminCommon.Version.Name, CIAdminCommon.Version.Revision);
+                multi.executeWithoutAccessCheck();
+                while (multi.next()) {
+                    final String name = multi.<String>getAttribute(CIAdminCommon.Version.Name);
+                    final Long revision = multi.<Long>getAttribute(CIAdminCommon.Version.Revision);
                     if (!versions.containsKey(name) || (versions.get(name) < revision)) {
                         versions.put(name, revision);
                     }
                 }
-                query.close();
             } catch (final EFapsException e)  {
                 throw new InstallationException("Latest version could not be found", e);
             }
@@ -279,8 +278,10 @@ public class Install
      * Reads all XML update files and parses them.
      *
      * @see #initialised
+     * @throws InstallationException on error
      */
     protected void initialise()
+        throws InstallationException
     {
 
         if (!this.initialised) {
@@ -292,19 +293,19 @@ public class Install
                 if (fileType == FileType.XML) {
                     for (final InstallFile file : this.files) {
                         if (file.getType() == fileType) {
+                            final SaxHandler handler = new SaxHandler();
                             try {
-                                final SaxHandler handler = new SaxHandler();
                                 final IUpdate elem = handler.parse(file.getUrl());
-
                                 List<IUpdate> list = this.cache.get(elem.getClass());
                                 if (list == null) {
                                     list = new ArrayList<IUpdate>();
                                     this.cache.put(elem.getClass(), list);
                                 }
                                 list.add(handler.getUpdate());
-                            } catch (final Exception e) {
-                                e.printStackTrace();
-                                throw new Error(e);
+                            } catch (final SAXException e) {
+                                throw new InstallationException("initialise()", e);
+                            } catch (final IOException e) {
+                                throw new InstallationException("initialise()", e);
                             }
                         }
                     }
@@ -318,11 +319,9 @@ public class Install
                         try {
                             method = updateClass.getMethod("readFile", URL.class);
                         } catch (final SecurityException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            throw new InstallationException("initialise()", e);
                         } catch (final NoSuchMethodException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            throw new InstallationException("initialise()", e);
                         }
                         for (final InstallFile file : this.files) {
                             if (file.getType() == fileType) {
@@ -330,14 +329,11 @@ public class Install
                                 try {
                                     obj = method.invoke(null, file.getUrl());
                                 } catch (final IllegalArgumentException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
+                                    throw new InstallationException("initialise()", e);
                                 } catch (final IllegalAccessException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
+                                    throw new InstallationException("initialise()", e);
                                 } catch (final InvocationTargetException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
+                                    throw new InstallationException("initialise()", e);
                                 }
                                 if (obj != null) {
                                     list.add((AbstractUpdate) obj);
@@ -396,7 +392,7 @@ public class Install
      *
      * @return string representation of this Application
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)
