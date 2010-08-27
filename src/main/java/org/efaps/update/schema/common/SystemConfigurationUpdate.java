@@ -26,9 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
@@ -62,7 +64,7 @@ public class SystemConfigurationUpdate
      * @return new definition instance
      * @see Definition
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         return new Definition();
@@ -96,7 +98,7 @@ public class SystemConfigurationUpdate
          * @param _attributes   attributes for current path
          * @param _text         content for current path
          */
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
@@ -120,26 +122,21 @@ public class SystemConfigurationUpdate
         public void updateInDB(final Instance _instance)
             throws EFapsException
         {
-            //create/update the attributSet
-            final SearchQuery query = new SearchQuery();
-            query.setQueryTypes("Admin_Common_SystemConfigurationAttribute");
-            query.addWhereExprEqValue("Key", this.key);
-            query.addWhereExprEqValue("AbstractLink", _instance.getId());
-            query.addSelect("OID");
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.SystemConfigurationAttribute);
+            queryBldr.addWhereAttrEqValue(CIAdminCommon.SystemConfigurationAttribute.Key, this.key);
+            queryBldr.addWhereAttrEqValue(CIAdminCommon.SystemConfigurationAttribute.AbstractLink, _instance.getId());
+            final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             Update update = null;
             if (query.next()) {
-                update = new Update((String) query.get("OID"));
+                update = new Update(query.getCurrentValue());
             } else {
-                update = new Insert("Admin_Common_SystemConfigurationAttribute");
-                update.add("AbstractLink", "" + _instance.getId());
-                update.add("Key", this.key);
+                update = new Insert(CIAdminCommon.SystemConfigurationAttribute);
+                update.add(CIAdminCommon.SystemConfigurationAttribute.AbstractLink, _instance.getId());
+                update.add(CIAdminCommon.SystemConfigurationAttribute.Key, this.key);
             }
-            query.close();
-
-            update.add("Value", this.value);
-            update.add("Description", this.description);
-
+            update.add(CIAdminCommon.SystemConfigurationAttribute.Value, this.value);
+            update.add(CIAdminCommon.SystemConfigurationAttribute.Description, this.description);
             update.executeWithoutAccessCheck();
         }
     }
@@ -172,7 +169,7 @@ public class SystemConfigurationUpdate
          * @param _attributes   attributes for current path
          * @param _text         content for current path
          */
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
@@ -200,7 +197,7 @@ public class SystemConfigurationUpdate
          * @throws InstallationException if update failed
          * @see #attributes
          */
-        @Override()
+        @Override
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
             throws InstallationException
