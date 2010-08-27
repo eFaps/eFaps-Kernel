@@ -158,7 +158,7 @@ public class Dependency
      *
      * @return string representation
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)

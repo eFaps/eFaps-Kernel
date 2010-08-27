@@ -59,7 +59,7 @@ public class WebDAVUpdate
      * @return new definition instance
      * @see Definition
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         return new Definition();
@@ -68,7 +68,7 @@ public class WebDAVUpdate
     public class Definition
         extends AbstractDefinition
     {
-        @Override()
+        @Override
         public void readXML(final List<String> _tags,
                             final Map<String, String> _attributes,
                             final String _text)

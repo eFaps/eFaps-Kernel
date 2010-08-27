@@ -106,7 +106,7 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
          *                               not be read or the file could not be
          *                               accessed because of the wrong URL
          */
-        @Override()
+        @Override
         protected void searchInstance()
             throws InstallationException
         {

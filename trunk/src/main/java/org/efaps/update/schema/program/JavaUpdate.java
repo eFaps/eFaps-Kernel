@@ -91,7 +91,7 @@ public class JavaUpdate
          *                               read or the file could not be accessed
          *                               because of the wrong URL
          */
-        @Override()
+        @Override
         protected void searchInstance()
             throws InstallationException
         {
@@ -121,7 +121,7 @@ public class JavaUpdate
          * @param _allLinkTypes     all link types to update
          * @throws InstallationException on error
          */
-        @Override()
+        @Override
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
             throws InstallationException

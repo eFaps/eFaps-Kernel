@@ -87,7 +87,7 @@ public class SQLTableUpdate
      * @return new definition instance
      * @see Definition
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         return new Definition();
@@ -142,7 +142,7 @@ public class SQLTableUpdate
          *
          * @return string representation of this definition of a column
          */
-        @Override()
+        @Override
         public String toString()
         {
             return new ToStringBuilder(this)
@@ -187,7 +187,7 @@ public class SQLTableUpdate
          *
          * @return string representation of this definition of a column
          */
-        @Override()
+        @Override
         public String toString()
         {
             return new ToStringBuilder(this)
@@ -246,7 +246,7 @@ public class SQLTableUpdate
          *
          * @return string representation of this definition of a column
          */
-        @Override()
+        @Override
         public String toString()
         {
             return new ToStringBuilder(this)
@@ -291,7 +291,7 @@ public class SQLTableUpdate
          *
          * @return string representation of this definition of a column
          */
-        @Override()
+        @Override
         public String toString()
         {
             return new ToStringBuilder(this)
@@ -353,7 +353,7 @@ public class SQLTableUpdate
          * @param _attributes   attributes for current path
          * @param _text         content for current path
          */
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
@@ -421,7 +421,7 @@ public class SQLTableUpdate
          * @throws InstallationException if insert of the eFaps definition for
          *                               the SQL table failed
          */
-        @Override()
+        @Override
         protected void createInDB(final Insert _insert)
             throws InstallationException
         {
@@ -466,7 +466,7 @@ public class SQLTableUpdate
          * @see #updateSQLTable()
          * @see #executeSQLs()
          */
-        @Override()
+        @Override
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
             throws InstallationException

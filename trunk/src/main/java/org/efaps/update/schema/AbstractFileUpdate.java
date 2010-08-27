@@ -97,7 +97,7 @@ public abstract class AbstractFileUpdate
          * @param _attributes   attributes for current path
          * @param _text         content for current path
          */
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
@@ -120,7 +120,7 @@ public abstract class AbstractFileUpdate
          * @param _allLinkTypes     set of all type of links
          * @throws InstallationException if update failed
          */
-        @Override()
+        @Override
         protected void updateInDB(final UpdateLifecycle _step,
                                   final Set<Link> _allLinkTypes)
             throws InstallationException
@@ -152,7 +152,7 @@ public abstract class AbstractFileUpdate
          *
          * @return string representation of this definition of a column
          */
-        @Override()
+        @Override
         public String toString()
         {
             return new ToStringBuilder(this)

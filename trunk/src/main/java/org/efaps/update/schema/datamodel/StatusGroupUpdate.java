@@ -156,7 +156,7 @@ public class StatusGroupUpdate
          * @param _attributes attributes for current path
          * @param _text content for current path
          */
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
@@ -188,7 +188,7 @@ public class StatusGroupUpdate
          * @see #parentType
          * @see #attributes
          */
-        @Override()
+        @Override
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
             throws InstallationException

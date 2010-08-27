@@ -54,7 +54,7 @@ public class JasperImageUpdate
      * @return new definition instance
      * @see JasperImageUpdate.JasperImageDefinition
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         return new JasperImageDefinition();

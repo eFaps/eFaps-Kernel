@@ -82,7 +82,7 @@ public abstract class AbstractSourceUpdate
      *
      * @return nothing
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         throw new Error("not allowed");
@@ -129,7 +129,7 @@ public abstract class AbstractSourceUpdate
          * @throws InstallationException on error
          *
          */
-        @Override()
+        @Override
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
             throws InstallationException
@@ -182,7 +182,7 @@ public abstract class AbstractSourceUpdate
          * Method returns a String representation of this class.
          * @return String representation
          */
-        @Override()
+        @Override
         public String toString()
         {
             return new ToStringBuilder(this)

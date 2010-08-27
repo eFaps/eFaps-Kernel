@@ -111,7 +111,7 @@ public class CSSUpdate
          * @throws EFapsException if the Java source code could not be read or
          *             the file could not be accessed because of the wrong URL
          */
-        @Override()
+        @Override
         protected void searchInstance()
             throws InstallationException
         {

@@ -311,7 +311,7 @@ public class ESJPCompiler
         /**
          * Stub method because only required to derive from {@link Writer}.
          */
-        @Override()
+        @Override
         public void close()
         {
         }
@@ -331,7 +331,7 @@ public class ESJPCompiler
          * @param _off      offset within the buffer
          * @param _len      len of the message within the buffer
          */
-        @Override()
+        @Override
         public void write(final char[] _cbuf,
                           final int _off,
                           final int _len)
@@ -372,7 +372,7 @@ public class ESJPCompiler
          * @param _fileObject   file object to be used as hint for placement
          * @return always <code>null</code>
          */
-        @Override()
+        @Override
         public FileObject getFileForOutput(final Location _location,
                                            final String _packageName,
                                            final String _relativeName,
@@ -392,7 +392,7 @@ public class ESJPCompiler
          * @return Java file object for ESJP used to store the compiled class
          * @see ESJPCompiler
          */
-        @Override()
+        @Override
         public JavaFileObject getJavaFileForOutput(final Location _location,
                                                    final String _className,
                                                    final JavaFileObject.Kind _kind,
@@ -412,7 +412,7 @@ public class ESJPCompiler
          *         the forwarding standard Java file manager handles the
          *         <code>_location</code>; otherwise <i>false</i>
          */
-        @Override()
+        @Override
         public boolean hasLocation(final JavaFileManager.Location _location)
         {
             return StandardLocation.SOURCE_PATH.getName().equals(_location.getName()) || super.hasLocation(_location);
@@ -433,7 +433,7 @@ public class ESJPCompiler
          * @return name of the binary object for the ESJP or from forwarded
          *         {@link StandardJavaFileManager standard Java file manager}
          */
-        @Override()
+        @Override
         public String inferBinaryName(final JavaFileManager.Location _location,
                                       final JavaFileObject _javaFileObject)
         {
@@ -469,7 +469,7 @@ public class ESJPCompiler
          *         manager
          * @throws IOException from forwarded standard Java file manager
          */
-        @Override()
+        @Override
         public Iterable<JavaFileObject> list(final Location _location,
                                              final String _packageName,
                                              final Set<JavaFileObject.Kind> _kinds,
@@ -539,7 +539,7 @@ public class ESJPCompiler
          * @throws IOException if source could not be read from the eFaps
          *                     database
          */
-        @Override()
+        @Override
         public CharSequence getCharContent(final boolean _ignoreEncodingErrors)
             throws IOException
         {
@@ -596,7 +596,7 @@ public class ESJPCompiler
          * @return {@link #out} as output stream
          * @see #out
          */
-        @Override()
+        @Override
         public OutputStream openOutputStream()
         {
             return this.out;
