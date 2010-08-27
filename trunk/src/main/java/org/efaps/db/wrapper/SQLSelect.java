@@ -381,6 +381,12 @@ public class SQLSelect
             return this.tableIndex;
         }
 
+        @Override
+        public void appendSQL(final StringBuilder _cmd)
+        {
+            appendSQL(true, _cmd);
+        }
+
         /**
          * Appends the {@link #tableName name} of this table depending on a
          * given {@link #tableIndex index} to the SQL select statement in
