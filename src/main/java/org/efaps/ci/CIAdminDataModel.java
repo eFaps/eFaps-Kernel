@@ -200,4 +200,41 @@ public class CIAdminDataModel
         public final CIAttribute From = new CIAttribute(this, "From");
         public final CIAttribute To = new CIAttribute(this, "To");
     }
+    public static final _UoM UoM = new _UoM("af2a5069-6ee8-40c4-8f8e-80a11565869d");
+
+    public static class _UoM
+        extends CIType
+    {
+
+        protected _UoM(final String _uuid)
+        {
+            super(_uuid);
+        }
+
+        public final CIAttribute Dimension = new CIAttribute(this, "Dimension");
+        public final CIAttribute Name = new CIAttribute(this, "Name");
+        public final CIAttribute Numerator = new CIAttribute(this, "Numerator");
+        public final CIAttribute Denominator = new CIAttribute(this, "Denominator");
+    }
+
+    public static final _Dimension Dimension = new _Dimension("e3a45e2e-bed9-4be0-a4a2-890acac3a669");
+
+    public static class _Dimension
+        extends CIType
+    {
+
+        protected _Dimension(final String _uuid)
+        {
+            super(_uuid);
+        }
+
+        public final CIAttribute Name = new CIAttribute(this, "Name");
+        public final CIAttribute Description = new CIAttribute(this, "Description");
+        public final CIAttribute UUID = new CIAttribute(this, "UUID");
+        public final CIAttribute BaseUoM = new CIAttribute(this, "BaseUoM");
+        public final CIAttribute Creator = new CIAttribute(this, "Creator");
+        public final CIAttribute Created = new CIAttribute(this, "Created");
+        public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
+        public final CIAttribute Modified = new CIAttribute(this, "Modified");
+    }
 }
