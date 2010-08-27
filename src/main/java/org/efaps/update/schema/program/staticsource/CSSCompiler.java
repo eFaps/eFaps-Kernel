@@ -81,7 +81,7 @@ public class CSSCompiler
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     protected String getCompiledString(final Instance _instance)
     {
         String ret = "";

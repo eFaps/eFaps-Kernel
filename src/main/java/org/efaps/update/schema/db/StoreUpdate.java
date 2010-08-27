@@ -63,7 +63,7 @@ public class StoreUpdate
      *
      * @return new definition instance
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         return new StoreDefinition();
@@ -100,7 +100,7 @@ public class StoreUpdate
          * @param _attributes attributes
          * @param _text text
          */
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
@@ -157,7 +157,7 @@ public class StoreUpdate
          * @throws InstallationException on error
          * @see AbstractUpdate.AbstractDefinition#updateInDB(UpdateLifecycle,Set)
          */
-        @Override()
+        @Override
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
             throws InstallationException

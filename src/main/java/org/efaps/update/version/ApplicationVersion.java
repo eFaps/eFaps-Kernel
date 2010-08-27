@@ -346,7 +346,7 @@ public class ApplicationVersion
      *
      * @return string representation of this Application
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)
@@ -458,7 +458,7 @@ public class ApplicationVersion
          * @throws InstallationException if installation failed
          * TODO: it must be able to deactivate the CONTEXT
          */
-        @Override()
+        @Override
         public void execute(final String _userName,
                             final String _password)
             throws InstallationException
@@ -538,7 +538,7 @@ public class ApplicationVersion
         /**
          * {@inheritDoc}
          */
-        @Override()
+        @Override
         public void execute(final String _userName,
                             final String _password)
             throws InstallationException

@@ -58,7 +58,7 @@ public class CompanyUpdate
     public class CompanyDefinition
         extends AbstractDefinition
     {
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)

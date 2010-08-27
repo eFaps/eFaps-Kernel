@@ -49,7 +49,7 @@ public class RoleUpdate
      * @return new definition instance
      * @see RoleDefinition
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         return new RoleDefinition();
@@ -58,7 +58,7 @@ public class RoleUpdate
     public class RoleDefinition
         extends AbstractDefinition
     {
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)

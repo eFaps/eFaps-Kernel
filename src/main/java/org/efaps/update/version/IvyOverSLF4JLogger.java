@@ -43,7 +43,7 @@ public class IvyOverSLF4JLogger
      *
      * @param _text     not used
      */
-    @Override()
+    @Override
     protected void doEndProgress(final String _text)
     {
     }
@@ -51,7 +51,7 @@ public class IvyOverSLF4JLogger
     /**
      * Method is only required to implement the IVY logging interface.
      */
-    @Override()
+    @Override
     protected void doProgress()
     {
     }

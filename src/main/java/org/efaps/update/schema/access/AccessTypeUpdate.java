@@ -47,7 +47,7 @@ public class AccessTypeUpdate
      * @return new definition instance
      * @see AccessTypeUpdate.Definition
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         return new Definition();

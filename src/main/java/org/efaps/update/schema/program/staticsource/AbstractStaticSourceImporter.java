@@ -64,7 +64,7 @@ public abstract class AbstractStaticSourceImporter
      *
      * @return class name of the source code
      */
-    @Override()
+    @Override
     protected String evalProgramName()
     {
         final String urlPath = getUrl().getPath();
@@ -85,7 +85,7 @@ public abstract class AbstractStaticSourceImporter
      *
      * @return Revision of the program
      */
-    @Override()
+    @Override
     protected String evalRevision()
     {
         String ret = null;
@@ -102,7 +102,7 @@ public abstract class AbstractStaticSourceImporter
      *
      * @return UUID of the source
      */
-    @Override()
+    @Override
     protected UUID evalUUID()
     {
         UUID uuid = null;

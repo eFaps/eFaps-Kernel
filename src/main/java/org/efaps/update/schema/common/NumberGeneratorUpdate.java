@@ -74,7 +74,7 @@ public class NumberGeneratorUpdate
         /**
          * {@inheritDoc}
          */
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
@@ -92,7 +92,7 @@ public class NumberGeneratorUpdate
         /**
          * {@inheritDoc}
          */
-        @Override()
+        @Override
         protected void createInDB(final Insert _insert)
             throws InstallationException
         {

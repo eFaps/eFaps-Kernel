@@ -77,7 +77,7 @@ public class JAASSystemUpdate
      * @return new definition instance
      * @see JAASSystemUpdate.Definition
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         return new Definition();
@@ -87,7 +87,7 @@ public class JAASSystemUpdate
         extends AbstractDefinition
     {
 
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
@@ -147,7 +147,7 @@ public class JAASSystemUpdate
          * @param _insert  insert instance
          * @throws InstallationException if insert failed
          */
-        @Override()
+        @Override
         protected void createInDB(final Insert _insert)
             throws InstallationException
         {

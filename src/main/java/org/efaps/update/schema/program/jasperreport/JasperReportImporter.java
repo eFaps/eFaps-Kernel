@@ -64,7 +64,7 @@ public class JasperReportImporter
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     protected void readCode()
         throws InstallationException
     {

@@ -103,7 +103,7 @@ public class WikiUpdate extends AbstractSourceUpdate
          *                               not be accessed because of the wrong
          *                               URL
          */
-        @Override()
+        @Override
         protected void searchInstance()
             throws InstallationException
         {

@@ -60,7 +60,7 @@ public class ESJPImporter
      *
      * @return class name of the ESJP
      */
-    @Override()
+    @Override
     protected String evalProgramName()
     {
         final String urlPath = getUrl().getPath();
@@ -84,7 +84,7 @@ public class ESJPImporter
      *
      * @return UUID of the ESJP
      */
-    @Override()
+    @Override
     protected UUID evalUUID()
     {
         UUID uuid = null;
@@ -105,7 +105,7 @@ public class ESJPImporter
      *
      * @return revision of the ESJP
      */
-    @Override()
+    @Override
     protected String evalRevision()
     {
         String ret = null;

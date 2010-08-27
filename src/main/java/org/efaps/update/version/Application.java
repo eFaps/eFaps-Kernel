@@ -214,7 +214,7 @@ public final class Application
                  *
                  * @param attributes The attribute list of this element
                  */
-                @Override()
+                @Override
                 public void begin(final Attributes _attributes)
                                             {
                     this.digester.push(new Application(_rootUrl, _classpathElements));
@@ -223,7 +223,7 @@ public final class Application
                 /**
                  * Process the end of this element.
                  */
-                @Override()
+                @Override
                 public void end()
                                             {
                     this.digester.pop();
@@ -870,7 +870,7 @@ public final class Application
      *
      * @return string representation of this Application
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)

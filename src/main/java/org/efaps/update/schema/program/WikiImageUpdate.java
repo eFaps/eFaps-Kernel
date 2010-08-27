@@ -53,7 +53,7 @@ public class WikiImageUpdate
      * @return new definition instance
      * @see WikiImageUpdate.JasperImageDefinition
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         return new WikiImageDefinition();
