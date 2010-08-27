@@ -450,9 +450,9 @@ public class Update
      * @return id of {@link #instance}
      * @see #instance
      */
-    public String getId()
+    public long getId()
     {
-        return "" + getInstance().getId();
+        return getInstance().getId();
     }
 
     /**
