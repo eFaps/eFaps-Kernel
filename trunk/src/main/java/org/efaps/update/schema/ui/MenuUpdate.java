@@ -78,7 +78,7 @@ public class MenuUpdate
      * @return new definition instance
      * @see MenuDefinition
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         return new MenuDefinition();
@@ -87,7 +87,7 @@ public class MenuUpdate
     protected class MenuDefinition
         extends CommandDefinition
     {
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
@@ -98,14 +98,14 @@ public class MenuUpdate
                     final String subValue = _tags.get(1);
                     if ("child".equals(subValue))  {
                         // assigns / removes child commands / menus to this menu
-                        if ("remove".equals(_attributes.get("modus")))  {
+                        if ("remove".equals(_attributes.get("modus"))) {
                         } else  {
                             final LinkInstance child = new LinkInstance(_text);
                             final String order = _attributes.get("order");
                             if (order != null)  {
                                 child.setOrder(Integer.parseInt(order));
                             }
-                            this.addLink(MenuUpdate.LINK2CHILD, child);
+                            addLink(MenuUpdate.LINK2CHILD, child);
                         }
                     } else  {
                         super.readXML(_tags, _attributes, _text);
@@ -114,7 +114,7 @@ public class MenuUpdate
             } else if ("type".equals(value))  {
                 // assigns a type the menu for which this menu instance is the type
                 // tree menu
-                this.addLink(MenuUpdate.LINK2TYPE, new LinkInstance(_text));
+                addLink(MenuUpdate.LINK2TYPE, new LinkInstance(_text));
             } else  {
                 super.readXML(_tags, _attributes, _text);
             }

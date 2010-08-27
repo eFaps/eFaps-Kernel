@@ -65,7 +65,7 @@ public class SearchUpdate
      * @return new definition instance
      * @see SearchDefinition
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         return new SearchDefinition();
@@ -74,7 +74,7 @@ public class SearchUpdate
     public class SearchDefinition
         extends MenuDefinition
     {
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
@@ -85,7 +85,7 @@ public class SearchUpdate
                     final String subValue = _tags.get(1);
                     if ("command".equals(subValue))  {
                         // assigns a command as default for the search menu
-                        this.addLink(SearchUpdate.LINK2DEFAULTCMD, new LinkInstance(_text));
+                        addLink(SearchUpdate.LINK2DEFAULTCMD, new LinkInstance(_text));
                     } else  {
                         super.readXML(_tags, _attributes, _text);
                     }

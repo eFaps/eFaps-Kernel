@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.jexl.JexlContext;
-
 import org.efaps.update.util.InstallationException;
+import org.xml.sax.SAXException;
 
 /**
  * TODO comment!
@@ -58,9 +58,11 @@ public interface IUpdate
      * @param _tags         tags path as list
      * @param _attributes   map of attributes for current tag
      * @param _text         content text of this tags path
+     * @throws SAXException on error
      */
     void readXML(final List<String> _tags,
                  final Map<String, String> _attributes,
-                 final String _text);
+                 final String _text)
+     throws SAXException;
 
 }

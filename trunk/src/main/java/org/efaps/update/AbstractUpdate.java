@@ -36,30 +36,42 @@ import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.ci.CIAdmin;
+import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
+import org.efaps.db.SelectBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.event.Event;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
- * <p>This class is the major class for importing or updating of types,
- * commands and so on in eFaps.<p/>
- * <p>For every kind of Object in eFaps a own class extends this
- * AbstractUpdate. In this classes the XML-Files is read and with the digester
- * converted in Objects. After reading all Objects of one XML-File the Objects
- * are inserted corresponding to the Version.</p>
+ * <p>
+ * This class is the major class for importing or updating of types, commands
+ * and so on in eFaps.
+ * <p/>
+ * <p>
+ * For every kind of Object in eFaps a own class extends this AbstractUpdate. In
+ * this classes the XML-Files is read and with the digester converted in
+ * Objects. After reading all Objects of one XML-File the Objects are inserted
+ * corresponding to the Version.
+ * </p>
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractUpdate implements IUpdate
+public abstract class AbstractUpdate
+    implements IUpdate
 {
+
     /**
      * Logging instance used to give logging information of this class.
      */
@@ -111,8 +123,8 @@ public abstract class AbstractUpdate implements IUpdate
      * Default constructor with no defined possible links for given
      * <code>_dataModelTypeName</code>.
      *
-     * @param _url                  URL of the update file
-     * @param _dataModelTypeName    name of the data model type to update
+     * @param _url URL of the update file
+     * @param _dataModelTypeName name of the data model type to update
      */
     protected AbstractUpdate(final URL _url,
                              final String _dataModelTypeName)
@@ -124,9 +136,9 @@ public abstract class AbstractUpdate implements IUpdate
      * Default constructor with defined possible links
      * <code>_allLinkTypes</code> for given <code>_dataModelTypeName</code>.
      *
-     * @param _url                  URL of the update file
-     * @param _dataModelTypeName    name of the data model type to update
-     * @param _allLinkTypes         all possible type link
+     * @param _url URL of the update file
+     * @param _dataModelTypeName name of the data model type to update
+     * @param _allLinkTypes all possible type link
      */
     protected AbstractUpdate(final URL _url,
                              final String _dataModelTypeName,
@@ -142,11 +154,14 @@ public abstract class AbstractUpdate implements IUpdate
      *
      * @param _tags tags path as list
      * @param _attributes map of attributes for current tag
-     * @param _text content text of this tags path
-     * TODO:  error could not be thrown because db properties is not read
-     *       correctly
+     * @param _text content text of this tags path TODO: error could not be
+     *            thrown because db properties is not read correctly
+     * @throws SAXException on error
      */
-    public void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+    public void readXML(final List<String> _tags,
+                        final Map<String, String> _attributes,
+                        final String _text)
+        throws SAXException
     {
         if (_tags.size() == 1) {
             final String value = _tags.get(0);
@@ -163,8 +178,7 @@ public abstract class AbstractUpdate implements IUpdate
             final AbstractDefinition curDef = this.definitions.get(this.definitions.size() - 1);
             curDef.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
         } else {
-            // throw new Error("Unknown Tag '" + _tags + "' (file " + this.url +
-            // ")");
+            throw new SAXException("Unknown XML Tag " + _tags);
         }
     }
 
@@ -203,27 +217,21 @@ public abstract class AbstractUpdate implements IUpdate
      * The new created object is stored as instance information in
      * {@link #instance}.
      *
-     * @param _jexlContext  context used to evaluate JEXL expressions
-     * @param _step         current step of the update life cycle
+     * @param _jexlContext context used to evaluate JEXL expressions
+     * @param _step current step of the update life cycle
      * @throws InstallationException from called update methods
      */
     public void updateInDB(final JexlContext _jexlContext,
                            final UpdateLifecycle _step)
         throws InstallationException
     {
-        try {
-            for (final AbstractDefinition def : this.definitions) {
-                if (def.isValidVersion(_jexlContext)) {
-                    if ((this.url != null) && AbstractUpdate.LOG.isDebugEnabled()) {
-                        AbstractUpdate.LOG.debug("Executing '" + this.url.toString() + "'");
-                    }
-                    def.updateInDB(_step, this.allLinkTypes);
+        for (final AbstractDefinition def : this.definitions) {
+            if (def.isValidVersion(_jexlContext)) {
+                if ((this.url != null) && AbstractUpdate.LOG.isDebugEnabled()) {
+                    AbstractUpdate.LOG.debug("Executing '" + this.url.toString() + "'");
                 }
+                def.updateInDB(_step, this.allLinkTypes);
             }
-        } catch (final EFapsException e) {
-// TODO: only InstallationException should be defined in the updateInDB method
-            AbstractUpdate.LOG.error("updateInDB", e);
-            throw new InstallationException("Update failed", e);
         }
     }
 
@@ -240,7 +248,7 @@ public abstract class AbstractUpdate implements IUpdate
     /**
      * Defines the new {@link #uuid UUID} of the updated object.
      *
-     * @param _uuid     new UUID for the object to update
+     * @param _uuid new UUID for the object to update
      * @see #uuid
      */
     protected void setUUID(final String _uuid)
@@ -364,6 +372,7 @@ public abstract class AbstractUpdate implements IUpdate
      */
     protected static class Link
     {
+
         /** Name of the link. */
         private final String linkName;
 
@@ -390,19 +399,22 @@ public abstract class AbstractUpdate implements IUpdate
         /**
          * Constructor used to initialize the instance variables.
          *
-         * @param _linkName name    of the link itself
-         * @param _parentAttrName   name of the parent attribute in the link
-         * @param _childTypeName     name of the child type
-         * @param _childAttrName    name of the child attribute in the link
-         * @param _keyAttributes    list of attributes used to identify the object to be
-         *                          connected default "Name"
+         * @param _linkName name of the link itself
+         * @param _parentAttrName name of the parent attribute in the link
+         * @param _childTypeName name of the child type
+         * @param _childAttrName name of the child attribute in the link
+         * @param _keyAttributes list of attributes used to identify the object
+         *            to be connected default "Name"
          * @see #linkName
          * @see #parentAttrName
          * @see #childTypeName
          * @see #childAttrName
          */
-        public Link(final String _linkName, final String _parentAttrName, final String _childTypeName,
-                    final String _childAttrName, final String... _keyAttributes)
+        public Link(final String _linkName,
+                    final String _parentAttrName,
+                    final String _childTypeName,
+                    final String _childAttrName,
+                    final String... _keyAttributes)
         {
             this.linkName = _linkName;
             this.parentAttrName = _parentAttrName;
@@ -470,6 +482,12 @@ public abstract class AbstractUpdate implements IUpdate
         extends AbstractUpdate.Link
     {
 
+        /**
+         * @param _linkName name of the link itself
+         * @param _parentAttrName name of the parent attribute in the link
+         * @param _childTypeName name of the child type
+         * @param _childAttrName name of the child attribute in the link
+         */
         public OrderedLink(final String _linkName,
                            final String _parentAttrName,
                            final String _childTypeName,
@@ -484,6 +502,7 @@ public abstract class AbstractUpdate implements IUpdate
      */
     protected abstract class AbstractDefinition
     {
+
         /**
          * Expression of this definition if this definition must be installed.
          *
@@ -523,10 +542,8 @@ public abstract class AbstractUpdate implements IUpdate
         /**
          *
          */
-        private final Map<AbstractUpdate.Link, Set<LinkInstance>> links
-            = new HashMap<AbstractUpdate.Link, Set<LinkInstance>>();
-
-        protected final List<Event> events = new ArrayList<Event>();
+        private final Map<AbstractUpdate.Link, Set<LinkInstance>> links = new HashMap<AbstractUpdate.Link,
+                                                                                                   Set<LinkInstance>>();
 
         /**
          * Name of attribute by which the search in the database is done. If not
@@ -536,6 +553,11 @@ public abstract class AbstractUpdate implements IUpdate
          * @see #searchInstance
          */
         private final String searchAttrName;
+
+        /**
+         * list of events.
+         */
+        protected final List<Event> events = new ArrayList<Event>();
 
         /**
          * Instance of this definition.
@@ -587,43 +609,41 @@ public abstract class AbstractUpdate implements IUpdate
          *
          * @param _jexlContext context used to evaluate JEXL expressions
          * @return <i>true</i> if the definition is valid
-         * @throws EFapsException if the JEXL expression in {@link #expression}
+         * @throws InstallationException if the JEXL expression in {@link #expression}
          *             could not be evaluated
          * @see #expression
          */
         public boolean isValidVersion(final JexlContext _jexlContext)
-            throws EFapsException
+            throws InstallationException
         {
             boolean exec;
             try {
                 if (this.expression == null) {
                     final Expression jexlExpr = ExpressionFactory.createExpression("version==latest");
-                    exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
+                    exec = Boolean.parseBoolean(jexlExpr.evaluate(_jexlContext).toString());
                 } else {
                     final Expression jexlExpr = ExpressionFactory.createExpression(this.expression);
-                    exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
+                    exec = Boolean.parseBoolean(jexlExpr.evaluate(_jexlContext).toString());
                 }
+                //CHECKSTYLE:OFF
             } catch (final Exception e) {
-                throw new EFapsException(getClass(),
-                                         "isValidVersion.JEXLExpressionNotEvaluatable",
-                                         e,
-                                         AbstractUpdate.this.url.getFile() ,
-                                         this.expression);
+              //CHECKSTYLE:ON
+                throw new InstallationException("isValidVersion.JEXLExpressionNotEvaluatable", e);
             }
             return exec;
         }
 
         /**
-         * @param _step             current update step
-         * @param _allLinkTypes     set of all type of links
-         * @throws InstallationException if update failed
-         * TODO: do not throw EFapsException
+         * @param _step current update step
+         * @param _allLinkTypes set of all type of links
+         * @throws InstallationException if update failed TODO: do not throw
+         *             EFapsException
          */
         protected void updateInDB(final UpdateLifecycle _step,
                                   final Set<AbstractUpdate.Link> _allLinkTypes)
             throws InstallationException
         {
-            if (_step == UpdateLifecycle.EFAPS_CREATE)  {
+            if (_step == UpdateLifecycle.EFAPS_CREATE) {
                 searchInstance();
 
                 // if no instance exists, a new insert must be done
@@ -632,15 +652,15 @@ public abstract class AbstractUpdate implements IUpdate
                     try {
                         insert = new Insert(AbstractUpdate.this.dataModelTypeName);
                         insert.add("UUID", AbstractUpdate.this.uuid);
-                    } catch (final EFapsException e)  {
+                    } catch (final EFapsException e) {
                         throw new InstallationException("Initialize for the insert of '"
-                                + AbstractUpdate.this.dataModelTypeName + "' with UUID '"
-                                + AbstractUpdate.this.uuid + "' failed", e);
+                                        + AbstractUpdate.this.dataModelTypeName + "' with UUID '"
+                                        + AbstractUpdate.this.uuid + "' failed", e);
                     }
                     createInDB(insert);
                 }
 
-            } else if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
+            } else if (_step == UpdateLifecycle.EFAPS_UPDATE) {
                 try {
                     final String name = this.values.get("Name");
                     final Update update = new Update(this.instance);
@@ -692,25 +712,23 @@ public abstract class AbstractUpdate implements IUpdate
         {
             if (this.instance == null) {
                 try {
-                    final SearchQuery query = new SearchQuery();
-                    query.setQueryTypes(AbstractUpdate.this.dataModelTypeName);
+                    final QueryBuilder queryBldr = new QueryBuilder(Type.get(AbstractUpdate.this.dataModelTypeName));
                     if (this.searchAttrName == null) {
-                        query.addWhereExprEqValue("UUID", AbstractUpdate.this.uuid);
+                        queryBldr.addWhereAttrEqValue("UUID", AbstractUpdate.this.uuid);
                     } else {
-                        query.addWhereExprEqValue(this.searchAttrName, this.values.get(this.searchAttrName));
+                        queryBldr.addWhereAttrEqValue(this.searchAttrName, this.values.get(this.searchAttrName));
                     }
-                    query.addSelect("OID");
+                    final InstanceQuery query = queryBldr.getQuery();
                     query.executeWithoutAccessCheck();
                     if (query.next()) {
-                        this.instance = Instance.get((String) query.get("OID"));
+                        this.instance = query.getCurrentValue();
                     }
-                    query.close();
                 } catch (final EFapsException e) {
                     throw new InstallationException("Search for '" + AbstractUpdate.this.dataModelTypeName + "' for '"
-                            + ((this.searchAttrName == null)
-                                    ? AbstractUpdate.this.uuid
-                                    : this.values.get(this.searchAttrName))
-                            + "' failed", e);
+                                    + ((this.searchAttrName == null)
+                                                    ? AbstractUpdate.this.uuid
+                                                    : this.values.get(this.searchAttrName))
+                                    + "' failed", e);
                 }
             }
         }
@@ -719,7 +737,7 @@ public abstract class AbstractUpdate implements IUpdate
          * Inserts current instance defined by <code>_insert</code> into the
          * eFaps database without any access check.
          *
-         * @param _insert   insert instance
+         * @param _insert insert instance
          * @throws InstallationException if insert failed
          */
         protected void createInDB(final Insert _insert)
@@ -731,14 +749,14 @@ public abstract class AbstractUpdate implements IUpdate
                 }
                 final String name = this.values.get("Name");
                 _insert.add("Name", (name == null) ? "-" : name);
-                if (AbstractUpdate.LOG.isInfoEnabled())  {
+                if (AbstractUpdate.LOG.isInfoEnabled()) {
                     AbstractUpdate.LOG.info("    Insert " + _insert.getInstance().getType().getName()
-                            + " '" + name + "'");
+                                    + " '" + name + "'");
                 }
                 _insert.executeWithoutAccessCheck();
-            } catch (final EFapsException e)  {
+            } catch (final EFapsException e) {
                 throw new InstallationException("Insert for '" + _insert.getInstance().getType().getName()
-                        + "' '" + this.values.get("Name") + " failed", e);
+                                + "' '" + this.values.get("Name") + " failed", e);
             }
             this.instance = _insert.getInstance();
         }
@@ -746,10 +764,10 @@ public abstract class AbstractUpdate implements IUpdate
         /**
          * Remove all links from given object (defined by the instance).
          *
-         * @param _instance     instance for which all links must be removed
-         * @param _linkType     type of link which must be removed
+         * @param _instance instance for which all links must be removed
+         * @param _linkType type of link which must be removed
          * @throws EFapsException if existing links could not be removed
-         *                        (deleted)
+         *             (deleted)
          * @see #setLinksInDB used to remove all links for given instance with a
          *      zero length set of link instances
          */
@@ -764,10 +782,10 @@ public abstract class AbstractUpdate implements IUpdate
          * Sets the links from this object to the given list of objects (with
          * the object name) in the eFaps database.
          *
-         * @param _instance     instance for which the links must be defined
-         * @param _linktype     type of the link to be updated
-         * @param _links        all links of the type _linktype which will be
-         *                      connected to this instance
+         * @param _instance instance for which the links must be defined
+         * @param _linktype type of the link to be updated
+         * @param _links all links of the type _linktype which will be connected
+         *            to this instance
          * @throws EFapsException if links could not be defined
          */
         protected void setLinksInDB(final Instance _instance,
@@ -786,26 +804,30 @@ public abstract class AbstractUpdate implements IUpdate
 
                 // add the existing Links as LinkInstance to the List of all
                 // Links
-                SearchQuery query = new SearchQuery();
-                query.setExpand(_instance, _linktype.linkName + "\\" + _linktype.parentAttrName);
-                query.addSelect("OID");
-                query.addSelect("Type");
-                query.addSelect("ID");
-                query.addSelect(_linktype.childAttrName + ".ID");
-                query.addSelect(_linktype.childAttrName + ".Type");
+                final QueryBuilder queryBldr = new QueryBuilder(Type.get(_linktype.linkName));
+                queryBldr.addWhereAttrEqValue(_linktype.parentAttrName, _instance.getId());
+                final MultiPrintQuery multi = queryBldr.getPrint();
+                multi.addAttribute("Type", "OID" , "ID");
+                final SelectBuilder selId = new SelectBuilder().linkto(_linktype.childAttrName).id();
+                final SelectBuilder selType = new SelectBuilder().linkto(_linktype.childAttrName).type();
+                multi.addSelect(selId, selType);
                 for (final String attrName : _linktype.getKeyAttributes()) {
-                    query.addSelect(_linktype.childAttrName + "." + attrName);
+                    final SelectBuilder selAttr = new SelectBuilder().linkto(_linktype.childAttrName)
+                                                                .attribute(attrName);
+                    multi.addSelect(selAttr);
                 }
-                query.executeWithoutAccessCheck();
-                while (query.next()) {
-                    final Type tempType = (Type) query.get("Type");
-                    final Type childType = (Type) query.get(_linktype.childAttrName + ".Type");
+                multi.executeWithoutAccessCheck();
+                while (multi.next()) {
+                    final Type tempType = multi.getCurrentInstance().getType();
+                    final Type childType = multi.<Type>getSelect(selType);
                     // check if this is a correct Link for this LinkType
                     if (tempType.isKindOf(_linktype.getLinkType()) && childType.isKindOf(_linktype.getChildType())) {
 
                         final LinkInstance oldLink = new LinkInstance();
                         for (final String attrName : _linktype.getKeyAttributes()) {
-                            final Object ob = query.get(_linktype.childAttrName + "." + attrName);
+                            final SelectBuilder selAttr = new SelectBuilder().linkto(_linktype.childAttrName)
+                                                                        .attribute(attrName);
+                            final Object ob = multi.getSelect(selAttr);
                             String tmp;
                             if (ob instanceof Type) {
                                 tmp = ((Long) ((Type) ob).getId()).toString();
@@ -814,29 +836,26 @@ public abstract class AbstractUpdate implements IUpdate
                             }
                             oldLink.getKeyAttr2Value().put(attrName, tmp);
                         }
-                        final long childId = (Long) query.get(_linktype.childAttrName + ".ID");
+                        final long childId = multi.<Long>getSelect(selId);
                         oldLink.setChildId(childId);
-                        oldLink.setOid((String) query.get("OID"));
-                        oldLink.setId((Long) query.get("ID"));
+                        oldLink.setOid(multi.<String>getAttribute("OID"));
+                        oldLink.setId(multi.<Long>getAttribute("ID"));
                         allLinks.add(oldLink);
                         existing.put(childId, oldLink);
                     }
                 }
-                query.close();
 
                 // add the new LinkInstances to the List of all Linkinstances
                 for (final LinkInstance onelink : _links) {
                     // search the id for the Linked Object
-                    query = new SearchQuery();
-                    query.setQueryTypes(_linktype.childTypeName);
-                    query.setExpandChildTypes(true);
+                    final QueryBuilder queryBldr2 = new QueryBuilder(Type.get(_linktype.childTypeName));
                     for (final Entry<String, String> entry : onelink.getKeyAttr2Value().entrySet()) {
-                        query.addWhereExprEqValue(entry.getKey(), entry.getValue());
+                        queryBldr2.addWhereAttrEqValue(entry.getKey(), entry.getValue());
                     }
-                    query.addSelect("ID");
+                    final InstanceQuery query = queryBldr2.getQuery();
                     query.executeWithoutAccessCheck();
                     if (query.next()) {
-                        final Long id = (Long) query.get("ID");
+                        final Long id = query.getCurrentValue().getId();
                         if (id != null) {
                             boolean add = true;
                             if (existing.get(id) != null) {
@@ -859,7 +878,6 @@ public abstract class AbstractUpdate implements IUpdate
                         AbstractUpdate.LOG.error(_linktype.childTypeName + " '" + onelink.getKeyAttr2Value()
                                                     + "' not found!");
                     }
-                    query.close();
                 }
                 final Map<Long, LinkInstance> orderid = new TreeMap<Long, LinkInstance>();
                 if (order) {
@@ -925,28 +943,24 @@ public abstract class AbstractUpdate implements IUpdate
          *
          * @param _instance instance for which the properties must be set
          * @param _properties new properties to set
-         * @throws EFapsException if properties could not be set
-         * TODO: rework of the update algorithm (not always a complete delete
-         *       and and new create is needed)
-         * TODO: description
+         * @throws EFapsException if properties could not be set TODO: rework of
+         *             the update algorithm (not always a complete delete and
+         *             and new create is needed) TODO: description
          */
         protected void setPropertiesInDb(final Instance _instance,
                                          final Map<String, String> _properties)
             throws EFapsException
         {
 
-            if (_instance.getType().isKindOf(Type.get("Admin_Abstract"))) {
+            if (_instance.getType().isKindOf(CIAdmin.Abstract.getType())) {
                 // remove old properties
-                final SearchQuery query = new SearchQuery();
-                query.setExpand(_instance, "Admin_Common_Property\\Abstract");
-                query.addSelect("OID");
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.Property);
+                queryBldr.addWhereAttrEqValue(CIAdminCommon.Property.Abstract, _instance.getId());
+                final InstanceQuery query = queryBldr.getQuery();
                 query.executeWithoutAccessCheck();
                 while (query.next()) {
-                    final String propOid = (String) query.get("OID");
-                    final Delete del = new Delete(propOid);
-                    del.executeWithoutAccessCheck();
+                    new Delete(query.getCurrentValue()).executeWithoutAccessCheck();
                 }
-                query.close();
 
                 // add current properites
                 if (_properties != null) {
@@ -962,9 +976,9 @@ public abstract class AbstractUpdate implements IUpdate
         }
 
         /**
-         * @param _link             link type
-         * @param _linkinstance     name of the object which is linked to
-         *                          and values in the link itself (or null)
+         * @param _link link type
+         * @param _linkinstance name of the object which is linked to and values
+         *            in the link itself (or null)
          */
         protected void addLink(final Link _link,
                                final LinkInstance _linkinstance)
@@ -991,7 +1005,8 @@ public abstract class AbstractUpdate implements IUpdate
          * @param _value value of the attribute
          * @see #values
          */
-        protected void addValue(final String _name, final String _value)
+        protected void addValue(final String _name,
+                                final String _value)
         {
             this.values.put(_name, _value);
         }
@@ -1030,7 +1045,7 @@ public abstract class AbstractUpdate implements IUpdate
         /**
          * Adds a trigger <code>_event</code> to this definition.
          *
-         * @param _event    trigger event to add
+         * @param _event trigger event to add
          * @see #events
          */
         protected void addEvent(final Event _event)

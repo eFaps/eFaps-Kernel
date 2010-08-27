@@ -75,12 +75,9 @@ public class FormUpdate
         extends Definition
     {
         /**
-         * @see org.efaps.update.schema.ui.AbstractCollectionUpdate.Definition#readXML(java.util.List, java.util.Map, java.lang.String)
-         * @param _tags         tags
-         * @param _attributes   attributes
-         * @param _text         text
+         * {@inheritDoc}
          */
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
         {
             final String value = _tags.get(0);

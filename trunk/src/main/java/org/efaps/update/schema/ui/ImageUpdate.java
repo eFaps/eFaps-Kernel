@@ -74,7 +74,7 @@ public class ImageUpdate
      * @return new definition instance
      * @see ImageUpdate.ImageDefinition
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         return new ImageDefinition();
@@ -99,7 +99,7 @@ public class ImageUpdate
          * @param _attributes   attributes for current path
          * @param _text         content for current path
          */
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)

@@ -49,7 +49,7 @@ public class PickerUpdate
      * @return new definition instance
      * @see PickerUpdate.PickerDefinition
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         return new PickerDefinition();
@@ -58,7 +58,7 @@ public class PickerUpdate
     private class PickerDefinition
         extends Definition
     {
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
