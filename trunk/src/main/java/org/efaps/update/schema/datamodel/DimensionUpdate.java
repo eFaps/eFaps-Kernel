@@ -26,9 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.efaps.ci.CIAdminDataModel;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
@@ -62,7 +64,7 @@ public class DimensionUpdate
      * @return new definition instance
      * @see DimensionUpdate
      */
-    @Override()
+    @Override
     protected AbstractDefinition newDefinition()
     {
         return new DimensionDefinition();
@@ -92,12 +94,9 @@ public class DimensionUpdate
         private boolean base;
 
         /**
-         * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List, java.util.Map, java.lang.String)
-         * @param _tags         current path as list of single tags
-         * @param _attributes   attributes for current path
-         * @param _text         content for current path
+         * {@inheritDoc}
          */
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
@@ -126,25 +125,21 @@ public class DimensionUpdate
             throws InstallationException
         {
             try {
-                final SearchQuery query = new SearchQuery();
-                query.setExpand(_instance, "Admin_DataModel_UoM\\Dimension");
-                query.addWhereExprEqValue("Name", getValue("Name"));
-                query.addSelect("OID");
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.UoM);
+                queryBldr.addWhereAttrEqValue(CIAdminDataModel.UoM.Dimension, _instance.getId());
+                queryBldr.addWhereAttrEqValue(CIAdminDataModel.UoM.Name, getValue("Name"));
+                final InstanceQuery query = queryBldr.getQuery();
                 query.executeWithoutAccessCheck();
                 Update update;
-
                 if (query.next()) {
-                    update = new Update((String) query.get("OID"));
+                    update = new Update(query.getCurrentValue());
                 } else {
-                    update = new Insert("Admin_DataModel_UoM");
-                    update.add("Dimension", "" + _instance.getId());
-                    update.add("Name", getValue("Name"));
+                    update = new Insert(CIAdminDataModel.UoM);
+                    update.add(CIAdminDataModel.UoM.Dimension, _instance.getId());
+                    update.add(CIAdminDataModel.UoM.Name, getValue("Name"));
                 }
-                query.close();
-
-                update.add("Numerator",  this.numerator);
-                update.add("Denominator",  this.denominator);
-
+                update.add(CIAdminDataModel.UoM.Numerator,  this.numerator);
+                update.add(CIAdminDataModel.UoM.Denominator,  this.denominator);
                 update.executeWithoutAccessCheck();
 
                 if (this.base) {
@@ -189,12 +184,9 @@ public class DimensionUpdate
         private String description;
 
         /**
-         * @param _tags         current path as list of single tags
-         * @param _attributes   attributes for current path
-         * @param _text         content for current path
-         * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List, java.util.Map, java.lang.String)
+         * {@inheritDoc}
          */
-        @Override()
+        @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
@@ -221,18 +213,18 @@ public class DimensionUpdate
          * @param _insert insert to be executed
          * @throws InstallationException on error
          */
-        @Override()
+        @Override
         protected void createInDB(final Insert _insert)
             throws InstallationException
         {
             final String name = super.getValue("Name");
             try {
-                _insert.add("Name", (name == null) ? "-" : name);
+                _insert.add(CIAdminDataModel.Dimension.Name, (name == null) ? "-" : name);
             } catch (final EFapsException e) {
                 throw new InstallationException("Name attribute could not be defined", e);
             }
             try {
-                _insert.add("Description", (this.description == null) ? "-" : this.description);
+                _insert.add(CIAdminDataModel.Dimension.Description, this.description == null ? "-" : this.description);
             } catch (final EFapsException e) {
                 throw new InstallationException("Description attribute could not be defined", e);
             }
@@ -254,13 +246,13 @@ public class DimensionUpdate
          * @throws InstallationException on error
          * @see #uoms
          */
-        @Override()
+        @Override
         public void updateInDB(final UpdateLifecycle _step,
                                final Set<Link> _allLinkTypes)
             throws InstallationException
         {
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
-                addValue("Description", this.description);
+                addValue(CIAdminDataModel.Dimension.Description.name, this.description);
             }
 
             super.updateInDB(_step, _allLinkTypes);
