@@ -70,7 +70,7 @@ public class RootObject
 
     public static OrderObject getOrder(final String _type)
     {
-        return ORDER.get(_type);
+        return RootObject.ORDER.get(_type);
     }
 
 
@@ -79,7 +79,7 @@ public class RootObject
         this.childs.add(_object);
     }
 
-    @Override()
+    @Override
     public void dbAddChilds()
     {
         for (final AbstractObject object : this.childs) {
@@ -101,7 +101,7 @@ public class RootObject
                     insert.add(link.getLinkAttribute(), link.dbGetValue());
                 }
                 insert.executeWithoutAccessCheck();
-                final String newId = insert.getId();
+                final long newId = insert.getId();
                 insert.close();
 
                 object.setID(newId);
@@ -124,7 +124,7 @@ public class RootObject
      *
      * @return always <code>null</code>
      */
-    @Override()
+    @Override
     public Map<String, Object> getAttributes()
     {
         return null;
@@ -136,7 +136,7 @@ public class RootObject
      *
      * @return always <code>null</code>
      */
-    @Override()
+    @Override
     public String getType()
     {
         return null;
@@ -148,8 +148,8 @@ public class RootObject
      *
      * @param _id       not used
      */
-    @Override()
-    public void setID(final String _id)
+    @Override
+    public void setID(final long _id)
     {
     }
 
@@ -159,7 +159,7 @@ public class RootObject
      *
      * @return always <code>null</code>
      */
-    @Override()
+    @Override
     public String getParrentAttribute()
     {
         return null;
@@ -171,7 +171,7 @@ public class RootObject
      *
      * @return always <code>null</code>
      */
-    @Override()
+    @Override
     public Set<ForeignObject> getLinks()
     {
         return null;
@@ -183,7 +183,7 @@ public class RootObject
      *
      * @return always <i>false</i>
      */
-    @Override()
+    @Override
     public boolean isCheckinObject()
     {
         return false;
@@ -193,7 +193,7 @@ public class RootObject
      * The method is not required for root objects and therefore the method is
      * only a stub method.
      */
-    @Override()
+    @Override
     public void dbCheckObjectIn()
     {
     }
@@ -204,7 +204,7 @@ public class RootObject
      *
      * @return always <code>null</code>
      */
-    @Override()
+    @Override
     public Set<String> getUniqueAttributes()
     {
         // not needed here
@@ -218,7 +218,7 @@ public class RootObject
      * @param _attribute    not used
      * @return always <code>null</code>
      */
-    @Override()
+    @Override
     public Object getAttribute(final String _attribute)
     {
         // not needed here
@@ -231,7 +231,7 @@ public class RootObject
      *
      * @return always <i>false</i>
      */
-    @Override()
+    @Override
     public boolean hasChilds()
     {
         return false;
@@ -245,11 +245,11 @@ public class RootObject
      * @param _id       not used
      * @return always <code>null</code>
      */
-    @Override()
-    public String dbUpdateOrInsert(final AbstractObject _parent,
-                                   final String _id)
+    @Override
+    public long dbUpdateOrInsert(final AbstractObject _parent,
+                                   final long _id)
     {
-        return null;
+        return 0;
     }
 
     /**
@@ -258,9 +258,9 @@ public class RootObject
      *
      * @return always <code>null</code>
      */
-    @Override()
-    public String getID()
+    @Override
+    public long getID()
     {
-        return null;
+        return 0;
     }
 }

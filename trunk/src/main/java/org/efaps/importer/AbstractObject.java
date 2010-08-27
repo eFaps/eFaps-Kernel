@@ -66,14 +66,14 @@ public abstract class AbstractObject
      *
      * @return string with the id of the object
      */
-    public abstract String getID();
+    public abstract long getID();
 
     /**
      * Sets the id of the object.
      *
      * @param _id   new id of the object
      */
-    public abstract void setID(final String _id);
+    public abstract void setID(final long _id);
 
     /**
      * Returns the attribute which contains the parent-child relationship.
@@ -121,6 +121,6 @@ public abstract class AbstractObject
      *                  given an insert will be made
      * @return string with the id of the new or updated object
      */
-    public abstract String dbUpdateOrInsert(final AbstractObject _parent,
-                                            final String _id);
+    public abstract long dbUpdateOrInsert(final AbstractObject _parent,
+                                          final long _id);
 }
