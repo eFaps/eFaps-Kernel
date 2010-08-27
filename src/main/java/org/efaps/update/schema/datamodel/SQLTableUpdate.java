@@ -29,10 +29,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.efaps.ci.CIAdminDataModel;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.databases.information.ColumnInformation;
 import org.efaps.db.databases.information.ForeignKeyInformation;
@@ -123,6 +125,13 @@ public class SQLTableUpdate
          */
         private final int scale;
 
+        /**
+         * @param _name     Name
+         * @param _type     column type
+         * @param _length   length
+         * @param _scale    scale
+         * @param _notNull  not null
+         */
         private Column(final String _name,
                        final AbstractDatabase.ColumnType _type,
                        final int _length,
@@ -301,6 +310,9 @@ public class SQLTableUpdate
         }
     }
 
+    /**
+     * Definition for SQLTable.
+     */
     protected class Definition
         extends AbstractDefinition
     {
@@ -490,16 +502,14 @@ public class SQLTableUpdate
                     if (getValue("Name") != null) {
                         // search for the parent SQL table name instance (if defined)
                         if (this.parent != null) {
-                            final SearchQuery query = new SearchQuery();
-                            query.setQueryTypes("Admin_DataModel_SQLTable");
-                            query.addWhereExprEqValue("Name", this.parent);
-                            query.addSelect("OID");
+                            final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.SQLTable);
+                            queryBldr.addWhereAttrEqValue(CIAdminDataModel.SQLTable.Name, this.parent);
+                            final InstanceQuery query = queryBldr.getQuery();
                             query.executeWithoutAccessCheck();
                             if (query.next()) {
-                                final Instance instance = Instance.get((String) query.get("OID"));
-                                addValue("DMTableMain", "" + instance.getId());
+                                final Instance instance = query.getCurrentValue();
+                                addValue(CIAdminDataModel.SQLTable.DMTableMain.name, "" + instance.getId());
                             }
-                            query.close();
                         }
                         super.updateInDB(_step, _allLinkTypes);
                     }
@@ -586,18 +596,13 @@ public class SQLTableUpdate
                 }
                 con.commit();
 
-            } catch (final EFapsException e) {
+            } catch (final SQLException e) {
                 SQLTableUpdate.LOG.error("SQLTableUpdate.createSQLTable.EFapsException", e);
-                if (con != null) {
+                throw new EFapsException("SQLTableUpdate.createSQLTable.EFapsException", e);
+            } finally {
+                if (con != null && con.isOpened()) {
                     con.abort();
                 }
-                throw e;
-            } catch (final Throwable e) {
-                SQLTableUpdate.LOG.error("SQLTableUpdate.createSQLTable.Throwable", e);
-                if (con != null) {
-                    con.abort();
-                }
-                throw new EFapsException(getClass(), "createSQLTable.Throwable", e);
             }
         }
 
@@ -608,10 +613,11 @@ public class SQLTableUpdate
          * defined in the XML configuration item file).
          *
          * @throws EFapsException if update of the SQL tables failed
+         * @throws InstallationException if update of the SQL tables failed
          * @see #updateInDB(UpdateLifecycle, Set)
          */
         protected void updateColIdSQLTable()
-            throws EFapsException
+            throws EFapsException, InstallationException
         {
             if (SQLTableUpdate.this.created)  {
                 SQLTableUpdate.this.created = false;
@@ -635,20 +641,14 @@ public class SQLTableUpdate
                     } else  {
                         Context.getDbType().defineTableAutoIncrement(con.getConnection(), tableName);
                     }
-
                     con.commit();
-                } catch (final EFapsException e) {
+                }  catch (final SQLException e) {
                     SQLTableUpdate.LOG.error("SQLTableUpdate.updateSQLTable.EFapsException", e);
-                    if (con != null) {
-                        con.abort();
-                    }
-                    throw e;
-                } catch (final Throwable e) {
-                    SQLTableUpdate.LOG.error("SQLTableUpdate.updateSQLTable.Throwable", e);
-                    if (con != null) {
-                        con.abort();
-                    }
                     throw new EFapsException(getClass(), "updateSQLTable.Throwable", e);
+                } finally {
+                    if (con != null && con.isOpened()) {
+                        con.abort();
+                    }
                 }
             }
         }
