@@ -154,7 +154,7 @@ public class ForeignObject
      *
      * @return string representation of this class
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)

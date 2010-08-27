@@ -33,13 +33,6 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
@@ -48,6 +41,12 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>This class presents the main Object for the import of Data into eFaps and
@@ -92,7 +91,7 @@ public class InsertObject
     /**
      * Contains the id for this insert object.
      */
-    private String id;
+    private long id;
 
     /**
      * Contains all links to {@link ForeignObject foreign objects} of this
@@ -212,7 +211,7 @@ public class InsertObject
      *         <i>false</i>
      * @see #childs
      */
-    @Override()
+    @Override
     public boolean hasChilds()
     {
         return !this.childs.isEmpty();
@@ -251,16 +250,16 @@ public class InsertObject
      * @param _id   new id of the insert object
      * @see #id
      */
-    @Override()
-    public void setID(final String _id)
+    @Override
+    public void setID(final long _id)
     {
         this.id = _id;
     }
 
-    @Override()
+    @Override
     public void dbAddChilds()
     {
-        String newId = null;
+        Long newId = null;
         boolean noInsert = false;
         for (final List<AbstractObject> list : this.childs.values()) {
             for (final AbstractObject object : list) {
@@ -299,17 +298,17 @@ public class InsertObject
                         }
                         query.executeWithoutAccessCheck();
                         if (query.next() && !noInsert) {
-                            newId = object.dbUpdateOrInsert(this, query.get("ID").toString());
+                            newId = object.dbUpdateOrInsert(this, (Long) query.get("ID"));
                         } else {
                             if (noInsert && !object.hasChilds()) {
                                 InsertObject.LOG.error("sskipt: " + object.toString());
                             } else {
-                                newId = object.dbUpdateOrInsert(this, "");
+                                newId = object.dbUpdateOrInsert(this, 0);
                             }
                         }
                         query.close();
                     } else {
-                        newId = object.dbUpdateOrInsert(this, "");
+                        newId = object.dbUpdateOrInsert(this, 0);
                     }
                     object.setID(newId);
 
@@ -341,15 +340,15 @@ public class InsertObject
      *         <code>null</code> if the creation of the new object was skipped,
      *         because of a foreign object was not found
      */
-    @Override()
-    public String dbUpdateOrInsert(final AbstractObject _parent,
-                                   final String _id)
+    @Override
+    public long dbUpdateOrInsert(final AbstractObject _parent,
+                                 final long _id)
     {
         Boolean noInsert = false;
-        String newId = null;
+        Long newId = null;
         try {
             Update upIn;
-            if (!"".equals(_id))  {
+            if (0 != _id)  {
                 upIn = new Update(Type.get(this.type), _id);
             } else {
                 upIn = new Insert(this.type);
@@ -394,8 +393,8 @@ public class InsertObject
      * @return id of the insert object
      * @see #id
      */
-    @Override()
-    public String getID()
+    @Override
+    public long getID()
     {
         return this.id;
     }
@@ -406,13 +405,13 @@ public class InsertObject
      * @return type of insert object
      * @see #type
      */
-    @Override()
+    @Override
     public String getType()
     {
         return this.type;
     }
 
-    @Override()
+    @Override
     public Map<String, Object> getAttributes()
     {
         for (final Entry<String, Object> element : this.attributes.entrySet()) {
@@ -436,13 +435,13 @@ public class InsertObject
         return this.attributes;
     }
 
-    @Override()
+    @Override
     public Object getAttribute(final String _attribute)
     {
         return (this.attributes.get(_attribute));
     }
 
-    @Override()
+    @Override
     public String getParrentAttribute()
     {
         return this.parentAttribute;
@@ -454,7 +453,7 @@ public class InsertObject
      * @return all links
      * @see #links
      */
-    @Override()
+    @Override
     public Set<ForeignObject> getLinks()
     {
         return this.links;
@@ -466,7 +465,7 @@ public class InsertObject
      * @return set of all unique attributes
      * @see #uniqueAttributes
      */
-    @Override()
+    @Override
     public Set<String> getUniqueAttributes()
     {
         return this.uniqueAttributes;
@@ -493,16 +492,16 @@ public class InsertObject
      * @return <i>true</i> if a check in object exists (meaning a file must be
      *         checked in); otherwise <i>false</i>
      */
-    @Override()
+    @Override
     public boolean isCheckinObject()
     {
         return (this.checkInObject != null);
     }
 
-    @Override()
+    @Override
     public void dbCheckObjectIn()
     {
-        final Checkin checkin = new Checkin(Instance.get(this.type, this.id));
+        final Checkin checkin = new Checkin(Instance.get(Type.get(this.type), this.id));
         try {
             checkin.executeWithoutAccessCheck(this.checkInObject.getName(), this.checkInObject.getInputStream(), -1);
         } catch (final EFapsException e) {
@@ -517,7 +516,7 @@ public class InsertObject
      *
      * @return string representation of this class
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)
