@@ -233,7 +233,7 @@ public class ClassificationValueSelect
                         .addColumnPart(0, clazz.getClassifyRelationType().getMainTable().getSqlColType())
                         .addPart(SQLPart.EQUAL).addValuePart(clazz.getClassifyRelationType().getId());
                 }
-                if (union) {
+                if (union && !select.equals(unionSelect)) {
                     unionSelect.addNestedSelectPart(select.getSQL());
                 }
             }
