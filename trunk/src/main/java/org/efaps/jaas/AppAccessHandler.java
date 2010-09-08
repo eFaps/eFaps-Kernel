@@ -33,7 +33,7 @@ import org.efaps.util.EFapsException;
  *  <li>If the loginRoles contain names than only the access for this roles
  * are accepted. If for example a command does not have an access
  * definition it must not be accessible.</li>
- *  <li>If the loginRoles is emptythan access of all roles inside eFaps
+ *  <li>If the loginRoles is empty than access of all roles inside eFaps
  * are accepted. If for example a command does not have an access
  * definition it is accessible.</li>
  * </ul>
@@ -50,18 +50,30 @@ public final class AppAccessHandler
     private static AppAccessHandler HANDLER;
 
     /**
+     * Default key of the related Application if not set explicitely.
+     */
+    private final static String KEYDEFAULT = "eFaps";
+
+    /**
      * Immutable Set of login roles that is allowed for the application instance
      * related to this filter.
      */
     private final Set<String> loginRoles;
 
     /**
+     * Key of the Aplication this AccessHandler belongs to.
+     */
+    private final String appKey;
+
+    /**
      * Private Constructor to make a Singleton.
-     *
+     * @param _key of the application
      * @param _loginRoles allowed login roles
      */
-    private AppAccessHandler(final Set<String> _loginRoles)
+    private AppAccessHandler(final String _appKey,
+                             final Set<String> _loginRoles)
     {
+        this.appKey = _appKey == null ? AppAccessHandler.KEYDEFAULT : _appKey;
         this.loginRoles = Collections.unmodifiableSet(_loginRoles);
     }
 
@@ -79,13 +91,15 @@ public final class AppAccessHandler
     }
 
     /**
-     * Init the Hanlder. Can only be executed once.
+     * Init the Handler. Can only be executed once.
+     * @param _key of the application
      * @param _loginRoles allowd Login roles
      */
-    public static void init(final Set<String> _loginRoles)
+    public static void init(final String _appKey,
+                            final Set<String> _loginRoles)
     {
         if (AppAccessHandler.HANDLER == null) {
-            AppAccessHandler.HANDLER = new AppAccessHandler(Collections.unmodifiableSet(_loginRoles));
+            AppAccessHandler.HANDLER = new AppAccessHandler(_appKey, _loginRoles);
         }
     }
 
@@ -125,4 +139,18 @@ public final class AppAccessHandler
         }
         return !AppAccessHandler.HANDLER.loginRoles.isEmpty();
     }
+
+    /**
+     * @return key of the related application
+     * @throws EFapsException if not initialized
+     */
+    public static String getApplicationKey()
+        throws EFapsException
+    {
+        if (!AppAccessHandler.initialized()) {
+            throw new EFapsException(AppAccessHandler.class, "not initialized", "");
+        }
+        return AppAccessHandler.HANDLER.appKey;
+    }
+
 }
