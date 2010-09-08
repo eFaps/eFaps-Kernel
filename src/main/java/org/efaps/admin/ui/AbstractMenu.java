@@ -30,6 +30,7 @@ import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.jaas.AppAccessHandler;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -117,7 +118,7 @@ public abstract class AbstractMenu
     {
         boolean ret = super.hasAccess(_targetMode, _instance);
 
-        if (ret && getCommands().size() > 0) {
+        if (ret && getCommands().size() > 0 && !AppAccessHandler.excludeMode()) {
             ret = false;
             for (final AbstractCommand cmd : getCommands()) {
                 if (cmd.hasAccess(_targetMode, _instance)) {
