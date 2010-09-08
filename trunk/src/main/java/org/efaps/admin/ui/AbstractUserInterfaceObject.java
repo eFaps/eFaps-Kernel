@@ -221,7 +221,7 @@ public abstract class AbstractUserInterfaceObject
                 }
             }
         }
-        if (ret && super.hasEvents(EventType.UI_ACCESSCHECK)) {
+        if ((ret || AppAccessHandler.excludeMode()) && super.hasEvents(EventType.UI_ACCESSCHECK)) {
             ret = false;
             final List<EventDefinition> events = super.getEvents(EventType.UI_ACCESSCHECK);
 
