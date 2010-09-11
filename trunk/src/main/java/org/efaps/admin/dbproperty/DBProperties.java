@@ -142,8 +142,11 @@ public class DBProperties
         String value = null;
 
         // WebApp-Configuration
-        final boolean showKey = SystemConfiguration.get(UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"))
-                        .getAttributeValueAsBoolean("ShowDBPropertiesKey");
+        final SystemConfiguration webConfig = SystemConfiguration.get(
+                                                UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
+        final boolean showKey = webConfig== null
+                                            ? false
+                                            : webConfig.getAttributeValueAsBoolean("ShowDBPropertiesKey");
 
         if (showKey) {
             value = _key;
