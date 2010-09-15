@@ -127,7 +127,7 @@ public class QClassEqual
             .addColumnPart(null, relType.getAttribute(clazz.getRelTypeAttributeName()).getSqlColNames().get(0));
 
         if (this.values.size() > 1) {
-            _sql.addPart(SQLPart.WHERE).addPart(SQLPart.PARENTHESIS_OPEN);
+            _sql.addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
             boolean first = true;
             for (final QClassValue value : this.values) {
                 if (first) {
