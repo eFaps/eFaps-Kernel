@@ -102,7 +102,7 @@ public class ApplicationVersion
      *
      * @see #addScript(String, String, String, String)
      */
-    private final List<Script> scripts = new ArrayList<Script>();
+    private final List<AbstractScript> scripts = new ArrayList<AbstractScript>();
 
     /**
      * Description of this version.
@@ -133,39 +133,42 @@ public class ApplicationVersion
      *            version.xml file)
      * @param _userName name of logged in user
      * @param _password password of logged in user
-     * @throws Exception on error
+     * @throws InstallationException on error
      */
     public void install(final Install _install,
                         final long _latestVersionNumber,
                         final String _userName,
                         final String _password)
-        throws Exception
+        throws InstallationException
     {
         // reload cache if needed
         if (this.reloadCacheNeeded) {
             this.application.reloadCache();
         }
+        try {
+            // start transaction (with user name if needed)
+            if (this.loginNeeded) {
+                Context.begin(_userName);
+            } else {
+                Context.begin();
+            }
 
-        // start transaction (with user name if needed)
-        if (this.loginNeeded) {
-            Context.begin(_userName);
-        } else {
-            Context.begin();
-        }
+            _install.install(this.number, _latestVersionNumber, this.ignoredSteps);
 
-        _install.install(this.number, _latestVersionNumber, this.ignoredSteps);
+            // commit transaction
+            Context.commit();
 
-        // commit transaction
-        Context.commit();
+            // execute all scripts
+            for (final AbstractScript script : this.scripts) {
+                script.execute(_userName, _password);
+            }
 
-        // execute all scripts
-        for (final Script script : this.scripts) {
-            script.execute(_userName, _password);
-        }
-
-        // Compile esjp's in the database (if the compile flag is set).
-        if (this.compile) {
-            this.application.compileAll(_userName, true);
+            // Compile esjp's in the database (if the compile flag is set).
+            if (this.compile) {
+                this.application.compileAll(_userName, true);
+            }
+        } catch (final EFapsException e) {
+            throw new InstallationException("error in Context", e);
         }
     }
 
@@ -182,7 +185,7 @@ public class ApplicationVersion
                           final String _name,
                           final String _function)
     {
-        Script script = null;
+        AbstractScript script = null;
         if ("rhino".equalsIgnoreCase(_type)) {
             script = new RhinoScript(_code, _name, _function);
         } else if ("groovy".equalsIgnoreCase(_type)) {
@@ -251,7 +254,7 @@ public class ApplicationVersion
      */
     public int compareTo(final ApplicationVersion _compareTo)
     {
-        return new Long(this.number).compareTo((_compareTo).number);
+        return new Long(this.number).compareTo(_compareTo.number);
     }
 
     /**
@@ -358,7 +361,7 @@ public class ApplicationVersion
      * Class used to store information of needed called scripts within an
      * application version.
      */
-    private abstract class Script
+    private abstract class AbstractScript
     {
 
         /**
@@ -383,9 +386,9 @@ public class ApplicationVersion
          * @param _fileName     script file name
          * @param _function     called function name
          */
-        private Script(final String _code,
-                       final String _fileName,
-                       final String _function)
+        private AbstractScript(final String _code,
+                               final String _fileName,
+                               final String _function)
         {
             this.code = (_code == null) || ("".equals(_code.trim())) ? null : _code.trim();
             this.fileName = _fileName;
@@ -438,7 +441,7 @@ public class ApplicationVersion
      *Script for groovy.
      */
     private final class GroovyScript
-        extends ApplicationVersion.Script
+        extends ApplicationVersion.AbstractScript
     {
         /**
          * Constructor.
@@ -519,7 +522,7 @@ public class ApplicationVersion
      * Script for mozilla rhino (Javascript).
      */
     private final class RhinoScript
-        extends ApplicationVersion.Script
+        extends ApplicationVersion.AbstractScript
     {
         /**
          * Constructor.

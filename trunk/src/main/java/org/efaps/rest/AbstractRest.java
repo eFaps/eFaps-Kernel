@@ -56,7 +56,7 @@ public abstract class AbstractRest
         throws CacheReloadException, EFapsException
     {
         //Admin_REST
-        return (Context.getThreadContext().getPerson().isAssigned(Role.get(
-                        UUID.fromString("2d142645-140d-46ad-af67-835161a8d732"))));
+        return Context.getThreadContext().getPerson().isAssigned(Role.get(
+                        UUID.fromString("2d142645-140d-46ad-af67-835161a8d732")));
     }
 }

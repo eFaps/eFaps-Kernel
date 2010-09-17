@@ -35,12 +35,13 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.TableInformation;
 import org.efaps.db.wrapper.SQLDelete;
+import org.efaps.db.wrapper.SQLDelete.DeleteDefintion;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLUpdate;
-import org.efaps.db.wrapper.SQLDelete.DeleteDefintion;
 import org.efaps.update.util.InstallationException;
+import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -888,11 +889,10 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @throws InstantiationException   if DB class could not be instantiated
      * @throws IllegalAccessException   if DB class could not be accessed
      */
-    @SuppressWarnings("unchecked")
-    public static AbstractDatabase findByClassName(final String _dbClassName)
+    public static AbstractDatabase<?> findByClassName(final String _dbClassName)
         throws ClassNotFoundException, InstantiationException, IllegalAccessException
     {
-        return (AbstractDatabase) Class.forName(_dbClassName).newInstance();
+        return (AbstractDatabase<?>) Class.forName(_dbClassName).newInstance();
     }
 
     /**
@@ -1074,7 +1074,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                     final String colName = rsf.getString("FKCOLUMN_NAME").toUpperCase();
                     final String refTableName = rsf.getString("PKTABLE_NAME").toUpperCase();
                     final String refColName = rsf.getString("PKCOLUMN_NAME").toUpperCase();
-                    final boolean cascade = (rsf.getInt("DELETE_RULE") == DatabaseMetaData.importedKeyCascade);
+                    final boolean cascade = rsf.getInt("DELETE_RULE") == DatabaseMetaData.importedKeyCascade;
                     _cache4Name.get(tableName).addForeignKey(fkName, colName, refTableName, refColName, cascade);
                 }
             }
@@ -1095,7 +1095,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         /**
          * {@inheritDoc}
          */
-        @Override()
+        @Override
         protected void readCache(final Map<Long, TableInformation> _cache4Id,
                                  final Map<String, TableInformation> _cache4Name,
                                  final Map<UUID, TableInformation> _cache4UUID)
@@ -1109,7 +1109,9 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                 AbstractDatabase.this.initTableInfoUniqueKeys(con, null, _cache4Name);
                 AbstractDatabase.this.initTableInfoForeignKeys(con, null, _cache4Name);
 
-            } catch (final Exception e)  {
+            } catch (final SQLException e)  {
+                throw new CacheReloadException("cache for table information could not be read", e);
+            } catch (final EFapsException e) {
                 throw new CacheReloadException("cache for table information could not be read", e);
             }
         }

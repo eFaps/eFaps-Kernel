@@ -205,7 +205,7 @@ public class Install
         initialise();
 
         // get for all applications the latest version
-        final Map<String, Long> versions = getLatestVersions();
+        final Map<String, Integer> versions = getLatestVersions();
 
         // loop through all life cycle steps
         for (final UpdateLifecycle step : getUpdateLifecycles()) {
@@ -215,7 +215,7 @@ public class Install
             for (final Map.Entry<Class<? extends IUpdate>, List<IUpdate>> entry
                             : this.cache.entrySet()) {
                 for (final IUpdate update : entry.getValue()) {
-                    final Long latestVersion = versions.get(update.getFileApplication());
+                    final Integer latestVersion = versions.get(update.getFileApplication());
                     // initialize JexlContext (used to evaluate version)
                     final JexlContext jexlContext = JexlHelper.createContext();
                     if (latestVersion != null) {
@@ -250,10 +250,10 @@ public class Install
      * @return Map containing the versions
      * @throws InstallationException on error
      */
-    public Map<String, Long> getLatestVersions()
+    public Map<String, Integer> getLatestVersions()
         throws InstallationException
     {
-        final Map<String, Long> versions = new HashMap<String, Long>();
+        final Map<String, Integer> versions = new HashMap<String, Integer>();
         if (CIAdminCommon.Version.getType() != null) {
             try  {
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.Version);
@@ -262,7 +262,7 @@ public class Install
                 multi.executeWithoutAccessCheck();
                 while (multi.next()) {
                     final String name = multi.<String>getAttribute(CIAdminCommon.Version.Name);
-                    final Long revision = multi.<Long>getAttribute(CIAdminCommon.Version.Revision);
+                    final Integer revision = multi.<Integer>getAttribute(CIAdminCommon.Version.Revision);
                     if (!versions.containsKey(name) || (versions.get(name) < revision)) {
                         versions.put(name, revision);
                     }
