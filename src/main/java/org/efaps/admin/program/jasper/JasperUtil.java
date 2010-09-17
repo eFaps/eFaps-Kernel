@@ -150,9 +150,9 @@ public final class JasperUtil
 
         JasperPrint jp = null;
         try {
-            Map parameters;
+            Map<?, ?> parameters;
             if (_parameters == null) {
-                parameters = new HashMap();
+                parameters = new HashMap<Object, Object>();
             } else {
                 parameters = _parameters;
             }
@@ -251,11 +251,11 @@ public final class JasperUtil
                         _dynReport, _layoutManager);
         djGroupRegistrationManager.registerEntities(_dynReport.getColumnsGroups());
 
-        for (final Iterator iterator = _dynReport.getColumns().iterator(); iterator.hasNext();) {
+        for (final Iterator<?> iterator = _dynReport.getColumns().iterator(); iterator.hasNext();) {
             final AbstractColumn column = (AbstractColumn) iterator.next();
             if (column instanceof PercentageColumn) {
                 final PercentageColumn percentageColumn = (PercentageColumn) column;
-                for (final Iterator iterator2 = _dynReport.getColumnsGroups().iterator(); iterator2.hasNext();) {
+                for (final Iterator<?> iterator2 = _dynReport.getColumnsGroups().iterator(); iterator2.hasNext();) {
                     final DJGroup djGroup = (DJGroup) iterator2.next();
                     final JRDesignGroup jrGroup = LayoutUtils.getJRDesignGroup(_dynDesign, _layoutManager, djGroup);
                     final DJGroupVariableDefRegistrationManager variablesRM = new DJGroupVariableDefRegistrationManager(
@@ -263,14 +263,14 @@ public final class JasperUtil
                     final DJGroupVariableDef variable = new DJGroupVariableDef(
                                     percentageColumn.getGroupVariableName(djGroup),
                                     percentageColumn.getPercentageColumn(), DJCalculation.SUM);
-                    final Collection entities = new ArrayList();
+                    final Collection<DJGroupVariableDef> entities = new ArrayList<DJGroupVariableDef>();
                     entities.add(variable);
                     variablesRM.registerEntities(entities);
                 }
             }
         }
 
-        for (final Iterator iter = _dynReport.getFields().iterator(); iter.hasNext();) {
+        for (final Iterator<?> iter = _dynReport.getFields().iterator(); iter.hasNext();) {
             final ColumnProperty element = (ColumnProperty) iter.next();
             final JRDesignField field = new JRDesignField();
             field.setValueClassName(element.getValueClassName());

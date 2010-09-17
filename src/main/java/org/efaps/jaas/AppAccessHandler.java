@@ -52,7 +52,7 @@ public final class AppAccessHandler
     /**
      * Default key of the related Application if not set explicitely.
      */
-    private final static String KEYDEFAULT = "eFaps";
+    private static final String KEYDEFAULT = "eFaps";
 
     /**
      * Immutable Set of login roles that is allowed for the application instance
@@ -67,7 +67,7 @@ public final class AppAccessHandler
 
     /**
      * Private Constructor to make a Singleton.
-     * @param _key of the application
+     * @param _appKey of the application
      * @param _loginRoles allowed login roles
      */
     private AppAccessHandler(final String _appKey,
@@ -92,7 +92,7 @@ public final class AppAccessHandler
 
     /**
      * Init the Handler. Can only be executed once.
-     * @param _key of the application
+     * @param _appKey of the application
      * @param _loginRoles allowd Login roles
      */
     public static void init(final String _appKey,

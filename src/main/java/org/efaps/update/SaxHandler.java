@@ -178,7 +178,8 @@ public class SaxHandler extends DefaultHandler
     }
 
     /**
-     * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
+     * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String,
+     * org.xml.sax.Attributes)
      * @param _uri          uri
      * @param _localName    local name
      * @param _qName        qualified Name
@@ -248,7 +249,7 @@ public class SaxHandler extends DefaultHandler
         } else if ("user-role".equals(_qName)) {
             this.update = new RoleUpdate(this.url);
         } else if ("import".equals(_qName)) {
-            this.update = new TypeUpdate(this.url);
+            this.update = new ImportUpdate();
         } else if ("dbproperties".equals(_qName)) {
             this.update = new DBPropertiesUpdate(this.url);
         } else if ("help-menu".equals(_qName)) {

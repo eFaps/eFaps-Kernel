@@ -27,9 +27,9 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
@@ -178,7 +178,7 @@ public abstract class AbstractUpdate
             final AbstractDefinition curDef = this.definitions.get(this.definitions.size() - 1);
             curDef.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
         } else {
-            throw new SAXException("Unknown XML Tag " + _tags);
+            throw new SAXException("Unknown XML Tag: " + _tags + " for: " + this.url);
         }
     }
 

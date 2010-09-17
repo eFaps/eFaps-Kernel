@@ -216,7 +216,7 @@ public final class Application
                  */
                 @Override
                 public void begin(final Attributes _attributes)
-                                            {
+                {
                     this.digester.push(new Application(_rootUrl, _classpathElements));
                 }
 
@@ -225,7 +225,7 @@ public final class Application
                  */
                 @Override
                 public void end()
-                                            {
+                {
                     this.digester.pop();
                 }
             });
@@ -352,7 +352,7 @@ public final class Application
     }
 
     /**
-     * Uses the <code_>includes</code> and <code>_excludes</code> together with
+     * Uses the <code>_includes</code> and <code>_excludes</code> together with
      * the root directory <code>_eFapsDir</code> to get all related and matched
      * files.
      *
@@ -535,7 +535,7 @@ public final class Application
         reloadCache();
 
         // load latest installed versions
-        final Map<String, Long> latestVersions;
+        final Map<String, Integer> latestVersions;
         try {
             Context.begin();
             latestVersions = this.install.getLatestVersions();
@@ -543,7 +543,7 @@ public final class Application
         } catch (final EFapsException e) {
             throw new InstallationException("Could not get information about installed versions", e);
         }
-        final Long latestVersion = latestVersions.get(this.application);
+        final Integer latestVersion = latestVersions.get(this.application);
 
         Application.LOG.info("Install application '" + this.application + "'");
 
@@ -587,17 +587,18 @@ public final class Application
      * @param _userName name of logged in user
      * @param _password password of logged in user TODO: throw Exceptions
      *            instead of logging errors
+     * @throws Exception
      */
     public void updateLastVersion(final String _userName,
                                   final String _password)
-        throws EFapsException, Exception
+        throws Exception
     {
         // reload cache (if possible)
         reloadCache();
 
         // load installed versions
         Context.begin();
-        final Map<String, Long> latestVersions = this.install.getLatestVersions();
+        final Map<String, Integer> latestVersions = this.install.getLatestVersions();
         Context.rollback();
         final long latestVersion = latestVersions.get(this.application);
 
@@ -759,7 +760,8 @@ public final class Application
      * definition files ({@link #install}).
      *
      * @param _classPathFile file name from the class path to add
-     * @throws MalformedURLException
+     * @param _type             type of the file to be added
+     * @throws MalformedURLException on error with the URL
      * @see #addURL(URL, String)
      */
     public void addClassPathFile(final String _classPathFile,
