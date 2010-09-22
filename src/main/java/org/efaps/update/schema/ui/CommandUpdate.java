@@ -55,7 +55,7 @@ public class CommandUpdate extends AbstractUpdate
     private static final Link LINK2ACCESSGROUP = new Link("Admin_UI_Access", "UILink", "Admin_User_Group", "UserLink");
 
     /** Link from UI object to company. */
-    private static final Link LINK2ACCESSCOMPANY = new Link("Admin_UI_Access", "UILink", "Admin_User_Copmany",
+    private static final Link LINK2ACCESSCOMPANY = new Link("Admin_UI_Access", "UILink", "Admin_User_Company",
                                                             "UserLink");
 
     /** Link from command to icon. */
