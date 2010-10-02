@@ -200,6 +200,23 @@ public class CIAdminDataModel
         public final CIAttribute From = new CIAttribute(this, "From");
         public final CIAttribute To = new CIAttribute(this, "To");
     }
+
+
+    public static final _TypeClassifyCompany TypeClassifyCompany = new _TypeClassifyCompany("4bd5bd75-54b5-4be2-8874-d48cbd5f0b50");
+
+    public static class _TypeClassifyCompany
+        extends CIAdminUserInterface._Abstract2Abstract
+    {
+
+        protected _TypeClassifyCompany(final String _uuid)
+        {
+            super(_uuid);
+        }
+
+        public final CIAttribute From = new CIAttribute(this, "From");
+        public final CIAttribute To = new CIAttribute(this, "To");
+    }
+
     public static final _UoM UoM = new _UoM("af2a5069-6ee8-40c4-8f8e-80a11565869d");
 
     public static class _UoM
