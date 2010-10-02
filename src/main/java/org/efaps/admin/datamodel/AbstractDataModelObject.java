@@ -28,7 +28,8 @@ import org.efaps.util.cache.CacheReloadException;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractDataModelObject extends AbstractAdminObject
+public abstract class AbstractDataModelObject
+    extends AbstractAdminObject
 {
 
     /**
@@ -38,7 +39,9 @@ public abstract class AbstractDataModelObject extends AbstractAdminObject
      * @param _uuid universal unique identifier
      * @param _name name to set
      */
-    protected AbstractDataModelObject(final long _id, final String _uuid, final String _name)
+    protected AbstractDataModelObject(final long _id,
+                                      final String _uuid,
+                                      final String _name)
     {
         super(_id, _uuid, _name);
     }
@@ -48,7 +51,8 @@ public abstract class AbstractDataModelObject extends AbstractAdminObject
      *
      * @throws CacheReloadException if cache could not be initialized
      */
-    public static void initialize() throws CacheReloadException
+    public static void initialize()
+        throws CacheReloadException
     {
         Context.getDbType().initialize(AbstractDataModelObject.class);
         AttributeType.initialize(AbstractDataModelObject.class);
