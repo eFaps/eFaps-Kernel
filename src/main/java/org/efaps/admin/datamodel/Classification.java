@@ -23,6 +23,7 @@ package org.efaps.admin.datamodel;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.efaps.admin.user.Company;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -41,6 +42,8 @@ public class Classification
      * Enum contains the keys for the attributes.
      */
     public enum Keys {
+        /** key to the type {@link Classification#multipleSelect}. */
+        MULTI("multipleSelect"),
         /** key to the type {@link Classification#classifiesType}. */
         TYPE("type"),
         /** key to the relation type {@link Classification#classifyRelation}. */
@@ -82,6 +85,11 @@ public class Classification
     private Classification parent = null;
 
     /**
+     * Can multiple Classifications be selected.
+     */
+    private boolean multipleSelect = true;
+
+    /**
      * Instance variable for all child classification of this classification.
      */
     private final Set<Classification> childs = new HashSet<Classification>();
@@ -95,7 +103,6 @@ public class Classification
      * Relation belonging to the type this Classification is classifying.
      */
     private Type classifyRelation;
-
 
     /**
      * Name of the Attribute of the Relation {@link #classifyRelation} that
@@ -116,6 +123,10 @@ public class Classification
      */
     private String linkAttributeName;
 
+    /**
+     * Companies this Classification is assigned to.
+     */
+    private final Set<Company> companies = new HashSet<Company>();
 
     /**
      * @param _id       id of this Classification
@@ -253,6 +264,35 @@ public class Classification
     }
 
     /**
+     * Getter method for the instance variable {@link #multipleSelect}.
+     *
+     * @return value of instance variable {@link #multipleSelect}
+     */
+    public boolean isMultipleSelect()
+    {
+        return this.multipleSelect;
+    }
+
+    /**
+     * Check if the root classification of this classification
+     * is assigned to the given company.
+     * @see #companies
+     * @param _company  copmany that will be checked for assignment
+     * @return true it the root classification of this classification
+     *          is assigned to the given company, else
+     */
+    public boolean isAssigendTo(final Company _company)
+    {
+        final boolean ret;
+        if (isRoot()) {
+            ret = this.companies.isEmpty() ? true : this.companies.contains(_company);
+        } else {
+            ret = this.parent.isAssigendTo(_company);
+        }
+        return ret;
+    }
+
+    /**
      *
      * Sets the link properties for this object.
      *
@@ -274,6 +314,8 @@ public class Classification
             this.classifiesType = Type.get(_toId);
         } else if (_linkType.isKindOf(CIAdminDataModel.TypeClassifyRelation.getType())) {
             this.classifyRelation = Type.get(_toId);
+        } else if (_linkType.isKindOf(CIAdminDataModel.TypeClassifyCompany.getType())) {
+            this.companies.add(Company.get(_toId));
         } else {
             super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
@@ -298,6 +340,8 @@ public class Classification
             this.relLinkAttributeName = _value;
         } else if (_name.equals(Classification.Keys.RELTYPEATTR.value)) {
             this.relTypeAttributeName = _value;
+        } else if (_name.equals(Classification.Keys.MULTI.value)) {
+            this.multipleSelect = !"FALSE".equalsIgnoreCase(_value);
         } else {
             super.setProperty(_name, _value);
         }

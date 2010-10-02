@@ -91,6 +91,12 @@ public class TypeUpdate
                                                           "Admin_DataModel_Type", "To");
 
     /**
+     * Link the data model type to a tyep used for classification.
+     */
+    private static final Link LINK2CLASSIFYCOMPANY = new Link("Admin_DataModel_TypeClassifyCompany", "From",
+                                                          "Admin_User_Company", "To");
+
+    /**
      * List of all links for the type.
      */
     private static final Set<Link> ALLLINKS = new HashSet<Link>();
@@ -99,6 +105,7 @@ public class TypeUpdate
         TypeUpdate.ALLLINKS.add(TypeUpdate.LINK2STORE);
         TypeUpdate.ALLLINKS.add(TypeUpdate.LINK2CLASSIFIES);
         TypeUpdate.ALLLINKS.add(TypeUpdate.LINK2CLASSIFYREL);
+        TypeUpdate.ALLLINKS.add(TypeUpdate.LINK2CLASSIFYCOMPANY);
     }
 
     /**
@@ -693,14 +700,22 @@ public class TypeUpdate
                 // Adds the name of a allowed event type
                 addLink(TypeUpdate.LINK2ALLOWEDEVENT, new LinkInstance(_attributes.get("type")));
             } else if ("classifies".equals(value)) {
-                addLink(TypeUpdate.LINK2CLASSIFIES,
-                                new LinkInstance(_attributes.get(Classification.Keys.TYPE.getValue())));
-                addLink(TypeUpdate.LINK2CLASSIFYREL,
-                                new LinkInstance(_attributes.get(Classification.Keys.RELTYPE.getValue())));
-                getProperties().put(Classification.Keys.RELTYPEATTR.getValue(),
-                                    _attributes.get(Classification.Keys.RELTYPEATTR.getValue()));
-                getProperties().put(Classification.Keys.RELLINKATTR.getValue(),
-                                    _attributes.get(Classification.Keys.RELLINKATTR.getValue()));
+                if (_tags.size() == 1) {
+                    addLink(TypeUpdate.LINK2CLASSIFIES,
+                                    new LinkInstance(_attributes.get(Classification.Keys.TYPE.getValue())));
+                    addLink(TypeUpdate.LINK2CLASSIFYREL,
+                                    new LinkInstance(_attributes.get(Classification.Keys.RELTYPE.getValue())));
+                    getProperties().put(Classification.Keys.RELTYPEATTR.getValue(),
+                                        _attributes.get(Classification.Keys.RELTYPEATTR.getValue()));
+                    getProperties().put(Classification.Keys.RELLINKATTR.getValue(),
+                                        _attributes.get(Classification.Keys.RELLINKATTR.getValue()));
+                    getProperties().put(Classification.Keys.MULTI.getValue(),
+                                        _attributes.get(Classification.Keys.MULTI.getValue()));
+                } else if ((_tags.size() == 2) && "company".equals(_tags.get(1))) {
+                    addLink(TypeUpdate.LINK2CLASSIFYCOMPANY, new LinkInstance(_text));
+                } else {
+                    super.readXML(_tags, _attributes, _text);
+                }
             } else if ("parent".equals(value)) {
                 this.parentType = _text;
             } else if ("store".equals(value)) {
