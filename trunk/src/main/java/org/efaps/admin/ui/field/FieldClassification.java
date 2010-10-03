@@ -20,6 +20,20 @@
 
 package org.efaps.admin.ui.field;
 
+import java.util.List;
+
+import org.efaps.admin.datamodel.Classification;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.db.Context;
+import org.efaps.db.Instance;
+import org.efaps.jaas.AppAccessHandler;
+import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -59,6 +73,37 @@ public class FieldClassification
     public String getClassificationName()
     {
         return this.classificationName;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasAccess(final TargetMode _targetMode,
+                             final Instance _instance)
+        throws EFapsException
+    {
+        boolean ret = false;
+        if (Type.get(this.classificationName) != null
+                        && ((Classification) Type.get(this.classificationName))
+                            .isAssigendTo(Context.getThreadContext().getCompany())
+                        && !AppAccessHandler.excludeMode()) {
+            ret = true;
+        }
+        if ((ret || AppAccessHandler.excludeMode()) && super.hasEvents(EventType.UI_ACCESSCHECK)) {
+            ret = false;
+            final List<EventDefinition> events = super.getEvents(EventType.UI_ACCESSCHECK);
+
+            final Parameter parameter = new Parameter();
+            parameter.put(ParameterValues.UIOBJECT, this);
+            parameter.put(ParameterValues.ACCESSMODE, _targetMode);
+            parameter.put(ParameterValues.INSTANCE, _instance);
+            for (final EventDefinition event : events) {
+                final Return retIn = event.execute(parameter);
+                ret = retIn.get(ReturnValues.TRUE) != null;
+            }
+        }
+        return ret;
     }
 
     /**
