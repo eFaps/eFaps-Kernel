@@ -270,7 +270,13 @@ public class Classification
      */
     public boolean isMultipleSelect()
     {
-        return this.multipleSelect;
+        final boolean ret;
+        if (isRoot()) {
+            ret = this.multipleSelect;
+        } else {
+            ret = this.parent.isMultipleSelect();
+        }
+        return ret;
     }
 
     /**
