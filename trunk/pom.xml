@@ -32,7 +32,7 @@
     <packaging>jar</packaging>
     <groupId>org.efaps</groupId>
     <artifactId>efaps-kernel</artifactId>
-    <version>1.4.6-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <description>
         eFaps is a framework used to map objects with or without attached files to
 a relational database and optional file systems (only for attaches files). Configurable access control can be provided down to object and attribute level depending on implementation and use case. Depending on requirements, events (like triggers) allow to implement business logic and to separate business logic from user interface.
@@ -91,7 +91,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
     <!-- Distribution Repository -->
     <distributionManagement>
         <site>
-            <id>efaps</id>
+            <id>efaps.googlecode.com</id>
             <name>Maven eFaps Plug-In Site</name>
             <url>svn:https://efaps.googlecode.com/svn/site/eFaps-Kernel</url>
         </site>
@@ -196,85 +196,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
     <!-- ************************************************************************
     * Reporting
     ************************************************************************* -->
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.1</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>index</report>
-                            <report>summary</report>
-                            <report>dependencies</report>
-                            <report>project-team</report>
-                            <!--   <report>mailing-list</report>-->
-                            <!-- <report>cim</report> -->
-                            <report>issue-tracking</report>
-                            <report>license</report>
-                            <report>scm</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-            <!-- JavaCC reporting -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>javacc-maven-plugin</artifactId>
-                <version>2.6</version>
-            </plugin>
-            <!-- java doc -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <minmemory>128m</minmemory>
-                    <maxmemory>1g</maxmemory>
-                    <level>private</level>
-                    <detectLinks />
-                </configuration>
-            </plugin>
-            <!-- source code -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.2</version>
-                <configuration>
-                    <linkJavadoc>false</linkJavadoc>
-                    <javadocDir>apidocs</javadocDir>
-                </configuration>
-            </plugin>
-            <!-- checkstyle -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <configLocation>${basedir}/src/checkstyle/efaps_checks.xml</configLocation>
-                </configuration>
-            </plugin>
-            <!-- PMD report -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <linkXref>true</linkXref>
-                    <sourceEncoding>utf-8</sourceEncoding>
-                    <targetJdk>1.5</targetJdk>
-                </configuration>
-            </plugin>
-            <!--  findbugs report -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.3.1</version>
-                <configuration />
-            </plugin>
-        </plugins>
-    </reporting>
+
 
     <!-- ************************************************************************
     * Project itself
@@ -336,7 +258,84 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>2.1.1</version>
+                <version>3.0-beta-2</version>
+                <configuration>
+                    <reportPlugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-project-info-reports-plugin</artifactId>
+                            <reportSets>
+                                <reportSet>
+                                    <reports>
+                                        <report>index</report>
+                                        <report>summary</report>
+                                        <report>dependencies</report>
+                                        <report>project-team</report>
+                                        <!--   <report>mailing-list</report>-->
+                                        <!-- <report>cim</report> -->
+                                        <report>issue-tracking</report>
+                                        <report>license</report>
+                                        <report>scm</report>
+                                    </reports>
+                                </reportSet>
+                            </reportSets>
+                        </plugin>
+                        <!-- JavaCC reporting -->
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>javacc-maven-plugin</artifactId>
+                        </plugin>
+                        <!-- java doc -->
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                            <version>2.7</version>
+                            <configuration>
+                                <minmemory>128m</minmemory>
+                                <maxmemory>1g</maxmemory>
+                                <level>private</level>
+                                <detectLinks />
+                            </configuration>
+                        </plugin>
+                        <!-- source code -->
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-jxr-plugin</artifactId>
+                            <version>2.2</version>
+                            <configuration>
+                                <linkJavadoc>false</linkJavadoc>
+                                <javadocDir>apidocs</javadocDir>
+                            </configuration>
+                        </plugin>
+                        <!-- checkstyle -->
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-checkstyle-plugin</artifactId>
+                            <version>2.6</version>
+                            <configuration>
+                                <configLocation>${basedir}/src/checkstyle/efaps_checks.xml</configLocation>
+                            </configuration>
+                        </plugin>
+                        <!-- PMD report -->
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-pmd-plugin</artifactId>
+                            <version>2.5</version>
+                            <configuration>
+                                <linkXref>true</linkXref>
+                                <sourceEncoding>utf-8</sourceEncoding>
+                                <targetJdk>1.5</targetJdk>
+                            </configuration>
+                        </plugin>
+                        <!--  findbugs report -->
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>findbugs-maven-plugin</artifactId>
+                            <version>2.3.1</version>
+                            <configuration />
+                        </plugin>
+                    </reportPlugins>
+                </configuration>
             </plugin>
         </plugins>
 
@@ -345,6 +344,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <extension>
                 <groupId>org.jvnet.wagon-svn</groupId>
                 <artifactId>wagon-svn</artifactId>
+                <version>1.11</version>
             </extension>
         </extensions>
     </build>
