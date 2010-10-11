@@ -482,7 +482,11 @@ public final class Application
 
         try {
             Context.begin(_userName);
-            (new ESJPCompiler(this.classpathElements)).compile(null, _addRuntimeClassPath);
+            try {
+                new ESJPCompiler(this.classpathElements).compile(null, _addRuntimeClassPath);
+            } catch (final InstallationException e) {
+                Application.LOG.error(" error during compilation of ESJP.");
+            }
             AbstractStaticSourceCompiler.compileAll(this.classpathElements);
             Context.commit();
         } catch (final EFapsException e) {

@@ -126,7 +126,7 @@ public class ESJPCompiler
     public ESJPCompiler(final List<String> _classPathElements)
     {
         this.esjpType = CIAdminProgram.Java.getType();
-        this.classType =CIAdminProgram.JavaClass.getType();
+        this.classType = CIAdminProgram.JavaClass.getType();
         this.classPathElements = _classPathElements;
     }
 
@@ -220,7 +220,7 @@ public class ESJPCompiler
                                              .call();
 
             if (!noErrors)  {
-                throw new Error("error");
+                throw new InstallationException("error");
             }
 
             // store all compiled ESJP's
