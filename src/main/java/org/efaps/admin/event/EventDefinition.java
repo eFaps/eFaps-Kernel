@@ -171,22 +171,22 @@ public final class EventDefinition
     {
         try {
             if (EventDefinition.LOG.isDebugEnabled()) {
-                EventDefinition.LOG.debug("setting Instance: " + this.resourceName + " - " + this.methodName);
+                EventDefinition.LOG.debug("setting Instance: {} - {}", this.resourceName, this.methodName);
             }
             final Class<?> cls = Class.forName(this.resourceName, true, EventDefinition.CLASSLOADER);
             this.method = cls.getMethod(this.methodName, new Class[] { Parameter.class });
             this.progInstance = cls.newInstance();
         } catch (final ClassNotFoundException e) {
-            EventDefinition.LOG.error("could not find Class: '" + this.resourceName + "'", e);
+            EventDefinition.LOG.error("could not find Class: '{}'", this.resourceName, e);
         } catch (final InstantiationException e) {
-            EventDefinition.LOG.error("could not instantiat Class: '" + this.resourceName + "'", e);
+            EventDefinition.LOG.error("could not instantiat Class: '{}'" , this.resourceName, e);
         } catch (final IllegalAccessException e) {
-            EventDefinition.LOG.error("could not access Class: '" + this.resourceName + "'", e);
+            EventDefinition.LOG.error("could not access Class: '{}'", this.resourceName, e);
         } catch (final SecurityException e) {
-            EventDefinition.LOG.error("could not access Class: '" + this.resourceName + "'", e);
+            EventDefinition.LOG.error("could not access Class: '{}'", this.resourceName, e);
         } catch (final NoSuchMethodException e) {
-            EventDefinition.LOG.error("could not find method: '"
-                            + this.methodName + "' in class: '" + this.resourceName + "'", e);
+            EventDefinition.LOG.error("could not find method: '{}' in class '{}'",
+                                new Object[] { this.methodName, this.resourceName, e });
         }
     }
 
@@ -203,7 +203,10 @@ public final class EventDefinition
         Return ret = null;
         _parameter.put(ParameterValues.PROPERTIES, super.getProperties());
         try {
+            EventDefinition.LOG.debug("Invoking method '{}' for Resource '{}'", this.methodName, this.resourceName);
             ret = (Return) this.method.invoke(this.progInstance, _parameter);
+            EventDefinition.LOG.debug("Terminated invokation of method '{}' for Resource '{}'",
+                                this.methodName, this.resourceName);
         } catch (final SecurityException e) {
             EventDefinition.LOG.error("could not access class: '" + this.resourceName, e);
         } catch (final IllegalArgumentException e) {
@@ -359,7 +362,9 @@ public final class EventDefinition
                 } else if (EventDefinition.LOG.isDebugEnabled()) {
                     EventDefinition.LOG.debug("initialise() - unknown event trigger connection");
                 }
+                //CHECKSTYLE:OFF
             } catch (final Exception e) {
+                //CHECKSTYLE:ON
                 if (e instanceof EFapsException) {
                     throw (EFapsException) e;
                 } else {
@@ -387,7 +392,7 @@ public final class EventDefinition
         if (print.executeWithoutAccessCheck()) {
             ret = print.getAttribute(CIAdminProgram.Java.Name);
         } else {
-            EventDefinition.LOG.error("Can't find the Name for the Program with ID: " + _programId);
+            EventDefinition.LOG.error("Can't find the Name for the Program with ID: {}", _programId);
         }
         return ret;
     }
@@ -421,8 +426,8 @@ public final class EventDefinition
         }
         UUID ret = null;
         if (type == null) {
-            EventDefinition.LOG.error("Can't find the Type  with ID: " + _abstractID + " for event Name: " + _eventName
-                            + " Instance: " + _eventDefInst);
+            EventDefinition.LOG.error("Can't find the Type  with ID: {}, for event Name: {}, Instance: {}",
+                            new Object[] {_abstractID, _eventName, _eventDefInst});
         } else {
             ret = type.getUUID();
         }
