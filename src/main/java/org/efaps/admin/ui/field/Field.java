@@ -23,14 +23,13 @@ package org.efaps.admin.ui.field;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.ui.AbstractCollection;
+import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.AbstractUserInterfaceObject;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Table;
-import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
@@ -68,23 +67,6 @@ public class Field
      * Logger for this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(Field.class);
-
-    /**
-     * This is the expression to get a field from the database.
-     *
-     * @see #setExpression
-     * @see #getExpression
-     */
-    private String expression;
-
-    /**
-     * This is the expression to get the alternate id of a field from the
-     * database.
-     *
-     * @see #setAlternateOID
-     * @see #getAlternateOID
-     */
-    private String alternateOID = null;
 
     /**
      * This is the value in the create process. Default value is <i>null</i>.
@@ -400,30 +382,6 @@ public class Field
     public String getFilterAttributes()
     {
         return this.filterAttributes;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #expression}.
-     *
-     * @return the value of the instance variable {@link #expression}.
-     * @see #expression
-     * @see #setExpression
-     */
-    public String getExpression()
-    {
-        return this.expression;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #alternateOID}.
-     *
-     * @return the value of the instance variable {@link #alternateOID}.
-     * @see #alternateOID
-     * @see #setAlternateOID
-     */
-    public String getAlternateOID()
-    {
-        return this.alternateOID;
     }
 
     /**
@@ -885,9 +843,7 @@ public class Field
                                final String _value)
         throws CacheReloadException
     {
-        if ("AlternateOID".equals(_name)) {
-            this.alternateOID = _value;
-        } else if ("Align".equals(_name)) {
+        if ("Align".equals(_name)) {
             this.align = _value;
         } else if ("ClassNameUI".equals(_name)) {
             try {
@@ -904,8 +860,6 @@ public class Field
             this.cols = Integer.parseInt(_value);
         } else if ("CreateValue".equals(_name)) {
             this.createValue = _value;
-        } else if ("Expression".equals(_name)) {
-            this.expression = _value;
         } else if ("SelectAlternateOID".equals(_name)) {
             this.selectAlternateOID = _value;
         } else if ("Select".equals(_name)) {
@@ -968,18 +922,5 @@ public class Field
         } else {
             super.setProperty(_name, _value);
         }
-    }
-
-    /**
-     * The method overrides the original method 'toString' and returns the
-     * information of the field user interface object.
-     *
-     * @return name of the user interface object
-     */
-    @Override
-    public String toString()
-    {
-        return new ToStringBuilder(this).appendSuper(super.toString()).append("expression", getExpression()).append(
-                        "alternateOID", getAlternateOID()).toString();
     }
 }

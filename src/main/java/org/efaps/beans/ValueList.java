@@ -199,14 +199,14 @@ public class ValueList
      * @param _print        AbstractPrintQuery the ValueString should be retrieved
      * @param _mode         target mode
      * @return String with the actuall Value of this ValueList
-     * @throws Exception on error
+     * @throws EFapsException on error
      * @see {@link #makeSelect(AbstractQuery)}
      *
      */
     public String makeString(final Instance _callInstance,
                              final AbstractPrintQuery _print,
                              final TargetMode _mode)
-        throws Exception
+        throws EFapsException
     {
         final StringBuilder buf = new StringBuilder();
 
