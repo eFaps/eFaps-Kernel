@@ -528,24 +528,37 @@ public class OneSelect
     /**
      * Method returns the instances this OneSelect has returned.
      *
-     * @return Collection of Insatcne
+     * @return Collection of Instances
+     * @throws EFapsException on error
      */
     @SuppressWarnings("unchecked")
     public List<Instance> getInstances()
+        throws EFapsException
     {
         final List<Instance> ret = new ArrayList<Instance>();
+        // no value select means, that the from select must be asked
         if (this.valueSelect == null) {
             ret.addAll(this.fromSelect.getMainOneSelect().getInstances());
         } else {
-            List<Long> idTmp;
-            if (this.valueSelect.getParentSelectPart() != null
-                            && this.valueSelect.getParentSelectPart() instanceof LinkToSelectPart) {
-                idTmp = (List<Long>) this.valueSelect.getParentSelectPart().getObject();
+            // if an oid select was given the oid is evaluated
+            if ("oid".equals(this.valueSelect.getValueType())) {
+                for (final Object object : this.objectList) {
+                    final Instance inst = Instance.get((String) this.valueSelect.getValue(object));
+                    if (inst.isValid()) {
+                        ret.add(inst);
+                    }
+                }
             } else {
-                idTmp = this.idList;
-            }
-            for (final Long id : idTmp) {
-                ret.add(Instance.get(this.valueSelect.getAttribute().getParent(), id.toString()));
+                List<Long> idTmp;
+                if (this.valueSelect.getParentSelectPart() != null
+                                && this.valueSelect.getParentSelectPart() instanceof LinkToSelectPart) {
+                    idTmp = (List<Long>) this.valueSelect.getParentSelectPart().getObject();
+                } else {
+                    idTmp = this.idList;
+                }
+                for (final Long id : idTmp) {
+                    ret.add(Instance.get(this.valueSelect.getAttribute().getParent(), id.toString()));
+                }
             }
         }
         return ret;
