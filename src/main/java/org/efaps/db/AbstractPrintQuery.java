@@ -173,8 +173,10 @@ public abstract class AbstractPrintQuery
      * Method to get the instance for an <code>_attributeName</code>.
      * @param _attributeName name of the attribute
      * @return list of instance
+     * @throws EFapsException on error
      */
     public List<Instance> getInstances4Attribute(final String _attributeName)
+        throws EFapsException
     {
         final OneSelect oneselect = this.attr2OneSelect.get(_attributeName);
         return oneselect == null ? null : oneselect.getInstances();
@@ -527,8 +529,10 @@ public abstract class AbstractPrintQuery
      *
      * @param _selectStmt   selectstatement the attribute is wanted for
      * @return attribute for the select statement
+     * @throws EFapsException on error
      */
     public List<Instance> getInstances4Select(final String _selectStmt)
+        throws EFapsException
     {
         final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectStmt);
         return oneselect.getInstances();
