@@ -23,6 +23,7 @@ package org.efaps.admin.datamodel.ui;
 import java.text.Collator;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
@@ -67,14 +68,14 @@ public class StringUI
                     } else {
                         ret.append("<br/>");
                     }
-                    ret.append(tmp.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\n", "<br/>"));
+                    ret.append(StringEscapeUtils.escapeHtml(tmp).replaceAll("\\n", "<br/>"));
                 }
             }
         } else {
             final String tmp = value != null ? value.toString() : "";
             if (tmp != null) {
                 ret.append("<span name=\"").append(field.getName()).append("\" ").append(UIInterface.EFAPSTMPTAG)
-                    .append(">").append(tmp.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\n", "<br/>"))
+                    .append(">").append(StringEscapeUtils.escapeHtml(tmp).replaceAll("\\n", "<br/>"))
                     .append("</span>");
             }
         }
@@ -91,9 +92,10 @@ public class StringUI
         final StringBuilder ret = new StringBuilder();
         final Field field = _fieldValue.getField();
         final Object value = _fieldValue.getValue();
+        final String tmp = value != null ? value.toString() : "";
 
         ret.append("<input type=\"hidden\" ").append(" name=\"").append(field.getName())
-            .append("\" value=\"").append(value != null ? value : "").append("\"")
+            .append("\" value=\"").append(StringEscapeUtils.escapeHtml(tmp)).append("\"")
             .append(UIInterface.EFAPSTMPTAG).append("/>");
 
         return ret.toString();
@@ -109,9 +111,13 @@ public class StringUI
         final Field field = _fieldValue.getField();
         final Object value = _fieldValue.getValue();
         if (_fieldValue.getTargetMode().equals(TargetMode.SEARCH)) {
-            ret.append("<input type=\"text\"").append(" size=\"").append(field.getCols()).append("\" name=\"")
-                .append(field.getName()).append("\" value=\"").append(value != null ? value : "*").append("\" />");
+            final String tmp = value != null ? value.toString() : "*";
+            ret.append("<input type=\"text\"")
+                .append(" size=\"").append(field.getCols())
+                .append("\" name=\"").append(field.getName())
+                .append("\" value=\"").append(StringEscapeUtils.escapeHtml(tmp)).append("\" />");
         } else {
+            final String tmp = value != null ? value.toString() : "";
             if (field.getRows() > 1) {
                 ret.append("<textarea type=\"text\"")
                                 .append(" cols=\"").append(field.getCols())
@@ -119,14 +125,14 @@ public class StringUI
                                 .append("\" name=\"").append(field.getName()).append("\"")
                                 .append(UIInterface.EFAPSTMPTAG).append("/>");
                 if (value != null) {
-                    ret.append(value);
+                    ret.append(StringEscapeUtils.escapeHtml(tmp));
                 }
                 ret.append("</textarea>");
             } else {
                 ret.append("<input type=\"text\" size=\"").append(field.getCols())
-                                .append("\" name=\"").append(field.getName())
-                                .append("\" value=\"").append(value != null ? value : "").append("\"")
-                                .append(UIInterface.EFAPSTMPTAG).append("/>");
+                    .append("\" name=\"").append(field.getName())
+                    .append("\" value=\"").append(StringEscapeUtils.escapeHtml(tmp))
+                    .append("\"").append(UIInterface.EFAPSTMPTAG).append("/>");
             }
         }
         return ret.toString();
