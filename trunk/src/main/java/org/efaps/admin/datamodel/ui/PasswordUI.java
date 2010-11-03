@@ -30,7 +30,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class PasswordUI extends AbstractUI
+public class PasswordUI
+    extends AbstractUI
 {
 
     /**

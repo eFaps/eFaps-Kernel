@@ -111,7 +111,7 @@ public class DecimalUI
                         ? (value instanceof Number ? formatter.format(value) : value.toString())
                         : "";
         ret.append("<input type=\"hidden\" ").append(" name=\"").append(field.getName())
-                        .append("\" value=\"").append(tmp).append("\"")
+                        .append("\" value=\"").append(StringEscapeUtils.escapeHtml(tmp)).append("\"")
                         .append(UIInterface.EFAPSTMPTAG).append("/>");
 
         return ret.toString();
@@ -140,7 +140,7 @@ public class DecimalUI
         if (_fieldValue.getTargetMode().equals(TargetMode.SEARCH)) {
             ret.append("<input type=\"text\"").append(" size=\"").append(field.getCols()).append("\" name=\"")
                             .append(field.getName()).append("\" value=\"")
-                            .append(tmp != null ? tmp : "*").append("\" />");
+                            .append(value != null ? StringEscapeUtils.escapeHtml(tmp) : "*").append("\" />");
         } else {
             if (field.getRows() > 1) {
                 ret.append("<textarea type=\"text\"")
@@ -149,14 +149,14 @@ public class DecimalUI
                                 .append("\" name=\"").append(field.getName()).append("\"")
                                 .append(UIInterface.EFAPSTMPTAG).append("/>");
                 if (value != null) {
-                    ret.append(formatter.format(value));
+                    ret.append(StringEscapeUtils.escapeHtml(tmp));
                 }
                 ret.append("</textarea>");
             } else {
                 ret.append("<input type=\"text\" size=\"").append(field.getCols())
-                                .append("\" name=\"").append(field.getName())
-                                .append("\" value=\"").append(tmp).append("\"")
-                                .append(UIInterface.EFAPSTMPTAG).append("/>");
+                    .append("\" name=\"").append(field.getName())
+                    .append("\" value=\"").append(StringEscapeUtils.escapeHtml(tmp)).append("\"")
+                    .append(UIInterface.EFAPSTMPTAG).append("/>");
             }
         }
         return ret.toString();
