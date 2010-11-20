@@ -76,7 +76,7 @@ public class TypeValueSelect
     {
         Object ret = null;
         Type tempType;
-        if (this.type.getMainTable().getSqlColType() != null) {
+        if (this.type.getMainTable().getSqlColType() != null && _currentObject != null) {
             tempType = Type.get((Long) _currentObject);
         } else {
             tempType = this.type;
