@@ -31,7 +31,6 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
-import org.efaps.admin.ui.Picker;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.ci.CIAdminCommon;
@@ -348,16 +347,6 @@ public final class EventDefinition
                     }
 
                     fieldtable.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
-
-                } else if (CIAdminUserInterface.Picker.uuid.equals(typeUUId)) {
-
-                    final Picker picker = Picker.get(abstractID);
-
-                    if (EventDefinition.LOG.isDebugEnabled()) {
-                        EventDefinition.LOG.debug("       Picker=" + picker.getName());
-                    }
-
-                    picker.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
 
                 } else if (EventDefinition.LOG.isDebugEnabled()) {
                     EventDefinition.LOG.debug("initialise() - unknown event trigger connection");

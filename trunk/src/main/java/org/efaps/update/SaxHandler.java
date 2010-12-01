@@ -47,7 +47,6 @@ import org.efaps.update.schema.ui.CommandUpdate;
 import org.efaps.update.schema.ui.FormUpdate;
 import org.efaps.update.schema.ui.ImageUpdate;
 import org.efaps.update.schema.ui.MenuUpdate;
-import org.efaps.update.schema.ui.PickerUpdate;
 import org.efaps.update.schema.ui.SearchUpdate;
 import org.efaps.update.schema.ui.TableUpdate;
 import org.efaps.update.schema.user.CompanyUpdate;
@@ -236,8 +235,6 @@ public class SaxHandler extends DefaultHandler
             this.update = new ImageUpdate(this.url);
         } else if ("ui-menu".equals(_qName)) {
             this.update = new MenuUpdate(this.url);
-        } else if ("ui-picker".equals(_qName)) {
-            this.update = new PickerUpdate(this.url);
         } else if ("ui-search".equals(_qName)) {
             this.update = new SearchUpdate(this.url);
         } else if ("ui-table".equals(_qName)) {

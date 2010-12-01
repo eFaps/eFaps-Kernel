@@ -36,8 +36,8 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.user.AbstractUserObject;
 import org.efaps.admin.user.Company;
@@ -262,14 +262,12 @@ public abstract class AbstractUserInterfaceObject
         Search.getCache().initialize(AbstractUserInterfaceObject.class);
         Form.getCache().initialize(AbstractUserInterfaceObject.class);
         Table.getCache().initialize(AbstractUserInterfaceObject.class);
-        Picker.getCache().initialize(AbstractUserInterfaceObject.class);
         Image.getCache().readFromDB();
         Command.getCache().readFromDB();
         Menu.getCache().readFromDB();
         Search.getCache().readFromDB();
         Form.getCache().readFromDB();
         Table.getCache().readFromDB();
-        Picker.getCache().readFromDB();
     }
 
     /**

@@ -34,6 +34,7 @@ import org.efaps.admin.ui.field.FieldClassification;
 import org.efaps.admin.ui.field.FieldCommand;
 import org.efaps.admin.ui.field.FieldGroup;
 import org.efaps.admin.ui.field.FieldHeading;
+import org.efaps.admin.ui.field.FieldPicker;
 import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.ci.CIAdminUserInterface;
@@ -220,6 +221,8 @@ public abstract class AbstractCollection
                     field = new FieldSet(id, null, name);
                 } else if (type.getUUID().equals(CIAdminUserInterface.FieldClassification.uuid)) {
                     field = new FieldClassification(id, null, name);
+                } else if (type.getUUID().equals(CIAdminUserInterface.FieldPicker.uuid)) {
+                    field = new FieldPicker(id, null, name);
                 } else {
                     field = new Field(id, null, name);
                 }
