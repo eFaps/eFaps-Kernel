@@ -156,6 +156,17 @@ public class CIAdminUserInterface
         }
 
     }
+    public static final _FieldPicker FieldPicker = new _FieldPicker("dc668a38-090d-488d-853b-4189e08263de");
+
+    public static class _FieldPicker
+        extends _Field
+    {
+        protected _FieldPicker(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
 
     public static final _FieldSet FieldSet = new _FieldSet("415c196f-c1aa-4aa0-b96e-f8541332a921");
 
@@ -170,6 +181,18 @@ public class CIAdminUserInterface
 
     }
 
+    public static final _LinkField2Command LinkField2Command = new _LinkField2Command("2e0776b8-848e-4849-a2ef-ed7078238f08");
+
+    public static class _LinkField2Command
+        extends _Field
+    {
+
+        protected _LinkField2Command(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
     public static final _Menu Menu = new _Menu("209d2e8b-608b-4b09-bdbb-ef5b98d0e2ab");
 
     public static class _Menu
@@ -181,18 +204,6 @@ public class CIAdminUserInterface
             super(_uuid);
         }
 
-    }
-
-    public static final _Picker Picker = new _Picker("259e8dda-dc0e-492c-96dc-850a2fa13d98");
-
-    public static class _Picker
-        extends _Collection
-    {
-
-        protected _Picker(final String _uuid)
-        {
-            super(_uuid);
-        }
     }
 
     public static final _Link Link = new _Link("23f3aa8c-30db-4aa5-8add-d2277ae8b3c3");

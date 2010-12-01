@@ -63,6 +63,10 @@ public abstract class AbstractCollectionUpdate
     /** Link from field to table as target. */
     private static final Link LINK2TARGETTABLE = new Link("Admin_UI_LinkTargetTable", "From", "Admin_UI_Table", "To");
 
+    /** Link from field to command as picker. */
+    private static final Link LINK2PICKER = new Link("Admin_UI_LinkField2Command", "FromLink",
+                    "Admin_UI_Command", "ToLink");
+
     /**
      * @param _url URL of the file
      * @param _typeName name of the type
@@ -148,6 +152,9 @@ public abstract class AbstractCollectionUpdate
             } else if ("table".equals(value)) {
                 // assigns a table as target for this field definition
                 addLink(AbstractCollectionUpdate.LINK2TARGETTABLE, new LinkInstance(_text));
+            } else if ("picker".equals(value)) {
+                 // assigns a picker as target for this field definition
+                addLink(AbstractCollectionUpdate.LINK2PICKER, new LinkInstance(_attributes.get("name")));
             } else if ("trigger".equals(value)) {
                 if (_tags.size() == 1) {
                     this.events.add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
@@ -264,6 +271,7 @@ public abstract class AbstractCollectionUpdate
                 setPropertiesInDb(field, null);
                 removeLinksInDB(field, AbstractCollectionUpdate.LINKFIELD2ICON);
                 removeLinksInDB(field, AbstractCollectionUpdate.LINK2TARGETTABLE);
+                removeLinksInDB(field, AbstractCollectionUpdate.LINK2PICKER);
                 // remove events
                 final QueryBuilder eventQueryBldr = new QueryBuilder(CIAdminEvent.Definition);
                 eventQueryBldr.addWhereAttrEqValue(CIAdminEvent.Definition.Abstract, field.getId());
@@ -298,6 +306,8 @@ public abstract class AbstractCollectionUpdate
                     insert = new Insert(CIAdminUserInterface.FieldSet);
                 } else if ("Classification".equals(field.character)) {
                     insert = new Insert(CIAdminUserInterface.FieldClassification);
+                } else if ("Picker".equals(field.character)) {
+                    insert = new Insert(CIAdminUserInterface.FieldPicker);
                 } else {
                     insert = new Insert(CIAdminUserInterface.Field);
                 }
@@ -316,6 +326,10 @@ public abstract class AbstractCollectionUpdate
                 // link to table
                 setLinksInDB(insert.getInstance(), AbstractCollectionUpdate.LINK2TARGETTABLE,
                                 field.getLinks(AbstractCollectionUpdate.LINK2TARGETTABLE));
+
+                // link to picker
+                setLinksInDB(insert.getInstance(), AbstractCollectionUpdate.LINK2PICKER,
+                                field.getLinks(AbstractCollectionUpdate.LINK2PICKER));
 
                 // append events
                 for (final Event event : field.getEvents()) {
