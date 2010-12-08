@@ -83,8 +83,8 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
 
     <!-- SubVersion Repository -->
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-kernel/</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-kernel/</developerConnection>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-kernel/trunk</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-kernel/trunk</developerConnection>
         <url>http://efaps.googlecode.com/svn/eFaps-kernel/</url>
     </scm>
 
