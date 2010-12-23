@@ -24,6 +24,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.Table;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author The eFaps Team
@@ -32,7 +33,6 @@ import org.efaps.util.EFapsException;
 public class FieldTable
     extends Field
 {
-
     /**
      * The instance variable stores the target user interface table object which
      * is shown by the this field.
@@ -41,6 +41,11 @@ public class FieldTable
      * @see #setTargetTable
      */
     private Table targetTable = null;
+
+    /**
+     * Name of the field the StructurBrowser is bedded into the target.
+     */
+    private String targetStructurBrowserField;
 
     /**
      * Costructor.
@@ -80,6 +85,21 @@ public class FieldTable
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setProperty(final String _name,
+                               final String _value)
+        throws CacheReloadException
+    {
+        if ("TargetStructurBrowserField".equals(_name)) {
+            this.targetStructurBrowserField = _value;
+        } else {
+            super.setProperty(_name, _value);
+        }
+    }
+
+    /**
      * Returns for given parameter <i>_id</i> the instance of class
      * {@link Field}.
      *
@@ -101,4 +121,13 @@ public class FieldTable
         return this.targetTable;
     }
 
+    /**
+     * Getter method for the instance variable {@link #targetStructurBrowserField}.
+     *
+     * @return value of instance variable {@link #targetStructurBrowserField}
+     */
+    public String getTargetStructurBrowserField()
+    {
+        return this.targetStructurBrowserField;
+    }
 }
