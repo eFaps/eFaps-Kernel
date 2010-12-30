@@ -294,7 +294,6 @@ public abstract class AbstractCommand
      * e.g. to delete selected.
      *
      * @see #isTargetShowCheckBoxes
-     * @see #setTargetShowCheckBoxes
      */
     private boolean targetShowCheckBoxes = false;
 
@@ -813,8 +812,6 @@ public abstract class AbstractCommand
      * {@link #targetShowCheckBoxes}.
      *
      * @return value of instance variable {@link #targetShowCheckBoxes}
-     * @see #targetShowCheckBoxes
-     * @see #setTargetShowCheckBoxes
      */
     public boolean isTargetShowCheckBoxes()
     {
