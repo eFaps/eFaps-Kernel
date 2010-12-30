@@ -48,7 +48,21 @@ public class FieldTable
     private String targetStructurBrowserField;
 
     /**
-     * Costructor.
+     * Standard checkboxes for a table must be shown. The checkboxes are used
+     * e.g. to delete selected.
+     *
+     * @see #isTargetShowCheckBoxes
+     * @see #setTargetShowCheckBoxes
+     */
+    private boolean targetShowCheckBoxes = false;
+
+    /**
+     * Is the StructurBrowser Forced to be Expanded.
+     */
+    private boolean targetStructurBrowserForceExpand = false;
+
+    /**
+     * Constructor.
      *
      * @param _id id of this FieldTable
      * @param _uuid uuid of this FieldTable
@@ -94,6 +108,10 @@ public class FieldTable
     {
         if ("TargetStructurBrowserField".equals(_name)) {
             this.targetStructurBrowserField = _value;
+        } else if ("TargetShowCheckBoxes".equals(_name)) {
+            this.targetShowCheckBoxes = "true".equalsIgnoreCase(_value);
+        } else if ("TargetStructurBrowserForceExpand".equals(_name)) {
+            this.targetStructurBrowserForceExpand = "true".equalsIgnoreCase(_value);
         } else {
             super.setProperty(_name, _value);
         }
@@ -129,5 +147,28 @@ public class FieldTable
     public String getTargetStructurBrowserField()
     {
         return this.targetStructurBrowserField;
+    }
+
+    /**
+     * This is the setter method for the instance variable
+     * {@link #targetShowCheckBoxes}.
+     *
+     * @return value of instance variable {@link #targetShowCheckBoxes}
+     * @see #targetShowCheckBoxes
+     * @see #setTargetShowCheckBoxes
+     */
+    public boolean isTargetShowCheckBoxes()
+    {
+        return this.targetShowCheckBoxes;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #targetStructurBrowserForceExpand}.
+     *
+     * @return value of instance variable {@link #targetStructurBrowserForceExpand}
+     */
+    public boolean isTargetStructurBrowserForceExpand()
+    {
+        return this.targetStructurBrowserForceExpand;
     }
 }
