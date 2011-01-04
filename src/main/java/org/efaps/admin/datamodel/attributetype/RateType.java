@@ -70,9 +70,15 @@ public class RateType
         throws SQLException
     {
         final Rate ret;
-
-        if ((_values == null) || (_values.length < 2) || (_values[0] == null)) {
+        if ((_values == null) || (_values[0] == null)) {
             ret = null;
+        } else if (_values[0] instanceof Object[]) {
+            final Object[] valueTmp = (Object[]) _values[0];
+            if (valueTmp.length < 2) {
+                ret = null;
+            } else {
+                ret = new Rate(evalObject(valueTmp[0]), evalObject(valueTmp[1]));
+            }
         } else {
             ret = new Rate(evalObject(_values[0]), evalObject(_values[1]));
         }
