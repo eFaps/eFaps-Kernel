@@ -26,8 +26,8 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
@@ -67,6 +67,21 @@ public class FieldValue implements Comparable<Object>
     private final Instance instance;
 
     /**
+      *  Instance for which this field is called (not the same
+      *  as the instance of the field...).
+      */
+    private final Instance callInstance;
+
+    /**
+     * List of instances that where received from a query while
+     * receiving the {@link #instance}. e.g. used for a table to pass
+     * the instances of all rows so that for column the amount of
+     * queries necessary can be reduced;
+     */
+    private final List<Instance> requestInstances;
+
+
+    /**
      * The instance variable stores the field for this value.
      *
      * @see #getFieldDef
@@ -95,21 +110,28 @@ public class FieldValue implements Comparable<Object>
      */
     private Display display;
 
-     /**
-      *  instance for which this field is called (not the same
-      *  as the instance of the field...).
-      */
-    private Instance callInstance;
-
+    /**
+     * Constructor used to evaluate the value from the database by using one of
+     * the getter methods for html. Used normally on create when no instances
+     * are given.
+     *
+     * @param _field            field this value belongs to
+     * @param _attr             attribute the value belongs to
+     */
+    public FieldValue(final Field _field,
+                      final Attribute _attr)
+    {
+        this(_field, _attr, null, null, null);
+    }
 
     /**
-     * Construtor used to evaluate the value from the database by using one of
+     * Constructor used to evaluate the value from the database by using one of
      * the getter methods for html.
      *
      * @param _field            field this value belongs to
      * @param _attr             attribute the value belongs to
      * @param _value            value of the FieldValue
-     * @param _valueInstance     Instance the Value belongs to
+     * @param _valueInstance    Instance the Value belongs to
      * @param _callInstance     Instance that called Value for edit, view etc.
      */
     public FieldValue(final Field _field,
@@ -118,16 +140,37 @@ public class FieldValue implements Comparable<Object>
                       final Instance _valueInstance,
                       final Instance _callInstance)
     {
+        this(_field, _attr, _value, _valueInstance, _callInstance, null);
+    }
+
+    /**
+     * Constructor used to evaluate the value from the database by using one of
+     * the getter methods for html.
+     *
+     * @param _field            field this value belongs to
+     * @param _attr             attribute the value belongs to
+     * @param _value            value of the FieldValue
+     * @param _valueInstance    Instance the Value belongs to
+     * @param _callInstance     Instance that called Value for edit, view etc.
+     * @param _requestInstances Instance called inthe same request
+     */
+    public FieldValue(final Field _field,
+                      final Attribute _attr,
+                      final Object _value,
+                      final Instance _valueInstance,
+                      final Instance _callInstance,
+                      final List<Instance> _requestInstances)
+    {
         this.field = _field;
         this.attribute = _attr;
         this.value = _value;
         this.instance = _valueInstance;
         this.callInstance = _callInstance;
+        this.requestInstances = _requestInstances;
         this.ui = (_attr == null)
             ? (this.field.getClassUI() == null ? new StringUI()
             : this.field.getClassUI()) : _attr.getAttributeType().getUI();
     }
-
 
     /**
      * Constructor used in case of comparison.
@@ -144,7 +187,9 @@ public class FieldValue implements Comparable<Object>
         this.field = _field;
         this.value = _compareValue;
         this.instance = null;
+        this.callInstance = null;
         this.attribute = null;
+        this.requestInstances = null;
     }
 
 
@@ -268,6 +313,7 @@ public class FieldValue implements Comparable<Object>
                 parameter.put(ParameterValues.UIOBJECT, this);
                 parameter.put(ParameterValues.CALL_INSTANCE, this.callInstance);
                 parameter.put(ParameterValues.INSTANCE, this.instance);
+                parameter.put(ParameterValues.REQUEST_INSTANCES, this.requestInstances);
                 if (parameter.get(ParameterValues.PARAMETERS) == null) {
                     parameter.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
                 }
@@ -439,5 +485,16 @@ public class FieldValue implements Comparable<Object>
     public Display getDisplay()
     {
         return this.display;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #requestInstances}.
+     *
+     * @return value of instance variable {@link #requestInstances}
+     */
+    public List<Instance> getRequestInstances()
+    {
+        return this.requestInstances;
     }
 }

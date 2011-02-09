@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class EFapsException
         super("error in " + _className.getName() + "(" + _id + "," + _args + ")");
         this.id = _id;
         this.className = _className;
-        if ((_args.length > 0) && (_args[0] instanceof Throwable))  {
+        if (_args != null && _args.length > 0 && _args[0] instanceof Throwable)  {
             initCause((Throwable) _args[0]);
         }
         this.args = _args;
@@ -91,10 +91,10 @@ public class EFapsException
     {
         super(_message, _cause);
         if (_cause instanceof EFapsException) {
-             final EFapsException cause = ((EFapsException) _cause);
-             this.id = cause.getId();
-             this.className = cause.getClassName();
-             this.args = cause.getArgs();
+            final EFapsException cause = (EFapsException) _cause;
+            this.id = cause.getId();
+            this.className = cause.getClassName();
+            this.args = cause.getArgs();
         } else {
             this.id = null;
             this.className = null;
@@ -110,7 +110,7 @@ public class EFapsException
      * @param _stream <code>PrintStream</code> to use for output
      * @see #makeInfo() to get all information about this EFapsException
      */
-    @Override()
+    @Override
     public void printStackTrace(final PrintStream _stream)
     {
         _stream.append(makeInfo());
@@ -134,7 +134,7 @@ public class EFapsException
      * @param _writer <code>PrintWriter</code> to use for output
      * @see #makeInfo() to get all information about this EFapsException
      */
-    @Override()
+    @Override
     public void printStackTrace(final PrintWriter _writer)
     {
         _writer.append(makeInfo());

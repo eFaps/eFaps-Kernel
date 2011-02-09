@@ -41,17 +41,14 @@ public class Parameter
      */
     public enum ParameterValues
     {
-
         /**
          * Holds an AccessType, used for AccessCheck-Programs.
          */
         ACCESSTYPE,
-
         /**
          * Holds the mode of the access for the ui.
          */
         ACCESSMODE,
-
         /**
          * Call instance, means
          * <ul>
@@ -63,49 +60,44 @@ public class Parameter
          * </ul>
          */
         CALL_INSTANCE,
-
         /**
          * Contains the class that called the esjp.
          */
         CLASS,
-
         /**
          * Contains a list of classifcations.
          */
         CLASSIFICATIONS,
-
         /**
          * Holds an Instance.
          * */
         INSTANCE,
-
         /**
          * Holds the new Values for an Instance, used e.g. by Creation of a new
          * Object
          */
         NEW_VALUES,
-
         /**
          * Holds an Map used to obfuscate the oids for presentation in the UserInterface.
          */
         OIDMAP4UI,
-
         /**
          * Further Parameters as map (key is string, value is string array),
          * e.g. from called form, command etc.
          */
         PARAMETERS,
-
         /**
          * Holds the Properties of the trigger.
          */
         PROPERTIES,
-
         /**
          * Place mark for additional Informations.
          */
         OTHERS,
-
+        /**
+         * Instances that where reterieved in the same request as the instance.
+         */
+        REQUEST_INSTANCES,
         /**
          * Holds the UserInterfaceObject on which the event is called.
          */
