@@ -23,9 +23,11 @@ package org.efaps.admin.ui;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
@@ -526,26 +528,66 @@ public abstract class AbstractCommand
      * This is the setter method for the instance variable {@link #targetMenu}.
      *
      * @return value of instance variable {@link #targetMenu}
+     * @throws EFapsException on error
      * @see #targetMenu
      * @see #setTargetMenu
      */
     public Menu getTargetMenu()
+        throws EFapsException
     {
         Menu ret = null;
         if (this.targetDefaultMenu) {
             // reads the Value from "Common_Main_DefaultMenu"
-            final String menuname = EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DefaultMenu");
-
-            if (!"none".equals(menuname)) {
-                if (this.targetMenu == null) {
-                    ret = Menu.get(menuname);
-                } else {
-                    this.targetMenu.addAll(Menu.get(menuname));
-                    ret = this.targetMenu;
-                }
+            final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
+            if (EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DefaultMenu").equals("none")) {
+                ret = addMenu4Target("none");
             } else {
+                final Properties prop = config.getAttributeValueAsProperties("DefaultMenu");
+
+                for (int i = 0; i < 99; i++) {
+
+                    if (prop.getProperty("Menu" + i) != null) {
+                        String menuname = prop.getProperty("Menu" + i);
+                        if (this.getTargetTable() != null) {
+                            if (prop.getProperty("Enable4Table" + i) != null
+                                                            && prop.getProperty("Enable4Table" + i).equals("false")) {
+                                menuname = "none";
+                            }
+                        } else if (this.getTargetForm() != null) {
+                            if (prop.getProperty("Enable4Form" + i) == null
+                                            || (prop.getProperty("Enable4Form" + i) != null
+                                                            && prop.getProperty("Enable4Form" + i).equals("false"))) {
+                                menuname = "none";
+                            }
+                        }
+                        ret = addMenu4Target(menuname);
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Method to add the default menu to the targetMenu if it isn't none.
+     *
+     * @param _menuname the default menu name.
+     * @return Menu with the new menu.
+     */
+    protected Menu addMenu4Target(final String _menuname)
+    {
+        Menu ret = null;
+        if (!"none".equals(_menuname)) {
+            if (this.targetMenu == null) {
+                ret = Menu.get(_menuname);
+            } else {
+                this.targetMenu.addAll(Menu.get(_menuname));
                 ret = this.targetMenu;
             }
+        } else {
+            ret = this.targetMenu;
         }
         return ret;
     }
