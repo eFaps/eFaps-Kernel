@@ -27,7 +27,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.efaps.admin.EFapsSystemConfiguration;
-import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
@@ -525,7 +524,9 @@ public abstract class AbstractCommand
     }
 
     /**
-     * This is the setter method for the instance variable {@link #targetMenu}.
+     * Getter method for the instance variable {@link #targetMenu}.
+     * Adds the default menus if allowed ({@link #targetDefaultMenu}
+     * defined in an SystemConfiguration.
      *
      * @return value of instance variable {@link #targetMenu}
      * @throws EFapsException on error
@@ -535,59 +536,49 @@ public abstract class AbstractCommand
     public Menu getTargetMenu()
         throws EFapsException
     {
-        Menu ret = null;
-        if (this.targetDefaultMenu) {
+        Menu ret = this.targetMenu;
+        if (this.targetDefaultMenu && EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DefaultMenu") != null) {
             // reads the Value from "Common_Main_DefaultMenu"
-            final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
             if (EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DefaultMenu").equals("none")) {
-                ret = addMenu4Target("none");
+                ret = this.targetMenu;
             } else {
-                final Properties prop = config.getAttributeValueAsProperties("DefaultMenu");
-
+                final Properties prop = EFapsSystemConfiguration.KERNEL.get()
+                                                                .getAttributeValueAsProperties("DefaultMenu");
                 for (int i = 0; i < 99; i++) {
-
                     if (prop.getProperty("Menu" + i) != null) {
-                        String menuname = prop.getProperty("Menu" + i);
-                        if (this.getTargetTable() != null) {
-                            if (prop.getProperty("Enable4Table" + i) != null
-                                                            && prop.getProperty("Enable4Table" + i).equals("false")) {
-                                menuname = "none";
+                        final String menuname = prop.getProperty("Menu" + i);
+                        if (getTargetTable() != null) {
+                            // if no Enable4TableN property is set or if the Enable4TableN is not false the default
+                            // menu will be added
+                            if (prop.getProperty("Enable4Table" + i) == null
+                                            || (prop.getProperty("Enable4Table" + i) != null
+                                                            && !prop.getProperty("Enable4Table" + i).equals("false"))) {
+                                if (this.targetMenu == null && ret == null) {
+                                    ret = Menu.get(menuname);
+                                    break;
+                                } else {
+                                    this.targetMenu.addAll(Menu.get(menuname));
+                                    ret = this.targetMenu;
+                                }
                             }
-                        } else if (this.getTargetForm() != null) {
+                        } else if (getTargetForm() != null) {
                             if (prop.getProperty("Enable4Form" + i) == null
-                                            || (prop.getProperty("Enable4Form" + i) != null
-                                                            && prop.getProperty("Enable4Form" + i).equals("false"))) {
-                                menuname = "none";
+                                            || ((prop.getProperty("Enable4Form" + i) != null
+                                                            && !prop.getProperty("Enable4Form" + i).equals("false")))) {
+                                if (this.targetMenu == null && ret == null) {
+                                    ret = Menu.get(menuname);
+                                    break;
+                                } else {
+                                    this.targetMenu.addAll(Menu.get(menuname));
+                                    ret = this.targetMenu;
+                                }
                             }
                         }
-                        ret = addMenu4Target(menuname);
                     } else {
                         break;
                     }
                 }
             }
-        }
-        return ret;
-    }
-
-    /**
-     * Method to add the default menu to the targetMenu if it isn't none.
-     *
-     * @param _menuname the default menu name.
-     * @return Menu with the new menu.
-     */
-    protected Menu addMenu4Target(final String _menuname)
-    {
-        Menu ret = null;
-        if (!"none".equals(_menuname)) {
-            if (this.targetMenu == null) {
-                ret = Menu.get(_menuname);
-            } else {
-                this.targetMenu.addAll(Menu.get(_menuname));
-                ret = this.targetMenu;
-            }
-        } else {
-            ret = this.targetMenu;
         }
         return ret;
     }
