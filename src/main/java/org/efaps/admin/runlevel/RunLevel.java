@@ -35,7 +35,7 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -194,7 +194,7 @@ public final class RunLevel
     {
         RunLevel.RUNLEVEL.executeMethods();
         final List<String> allInitializer = RunLevel.RUNLEVEL.getAllInitializers();
-        for (final Cache<?> cache : Cache.getCaches()) {
+        for (final AbstractCache<?> cache : AbstractCache.getCaches()) {
             final String initiliazer = cache.getInitializer();
             if (!allInitializer.contains(initiliazer)) {
                 cache.clear();

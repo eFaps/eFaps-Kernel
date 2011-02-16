@@ -30,7 +30,7 @@ import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,7 +158,7 @@ public final class Company
      * Method to get the Cache for Company.
      * @return Cache
      */
-    public static Cache<Company> getCache()
+    public static AbstractCache<Company> getCache()
     {
         return Company.CACHE;
     }
@@ -166,7 +166,7 @@ public final class Company
     /**
      * Cache for Companies.
      */
-    private static final class CompanyCache extends Cache<Company>
+    private static final class CompanyCache extends AbstractCache<Company>
     {
         /**
          * {@inheritDoc}

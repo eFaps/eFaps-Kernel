@@ -30,7 +30,7 @@ import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -213,7 +213,7 @@ public final class Role
      * @return Cache
      * @see #CACHE
      */
-    public static Cache<Role> getCache()
+    public static AbstractCache<Role> getCache()
     {
         return Role.CACHE;
     }
@@ -222,7 +222,7 @@ public final class Role
      * Class used as the Cache for Roles.
      */
     private static final class RoleCache
-        extends Cache<Role>
+        extends AbstractCache<Role>
     {
         /**
          * Method to read the data into the cache.

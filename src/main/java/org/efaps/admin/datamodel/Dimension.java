@@ -34,7 +34,7 @@ import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -226,7 +226,7 @@ public class Dimension
      *
      * @return value of static variable {@link #CACHE}
      */
-    public static Cache<Dimension> getTypeCache()
+    public static AbstractCache<Dimension> getTypeCache()
     {
         return Dimension.CACHE;
     }
@@ -370,10 +370,10 @@ public class Dimension
      *
      */
     private static class DimensionCache
-        extends Cache<Dimension>
+        extends AbstractCache<Dimension>
     {
         /**
-         * @see org.efaps.util.cache.Cache#readCache(java.util.Map, java.util.Map, java.util.Map)
+         * @see org.efaps.util.cache.AbstractCache#readCache(java.util.Map, java.util.Map, java.util.Map)
          * @param _cache4Id cache for id
          * @param _cache4Name cache for name
          * @param _cache4UUID cache for uuid

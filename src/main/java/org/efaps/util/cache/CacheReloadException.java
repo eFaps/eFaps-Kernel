@@ -24,11 +24,11 @@ import org.efaps.util.EFapsException;
 
 /**
  * The <code>CacheReloadException</code> class is an exception is thrown, if
- * a cache implementing {@link Cache} could not be reloaded.
+ * a cache implementing {@link AbstractCache} could not be reloaded.
  *
  * @author The eFaps Team
  * @version $Id$
- * @see Cache
+ * @see AbstractCache
  */
 public class CacheReloadException
     extends EFapsException

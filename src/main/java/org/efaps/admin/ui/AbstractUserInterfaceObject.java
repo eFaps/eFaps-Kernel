@@ -49,7 +49,7 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -276,7 +276,7 @@ public abstract class AbstractUserInterfaceObject
      * @param <T>
      */
     protected abstract static class AbstractUserInterfaceObjectCache<T extends AbstractUserInterfaceObject>
-        extends Cache<T>
+        extends AbstractCache<T>
     {
 
         /**

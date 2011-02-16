@@ -35,7 +35,7 @@ import org.efaps.db.databases.information.TableInformation;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -325,7 +325,7 @@ public final class SQLTable
      * Cache for SQLTable.
      */
     private static class SQLTableCache
-        extends Cache<SQLTable>
+        extends AbstractCache<SQLTable>
     {
         /**
          * {@inheritDoc}

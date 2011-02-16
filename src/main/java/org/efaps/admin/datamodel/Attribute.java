@@ -46,7 +46,7 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -694,7 +694,7 @@ public class Attribute
      *
      */
     protected static final class AttributeCache
-        extends Cache<Attribute>
+        extends AbstractCache<Attribute>
     {
 
         /**
@@ -715,7 +715,7 @@ public class Attribute
                                                  + "from V_ADMINATTRIBUTE";
 
         /**
-         * @see org.efaps.util.cache.Cache#readCache(java.util.Map, java.util.Map, java.util.Map)
+         * @see org.efaps.util.cache.AbstractCache#readCache(java.util.Map, java.util.Map, java.util.Map)
          * @param _newCache4Id      cache for id
          * @param _newCache4Name    cache for name
          * @param _newCache4UUID    cache for uuid

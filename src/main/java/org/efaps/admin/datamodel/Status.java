@@ -32,7 +32,7 @@ import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -310,7 +310,7 @@ public final class Status implements CacheObjectInterface
     /**
      * Cache for Status.
      */
-    private static class StatusGroupCache extends Cache<Status.StatusGroup>
+    private static class StatusGroupCache extends AbstractCache<Status.StatusGroup>
     {
         /**
          * {@inheritDoc}
@@ -380,7 +380,7 @@ public final class Status implements CacheObjectInterface
     /**
      * Cache for Stati.
      */
-    private static class StatusCache extends Cache<Status>
+    private static class StatusCache extends AbstractCache<Status>
     {
 
         /**

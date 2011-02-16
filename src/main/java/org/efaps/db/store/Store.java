@@ -40,7 +40,7 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.store.Resource.Compress;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -271,7 +271,7 @@ public final class Store
      * Cache for Stores.
      */
     public static class StoreCache
-        extends Cache<Store>
+        extends AbstractCache<Store>
     {
 
         /**

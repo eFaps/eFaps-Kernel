@@ -31,7 +31,7 @@ import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,7 +158,7 @@ public final class AccessType
      * Cache for all access types.
      */
     private static class AccessTypeCache
-        extends Cache<AccessType>
+        extends AbstractCache<AccessType>
     {
         /**
          * Reads all access types and stores them in the given mapping caches.

@@ -50,7 +50,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -909,7 +909,7 @@ public class Type
      *
      * @return value of static variable {@link #CACHE}
      */
-    public static Cache<Type> getTypeCache()
+    public static AbstractCache<Type> getTypeCache()
     {
         return Type.CACHE;
     }
@@ -918,11 +918,11 @@ public class Type
      * Cache for Types.
      */
     private static class TypeCache
-        extends Cache<Type>
+        extends AbstractCache<Type>
     {
 
         /**
-         * @see org.efaps.util.cache.Cache#readCache(java.util.Map,
+         * @see org.efaps.util.cache.AbstractCache#readCache(java.util.Map,
          *      java.util.Map, java.util.Map)
          * @param _cache4Id Cache for id
          * @param _cache4Name Cache for name

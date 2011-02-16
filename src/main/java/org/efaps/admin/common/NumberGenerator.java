@@ -32,7 +32,7 @@ import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -279,7 +279,7 @@ public final class NumberGenerator
      *
      * @return value of static variable {@link #CACHE}
      */
-    public static Cache<NumberGenerator> getTypeCache()
+    public static AbstractCache<NumberGenerator> getTypeCache()
     {
         return NumberGenerator.CACHE;
     }
@@ -287,7 +287,7 @@ public final class NumberGenerator
     /**
      * Cache for Types.
      */
-    private static class NumberGeneratorCache extends Cache<NumberGenerator>
+    private static class NumberGeneratorCache extends AbstractCache<NumberGenerator>
     {
 
         /**

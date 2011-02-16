@@ -29,7 +29,7 @@ import java.util.UUID;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,7 +199,7 @@ public final class Group
      * Class to cache all group instances.
      */
     private static class GroupCache
-        extends Cache<Group>
+        extends AbstractCache<Group>
     {
         /**
          * Reads the information for groups from the database and stores them

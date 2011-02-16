@@ -27,10 +27,10 @@ import java.util.UUID;
  *
  * @author The eFaps Team
  * @version $Id$
- * @param <K> CacheObjectInterface
+ * @param <T> CacheObjectInterface
  */
-public abstract class AutomaticCache<K extends CacheObjectInterface>
-    extends Cache<K>
+public abstract class AbstractAutomaticCache<T extends CacheObjectInterface>
+    extends AbstractCache<T>
 {
     /**
      * Returns for given key id the cached object from the cache4Id cache. If
@@ -39,11 +39,11 @@ public abstract class AutomaticCache<K extends CacheObjectInterface>
      * @param _id   id of searched cached object
      * @return cached object
      */
-    @Override()
-    public K get(final long _id)
+    @Override
+    public T get(final long _id)
     {
         if (!hasEntries()) {
-            initialize(AutomaticCache.class);
+            initialize(AbstractAutomaticCache.class);
         }
         return getCache4Id().get(new Long(_id));
     }
@@ -55,11 +55,11 @@ public abstract class AutomaticCache<K extends CacheObjectInterface>
      * @param _name     name of searched cached object
      * @return cached object
      */
-    @Override()
-    public K get(final String _name)
+    @Override
+    public T get(final String _name)
     {
         if (!hasEntries()) {
-            initialize(AutomaticCache.class);
+            initialize(AbstractAutomaticCache.class);
         }
         return getCache4Name().get(_name);
     }
@@ -71,11 +71,11 @@ public abstract class AutomaticCache<K extends CacheObjectInterface>
      * @param _uuid     UUID of searched cached object
      * @return cached object
      */
-    @Override()
-    public K get(final UUID _uuid)
+    @Override
+    public T get(final UUID _uuid)
     {
         if (!hasEntries()) {
-            initialize(AutomaticCache.class);
+            initialize(AbstractAutomaticCache.class);
         }
         return getCache4UUID().get(_uuid);
     }

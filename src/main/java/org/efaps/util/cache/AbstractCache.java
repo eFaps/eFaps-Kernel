@@ -43,20 +43,20 @@ import org.slf4j.LoggerFactory;
  * faster than a synchronized hash map.</p>
  *
  * @author The eFaps Team
- * @param <K> class implementing CacheObjectInterface
+ * @param <T> class implementing CacheObjectInterface
  * @version $Id$
  */
-public abstract class Cache<K extends CacheObjectInterface>
+public abstract class AbstractCache<T extends CacheObjectInterface>
 {
     /**
      * Logging instance used to give logging information of this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(Cache.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractCache.class);
 
     /**
      * Set that stores all initialized Caches.
      */
-    private static Set<Cache<?>> CACHES = Collections.synchronizedSet(new HashSet<Cache<?>>());
+    private static Set<AbstractCache<?>> CACHES = Collections.synchronizedSet(new HashSet<AbstractCache<?>>());
 
     /**
      * The map holds all cached data instances by Id. Because of the
@@ -65,7 +65,7 @@ public abstract class Cache<K extends CacheObjectInterface>
      *
      * @see #get(Long)
      */
-    private volatile Map<Long, K> cache4Id = null;
+    private volatile Map<Long, T> cache4Id = null;
 
     /**
      * The map holds all cached data instances by Name. Because of the
@@ -74,7 +74,7 @@ public abstract class Cache<K extends CacheObjectInterface>
      *
      * @see #get(String)
      */
-    private volatile Map<String, K> cache4Name = null;
+    private volatile Map<String, T> cache4Name = null;
 
     /**
      * The map holds all cached data instances by UUID. Because of the
@@ -83,7 +83,7 @@ public abstract class Cache<K extends CacheObjectInterface>
      *
      * @see #get(UUID)
      */
-    private volatile Map<UUID, K> cache4UUID = null;
+    private volatile Map<UUID, T> cache4UUID = null;
 
     /**
      * Stores the class name of the class that initialized this cache.
@@ -93,9 +93,9 @@ public abstract class Cache<K extends CacheObjectInterface>
     /**
      * Constructor adding this Cache to the set of Caches.
      */
-    protected Cache()
+    protected AbstractCache()
     {
-        Cache.CACHES.add(this);
+        AbstractCache.CACHES.add(this);
     }
 
     /**
@@ -107,7 +107,7 @@ public abstract class Cache<K extends CacheObjectInterface>
      * @return cached object
      *
      */
-    public K get(final long _id)
+    public T get(final long _id)
     {
         return getCache4Id() == null ? null : getCache4Id().get(new Long(_id));
     }
@@ -120,7 +120,7 @@ public abstract class Cache<K extends CacheObjectInterface>
      * @param _name     name the cached object
      * @return cached object
      */
-    public K get(final String _name)
+    public T get(final String _name)
     {
         return getCache4Name() == null ? null : getCache4Name().get(_name);
     }
@@ -134,7 +134,7 @@ public abstract class Cache<K extends CacheObjectInterface>
      * @return cached object
      *
      */
-    public K get(final UUID _uuid)
+    public T get(final UUID _uuid)
     {
         return getCache4UUID() == null ? null : getCache4UUID().get(_uuid);
     }
@@ -147,33 +147,33 @@ public abstract class Cache<K extends CacheObjectInterface>
      *
      * @param _object Object to be added
      */
-    public void addObject(final K _object)
+    public void addObject(final T _object)
     {
-        final Map<Long, K> newCache4Id = new HashMap<Long, K>();
-        final Map<String, K> newCache4Name = new HashMap<String, K>();
-        final Map<UUID, K>  newCache4UUID = new HashMap<UUID, K>();
+        final Map<Long, T> newCache4Id =  getNewCache4Id();
+        final Map<String, T> newCache4Name = getNewCache4Name();
+        final Map<UUID, T>  newCache4UUID = getNewCache4UUID();
+
+        if (getCache4Id() != null) {
+            newCache4Id.putAll(getCache4Id());
+        }
+
+        if (getCache4Name() != null) {
+            newCache4Name.putAll(getCache4Name());
+        }
+
+        if (getCache4UUID() != null) {
+            newCache4UUID.putAll(getCache4UUID());
+        }
 
         newCache4Id.put(_object.getId(), _object);
         newCache4Name.put(_object.getName(), _object);
         newCache4UUID.put(_object.getUUID(), _object);
 
-        if (this.cache4Id != null) {
-            newCache4Id.putAll(this.cache4Id);
-        }
-
-        if (this.cache4Name != null) {
-            newCache4Name.putAll(this.cache4Name);
-        }
-
-        if (this.cache4UUID != null) {
-            newCache4UUID.putAll(this.cache4UUID);
-        }
-
         // replace old cache with new values
         // it is thread save because of volatile
-        this.cache4Id = newCache4Id;
-        this.cache4Name = newCache4Name;
-        this.cache4UUID = newCache4UUID;
+        setCache4Id(newCache4Id);
+        setCache4Name(newCache4Name);
+        setCache4UUID(newCache4UUID);
     }
 
     /**
@@ -184,9 +184,9 @@ public abstract class Cache<K extends CacheObjectInterface>
      */
     public boolean hasEntries()
     {
-        return (this.cache4Id != null && !this.cache4Id.isEmpty())
-            || (this.cache4Name != null && !this.cache4Name.isEmpty())
-            || (this.cache4UUID != null && !this.cache4UUID.isEmpty());
+        return (getCache4Id() != null && !getCache4Id().isEmpty())
+            || (getCache4Name() != null && !getCache4Name().isEmpty())
+            || (getCache4UUID() != null && !getCache4UUID().isEmpty());
     }
 
     /**
@@ -202,8 +202,7 @@ public abstract class Cache<K extends CacheObjectInterface>
             try {
                 readCache();
             } catch (final CacheReloadException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                AbstractCache.LOG.error("Unexpected error while initializing Cache for " + getClass(), e);
             }
         }
     }
@@ -233,16 +232,18 @@ public abstract class Cache<K extends CacheObjectInterface>
     {
         // if cache is not initialized, the correct order is required!
         // otherwise the cache is not null and returns wrong values!
-        final Map<Long, K> newCache4Id = new HashMap<Long, K>();
-        final Map<String, K> newCache4Name = new HashMap<String, K>();
-        final Map<UUID, K>  newCache4UUID = new HashMap<UUID, K>();
+        final Map<Long, T> newCache4Id = getNewCache4Id();
+        final Map<String, T> newCache4Name = getNewCache4Name();
+        final Map<UUID, T>  newCache4UUID = getNewCache4UUID();
         try {
             readCache(newCache4Id, newCache4Name, newCache4UUID);
         } catch (final CacheReloadException e) {
-            Cache.LOG.error("Read Cache for " + getClass() + " failed", e);
+            AbstractCache.LOG.error("Read Cache for " + getClass() + " failed", e);
             throw e;
+            //CHECKSTYLE:OFF
         } catch (final Exception e) {
-            Cache.LOG.error("Unexpected error while reading Cache for " + getClass(), e);
+            //CHECKSTYLE:ON
+            AbstractCache.LOG.error("Unexpected error while reading Cache for " + getClass(), e);
             throw new CacheReloadException("Unexpected error while reading Cache " + "for " + getClass(), e);
         }
         // replace old cache with new values
@@ -260,19 +261,66 @@ public abstract class Cache<K extends CacheObjectInterface>
      * @param _newCache4UUID    cache for UUID
      * @throws CacheReloadException on error during reading
      */
-    protected abstract void readCache(final Map<Long, K> _newCache4Id,
-                                      final Map<String, K> _newCache4Name,
-                                      final Map<UUID, K> _newCache4UUID)
+    protected abstract void readCache(final Map<Long, T> _newCache4Id,
+                                      final Map<String, T> _newCache4Name,
+                                      final Map<UUID, T> _newCache4UUID)
         throws CacheReloadException;
+
+    /**
+     * Method to get a new empty Map for the id Cache.
+     * The method is implemented to provide the possibility to use
+     * different Map types in the extending classes.
+     *
+     * @return new empty Instance of a HashMap
+     */
+    protected Map<Long, T> getNewCache4Id()
+    {
+        return new HashMap<Long, T>();
+    }
+
+    /**
+     * Method to get a new empty Map for the id Cache.
+     * The method is implemented to provide the possibility to use
+     * different Map types in the extending classes.
+     *
+     * @return new empty Instance of a HashMap
+     */
+    protected Map<String, T> getNewCache4Name()
+    {
+        return new HashMap<String, T>();
+    }
+
+    /**
+     * Method to get a new empty Map for the id Cache.
+     * The method is implemented to provide the possibility to use
+     * different Map types in the extending classes.
+     *
+     * @return new empty Instance of a HashMap
+     */
+    protected Map<UUID, T> getNewCache4UUID()
+    {
+        return new HashMap<UUID, T>();
+    }
 
     /**
      * Getter method for instance variable {@link #cache4Id}.
      *
      * @return value of instance variable {@link #cache4Id}
      */
-    public Map<Long, K> getCache4Id()
+    public Map<Long, T> getCache4Id()
     {
         return this.cache4Id;
+    }
+
+    /**
+     * Setter method for instance variable {@link #cache4Id}.
+     *
+     * @param _cache4Id value for instance variable {@link #cache4Id}
+     */
+
+    protected void setCache4Id(final Map<Long, T> _cache4Id)
+    {
+        this.cache4Id = _cache4Id;
     }
 
     /**
@@ -280,9 +328,31 @@ public abstract class Cache<K extends CacheObjectInterface>
      *
      * @return value of instance variable {@link #cache4Name}
      */
-    protected Map<String, K> getCache4Name()
+    protected Map<String, T> getCache4Name()
     {
         return this.cache4Name;
+    }
+
+    /**
+     * Setter method for instance variable {@link #cache4Name}.
+     *
+     * @param _cache4Name value for instance variable {@link #cache4Name}
+     */
+
+    protected void setCache4Name(final Map<String, T> _cache4Name)
+    {
+        this.cache4Name = _cache4Name;
+    }
+
+    /**
+     * Setter method for instance variable {@link #cache4UUID}.
+     *
+     * @param _cache4uuid value for instance variable {@link #cache4UUID}
+     */
+
+    protected void setCache4UUID(final Map<UUID, T> _cache4uuid)
+    {
+        this.cache4UUID = _cache4uuid;
     }
 
     /**
@@ -290,7 +360,7 @@ public abstract class Cache<K extends CacheObjectInterface>
      *
      * @return value of instance variable {@link #cache4UUID}
      */
-    protected Map<UUID, K> getCache4UUID()
+    protected Map<UUID, T> getCache4UUID()
     {
         return this.cache4UUID;
     }
@@ -310,14 +380,14 @@ public abstract class Cache<K extends CacheObjectInterface>
      */
     public void clear()
     {
-        if (this.cache4Id != null) {
-            this.cache4Id.clear();
+        if (getCache4Id() != null) {
+            getCache4Id().clear();
         }
-        if (this.cache4Name != null) {
-            this.cache4Name.clear();
+        if (getCache4Name() != null) {
+            getCache4Name().clear();
         }
-        if (this.cache4UUID != null) {
-            this.cache4UUID.clear();
+        if (getCache4UUID() != null) {
+            getCache4UUID().clear();
         }
     }
 
@@ -326,11 +396,11 @@ public abstract class Cache<K extends CacheObjectInterface>
      */
     public static void clearCaches()
     {
-        synchronized (Cache.CACHES) {
-            for (final Cache<?> cache : Cache.CACHES) {
-                cache.cache4Id.clear();
-                cache.cache4Name.clear();
-                cache.cache4UUID.clear();
+        synchronized (AbstractCache.CACHES) {
+            for (final AbstractCache<?> cache : AbstractCache.CACHES) {
+                cache.getCache4Id().clear();
+                cache.getCache4Name().clear();
+                cache.getCache4UUID().clear();
             }
         }
     }
@@ -340,8 +410,8 @@ public abstract class Cache<K extends CacheObjectInterface>
      *
      * @return value of variable {@link #CACHES}
      */
-    public static Set<Cache<?>> getCaches()
+    public static Set<AbstractCache<?>> getCaches()
     {
-        return Cache.CACHES;
+        return AbstractCache.CACHES;
     }
 }

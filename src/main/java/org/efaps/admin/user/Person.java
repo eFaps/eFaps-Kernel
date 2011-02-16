@@ -27,8 +27,10 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -46,7 +48,7 @@ import org.efaps.jaas.AppAccessHandler;
 import org.efaps.util.ChronologyType;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -125,7 +127,17 @@ public final class Person
      *
      * @see #getCache
      */
-    private static final Cache<Person> CACHE = new PersonCache();
+    private static final AbstractCache<Person> CACHE = new PersonCache();
+
+    /**
+     * Key to access the cache4Name in the Context.
+     */
+    private static final String CACHE4NAMEKEY = "org.efaps.admin.user.Person.eFapsPersonCache4Name";
+
+    /**
+     * Key to access the cache4ID in the Context.
+     */
+    private static final String CACHE4IDKEY = "org.efaps.admin.user.Person.eFapsPersonCache4Id";
 
     /**
      * HashSet instance variable to hold all roles for this person.
@@ -197,7 +209,7 @@ public final class Person
     @Override
     public boolean hasChildPerson(final Person _person)
     {
-        return (_person.getId() == getId());
+        return _person.getId() == getId();
     }
 
     /**
@@ -1173,7 +1185,7 @@ public final class Person
      *
      * @return string representation of this person
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)
@@ -1463,7 +1475,7 @@ public final class Person
      *
      * @return value of static variable {@link #CACHE}
      */
-    public static Cache<Person> getCache()
+    public static AbstractCache<Person> getCache()
     {
         return Person.CACHE;
     }
@@ -1472,27 +1484,26 @@ public final class Person
      * This Class is used to store a Person in the Cache.
      */
     private static final class PersonCache
-        extends Cache<Person>
+        extends AbstractCache<Person>
     {
-
         /**
          * Method is overwritten because the map is stored in the context.
          *
          * @return Map by id
          */
-        @Override()
+        @Override
         @SuppressWarnings("unchecked")
         public Map<Long, Person> getCache4Id()
         {
             Map<Long, Person> map = null;
             try {
-                map = (Map<Long, Person>) Context.getThreadContext().getSessionAttribute("PersonCacheId");
+                map = (PersonMap<Long>) Context.getThreadContext().getSessionAttribute(Person.CACHE4IDKEY);
                 if (map == null) {
-                    map = new HashMap<Long, Person>();
-                    Context.getThreadContext().setSessionAttribute("PersonCacheId", map);
+                    map = new PersonMap<Long>();
+                    Context.getThreadContext().setSessionAttribute(Person.CACHE4IDKEY, map);
                 }
             } catch (final EFapsException e) {
-                Person.LOG.error("could not read or set a SessionAttribute for the " + "PersonCacheID", e);
+                Person.LOG.error("could not read or set a SessionAttribute for " + Person.CACHE4IDKEY, e);
             }
             return map;
         }
@@ -1508,27 +1519,75 @@ public final class Person
         {
             Map<String, Person> map = null;
             try {
-                map = (Map<String, Person>) Context.getThreadContext().getSessionAttribute("PersonCacheString");
+                map = (Map<String, Person>) Context.getThreadContext().getSessionAttribute(Person.CACHE4NAMEKEY);
                 if (map == null) {
-                    map = new HashMap<String, Person>();
-                    Context.getThreadContext().setSessionAttribute("PersonCacheString", map);
+                    map = new PersonMap<String>();
+                    Context.getThreadContext().setSessionAttribute(Person.CACHE4NAMEKEY, map);
                 }
             } catch (final EFapsException e) {
-                Person.LOG.error("could not read or set a SessionAttribute for the PersonCache", e);
+                Person.LOG.error("could not read or set a SessionAttribute for the " + Person.CACHE4NAMEKEY, e);
             }
             return map;
         }
 
         /**
+         * Method is overwritten because the map is stored in the context.
+         *
+         * @return Map by name
+         */
+        @Override
+        protected void setCache4Id(final Map<Long, Person> _cache4Id)
+        {
+            try {
+                Context.getThreadContext().setSessionAttribute(Person.CACHE4IDKEY, _cache4Id);
+            } catch (final EFapsException e) {
+                Person.LOG.error("could set a SessionAttribute for the " + Person.CACHE4IDKEY, e);
+            }
+        }
+
+        /**
+         * Method is overwritten because the map is stored in the context.
+         *
+         * @return Map by name
+         */
+        @Override
+        protected void setCache4Name(final Map<String, Person> _cache4Name)
+        {
+            try {
+                Context.getThreadContext().setSessionAttribute(Person.CACHE4NAMEKEY, _cache4Name);
+            } catch (final EFapsException e) {
+                Person.LOG.error("could not set a SessionAttribute for the " + Person.CACHE4NAMEKEY, e);
+            }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected Map<Long, Person> getNewCache4Id()
+        {
+            return new PersonMap<Long>();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected Map<String, Person> getNewCache4Name()
+        {
+            return new PersonMap<String>();
+        }
+
+        /**
          * Method must not be overwritten (used), because the person cache is
          * stored inside the session and is growing dynamically during the
-         * session.
+         * session up to a maximum value defined by a SystemAttribute.
          *
          * @param _cache4Id not used
          * @param _cache4Name not used
          * @param _cache4UUID not used
          */
-        @Override()
+        @Override
         protected void readCache(final Map<Long, Person> _cache4Id,
                                  final Map<String, Person> _cache4Name,
                                  final Map<UUID, Person> _cache4UUID)
@@ -1536,18 +1595,23 @@ public final class Person
         }
 
         /**
-         * Clear the person cache in the session if exist.
+         * Implementation of a LinkedHashMap with limited capacity.
          */
-        @Override()
-        public void clear()
+        public class PersonMap<T> extends LinkedHashMap<T, Person>
         {
-            try {
-                final Map<?, ?> map = (Map<?, ?>) Context.getThreadContext().getSessionAttribute("PersonCacheString");
-                if (map != null) {
-                    map.clear();
+            /**
+             * Needed for serialization.
+             */
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected boolean removeEldestEntry(final Entry<T, Person> _eldest)
+            {
+                int size = EFapsSystemConfiguration.KERNEL.get().getAttributeValueAsInteger("Cache4PersonMaxSize");
+                if (size < 1) {
+                    size = 100;
                 }
-            } catch (final EFapsException e) {
-                Person.LOG.error("could not read or set a SessionAttribute for the PersonCache", e);
+                return size() > size;
             }
         }
     }

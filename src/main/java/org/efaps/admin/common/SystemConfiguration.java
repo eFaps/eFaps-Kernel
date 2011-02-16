@@ -36,7 +36,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -350,7 +350,7 @@ public final class SystemConfiguration
      * Cache for all system configurations.
      */
     private static class SystemConfigurationCache
-        extends Cache<SystemConfiguration>
+        extends AbstractCache<SystemConfiguration>
     {
 
         /**

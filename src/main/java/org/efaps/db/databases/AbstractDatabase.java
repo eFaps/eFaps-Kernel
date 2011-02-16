@@ -42,7 +42,7 @@ import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1090,7 +1090,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @see TableInformation
      */
     private class TableInfoCache
-        extends Cache<TableInformation>
+        extends AbstractCache<TableInformation>
     {
         /**
          * {@inheritDoc}
