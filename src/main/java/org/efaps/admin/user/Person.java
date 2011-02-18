@@ -1533,7 +1533,7 @@ public final class Person
         /**
          * Method is overwritten because the map is stored in the context.
          *
-         * @return Map by name
+         * {@inheritDoc}
          */
         @Override
         protected void setCache4Id(final Map<Long, Person> _cache4Id)
@@ -1548,7 +1548,7 @@ public final class Person
         /**
          * Method is overwritten because the map is stored in the context.
          *
-         * @return Map by name
+         * {@inheritDoc}
          */
         @Override
         protected void setCache4Name(final Map<String, Person> _cache4Name)

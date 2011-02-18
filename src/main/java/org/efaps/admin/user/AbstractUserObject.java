@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -298,28 +298,30 @@ public abstract class AbstractUserObject
         }
     }
 
-
     /**
      * Returns for given parameter <i>_id</i> the instance of class
      * {@link AbstractUserObject}. The returned AbstractUserObject can be a
-     * {@link Person}, {@link Role} or {@link Group}. The method first searches
-     * for a Person, if not found for a Role and if again not found for a Group.
+     * {@link Person}, {@link Role} or {@link Group}. The method searches in
+     * sequence for Role, Group, Company and last User. User is searched last
+     * due to the reason that it is the only object that is not always stored
+     * in a cache an might produce queries against the DataBase
      *
      * @param _id id to search in the cache
      * @return instance of class {@link AbstractUserObject}
      * @throws EFapsException on error
      */
-    public static AbstractUserObject getUserObject(final long _id) throws EFapsException
+    public static AbstractUserObject getUserObject(final long _id)
+        throws EFapsException
     {
-        AbstractUserObject ret = Person.get(_id);
-        if (ret == null) {
-            ret = Role.get(_id);
-        }
+        AbstractUserObject ret = Role.get(_id);
         if (ret == null) {
             ret = Group.get(_id);
         }
         if (ret == null) {
             ret = Company.get(_id);
+        }
+        if (ret == null) {
+            ret = Person.get(_id);
         }
         return ret;
     }
@@ -327,24 +329,27 @@ public abstract class AbstractUserObject
     /**
      * Returns for given parameter <i>_name</i> the instance of class
      * {@link AbstractUserObject}.The returned AbstractUserObject can be a
-     * {@link Person}, {@link Role} or {@link Group}. The method first searches
-     * for a Person, if not found for a Role and if again not found for a Group.
+     * {@link Person}, {@link Role} or {@link Group}. he method searches in
+     * sequence for Role, Group, Company and last User. User is searched last
+     * due to the reason that it is the only object that is not always stored
+     * in a cache an might produce queries against the DataBase
      *
      * @param _name name to search in the cache
      * @return instance of class {@link AbstractUserObject}
      * @throws EFapsException on error
      */
-    public static AbstractUserObject getUserObject(final String _name) throws EFapsException
+    public static AbstractUserObject getUserObject(final String _name)
+        throws EFapsException
     {
-        AbstractUserObject ret = Person.get(_name);
-        if (ret == null) {
-            ret = Role.get(_name);
-        }
+        AbstractUserObject ret = Role.get(_name);
         if (ret == null) {
             ret = Group.get(_name);
         }
         if (ret == null) {
             ret = Company.get(_name);
+        }
+        if (ret == null) {
+            ret = Person.get(_name);
         }
         return ret;
     }
@@ -375,7 +380,8 @@ public abstract class AbstractUserObject
      * @param _status status to set
      * @throws EFapsException on error
      */
-    protected void setStatusInDB(final boolean _status) throws EFapsException
+    protected void setStatusInDB(final boolean _status)
+        throws EFapsException
     {
         ConnectionResource rsrc = null;
         try {

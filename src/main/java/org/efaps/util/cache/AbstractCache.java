@@ -317,7 +317,6 @@ public abstract class AbstractCache<T extends CacheObjectInterface>
      *
      * @param _cache4Id value for instance variable {@link #cache4Id}
      */
-
     protected void setCache4Id(final Map<Long, T> _cache4Id)
     {
         this.cache4Id = _cache4Id;
@@ -338,7 +337,6 @@ public abstract class AbstractCache<T extends CacheObjectInterface>
      *
      * @param _cache4Name value for instance variable {@link #cache4Name}
      */
-
     protected void setCache4Name(final Map<String, T> _cache4Name)
     {
         this.cache4Name = _cache4Name;
@@ -349,7 +347,6 @@ public abstract class AbstractCache<T extends CacheObjectInterface>
      *
      * @param _cache4uuid value for instance variable {@link #cache4UUID}
      */
-
     protected void setCache4UUID(final Map<UUID, T> _cache4uuid)
     {
         this.cache4UUID = _cache4uuid;
