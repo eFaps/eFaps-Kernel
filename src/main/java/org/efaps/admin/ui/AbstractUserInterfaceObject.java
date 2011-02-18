@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ import org.efaps.util.cache.CacheReloadException;
  * and the Triggers for the <code>UserInterfaceObjects</code> are handled.
  *
  * @author The eFaps Team
- * @version $Id: AbstractUserInterfaceObject.java 4820 2010-06-19 01:37:58Z
+ * @version $Id: AbstractUserInterfaceObject.java 4820 2011-06-19 01:37:58Z
  *          jan.moxter $
  */
 public abstract class AbstractUserInterfaceObject

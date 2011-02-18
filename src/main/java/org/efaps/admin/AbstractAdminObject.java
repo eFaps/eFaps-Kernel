@@ -1,4 +1,4 @@
-/**
+/*
  *
  *  Copyright 2003 - 2011 The eFaps Team
  *
@@ -34,8 +34,8 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.AbstractUserInterfaceObject;
 import org.efaps.db.Context;
 import org.efaps.db.wrapper.SQLPart;

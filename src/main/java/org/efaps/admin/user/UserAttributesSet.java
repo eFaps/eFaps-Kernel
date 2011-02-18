@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ import org.efaps.util.EFapsException;
  * called explicitly.
  *
  * @author The eFasp Team
- * @version $Id: UserAttributesSet.java 3924 2010-03-31 15:40:15Z
+ * @version $Id: UserAttributesSet.java 3924 2011-03-31 15:40:15Z
  *          miguel.a.aranya $
  */
 public class UserAttributesSet

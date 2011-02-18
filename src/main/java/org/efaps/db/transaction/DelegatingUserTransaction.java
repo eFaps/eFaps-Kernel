@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2011 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import org.efaps.util.EFapsException;
  * Delegate a UserTransaction to the TransactionManager used by the Context.
  *
  * @author The eFaps Team
- * @version $Id: DelegatingUserTransaction.java 4534 2010-05-24 21:02:35Z
+ * @version $Id: DelegatingUserTransaction.java 4534 2011-05-24 21:02:35Z
  *          jan.moxter $
  */
 public class DelegatingUserTransaction
