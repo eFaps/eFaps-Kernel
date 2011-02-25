@@ -60,7 +60,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
     /**
      * Logging instance used in this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(DerbyDatabase.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractDatabase.class);
 
     /**
      * The enumeration defines the known column types in the database.
@@ -121,6 +121,19 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @see #getTableInformation(Connection, String)
      */
     private final TableInfoCache cache = new TableInfoCache();
+
+    /**
+     * Method is used to determine if this DataBase is connected.
+     * It uses SQL statements against the database to determine if
+     * it is the right database using unique identifiers e.g. systemtables,
+     * version info etc.
+     *
+     * @param _connection   Connection to be used foo analyze
+     * @return true if this database is connected
+     * @throws SQLException on error
+     */
+    public abstract boolean isConnected(final Connection _connection)
+        throws SQLException;
 
     /**
      * Initializes the {@link #cache} for the table informations.

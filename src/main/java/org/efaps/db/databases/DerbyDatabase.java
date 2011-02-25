@@ -96,7 +96,17 @@ public class DerbyDatabase
         addMapping(ColumnType.BOOLEAN,      "smallint",   "cast(null as smallint)",   "smallint");
     }
 
-    @Override()
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isConnected(final Connection _connection)
+    {
+        // FIXME must be implemented
+        return false;
+    }
+
+    @Override
     public String getCurrentTimeStamp()
     {
         return "current_timestamp";
@@ -116,7 +126,7 @@ public class DerbyDatabase
      * @param _con  sql connection
      * @throws SQLException if remove of keys, views or tables failed
      */
-    @Override()
+    @Override
     public void deleteAll(final Connection _con)
         throws SQLException
     {
@@ -197,7 +207,7 @@ public class DerbyDatabase
      *
      * @throws SQLException if the table could not be created
      */
-    @Override()
+    @Override
     public DerbyDatabase createTable(final Connection _con,
                                      final String _table/*,
                                      final String _parentTable*/)
@@ -240,7 +250,7 @@ public class DerbyDatabase
     /**
      * TODO: implement
      */
-    @Override()
+    @Override
     public DerbyDatabase defineTableAutoIncrement(final Connection _con,
                                                   final String _table)
         throws SQLException
@@ -268,7 +278,7 @@ public class DerbyDatabase
      *                      <code>null</code> values
      * @throws SQLException if the column could not be added to the tables
      */
-    @Override()
+    @Override
     public DerbyDatabase addTableColumn(final Connection _con,
                                         final String _tableName,
                                         final String _columnName,
@@ -301,7 +311,7 @@ public class DerbyDatabase
     /**
      * @return always <i>true</i> because supported by Derby database
      */
-    @Override()
+    @Override
     public boolean supportsGetGeneratedKeys()
     {
         return true;
@@ -310,7 +320,7 @@ public class DerbyDatabase
     /**
      * @return always <i>true</i> because supported by PostgreSQL database
      */
-    @Override()
+    @Override
     public boolean supportsBinaryInputStream()
     {
         return false;
@@ -320,7 +330,7 @@ public class DerbyDatabase
      * @return always <i>false</i> because Apache Derby has some problems to
      *         handle to big transactions
      */
-    @Override()
+    @Override
     public boolean supportsBigTransactions()
     {
         return false;
@@ -329,7 +339,7 @@ public class DerbyDatabase
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public DerbyDatabase createSequence(final Connection _con,
                                         final String _name,
                                         final long _startValue)
@@ -340,7 +350,7 @@ public class DerbyDatabase
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public DerbyDatabase deleteSequence(final Connection _con,
                                         final String _name)
     {
@@ -350,7 +360,7 @@ public class DerbyDatabase
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public boolean existsSequence(final Connection _con,
                                   final String _name)
     {
@@ -360,7 +370,7 @@ public class DerbyDatabase
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public long nextSequence(final Connection _con,
                              final String _name)
         throws SQLException
@@ -371,7 +381,7 @@ public class DerbyDatabase
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public DerbyDatabase setSequence(final Connection _con,
                                      final String _name,
                                      final long _value)
@@ -404,7 +414,7 @@ public class DerbyDatabase
      * @param _tableName  name of table which must be evaluated
      * @throws SQLException if unique keys could not be fetched
      */
-    @Override()
+    @Override
     protected void initTableInfoUniqueKeys(final Connection _con,
                                            final String _sql,
                                            final Map<String, TableInformation> _cache4Name)

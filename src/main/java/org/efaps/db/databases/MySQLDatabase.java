@@ -116,6 +116,16 @@ public class MySQLDatabase
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isConnected(final Connection _connection)
+    {
+        // FIXME must be implemented
+        return false;
+    }
+
+    /**
      * @see org.efaps.db.databases.AbstractDatabase#getCurrentTimeStamp()
      * @return "current_timestamp"
      */

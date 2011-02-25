@@ -48,6 +48,7 @@ import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.admin.user.UserAttributesSet.UserAttributesDefinition;
 import org.efaps.db.databases.AbstractDatabase;
+import org.efaps.db.databases.DataBaseFactory;
 import org.efaps.db.store.Resource;
 import org.efaps.db.store.Store;
 import org.efaps.db.transaction.ConnectionResource;
@@ -102,9 +103,9 @@ public final class Context
     static {
         try {
             final InitialContext initCtx = new InitialContext();
-            final javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
-            Context.DBTYPE = (AbstractDatabase<?>) envCtx.lookup(INamingBinds.RESOURCE_DBTYPE);
+            final javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:");
             Context.DATASOURCE = (DataSource) envCtx.lookup(INamingBinds.RESOURCE_DATASOURCE);
+            Context.DBTYPE = DataBaseFactory.getDatabase(Context.DATASOURCE.getConnection());
             Context.TRANSMANAG = (TransactionManager) envCtx.lookup(INamingBinds.RESOURCE_TRANSMANAG);
             try {
                 Context.TRANSMANAGTIMEOUT = (Integer) envCtx.lookup(INamingBinds.RESOURCE_TRANSMANAGTIMEOUT);
@@ -113,7 +114,10 @@ public final class Context
                 Context.TRANSMANAGTIMEOUT = 0;
             }
         } catch (final NamingException e) {
-            e.printStackTrace();
+            Context.LOG.error("NamingException", e);
+            throw new Error(e);
+        } catch (final SQLException e) {
+            Context.LOG.error("SQLException", e);
             throw new Error(e);
         }
     }
@@ -280,10 +284,8 @@ public final class Context
         this.sessionAttributes = (_sessionAttributes == null) ? new HashMap<String, Object>() : _sessionAttributes;
         try {
             setConnection(Context.DATASOURCE.getConnection());
-            getConnection().setAutoCommit(true);
         } catch (final SQLException e) {
             Context.LOG.error("could not get a sql connection", e);
-            // TODO: LOG + Exception
         }
     }
 

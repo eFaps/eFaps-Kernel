@@ -94,7 +94,7 @@ public class PostgreSQLDatabase
             + "and c.unique_constraint_name=d.constraint_name";
 
     /**
-     * TODO: specificy real column type
+     * Constructor.
      */
     public PostgreSQLDatabase()
     {
@@ -109,11 +109,37 @@ public class PostgreSQLDatabase
         addMapping(ColumnType.BOOLEAN,      "boolean",   "null", "bool");
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isConnected(final Connection _connection)
+        throws SQLException
+    {
+        boolean ret = false;
+        final StringBuilder cmd = new StringBuilder();
+        cmd.append(" SELECT version();");
+        PreparedStatement stmt = null;
+        stmt = _connection.prepareStatement(cmd.toString());
+        try {
+            final ResultSet resultset = stmt.executeQuery();
+            if (resultset.next()) {
+                final String str = resultset.getString(1);
+                ret = str.toUpperCase().contains("POSTGRESQL");
+            }
+            resultset.close();
+        } finally {
+            stmt.close();
+        }
+        return ret;
+    }
+
     /**
      * @see org.efaps.db.databases.AbstractDatabase#getCurrentTimeStamp()
      * @return "current_timestamp"
      */
-    @Override()
+    @Override
     public String getCurrentTimeStamp()
     {
         return "current_timestamp";
@@ -135,7 +161,7 @@ public class PostgreSQLDatabase
      * @param _con sql connection
      * @throws SQLException on error while executing sql statements
      */
-    @Override()
+    @Override
     public void deleteAll(final Connection _con)
         throws SQLException
     {
@@ -220,7 +246,7 @@ public class PostgreSQLDatabase
      * @return this PostgreSQL DB definition instance
      * @throws SQLException if the table could not be created
      */
-    @Override()
+    @Override
     public PostgreSQLDatabase createTable(final Connection _con,
                                           final String _table)
         throws SQLException
@@ -243,7 +269,7 @@ public class PostgreSQLDatabase
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public PostgreSQLDatabase defineTableAutoIncrement(final Connection _con,
                                                        final String _table)
         throws SQLException
@@ -283,7 +309,7 @@ public class PostgreSQLDatabase
      * @throws SQLException if a new id could not be retrieved
      * @return new id for the sequence
      */
-    @Override()
+    @Override
     public long getNewId(final Connection _con,
                          final String _table,
                          final String _column)
@@ -312,7 +338,7 @@ public class PostgreSQLDatabase
     /**
      * @return always <i>true</i> because supported by PostgreSQL database
      */
-    @Override()
+    @Override
     public boolean supportsBinaryInputStream()
     {
         return true;
@@ -363,7 +389,7 @@ public class PostgreSQLDatabase
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public PostgreSQLDatabase deleteSequence(final Connection _con,
                                              final String _name)
         throws SQLException
@@ -391,7 +417,7 @@ public class PostgreSQLDatabase
      * @return <i>true</i> if sequence exists; otherwise <i>false</i>
      * @throws SQLException if it could not be checked that the sequence exists
      */
-    @Override()
+    @Override
     public boolean existsSequence(final Connection _con,
                                   final String _name)
         throws SQLException
@@ -415,7 +441,7 @@ public class PostgreSQLDatabase
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public long nextSequence(final Connection _con,
                              final String _name)
         throws SQLException
@@ -456,7 +482,7 @@ public class PostgreSQLDatabase
      * @see #deleteSequence(Connection, String)
      * @see #createSequence(Connection, String, long)
      */
-    @Override()
+    @Override
     public PostgreSQLDatabase setSequence(final Connection _con,
                                           final String _name,
                                           final long _value)
@@ -479,7 +505,7 @@ public class PostgreSQLDatabase
      * @throws SQLException if unique keys could not be fetched
      * @see #SQL_UNIQUE_KEYS
      */
-    @Override()
+    @Override
     protected void initTableInfoUniqueKeys(final Connection _con,
                                            final String _sql,
                                            final Map<String, TableInformation> _cache4Name)
@@ -500,7 +526,7 @@ public class PostgreSQLDatabase
      * @throws SQLException if foreign keys could not be fetched
      * @see #SQL_FOREIGN_KEYS
      */
-    @Override()
+    @Override
     protected void initTableInfoForeignKeys(final Connection _con,
                                             final String _sql,
                                             final Map<String, TableInformation> _cache4Name)

@@ -63,6 +63,17 @@ public class OracleDatabase
         addMapping(ColumnType.BOOLEAN,      "number",     "null", "number");
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isConnected(final Connection _connection)
+    {
+        // FIXME must be implemented
+        return false;
+    }
+
+
     @Override()
     public int getMaxExpressions()
     {
