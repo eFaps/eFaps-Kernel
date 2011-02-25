@@ -35,8 +35,7 @@ import org.efaps.util.EFapsException;
  * Delegate a UserTransaction to the TransactionManager used by the Context.
  *
  * @author The eFaps Team
- * @version $Id: DelegatingUserTransaction.java 4534 2011-05-24 21:02:35Z
- *          jan.moxter $
+ * @version $Id$
  */
 public class DelegatingUserTransaction
     implements UserTransaction
