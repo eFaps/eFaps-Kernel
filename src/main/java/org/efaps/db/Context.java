@@ -103,7 +103,7 @@ public final class Context
     static {
         try {
             final InitialContext initCtx = new InitialContext();
-            final javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:");
+            final javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:/comp/env");
             Context.DATASOURCE = (DataSource) envCtx.lookup(INamingBinds.RESOURCE_DATASOURCE);
             Context.DBTYPE = DataBaseFactory.getDatabase(Context.DATASOURCE.getConnection());
             Context.TRANSMANAG = (TransactionManager) envCtx.lookup(INamingBinds.RESOURCE_TRANSMANAG);
