@@ -76,14 +76,13 @@ public class ConnectionResource
      * Frees the resource and gives this connection resource back to the
      * context object.
      */
-    @Override()
+    @Override
     protected void freeResource()
     {
         try {
             Context.getThreadContext().returnConnectionResource(this);
         } catch (final EFapsException e) {
-// TODO Auto-generated catch block
-            e.printStackTrace();
+            ConnectionResource.LOG.error("EFapsException", e);
         }
     }
 
@@ -93,6 +92,8 @@ public class ConnectionResource
     /**
      * Ask the resource manager to prepare for a transaction commit of the
      * transaction specified in xid (used for 2-phase commits).
+     * @param _xid Xid
+     * @return 0
      */
     public int prepare(final Xid _xid)
     {
@@ -104,6 +105,9 @@ public class ConnectionResource
 
     /**
      * Commits the global transaction specified by xid.
+     * @param _xid      Xid
+     * @param _onePhase one phase
+     * @throws XAException on error
      */
     public void commit(final Xid _xid,
                        final boolean _onePhase)
@@ -127,7 +131,7 @@ public class ConnectionResource
                     this.connection = null;
                 }
             } catch (final SQLException e) {
-//        getLogger().log(e, LOG_CHANNEL, Logger.WARNING);
+                ConnectionResource.LOG.error("SQLException", e);
             }
         }
     }
@@ -135,6 +139,8 @@ public class ConnectionResource
     /**
      * Informs the resource manager to roll back work done on behalf of a
      * transaction branch.
+     * @param _xid Xid
+     * @throws XAException on error
      */
     public void rollback(final Xid _xid)
         throws XAException
@@ -157,7 +163,7 @@ public class ConnectionResource
                     this.connection = null;
                 }
             } catch (final SQLException e) {
-//        getLogger().log(e, LOG_CHANNEL, Logger.WARNING);
+                ConnectionResource.LOG.error("SQLException", e);
             }
         }
     }
@@ -165,6 +171,7 @@ public class ConnectionResource
     /**
      * Tells the resource manager to forget about a heuristically completed
      * transaction branch.
+     * @param _xid Xid
      */
     public void forget(final Xid _xid)
     {
@@ -176,6 +183,7 @@ public class ConnectionResource
     /**
      * Obtains the current transaction timeout value set for this XAResource
      * instance.
+     * @return 0
      */
     public int getTransactionTimeout()
     {
@@ -187,6 +195,8 @@ public class ConnectionResource
 
     /**
      * Obtains a list of prepared transaction branches from a resource manager.
+     * @param _flag flag
+     * @return null
      */
     public Xid[] recover(final int _flag)
     {
