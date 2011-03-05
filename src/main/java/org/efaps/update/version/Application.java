@@ -105,6 +105,7 @@ public final class Application
     private static final Set<String> DEFAULT_EXCLUDES = new HashSet<String>();
     static {
         Application.DEFAULT_EXCLUDES.add("**/versions.xml");
+        Application.DEFAULT_EXCLUDES.add("**/package-info.java");
     }
 
     /**
