@@ -66,13 +66,18 @@ public class DecimalWithUoMUI
             final Object[] values =  (Object[]) value;
             final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
                             .getLocale());
-            final String strValue = values[0] instanceof Number ? formatter.format(values[0]) : values[0].toString();
-            final UoM uom = (UoM) values[1];
-            ret.append("<span><span name=\"").append(field.getName()).append("\" ")
-                .append(UIInterface.EFAPSTMPTAG).append(">")
-                .append(strValue).append("</span>&nbsp;")
-                .append("<span name=\"").append(field.getName()).append("UoM\" ").append(">")
-                .append(uom.getName()).append("</span></span>");
+                final String strValue = values[0] != null ? (values[0] instanceof Number
+                                                    ? formatter.format(values[0]) : values[0].toString()) : "";
+
+                final UoM uom = (UoM) values[1];
+                ret.append("<span><span name=\"").append(field.getName()).append("\" ")
+                    .append(UIInterface.EFAPSTMPTAG).append(">")
+                    .append(strValue).append("</span>&nbsp;");
+                if (strValue.length() > 0 && uom != null) {
+                    ret.append("<span name=\"").append(field.getName()).append("UoM\" ").append(">")
+                    .append(uom.getName()).append("</span>");
+                }
+                ret.append("</span>");
         }
         return ret.toString();
     }
