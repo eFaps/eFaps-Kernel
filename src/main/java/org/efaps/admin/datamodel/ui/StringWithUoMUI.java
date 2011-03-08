@@ -57,7 +57,7 @@ public class StringWithUoMUI
 
         if (value instanceof Object[]) {
             final Object[] values =  (Object[]) value;
-            final String tmp = values[0].toString();
+            final String tmp = values[0] != null ?  values[0].toString() : "";
             final UoM uom = (UoM) values[1];
             ret.append("<span><span name=\"").append(field.getName()).append("\" ")
                 .append(UIInterface.EFAPSTMPTAG).append(">")
@@ -83,7 +83,7 @@ public class StringWithUoMUI
         UoM uomValue = null;
         if (value instanceof Object[]) {
             final Object[] values =  (Object[]) value;
-            strValue = values[0].toString();
+            strValue = values[0] != null ?  values[0].toString() : "";
             uomValue = (UoM) values[1];
         }
 

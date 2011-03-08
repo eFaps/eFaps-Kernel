@@ -68,7 +68,6 @@ public class DecimalWithUoMUI
                             .getLocale());
                 final String strValue = values[0] != null ? (values[0] instanceof Number
                                                     ? formatter.format(values[0]) : values[0].toString()) : "";
-
                 final UoM uom = (UoM) values[1];
                 ret.append("<span><span name=\"").append(field.getName()).append("\" ")
                     .append(UIInterface.EFAPSTMPTAG).append(">")
@@ -98,7 +97,8 @@ public class DecimalWithUoMUI
             final Object[] values =  (Object[]) value;
             final DecimalFormat formatter
                 = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext().getLocale());
-            strValue = values[0] instanceof Number ? formatter.format(values[0]) : values[0].toString();
+            strValue =  values[0] != null
+                ? (values[0] instanceof Number ? formatter.format(values[0]) : values[0].toString()) : "";
             uomValue = (UoM) values[1];
         }
 

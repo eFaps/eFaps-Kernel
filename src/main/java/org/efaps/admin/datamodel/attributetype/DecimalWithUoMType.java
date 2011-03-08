@@ -78,7 +78,7 @@ public class DecimalWithUoMType
     {
         final DecimalWithUoM ret;
 
-        if ((_values == null) || (_values.length < 2) || (_values[0] == null))  {
+        if ((_values == null) || (_values.length < 2))  {
             ret = null;
         } else  {
             final BigDecimal value;
@@ -97,14 +97,15 @@ public class DecimalWithUoMType
             }
 
             final UoM uom;
-            if ((_values[1] instanceof String) && (((String) _values[1]).length() > 0)) {
+            if (_values[1] instanceof UoM) {
+                uom = (UoM) _values[1];
+            } else if ((_values[1] instanceof String) && (((String) _values[1]).length() > 0)) {
                 uom = Dimension.getUoM(Long.parseLong((String) _values[1]));
             } else if (_values[1] instanceof Number) {
                 uom = Dimension.getUoM(((Number) _values[1]).longValue());
             } else  {
                 uom = null;
             }
-
             ret = new DecimalWithUoM(value, uom);
         }
         return ret;
