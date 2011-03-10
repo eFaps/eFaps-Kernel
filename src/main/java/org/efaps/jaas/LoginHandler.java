@@ -119,6 +119,7 @@ public class LoginHandler
 
                 updateRoles(login, person);
                 updateGroups(login, person);
+                updateCompanies(login, person);
 
                 person.updateLastLogin();
             }
@@ -338,6 +339,27 @@ public class LoginHandler
             }
         }
     }
+
+    /**
+     * The groups of the given person are updated with the information from the
+     * JAAS login context.
+     * TODO: no real check or update is done
+     * @param _login    JAAS login context
+     * @param _person   person for which the groups must be updated
+     * @throws EFapsException if a method of the principals inside the JAAS
+     *                        login contexts could not be executed or the
+     *                        groups for the given person could not be set.
+     */
+    protected void updateCompanies(final LoginContext _login,
+                                final Person _person)
+        throws EFapsException
+    {
+        for (final JAASSystem system : JAASSystem.getAllJAASSystems()) {
+            _person.setCompanies(system, _person.getCompaniesFromDB(null));
+            break;
+        }
+    }
+
 
     /**
      * This is the getter method for instance variable {@link #applicationName}.

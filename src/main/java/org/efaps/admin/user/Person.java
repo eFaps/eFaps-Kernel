@@ -49,6 +49,7 @@ import org.efaps.util.ChronologyType;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheReloadException;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -256,6 +257,17 @@ public final class Person
     public boolean isAssigned(final Group _group)
     {
         return this.groups.contains(_group);
+    }
+
+    /**
+     * Add a role to this person.
+     *
+     * @param _group group to add to this person
+     * @see #groups
+     */
+    private void add(final Company _group)
+    {
+        this.companies.add(_group);
     }
 
     /**
@@ -762,7 +774,7 @@ public final class Person
      * @return set of all found companies for given JAAS system
      * @throws EFapsException on error
      */
-    protected Set<Company> getCompaniesFromDB(final JAASSystem _jaasSystem)
+    public Set<Company> getCompaniesFromDB(final JAASSystem _jaasSystem)
         throws EFapsException
     {
         final Set<Company> ret = new HashSet<Company>();
@@ -806,6 +818,30 @@ public final class Person
             }
         }
         return ret;
+    }
+
+    /**
+     * The depending roles for the user are set for the given JAAS system. All
+     * roles are added to the loaded roles in the cache of this person.
+     *
+     * @param _jaasSystem JAAS system for which the roles are set
+     * @param _companies set of company to set for the JAAS system
+     * @throws EFapsException from calling methods
+     */
+    public void setCompanies(final JAASSystem _jaasSystem,
+                             final Set<Company> _companies)
+        throws EFapsException
+    {
+
+        if (_jaasSystem == null) {
+            throw new EFapsException(getClass(), "setRoles.nojaasSystem", getName());
+        }
+        if (_companies == null) {
+            throw new EFapsException(getClass(), "setRoles.noRoles", getName());
+        }
+        for (final Company role : _companies) {
+            add(role);
+        }
     }
 
     /**
@@ -1583,15 +1619,23 @@ public final class Person
          * stored inside the session and is growing dynamically during the
          * session up to a maximum value defined by a SystemAttribute.
          *
-         * @param _cache4Id not used
-         * @param _cache4Name not used
-         * @param _cache4UUID not used
+         * @param _cache4Id     cache 4 id
+         * @param _cache4Name   cache 4 name
+         * @param _cache4UUID   not used
+         * @throws CacheReloadException on error
          */
         @Override
         protected void readCache(final Map<Long, Person> _cache4Id,
                                  final Map<String, Person> _cache4Name,
                                  final Map<UUID, Person> _cache4UUID)
+            throws CacheReloadException
         {
+            try {
+                Context.getThreadContext().setSessionAttribute(Person.CACHE4NAMEKEY, _cache4Name);
+                Context.getThreadContext().setSessionAttribute(Person.CACHE4IDKEY, _cache4Id);
+            } catch (final EFapsException e) {
+                throw new CacheReloadException("error in reading cache for Person", e);
+            }
         }
 
         /**
