@@ -1005,9 +1005,9 @@ public final class Context
                     }
                 }
                 if (context.company == null && context.person.getCompanies().size() > 0) {
-                    for (final Company comp : context.person.getCompanies()) {
-                        context.setUserAttribute(Context.CURRENTCOMPANY, ((Long) comp.getId()).toString());
-                        context.company = comp;
+                    for (final Long compID : context.person.getCompanies()) {
+                        context.setUserAttribute(Context.CURRENTCOMPANY, compID.toString());
+                        context.company = Company.get(compID);
                         break;
                     }
                 }

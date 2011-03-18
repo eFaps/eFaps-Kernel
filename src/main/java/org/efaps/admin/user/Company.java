@@ -72,7 +72,10 @@ public final class Company
      * @param _name     name for this company
      * @param _status    status for this company
      */
-    private Company(final long _id, final String _uuid, final String _name, final boolean _status)
+    private Company(final long _id,
+                    final String _uuid,
+                    final String _name,
+                    final boolean _status)
     {
         super(_id, _uuid, _name, _status);
     }
@@ -123,7 +126,8 @@ public final class Company
     * @throws CacheReloadException on error
     * @see #getCache
     */
-    public static Company get(final long _id) throws CacheReloadException
+    public static Company get(final long _id)
+        throws CacheReloadException
     {
         return Company.CACHE.get(_id);
     }
@@ -137,7 +141,8 @@ public final class Company
     * @throws CacheReloadException on error
     * @see #getCache
     */
-    public static Company get(final String _name) throws CacheReloadException
+    public static Company get(final String _name)
+        throws CacheReloadException
     {
         return Company.CACHE.get(_name);
     }
@@ -149,7 +154,8 @@ public final class Company
      * @return instance of class {@link Company}
      * @throws CacheReloadException on error
      */
-    public static Company get(final UUID _uuid) throws CacheReloadException
+    public static Company get(final UUID _uuid)
+        throws CacheReloadException
     {
         return Company.CACHE.get(_uuid);
     }
@@ -166,13 +172,15 @@ public final class Company
     /**
      * Cache for Companies.
      */
-    private static final class CompanyCache extends AbstractCache<Company>
+    private static final class CompanyCache
+        extends AbstractCache<Company>
     {
         /**
          * {@inheritDoc}
          */
         @Override
-        protected void readCache(final Map<Long, Company> _cache4Id, final Map<String, Company> _cache4Name,
+        protected void readCache(final Map<Long, Company> _cache4Id,
+                                 final Map<String, Company> _cache4Name,
                                  final Map<UUID, Company> _cache4UUID)
             throws CacheReloadException
         {

@@ -141,28 +141,28 @@ public final class Person
     private static final String CACHE4IDKEY = "org.efaps.admin.user.Person.eFapsPersonCache4Id";
 
     /**
-     * HashSet instance variable to hold all roles for this person.
+     * HashSet instance variable to hold all id of roles for this person.
      *
      * @see #getRoles
      * @see #add(Role)
      */
-    private final Set<Role> roles = new HashSet<Role>();
+    private final Set<Long> roles = new HashSet<Long>();
 
     /**
-     * HashSet instance variable to hold all groups for this person.
+     * HashSet instance variable to hold all id of groups for this person.
      *
      * @see #getGroups
      * @see #add(Group)
      */
-    private final Set<Group> groups = new HashSet<Group>();
+    private final Set<Long> groups = new HashSet<Long>();
 
     /**
-     * HashSet instance variable to hold all groups for this person.
+     * HashSet instance variable to hold all id of groups for this person.
      *
      * @see #getCompanies
      * @see #add(Company)
      */
-    private final Set<Company> companies = new HashSet<Company>();
+    private final Set<Long> companies = new HashSet<Long>();
 
     /**
      * The map is used to store all attribute values depending on attribute
@@ -221,7 +221,7 @@ public final class Person
      */
     private void add(final Role _role)
     {
-        this.roles.add(_role);
+        this.roles.add(_role.getId());
     }
 
     /**
@@ -233,7 +233,7 @@ public final class Person
      */
     public boolean isAssigned(final Role _role)
     {
-        return this.roles.contains(_role);
+        return this.roles.contains(_role.getId());
     }
 
     /**
@@ -244,7 +244,7 @@ public final class Person
      */
     private void add(final Group _group)
     {
-        this.groups.add(_group);
+        this.groups.add(_group.getId());
     }
 
     /**
@@ -256,7 +256,7 @@ public final class Person
      */
     public boolean isAssigned(final Group _group)
     {
-        return this.groups.contains(_group);
+        return this.groups.contains(_group.getId());
     }
 
     /**
@@ -267,7 +267,7 @@ public final class Person
      */
     private void add(final Company _group)
     {
-        this.companies.add(_group);
+        this.companies.add(_group.getId());
     }
 
     /**
@@ -279,7 +279,7 @@ public final class Person
      */
     public boolean isAssigned(final Company _company)
     {
-        return this.companies.contains(_company);
+        return this.companies.contains(_company.getId());
     }
 
     /**
@@ -707,11 +707,17 @@ public final class Person
     {
         readFromDBAttributes();
         this.roles.clear();
-        this.roles.addAll(getRolesFromDB());
+        for (final Role role : getRolesFromDB()) {
+            add(role);
+        }
         this.groups.clear();
-        this.groups.addAll(getGroupsFromDB(null));
+        for (final Group group : getGroupsFromDB(null)) {
+            add(group);
+        }
         this.companies.clear();
-        this.companies.addAll(getCompaniesFromDB(null));
+        for (final Company company : getCompaniesFromDB(null)) {
+            add(company);
+        }
     }
 
     /**
@@ -1182,7 +1188,7 @@ public final class Person
      * @return the value of the instance variable {@link #roles}.
      * @see #roles
      */
-    public Set<Role> getRoles()
+    public Set<Long> getRoles()
     {
         return this.roles;
     }
@@ -1193,7 +1199,7 @@ public final class Person
      * @return the value of the instance variable {@link #groups}.
      * @see #groups
      */
-    public Set<Group> getGroups()
+    public Set<Long> getGroups()
     {
         return this.groups;
     }
@@ -1203,7 +1209,7 @@ public final class Person
      *
      * @return value of instance variable {@link #companies}
      */
-    public Set<Company> getCompanies()
+    public Set<Long> getCompanies()
     {
         return this.companies;
     }
