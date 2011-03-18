@@ -141,6 +141,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
+                        <version>2.1.2</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -155,6 +156,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                         <inherited>true</inherited>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.7</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
@@ -169,6 +171,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                         <inherited>true</inherited>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
+                        <version>2.5</version>
                         <configuration>
                             <updateReleaseInfo>true</updateReleaseInfo>
                         </configuration>
@@ -177,6 +180,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.1</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -240,7 +244,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             -->
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.6</version>
+                <version>2.8</version>
                 <configuration>
                     <suiteXmlFiles>
                         <suiteXmlFile>${basedir}/src/test/resources/testng.xml</suiteXmlFile>
@@ -258,7 +262,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.0-beta-2</version>
+                <version>3.0-beta-3</version>
                 <configuration>
                     <reportPlugins>
                         <plugin>
@@ -361,7 +365,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.6.0</version>
+            <version>1.6.1</version>
         </dependency>
 
         <!-- JDBC driver -->
@@ -373,21 +377,21 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.9</version>
+            <version>5.1.15</version>
         </dependency>
 
         <!-- used for toString methods -->
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.4</version>
+            <version>2.6</version>
         </dependency>
 
         <!-- easy XML reader -->
         <dependency>
             <groupId>commons-digester</groupId>
             <artifactId>commons-digester</artifactId>
-            <version>1.8.1</version>
+            <version>2.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -472,14 +476,14 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>1.6</version>
+            <version>1.6.2</version>
         </dependency>
 
         <!-- the yuicompressor is used to compress javascript and css files -->
         <dependency>
             <groupId>com.yahoo.platform.yui</groupId>
             <artifactId>yuicompressor</artifactId>
-            <version>2.3.6</version>
+            <version> 2.4.2</version>
         </dependency>
 
         <!-- wikiutil from efaps to compile wiki into html -->
@@ -493,7 +497,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -521,7 +525,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.6</version>
+            <version>3.7</version>
             <exclusions>
                 <exclusion>
                     <groupId>log4j</groupId>
@@ -548,7 +552,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.ivy</groupId>
             <artifactId>ivy</artifactId>
-            <version>2.1.0</version>
+            <version>2.2.0</version>
         </dependency>
 
 
@@ -556,7 +560,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>com.sun.jersey.contribs</groupId>
             <artifactId>jersey-multipart</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -566,7 +570,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
             <scope>compile</scope>
         </dependency>
 
@@ -608,13 +612,13 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.6.0</version>
+            <version>1.6.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.15</version>
+            <version>1.2.16</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -656,7 +660,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.ow2.spec.ee</groupId>
             <artifactId>ow2-connector-1.5-spec</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.6</version>
             <scope>test</scope>
         </dependency>
         <!-- Needed indirectly for the transaction manager -->
