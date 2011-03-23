@@ -41,8 +41,8 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.db.Context;
@@ -510,6 +510,10 @@ public class Type
             for (final EventDefinition event : events) {
                 final Return retrn = event.execute(parameter);
                 ret = (Map<Instance, Boolean>) retrn.get(ReturnValues.VALUES);
+            }
+        } else {
+            for (final Instance instance : _instances) {
+                ret.put(instance, true);
             }
         }
         return ret;
