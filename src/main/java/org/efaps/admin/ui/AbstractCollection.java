@@ -39,7 +39,6 @@ import org.efaps.admin.ui.field.FieldPicker;
 import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.ci.CIAdminUserInterface;
-import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
@@ -98,7 +97,9 @@ public abstract class AbstractCollection
      * @param _uuid uuid of this collection
      * @param _name name of this collection
      */
-    protected AbstractCollection(final long _id, final String _uuid, final String _name)
+    protected AbstractCollection(final long _id,
+                                 final String _uuid,
+                                 final String _name)
     {
         super(_id, _uuid, _name);
     }
@@ -122,6 +123,7 @@ public abstract class AbstractCollection
                 addFieldExpr(ref.substring(index, end));
             }
         }
+        _field.setCollectionUUID(getUUID());
     }
 
     /**
@@ -182,7 +184,8 @@ public abstract class AbstractCollection
      * @throws CacheReloadException on error
      */
     @Override
-    protected void readFromDB() throws CacheReloadException
+    protected void readFromDB()
+        throws CacheReloadException
     {
         super.readFromDB();
         readFromDB4Fields();
@@ -193,11 +196,11 @@ public abstract class AbstractCollection
      *
      * @throws CacheReloadException on error
      */
-    private void readFromDB4Fields() throws CacheReloadException
+    private void readFromDB4Fields()
+        throws CacheReloadException
     {
         try {
 
-            Instance.get(CIAdminUserInterface.Collection.getType(), getId());
             final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Field);
             queryBldr.addWhereAttrEqValue(CIAdminUserInterface.Field.Collection, getId());
             final MultiPrintQuery multi = queryBldr.getPrint();
@@ -225,7 +228,7 @@ public abstract class AbstractCollection
                 } else if (type.getUUID().equals(CIAdminUserInterface.FieldPicker.uuid)) {
                     field = new FieldPicker(id, null, name);
                 } else if (type.getUUID().equals(CIAdminUserInterface.FieldChart.uuid)) {
-                        field = new FieldChart(id, null, name);
+                    field = new FieldChart(id, null, name);
                 } else {
                     field = new Field(id, null, name);
                 }

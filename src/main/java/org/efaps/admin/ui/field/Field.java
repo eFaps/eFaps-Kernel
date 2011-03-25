@@ -22,6 +22,7 @@ package org.efaps.admin.ui.field;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.UIInterface;
@@ -162,14 +163,6 @@ public class Field
     private int selIndex;
 
     /**
-     * The field is represented by a radio button, if the field is editable.
-     *
-     * @see #setRadioButton
-     * @see #isRadioButton
-     */
-    private final boolean radioButton = false;
-
-    /**
      * The field has an icon..
      *
      * @see #setIcon
@@ -260,12 +253,10 @@ public class Field
     private String align = "left";
 
     /**
-     * Standart-Constructor.
+     * UUID of the parent collection. It is used to have a lazy low cost
+     * access to the collection this FIeld belongs to.
      */
-    public Field()
-    {
-        super(0, null, null);
-    }
+    private UUID collectionUUID;
 
     /**
      * This is the constructor of the field class.
@@ -499,18 +490,6 @@ public class Field
     }
 
     /**
-     * This is the getter method for instance variable {@link #radioButton}.
-     *
-     * @return the value of the instance variable {@link #radioButton}.
-     * @see #radioButton
-     * @see #setRadioButton
-     */
-    public boolean isRadioButton()
-    {
-        return this.radioButton;
-    }
-
-    /**
      * This is the setter method for instance variable {@link #sortAble}.
      *
      * @return the value of the instance variable {@link #sortAble}.
@@ -638,6 +617,32 @@ public class Field
     {
         return this.phrase;
     }
+
+    /**
+     * Getter method for the instance variable {@link #collectionOID}.
+     *
+     * @return value of instance variable {@link #collectionOID}
+     */
+    public AbstractCollection getCollection()
+    {
+        AbstractCollection ret = Form.get(this.collectionUUID);
+        if (ret == null) {
+            ret = Table.get(this.collectionUUID);
+        }
+        return ret;
+    }
+
+    /**
+     * Setter method for instance variable {@link #collectionOID}.
+     *
+     * @param _collectionOID value for instance variable {@link #collectionOID}
+     */
+
+    public void setCollectionUUID(final UUID _collectionOID)
+    {
+        this.collectionUUID = _collectionOID;
+    }
+
 
     /**
      * Getter method for instance variable {@link #selectAlternateOID}.

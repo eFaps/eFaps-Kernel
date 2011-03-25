@@ -1235,6 +1235,7 @@ public final class Person
                         .append("attrValues", this.attrValues)
                         .append("roles", this.roles)
                         .append("groups", this.groups)
+                        .append("companies", this.companies)
                         .toString();
     }
 

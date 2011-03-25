@@ -61,6 +61,10 @@ public class Parameter
          */
         CALL_INSTANCE,
         /**
+         * The cmd that initiated the call. (e.g. The cmd that opened the form)
+         */
+        CALL_CMD,
+        /**
          * Contains the class that called the esjp.
          */
         CLASS,
@@ -95,7 +99,7 @@ public class Parameter
          */
         OTHERS,
         /**
-         * Instances that where reterieved in the same request as the instance.
+         * Instances that where retrieved in the same request as the instance.
          */
         REQUEST_INSTANCES,
         /**

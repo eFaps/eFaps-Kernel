@@ -191,6 +191,35 @@ public abstract class AbstractUserInterfaceObject
                              final Instance _instance)
         throws EFapsException
     {
+        return hasAccess(_targetMode, _instance, null);
+    }
+
+    /**
+     * Check, if the user of the context has access to this user interface
+     * object. <br>
+     * The Check is made in the following order: <br>
+     * <ol>
+     * <li>If no access User or role is assigned to this user interface object,
+     * all user have access and the return is <i>true</i> => go on with Step 3</li>
+     * <li>else check if the context person is assigned to one of the user
+     * objects.</li>
+     * <li>if Step 1 or Step 2 have <i>true</i> and the context an Event of the
+     * Type <code>TriggerEvent.ACCESSCHECK</code>, the return of the trigger
+     * initiated program is returned</li>
+     * </ol>
+     *
+     * @param _targetMode targetmode of the access
+     * @param _instance the field will represent, e.g. on edit mode
+     * @param _callCmd  the cmd that called this UI-Object
+     * @return <i>true</i> if context user has access, otherwise <i>false</i> is
+     *         returned
+     * @throws EFapsException on error
+     */
+    public boolean hasAccess(final TargetMode _targetMode,
+                             final Instance _instance,
+                             final AbstractCommand _callCmd)
+        throws EFapsException
+    {
         boolean ret = false;
         if (getAccess().isEmpty() && !AppAccessHandler.excludeMode()) {
             ret = true;
@@ -229,6 +258,7 @@ public abstract class AbstractUserInterfaceObject
             parameter.put(ParameterValues.UIOBJECT, this);
             parameter.put(ParameterValues.ACCESSMODE, _targetMode);
             parameter.put(ParameterValues.INSTANCE, _instance);
+            parameter.put(ParameterValues.CALL_CMD, _callCmd);
             for (final EventDefinition event : events) {
                 final Return retIn = event.execute(parameter);
                 ret = retIn.get(ReturnValues.TRUE) != null;

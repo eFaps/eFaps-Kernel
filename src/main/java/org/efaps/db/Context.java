@@ -998,7 +998,7 @@ public final class Context
             if (_sessionAttributes != null) {
                 if (context.containsUserAttribute(Context.CURRENTCOMPANY)) {
                     final Company comp = Company.get(Long.parseLong(context.getUserAttribute(Context.CURRENTCOMPANY)));
-                    if (comp != null && comp.hasChildPerson(context.person)) {
+                    if (comp != null && !context.person.getCompanies().isEmpty() && context.person.isAssigned(comp)) {
                         context.company = comp;
                     } else {
                         context.setUserAttribute(Context.CURRENTCOMPANY, "0");
