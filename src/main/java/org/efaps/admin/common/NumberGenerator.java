@@ -23,8 +23,8 @@ package org.efaps.admin.common;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.util.Formatter;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -138,15 +138,34 @@ public final class NumberGenerator
     public String getNextVal()
         throws EFapsException
     {
-        long ret = 0;
+        return getNextVal(new Object[0]);
+    }
+
+    /**
+     * Method to get the next value for this sequence.
+     * Including additional format information.
+     * To get the long value use {@link #getNextValAsLong()}
+     * @param _args  arguments for the formatter
+     * @return next value for this sequence
+     * @throws EFapsException on error
+     */
+    public String getNextVal(final Object... _args)
+        throws EFapsException
+    {
+        final Object[] args = new Object[_args.length + 1];
         try {
-            ret = Context.getDbType().nextSequence(Context.getThreadContext().getConnection(), getDBName());
+            final long val = Context.getDbType().nextSequence(Context.getThreadContext().getConnection(), getDBName());
+            args[0] = val;
         } catch (final SQLException e) {
             throw new EFapsException(NumberGenerator.class, " getNextVal()", e);
         }
-        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance();
-        formatter.applyPattern(this.format);
-        return formatter.format(ret);
+        for (int i = 0; i < _args.length; i++) {
+            args[i + 1] = _args[i];
+        }
+        final Locale local = Context.getThreadContext().getLocale();
+        final Formatter formatter = new Formatter(local);
+        formatter.format(this.format, args);
+        return formatter.toString();
     }
 
     /**
