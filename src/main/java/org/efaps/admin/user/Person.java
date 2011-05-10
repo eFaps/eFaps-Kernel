@@ -1658,7 +1658,12 @@ public final class Person
             @Override
             protected boolean removeEldestEntry(final Entry<T, Person> _eldest)
             {
-                int size = EFapsSystemConfiguration.KERNEL.get().getAttributeValueAsInteger("Cache4PersonMaxSize");
+                int size = 0;
+                final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
+                if (config != null) {
+                    size = EFapsSystemConfiguration.KERNEL.get().getAttributeValueAsInteger("Cache4PersonMaxSize");
+                }
+
                 if (size < 1) {
                     size = 100;
                 }
