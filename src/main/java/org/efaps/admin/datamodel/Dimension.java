@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -47,7 +48,13 @@ import org.slf4j.LoggerFactory;
  */
 public class Dimension
     extends AbstractAdminObject
+    implements Serializable
 {
+
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * This is the sql select statement to select all dimension from the
@@ -246,7 +253,12 @@ public class Dimension
      * Class for an UoM. (Unit of Measurement)
      */
     public class UoM
+        implements Serializable
     {
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
 
         /**
          * Id of this UoM.

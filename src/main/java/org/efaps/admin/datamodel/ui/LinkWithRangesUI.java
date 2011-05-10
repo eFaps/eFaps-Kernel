@@ -21,13 +21,13 @@
 package org.efaps.admin.datamodel.ui;
 
 import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventType;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
@@ -118,5 +118,16 @@ public class LinkWithRangesUI
             }
         }
         return ret.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int compare(final FieldValue _fieldValue,
+                       final FieldValue _fieldValue2)
+        throws EFapsException
+    {
+        return _fieldValue.getValue().toString().compareTo(_fieldValue2.getValue().toString());
     }
 }
