@@ -76,7 +76,18 @@ public class DateTimeType
         final List<DateTime> ret = new ArrayList<DateTime>();
         for (final Object object : _objectList) {
             if (object instanceof Timestamp || object instanceof Date) {
-                ret.add(new DateTime(object, chron));
+                // to avoid the automatic "correction" of the timezone first a local date must be made
+                // and than a new Date with the correct timezone must be created
+                final DateTime dateTime = new DateTime(object);
+                final DateTime unlocalized = new DateTime(dateTime.getYear(),
+                                dateTime.getMonthOfYear(),
+                                dateTime.getDayOfMonth(),
+                                dateTime.getHourOfDay(),
+                                dateTime.getMinuteOfHour(),
+                                dateTime.getSecondOfMinute(),
+                                dateTime.getMillisOfSecond(),
+                                chron);
+                ret.add(unlocalized);
             } else if (ret != null) {
                 ret.add(new DateTime());
             }
@@ -114,7 +125,19 @@ public class DateTimeType
             ret = null;
         } else  {
             final DateTime dateTime = DateTimeUtil.translateFromUI(_value[0]);
-            ret = (dateTime != null) ? new Timestamp(dateTime.getMillis()) : null;
+            // until now we have a time that depends on the timezone of the application server
+            // to convert it in a timestamp for the efaps database the timezone information (mainly the offste)
+            // must be removed. This is done by creating a local date with the same, date and time.
+            // this guarantees that the datetime inserted into the database depends on the setting
+            // in the configuration and not on the timezone for the application server.
+            final DateTime localized = new DateTime(dateTime.getYear(),
+                                                    dateTime.getMonthOfYear(),
+                                                    dateTime.getDayOfMonth(),
+                                                    dateTime.getHourOfDay(),
+                                                    dateTime.getMinuteOfHour(),
+                                                    dateTime.getSecondOfMinute(),
+                                                    dateTime.getMillisOfSecond());
+            ret = (dateTime != null) ? new Timestamp(localized.getMillis()) : null;
         }
         return ret;
     }

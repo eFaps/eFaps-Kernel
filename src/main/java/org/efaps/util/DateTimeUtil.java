@@ -133,7 +133,7 @@ public final class DateTimeUtil
         } else if (_value instanceof DateTime) {
             ret = ((DateTime) _value).withChronology(chron);
         } else if (_value instanceof String) {
-            ret = ISODateTimeFormat.dateTime().parseDateTime((String) _value);
+            ret = ISODateTimeFormat.dateTime().parseDateTime((String) _value).withChronology(chron);
         } else  {
             ret = null;
         }

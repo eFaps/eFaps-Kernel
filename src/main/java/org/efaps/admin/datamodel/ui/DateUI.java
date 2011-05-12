@@ -51,15 +51,16 @@ public class DateUI
         throws EFapsException
     {
         String ret = null;
-
         if (_fieldValue.getValue() instanceof DateTime) {
-            final DateMidnight datetime = ((DateTime) _fieldValue.getValue()).toDateMidnight();
+            final DateTime datetime = (DateTime) _fieldValue.getValue();
             if (datetime != null) {
-                final DateTimeFormatter formatter = DateTimeFormat.mediumDate();
                 // format the Date with the Locale and Chronology from the user
                 // context
-                ret = datetime.withChronology(Context.getThreadContext().getChronology()).toString(
-                                formatter.withLocale(Context.getThreadContext().getLocale()));
+                final DateMidnight dateTmp = new DateMidnight(datetime.getYear(), datetime.getMonthOfYear(),
+                                datetime.getDayOfMonth(), Context.getThreadContext().getChronology());
+                final DateTimeFormatter formatter = DateTimeFormat.mediumDate();
+
+                ret = dateTmp.toString(formatter.withLocale(Context.getThreadContext().getLocale()));
             }
         } else if (_fieldValue.getValue() != null) {
             throw new EFapsException(this.getClass(), "getViewHtml.noDateTime", (Object[]) null);
