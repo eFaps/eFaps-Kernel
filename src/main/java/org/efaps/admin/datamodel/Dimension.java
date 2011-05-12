@@ -115,6 +115,23 @@ public class Dimension
     private UoM baseUoM;
 
     /**
+     * Constructor needed for serialization.
+     * "To allow subtypes of non-serializable classes to be serialized, the
+     * subtype may assume responsibility for saving and restoring the
+     * state of the supertype's public, protected, and (if accessible)
+     * package fields.  The subtype may assume this responsibility only if
+     * the class it extends has an accessible no-arg constructor to
+     * initialize the class's state.  It is an error to declare a class
+     * Serializable if this is not the case.  The error will be detected at
+     * runtime."
+     */
+    protected Dimension()
+    {
+        super(0, null, null);
+        this.baseUoMId = 0;
+    }
+
+    /**
      * Constructor.
      *
      * @param _id id of this dimension
