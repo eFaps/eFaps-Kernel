@@ -48,9 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Dimension
     extends AbstractAdminObject
-    implements Serializable
 {
-
     /**
      * Needed for serialization.
      */
@@ -113,23 +111,6 @@ public class Dimension
      * Base UoM.
      */
     private UoM baseUoM;
-
-    /**
-     * Constructor needed for serialization.
-     * "To allow subtypes of non-serializable classes to be serialized, the
-     * subtype may assume responsibility for saving and restoring the
-     * state of the supertype's public, protected, and (if accessible)
-     * package fields.  The subtype may assume this responsibility only if
-     * the class it extends has an accessible no-arg constructor to
-     * initialize the class's state.  It is an error to declare a class
-     * Serializable if this is not the case.  The error will be detected at
-     * runtime."
-     */
-    protected Dimension()
-    {
-        super(0, null, null);
-        this.baseUoMId = 0;
-    }
 
     /**
      * Constructor.
@@ -269,7 +250,7 @@ public class Dimension
     /**
      * Class for an UoM. (Unit of Measurement)
      */
-    public class UoM
+    public static class UoM
         implements Serializable
     {
         /**
@@ -466,7 +447,7 @@ public class Dimension
                             Dimension.LOG.debug("read dimension '" + name + "' (id = " + id + ")");
                         }
                         final Dimension dim = _cache4Id.get(dimId);
-                        final UoM uom = dim.new UoM(id, dimId, name, numerator, denominator);
+                        final UoM uom = new UoM(id, dimId, name, numerator, denominator);
                         dim.addUoM(uom);
                         Dimension.ID2UOM.put(uom.getId(), uom);
                     }
