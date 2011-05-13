@@ -144,28 +144,31 @@ public class DBProperties
         }
 
         String value = null;
+        try {
+            // WebApp-Configuration
+            final SystemConfiguration webConfig = SystemConfiguration.get(
+                                                    UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
+            final boolean showKey = webConfig == null
+                                                ? false
+                                                : webConfig.getAttributeValueAsBoolean("ShowDBPropertiesKey");
 
-        // WebApp-Configuration
-        final SystemConfiguration webConfig = SystemConfiguration.get(
-                                                UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
-        final boolean showKey = webConfig == null
-                                            ? false
-                                            : webConfig.getAttributeValueAsBoolean("ShowDBPropertiesKey");
+            if (showKey) {
+                value = _key;
+            } else {
+                final Map<String, String> map = DBProperties.PROPERTIESCACHE.get(_language);
+                if (map != null) {
+                    value = map.get(_key);
+                }
 
-        if (showKey) {
-            value = _key;
-        } else {
-            final Map<String, String> map = DBProperties.PROPERTIESCACHE.get(_language);
-            if (map != null) {
-                value = map.get(_key);
-            }
-
-            if (value == null) {
-                final Map<String, String> defaultProps = DBProperties.PROPERTIESCACHE.get(DBProperties.DEFAULT);
-                if (defaultProps != null) {
-                    value = DBProperties.PROPERTIESCACHE.get(DBProperties.DEFAULT).get(_key);
+                if (value == null) {
+                    final Map<String, String> defaultProps = DBProperties.PROPERTIESCACHE.get(DBProperties.DEFAULT);
+                    if (defaultProps != null) {
+                        value = DBProperties.PROPERTIESCACHE.get(DBProperties.DEFAULT).get(_key);
+                    }
                 }
             }
+        } catch (final EFapsException e) {
+            DBProperties.LOG.error("not able to read ShowDBPropertiesKey from the webConfig", e);
         }
         return (value == null) ? "?? - " + _key + " - ??" : value;
     }

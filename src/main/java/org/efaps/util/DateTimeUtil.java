@@ -91,8 +91,10 @@ public final class DateTimeUtil
      *
      * @param _date     date to normalize
      * @return DateTime normalized for the database
+     * @throws EFapsException
      */
     public static DateTime normalize(final DateTime _date)
+        throws EFapsException
     {
         // reads the Value from "Admin_Common_DataBaseTimeZone"
         final String timezoneID = EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DataBaseTimeZone");
@@ -115,8 +117,10 @@ public final class DateTimeUtil
      *
      * @param _value    value from user interface to translate
      * @return translated date time
+     * @throws EFapsException on error
      */
     public static DateTime translateFromUI(final Object _value)
+        throws EFapsException
     {
         final DateTime ret;
         // reads the Value from "Admin_Common_DataBaseTimeZone"

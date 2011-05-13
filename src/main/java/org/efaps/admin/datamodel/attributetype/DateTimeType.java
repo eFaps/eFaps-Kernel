@@ -58,10 +58,12 @@ public class DateTimeType
 
     /**
      * {@inheritDoc}
+     * @throws EFapsException
      */
     @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
+        throws EFapsException
     {
         // reads the Value from "Admin_Common_DataBaseTimeZone"
         final String timezoneID = EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DataBaseTimeZone");
@@ -105,7 +107,11 @@ public class DateTimeType
         throws SQLException
     {
         checkSQLColumnSize(_attribute, 1);
-        _insertUpdate.column(_attribute.getSqlColNames().get(0), eval(_values));
+        try {
+            _insertUpdate.column(_attribute.getSqlColNames().get(0), eval(_values));
+        } catch (final EFapsException e) {
+            throw new SQLException(e);
+        }
     }
 
 
@@ -117,8 +123,10 @@ public class DateTimeType
      *
      * @param _value value to evaluate
      * @return evaluated value
+     * @throws EFapsException on error
      */
     protected Timestamp eval(final Object[] _value)
+        throws EFapsException
     {
         final Timestamp ret;
         if ((_value == null) || (_value.length == 0) || (_value[0] == null)) {

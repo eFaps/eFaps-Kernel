@@ -1661,7 +1661,11 @@ public final class Person
                 int size = 0;
                 final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
                 if (config != null) {
-                    size = EFapsSystemConfiguration.KERNEL.get().getAttributeValueAsInteger("Cache4PersonMaxSize");
+                    try {
+                        size = EFapsSystemConfiguration.KERNEL.get().getAttributeValueAsInteger("Cache4PersonMaxSize");
+                    } catch (final EFapsException e) {
+                       Person.LOG.debug("error", e);
+                    }
                 }
 
                 if (size < 1) {

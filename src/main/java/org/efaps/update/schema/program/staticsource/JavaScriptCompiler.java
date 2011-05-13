@@ -142,8 +142,12 @@ public class JavaScriptCompiler
                         // Admin_Program_JavaScriptCompiled_Warn: do we want
                         // warnings?
                         final SystemConfiguration kernelConfig = EFapsSystemConfiguration.KERNEL.get();
-                        if (kernelConfig.getAttributeValueAsBoolean("JavaScriptCompiled_Warn")) {
-                            JavaScriptCompiler.LOG.warn(_warning);
+                        try {
+                            if (kernelConfig.getAttributeValueAsBoolean("JavaScriptCompiled_Warn")) {
+                                JavaScriptCompiler.LOG.warn(_warning);
+                            }
+                        } catch (final EFapsException e) {
+                            JavaScriptCompiler.LOG.error("error during checkout of Instance:" + _instance, e);
                         }
                     }
                 });

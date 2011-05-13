@@ -93,8 +93,10 @@ public class Compile
 
     /**
      * @return lsit of classpath elements
+     * @throws EFapsException
      */
     private List<String> getClassPathElements()
+        throws EFapsException
     {
         final List<String> ret = new ArrayList<String>();
         final SystemConfiguration config = SystemConfiguration.get(

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
@@ -338,16 +339,23 @@ public class CachedResult
         final Object obj = getObject(_index);
         if (obj instanceof Timestamp || obj instanceof Date) {
             // reads the Value from "Admin_Common_DataBaseTimeZone"
-            final String timezoneID = EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DataBaseTimeZone");
-            final ISOChronology chron;
-            if (timezoneID != null) {
-                final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
-                chron = ISOChronology.getInstance(timezone);
-            } else {
-                chron = ISOChronology.getInstanceUTC();
+            String timezoneID;
+            try {
+                timezoneID = EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DataBaseTimeZone");
+
+                final ISOChronology chron;
+                if (timezoneID != null) {
+                    final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
+                    chron = ISOChronology.getInstance(timezone);
+                } else {
+                    chron = ISOChronology.getInstanceUTC();
+                }
+                ret = new DateTime(obj, chron);
+            } catch (final EFapsException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
 
-            ret = new DateTime(obj, chron);
         }
         return ret;
     }

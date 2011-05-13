@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.efaps.admin.user.Company;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -64,6 +65,7 @@ public final class SystemConfiguration
                                                 .column("KEY")
                                                 .column("VALUE")
                                                 .column("UUID")
+                                                .column("COMPANYID")
                                                 .from("V_CMSYSCONF");
 
     /**
@@ -95,17 +97,17 @@ public final class SystemConfiguration
     /**
      * Map with all attributes for this system configuration.
      */
-    private final Map<String, String> attributes = new HashMap<String, String>();
+    private final Map<Long, Map<String, String>> attributes = new HashMap<Long, Map<String, String>>();
 
     /**
      * Map with all links for this system configuration.
      */
-    private final Map<String, String> links = new HashMap<String, String>();
+    private final Map<Long, Map<String, String>> links = new HashMap<Long, Map<String, String>>();
 
     /**
      * Map with all object attributes for this system configuration.
      */
-    private final Map<String, String> objectAttributes = new HashMap<String, String>();
+    private final Map<Long, Map<String, String>> objectAttributes = new HashMap<Long, Map<String, String>>();
 
     /**
      * Constructor setting instance variables.
@@ -121,6 +123,9 @@ public final class SystemConfiguration
         this.id = _id;
         this.uuid = UUID.fromString(_uuid);
         this.name = _name;
+        this.attributes.put(new Long(0), new HashMap<String, String>());
+        this.links.put(new Long(0), new HashMap<String, String>());
+        this.objectAttributes.put(new Long(0), new HashMap<String, String>());
     }
 
     /**
@@ -193,16 +198,39 @@ public final class SystemConfiguration
     }
 
     /**
+     * @param _key  key the value is wanted for
+     * @param _map  map the key will be search in for
+     * @return  String value
+     * @throws EFapsException on error
+     */
+    private String getValue(final String _key,
+                            final Map<Long, Map<String, String>> _map)
+        throws EFapsException
+    {
+        final Company company = Context.getThreadContext().getCompany();
+        final long companyId = company == null ? 0 : company.getId();
+        Map<String, String> map;
+        if (this.links.containsKey(companyId)) {
+            map = this.links.get(companyId);
+        } else {
+            map = this.links.get(new Long(0));
+        }
+        return map.get(_key);
+    }
+
+    /**
      * Returns for given <code>_key</code> the related link. If no link is found
      * <code>null</code> is returned.
      *
      * @param _key key of searched link
      * @return found link; if not found <code>null</code>
+     * @throws EFapsException on error
      * @see #links
      */
     public Instance getLink(final String _key)
+        throws EFapsException
     {
-        return Instance.get(this.links.get(_key));
+        return Instance.get(getValue(_key, this.links));
     }
 
     /**
@@ -211,11 +239,13 @@ public final class SystemConfiguration
      *
      * @param _instance Instance of searched objectattribute
      * @return found attribute value; if not found <code>null</code>
+     * @throws EFapsException  on error
      * @see #objectAttributes
      */
     public String getObjectAttributeValue(final Instance _instance)
+        throws EFapsException
     {
-        return this.objectAttributes.get(_instance.getOid());
+        return getObjectAttributeValue(_instance.getOid());
     }
 
     /**
@@ -224,11 +254,13 @@ public final class SystemConfiguration
      *
      * @param _oid OID of searched objectattribute
      * @return found attribute value; if not found <code>null</code>
+     * @throws EFapsException on error
      * @see #objectAttributes
      */
     public String getObjectAttributeValue(final String _oid)
+        throws EFapsException
     {
-        return this.objectAttributes.get(_oid);
+        return getValue(_oid, this.objectAttributes);
     }
 
     /**
@@ -259,8 +291,8 @@ public final class SystemConfiguration
         throws EFapsException
     {
         final Properties ret = new Properties();
-        if (this.objectAttributes.containsKey(_key)) {
-            final String value = this.objectAttributes.get(_key);
+        final String value = getValue(_key, this.objectAttributes);
+        if (value != null) {
             try {
                 ret.load(new StringReader(value));
             } catch (final IOException e) {
@@ -276,11 +308,13 @@ public final class SystemConfiguration
      *
      * @param _key key of searched attribute
      * @return found attribute value; if not found <code>null</code>
+     * @throws EFapsException on error
      * @see #attributes
      */
     public String getAttributeValue(final String _key)
+        throws EFapsException
     {
-        return this.attributes.get(_key);
+        return getValue(_key, this.attributes);
     }
 
     /**
@@ -289,13 +323,14 @@ public final class SystemConfiguration
      *
      * @param _key key of searched attribute
      * @return found boolean attribute value; if not found <i>false</i>
+     * @throws EFapsException on error
      * @see #attributes
      */
     public boolean getAttributeValueAsBoolean(final String _key)
+        throws EFapsException
     {
-        return this.attributes.containsKey(_key)
-                        ? Boolean.parseBoolean(this.attributes.get(_key))
-                        : false;
+        final String value = getAttributeValue(_key);
+        return value == null ? false : Boolean.parseBoolean(value);
     }
 
     /**
@@ -304,13 +339,14 @@ public final class SystemConfiguration
      *
      * @param _key key of searched attribute
      * @return found integer attribute value; if not found <code>0</code>
+     * @throws EFapsException on error
      * @see #attributes
      */
     public int getAttributeValueAsInteger(final String _key)
+        throws EFapsException
     {
-        return this.attributes.containsKey(_key)
-                        ? Integer.parseInt(this.attributes.get(_key))
-                        : 0;
+        final String value = getAttributeValue(_key);
+        return value == null ? 0 : Integer.parseInt(value);
     }
 
     /**
@@ -326,8 +362,8 @@ public final class SystemConfiguration
         throws EFapsException
     {
         final Properties ret = new Properties();
-        if (this.attributes.containsKey(_key)) {
-            final String value = this.attributes.get(_key);
+        final String value = getAttributeValue(_key);
+        if (value != null) {
             try {
                 ret.load(new StringReader(value));
             } catch (final IOException e) {
@@ -388,6 +424,7 @@ public final class SystemConfiguration
                         final String key = rs.getString(4).trim();
                         final String value = rs.getString(5).trim();
                         final String uuid = rs.getString(6).trim();
+                        final Long companyId = rs.getLong(7);
                         if (id != configId) {
                             id = configId;
                             config = new SystemConfiguration(configId, configName, configUUID);
@@ -396,13 +433,22 @@ public final class SystemConfiguration
                             _newCache4UUID.put(config.getUUID(), config);
                         }
                         final UUID uuidTmp = UUID.fromString(uuid);
-                        if (uuidTmp.equals(CIAdminCommon.SystemConfigurationAttribute.uuid)) {
-                            config.attributes.put(key, value);
-                        } else if (uuidTmp.equals(CIAdminCommon.SystemConfigurationLink.uuid)) {
-                            config.links.put(key, value);
+                        final Map<Long, Map<String, String>> configMap;
+                        if (uuidTmp.equals(CIAdminCommon.SystemConfigurationLink.uuid)) {
+                            configMap = config.links;
                         } else if (uuidTmp.equals(CIAdminCommon.SystemConfigurationObjectAttribute.uuid)) {
-                            config.objectAttributes.put(key, value);
+                            configMap = config.objectAttributes;
+                        } else {
+                            configMap = config.attributes;
                         }
+                        final Map<String, String> map;
+                        if (configMap.containsKey(companyId)) {
+                            map = configMap.get(companyId);
+                        } else {
+                            map = new HashMap<String, String>();
+                            configMap.put(companyId, map);
+                        }
+                        map.put(key, value);
                     }
                     rs.close();
                 } finally {
