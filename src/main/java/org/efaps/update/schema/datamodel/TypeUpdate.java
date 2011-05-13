@@ -678,6 +678,12 @@ public class TypeUpdate
                     if ("true".equalsIgnoreCase(_attributes.get("classification"))) {
                         valueTmp = valueTmp + Type.Purpose.CLASSIFICATION.getId();
                     }
+                    if ("true".equalsIgnoreCase(_attributes.get("GeneralInstance"))) {
+                        valueTmp = valueTmp + Type.Purpose.GENERALINSTANCE.getId();
+                    }
+                    if ("false".equalsIgnoreCase(_attributes.get("GeneralInstance"))) {
+                        valueTmp = valueTmp + Type.Purpose.NOGENERALINSTANCE.getId();
+                    }
                     addValue("Purpose", valueTmp.toString());
                 } else if (_tags.size() == 2) {
                     getProperties().put(Classification.Keys.LINKATTR.getValue(), _text);

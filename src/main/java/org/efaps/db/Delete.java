@@ -156,6 +156,7 @@ public class Delete
         try {
             con = context.getConnectionResource();
             try {
+                GeneralInstance.delete(getInstance(), con.getConnection());
                 final List<DeleteDefintion> defs = new ArrayList<DeleteDefintion>();
                 final SQLTable mainTable = getInstance().getType().getMainTable();
                 for (final SQLTable curTable : getInstance().getType().getTables()) {

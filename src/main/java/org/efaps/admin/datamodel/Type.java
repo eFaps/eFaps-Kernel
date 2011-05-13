@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
@@ -71,21 +72,39 @@ public class Type
      */
     public enum Purpose {
         /** Abstract purpose. */
-        ABSTRACT(1),
+        ABSTRACT(1, 0),
         /** classification purpose. */
-        CLASSIFICATION(2);
-
+        CLASSIFICATION(2, 1),
+        /** GeneralInstane */
+        GENERALINSTANCE(4, 2),
+        /** No GeneralInstane */
+        NOGENERALINSTANCE(8, 3);
         /** id of this purpose. */
         private final int id;
+        /** digit of this purpose. */
+        private final int digit;
 
         /**
          * Constructor setting the id.
          *
          * @param _id id of this purpose
+         * @param _digit digit of this purpose
          */
-        private Purpose(final int _id)
+        private Purpose(final int _id,
+                        final int _digit)
         {
             this.id = _id;
+            this.digit = _digit;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #digit}.
+         *
+         * @return value of instance variable {@link #digit}
+         */
+        public int getDigit()
+        {
+            return this.digit;
         }
 
         /**
@@ -219,6 +238,16 @@ public class Type
     private boolean abstractBool;
 
     /**
+     * Are the instance of this type general also. Used as a TRISTATE
+     * <ol>
+     * <li>null = Inherit the value from the parent.</li>
+     * <li>true = The instance of this type are general too</li>
+     * <li>false = The instance are not general</li>
+     * </ol>
+     */
+    private Boolean generalInstance;
+
+    /**
      * Stores the name of attribute that contains the status of this type. (if
      * exist)
      */
@@ -276,6 +305,33 @@ public class Type
     private void setAbstract(final boolean _abstract)
     {
         this.abstractBool = _abstract;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #generalInstance}.
+     *
+     * @return value of instance variable {@link #generalInstance}
+     */
+    public boolean isGeneralInstance()
+    {
+        boolean ret = true;
+        if (this.generalInstance != null ) {
+            ret = this.generalInstance;
+        } else if (getParentType() != null) {
+            ret = getParentType().isGeneralInstance();
+        }
+        return ret;
+    }
+
+    /**
+     * Setter method for instance variable {@link #generalInstance}.
+     *
+     * @param _generalInstance value for instance variable {@link #generalInstance}
+     */
+
+    private void setGeneralInstance(final boolean _generalInstance)
+    {
+        this.generalInstance = _generalInstance;
     }
 
     /**
@@ -964,16 +1020,21 @@ public class Type
                             Type.LOG.debug("read type '" + name + "' (id = " + id + ") (purpose = " + purpose + ")");
                         }
                         Type type;
-                        if (purpose == Type.Purpose.ABSTRACT.getId()) {
-                            type = new Type(id, uuid, name);
-                            type.setAbstract(true);
-                        } else if (purpose == Type.Purpose.CLASSIFICATION.getId()) {
+                        final char[] purpose2 = ("00000000" + Integer.toBinaryString(purpose)).toCharArray();
+                        ArrayUtils.reverse(purpose2);
+                        final char trueCriteria = "1".toCharArray()[0];
+                        if (trueCriteria == purpose2[Type.Purpose.CLASSIFICATION.getDigit()]) {
                             type = new Classification(id, uuid, name);
-                        } else if (purpose == Type.Purpose.CLASSIFICATION.getId() + Type.Purpose.ABSTRACT.getId()) {
-                            type = new Classification(id, uuid, name);
-                            type.setAbstract(true);
                         } else {
                             type = new Type(id, uuid, name);
+                        }
+                        type.setAbstract(trueCriteria == purpose2[Type.Purpose.ABSTRACT.getDigit()]);
+
+                        if (trueCriteria == purpose2[Type.Purpose.GENERALINSTANCE.getDigit()]) {
+                            type.setGeneralInstance(true);
+                        }
+                        if (trueCriteria == purpose2[Type.Purpose.NOGENERALINSTANCE.getDigit()]) {
+                            type.setGeneralInstance(false);
                         }
 
                         _cache4Id.put(type.getId(), type);

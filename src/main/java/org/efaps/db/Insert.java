@@ -25,8 +25,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
@@ -197,6 +197,8 @@ public class Insert
             final long id = executeOneStatement(con, mainTable, getExpr4Tables().get(mainTable).values(), 0);
 
             setInstance(Instance.get(getInstance().getType(), id));
+
+            GeneralInstance.insert(getInstance(), con.getConnection());
 
             for (final Entry<SQLTable, Map<Attribute, Value>> entry : getExpr4Tables().entrySet()) {
                 final SQLTable table = entry.getKey();
