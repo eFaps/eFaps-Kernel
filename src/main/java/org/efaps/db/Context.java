@@ -869,6 +869,17 @@ public final class Context
     }
 
     /**
+     * Is a Thread active.
+     *
+     * @return true if either the ThreadContext or the
+     *              Inherited ThreadContext is no null
+     */
+    public static boolean isThreadActive()
+    {
+        return Context.INHERITTHREADCONTEXT.get() != null || Context.THREADCONTEXT.get() != null;
+    }
+
+    /**
      * The method checks if for the current thread a context object is defined.
      * This found context object is returned.
      *

@@ -198,6 +198,14 @@ public final class SystemConfiguration
     }
 
     /**
+     * Get a value from the maps. The following logic applies:
+     * <ol>
+     * <li>Check if a Context exists</li>
+     * <li>If a Context exist check if a company is given</li>
+     * <li>If a company is given, check for a company specific map</li>
+     * <li>If a company specific map is given search for the key in this map</li>
+     * <li>If any of the earlier point fails the value from the default map is returned</li>
+     * </ol>
      * @param _key  key the value is wanted for
      * @param _map  map the key will be search in for
      * @return  String value
@@ -207,15 +215,21 @@ public final class SystemConfiguration
                             final Map<Long, Map<String, String>> _map)
         throws EFapsException
     {
-        final Company company = Context.getThreadContext().getCompany();
-        final long companyId = company == null ? 0 : company.getId();
-        Map<String, String> map;
-        if (this.links.containsKey(companyId)) {
-            map = this.links.get(companyId);
-        } else {
-            map = this.links.get(new Long(0));
+        Company company = null;
+        if (Context.isThreadActive()) {
+            company = Context.getThreadContext().getCompany();
         }
-        return map.get(_key);
+        final long companyId = company == null ? 0 : company.getId();
+        Map<String, String> innerMap;
+        if (_map.containsKey(companyId)) {
+            innerMap = _map.get(companyId);
+            if (!innerMap.containsKey(_key)) {
+                innerMap = _map.get(new Long(0));
+            }
+        } else {
+            innerMap = _map.get(new Long(0));
+        }
+        return innerMap.get(_key);
     }
 
     /**
