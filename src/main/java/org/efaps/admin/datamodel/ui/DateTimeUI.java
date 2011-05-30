@@ -73,7 +73,14 @@ public class DateTimeUI
     public Object getObject4Compare(final FieldValue _fieldValue)
         throws EFapsException
     {
-        return _fieldValue.getValue();
+        Object ret;
+        if (_fieldValue != null && _fieldValue.getValue() instanceof DateTime) {
+            final DateTime datetime = (DateTime) _fieldValue.getValue();
+            ret = datetime.withChronology(Context.getThreadContext().getChronology());
+        } else {
+            ret = _fieldValue.getValue();
+        }
+        return ret;
     }
 
     /**

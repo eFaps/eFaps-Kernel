@@ -71,18 +71,24 @@ public class DateUI
     /**
      * {@inheritDoc}
      */
-
     @Override
     public Object getObject4Compare(final FieldValue _fieldValue)
         throws EFapsException
     {
-        return _fieldValue.getValue();
+        Object ret;
+        if (_fieldValue != null && _fieldValue.getValue() instanceof DateTime) {
+            final DateTime datetime = (DateTime) _fieldValue.getValue();
+            ret = new DateMidnight(datetime.getYear(), datetime.getMonthOfYear(),
+                            datetime.getDayOfMonth(), Context.getThreadContext().getChronology()).toDateTime();
+        } else {
+            ret = _fieldValue.getValue();
+        }
+        return ret;
     }
 
     /**
      * {@inheritDoc}
      */
-
     @Override
     public int compare(final FieldValue _fieldValue,
                        final FieldValue _fieldValue2)
