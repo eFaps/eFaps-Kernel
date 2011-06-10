@@ -145,12 +145,46 @@ public class PasswordStore
      */
     public boolean checkCurrent(final String _plainPassword)
     {
-        final ConfigurablePasswordEncryptor passwordEncryptor = new ConfigurablePasswordEncryptor();
-        this.digesterConfig.setAlgorithm(this.props.getProperty(PasswordStore.ALGORITHM + 0));
-        this.digesterConfig.setIterations(this.props.getProperty(PasswordStore.ITERATIONS + 0));
-        this.digesterConfig.setSaltSizeBytes(this.props.getProperty(PasswordStore.SALTSIZE + 0));
-        passwordEncryptor.setConfig(this.digesterConfig);
-        return passwordEncryptor.checkPassword(_plainPassword, this.props.getProperty(PasswordStore.DIGEST + 0));
+        return check(_plainPassword, 0);
+    }
+
+    /**
+     * Check the given Plain Text Password for equal on the Hash by
+     * applying the algorithm salt etc
+     * @param _plainPassword    plain text password
+     * @param _pos              position of the password to be checked
+     * @return  true if equal, else false
+     */
+    private boolean check(final String _plainPassword,
+                          final int _pos)
+    {
+        boolean ret = false;
+        if (this.props.containsKey(PasswordStore.DIGEST + _pos)) {
+            final ConfigurablePasswordEncryptor passwordEncryptor = new ConfigurablePasswordEncryptor();
+            this.digesterConfig.setAlgorithm(this.props.getProperty(PasswordStore.ALGORITHM + _pos));
+            this.digesterConfig.setIterations(this.props.getProperty(PasswordStore.ITERATIONS + _pos));
+            this.digesterConfig.setSaltSizeBytes(this.props.getProperty(PasswordStore.SALTSIZE + _pos));
+            passwordEncryptor.setConfig(this.digesterConfig);
+            ret = passwordEncryptor.checkPassword(_plainPassword, this.props.getProperty(PasswordStore.DIGEST + _pos));
+        }
+        return ret;
+    }
+
+    /**
+     * Is the given plain password repeated. It is checked against the
+     * existing previous passwords.
+     * @param _plainPassword    plain text password
+     * @return true if repeated, else false
+     */
+    public boolean isRepeated(final String _plainPassword) {
+        boolean ret = false;
+        for (int i = 1; i < this.threshold + 1; i++) {
+            ret = check(_plainPassword, i);
+            if (ret) {
+                break;
+            }
+        }
+        return ret;
     }
 
     /**
@@ -195,7 +229,7 @@ public class PasswordStore
     private void shift(final String _key)
     {
         for (int i = this.threshold; i > 0; i--) {
-            this.props.setProperty(_key + i, this.props.getProperty(_key + (i - 1), ""));
+            this.props.setProperty(_key + i, this.props.getProperty(_key + (i - 1), "").trim());
         }
         int i = this.threshold + 1;
         while (this.props.contains(_key + i)) {
