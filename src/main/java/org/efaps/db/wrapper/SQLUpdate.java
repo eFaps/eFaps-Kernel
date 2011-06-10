@@ -55,6 +55,7 @@ public class SQLUpdate
      */
     private final long id;
 
+
     /**
      * Initializes this update. Do not call the constructor directly, instead
      * use
@@ -154,5 +155,15 @@ public class SQLUpdate
         } finally  {
             stmt.close();
         }
+    }
+
+    /**
+     * Getter method for the instance variable {@link #id}.
+     *
+     * @return value of instance variable {@link #id}
+     */
+    public long getId()
+    {
+        return this.id;
     }
 }

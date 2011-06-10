@@ -407,6 +407,13 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             </exclusions>
         </dependency>
 
+        <!-- The Symplified encryption to store the passwords in the DataBase -->
+        <dependency>
+            <groupId>org.jasypt</groupId>
+            <artifactId>jasypt</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+
         <!-- For interpreting expressions (e.g. of xml definitions) -->
         <dependency>
             <groupId>commons-jexl</groupId>

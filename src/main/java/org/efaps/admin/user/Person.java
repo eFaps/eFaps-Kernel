@@ -38,6 +38,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.attributevalue.PasswordStore;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
 import org.efaps.db.PrintQuery;
@@ -553,8 +554,8 @@ public final class Person
                            CIAdminUser.Person.LoginTriesCounter,
                            CIAdminUser.Person.Status);
         if (query.execute()) {
-            final String pwd = query.<String>getAttribute(CIAdminUser.Person.Password);
-            if (_passwd.equals(pwd)) {
+            final PasswordStore pwd = query.<PasswordStore>getAttribute(CIAdminUser.Person.Password);
+            if (pwd.checkCurrent(_passwd)) {
                 ret = query.<Boolean>getAttribute(CIAdminUser.Person.Status);
             } else {
                 setFalseLogin(query.<DateTime>getAttribute(CIAdminUser.Person.LoginTry),
@@ -654,19 +655,17 @@ public final class Person
      *
      * @param _newPasswd new Password to set
      * @throws EFapsException on error
+     * @return true if password set, else false
      */
-    public void setPassword(final String _newPasswd)
+    public Status setPassword(final String _newPasswd)
         throws EFapsException
     {
         final Type type = CIAdminUser.Person.getType();
-
         if (_newPasswd.length() == 0) {
             throw new EFapsException(getClass(), "PassWordLength", 1, _newPasswd.length());
         }
         final Update update = new Update(type, "" + getId());
-
         final Status status = update.add(CIAdminUser.Person.Password, _newPasswd);
-
         if (status.isOk()) {
             update.execute();
             update.close();
@@ -674,26 +673,7 @@ public final class Person
             Person.LOG.error("Password could not be set by the Update, due to restrictions " + "e.g. length???");
             throw new EFapsException(getClass(), "TODO");
         }
-    }
-
-    /**
-     * Returns current in eFaps stored password for this user.
-     *
-     * @return password of the user
-     * @throws EFapsException if query for the password of this user failed
-     */
-    public String getPassword()
-        throws EFapsException
-    {
-        final PrintQuery query = new PrintQuery(CIAdminUser.Person.getType(), getId());
-        query.addAttribute(CIAdminUser.Person.Password);
-        final String ret;
-        if (query.execute()) {
-            ret = query.<String>getAttribute(CIAdminUser.Person.Password);
-        } else {
-            ret = null;
-        }
-        return ret;
+        return status;
     }
 
     /**

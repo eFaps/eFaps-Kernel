@@ -62,7 +62,6 @@ public class StringType
     protected String eval(final Object[] _values)
     {
         final String ret;
-
         if ((_values == null) || (_values.length == 0) || (_values[0] == null))  {
             ret = null;
         } else if (_values[0] instanceof String) {
@@ -72,7 +71,6 @@ public class StringType
         } else  {
             ret = null;
         }
-
         return ret;
     }
 
@@ -97,6 +95,7 @@ public class StringType
     @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
+        throws EFapsException
     {
         Object ret = null;
         if (_objectList.size() < 1) {
