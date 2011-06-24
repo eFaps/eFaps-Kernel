@@ -250,7 +250,7 @@ public class SelectBuilder
     public SelectBuilder attributeset(final String _attribute)
     {
         addPoint();
-        this.bldr.append("attribute[").append(_attribute).append("]");
+        this.bldr.append("attributeset[").append(_attribute).append("]");
         return this;
     }
 
