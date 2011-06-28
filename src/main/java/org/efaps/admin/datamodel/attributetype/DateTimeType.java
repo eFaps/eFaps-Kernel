@@ -134,7 +134,7 @@ public class DateTimeType
         } else  {
             final DateTime dateTime = DateTimeUtil.translateFromUI(_value[0]);
             // until now we have a time that depends on the timezone of the application server
-            // to convert it in a timestamp for the efaps database the timezone information (mainly the offste)
+            // to convert it in a timestamp for the efaps database the timezone information (mainly the offset)
             // must be removed. This is done by creating a local date with the same, date and time.
             // this guarantees that the datetime inserted into the database depends on the setting
             // in the configuration and not on the timezone for the application server.
@@ -145,7 +145,7 @@ public class DateTimeType
                                                     dateTime.getMinuteOfHour(),
                                                     dateTime.getSecondOfMinute(),
                                                     dateTime.getMillisOfSecond());
-            ret = (dateTime != null) ? new Timestamp(localized.getMillis()) : null;
+            ret = (localized != null) ? new Timestamp(localized.getMillis()) : null;
         }
         return ret;
     }
