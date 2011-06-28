@@ -74,6 +74,7 @@ public class NumberUI
 
     /**
      * {@inheritDoc}
+     * Validate the value by parsing it. If an error is thrown the value is not valid.
      */
     @Override
     public String validateValue(final String _value,
@@ -81,8 +82,7 @@ public class NumberUI
     {
         String ret = null;
         try {
-            @SuppressWarnings("unused")
-            final Number test = new Long(_value);
+            Long.valueOf(_value);
         } catch (final NumberFormatException e) {
             ret = DBProperties.getProperty(NumberUI.class.getName() + ".InvalidValue");
         }

@@ -46,6 +46,7 @@ public class NumberWithUoMUI
 
     /**
      * {@inheritDoc}
+     * Validate the value by parsing it. If an error is thrown the value is not valid.
      */
     @Override
     public String validateValue(final String _value,
@@ -53,8 +54,7 @@ public class NumberWithUoMUI
     {
         String ret = null;
         try {
-            @SuppressWarnings("unused")
-            final Number test = new Long(_value);
+            Long.valueOf(_value);
         } catch (final NumberFormatException e) {
             ret = DBProperties.getProperty(NumberWithUoMUI.class.getName() + ".InvalidValue");
         }
