@@ -44,7 +44,7 @@ public class TempFileBundle
     /**
      * Temporary folder.
      */
-    private static File TMPFOLDER;
+    private static File TMPFOLDER = new File("");
 
     /**
      * Filed.
@@ -124,6 +124,7 @@ public class TempFileBundle
      *
      * @return value of instance variable {@link #contentType}
      */
+    @Override
     public String getContentType()
     {
         return this.contentType;
@@ -199,10 +200,11 @@ public class TempFileBundle
     {
         synchronized (TempFileBundle.TMPFOLDER) {
             try {
-                if (TempFileBundle.TMPFOLDER == null) {
+                if (!TempFileBundle.TMPFOLDER.exists()) {
                     final File tmp = File.createTempFile("eFapsTemp", null).getParentFile();
                     TempFileBundle.TMPFOLDER = new File(tmp.getAbsolutePath() + "/eFapsTemp");
                     TempFileBundle.TMPFOLDER.mkdir();
+                    tmp.delete();
                 }
             } catch (final IOException e) {
                 throw new EFapsException(TempFileBundle.class, "getTempFolder", e);
