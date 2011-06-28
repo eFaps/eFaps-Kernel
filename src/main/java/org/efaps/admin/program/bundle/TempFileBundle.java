@@ -197,14 +197,16 @@ public class TempFileBundle
     public static File getTempFolder()
         throws EFapsException
     {
-        try {
-            if (TempFileBundle.TMPFOLDER == null) {
-                final File tmp = File.createTempFile("eFapsTemp", null).getParentFile();
-                TempFileBundle.TMPFOLDER = new File(tmp.getAbsolutePath() + "/eFapsTemp");
-                TempFileBundle.TMPFOLDER.mkdir();
+        synchronized (TempFileBundle.TMPFOLDER) {
+            try {
+                if (TempFileBundle.TMPFOLDER == null) {
+                    final File tmp = File.createTempFile("eFapsTemp", null).getParentFile();
+                    TempFileBundle.TMPFOLDER = new File(tmp.getAbsolutePath() + "/eFapsTemp");
+                    TempFileBundle.TMPFOLDER.mkdir();
+                }
+            } catch (final IOException e) {
+                throw new EFapsException(TempFileBundle.class, "getTempFolder", e);
             }
-        } catch (final IOException e) {
-            throw new EFapsException(TempFileBundle.class, "getTempFolder", e);
         }
         return TempFileBundle.TMPFOLDER;
     }
