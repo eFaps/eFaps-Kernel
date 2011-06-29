@@ -58,9 +58,11 @@ public class TempFileBundle
         try {
             final File tmp = File.createTempFile("eFapsTemp", null).getParentFile();
             TempFileBundle.TMPFOLDER = new File(tmp.getAbsolutePath() + "/eFapsTemp");
-            final boolean mkdir = TempFileBundle.TMPFOLDER.mkdir();
-            if (!mkdir) {
-                TempFileBundle.LOG.error("Temp folder was not created");
+            if (!TempFileBundle.TMPFOLDER.exists()) {
+                final boolean mkdir = TempFileBundle.TMPFOLDER.mkdir();
+                if (!mkdir) {
+                    TempFileBundle.LOG.error("Temp folder was not created");
+                }
             }
             tmp.deleteOnExit();
         } catch (final IOException e) {
