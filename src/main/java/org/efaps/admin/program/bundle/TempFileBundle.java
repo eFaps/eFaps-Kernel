@@ -29,8 +29,11 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
+import org.efaps.admin.AbstractAdminObject;
 import org.efaps.db.Checkout;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Makes a bundle of files and zipps them.
@@ -41,11 +44,29 @@ import org.efaps.util.EFapsException;
 public class TempFileBundle
     implements BundleInterface
 {
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractAdminObject.class);
+
     /**
      * Temporary folder.
      */
     private static File TMPFOLDER = new File("");
-
+    static {
+        try {
+            final File tmp = File.createTempFile("eFapsTemp", null).getParentFile();
+            TempFileBundle.TMPFOLDER = new File(tmp.getAbsolutePath() + "/eFapsTemp");
+            final boolean mkdir = TempFileBundle.TMPFOLDER.mkdir();
+            if (!mkdir) {
+                TempFileBundle.LOG.error("Temp folder was not created");
+            }
+            tmp.deleteOnExit();
+        } catch (final IOException e) {
+            TempFileBundle.LOG.error("Temp archive could not be created");
+        }
+    }
     /**
      * Filed.
      */
@@ -198,18 +219,6 @@ public class TempFileBundle
     public static File getTempFolder()
         throws EFapsException
     {
-        synchronized (TempFileBundle.TMPFOLDER) {
-            try {
-                if (!TempFileBundle.TMPFOLDER.exists()) {
-                    final File tmp = File.createTempFile("eFapsTemp", null).getParentFile();
-                    TempFileBundle.TMPFOLDER = new File(tmp.getAbsolutePath() + "/eFapsTemp");
-                    TempFileBundle.TMPFOLDER.mkdir();
-                    tmp.delete();
-                }
-            } catch (final IOException e) {
-                throw new EFapsException(TempFileBundle.class, "getTempFolder", e);
-            }
-        }
         return TempFileBundle.TMPFOLDER;
     }
 
