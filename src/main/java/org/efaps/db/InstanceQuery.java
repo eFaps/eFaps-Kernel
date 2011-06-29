@@ -26,8 +26,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
@@ -104,10 +104,8 @@ public class InstanceQuery
             .from(getBaseType().getMainTable().getSqlTable(), 0);
 
         // if the main table has a column for the type it is selected also
-        int colIndex = 2;
         if (getBaseType().getMainTable().getSqlColType() != null) {
             select.column(0, getBaseType().getMainTable().getSqlColType());
-            colIndex++;
         }
         // add child tables
         if (getSqlTable2Index().size() > 0) {
