@@ -37,6 +37,7 @@ import org.efaps.db.AbstractPrintQuery;
 import org.efaps.db.Instance;
 import org.efaps.db.print.value.AbstractValueSelect;
 import org.efaps.db.print.value.AttributeValueSelect;
+import org.efaps.db.print.value.BaseValueSelect;
 import org.efaps.db.print.value.ClassificationValueSelect;
 import org.efaps.db.print.value.FormatValueSelect;
 import org.efaps.db.print.value.IDValueSelect;
@@ -44,6 +45,7 @@ import org.efaps.db.print.value.LabelValueSelect;
 import org.efaps.db.print.value.OIDValueSelect;
 import org.efaps.db.print.value.TypeValueSelect;
 import org.efaps.db.print.value.UUIDValueSelect;
+import org.efaps.db.print.value.UoMValueSelect;
 import org.efaps.db.print.value.ValueValueSelect;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -348,7 +350,7 @@ public class OneSelect
                     }
                 }
             }
-            if (attr != null && attr.getTable()!= null && !attr.getTable().equals(type.getMainTable())) {
+            if (attr != null && attr.getTable() != null && !attr.getTable().equals(type.getMainTable())) {
                 final ChildTableSelectPart childtable = new ChildTableSelectPart(type, attr.getTable());
                 this.selectParts.add(childtable);
             }
@@ -445,6 +447,10 @@ public class OneSelect
                 currentSelect.addValueSelect(new ClassificationValueSelect(currentSelect));
             } else if (part.equalsIgnoreCase("value")) {
                 currentSelect.addValueSelect(new ValueValueSelect(currentSelect));
+            } else if (part.equalsIgnoreCase("base")) {
+                currentSelect.addValueSelect(new BaseValueSelect(currentSelect));
+            } else if (part.equalsIgnoreCase("uom")) {
+                currentSelect.addValueSelect(new UoMValueSelect(currentSelect));
             } else if (part.startsWith("format")) {
                 final Matcher matcher = formatPat.matcher(part);
                 if (matcher.find()) {

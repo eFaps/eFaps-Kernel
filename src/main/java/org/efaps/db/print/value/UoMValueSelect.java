@@ -18,16 +18,14 @@
  * Last Changed By: $Author$
  */
 
+
 package org.efaps.db.print.value;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.Dimension.UoM;
 import org.efaps.admin.datamodel.attributetype.AbstractWithUoMType;
-import org.efaps.admin.datamodel.attributetype.RateType;
-import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.db.print.OneSelect;
 import org.efaps.util.EFapsException;
+
 
 /**
  * TODO comment!
@@ -35,7 +33,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class LabelValueSelect
+public class UoMValueSelect
     extends AbstractValueSelect
     implements IAttributeChildValueSelect
 {
@@ -43,7 +41,7 @@ public class LabelValueSelect
     /**
      * @param _oneSelect OneSelect
      */
-    public LabelValueSelect(final OneSelect _oneSelect)
+    public UoMValueSelect(final OneSelect _oneSelect)
     {
         super(_oneSelect);
     }
@@ -54,7 +52,7 @@ public class LabelValueSelect
     @Override
     public String getValueType()
     {
-        return "label";
+        return "uom";
     }
 
     /**
@@ -66,9 +64,7 @@ public class LabelValueSelect
         throws EFapsException
     {
         final Object ret;
-        if (_attribute.getAttributeType().getDbAttrType() instanceof RateType) {
-            ret = getRate(_attribute, _object);
-        } else if (_attribute.getAttributeType().getDbAttrType() instanceof AbstractWithUoMType) {
+        if (_attribute.getAttributeType().getDbAttrType() instanceof AbstractWithUoMType) {
             ret = getValueUOM(_object);
         }  else {
             ret = _object;
@@ -85,26 +81,7 @@ public class LabelValueSelect
         Object ret = null;
         if (_object instanceof Object[]) {
             final Object[] values = (Object[]) _object;
-            ret = ((UoM) values[1]).getName();
-        }
-        return ret;
-    }
-
-    /**
-     * @param _attribute Attribute this value is wanted for
-     * @param _object object the rate is wanted for
-     * @return Object
-     * @throws EFapsException on error
-     */
-    protected Object getRate(final Attribute _attribute,
-                             final Object _object)
-        throws EFapsException
-    {
-        Object ret = null;
-        if (_object instanceof Object[]) {
-            final FieldValue fieldValue = new FieldValue(null, _attribute, _object, null, null);
-            fieldValue.setTargetMode(TargetMode.VIEW);
-            ret = fieldValue.getObject4Compare();
+            ret = values[1];
         }
         return ret;
     }

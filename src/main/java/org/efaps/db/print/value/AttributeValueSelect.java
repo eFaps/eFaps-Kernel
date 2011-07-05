@@ -145,15 +145,9 @@ public class AttributeValueSelect
             i++;
         }
         if (getChildValueSelect() != null) {
-            if ("format".equals(getChildValueSelect().getValueType())) {
-                final FormatValueSelect format = (FormatValueSelect) getChildValueSelect();
-                ret = format.format(this.attribute, ret);
-            } else if ("value".equals(getChildValueSelect().getValueType())) {
-                final ValueValueSelect value = (ValueValueSelect) getChildValueSelect();
-                ret = value.get(this.attribute, ret);
-            } else if ("label".equals(getChildValueSelect().getValueType())) {
-                final LabelValueSelect value = (LabelValueSelect) getChildValueSelect();
-                ret = value.getLabel(this.attribute, ret);
+            if (getChildValueSelect() instanceof IAttributeChildValueSelect) {
+                final IAttributeChildValueSelect val = (IAttributeChildValueSelect) getChildValueSelect();
+                ret = val.get(this.attribute, ret);
             }
         }
         return ret;

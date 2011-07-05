@@ -36,6 +36,7 @@ import org.efaps.util.EFapsException;
  */
 public class FormatValueSelect
     extends AbstractValueSelect
+    implements IAttributeChildValueSelect
 {
 
     /**
@@ -71,7 +72,7 @@ public class FormatValueSelect
      * @return formated object
      * @throws EFapsException on error
      */
-    public Object format(final Attribute _attribute,
+    public Object get(final Attribute _attribute,
                          final Object _object)
         throws EFapsException
     {

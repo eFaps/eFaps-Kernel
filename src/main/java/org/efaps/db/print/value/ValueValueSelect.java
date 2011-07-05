@@ -37,6 +37,7 @@ import org.efaps.util.EFapsException;
  */
 public class ValueValueSelect
     extends AbstractValueSelect
+    implements IAttributeChildValueSelect
 {
 
     /**
