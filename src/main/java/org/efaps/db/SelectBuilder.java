@@ -203,6 +203,30 @@ public class SelectBuilder
     }
 
     /**
+     * Add base select part.
+     *
+     * @return this
+     */
+    public SelectBuilder base()
+    {
+        addPoint();
+        this.bldr.append("base");
+        return this;
+    }
+
+    /**
+     * Add uom select part.
+     *
+     * @return this
+     */
+    public SelectBuilder uom()
+    {
+        addPoint();
+        this.bldr.append("uom");
+        return this;
+    }
+
+    /**
      * Add uuid select part.
      *
      * @return this
