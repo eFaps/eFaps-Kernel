@@ -33,8 +33,7 @@
     <groupId>org.efaps</groupId>
     <artifactId>efaps-kernel</artifactId>
     <version>1.16.1-SNAPSHOT</version>
-    <description>
-        eFaps is a framework used to map objects with or without attached files to
+    <description>eFaps is a framework used to map objects with or without attached files to
 a relational database and optional file systems (only for attaches files). Configurable access control can be provided down to object and attribute level depending on implementation and use case. Depending on requirements, events (like triggers) allow to implement business logic and to separate business logic from user interface.
 The framework includes integrations (e.g. webdav, full text search) and a web application as 'simple' configurable user interface. Some best practises, example web application modules (e.g. team work module) support administrators and implementers using this framework.
     </description>
@@ -156,7 +155,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                         <inherited>true</inherited>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.7</version>
+                        <version>2.8</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
@@ -171,7 +170,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                         <inherited>true</inherited>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
-                        <version>2.5</version>
+                        <version>2.6</version>
                         <configuration>
                             <updateReleaseInfo>true</updateReleaseInfo>
                         </configuration>
@@ -180,7 +179,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.1</version>
+                        <version>1.3</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -244,7 +243,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             -->
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.8</version>
+                <version>2.9</version>
                 <configuration>
                     <suiteXmlFiles>
                         <suiteXmlFile>${basedir}/src/test/resources/testng.xml</suiteXmlFile>
@@ -254,7 +253,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
 
              <plugin>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.1</version>
+                <version>2.2</version>
                 <configuration>
                     <mavenExecutorId>forked-path</mavenExecutorId>
                 </configuration>
@@ -351,6 +350,41 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 <version>1.11</version>
             </extension>
         </extensions>
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.codehaus.mojo
+                                        </groupId>
+                                        <artifactId>
+                                            javacc-maven-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [2.6,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>javacc</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <!-- ************************************************************************
@@ -377,7 +411,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.15</version>
+            <version>5.1.17</version>
         </dependency>
 
         <!-- used for toString methods -->
@@ -453,7 +487,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
         </dependency>
 
         <!--
@@ -493,7 +527,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>com.yahoo.platform.yui</groupId>
             <artifactId>yuicompressor</artifactId>
-            <version> 2.4.2</version>
+            <version>2.4.6</version>
         </dependency>
 
         <!-- wikiutil from efaps to compile wiki into html -->
@@ -550,7 +584,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>net.sourceforge.jexcelapi</groupId>
             <artifactId>jxl</artifactId>
-            <version>2.6</version>
+            <version>2.6.12</version>
         </dependency>
         <dependency>
             <groupId>xerces</groupId>
@@ -570,7 +604,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>com.sun.jersey.contribs</groupId>
             <artifactId>jersey-multipart</artifactId>
-            <version>1.5</version>
+            <version>1.8</version>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -580,15 +614,14 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
-            <version>1.5</version>
-            <scope>compile</scope>
+            <version>1.8</version>
         </dependency>
 
         <!-- timer for background prozesses -->
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>1.8.4</version>
+            <version>2.0.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-api</artifactId>
@@ -670,7 +703,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.ow2.spec.ee</groupId>
             <artifactId>ow2-connector-1.5-spec</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.9</version>
             <scope>test</scope>
         </dependency>
         <!-- Needed indirectly for the transaction manager -->
