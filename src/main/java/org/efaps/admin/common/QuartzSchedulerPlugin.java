@@ -29,11 +29,15 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.SelectBuilder;
 import org.efaps.util.EFapsException;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.Job;
+import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
-import org.quartz.TriggerUtils;
+import org.quartz.TriggerBuilder;
 import org.quartz.spi.SchedulerPlugin;
 
 /**
@@ -80,23 +84,52 @@ public class QuartzSchedulerPlugin
                 final String esjp = multi.<String>getSelect(sel);
                 Trigger trigger = null;
                 if (type.isKindOf(CIAdminCommon.QuartzTriggerSecondly.getType())) {
-                    trigger = TriggerUtils.makeSecondlyTrigger(name, para1, para2);
+                    trigger = TriggerBuilder.newTrigger()
+                                    .withIdentity(name)
+                                    .withSchedule(para2 > 0 ? SimpleScheduleBuilder.simpleSchedule()
+                                                    .withIntervalInSeconds(para1)
+                                                    .withRepeatCount(para2)
+                                                    :  SimpleScheduleBuilder.repeatSecondlyForever(para1))
+                                    .build();
                 } else if (type.isKindOf(CIAdminCommon.QuartzTriggerMinutely.getType())) {
-                    trigger = TriggerUtils.makeMinutelyTrigger(name, para1, para2);
+                    trigger = TriggerBuilder.newTrigger()
+                                    .withIdentity(name)
+                                    .withSchedule(para2 > 0 ? SimpleScheduleBuilder.simpleSchedule()
+                                                    .withIntervalInMinutes(para1)
+                                                    .withRepeatCount(para2)
+                                                    :  SimpleScheduleBuilder.repeatMinutelyForever(para1))
+                                    .build();
                 } else if (type.isKindOf(CIAdminCommon.QuartzTriggerHourly.getType())) {
-                    trigger = TriggerUtils.makeHourlyTrigger(name, para1, para2);
+                    trigger = TriggerBuilder.newTrigger()
+                                    .withIdentity(name)
+                                    .withSchedule(para2 > 0 ? SimpleScheduleBuilder.simpleSchedule()
+                                                    .withIntervalInHours(para1)
+                                                    .withRepeatCount(para2)
+                                                    :  SimpleScheduleBuilder.repeatHourlyForever(para1))
+                                    .build();
                 } else if (type.isKindOf(CIAdminCommon.QuartzTriggerDaily.getType())) {
-                    trigger = TriggerUtils.makeDailyTrigger(name, para1, para2);
+                    trigger = TriggerBuilder.newTrigger()
+                                    .withIdentity(name)
+                                    .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(para1, para2))
+                                    .build();
                 } else if (type.isKindOf(CIAdminCommon.QuartzTriggerWeekly.getType())) {
-                    trigger = TriggerUtils.makeWeeklyTrigger(name, para1, para2, para3);
+                    trigger = TriggerBuilder.newTrigger()
+                                    .withIdentity(name)
+                                    .withSchedule(CronScheduleBuilder.weeklyOnDayAndHourAndMinute(para1, para2, para3))
+                                    .build();
                 } else if (type.isKindOf(CIAdminCommon.QuartzTriggerMonthly.getType())) {
-                    trigger = TriggerUtils.makeMonthlyTrigger(name, para1, para2, para3);
+                    trigger = TriggerBuilder.newTrigger()
+                                    .withIdentity(name)
+                                    .withSchedule(CronScheduleBuilder.monthlyOnDayAndHourAndMinute(para1, para2, para3))
+                                    .build();
                 }
-                final Class<?> clazz = Class.forName(esjp, false,
+                @SuppressWarnings("unchecked")
+                final Class<?  extends Job> clazz = (Class<? extends Job>) Class.forName(esjp, false,
                                 new EFapsClassLoader(this.getClass().getClassLoader()));
                 // class must be instantiated to force that related esjps are also loaded here
                 clazz.newInstance();
-                final JobDetail jobDetail = new JobDetail(name + "_" + esjp, Quartz.QUARTZGROUP, clazz);
+                final JobDetail jobDetail =  JobBuilder.newJob(clazz)
+                                .withIdentity(name + "_" + esjp, Quartz.QUARTZGROUP).build();
                 if (trigger != null) {
                     _scheduler.scheduleJob(jobDetail, trigger);
                 }

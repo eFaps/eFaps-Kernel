@@ -26,11 +26,15 @@ import java.util.UUID;
 import org.efaps.init.INamingBinds;
 import org.efaps.message.MessageStatusHolder;
 import org.efaps.util.EFapsException;
+import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
-import org.quartz.TriggerUtils;
+import org.quartz.TriggerBuilder;
+import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 
 /**
@@ -127,15 +131,18 @@ public final class Quartz
 
             if (config.getAttributeValueAsBoolean(Quartz.MSGTRIGGERACTIVE)) {
                 final int interval = config.getAttributeValueAsInteger(Quartz.MSGTRIGGERINTERVAL);
-                final Trigger trigger = TriggerUtils.makeMinutelyTrigger(interval > 0 ? interval : 1);
-                trigger.setName("SystemMessageTrigger");
-                JobDetail jobDetail = sched.getJobDetail("SystemMessage", null);
+                final Trigger trigger = TriggerBuilder.newTrigger()
+                                .withIdentity("SystemMessageTrigger")
+                                .withSchedule(SimpleScheduleBuilder.repeatMinutelyForever(interval > 0 ? interval : 1))
+                                .build();
+
+                JobDetail jobDetail = sched.getJobDetail(new JobKey("SystemMessage", Quartz.QUARTZGROUP));
                 if (jobDetail == null) {
-                    jobDetail = new JobDetail("SystemMessage", Quartz.QUARTZGROUP, MessageStatusHolder.class);
+                    jobDetail = JobBuilder.newJob(MessageStatusHolder.class)
+                                    .withIdentity("SystemMessage", Quartz.QUARTZGROUP).build();
                     sched.scheduleJob(jobDetail, trigger);
                 } else {
-                    trigger.setJobName("SystemMessage");
-                    sched.rescheduleJob("SystemMessageTrigger", Quartz.QUARTZGROUP, trigger);
+                    sched.rescheduleJob(new TriggerKey("SystemMessageTrigger", Quartz.QUARTZGROUP), trigger);
                 }
             }
             sched.start();
