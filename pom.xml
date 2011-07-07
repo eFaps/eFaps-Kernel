@@ -512,6 +512,12 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             </exclusions>
         </dependency>
 
+        <!-- to define a higher version (needed from another tool) -->
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.1</version>
+        </dependency>
 
         <!--
             Joda Time is used to have a quality replacement for Java date and
