@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.AbstractResource;
@@ -36,14 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The algorithm is:
- * <ol>
- *   <li></li>
- *   <li></li>
- *   <li></li>
- * </ol>
- *
- * For each file id a new VFS store resource must be created.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -114,7 +105,7 @@ public abstract class AbstractStoreResource
      * Frees this resource. Only a dummy implementation because nothing must be
      * freed for this store.
      */
-    @Override()
+    @Override
     protected void freeResource()
     {
     }
@@ -219,28 +210,6 @@ public abstract class AbstractStoreResource
     }
 
     /**
-     * Method is used to set the FileSytemManager for a Virtual File System.
-     * Because as default a store is not a virtual file system nothing is done.
-     *
-     * @param _manager DefaultFileSystemManager to set
-     */
-    public void setFileSystemManager(final DefaultFileSystemManager _manager)
-    {
-        //not used here.
-    }
-
-    /**
-     * @return always <code>null</code> because as default a store is not a
-     *         virtual file system
-     * @throws EFapsException on error
-     */
-    public DefaultFileSystemManager evaluateFileSystemManager()
-        throws EFapsException
-    {
-        return null;
-    }
-
-    /**
      * Wraps the standard {@link InputStream} to get an input stream for the
      * needs of eFaps.
      */
@@ -319,7 +288,7 @@ public abstract class AbstractStoreResource
          * @see #afterClose()
          * @throws IOException on error
          */
-        @Override()
+        @Override
         public void close()
             throws IOException
         {
@@ -348,7 +317,7 @@ public abstract class AbstractStoreResource
          * @throws IOException on error
          * @see InputStream#available()
          */
-        @Override()
+        @Override
         public int available()
             throws IOException
         {
@@ -359,7 +328,7 @@ public abstract class AbstractStoreResource
          * @param _readlimit limit to read
          * @see InputStream#mark(int)
          */
-        @Override()
+        @Override
         public void  mark(final int _readlimit)
         {
             this.in.mark(_readlimit);
@@ -369,7 +338,7 @@ public abstract class AbstractStoreResource
          * @return mark suported
          * @see InputStream#markSupported()
          */
-        @Override()
+        @Override
         public boolean markSupported()
         {
             return this.in.markSupported();
@@ -380,7 +349,7 @@ public abstract class AbstractStoreResource
          * @throws IOException on error
          * @see InputStream#read()
          */
-        @Override()
+        @Override
         public int read()
             throws IOException
         {
@@ -393,7 +362,7 @@ public abstract class AbstractStoreResource
          * @throws IOException on error
          * @see InputStream#read(byte[])
          */
-        @Override()
+        @Override
         public int read(final byte[] _b)
             throws IOException
         {
@@ -408,7 +377,7 @@ public abstract class AbstractStoreResource
          * @throws IOException on error
          * @see InputStream#read(byte[], int, int)
          */
-        @Override()
+        @Override
         public int read(final byte[] _b,
                         final int _off,
                         final int _len)
@@ -421,7 +390,7 @@ public abstract class AbstractStoreResource
          * @throws IOException on error
          * @see InputStream#reset()
          */
-        @Override()
+        @Override
         public void reset()
             throws IOException
         {
@@ -434,7 +403,7 @@ public abstract class AbstractStoreResource
          * @throws IOException on error
          * @see InputStream#skip(long)
          */
-        @Override()
+        @Override
         public long skip(final long _n)
             throws IOException
         {

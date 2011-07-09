@@ -97,7 +97,7 @@ public class JDBCStoreResource
      * @throws EFapsException on error
      * @see org.efaps.db.store.Resource#initialize(Instance, Map, Compress)
      */
-    @Override()
+    @Override
     public void initialize(final Instance _instance,
                            final Map<String, String> _properties,
                            final Compress _compress)
@@ -311,15 +311,6 @@ public class JDBCStoreResource
     }
 
     /**
-     * @see Resource#isVFS()
-     * @return always <i>false</i>
-     */
-    public boolean isVFS()
-    {
-        return false;
-    }
-
-    /**
      * This class implements an InputStream to read bytes from a
      * {@link java.sql.Blob} if the get binary stream of the blob does not
      * support the available method (and returns e.g. always 0 like the Oracle
@@ -362,7 +353,7 @@ public class JDBCStoreResource
          * @return length of the stream
          * @throws IOException on error
          */
-        @Override()
+        @Override
         public int read()
             throws IOException
         {
@@ -376,7 +367,7 @@ public class JDBCStoreResource
          * @return length of the stream
          * @throws IOException on error
          */
-        @Override()
+        @Override
         public int read(final byte[] _bytes)
             throws IOException
         {
@@ -398,7 +389,7 @@ public class JDBCStoreResource
          * @return <i>true</i> if available
          * @throws IOException on error
          */
-        @Override()
+        @Override
         public int available()
             throws IOException
         {
@@ -408,7 +399,7 @@ public class JDBCStoreResource
 
 
     /**
-     * Extdns super class.
+     * Extdens super class.
      *
      */
     private class JDBCStoreResourceInputStream

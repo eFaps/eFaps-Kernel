@@ -27,6 +27,11 @@ import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
@@ -169,7 +174,7 @@ public class VFSStoreResource
      * @throws EFapsException on error
      * @see Resource#initialize(Instance, Map, Compress)
      */
-    @Override()
+    @Override
     public void initialize(final Instance _instance,
                            final Map<String, String> _properties,
                            final Compress _compress)
@@ -201,37 +206,37 @@ public class VFSStoreResource
         if (numberBackupStr != null) {
             this.numberBackup  = Integer.parseInt(numberBackupStr);
         }
-    }
 
-    /**
-     * Method to determine if the Resource is a Virtual File System and therefore
-     * needs a FileSystemManager.
-     *
-     * @return always <i>true</i>
-     * @see Resource#isVFS()
-     */
-    public boolean isVFS()
-    {
-        return true;
-    }
-
-    /**
-     * Method is used to set the FileSytemManager for a Virtual File System.
-     *
-     * @param _manager DefaultFileSystemManager to set
-     */
-    @Override()
-    public void setFileSystemManager(final DefaultFileSystemManager _manager)
-    {
-        this.manager = _manager;
+        if (this.manager == null) {
+            try {
+                DefaultFileSystemManager tmpMan = null;
+                if (_properties.containsKey(Store.PROPERTY_JNDINAME)) {
+                    final InitialContext initialContext = new InitialContext();
+                    final Context context = (Context) initialContext.lookup("java:comp/env");
+                    final NamingEnumeration<NameClassPair> nameEnum = context.list("");
+                    while (nameEnum.hasMoreElements()) {
+                        final NameClassPair namePair = nameEnum.next();
+                        if (namePair.getName().equals(_properties.get(Store.PROPERTY_JNDINAME))) {
+                            tmpMan = (DefaultFileSystemManager) context.lookup(
+                                            _properties.get(Store.PROPERTY_JNDINAME));
+                            break;
+                        }
+                    }
+                }
+                if (tmpMan == null && this.manager == null) {
+                    this.manager = evaluateFileSystemManager();
+                }
+            } catch (final NamingException e) {
+                throw new EFapsException(VFSStoreResource.class, "initialize.NamingException", e);
+            }
+        }
     }
 
     /**
      * @return DefaultFileSystemManager
      * @throws EFapsException on error
      */
-    @Override()
-    public DefaultFileSystemManager evaluateFileSystemManager()
+    private DefaultFileSystemManager evaluateFileSystemManager()
         throws EFapsException
     {
         final DefaultFileSystemManager ret = new DefaultFileSystemManager();
@@ -308,21 +313,17 @@ public class VFSStoreResource
             } else  {
                 int length = _size;
                 while (length > 0) {
-                    final int readLength = (length < this.buffer.length
-                                            ? length
-                                            : this.buffer.length);
+                    final int readLength = length < this.buffer.length ? length : this.buffer.length;
                     _in.read(this.buffer, 0, readLength);
                     out.write(this.buffer, 0, readLength);
                     length -= readLength;
                 }
             }
-
             if (getCompress().equals(Compress.GZIP))  {
                 out.close();
             } else if (getCompress().equals(Compress.ZIP))  {
                 out.close();
             }
-
             tmpFile.close();
             return size;
         } catch (final IOException e)  {
@@ -344,16 +345,15 @@ public class VFSStoreResource
         try  {
             this.storeEvent = VFSStoreResource.StoreEvent.READ;
             final FileObject file = this.manager.resolveFile(this.fileName + VFSStoreResource.EXTENSION_NORMAL);
-
             if (!file.isReadable())  {
                 VFSStoreResource.LOG.error("file for " + this.fileName + " not readable");
                 throw new EFapsException(VFSStoreResource.class, "#####file not readable");
             }
-
             in = new VFSStoreResourceInputStream(this, file);
-        } catch (final EFapsException e)  {
-            throw e;
-        } catch (final Throwable e)  {
+        } catch (final FileSystemException e)  {
+            VFSStoreResource.LOG.error("read of " + this.fileName + " failed", e);
+            throw new EFapsException(VFSStoreResource.class, "read.Throwable", e);
+        } catch (final IOException e) {
             VFSStoreResource.LOG.error("read of " + this.fileName + " failed", e);
             throw new EFapsException(VFSStoreResource.class, "read.Throwable", e);
         }
@@ -461,7 +461,7 @@ public class VFSStoreResource
                 tmpFile.close();
                 currentFile.close();
                 bakFile.close();
-            } catch (final Throwable e)  {
+            } catch (final FileSystemException e)  {
                 VFSStoreResource.LOG.error("transaction commit fails for " + _xid
                         + " (one phase = " + _onePhase + ")", e);
                 final XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
@@ -471,7 +471,7 @@ public class VFSStoreResource
         } else if (this.storeEvent == VFSStoreResource.StoreEvent.DELETE) {
             try {
                 final FileObject curFile = this.manager.resolveFile(this.manager.getBaseFile(),
-                        this.fileName + VFSStoreResource.EXTENSION_NORMAL);
+                            this.fileName + VFSStoreResource.EXTENSION_NORMAL);
                 final FileObject bakFile = this.manager.resolveFile(this.manager.getBaseFile(),
                         this.fileName + VFSStoreResource.EXTENSION_BACKUP);
                 if (bakFile.exists()) {
@@ -482,9 +482,9 @@ public class VFSStoreResource
                 }
                 bakFile.close();
                 curFile.close();
-            } catch (final Throwable e)  {
+            } catch (final FileSystemException e) {
                 VFSStoreResource.LOG.error("transaction commit fails for " + _xid
-                        + " (one phase = " + _onePhase + ")", e);
+                                + " (one phase = " + _onePhase + ")", e);
                 final XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
                 xa.initCause(e);
                 throw xa;
@@ -515,7 +515,7 @@ public class VFSStoreResource
             if (tmpFile.exists()) {
                 tmpFile.delete();
             }
-        } catch (final Throwable e)  {
+        } catch (final FileSystemException e)  {
             VFSStoreResource.LOG.error("transaction rollback fails for " + _xid, e);
             final XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
             xa.initCause(e);
@@ -610,7 +610,7 @@ public class VFSStoreResource
          *
          * @throws IOException on error
          */
-        @Override()
+        @Override
         protected void beforeClose() throws IOException
         {
             this.file.close();

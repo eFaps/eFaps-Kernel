@@ -26,7 +26,6 @@ import java.util.Map;
 
 import javax.transaction.xa.XAResource;
 
-import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
@@ -62,7 +61,8 @@ public interface Resource
      * @return length of the file which is stored
      * @throws EFapsException if an error occurs
      */
-    int write(InputStream _in, int _size) throws EFapsException;
+    int write(final InputStream _in,
+              final int _size) throws EFapsException;
 
     /**
      * Method to open the Resource.
@@ -129,25 +129,4 @@ public interface Resource
                     final Map<String, String> _properties,
                     final Compress _compress)
         throws EFapsException;
-
-    /**
-     * Method to determine if the Resource is a Virtual File System and
-     * therefore needs a FileSystemManager.
-     *
-     * @return <i>true</i> if it is a VFS, else <i>false</i>
-     */
-    boolean isVFS();
-
-    /**
-     * Method is used to set the FileSytemManager for a Virtual File System.
-     *
-     * @param _fileSytemManager DefaultFileSystemManager to set
-     */
-    void setFileSystemManager(final DefaultFileSystemManager _fileSytemManager);
-
-    /**
-     * @return DefaultFileSystemManager
-     * @throws EFapsException on error
-     */
-    DefaultFileSystemManager evaluateFileSystemManager() throws EFapsException;
 }

@@ -24,13 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-
-import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminCommon;
@@ -89,11 +82,6 @@ public final class Store
      * Properties for the StoreResource.
      */
     private Map<String, String> resourceProperties;
-
-    /**
-     * FileSystemManager of this store.
-     */
-    private DefaultFileSystemManager fileSytemManager;
 
     /**
      * @param _id id of this store
@@ -175,37 +163,12 @@ public final class Store
             }
             ret.initialize(_instance, this.resourceProperties, compress);
 
-            if (ret.isVFS()) {
-                DefaultFileSystemManager tmpMan = null;
-                if (getProperty(Store.PROPERTY_JNDINAME) != null) {
-                    final InitialContext initialContext = new InitialContext();
-                    final Context context = (Context) initialContext.lookup("java:comp/env");
-                    final NamingEnumeration<NameClassPair> nameEnum = context.list("");
-                    while (nameEnum.hasMoreElements()) {
-                        final NameClassPair namePair = nameEnum.next();
-                        if (namePair.getName().equals(getProperty(Store.PROPERTY_JNDINAME))) {
-                            tmpMan = (DefaultFileSystemManager) context.lookup(getProperty(Store.PROPERTY_JNDINAME));
-                            break;
-                        }
-                    }
-                }
-                if (tmpMan == null && this.fileSytemManager == null) {
-                    this.fileSytemManager = ret.evaluateFileSystemManager();
-                    tmpMan = this.fileSytemManager;
-                } else {
-                    tmpMan = this.fileSytemManager;
-                }
-                ret.setFileSystemManager(tmpMan);
-            }
         } catch (final InstantiationException e) {
             throw new EFapsException(Store.class, "getResource.InstantiationException", e, this.resource);
         } catch (final IllegalAccessException e) {
             throw new EFapsException(Store.class, "getResource.IllegalAccessException", e, this.resource);
         } catch (final ClassNotFoundException e) {
             throw new EFapsException(Store.class, "getResource.ClassNotFoundException", e, this.resource);
-        } catch (final NamingException e) {
-            throw new EFapsException(Store.class, "getResource.NamingException", e, this.resource,
-                            getProperty(Store.PROPERTY_JNDINAME));
         }
         return ret;
     }
