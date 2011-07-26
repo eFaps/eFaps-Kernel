@@ -82,14 +82,7 @@ public abstract class AbstractStoreResource
     private Map<String, String> properties;
 
     /**
-     * Method called to initialize this StoreResource.
-     *
-     * @param _instance     instance of the object this StoreResource is wanted
-     *                      for
-     * @param _properties   properties for this StoreResource
-     * @param _compress     compress type for this StoreResource
-     * @throws EFapsException on error
-     * @see Resource#initialize(Instance, Map, Compress)
+     * {@inheritDoc}
      */
     public void initialize(final Instance _instance,
                            final Map<String, String> _properties,
