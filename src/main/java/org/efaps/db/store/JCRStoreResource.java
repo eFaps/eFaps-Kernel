@@ -32,7 +32,6 @@ import javax.naming.NamingException;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
-import org.apache.jackrabbit.rmi.repository.RMIRemoteRepository;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
@@ -85,7 +84,7 @@ public class JCRStoreResource
                     break;
                 }
             }
-            this.repository = new RMIRemoteRepository("//localhost/jackrabbit.repository");
+
         } catch (final NamingException e) {
             throw new EFapsException(JCRStoreResource.class, "initialize.NamingException", e);
         }
