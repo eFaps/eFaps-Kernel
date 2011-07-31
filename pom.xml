@@ -406,7 +406,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>8.4-702.jdbc4</version>
+            <version>9.0-801.jdbc4</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
