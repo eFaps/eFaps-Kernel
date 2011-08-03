@@ -20,20 +20,41 @@
 
 package org.efaps.db.store;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Calendar;
 import java.util.Map;
 
+import javax.jcr.AccessDeniedException;
+import javax.jcr.Binary;
+import javax.jcr.InvalidItemStateException;
+import javax.jcr.ItemExistsException;
+import javax.jcr.LoginException;
+import javax.jcr.NoSuchWorkspaceException;
+import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.ReferentialIntegrityException;
 import javax.jcr.Repository;
-import javax.naming.Context;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
+import javax.jcr.nodetype.NodeType;
+import javax.jcr.version.VersionException;
 import javax.naming.InitialContext;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Store Resource that uses the Content Repository for Java Technology API (JCR).
@@ -44,6 +65,11 @@ import org.efaps.util.EFapsException;
 public class JCRStoreResource
     extends AbstractStoreResource
 {
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG  = LoggerFactory.getLogger(JCRStoreResource.class);
 
     /**
      * Property Name to define if the type if is used to define a sub
@@ -62,6 +88,11 @@ public class JCRStoreResource
     private String identifier;
 
     /**
+     * Session for JCR access.
+     */
+    private Session session;
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -74,33 +105,68 @@ public class JCRStoreResource
         this.identifier = _instance.getOid();
         try {
             final InitialContext ctx = new InitialContext();
-
-            final Context context = (Context) ctx.lookup("java:comp/env");
-            final NamingEnumeration<NameClassPair> nameEnum = context.list("");
-            while (nameEnum.hasMoreElements()) {
-                final NameClassPair namePair = nameEnum.next();
-                if (namePair.getName().equals(_properties.get(Store.PROPERTY_JNDINAME))) {
-                    this.repository = (Repository) context.lookup(_properties.get(Store.PROPERTY_JNDINAME));
-                    break;
-                }
+            this.repository = (Repository) ctx.lookup(_properties.get(Store.PROPERTY_JNDINAME));
+            if (JCRStoreResource.LOG.isDebugEnabled()) {
+                final String name = this.repository.getDescriptor(Repository.REP_NAME_DESC);
+                JCRStoreResource.LOG.debug("Successfully retrieved '%s' repository from JNDI", new Object[]{ name });
             }
-
+            this.session = this.repository.login(new SimpleCredentials("username", "password".toCharArray()),
+                            getProperties().get(JCRStoreResource.PROPERTY_WORKSPACENAME));
         } catch (final NamingException e) {
             throw new EFapsException(JCRStoreResource.class, "initialize.NamingException", e);
+        } catch (final LoginException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final NoSuchWorkspaceException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final RepositoryException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.efaps.db.store.Resource#write(java.io.InputStream, int)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public int write(final InputStream _in,
                      final int _size)
         throws EFapsException
     {
+        final JCRBinary bin = new JCRBinary(_in);
+        int size = _size;
+        try {
+            final Node rootNode = this.session.getRootNode();
+            final Node fileNode = rootNode.addNode(this.identifier, NodeType.NT_FILE);
+            final Node resNode = fileNode.addNode(Property.JCR_CONTENT, NodeType.NT_RESOURCE);
+            resNode.setProperty(Property.JCR_DATA, bin);
+            resNode.setProperty(Property.JCR_LAST_MODIFIED, Calendar.getInstance());
+            resNode.setProperty(Property.JCR_LAST_MODIFIED_BY, Context.getThreadContext().getPerson().getName());
 
-        return 0;
+            // if size is unkown!
+            if (size < 0)  {
+                final byte[] buffer = new byte[1024];
+                int length = 1;
+                size = 0;
+                final OutputStream out = new ByteArrayOutputStream();
+                while (length > 0)  {
+                    length = _in.read(buffer);
+                    if (length > 0)  {
+                        out.write(buffer, 0, length);
+                        size += length;
+                    }
+                }
+            }
+
+        } catch (final RepositoryException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return size;
     }
 
     /*
@@ -111,8 +177,22 @@ public class JCRStoreResource
     public InputStream read()
         throws EFapsException
     {
-
-        return null;
+        InputStream input = null;
+        try {
+            final Node rootNode = this.session.getRootNode();
+            final Node fileNode = rootNode.getNode(this.identifier);
+            final Node resNode = fileNode.getNode(Property.JCR_CONTENT);
+            final Property data = resNode.getProperty(Property.JCR_DATA);
+            final Binary bin = data.getBinary();
+            input = new JCRStoreResourceInputStream(this, bin);
+        } catch (final RepositoryException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IOException e) {
+             // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return input;
     }
 
     /*
@@ -136,8 +216,36 @@ public class JCRStoreResource
                        final boolean _onePhase)
         throws XAException
     {
-        // TODO Auto-generated method stub
-
+        try {
+            this.session.save();
+        } catch (final AccessDeniedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final ItemExistsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final ReferentialIntegrityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final ConstraintViolationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final InvalidItemStateException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final VersionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final LockException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final NoSuchNodeTypeException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final RepositoryException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /*
@@ -212,4 +320,95 @@ public class JCRStoreResource
         return false;
     }
 
+
+    /**
+     * Implementation of Binary from JCR.
+     */
+    private static class JCRBinary
+        implements Binary
+    {
+
+        /**
+         * The InpuStrema this Binary belongs to.
+         */
+        private InputStream stream;
+
+        /**
+         * @param _in InputStream
+         */
+        public JCRBinary(final InputStream _in)
+        {
+            this.stream = _in;
+        }
+
+
+        /* (non-Javadoc)
+         * @see javax.jcr.Binary#getStream()
+         */
+        @Override
+        public InputStream getStream()
+            throws RepositoryException
+        {
+            return this.stream;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.jcr.Binary#read(byte[], long)
+         */
+        @Override
+        public int read(final byte[] _b,
+                        final long _position)
+            throws IOException, RepositoryException
+        {
+            return this.stream.read(_b);
+        }
+
+        /* (non-Javadoc)
+         * @see javax.jcr.Binary#getSize()
+         */
+        @Override
+        public long getSize()
+            throws RepositoryException
+        {
+            return 0;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.jcr.Binary#dispose()
+         */
+        @Override
+        public void dispose()
+        {
+            // TODO Auto-generated method stub
+            try {
+                this.stream.close();
+            } catch (final IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+
+    /**
+     * ResourceInputStream implementation.
+     */
+    private class JCRStoreResourceInputStream
+        extends StoreResourceInputStream
+    {
+
+        /**
+         * @param _store    Strore this InputStream belongs to
+         * @param _bin      Binary
+         * @throws IOException on error
+         * @throws RepositoryException  on error
+         */
+        protected JCRStoreResourceInputStream(final AbstractStoreResource _store,
+                                              final Binary _bin)
+            throws IOException, RepositoryException
+        {
+            super(_store, _bin.getStream());
+        }
+    }
 }

@@ -84,6 +84,7 @@ public abstract class AbstractStoreResource
     /**
      * {@inheritDoc}
      */
+    @Override
     public void initialize(final Instance _instance,
                            final Map<String, String> _properties,
                            final Compress _compress) throws EFapsException
