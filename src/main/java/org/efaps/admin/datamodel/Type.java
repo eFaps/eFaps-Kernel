@@ -75,9 +75,9 @@ public class Type
         ABSTRACT(1, 0),
         /** classification purpose. */
         CLASSIFICATION(2, 1),
-        /** GeneralInstane */
+        /** GeneralInstane. */
         GENERALINSTANCE(4, 2),
-        /** No GeneralInstane */
+        /** No GeneralInstane. */
         NOGENERALINSTANCE(8, 3);
         /** id of this purpose. */
         private final int id;
@@ -136,7 +136,6 @@ public class Type
                                                     .column("PARENTDMTYPE")
                                                     .column("SQLCACHEEXPR")
                                                     .from("V_ADMINTYPE");
-
 
     /**
      * Stores all instances of type.
@@ -315,7 +314,7 @@ public class Type
     public boolean isGeneralInstance()
     {
         boolean ret = true;
-        if (this.generalInstance != null ) {
+        if (this.generalInstance != null) {
             ret = this.generalInstance;
         } else if (getParentType() != null) {
             ret = getParentType().isGeneralInstance();
