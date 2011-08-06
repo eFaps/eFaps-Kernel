@@ -47,18 +47,6 @@ public final class Store
 {
 
     /**
-     * Property name of the file name attribute used in store actions (checkin,
-     * checkout).
-     */
-    public static final String PROPERTY_ATTR_FILE_NAME = "StoreAttributeFileName";
-
-    /**
-     * Property name of the file length attribute used in store actions
-     * (checkin).
-     */
-    public static final String PROPERTY_ATTR_FILE_LENGTH = "StoreAttributeFileLength";
-
-    /**
      * Property to get the compress for this store.
      */
     public static final String PROPERTY_COMPRESS = "StoreCompress";

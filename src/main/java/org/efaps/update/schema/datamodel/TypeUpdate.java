@@ -41,7 +41,6 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
-import org.efaps.db.store.Store;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.UpdateLifecycle;
@@ -328,9 +327,9 @@ public class TypeUpdate
                                   final long _setID)
             throws EFapsException
         {
-            final long attrTypeId = getAttrTypeId(_typeName);
-            final long sqlTableId = getSqlTableId(_typeName);
-            final long typeLinkId = getTypeLinkId(_typeName);
+            final long attrTypeId = this.getAttrTypeId(_typeName);
+            final long sqlTableId = this.getSqlTableId(_typeName);
+            final long typeLinkId = this.getTypeLinkId(_typeName);
 
             final CIType typeTmp;
             if (_setID > 0) {
@@ -371,11 +370,11 @@ public class TypeUpdate
 
             update.executeWithoutAccessCheck();
 
-            setPropertiesInDb(update.getInstance(), getProperties());
+            this.setPropertiesInDb(update.getInstance(), this.getProperties());
 
             for (final Event event : this.events) {
                 final Instance newInstance = event.updateInDB(update.getInstance(), this.name);
-                setPropertiesInDb(newInstance, event.getProperties());
+                this.setPropertiesInDb(newInstance, event.getProperties());
             }
         }
 
@@ -509,17 +508,17 @@ public class TypeUpdate
         {
             final String value = _tags.get(0);
             if ("name".equals(value)) {
-                setName(_text);
+                this.setName(_text);
             } else if ("type".equals(value)) {
-                setType(_text);
+                this.setType(_text);
             } else if ("uuid".equals(value)) {
                 this.uuid = _text;
             } else if ("parent".equals(value)) {
                 this.parentType = _text;
             } else if ("sqltable".equals(value)) {
-                setSqlTable(_text);
+                this.setSqlTable(_text);
             } else if ("sqlcolumn".equals(value)) {
-                setSqlColumn(_text);
+                this.setSqlColumn(_text);
             } else if ("attribute".equals(value)) {
                 if (_tags.size() == 1) {
                     this.curAttr = new AttributeDefinition();
@@ -547,7 +546,7 @@ public class TypeUpdate
             final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (!query.next()) {
-                TypeUpdate.LOG.error("type[" + _typeName + "]." + "attribute[" + getName() + "]: " + "Parent TYpe '"
+                TypeUpdate.LOG.error("type[" + _typeName + "]." + "attribute[" + this.getName() + "]: " + "Parent TYpe '"
                                 + this.parentType + "' not found");
             }
             return query.getCurrentValue().getId();
@@ -564,19 +563,19 @@ public class TypeUpdate
                                final String _typeName)
             throws EFapsException
         {
-            final String name = AttributeSet.evaluateName(_typeName, getName());
+            final String name = AttributeSet.evaluateName(_typeName, this.getName());
 
             long parentTypeId = 0;
             if (this.parentType != null) {
-                parentTypeId = getParentTypeId(this.parentType);
+                parentTypeId = this.getParentTypeId(this.parentType);
             }
 
-            final long attrTypeId = getAttrTypeId(_typeName);
-            final long sqlTableId = getSqlTableId(_typeName);
+            final long attrTypeId = this.getAttrTypeId(_typeName);
+            final long sqlTableId = this.getSqlTableId(_typeName);
 
             // create/update the attributSet
             final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.AttributeSet);
-            queryBldr.addWhereAttrEqValue(CIAdminDataModel.AttributeSet.Name, getName());
+            queryBldr.addWhereAttrEqValue(CIAdminDataModel.AttributeSet.Name, this.getName());
             queryBldr.addWhereAttrEqValue(CIAdminDataModel.AttributeSet.ParentType,  _instance.getId());
             final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
@@ -586,11 +585,11 @@ public class TypeUpdate
             } else {
                 update = new Insert(CIAdminDataModel.AttributeSet);
                 update.add(CIAdminDataModel.AttributeSet.ParentType, "" + _instance.getId());
-                update.add(CIAdminDataModel.AttributeSet.Name, getName());
+                update.add(CIAdminDataModel.AttributeSet.Name, this.getName());
             }
             update.add(CIAdminDataModel.AttributeSet.AttributeType, "" + attrTypeId);
             update.add(CIAdminDataModel.AttributeSet.Table, "" + sqlTableId);
-            update.add(CIAdminDataModel.AttributeSet.SQLColumn, getSqlColumn());
+            update.add(CIAdminDataModel.AttributeSet.SQLColumn, this.getSqlColumn());
             update.add(CIAdminDataModel.AttributeSet.DimensionUUID, this.uuid);
             if (parentTypeId > 0) {
                 update.add(CIAdminDataModel.AttributeSet.TypeLink, "" + parentTypeId);
@@ -684,9 +683,9 @@ public class TypeUpdate
                     if ("false".equalsIgnoreCase(_attributes.get("GeneralInstance"))) {
                         valueTmp = valueTmp + Type.Purpose.NOGENERALINSTANCE.getId();
                     }
-                    addValue("Purpose", valueTmp.toString());
+                    this.addValue("Purpose", valueTmp.toString());
                 } else if (_tags.size() == 2) {
-                    getProperties().put(Classification.Keys.LINKATTR.getValue(), _text);
+                    this.getProperties().put(Classification.Keys.LINKATTR.getValue(), _text);
                 }
             } else if ("attribute".equals(value)) {
                 if (_tags.size() == 1) {
@@ -704,30 +703,28 @@ public class TypeUpdate
                 }
             } else if ("event-for".equals(value)) {
                 // Adds the name of a allowed event type
-                addLink(TypeUpdate.LINK2ALLOWEDEVENT, new LinkInstance(_attributes.get("type")));
+                this.addLink(TypeUpdate.LINK2ALLOWEDEVENT, new LinkInstance(_attributes.get("type")));
             } else if ("classifies".equals(value)) {
                 if (_tags.size() == 1) {
-                    addLink(TypeUpdate.LINK2CLASSIFIES,
+                    this.addLink(TypeUpdate.LINK2CLASSIFIES,
                                     new LinkInstance(_attributes.get(Classification.Keys.TYPE.getValue())));
-                    addLink(TypeUpdate.LINK2CLASSIFYREL,
+                    this.addLink(TypeUpdate.LINK2CLASSIFYREL,
                                     new LinkInstance(_attributes.get(Classification.Keys.RELTYPE.getValue())));
-                    getProperties().put(Classification.Keys.RELTYPEATTR.getValue(),
+                    this.getProperties().put(Classification.Keys.RELTYPEATTR.getValue(),
                                         _attributes.get(Classification.Keys.RELTYPEATTR.getValue()));
-                    getProperties().put(Classification.Keys.RELLINKATTR.getValue(),
+                    this.getProperties().put(Classification.Keys.RELLINKATTR.getValue(),
                                         _attributes.get(Classification.Keys.RELLINKATTR.getValue()));
-                    getProperties().put(Classification.Keys.MULTI.getValue(),
+                    this.getProperties().put(Classification.Keys.MULTI.getValue(),
                                         _attributes.get(Classification.Keys.MULTI.getValue()));
                 } else if ((_tags.size() == 2) && "company".equals(_tags.get(1))) {
-                    addLink(TypeUpdate.LINK2CLASSIFYCOMPANY, new LinkInstance(_text));
+                    this.addLink(TypeUpdate.LINK2CLASSIFYCOMPANY, new LinkInstance(_text));
                 } else {
                     super.readXML(_tags, _attributes, _text);
                 }
             } else if ("parent".equals(value)) {
                 this.parentType = _text;
             } else if ("store".equals(value)) {
-                addLink(TypeUpdate.LINK2STORE, new LinkInstance(_attributes.get("name")));
-                getProperties().put(Store.PROPERTY_ATTR_FILE_LENGTH, _attributes.get("attributeFileLength"));
-                getProperties().put(Store.PROPERTY_ATTR_FILE_NAME, _attributes.get("attributeFileName"));
+                this.addLink(TypeUpdate.LINK2STORE, new LinkInstance(_attributes.get("name")));
             } else if ("trigger".equals(value)) {
                 if (_tags.size() == 1) {
                     this.events.add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
@@ -771,12 +768,12 @@ public class TypeUpdate
                         query.executeWithoutAccessCheck();
                         if (query.next()) {
                             final Instance instance = query.getCurrentValue();
-                            addValue("ParentType", "" + instance.getId());
+                            this.addValue("ParentType", "" + instance.getId());
                         } else {
-                            addValue("ParentType", null);
+                            this.addValue("ParentType", null);
                         }
                     } else {
-                        addValue("ParentType", null);
+                        this.addValue("ParentType", null);
                     }
                 }
 
@@ -784,14 +781,14 @@ public class TypeUpdate
 
                 if (_step == UpdateLifecycle.EFAPS_UPDATE) {
                     for (final AttributeDefinition attr : this.attributes) {
-                        attr.updateInDB(this.instance, getValue("Name"), 0);
+                        attr.updateInDB(this.instance, this.getValue("Name"), 0);
                     }
 
                     for (final AttributeSetDefinition attrSet : this.attributeSets) {
-                        attrSet.updateInDB(this.instance, getValue("Name"));
+                        attrSet.updateInDB(this.instance, this.getValue("Name"));
                     }
 
-                    removeObsoleteAttributes();
+                    this.removeObsoleteAttributes();
                 }
             } catch (final EFapsException e) {
                 throw new InstallationException(" Type can not be updated", e);

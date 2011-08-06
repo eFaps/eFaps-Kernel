@@ -41,6 +41,7 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs.provider.FileProvider;
 import org.efaps.db.Instance;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,7 +153,7 @@ public class VFSStoreResource
     /**
      * Stores the name of the file including the correct directory.
      */
-    private String fileName = null;
+    private String storeFileName = null;
 
     /**
      * FilesystemManager for this VFSStoreResource.
@@ -186,7 +187,7 @@ public class VFSStoreResource
 
         final String useTypeIdStr = _properties.get(VFSStoreResource.PROPERTY_USE_TYPE);
         if ("true".equalsIgnoreCase(useTypeIdStr))  {
-            fileNameTmp.append(getType().getId()).append("/");
+            fileNameTmp.append(getInstance().getType().getId()).append("/");
         }
 
         final String numberSubDirsStr =  _properties.get(VFSStoreResource.PROPERTY_NUMBER_SUBDIRS);
@@ -196,11 +197,11 @@ public class VFSStoreResource
                           + Math.round(Math.log10(numberSubDirs) + 0.5d)
                           + "d";
             fileNameTmp.append(String.format(pathFormat,
-                                         getFileId() % numberSubDirs))
+                            getInstance().getId() % numberSubDirs))
                    .append("/");
         }
-        fileNameTmp.append(getType().getId()).append(".").append(getFileId());
-        this.fileName = fileNameTmp.toString();
+        fileNameTmp.append(getInstance().getType().getId()).append(".").append(getInstance().getId());
+        this.storeFileName = fileNameTmp.toString();
 
         final String numberBackupStr = _properties.get(VFSStoreResource.PROPERTY_NUMBER_BACKUP);
         if (numberBackupStr != null) {
@@ -269,6 +270,15 @@ public class VFSStoreResource
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int add2Select(final SQLSelect _select)
+    {
+        return 0;
+    }
+
+    /**
      * The method writes the context (from the input stream) to a temporary file
      * (same file URL, but with extension {@link #EXTENSION_TEMP}).
      *
@@ -276,18 +286,20 @@ public class VFSStoreResource
      * @param _size length of the content (or negative meaning that the length
      *              is not known; then the content gets the length of readable
      *              bytes from the input stream)
+     * @param _fileName name of the file
      * @return size of the created temporary file object
      * @throws EFapsException on error
      */
-    public int write(final InputStream _in,
-                     final int _size)
+    public long write(final InputStream _in,
+                      final long _size,
+                      final String _fileName)
         throws EFapsException
     {
         try  {
             this.storeEvent = VFSStoreResource.StoreEvent.WRITE;
-            int size = _size;
+            long size = _size;
             final FileObject tmpFile = this.manager.resolveFile(this.manager.getBaseFile(),
-                                            this.fileName + VFSStoreResource.EXTENSION_TEMP);
+                                            this.storeFileName + VFSStoreResource.EXTENSION_TEMP);
             if (!tmpFile.exists()) {
                 tmpFile.createFile();
             }
@@ -311,9 +323,10 @@ public class VFSStoreResource
                     }
                 }
             } else  {
-                int length = _size;
+                Long length = _size;
                 while (length > 0) {
-                    final int readLength = length < this.buffer.length ? length : this.buffer.length;
+                    final int readLength = length.intValue() < this.buffer.length
+                                    ? length.intValue()  : this.buffer.length;
                     _in.read(this.buffer, 0, readLength);
                     out.write(this.buffer, 0, readLength);
                     length -= readLength;
@@ -325,11 +338,13 @@ public class VFSStoreResource
                 out.close();
             }
             tmpFile.close();
+            setFileInfo(_fileName, size);
             return size;
         } catch (final IOException e)  {
             VFSStoreResource.LOG.error("write of content failed", e);
             throw new EFapsException(VFSStoreResource.class, "write.IOException", e);
         }
+
     }
 
     /**
@@ -344,17 +359,17 @@ public class VFSStoreResource
         StoreResourceInputStream in = null;
         try  {
             this.storeEvent = VFSStoreResource.StoreEvent.READ;
-            final FileObject file = this.manager.resolveFile(this.fileName + VFSStoreResource.EXTENSION_NORMAL);
+            final FileObject file = this.manager.resolveFile(this.storeFileName + VFSStoreResource.EXTENSION_NORMAL);
             if (!file.isReadable())  {
-                VFSStoreResource.LOG.error("file for " + this.fileName + " not readable");
+                VFSStoreResource.LOG.error("file for " + this.storeFileName + " not readable");
                 throw new EFapsException(VFSStoreResource.class, "#####file not readable");
             }
             in = new VFSStoreResourceInputStream(this, file);
         } catch (final FileSystemException e)  {
-            VFSStoreResource.LOG.error("read of " + this.fileName + " failed", e);
+            VFSStoreResource.LOG.error("read of " + this.storeFileName + " failed", e);
             throw new EFapsException(VFSStoreResource.class, "read.Throwable", e);
         } catch (final IOException e) {
-            VFSStoreResource.LOG.error("read of " + this.fileName + " failed", e);
+            VFSStoreResource.LOG.error("read of " + this.storeFileName + " failed", e);
             throw new EFapsException(VFSStoreResource.class, "read.Throwable", e);
         }
         return in;
@@ -400,7 +415,7 @@ public class VFSStoreResource
     {
         if (_number < this.numberBackup) {
             final FileObject backFile = this.manager.resolveFile(this.manager.getBaseFile(),
-                    this.fileName + VFSStoreResource.EXTENSION_BACKUP + _number);
+                    this.storeFileName + VFSStoreResource.EXTENSION_BACKUP + _number);
             if (backFile.exists()) {
                 backup(backFile, _number + 1);
             }
@@ -442,11 +457,11 @@ public class VFSStoreResource
         if (this.storeEvent == VFSStoreResource.StoreEvent.WRITE) {
             try {
                 final FileObject tmpFile = this.manager.resolveFile(this.manager.getBaseFile(),
-                        this.fileName + VFSStoreResource.EXTENSION_TEMP);
+                        this.storeFileName + VFSStoreResource.EXTENSION_TEMP);
                 final FileObject currentFile = this.manager.resolveFile(this.manager.getBaseFile(),
-                        this.fileName + VFSStoreResource.EXTENSION_NORMAL);
+                        this.storeFileName + VFSStoreResource.EXTENSION_NORMAL);
                 final FileObject bakFile = this.manager.resolveFile(this.manager.getBaseFile(),
-                        this.fileName + VFSStoreResource.EXTENSION_BACKUP);
+                        this.storeFileName + VFSStoreResource.EXTENSION_BACKUP);
                 if (bakFile.exists() && (this.numberBackup > 0)) {
                     backup(bakFile, 0);
                 }
@@ -471,9 +486,9 @@ public class VFSStoreResource
         } else if (this.storeEvent == VFSStoreResource.StoreEvent.DELETE) {
             try {
                 final FileObject curFile = this.manager.resolveFile(this.manager.getBaseFile(),
-                            this.fileName + VFSStoreResource.EXTENSION_NORMAL);
+                            this.storeFileName + VFSStoreResource.EXTENSION_NORMAL);
                 final FileObject bakFile = this.manager.resolveFile(this.manager.getBaseFile(),
-                        this.fileName + VFSStoreResource.EXTENSION_BACKUP);
+                        this.storeFileName + VFSStoreResource.EXTENSION_BACKUP);
                 if (bakFile.exists()) {
                     bakFile.delete();
                 }
@@ -511,7 +526,7 @@ public class VFSStoreResource
         }
         try {
             final FileObject tmpFile = this.manager.resolveFile(this.manager.getBaseFile(),
-                    this.fileName + VFSStoreResource.EXTENSION_TEMP);
+                    this.storeFileName + VFSStoreResource.EXTENSION_TEMP);
             if (tmpFile.exists()) {
                 tmpFile.delete();
             }

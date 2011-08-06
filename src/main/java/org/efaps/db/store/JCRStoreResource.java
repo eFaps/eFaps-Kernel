@@ -52,6 +52,7 @@ import javax.transaction.xa.Xid;
 
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +66,6 @@ import org.slf4j.LoggerFactory;
 public class JCRStoreResource
     extends AbstractStoreResource
 {
-
     /**
      * Logging instance used in this class.
      */
@@ -126,16 +126,26 @@ public class JCRStoreResource
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.efaps.db.store.AbstractStoreResource#add2Select(org.efaps.db.wrapper.SQLSelect)
+     */
+    @Override
+    protected int add2Select(final SQLSelect _select)
+    {
+        return 0;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public int write(final InputStream _in,
-                     final int _size)
+    public long write(final InputStream _in,
+                     final long _size,
+                     final String _fileName)
         throws EFapsException
     {
         final JCRBinary bin = new JCRBinary(_in);
-        int size = _size;
+        long size = _size;
         try {
             final Node rootNode = this.session.getRootNode();
             final Node fileNode = rootNode.addNode(this.identifier, NodeType.NT_FILE);
@@ -158,7 +168,6 @@ public class JCRStoreResource
                     }
                 }
             }
-
         } catch (final RepositoryException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -169,9 +178,8 @@ public class JCRStoreResource
         return size;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.efaps.db.store.Resource#read()
+    /**
+     * {@inheritDoc}
      */
     @Override
     public InputStream read()
@@ -179,6 +187,7 @@ public class JCRStoreResource
     {
         InputStream input = null;
         try {
+            //this.session.getNodeByIdentifier(id)
             final Node rootNode = this.session.getRootNode();
             final Node fileNode = rootNode.getNode(this.identifier);
             final Node resNode = fileNode.getNode(Property.JCR_CONTENT);
@@ -195,21 +204,34 @@ public class JCRStoreResource
         return input;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.efaps.db.store.Resource#delete()
+    /**
+     * {@inheritDoc}
      */
     @Override
     public void delete()
         throws EFapsException
     {
-        // TODO Auto-generated method stub
-
+        try {
+            final Node rootNode = this.session.getRootNode();
+            final Node fileNode = rootNode.getNode(this.identifier);
+            fileNode.remove();
+        } catch (final RepositoryException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see javax.transaction.xa.XAResource#commit(javax.transaction.xa.Xid, boolean)
+    /**
+     * The method is called from the transaction manager if the complete
+     * transaction is completed.<br/>
+     *
+     * @param _xid      global transaction identifier (not used, because each
+     *                  file with the file id gets a new VFS store resource
+     *                  instance)
+     * @param _onePhase <i>true</i> if it is a one phase commitment transaction
+     *                  (not used)
+     * @throws XAException if any exception occurs (catch on
+     *         {@link java.lang.Throwable})
      */
     @Override
     public void commit(final Xid _xid,
@@ -217,7 +239,10 @@ public class JCRStoreResource
         throws XAException
     {
         try {
-            this.session.save();
+            if (this.session.hasPendingChanges()) {
+                this.session.save();
+            }
+            this.session.logout();
         } catch (final AccessDeniedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -248,76 +273,92 @@ public class JCRStoreResource
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see javax.transaction.xa.XAResource#forget(javax.transaction.xa.Xid)
+    /**
+     * Tells the resource manager to forget about a heuristically completed
+     * transaction branch.
+     *
+     * @param _xid  global transaction identifier (not used, because each file
+     *              with the file id gets a new VFS store resource instance)
      */
     @Override
     public void forget(final Xid _xid)
-        throws XAException
     {
-        // TODO Auto-generated method stub
-
+        if (JCRStoreResource.LOG.isDebugEnabled()) {
+            JCRStoreResource.LOG.debug("forget (xid = " + _xid + ")");
+        }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see javax.transaction.xa.XAResource#getTransactionTimeout()
+    /**
+     * Obtains the current transaction timeout value set for this XAResource
+     * instance.
+     *
+     * @return always 0
      */
-    @Override
     public int getTransactionTimeout()
-        throws XAException
     {
-        // TODO Auto-generated method stub
+        if (JCRStoreResource.LOG.isDebugEnabled()) {
+            JCRStoreResource.LOG.debug("getTransactionTimeout");
+        }
         return 0;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see javax.transaction.xa.XAResource#prepare(javax.transaction.xa.Xid)
+    /**
+     * Ask the resource manager to prepare for a transaction commit of the
+     * transaction specified in xid (used for 2-phase commits).
+     *
+     * @param _xid Xid
+     * @return always 0, because not 2 phase commit
      */
-    @Override
     public int prepare(final Xid _xid)
-        throws XAException
     {
-        // TODO Auto-generated method stub
+        if (JCRStoreResource.LOG.isDebugEnabled())  {
+            JCRStoreResource.LOG.debug("prepare (xid=" + _xid + ")");
+        }
         return 0;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see javax.transaction.xa.XAResource#recover(int)
+    /**
+     * Obtains a list of prepared transaction branches from a resource manager.
+     *
+     * @param _flag flag
+     * @return always <code>null</code>
      */
-    @Override
     public Xid[] recover(final int _flag)
-        throws XAException
     {
-        // TODO Auto-generated method stub
+        if (JCRStoreResource.LOG.isDebugEnabled()) {
+            JCRStoreResource.LOG.debug("recover (flag = " + _flag + ")");
+        }
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see javax.transaction.xa.XAResource#rollback(javax.transaction.xa.Xid)
+    /**
+     * On rollback no save is send to the session..
+     *
+     * @param _xid      global transaction identifier (not used, because each
+     *                  file with the file id gets a new VFS store resource
+     *                  instance)
+     * @throws XAException if any exception occurs (catch on
+     *         {@link java.lang.Throwable})
      */
     @Override
     public void rollback(final Xid _xid)
         throws XAException
     {
-        // TODO Auto-generated method stub
-
+        this.session.logout();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see javax.transaction.xa.XAResource#setTransactionTimeout(int)
+    /**
+     * Sets the current transaction timeout value for this XAResource instance.
+     *
+     * @param _seconds number of seconds
+     * @return always <i>true</i>
      */
-    @Override
     public boolean setTransactionTimeout(final int _seconds)
-        throws XAException
     {
-        // TODO Auto-generated method stub
-        return false;
+        if (JCRStoreResource.LOG.isDebugEnabled()) {
+            JCRStoreResource.LOG.debug("setTransactionTimeout (seconds = " + _seconds + ")");
+        }
+        return true;
     }
 
 

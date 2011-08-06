@@ -107,7 +107,6 @@ public final class JasperUtil
         throws EFapsException
     {
         final Checkout checkout = new Checkout(_instance);
-        checkout.preprocess();
         final InputStream source = checkout.execute();
         JasperDesign jasperDesign = null;
         try {

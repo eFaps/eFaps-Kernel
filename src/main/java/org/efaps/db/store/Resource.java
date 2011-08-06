@@ -30,7 +30,7 @@ import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO comment!
+ * Interface for the StoreResource used to archive files in eFaps.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -58,11 +58,14 @@ public interface Resource
      * @param _in       input stream
      * @param _size     size of the data to write (or negative if the size is
      *                  not known)
+     * @param _fileName name of the file
      * @return length of the file which is stored
      * @throws EFapsException if an error occurs
      */
-    int write(final InputStream _in,
-              final int _size) throws EFapsException;
+    long write(final InputStream _in,
+               final long _size,
+               final String _fileName)
+        throws EFapsException;
 
     /**
      * Method to open the Resource.
@@ -107,6 +110,21 @@ public interface Resource
      * @throws EFapsException if an error occurs
      */
     void read(final OutputStream _out) throws EFapsException;
+
+
+    /**
+     * Get the name of the file.
+     * @return filename
+     * @throws EFapsException on error
+     */
+    String getFileName() throws EFapsException;
+
+    /**
+     * Get the Length of the file in byte.
+     * @return filelength
+     * @throws EFapsException on error
+     */
+    Long getFileLength() throws EFapsException;
 
     /**
      * Will delete the file.

@@ -23,10 +23,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.efaps.admin.access.AccessTypeEnums;
-import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.store.Resource;
-import org.efaps.db.store.Store;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,28 +86,6 @@ public class Checkout
     }
 
     /**
-     * @throws EFapsException on error
-     */
-    public void preprocess()
-        throws EFapsException
-    {
-        final Type type = getInstance().getType();
-        final String fileNameTmp = type.getProperty(Store.PROPERTY_ATTR_FILE_NAME);
-        final String size = type.getProperty(Store.PROPERTY_ATTR_FILE_LENGTH);
-
-        final PrintQuery print = new PrintQuery(getInstance());
-        print.addAttribute(fileNameTmp, size);
-        if (print.executeWithoutAccessCheck()) {
-            final Object value = print.getAttribute(fileNameTmp);
-            if (value != null) {
-                this.fileName = value.toString();
-                final Long filelength = print.<Long>getAttribute(size);
-                this.fileLength = filelength;
-            }
-        }
-    }
-
-    /**
      * Executes the checkout with an output stream.
      *
      * @param _out      output stream where to write the file
@@ -122,9 +98,9 @@ public class Checkout
         final boolean hasAccess = super.getInstance().getType().hasAccess(super.getInstance(),
                                                                           AccessTypeEnums.CHECKOUT.getAccessType());
         if (!hasAccess) {
-            throw new EFapsException(getClass(), "execute.NoAccess");
+            throw new EFapsException(this.getClass(), "execute.NoAccess");
         }
-        executeWithoutAccessCheck(_out);
+        this.executeWithoutAccessCheck(_out);
     }
 
     /**
@@ -144,11 +120,11 @@ public class Checkout
     public void executeWithoutAccessCheck(final OutputStream _out)
         throws EFapsException
     {
-        executeEvents(EventType.CHECKOUT_PRE);
-        if (!executeEvents(EventType.CHECKOUT_OVERRIDE)) {
-            executeWithoutTrigger(_out);
+        this.executeEvents(EventType.CHECKOUT_PRE);
+        if (!this.executeEvents(EventType.CHECKOUT_OVERRIDE)) {
+            this.executeWithoutTrigger(_out);
         }
-        executeEvents(EventType.CHECKOUT_POST);
+        this.executeEvents(EventType.CHECKOUT_POST);
     }
 
     /**
@@ -163,15 +139,14 @@ public class Checkout
     {
         Resource storeRsrc = null;
         try {
-            storeRsrc = Context.getThreadContext().getStoreResource(getInstance());
+            storeRsrc = Context.getThreadContext().getStoreResource(this.getInstance());
             storeRsrc.read(_out);
+            this.fileLength = storeRsrc.getFileLength();
+            this.fileName = storeRsrc.getFileName();
             storeRsrc.commit();
         } catch (final EFapsException e) {
             Checkout.LOG.error("could not checkout " + super.getInstance(), e);
             throw e;
-        } catch (final Throwable e) {
-            Checkout.LOG.error("could not checkout " + super.getInstance(), e);
-            throw new EFapsException(getClass(), "executeWithoutAccessCheck.Throwable", e);
         } finally {
             if ((storeRsrc != null) && storeRsrc.isOpened()) {
                 storeRsrc.abort();
@@ -194,9 +169,9 @@ public class Checkout
         final boolean hasAccess = super.getInstance().getType().hasAccess(super.getInstance(),
                                                                           AccessTypeEnums.CHECKOUT.getAccessType());
         if (!hasAccess) {
-            throw new EFapsException(getClass(), "execute.NoAccess");
+            throw new EFapsException(this.getClass(), "execute.NoAccess");
         }
-        return executeWithoutAccessCheck();
+        return this.executeWithoutAccessCheck();
     }
 
     /**
@@ -219,11 +194,11 @@ public class Checkout
         throws EFapsException
     {
         InputStream ret = null;
-        executeEvents(EventType.CHECKOUT_PRE);
-        if (!executeEvents(EventType.CHECKOUT_OVERRIDE)) {
-            ret = executeWithoutTrigger();
+        this.executeEvents(EventType.CHECKOUT_PRE);
+        if (!this.executeEvents(EventType.CHECKOUT_OVERRIDE)) {
+            ret = this.executeWithoutTrigger();
         }
-        executeEvents(EventType.CHECKOUT_POST);
+        this.executeEvents(EventType.CHECKOUT_POST);
         return ret;
     }
 
@@ -242,15 +217,14 @@ public class Checkout
         Resource storeRsrc = null;
         InputStream in = null;
         try {
-            storeRsrc = Context.getThreadContext().getStoreResource(getInstance());
+            storeRsrc = Context.getThreadContext().getStoreResource(this.getInstance());
             in = storeRsrc.read();
+            this.fileLength = storeRsrc.getFileLength();
+            this.fileName = storeRsrc.getFileName();
             storeRsrc.commit();
         } catch (final EFapsException e) {
             Checkout.LOG.error("could not checkout " + super.getInstance(), e);
             throw e;
-        } catch (final Throwable e) {
-            Checkout.LOG.error("could not checkout " + super.getInstance(), e);
-            throw new EFapsException(getClass(), "executeWithoutAccessCheck.Throwable", e);
         } finally {
             if ((in == null) && (storeRsrc != null) && storeRsrc.isOpened()) {
                 storeRsrc.abort();

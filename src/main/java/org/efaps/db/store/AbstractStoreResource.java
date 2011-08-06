@@ -23,13 +23,23 @@ package org.efaps.db.store;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
-import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Context;
+import org.efaps.db.GeneralInstance;
 import org.efaps.db.Instance;
+import org.efaps.db.InstanceQuery;
 import org.efaps.db.transaction.AbstractResource;
+import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +59,30 @@ public abstract class AbstractStoreResource
     private static final Logger LOG = LoggerFactory.getLogger(AbstractStoreResource.class);
 
     /**
-     * The variable stores if the files inside the store itself are compressed.
+     * Name of the main store table.
      */
-    private Compress compress = Compress.NONE;
+    private static final String TABLENAME_STORE = "T_CMGENSTORE";
+
+    /**
+     * Name of the column for the filename.
+     */
+    private static final String COLNAME_FILENAME = "FILENAME";
+
+    /**
+     * Name of the column for the file length.
+     */
+    private static final String COLNAME_FILELENGTH = "FILELENGTH";
+
+    /**
+     * Basic SQL Select for getting the Resource.
+     */
+    private static final SQLSelect SQL_SELECT = new SQLSelect()
+                                                    .column(0, "ID")
+                                                    .column(1, AbstractStoreResource.COLNAME_FILENAME)
+                                                    .column(1, AbstractStoreResource.COLNAME_FILELENGTH)
+                                                    .column(1, "ID")
+                                                    .from(GeneralInstance.TABLENAME, 0)
+                                                    .leftJoin(AbstractStoreResource.TABLENAME_STORE, 1, "ID", 0, "ID");
 
     /**
      * Buffer used to copy from the input stream to the output stream.
@@ -61,20 +92,24 @@ public abstract class AbstractStoreResource
     private final byte[] buffer = new byte[1024];
 
     /**
-     * The variable stores the identifier of the file. This store is representing
-     * this file.
-     *
-     * @see #getFileId()
+     * The variable stores if the files inside the store itself are compressed.
      */
-    private long fileId;
+    private Compress compress = Compress.NONE;
 
     /**
-     * Each store must be identified with an URL defining where the file and
-     * which store resource is used.
-     *
-     * @see #getType()
+     * Instance this resource belongs to.
      */
-    private Type type;
+    private Instance instance;
+
+    /**
+     * GeneralID of this Store Resource.
+     */
+    private Long generalID;
+
+    /**
+     * Do the related objects exist.
+     */
+    private boolean[] exist;
 
     /**
      * Properties of this store resource.
@@ -82,34 +117,54 @@ public abstract class AbstractStoreResource
     private Map<String, String> properties;
 
     /**
+     * File Name of the Source.
+     */
+    private String fileName = "DEFAULT";
+
+    /**
+     * Length of the file in byte.
+     */
+    private Long fileLength = new Long(0);
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(final Instance _instance,
                            final Map<String, String> _properties,
-                           final Compress _compress) throws EFapsException
+                           final Compress _compress)
+        throws EFapsException
     {
-        this.type = _instance.getType();
+        this.instance = _instance;
         this.properties = _properties;
-        this.fileId = _instance.getId();
         this.compress = _compress;
+        final SQLSelect select = AbstractStoreResource.SQL_SELECT.getCopy()
+                        .addPart(SQLPart.WHERE)
+                        .addColumnPart(0, "INSTTYPEID").addPart(SQLPart.EQUAL)
+                        .addValuePart(_instance.getType().getId())
+                        .addPart(SQLPart.AND)
+                        .addColumnPart(0, "INSTID").addPart(SQLPart.EQUAL).addValuePart(_instance.getId());
+        this.exist = new boolean[1 + add2Select(select)];
+        getGeneralID(select.getSQL());
+
     }
 
     /**
-     * Frees this resource. Only a dummy implementation because nothing must be
-     * freed for this store.
+     * {@inheritDoc}
      */
     @Override
-    protected void freeResource()
+    public void open()
+        throws EFapsException
     {
+        super.open();
+        insertDefaults();
     }
 
     /**
-     * The output stream is written with the content of the file. From method
-     * {@link #read()} the input stream is used and copied into the output
-     * stream.
+     * The output stream is written with the content of the file. From method {@link #read()} the input stream is used
+     * and copied into the output stream.
      *
-     * @param _out    output stream where the file content must be written
+     * @param _out output stream where the file content must be written
      * @throws EFapsException if an error occurs
      * @see #read()
      */
@@ -117,22 +172,22 @@ public abstract class AbstractStoreResource
         throws EFapsException
     {
         StoreResourceInputStream in = null;
-        try  {
+        try {
             in = (StoreResourceInputStream) read();
-            if (in != null)  {
+            if (in != null) {
                 int length = 1;
-                while (length > 0)  {
+                while (length > 0) {
                     length = in.read(this.buffer);
-                    if (length > 0)  {
+                    if (length > 0) {
                         _out.write(this.buffer, 0, length);
                     }
                 }
             }
-        } catch (final IOException e)  {
+        } catch (final IOException e) {
             throw new EFapsException(AbstractStoreResource.class, "read.IOException", e);
-        } finally  {
-            if (in != null)  {
-                try  {
+        } finally {
+            if (in != null) {
+                try {
                     in.closeWithoutCommit();
                 } catch (final IOException e) {
                     AbstractStoreResource.LOG.warn("Catched IOException in class: " + this.getClass());
@@ -142,25 +197,165 @@ public abstract class AbstractStoreResource
     }
 
     /**
-     * This is the getter method for instance variable {@link #fileId}.
-     *
-     * @return value of instance variable {@link #fileId}
-     * @see #fileId
+     * {@inheritDoc}
      */
-    protected final long getFileId()
+    @Override
+    public String getFileName()
+        throws EFapsException
     {
-        return this.fileId;
+        return this.fileName;
     }
 
     /**
-     * This is the getter method for instance variable {@link #type}.
-     *
-     * @return value of instance variable {@link #type}
-     * @see #type
+     * {@inheritDoc}
      */
-    protected final Type getType()
+    @Override
+    public Long getFileLength()
+        throws EFapsException
     {
-        return this.type;
+        return this.fileLength;
+    }
+
+    /**
+     * Insert default values in the table. (if necessary).
+     * @throws EFapsException on error
+     */
+    protected void insertDefaults()
+        throws EFapsException
+    {
+        if (!getExist()[0] && getGeneralID() != null) {
+            try {
+                final ConnectionResource res = Context.getThreadContext().getConnectionResource();
+                final Connection con = res.getConnection();
+                Context.getDbType().newInsert(AbstractStoreResource.TABLENAME_STORE, "ID", false)
+                                .column("ID", getGeneralID())
+                                .column(AbstractStoreResource.COLNAME_FILENAME, "TMP")
+                                .column(AbstractStoreResource.COLNAME_FILELENGTH, 0)
+                                .execute(con);
+                res.commit();
+                this.fileName = "TMP";
+                this.fileLength = new Long(0);
+            } catch (final SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    /**
+     * Set the info for the file in this store reosurce.
+     * @param _filename     name of the file
+     * @param _fileLength   length of the file
+     * @throws EFapsException on error
+     */
+    protected void setFileInfo(final String _filename,
+                               final long _fileLength)
+        throws EFapsException
+    {
+        if (_filename.equals(this.fileName) || _fileLength != this.fileLength) {
+
+            ConnectionResource res = null;
+            try {
+                res = Context.getThreadContext().getConnectionResource();
+
+                final StringBuffer cmd = new StringBuffer().append("update ")
+                                .append(AbstractStoreResource.TABLENAME_STORE).append(" set ")
+                                .append(AbstractStoreResource.COLNAME_FILENAME).append("=?, ")
+                                .append(AbstractStoreResource.COLNAME_FILELENGTH).append("=? ")
+                                .append("where ID =").append(getGeneralID());
+
+                final PreparedStatement stmt = res.getConnection().prepareStatement(cmd.toString());
+                try {
+                    stmt.setString(1, _filename);
+                    stmt.setLong(2, _fileLength);
+                    stmt.execute();
+                } finally {
+                    stmt.close();
+                }
+                res.commit();
+            } catch (final EFapsException e) {
+                res.abort();
+                throw e;
+            } catch (final SQLException e) {
+                res.abort();
+                throw new EFapsException(JDBCStoreResource.class, "write.SQLException", e);
+            }
+        }
+    }
+
+    /**
+     * Add to the select for the existence check.
+     * @param _select select to add to
+     * @return number of added columns
+     */
+    protected abstract int add2Select(final SQLSelect _select);
+
+    /**
+     * Get the generalID etc. from the eFasp DataBase.
+     * @param _complStmt Statement to be executed
+     * @throws EFapsException on error
+     */
+    private void getGeneralID(final String _complStmt)
+        throws EFapsException
+    {
+        ConnectionResource con = null;
+        try {
+            con = Context.getThreadContext().getConnectionResource();
+
+            final Statement stmt = con.getConnection().createStatement();
+
+            final ResultSet rs = stmt.executeQuery(_complStmt.toString());
+
+            while (rs.next()) {
+                this.generalID = rs.getLong(1);
+                this.fileName = rs.getString(2);
+                if (this.fileName != null && !this.fileName.isEmpty()) {
+                    this.fileName = this.fileName.trim();
+                }
+                this.fileLength = rs.getLong(3);
+                for (int i = 0; i < this.exist.length; i++) {
+                    this.exist[i] = rs.getLong(4 + i) > 1;
+                }
+            }
+            rs.close();
+            stmt.close();
+            con.commit();
+        } catch (final SQLException e) {
+            throw new EFapsException(InstanceQuery.class, "executeOneCompleteStmt", e);
+        } finally {
+            if (con != null && con.isOpened()) {
+                con.abort();
+            }
+        }
+    }
+
+    /**
+     * Frees this resource. Only a dummy implementation because nothing must be freed for this store.
+     */
+    @Override
+    protected void freeResource()
+    {
+    }
+
+    /**
+     * Getter method for instance variable {@link #instance}.
+     *
+     * @return value of instance variable {@link #instance}
+     */
+    protected Instance getInstance()
+    {
+        return this.instance;
+    }
+
+    /**
+     * Setter method for instance variable {@link #instance}.
+     *
+     * @param _instance value for instance variable {@link #instance}
+     */
+    protected void setInstance(final Instance _instance)
+    {
+        this.instance = _instance;
     }
 
     /**
@@ -168,7 +363,7 @@ public abstract class AbstractStoreResource
      *
      * @return value of instance variable {@link #compress}
      */
-    public Compress getCompress()
+    protected Compress getCompress()
     {
         return this.compress;
     }
@@ -178,7 +373,7 @@ public abstract class AbstractStoreResource
      *
      * @param _compress value for instance variable {@link #compress}
      */
-    public void setCompress(final Compress _compress)
+    protected void setCompress(final Compress _compress)
     {
         this.compress = _compress;
     }
@@ -186,9 +381,9 @@ public abstract class AbstractStoreResource
     /**
      * Set the properties for this store.
      *
-     * @param _properties   properties to set
+     * @param _properties properties to set
      */
-    public void setProperties(final Map<String, String> _properties)
+    protected void setProperties(final Map<String, String> _properties)
     {
         this.properties = _properties;
     }
@@ -198,18 +393,38 @@ public abstract class AbstractStoreResource
      *
      * @return value of instance variable {@link #properties}
      */
-    public Map<String, String> getProperties()
+    protected Map<String, String> getProperties()
     {
         return this.properties;
     }
 
     /**
-     * Wraps the standard {@link InputStream} to get an input stream for the
-     * needs of eFaps.
+     * Getter method for instance variable {@link #exist}.
+     *
+     * @return value of instance variable {@link #exist}
+     */
+    protected boolean[] getExist()
+    {
+        return this.exist;
+    }
+
+    /**
+     * Getter method for instance variable {@link #generalID}.
+     *
+     * @return value of instance variable {@link #generalID}
+     */
+    protected Long getGeneralID()
+    {
+        return this.generalID;
+    }
+
+    /**
+     * Wraps the standard {@link InputStream} to get an input stream for the needs of eFaps.
      */
     protected class StoreResourceInputStream
         extends InputStream
     {
+
         /**
          * InputStream.
          */
@@ -221,8 +436,8 @@ public abstract class AbstractStoreResource
         private final AbstractStoreResource store;
 
         /**
-         * @param _store    StoreResource this InputStream belong to
-         * @param _in       inputstream
+         * @param _store StoreResource this InputStream belong to
+         * @param _in inputstream
          * @throws IOException on error
          */
         protected StoreResourceInputStream(final AbstractStoreResource _store,
@@ -230,11 +445,11 @@ public abstract class AbstractStoreResource
             throws IOException
         {
             this.store = _store;
-            if (_store.compress.equals(Compress.GZIP))  {
+            if (_store.compress.equals(Compress.GZIP)) {
                 this.in = new GZIPInputStream(_in);
-            } else if (_store.compress.equals(Compress.ZIP))  {
+            } else if (_store.compress.equals(Compress.ZIP)) {
                 this.in = new ZipInputStream(_in);
-            } else  {
+            } else {
                 this.in = _in;
             }
         }
@@ -251,8 +466,7 @@ public abstract class AbstractStoreResource
         }
 
         /**
-         * Only a dummy method if something must happened after the commit of
-         * the store.
+         * Only a dummy method if something must happened after the commit of the store.
          *
          * @throws IOException on error
          */
@@ -262,8 +476,7 @@ public abstract class AbstractStoreResource
         }
 
         /**
-         * The input stream and others are closes without commit of the store
-         * resource.
+         * The input stream and others are closes without commit of the store resource.
          *
          * @throws IOException on error
          */
@@ -275,8 +488,7 @@ public abstract class AbstractStoreResource
         }
 
         /**
-         * Calls method {@link #beforeClose()}, then commits the store and at
-         * least calls method {@link #afterClose()}.
+         * Calls method {@link #beforeClose()}, then commits the store and at least calls method {@link #afterClose()}.
          *
          * @see #beforeClose()
          * @see #afterClose()
@@ -286,20 +498,20 @@ public abstract class AbstractStoreResource
         public void close()
             throws IOException
         {
-            try  {
+            try {
                 super.close();
                 beforeClose();
                 if (this.store.isOpened()) {
                     this.store.commit();
                 }
                 afterClose();
-            } catch (final EFapsException e)  {
+            } catch (final EFapsException e) {
                 throw new IOException("commit of store not possible", e);
-            } finally  {
-                if (this.store.isOpened())  {
-                    try  {
+            } finally {
+                if (this.store.isOpened()) {
+                    try {
                         this.store.abort();
-                    } catch (final EFapsException e)  {
+                    } catch (final EFapsException e) {
                         throw new IOException("store resource could not be aborted", e);
                     }
                 }
@@ -323,7 +535,7 @@ public abstract class AbstractStoreResource
          * @see InputStream#mark(int)
          */
         @Override
-        public void  mark(final int _readlimit)
+        public void mark(final int _readlimit)
         {
             this.in.mark(_readlimit);
         }
@@ -351,7 +563,7 @@ public abstract class AbstractStoreResource
         }
 
         /**
-         * @param _b    byte to read
+         * @param _b byte to read
          * @return d
          * @throws IOException on error
          * @see InputStream#read(byte[])

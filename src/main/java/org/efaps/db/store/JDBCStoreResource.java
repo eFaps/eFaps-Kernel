@@ -23,6 +23,7 @@ package org.efaps.db.store;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,6 +35,7 @@ import javax.transaction.xa.Xid;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,38 +56,14 @@ public class JDBCStoreResource
     private static Logger LOG = LoggerFactory.getLogger(JDBCStoreResource.class);
 
     /**
-     * Property Name of the name of the blob in the SQL table defined with
-     * property {@link #PROPERY_TABLE}.
+     * Name of the table the content is stored in.
      */
-    private static final String PROPERY_BLOB  = "JDBCBlob";
+    private static final String TABLENAME_STORE = "T_CMGENSTOREJDBC";
 
     /**
-     * Property Name of the name of the key (id) in the SQL table defined with
-     * property {@link #PROPERY_TABLE}.
+     * Name of the column the content is stored in.
      */
-    private static final String PROPERY_KEY   = "JDBCKey";
-
-    /**
-     * Property Name of the name of the SQL table.
-     */
-    private static final String PROPERY_TABLE = "JDBCTable";
-
-    /**
-     * The string stores the SQL table name where the blob and key is located.
-     */
-    private String table;
-
-    /**
-     * The string stores the name of key column to select the row in the table
-     * {@link #table} (used to create the where clause).
-     */
-    private String keyColumn;
-
-    /**
-     * The string stores the name of the blob column in the table
-     * {@link #table}.
-     */
-    private String blobColumn;
+    private static final String COLNAME_FILECONTENT = "FILECONTENT";
 
     /**
      * Method called to initialize this StoreResource.
@@ -104,10 +82,41 @@ public class JDBCStoreResource
         throws EFapsException
     {
         super.initialize(_instance, _properties, _compress);
-        this.table = _properties.get(JDBCStoreResource.PROPERY_TABLE);
-        this.keyColumn = _properties.get(JDBCStoreResource.PROPERY_KEY);
-        this.blobColumn = _properties.get(JDBCStoreResource.PROPERY_BLOB);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int add2Select(final SQLSelect _select)
+    {
+        _select.column(2, "ID").leftJoin(JDBCStoreResource.TABLENAME_STORE, 2, "ID", 0, "ID");
+        return 1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void insertDefaults()
+        throws EFapsException
+    {
+        super.insertDefaults();
+        if (!getExist()[1] && getGeneralID() != null) {
+            try {
+                final ConnectionResource res = Context.getThreadContext().getConnectionResource();
+                final Connection con = res.getConnection();
+                Context.getDbType().newInsert(JDBCStoreResource.TABLENAME_STORE, "ID", false)
+                                .column("ID", getGeneralID())
+                                .execute(con);
+                res.commit();
+            } catch (final SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     /**
      * The method writes the context (from the input stream) into a SQL blob.
@@ -117,26 +126,28 @@ public class JDBCStoreResource
      *              is not known; then the content gets the length of readable
      *              bytes from the input stream) return size of the created
      *              temporary file object
+     * @param _fileName name of the file
      * @return size of the file
      * @throws EFapsException on error
      */
-    public int write(final InputStream _in,
-                     final int _size)
+    public long write(final InputStream _in,
+                      final long _size,
+                      final String _fileName)
         throws EFapsException
     {
-        int size = 0;
+        long size = 0;
         ConnectionResource res = null;
         try {
             res = Context.getThreadContext().getConnectionResource();
 
             final StringBuffer cmd = new StringBuffer().append("update ")
-                .append(this.table).append(" set ")
-                .append(this.blobColumn).append("=? ")
-                .append("where ").append(this.keyColumn).append("=").append(getFileId());
+                .append(JDBCStoreResource.TABLENAME_STORE).append(" set ")
+                .append(JDBCStoreResource.COLNAME_FILECONTENT).append("=? ")
+                .append("where ID =").append(getGeneralID());
 
             final PreparedStatement stmt = res.getConnection().prepareStatement(cmd.toString());
             try {
-                stmt.setBinaryStream(1, _in, _size);
+                stmt.setBinaryStream(1, _in, ((Long) _size).intValue());
                 stmt.execute();
             } finally {
                 stmt.close();
@@ -151,6 +162,7 @@ public class JDBCStoreResource
             JDBCStoreResource.LOG.error("write of content failed", e);
             throw new EFapsException(JDBCStoreResource.class, "write.SQLException", e);
         }
+        setFileInfo(_fileName, size);
         return size;
     }
 
@@ -177,9 +189,9 @@ public class JDBCStoreResource
 
             final Statement stmt = res.getConnection().createStatement();
             final StringBuffer cmd = new StringBuffer()
-                .append("select ").append(this.blobColumn).append(" ")
-                .append("from ").append(this.table).append(" ")
-                .append("where ").append(this.keyColumn).append("=").append(getFileId());
+                .append("select ").append(JDBCStoreResource.COLNAME_FILECONTENT).append(" ")
+                .append("from ").append(JDBCStoreResource.TABLENAME_STORE).append(" ")
+                .append("where ID =").append(getGeneralID());
             final ResultSet resultSet = stmt.executeQuery(cmd.toString());
             if (resultSet.next()) {
                 if (Context.getDbType().supportsBinaryInputStream())  {

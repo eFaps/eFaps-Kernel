@@ -20,19 +20,14 @@
  */
 
 package org.efaps.db;
-import java.io.File;
 import java.io.InputStream;
 
 import org.efaps.admin.access.AccessTypeEnums;
-import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.store.Resource;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_LENGTH;
-import static org.efaps.db.store.Store.PROPERTY_ATTR_FILE_NAME;
 
 /**
  * The class is used to check in a file to a given attribute of an object.
@@ -84,9 +79,9 @@ public class Checkin
         final boolean hasAccess = super.getInstance().getType().hasAccess(super.getInstance(),
                                                                           AccessTypeEnums.CHECKIN.getAccessType());
         if (!hasAccess) {
-            throw new EFapsException(getClass(), "execute.NoAccess");
+            throw new EFapsException(this.getClass(), "execute.NoAccess");
         }
-        executeWithoutAccessCheck(_fileName, _in, _size);
+        this.executeWithoutAccessCheck(_fileName, _in, _size);
     }
 
     /**
@@ -112,11 +107,11 @@ public class Checkin
                                           final int _size)
         throws EFapsException
     {
-        executeEvents(EventType.CHECKIN_PRE);
-        if (!executeEvents(EventType.CHECKIN_OVERRIDE)) {
-            executeWithoutTrigger(_fileName, _in, _size);
+        this.executeEvents(EventType.CHECKIN_PRE);
+        if (!this.executeEvents(EventType.CHECKIN_OVERRIDE)) {
+            this.executeWithoutTrigger(_fileName, _in, _size);
         }
-        executeEvents(EventType.CHECKIN_POST);
+        this.executeEvents(EventType.CHECKIN_POST);
     }
 
     /**
@@ -143,48 +138,15 @@ public class Checkin
         Resource storeRsrc = null;
         boolean ok = false;
         try {
-            final Type type = getInstance().getType();
-
-            final String attrFileName = type.getProperty(PROPERTY_ATTR_FILE_NAME);
-            final String attrFileLength = type.getProperty(PROPERTY_ATTR_FILE_LENGTH);
-            storeRsrc = context.getStoreResource(getInstance());
-            final int size = storeRsrc.write(_in, _size);
+            this.getInstance().getType();
+            storeRsrc = context.getStoreResource(this.getInstance());
+            storeRsrc.write(_in, _size, _fileName);
             storeRsrc.commit();
             storeRsrc = null;
-
-            final File file = new File(_fileName);
-            String fileName = file.getName();
-
-            // remove the path from the filename
-            final int lastSeperatorPosX = fileName.lastIndexOf("/");
-            final int lastSeperatorPosWin = fileName.lastIndexOf("\\");
-            final int lastSeperatorPosMac = fileName.lastIndexOf(":");
-
-            int lastSeperatorPos = lastSeperatorPosX;
-            if (lastSeperatorPos < lastSeperatorPosWin) {
-                lastSeperatorPos = lastSeperatorPosWin;
-            }
-            if (lastSeperatorPos < lastSeperatorPosMac) {
-                lastSeperatorPos = lastSeperatorPosMac;
-            }
-
-            if (lastSeperatorPos > -1 && lastSeperatorPos < fileName.length() - 1) {
-                fileName = fileName.substring(lastSeperatorPos + 1);
-            }
-
-            // set file name and length in the eFaps object
-            final Update update = new Update(super.getInstance());
-            update.add(attrFileName, fileName);
-            update.add(attrFileLength, size);
-            update.executeWithoutAccessCheck();
             ok = true;
         } catch (final EFapsException e) {
             Checkin.LOG.error("could not checkin " + super.getInstance(), e);
             throw e;
-        } catch (final Throwable e) {
-            Checkin.LOG.error("could not checkin " + super.getInstance(), e);
-            throw new EFapsException(Checkin.class,
-                                     "executeWithoutAccessCheck.Throwable", e);
         } finally {
             if (!ok) {
                 context.abort();
