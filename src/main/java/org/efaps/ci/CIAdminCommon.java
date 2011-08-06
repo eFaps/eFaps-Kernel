@@ -297,4 +297,17 @@ public class CIAdminCommon
 
     }
 
+
+    public static final _GeneralInstance GeneralInstance = new _GeneralInstance("35ea6932-eecf-406b-926d-54a59971b7bb");
+
+    public static class _GeneralInstance
+        extends CIType
+    {
+        protected _GeneralInstance(final String _uuid)
+        {
+            super(_uuid);
+        }
+        public final CIAttribute InstanceTypeID = new CIAttribute(this, "InstanceTypeID");
+        public final CIAttribute InstanceID = new CIAttribute(this, "InstanceID");
+    }
 }
