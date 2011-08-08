@@ -253,7 +253,7 @@ public abstract class AbstractStoreResource
                                final long _fileLength)
         throws EFapsException
     {
-        if (_filename.equals(this.fileName) || _fileLength != this.fileLength) {
+        if (!_filename.equals(this.fileName) || _fileLength != this.fileLength) {
 
             ConnectionResource res = null;
             try {
@@ -317,6 +317,7 @@ public abstract class AbstractStoreResource
                 for (int i = 0; i < this.exist.length; i++) {
                     this.exist[i] = rs.getLong(4 + i) > 1;
                 }
+                getAdditionalInfo(rs);
             }
             rs.close();
             stmt.close();
@@ -328,6 +329,16 @@ public abstract class AbstractStoreResource
                 con.abort();
             }
         }
+    }
+
+    /**
+     * Can be used by implementation to get additionla information form the database.
+     * @param _rs   ResultSet
+     * @throws SQLException on error
+     */
+    protected void getAdditionalInfo(final ResultSet _rs)
+        throws SQLException
+    {
     }
 
     /**

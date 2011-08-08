@@ -24,6 +24,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Map;
 
@@ -52,6 +56,7 @@ import javax.transaction.xa.Xid;
 
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -78,6 +83,16 @@ public class JCRStoreResource
     private static final String PROPERTY_WORKSPACENAME = "JCRWorkSpaceName";
 
     /**
+     * Name of the table the content is stored in.
+     */
+    private static final String TABLENAME_STORE = "T_CMGENSTOREJCR";
+
+    /**
+     * Name of the column the content is stored in.
+     */
+    private static final String COLNAME_IDENTIFIER = "IDENTIFIER";
+
+    /**
      * The repository for this JCR Store Resource.
      */
     private Repository repository;
@@ -102,7 +117,6 @@ public class JCRStoreResource
         throws EFapsException
     {
         super.initialize(_instance, _properties, _compress);
-        this.identifier = _instance.getOid();
         try {
             final InitialContext ctx = new InitialContext();
             this.repository = (Repository) ctx.lookup(_properties.get(Store.PROPERTY_JNDINAME));
@@ -126,13 +140,52 @@ public class JCRStoreResource
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.efaps.db.store.AbstractStoreResource#add2Select(org.efaps.db.wrapper.SQLSelect)
+    /**
+     * {@inheritDoc}
      */
     @Override
     protected int add2Select(final SQLSelect _select)
     {
-        return 0;
+        _select.column(2, "ID").column(2, JCRStoreResource.COLNAME_IDENTIFIER)
+            .leftJoin(JCRStoreResource.TABLENAME_STORE, 2, "ID", 0, "ID");
+        return 1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void getAdditionalInfo(final ResultSet _rs)
+        throws SQLException
+    {
+        final String identiferTmp = _rs.getString(6);
+        if (identiferTmp != null && !identiferTmp.isEmpty()) {
+            this.identifier = identiferTmp.trim();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void insertDefaults()
+        throws EFapsException
+    {
+        super.insertDefaults();
+        if (!getExist()[1] && getGeneralID() != null) {
+            try {
+                final ConnectionResource res = Context.getThreadContext().getConnectionResource();
+                final Connection con = res.getConnection();
+                Context.getDbType().newInsert(JCRStoreResource.TABLENAME_STORE, "ID", false)
+                                .column("ID", getGeneralID())
+                                .column(JCRStoreResource.COLNAME_IDENTIFIER, "NEW")
+                                .execute(con);
+                res.commit();
+            } catch (final SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -148,12 +201,12 @@ public class JCRStoreResource
         long size = _size;
         try {
             final Node rootNode = this.session.getRootNode();
-            final Node fileNode = rootNode.addNode(this.identifier, NodeType.NT_FILE);
+            final Node fileNode = rootNode.addNode(getInstance().getOid(), NodeType.NT_FILE);
             final Node resNode = fileNode.addNode(Property.JCR_CONTENT, NodeType.NT_RESOURCE);
             resNode.setProperty(Property.JCR_DATA, bin);
             resNode.setProperty(Property.JCR_LAST_MODIFIED, Calendar.getInstance());
             resNode.setProperty(Property.JCR_LAST_MODIFIED_BY, Context.getThreadContext().getPerson().getName());
-
+            setIdentifer(fileNode.getIdentifier());
             // if size is unkown!
             if (size < 0)  {
                 final byte[] buffer = new byte[1024];
@@ -175,7 +228,46 @@ public class JCRStoreResource
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        setFileInfo(_fileName, size);
         return size;
+    }
+
+    /**
+     * Set the identifier in the eFaps DataBase.
+     * @param _identifier   identifer to set
+     * @throws EFapsException on error
+     */
+    protected void setIdentifer(final String _identifier)
+        throws EFapsException
+    {
+        if (!_identifier.equals(this.identifier)) {
+
+            ConnectionResource res = null;
+            try {
+                res = Context.getThreadContext().getConnectionResource();
+
+                final StringBuffer cmd = new StringBuffer().append("update ")
+                                .append(JCRStoreResource.TABLENAME_STORE).append(" set ")
+                                .append(JCRStoreResource.COLNAME_IDENTIFIER).append("=? ")
+                                .append("where ID =").append(getGeneralID());
+
+                final PreparedStatement stmt = res.getConnection().prepareStatement(cmd.toString());
+                try {
+                    stmt.setString(1, _identifier);
+                    stmt.execute();
+                } finally {
+                    stmt.close();
+                }
+                res.commit();
+                this.identifier = _identifier;
+            } catch (final EFapsException e) {
+                res.abort();
+                throw e;
+            } catch (final SQLException e) {
+                res.abort();
+                throw new EFapsException(JDBCStoreResource.class, "write.SQLException", e);
+            }
+        }
     }
 
     /**
@@ -187,9 +279,7 @@ public class JCRStoreResource
     {
         InputStream input = null;
         try {
-            //this.session.getNodeByIdentifier(id)
-            final Node rootNode = this.session.getRootNode();
-            final Node fileNode = rootNode.getNode(this.identifier);
+            final Node fileNode = this.session.getNodeByIdentifier(this.identifier);
             final Node resNode = fileNode.getNode(Property.JCR_CONTENT);
             final Property data = resNode.getProperty(Property.JCR_DATA);
             final Binary bin = data.getBinary();
@@ -368,7 +458,6 @@ public class JCRStoreResource
     private static class JCRBinary
         implements Binary
     {
-
         /**
          * The InpuStrema this Binary belongs to.
          */
@@ -382,9 +471,17 @@ public class JCRStoreResource
             this.stream = _in;
         }
 
-
-        /* (non-Javadoc)
-         * @see javax.jcr.Binary#getStream()
+        /**
+         * Returns an {@link InputStream} representation of this value. Each call to
+         * <code>getStream()</code> returns a new stream. The API consumer is
+         * responsible for calling <code>close()</code> on the returned stream.
+         * <p>
+         * If {@link #dispose()} has been called on this <code>Binary</code>
+         * object, then this method will throw the runtime exception
+         * {@link java.lang.IllegalStateException}.
+         *
+         * @return A stream representation of this value.
+         * @throws RepositoryException if an error occurs.
          */
         @Override
         public InputStream getStream()
@@ -393,8 +490,24 @@ public class JCRStoreResource
             return this.stream;
         }
 
-        /* (non-Javadoc)
-         * @see javax.jcr.Binary#read(byte[], long)
+        /**
+         * Reads successive bytes from the specified <code>position</code> in this
+         * <code>Binary</code> into the passed byte array until either the byte
+         * array is full or the end of the <code>Binary</code> is encountered.
+         * <p>
+         * If {@link #dispose()} has been called on this <code>Binary</code>
+         * object, then this method will throw the runtime exception
+         * {@link java.lang.IllegalStateException}.
+         *
+         * @param _b        the buffer into which the data is read.
+         * @param _position the position in this Binary from which to start reading
+         *                 bytes.
+         * @return the number of bytes read into the buffer, or -1 if there is no
+         *         more data because the end of the Binary has been reached.
+         * @throws IOException              if an I/O error occurs.
+         * @throws NullPointerException     if b is null.
+         * @throws IllegalArgumentException if offset is negative.
+         * @throws RepositoryException      if another error occurs.
          */
         @Override
         public int read(final byte[] _b,
@@ -404,8 +517,15 @@ public class JCRStoreResource
             return this.stream.read(_b);
         }
 
-        /* (non-Javadoc)
-         * @see javax.jcr.Binary#getSize()
+        /**
+         * Returns the size of this <code>Binary</code> value in bytes.
+         * <p>
+         * If {@link #dispose()} has been called on this <code>Binary</code>
+         * object, then this method will throw the runtime exception
+         * {@link java.lang.IllegalStateException}.
+         *
+         * @return the size of this value in bytes.
+         * @throws RepositoryException if an error occurs.
          */
         @Override
         public long getSize()
@@ -414,23 +534,22 @@ public class JCRStoreResource
             return 0;
         }
 
-        /* (non-Javadoc)
-         * @see javax.jcr.Binary#dispose()
+        /**
+         * Releases all resources associated with this <code>Binary</code> object
+         * and informs the repository that these resources may now be reclaimed.
+         * An application should call this method when it is finished with the
+         * <code>Binary</code> object.
          */
         @Override
         public void dispose()
         {
-            // TODO Auto-generated method stub
             try {
                 this.stream.close();
             } catch (final IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                JCRStoreResource.LOG.error("Error on disposal of inpustream.", e);
             }
         }
-
     }
-
 
     /**
      * ResourceInputStream implementation.
