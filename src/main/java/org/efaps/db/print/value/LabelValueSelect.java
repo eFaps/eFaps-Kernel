@@ -22,11 +22,15 @@ package org.efaps.db.print.value;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension.UoM;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.AbstractWithUoMType;
 import org.efaps.admin.datamodel.attributetype.RateType;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.db.print.FileSelectPart;
 import org.efaps.db.print.OneSelect;
+import org.efaps.db.store.AbstractStoreResource;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 
 /**
@@ -56,6 +60,26 @@ public class LabelValueSelect
     {
         return "label";
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int append2SQLSelect(final Type _type,
+                                final SQLSelect _select,
+                                final int _tableIndex,
+                                final int _colIndex)
+    {
+        int ret = 0;
+        if (getParent() == null && getParentSelectPart() != null
+                        && getParentSelectPart() instanceof FileSelectPart) {
+            _select.column(_tableIndex, AbstractStoreResource.COLNAME_FILENAME);
+            getColIndexs().add(_colIndex);
+            ret = 1;
+        }
+        return ret;
+    }
+
 
     /**
      * {@inheritDoc}

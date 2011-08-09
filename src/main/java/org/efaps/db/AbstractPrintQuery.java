@@ -652,6 +652,10 @@ public abstract class AbstractPrintQuery
         }
         select.addPart(SQLPart.PARENTHESIS_CLOSE);
 
+        for (final OneSelect oneSel : this.allSelects) {
+            oneSel.append2SQLWhere(select);
+        }
+
         if (AbstractPrintQuery.LOG.isDebugEnabled()) {
             AbstractPrintQuery.LOG.debug(select.getSQL());
         }

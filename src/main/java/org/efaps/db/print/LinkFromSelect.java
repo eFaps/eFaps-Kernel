@@ -99,6 +99,13 @@ public class LinkFromSelect
             {
                 return null;
             }
+
+            @Override
+            public void add2Where(final OneSelect _oneselect,
+                                  final SQLSelect _select)
+            {
+                // no clause must be added
+            }
         });
     }
 

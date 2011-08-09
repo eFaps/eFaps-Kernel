@@ -19,48 +19,53 @@
  */
 
 
-package org.efaps.db.print;
+package org.efaps.db.print.value;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
+import org.efaps.admin.datamodel.Type;
+import org.efaps.db.print.OneSelect;
+import org.efaps.db.store.AbstractStoreResource;
 import org.efaps.db.wrapper.SQLSelect;
 
+
 /**
- * Abstract Select Part.
+ * ValueSelct to select the length value from a store instance.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractSelectPart
-    implements ISelectPart
+public class LengthValueSelect
+    extends AbstractValueSelect
 {
     /**
-     * {@inheritDoc}
+     * Constructor setting the OneSelect this LengthValueSelect belongs to.
+     *
+     * @param _oneSelect OneSelect
      */
-    @Override
-    public void addObject(final ResultSet _rs)
-        throws SQLException
+    public LengthValueSelect(final OneSelect _oneSelect)
     {
-        //no objects must be added
+        super(_oneSelect);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Object getObject()
+    public int append2SQLSelect(final Type _type,
+                                final SQLSelect _select,
+                                final int _tableIndex,
+                                final int _colIndex)
     {
-        return null;
+        _select.column(_tableIndex, AbstractStoreResource.COLNAME_FILELENGTH);
+        getColIndexs().add(_colIndex);
+        return 1;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public  void add2Where(final OneSelect _oneselect,
-                           final SQLSelect _select)
+    public String getValueType()
     {
-        //nothing must be added
+        return "length";
     }
 }

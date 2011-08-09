@@ -65,4 +65,13 @@ public interface ISelectPart
      * @return Object
      */
     Object getObject();
+
+
+    /**
+     * Add something to the where part of the SQL select.
+     * @param _oneselect    oneselect this select part must be joined to
+     * @param _select       SQL select statement wrapper
+     */
+    void add2Where(final OneSelect _oneselect,
+                   final SQLSelect _select);
 }

@@ -36,6 +36,7 @@ import org.efaps.db.Context;
 import org.efaps.db.GeneralInstance;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
+import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.transaction.AbstractResource;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
@@ -54,24 +55,24 @@ public abstract class AbstractStoreResource
     implements Resource
 {
     /**
-     * Logging instance used in this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractStoreResource.class);
-
-    /**
      * Name of the main store table.
      */
-    private static final String TABLENAME_STORE = "T_CMGENSTORE";
+    public static final String TABLENAME_STORE = "T_CMGENSTORE";
 
     /**
      * Name of the column for the filename.
      */
-    private static final String COLNAME_FILENAME = "FILENAME";
+    public static final String COLNAME_FILENAME = "FILENAME";
 
     /**
      * Name of the column for the file length.
      */
-    private static final String COLNAME_FILELENGTH = "FILELENGTH";
+    public static final String COLNAME_FILELENGTH = "FILELENGTH";
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractStoreResource.class);
 
     /**
      * Basic SQL Select for getting the Resource.
@@ -254,16 +255,24 @@ public abstract class AbstractStoreResource
         throws EFapsException
     {
         if (!_filename.equals(this.fileName) || _fileLength != this.fileLength) {
-
             ConnectionResource res = null;
             try {
                 res = Context.getThreadContext().getConnectionResource();
-
-                final StringBuffer cmd = new StringBuffer().append("update ")
-                                .append(AbstractStoreResource.TABLENAME_STORE).append(" set ")
-                                .append(AbstractStoreResource.COLNAME_FILENAME).append("=?, ")
-                                .append(AbstractStoreResource.COLNAME_FILELENGTH).append("=? ")
-                                .append("where ID =").append(getGeneralID());
+                final AbstractDatabase<?> db = Context.getDbType();
+                final StringBuilder cmd = new StringBuilder().append(db.getSQLPart(SQLPart.UPDATE)).append(" ")
+                        .append(db.getTableQuote()).append(AbstractStoreResource.TABLENAME_STORE)
+                        .append(db.getTableQuote())
+                        .append(" ").append(db.getSQLPart(SQLPart.SET)).append(" ")
+                        .append(db.getColumnQuote())
+                        .append(AbstractStoreResource.COLNAME_FILENAME)
+                        .append(db.getColumnQuote()).append(db.getSQLPart(SQLPart.EQUAL)).append("? ")
+                        .append(db.getSQLPart(SQLPart.COMMA))
+                        .append(db.getColumnQuote())
+                        .append(AbstractStoreResource.COLNAME_FILELENGTH)
+                        .append(db.getColumnQuote()).append(db.getSQLPart(SQLPart.EQUAL)).append("? ")
+                        .append(db.getSQLPart(SQLPart.WHERE)).append(" ")
+                        .append(db.getColumnQuote()).append("ID").append(db.getColumnQuote())
+                        .append(db.getSQLPart(SQLPart.EQUAL)).append(getGeneralID());
 
                 final PreparedStatement stmt = res.getConnection().prepareStatement(cmd.toString());
                 try {

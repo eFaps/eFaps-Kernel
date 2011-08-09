@@ -42,6 +42,7 @@ import org.efaps.db.print.value.ClassificationValueSelect;
 import org.efaps.db.print.value.FormatValueSelect;
 import org.efaps.db.print.value.IDValueSelect;
 import org.efaps.db.print.value.LabelValueSelect;
+import org.efaps.db.print.value.LengthValueSelect;
 import org.efaps.db.print.value.OIDValueSelect;
 import org.efaps.db.print.value.TypeValueSelect;
 import org.efaps.db.print.value.UUIDValueSelect;
@@ -290,6 +291,40 @@ public class OneSelect
     }
 
     /**
+     * Add the select part to connect the general store.
+     */
+    public void addFileSelectPart()
+    {
+        Type type;
+        // if a previous select exists it is based on the previous select,
+        // else it is based on the basic table
+        if (this.selectParts.size() > 0) {
+            type = this.selectParts.get(this.selectParts.size() - 1).getType();
+        } else {
+            type = this.query.getMainType();
+        }
+        final FileSelectPart linkto = new FileSelectPart(type);
+        this.selectParts.add(linkto);
+    }
+
+    /**
+     * Add the select part to connect the general instances.
+     */
+    public void addGenInstSelectPart()
+    {
+        Type type;
+        // if a previous select exists it is based on the previous select,
+        // else it is based on the basic table
+        if (this.selectParts.size() > 0) {
+            type = this.selectParts.get(this.selectParts.size() - 1).getType();
+        } else {
+            type = this.query.getMainType();
+        }
+        final GenInstSelectPart linkto = new GenInstSelectPart(type);
+        this.selectParts.add(linkto);
+    }
+
+    /**
      * Add the name of the attribute the link must go to, evaluated from an
      * <code>attributeSet[ATTRIBUTESETNAME]</code> part of an select statement.
      * @param _attributeSet   name of the attribute the link must go to
@@ -388,6 +423,18 @@ public class OneSelect
     }
 
     /**
+     * Method used to append to the where part of an SQL statement.
+     *
+     * @param _select   SQL select wrapper
+     */
+    public void append2SQLWhere(final SQLSelect _select)
+    {
+        for (final ISelectPart part : this.selectParts) {
+            part.add2Where(this, _select);
+        }
+    }
+
+    /**
      * Method to analyse the select statement. Meaning the the different
      * select parts will be added to {@link #selectParts}.
      * @throws EFapsException on error
@@ -451,6 +498,10 @@ public class OneSelect
                 currentSelect.addValueSelect(new BaseValueSelect(currentSelect));
             } else if (part.equalsIgnoreCase("uom")) {
                 currentSelect.addValueSelect(new UoMValueSelect(currentSelect));
+            } else if (part.equalsIgnoreCase("file")) {
+                currentSelect.addFileSelectPart();
+            } else if (part.equalsIgnoreCase("length")) {
+                currentSelect.addValueSelect(new LengthValueSelect(currentSelect));
             } else if (part.startsWith("format")) {
                 final Matcher matcher = formatPat.matcher(part);
                 if (matcher.find()) {
@@ -502,7 +553,7 @@ public class OneSelect
             }
             ret = this.valueSelect.getValue(tmpList);
         } else {
-            ret = getObject();
+            ret = this.getObject();
         }
         return ret;
     }
@@ -617,14 +668,14 @@ public class OneSelect
     {
         boolean ret;
         if (_object instanceof Long && this.fromSelect != null) {
-            final Object object = getObject(_object);
+            final Object object = this.getObject(_object);
             if (object instanceof List<?>) {
                 ret = true;
             } else {
                 ret = false;
             }
         } else {
-            ret = isMultiple();
+            ret = this.isMultiple();
         }
         return ret;
     }
@@ -735,7 +786,6 @@ public class OneSelect
     {
         return this.objectList;
     }
-
 
     /**
      * Method sorts the object and idList.

@@ -34,7 +34,9 @@ import javax.transaction.xa.Xid;
 
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -140,10 +142,17 @@ public class JDBCStoreResource
         try {
             res = Context.getThreadContext().getConnectionResource();
 
-            final StringBuffer cmd = new StringBuffer().append("update ")
-                .append(JDBCStoreResource.TABLENAME_STORE).append(" set ")
-                .append(JDBCStoreResource.COLNAME_FILECONTENT).append("=? ")
-                .append("where ID =").append(getGeneralID());
+            final AbstractDatabase<?> db = Context.getDbType();
+            final StringBuilder cmd = new StringBuilder().append(db.getSQLPart(SQLPart.UPDATE)).append(" ")
+                    .append(db.getTableQuote()).append(JDBCStoreResource.TABLENAME_STORE)
+                    .append(db.getTableQuote())
+                    .append(" ").append(db.getSQLPart(SQLPart.SET)).append(" ")
+                    .append(db.getColumnQuote())
+                    .append(JDBCStoreResource.COLNAME_FILECONTENT)
+                    .append(db.getColumnQuote()).append(db.getSQLPart(SQLPart.EQUAL)).append("? ")
+                    .append(db.getSQLPart(SQLPart.WHERE)).append(" ")
+                    .append(db.getColumnQuote()).append("ID").append(db.getColumnQuote())
+                    .append(db.getSQLPart(SQLPart.EQUAL)).append(getGeneralID());
 
             final PreparedStatement stmt = res.getConnection().prepareStatement(cmd.toString());
             try {
