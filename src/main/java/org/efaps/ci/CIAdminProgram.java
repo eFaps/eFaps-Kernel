@@ -35,14 +35,10 @@ public class CIAdminProgram
     public static class _Abstract
         extends CIAdmin._Abstract
     {
-
         protected _Abstract(final String _uuid)
         {
             super(_uuid);
         }
-
-        public final CIAttribute FileName = new CIAttribute(this, "FileName");
-        public final CIAttribute FileLength = new CIAttribute(this, "FileLength");
     }
 
     public static final _Java Java = new _Java("11043a35-f73c-481c-8c77-00306dbce824");
@@ -69,8 +65,6 @@ public class CIAdminProgram
         }
 
         public final CIAttribute Name = new CIAttribute(this, "Name");
-        public final CIAttribute FileName = new CIAttribute(this, "FileName");
-        public final CIAttribute FileLength = new CIAttribute(this, "FileLength");
         public final CIAttribute Creator = new CIAttribute(this, "Creator");
         public final CIAttribute Created = new CIAttribute(this, "Created");
         public final CIAttribute Modifier = new CIAttribute(this, "Modifier");

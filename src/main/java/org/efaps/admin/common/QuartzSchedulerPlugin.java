@@ -24,7 +24,6 @@ package org.efaps.admin.common;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.ci.CIAdminCommon;
-import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.SelectBuilder;
@@ -72,7 +71,7 @@ public class QuartzSchedulerPlugin
                                CIAdminCommon.QuartzTriggerAbstract.Parameter2,
                                CIAdminCommon.QuartzTriggerAbstract.Parameter3);
             final SelectBuilder sel = new SelectBuilder().linkto(CIAdminCommon.QuartzTriggerAbstract.ESJPLink)
-                .attribute(CIAdminProgram.Java.FileName);
+                            .file().label();;
             multi.addSelect(sel);
             multi.execute();
             while (multi.next()) {

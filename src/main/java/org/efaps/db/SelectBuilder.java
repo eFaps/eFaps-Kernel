@@ -203,6 +203,30 @@ public class SelectBuilder
     }
 
     /**
+     * Add file select part.
+     *
+     * @return this
+     */
+    public SelectBuilder file()
+    {
+        addPoint();
+        this.bldr.append("file");
+        return this;
+    }
+
+    /**
+     * Add length select part.
+     *
+     * @return this
+     */
+    public SelectBuilder length()
+    {
+        addPoint();
+        this.bldr.append("length");
+        return this;
+    }
+
+    /**
      * Add base select part.
      *
      * @return this

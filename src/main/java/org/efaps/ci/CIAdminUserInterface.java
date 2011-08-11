@@ -383,13 +383,10 @@ public class CIAdminUserInterface
     public static class _File
         extends _Direct
     {
-
         protected _File(final String _uuid)
         {
             super(_uuid);
         }
-        public final CIAttribute FileName = new CIAttribute(this, "FileName");
-        public final CIAttribute FileLength = new CIAttribute(this, "FileLength");
     }
 
 
