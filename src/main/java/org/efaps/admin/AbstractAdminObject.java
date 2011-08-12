@@ -38,6 +38,7 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.AbstractUserInterfaceObject;
 import org.efaps.db.Context;
+import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -53,7 +54,6 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractAdminObject
     implements CacheObjectInterface
 {
-
     /**
      * Logging instance used in this class.
      */
@@ -266,15 +266,17 @@ public abstract class AbstractAdminObject
     /**
      * The instance method reads the properties for this administration object.
      * Each found property is set with instance method {@link #setProperty}.
+     * @throws CacheReloadException on error
      *
      * @see #setProperty
-     * @throws CacheReloadException on error
      */
-    protected void readFromDB4Properties() throws CacheReloadException
+    protected void readFromDB4Properties()
+        throws CacheReloadException
     {
-        Statement stmt = null;
+        ConnectionResource con = null;
         try {
-            stmt = Context.getThreadContext().getConnection().createStatement();
+            con = Context.getThreadContext().getConnectionResource();
+            final Statement stmt = con.getConnection().createStatement();
             final SQLSelect select = new SQLSelect()
                                             .column("NAME")
                                             .column("VALUE")
@@ -285,22 +287,30 @@ public abstract class AbstractAdminObject
                                             .addValuePart(getId());
 
             final ResultSet rs = stmt.executeQuery(select.getSQL());
+            if (AbstractAdminObject.LOG.isDebugEnabled()) {
+                AbstractAdminObject.LOG.debug("Reading Properties for '{}'", getName());
+            }
             while (rs.next()) {
                 final String nameStr = rs.getString(1).trim();
                 final String value = rs.getString(2).trim();
                 setProperty(nameStr, value);
+                if (AbstractAdminObject.LOG.isDebugEnabled()) {
+                    AbstractAdminObject.LOG.debug("    Name: '{}' - Value: '{}'", new Object[]{ nameStr, value });
+                }
             }
             rs.close();
-        } catch (final EFapsException e) {
-            throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
+            stmt.close();
+            con.commit();
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
         } finally {
-            if (stmt != null) {
+            if (con != null && con.isOpened()) {
                 try {
-                    stmt.close();
-                } catch (final SQLException e) {
-                    AbstractAdminObject.LOG.warn("Catched SQLExeption in class" + this.getClass());
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
                 }
             }
         }
@@ -309,16 +319,15 @@ public abstract class AbstractAdminObject
     /**
      * Reads all links for this administration object. Each found link property
      * is set with instance method {@link setLinkProperty}.
-     *
-     * @see #setLinkProperty
      * @throws CacheReloadException on error
-     *
+     * @see #setLinkProperty
      */
-    protected void readFromDB4Links() throws CacheReloadException
+    protected void readFromDB4Links()
+        throws CacheReloadException
     {
-        Statement stmt = null;
+        ConnectionResource con = null;
         try {
-            stmt = Context.getThreadContext().getConnection().createStatement();
+            con = Context.getThreadContext().getConnectionResource();
             final SQLSelect select = new SQLSelect()
                                             .column(0, "TYPEID")
                                             .column(0, "TOID")
@@ -331,30 +340,39 @@ public abstract class AbstractAdminObject
                                             .addPart(SQLPart.EQUAL)
                                             .addValuePart(getId());
 
-            final ResultSet resultset = stmt.executeQuery(select.getSQL());
-
-            while (resultset.next()) {
-                final long conTypeId = resultset.getLong(1);
-                final long toId = resultset.getLong(2);
-                final long toTypeId = resultset.getLong(3);
-                final String toName = resultset.getString(4);
+            final Statement stmt = con.getConnection().createStatement();
+            final ResultSet rs = stmt.executeQuery(select.getSQL());
+            if (AbstractAdminObject.LOG.isDebugEnabled()) {
+                AbstractAdminObject.LOG.debug("Reading Links for '%s'", getName());
+            }
+            while (rs.next()) {
+                final long conTypeId = rs.getLong(1);
+                final long toId = rs.getLong(2);
+                final long toTypeId = rs.getLong(3);
+                final String toName = rs.getString(4);
                 final Type conType = Type.get(conTypeId);
                 final Type toType = Type.get(toTypeId);
                 if (conType != null && toType != null) {
                     setLinkProperty(conType, toId, toType, toName.trim());
                 }
             }
-            resultset.close();
+            rs.close();
+            stmt.close();
+            con.commit();
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read db links for " + "'" + getName() + "'", e);
             //CHECKSTYLE:OFF
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             //CHECKSTYLE:ON
             throw new CacheReloadException("could not read db links for " + "'" + getName() + "'", e);
+        }  catch (final EFapsException e) {
+            throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
         } finally {
-            if (stmt != null) {
+            if (con != null && con.isOpened()) {
                 try {
-                    stmt.close();
-                } catch (final SQLException e) {
-                    AbstractAdminObject.LOG.warn("Catched SQLExeption in class" + this.getClass());
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
                 }
             }
         }
