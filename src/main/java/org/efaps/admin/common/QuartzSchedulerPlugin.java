@@ -71,7 +71,7 @@ public class QuartzSchedulerPlugin
                                CIAdminCommon.QuartzTriggerAbstract.Parameter2,
                                CIAdminCommon.QuartzTriggerAbstract.Parameter3);
             final SelectBuilder sel = new SelectBuilder().linkto(CIAdminCommon.QuartzTriggerAbstract.ESJPLink)
-                            .file().label();;
+                            .file().label();
             multi.addSelect(sel);
             multi.execute();
             while (multi.next()) {

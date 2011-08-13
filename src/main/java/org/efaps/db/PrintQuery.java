@@ -159,8 +159,10 @@ public class PrintQuery extends AbstractPrintQuery
     public boolean execute() throws EFapsException
     {
         boolean ret = false;
-        if (getMainType().hasAccess(this.instance, AccessTypeEnums.SHOW.getAccessType())) {
-            ret = executeWithoutAccessCheck();
+        if (isMarked4execute()) {
+            if (getMainType().hasAccess(this.instance, AccessTypeEnums.SHOW.getAccessType())) {
+                ret = executeWithoutAccessCheck();
+            }
         }
         return ret;
     }

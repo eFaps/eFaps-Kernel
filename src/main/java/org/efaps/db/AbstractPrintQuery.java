@@ -113,12 +113,13 @@ public abstract class AbstractPrintQuery
     public AbstractPrintQuery addAttribute(final CIAttribute... _attributes)
         throws EFapsException
     {
-        for (final CIAttribute attr : _attributes) {
-            addAttribute(attr.name);
+        if (isMarked4execute()) {
+            for (final CIAttribute attr : _attributes) {
+                addAttribute(attr.name);
+            }
         }
         return this;
     }
-
 
     /**
      * Add an attribute to the PrintQuery. It is used to get editable values
@@ -129,10 +130,12 @@ public abstract class AbstractPrintQuery
      */
     public AbstractPrintQuery addAttribute(final Attribute... _attributes)
     {
-        for (final Attribute attr : _attributes) {
-            final OneSelect oneselect = new OneSelect(this, attr);
-            this.allSelects.add(oneselect);
-            this.attr2OneSelect.put(attr.getName(), oneselect);
+        if (isMarked4execute()) {
+            for (final Attribute attr : _attributes) {
+                final OneSelect oneselect = new OneSelect(this, attr);
+                this.allSelects.add(oneselect);
+                this.attr2OneSelect.put(attr.getName(), oneselect);
+            }
         }
         return this;
     }
@@ -195,7 +198,6 @@ public abstract class AbstractPrintQuery
     {
         return this.<T>getAttribute(_attribute.name);
     }
-
 
     /**
      * Get the object returned by the given name of an attribute.
@@ -450,8 +452,10 @@ public abstract class AbstractPrintQuery
     public AbstractPrintQuery addSelect(final SelectBuilder... _selectBldrs)
         throws EFapsException
     {
-        for (final SelectBuilder selectBldr : _selectBldrs) {
-            addSelect(selectBldr.toString());
+        if (isMarked4execute()) {
+            for (final SelectBuilder selectBldr : _selectBldrs) {
+                addSelect(selectBldr.toString());
+            }
         }
         return this;
     }
@@ -471,11 +475,13 @@ public abstract class AbstractPrintQuery
     public AbstractPrintQuery addSelect(final String... _selectStmts)
         throws EFapsException
     {
-        for (final String selectStmt : _selectStmts) {
-            final OneSelect oneselect = new OneSelect(this, selectStmt);
-            this.allSelects.add(oneselect);
-            this.selectStmt2OneSelect.put(selectStmt, oneselect);
-            oneselect.analyzeSelectStmt();
+        if (isMarked4execute()) {
+            for (final String selectStmt : _selectStmts) {
+                final OneSelect oneselect = new OneSelect(this, selectStmt);
+                this.allSelects.add(oneselect);
+                this.selectStmt2OneSelect.put(selectStmt, oneselect);
+                oneselect.analyzeSelectStmt();
+            }
         }
         return this;
     }
@@ -596,14 +602,16 @@ public abstract class AbstractPrintQuery
         throws EFapsException
     {
         boolean ret = false;
-        if (getInstanceList().size() > 0) {
-            ret =  executeOneCompleteStmt(createSQLStatement(), this.allSelects);
-        }
+        if (isMarked4execute()) {
+            if (getInstanceList().size() > 0) {
+                ret =  executeOneCompleteStmt(createSQLStatement(), this.allSelects);
+            }
 
-        if (ret) {
-            for (final OneSelect onesel : this.allSelects) {
-                if (onesel.getFromSelect() != null) {
-                    onesel.getFromSelect().execute(onesel);
+            if (ret) {
+                for (final OneSelect onesel : this.allSelects) {
+                    if (onesel.getFromSelect() != null) {
+                        onesel.getFromSelect().execute(onesel);
+                    }
                 }
             }
         }
@@ -756,5 +764,16 @@ public abstract class AbstractPrintQuery
         this.tableIndex++;
         this.sqlTable2Index.put(_relIndex + "__" + _tableName + "__" + _column, this.tableIndex);
         return this.tableIndex;
+    }
+
+    /**
+     * A PrintQuery will only be executed if at least one
+     * Instance is given to be executed on.
+     *
+     * @return true if this PrintQuery will be executed.
+     */
+    public boolean isMarked4execute()
+    {
+        return !getInstanceList().isEmpty();
     }
 }
