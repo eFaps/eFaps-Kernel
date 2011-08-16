@@ -21,9 +21,14 @@
 package org.efaps.db;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.efaps.db.databases.AbstractDatabase;
+import org.efaps.db.store.AbstractStoreResource;
+import org.efaps.db.store.JCRStoreResource;
+import org.efaps.db.store.JDBCStoreResource;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.util.EFapsException;
@@ -104,29 +109,100 @@ public final class GeneralInstance
         throws EFapsException
     {
         if (_instance.isValid() && _instance.getType().isGeneralInstance()) {
+            final long id = GeneralInstance.getId(_instance, _con);
+            if (id > 0) {
+                if (_instance.getType().getStoreId() > 0) {
+                    GeneralInstance.del4Table(id, _con, JDBCStoreResource.TABLENAME_STORE);
+                    GeneralInstance.del4Table(id, _con, JCRStoreResource.TABLENAME_STORE);
+                    GeneralInstance.del4Table(id, _con, AbstractStoreResource.TABLENAME_STORE);
+                }
+                GeneralInstance.del4Table(id, _con, GeneralInstance.TABLENAME);
+            }
+        }
+    }
+
+    /**
+     * @param _id           id to be deleted
+     * @param _con          connection used for the execute
+     * @param _tableName    nem of the table the value must be deleted from
+     * @throws EFapsException on error
+     */
+    private static void del4Table(final long _id,
+                                  final Connection _con,
+                                  final String _tableName)
+        throws EFapsException
+    {
+        try {
+            final AbstractDatabase<?> db = Context.getDbType();
+            final StringBuilder cmd = new StringBuilder();
+            cmd.append(db.getSQLPart(SQLPart.DELETE)).append(" ")
+                .append(db.getSQLPart(SQLPart.FROM)).append(" ")
+                .append(db.getTableQuote())
+                .append(_tableName)
+                .append(db.getTableQuote()).append(" ")
+                .append(db.getSQLPart(SQLPart.WHERE)).append(" ")
+                .append(db.getColumnQuote())
+                .append("ID")
+                .append(db.getColumnQuote())
+                .append(db.getSQLPart(SQLPart.EQUAL))
+                .append(_id).append(" ");
+
+            final Statement stmt = _con.createStatement();
+            stmt.executeUpdate(cmd.toString());
+            stmt.close();
+
+            if (GeneralInstance.LOG.isDebugEnabled()) {
+                GeneralInstance.LOG.debug(cmd.toString());
+            }
+        } catch (final SQLException e) {
+            GeneralInstance.LOG.error("executeOneStatement", e);
+            throw new EFapsException(GeneralInstance.class, "create", e);
+        }
+    }
+
+    /**
+     * @param _instance Instance the id of the GeneralInstance will be retrieved for.
+     * @param _con      Connection the query will be executed in
+     * @throws EFapsException on  error
+     * @return id of the current General Instance
+     */
+    protected static long getId(final Instance _instance,
+                                final Connection _con)
+        throws EFapsException
+    {
+        long ret = 0;
+        if (_instance.isValid() && _instance.getType().isGeneralInstance()) {
             try {
-                final Statement stmt = _con.createStatement();
+                final Statement queryStmt = _con.createStatement();
+                final AbstractDatabase<?> db = Context.getDbType();
+
                 final StringBuilder cmd = new StringBuilder();
-                cmd.append(Context.getDbType().getSQLPart(SQLPart.DELETE)).append(" ")
-                    .append(Context.getDbType().getSQLPart(SQLPart.FROM)).append(" ")
-                    .append(Context.getDbType().getTableQuote())
+                cmd.append(db.getSQLPart(SQLPart.SELECT)).append(" ")
+                    .append(db.getColumnQuote())
+                    .append(GeneralInstance.IDCOLUMN)
+                    .append(db.getColumnQuote()).append(" ")
+                    .append(db.getSQLPart(SQLPart.FROM)).append(" ")
+                    .append(db.getTableQuote())
                     .append(GeneralInstance.TABLENAME)
-                    .append(Context.getDbType().getTableQuote()).append(" ")
-                    .append(Context.getDbType().getSQLPart(SQLPart.WHERE)).append(" ")
-                    .append(Context.getDbType().getColumnQuote())
+                    .append(db.getTableQuote()).append(" ")
+                    .append(db.getSQLPart(SQLPart.WHERE)).append(" ")
+                    .append(db.getColumnQuote())
                     .append(GeneralInstance.ISIDCOLUMN)
-                    .append(Context.getDbType().getColumnQuote())
-                    .append(Context.getDbType().getSQLPart(SQLPart.EQUAL))
+                    .append(db.getColumnQuote())
+                    .append(db.getSQLPart(SQLPart.EQUAL))
                     .append(_instance.getId()).append(" ")
-                    .append(Context.getDbType().getSQLPart(SQLPart.AND)).append(" ")
-                    .append(Context.getDbType().getColumnQuote())
+                    .append(db.getSQLPart(SQLPart.AND)).append(" ")
+                    .append(db.getColumnQuote())
                     .append(GeneralInstance.ISTYPECOLUMN)
-                    .append(Context.getDbType().getColumnQuote())
-                    .append(Context.getDbType().getSQLPart(SQLPart.EQUAL))
+                    .append(db.getColumnQuote())
+                    .append(db.getSQLPart(SQLPart.EQUAL))
                     .append(_instance.getType().getId()).append(" ");
 
-                stmt.execute(cmd.toString());
-
+                final ResultSet rs = queryStmt.executeQuery(cmd.toString());
+                while (rs.next()) {
+                    ret = rs.getLong(1);
+                }
+                queryStmt.close();
                 if (GeneralInstance.LOG.isDebugEnabled()) {
                     GeneralInstance.LOG.debug(cmd.toString());
                 }
@@ -135,5 +211,6 @@ public final class GeneralInstance
                 throw new EFapsException(GeneralInstance.class, "create", e);
             }
         }
+        return ret;
     }
 }

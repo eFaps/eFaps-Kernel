@@ -53,19 +53,19 @@ public class JDBCStoreResource
     extends AbstractStoreResource
 {
     /**
-     * Logging instance used in this class.
-     */
-    private static Logger LOG = LoggerFactory.getLogger(JDBCStoreResource.class);
-
-    /**
      * Name of the table the content is stored in.
      */
-    private static final String TABLENAME_STORE = "T_CMGENSTOREJDBC";
+    public static final String TABLENAME_STORE = "T_CMGENSTOREJDBC";
 
     /**
      * Name of the column the content is stored in.
      */
-    private static final String COLNAME_FILECONTENT = "FILECONTENT";
+    public static final String COLNAME_FILECONTENT = "FILECONTENT";
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static Logger LOG = LoggerFactory.getLogger(JDBCStoreResource.class);
 
     /**
      * Method called to initialize this StoreResource.

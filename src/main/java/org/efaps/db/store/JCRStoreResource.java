@@ -72,6 +72,16 @@ public class JCRStoreResource
     extends AbstractStoreResource
 {
     /**
+     * Name of the table the content is stored in.
+     */
+    public static final String TABLENAME_STORE = "T_CMGENSTOREJCR";
+
+    /**
+     * Name of the column the content is stored in.
+     */
+    public static final String COLNAME_IDENTIFIER = "IDENTIFIER";
+
+    /**
      * Logging instance used in this class.
      */
     private static final Logger LOG  = LoggerFactory.getLogger(JCRStoreResource.class);
@@ -81,16 +91,6 @@ public class JCRStoreResource
      * directory.
      */
     private static final String PROPERTY_WORKSPACENAME = "JCRWorkSpaceName";
-
-    /**
-     * Name of the table the content is stored in.
-     */
-    private static final String TABLENAME_STORE = "T_CMGENSTOREJCR";
-
-    /**
-     * Name of the column the content is stored in.
-     */
-    private static final String COLNAME_IDENTIFIER = "IDENTIFIER";
 
     /**
      * The repository for this JCR Store Resource.
