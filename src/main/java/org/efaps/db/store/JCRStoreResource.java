@@ -29,7 +29,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
-import java.util.Map;
 
 import javax.jcr.AccessDeniedException;
 import javax.jcr.Binary;
@@ -93,6 +92,22 @@ public class JCRStoreResource
     private static final String PROPERTY_WORKSPACENAME = "JCRWorkSpaceName";
 
     /**
+     * Property Name to define if the file will be deleted on deletion of the related object.
+     */
+    private static final String PROPERTY_ENABLEDELETION = "JCREnableDeletion";
+
+    /**
+     * Property Name to define if the file will be deleted on deletion of the related object.
+     */
+    private static final String PROPERTY_USERNAME = "JCRUserName";
+
+    /**
+     * Property Name to define if the file will be deleted on deletion of the related object.
+     */
+    private static final String PROPERTY_PASSWORD = "JCRPassword";
+
+
+    /**
      * The repository for this JCR Store Resource.
      */
     private Repository repository;
@@ -112,31 +127,35 @@ public class JCRStoreResource
      */
     @Override
     public void initialize(final Instance _instance,
-                           final Map<String, String> _properties,
-                           final Compress _compress)
+                           final Store _store)
         throws EFapsException
     {
-        super.initialize(_instance, _properties, _compress);
+        super.initialize(_instance, _store);
         try {
             final InitialContext ctx = new InitialContext();
-            this.repository = (Repository) ctx.lookup(_properties.get(Store.PROPERTY_JNDINAME));
+            this.repository = (Repository) ctx.lookup(getStore().getProperty(Store.PROPERTY_JNDINAME));
             if (JCRStoreResource.LOG.isDebugEnabled()) {
                 final String name = this.repository.getDescriptor(Repository.REP_NAME_DESC);
                 JCRStoreResource.LOG.debug("Successfully retrieved '%s' repository from JNDI", new Object[]{ name });
             }
-            this.session = this.repository.login(new SimpleCredentials("username", "password".toCharArray()),
+            String username = getProperties().get(JCRStoreResource.PROPERTY_USERNAME);
+            if (username == null) {
+                username = Context.getThreadContext().getPerson().getName();
+            }
+            String passwd = getProperties().get(JCRStoreResource.PROPERTY_PASSWORD);
+            if (passwd == null) {
+                passwd = "efaps";
+            }
+            this.session = this.repository.login(new SimpleCredentials(username, passwd.toCharArray()),
                             getProperties().get(JCRStoreResource.PROPERTY_WORKSPACENAME));
         } catch (final NamingException e) {
             throw new EFapsException(JCRStoreResource.class, "initialize.NamingException", e);
         } catch (final LoginException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(JCRStoreResource.class, "initialize.LoginException", e);
         } catch (final NoSuchWorkspaceException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(JCRStoreResource.class, "initialize.NoSuchWorkspaceException", e);
         } catch (final RepositoryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(JCRStoreResource.class, "initialize.RepositoryException", e);
         }
     }
 
@@ -182,8 +201,7 @@ public class JCRStoreResource
                                 .execute(con);
                 res.commit();
             } catch (final SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new EFapsException(JCRStoreResource.class, "insertDefaults", e);
             }
         }
     }
@@ -222,11 +240,9 @@ public class JCRStoreResource
                 }
             }
         } catch (final RepositoryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(JCRStoreResource.class, "write.RepositoryException", e);
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(JCRStoreResource.class, "write.IOException", e);
         }
         setFileInfo(_fileName, size);
         return size;
@@ -271,6 +287,16 @@ public class JCRStoreResource
     }
 
     /**
+     * A JCR Store resource does not use compression from eFaps Side.
+     * @return Compress.NONE
+     */
+    @Override
+    protected Compress getCompress()
+    {
+        return Compress.NONE;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -285,11 +311,9 @@ public class JCRStoreResource
             final Binary bin = data.getBinary();
             input = new JCRStoreResourceInputStream(this, bin);
         } catch (final RepositoryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(JCRStoreResource.class, "read.RepositoryException", e);
         } catch (final IOException e) {
-             // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException(JCRStoreResource.class, "read.IOException", e);
         }
         return input;
     }
@@ -301,13 +325,13 @@ public class JCRStoreResource
     public void delete()
         throws EFapsException
     {
-        try {
-            final Node rootNode = this.session.getRootNode();
-            final Node fileNode = rootNode.getNode(this.identifier);
-            fileNode.remove();
-        } catch (final RepositoryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        if ("TRUE".equalsIgnoreCase(getProperties().get(JCRStoreResource.PROPERTY_ENABLEDELETION))) {
+            try {
+                final Node fileNode = this.session.getNodeByIdentifier(this.identifier);
+                fileNode.remove();
+            } catch (final RepositoryException e) {
+                throw new EFapsException(JCRStoreResource.class, "delete.RepositoryException", e);
+            }
         }
     }
 
@@ -334,32 +358,23 @@ public class JCRStoreResource
             }
             this.session.logout();
         } catch (final AccessDeniedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new XAException("AccessDeniedException");
         } catch (final ItemExistsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new XAException("ItemExistsException");
         } catch (final ReferentialIntegrityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new XAException("ReferentialIntegrityException");
         } catch (final ConstraintViolationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new XAException("AccessDeniedException");
         } catch (final InvalidItemStateException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new XAException("InvalidItemStateException");
         } catch (final VersionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new XAException("VersionException");
         } catch (final LockException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new XAException(XAException.XA_RBDEADLOCK);
         } catch (final NoSuchNodeTypeException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new XAException("NoSuchNodeTypeException");
         } catch (final RepositoryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new XAException("RepositoryException");
         }
     }
 

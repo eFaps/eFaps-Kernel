@@ -22,7 +22,6 @@ package org.efaps.db.store;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Map;
 
 import javax.transaction.xa.XAResource;
 
@@ -139,12 +138,10 @@ public interface Resource
      *  java.util.Map, org.efaps.db.store.Resource.Compress)
      * @param _instance     Instance of the object this StoreResource is wanted
      *                      for
-     * @param _properties   properties for this StoreResource
-     * @param _compress     compress type for this StoreResource
+     * @param _store        Store this StoreResource belongs to
      * @throws EFapsException on error
      */
     void initialize(final Instance _instance,
-                    final Map<String, String> _properties,
-                    final Compress _compress)
+                    final Store _store)
         throws EFapsException;
 }

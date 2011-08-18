@@ -23,7 +23,6 @@ package org.efaps.db.store;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -170,27 +169,26 @@ public class VFSStoreResource
      * Method called to initialize this StoreResource.
      * @param _instance     Instance of the object this StoreResource is wanted
      *                      for
-     * @param _properties   properties for this StoreResource
-     * @param _compress     compress type for this StoreResource
+     * @param _store        Store this resource belongs to
      * @throws EFapsException on error
      * @see Resource#initialize(Instance, Map, Compress)
      */
     @Override
     public void initialize(final Instance _instance,
-                           final Map<String, String> _properties,
-                           final Compress _compress)
+                           final Store _store)
         throws EFapsException
     {
-        super.initialize(_instance, _properties, _compress);
+        super.initialize(_instance, _store);
 
         final StringBuilder fileNameTmp = new StringBuilder();
 
-        final String useTypeIdStr = _properties.get(VFSStoreResource.PROPERTY_USE_TYPE);
+        final String useTypeIdStr = getStore().getResourceProperties().get(VFSStoreResource.PROPERTY_USE_TYPE);
         if ("true".equalsIgnoreCase(useTypeIdStr))  {
             fileNameTmp.append(getInstance().getType().getId()).append("/");
         }
 
-        final String numberSubDirsStr =  _properties.get(VFSStoreResource.PROPERTY_NUMBER_SUBDIRS);
+        final String numberSubDirsStr =  getStore().getResourceProperties().get(
+                        VFSStoreResource.PROPERTY_NUMBER_SUBDIRS);
         if (numberSubDirsStr != null)  {
             final long numberSubDirs = Long.parseLong(numberSubDirsStr);
             final String pathFormat = "%0"
@@ -203,7 +201,7 @@ public class VFSStoreResource
         fileNameTmp.append(getInstance().getType().getId()).append(".").append(getInstance().getId());
         this.storeFileName = fileNameTmp.toString();
 
-        final String numberBackupStr = _properties.get(VFSStoreResource.PROPERTY_NUMBER_BACKUP);
+        final String numberBackupStr = getStore().getResourceProperties().get(VFSStoreResource.PROPERTY_NUMBER_BACKUP);
         if (numberBackupStr != null) {
             this.numberBackup  = Integer.parseInt(numberBackupStr);
         }
@@ -211,15 +209,16 @@ public class VFSStoreResource
         if (this.manager == null) {
             try {
                 DefaultFileSystemManager tmpMan = null;
-                if (_properties.containsKey(Store.PROPERTY_JNDINAME)) {
+                if (getStore().getResourceProperties().containsKey(Store.PROPERTY_JNDINAME)) {
                     final InitialContext initialContext = new InitialContext();
                     final Context context = (Context) initialContext.lookup("java:comp/env");
                     final NamingEnumeration<NameClassPair> nameEnum = context.list("");
                     while (nameEnum.hasMoreElements()) {
                         final NameClassPair namePair = nameEnum.next();
-                        if (namePair.getName().equals(_properties.get(Store.PROPERTY_JNDINAME))) {
+                        if (namePair.getName().equals(getStore().getResourceProperties().get(
+                                        Store.PROPERTY_JNDINAME))) {
                             tmpMan = (DefaultFileSystemManager) context.lookup(
-                                            _properties.get(Store.PROPERTY_JNDINAME));
+                                            getStore().getResourceProperties().get(Store.PROPERTY_JNDINAME));
                             break;
                         }
                     }
@@ -332,9 +331,7 @@ public class VFSStoreResource
                     length -= readLength;
                 }
             }
-            if (getCompress().equals(Compress.GZIP))  {
-                out.close();
-            } else if (getCompress().equals(Compress.ZIP))  {
+            if (getCompress().equals(Compress.GZIP) || getCompress().equals(Compress.ZIP))  {
                 out.close();
             }
             tmpFile.close();

@@ -28,7 +28,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
 
 import javax.transaction.xa.Xid;
 
@@ -72,18 +71,16 @@ public class JDBCStoreResource
      *
      * @param _instance     instance of the object this StoreResource is wanted
      *                      for
-     * @param _properties   properties for this StoreResource
-     * @param _compress     compress type for this StoreResource
+     * @param _store        Store this resource belongs to
      * @throws EFapsException on error
      * @see org.efaps.db.store.Resource#initialize(Instance, Map, Compress)
      */
     @Override
     public void initialize(final Instance _instance,
-                           final Map<String, String> _properties,
-                           final Compress _compress)
+                           final Store _store)
         throws EFapsException
     {
-        super.initialize(_instance, _properties, _compress);
+        super.initialize(_instance, _store);
     }
 
     /**
@@ -113,12 +110,10 @@ public class JDBCStoreResource
                                 .execute(con);
                 res.commit();
             } catch (final SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new EFapsException(JDBCStoreResource.class, "insertDefaults", e);
             }
         }
     }
-
 
     /**
      * The method writes the context (from the input stream) into a SQL blob.

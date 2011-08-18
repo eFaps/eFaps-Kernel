@@ -93,11 +93,6 @@ public abstract class AbstractStoreResource
     private final byte[] buffer = new byte[1024];
 
     /**
-     * The variable stores if the files inside the store itself are compressed.
-     */
-    private Compress compress = Compress.NONE;
-
-    /**
      * Instance this resource belongs to.
      */
     private Instance instance;
@@ -113,11 +108,6 @@ public abstract class AbstractStoreResource
     private boolean[] exist;
 
     /**
-     * Properties of this store resource.
-     */
-    private Map<String, String> properties;
-
-    /**
      * File Name of the Source.
      */
     private String fileName = "DEFAULT";
@@ -128,17 +118,20 @@ public abstract class AbstractStoreResource
     private Long fileLength = new Long(0);
 
     /**
+     * Store this Resource belongs to.
+     */
+    private Store store;
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(final Instance _instance,
-                           final Map<String, String> _properties,
-                           final Compress _compress)
+                           final Store _store)
         throws EFapsException
     {
         this.instance = _instance;
-        this.properties = _properties;
-        this.compress = _compress;
+        this.store = _store;
         final SQLSelect select = AbstractStoreResource.SQL_SELECT.getCopy()
                         .addPart(SQLPart.WHERE)
                         .addColumnPart(0, "INSTTYPEID").addPart(SQLPart.EQUAL)
@@ -237,8 +230,7 @@ public abstract class AbstractStoreResource
                 this.fileName = "TMP";
                 this.fileLength = new Long(0);
             } catch (final SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new EFapsException(AbstractStoreResource.class, "insertDefaults", e);
             }
         }
     }
@@ -379,43 +371,39 @@ public abstract class AbstractStoreResource
     }
 
     /**
-     * Getter method for instance variable {@link #compress}.
+     * Is this Store resource compressed.
      *
-     * @return value of instance variable {@link #compress}
+     * @return Is this Store resource compressed
      */
     protected Compress getCompress()
     {
-        return this.compress;
+        Compress compress;
+        if (this.store.getResourceProperties().containsKey(Store.PROPERTY_COMPRESS)) {
+            compress = Compress.valueOf(this.store.getResourceProperties().get(Store.PROPERTY_COMPRESS).toUpperCase());
+        } else {
+            compress = Compress.NONE;
+        }
+        return compress;
     }
 
     /**
-     * Setter method for instance variable {@link #compress}.
+     * Getter method for instance variable {@link #store}.
      *
-     * @param _compress value for instance variable {@link #compress}
+     * @return value of instance variable {@link #store}
      */
-    protected void setCompress(final Compress _compress)
+    protected Store getStore()
     {
-        this.compress = _compress;
+        return this.store;
     }
 
     /**
-     * Set the properties for this store.
+     * Get the properties for this resource.
      *
-     * @param _properties properties to set
-     */
-    protected void setProperties(final Map<String, String> _properties)
-    {
-        this.properties = _properties;
-    }
-
-    /**
-     * Getter method for instance variable {@link #properties}.
-     *
-     * @return value of instance variable {@link #properties}
+     * @return properties for this resource
      */
     protected Map<String, String> getProperties()
     {
-        return this.properties;
+        return this.store.getResourceProperties();
     }
 
     /**
@@ -444,7 +432,6 @@ public abstract class AbstractStoreResource
     protected class StoreResourceInputStream
         extends InputStream
     {
-
         /**
          * InputStream.
          */
@@ -456,18 +443,18 @@ public abstract class AbstractStoreResource
         private final AbstractStoreResource store;
 
         /**
-         * @param _store StoreResource this InputStream belong to
-         * @param _in inputstream
+         * @param _resource StoreResource this InputStream belong to
+         * @param _in       inputstream
          * @throws IOException on error
          */
-        protected StoreResourceInputStream(final AbstractStoreResource _store,
+        protected StoreResourceInputStream(final AbstractStoreResource _resource,
                                            final InputStream _in)
             throws IOException
         {
-            this.store = _store;
-            if (_store.compress.equals(Compress.GZIP)) {
+            this.store = _resource;
+            if (_resource.getCompress().equals(Compress.GZIP)) {
                 this.in = new GZIPInputStream(_in);
-            } else if (_store.compress.equals(Compress.ZIP)) {
+            } else if (_resource.getCompress().equals(Compress.ZIP)) {
                 this.in = new ZipInputStream(_in);
             } else {
                 this.in = _in;

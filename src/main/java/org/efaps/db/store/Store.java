@@ -31,7 +31,6 @@ import org.efaps.ci.CIDB;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
-import org.efaps.db.store.Resource.Compress;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheReloadException;
@@ -45,7 +44,6 @@ import org.efaps.util.cache.CacheReloadException;
 public final class Store
     extends AbstractAdminObject
 {
-
     /**
      * Property to get the compress for this store.
      */
@@ -69,7 +67,7 @@ public final class Store
     /**
      * Properties for the StoreResource.
      */
-    private Map<String, String> resourceProperties;
+    private final Map<String, String> resourceProperties = new HashMap<String, String>();
 
     /**
      * @param _id id of this store
@@ -101,7 +99,7 @@ public final class Store
     {
         if (_linkType.isKindOf(CIDB.Store2Resource.getType())) {
             this.resource = _toName;
-            this.resourceProperties = getProperties(_toId);
+            loadResourceProperties(_toId);
         } else {
             super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
@@ -111,23 +109,29 @@ public final class Store
      * Method to get the properties for the resource.
      *
      * @param _id id of the resource
-     * @return Properties of the resource
      * @throws EFapsException on error
      */
-    private Map<String, String> getProperties(final long _id)
+    private void loadResourceProperties(final long _id)
         throws EFapsException
     {
-        final Map<String, String> ret = new HashMap<String, String>();
+        this.resourceProperties.clear();
         final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.Property);
         queryBldr.addWhereAttrEqValue(CIAdminCommon.Property.Abstract, _id);
         final MultiPrintQuery multi = queryBldr.getPrint();
         multi.addAttribute(CIAdminCommon.Property.Name, CIAdminCommon.Property.Value);
         multi.executeWithoutAccessCheck();
         while (multi.next()) {
-            ret.put(multi.<String> getAttribute(CIAdminCommon.Property.Name),
+            this.resourceProperties.put(multi.<String> getAttribute(CIAdminCommon.Property.Name),
                             multi.<String> getAttribute(CIAdminCommon.Property.Value));
         }
-        return ret;
+    }
+
+    /**
+     * @return value for instance variable {@link #resourceProperties}
+     */
+    protected Map<String, String> getResourceProperties()
+    {
+        return this.resourceProperties;
     }
 
     /**
@@ -143,14 +147,7 @@ public final class Store
         Resource ret = null;
         try {
             ret = (Resource) (Class.forName(this.resource).newInstance());
-            Compress compress;
-            if (this.resourceProperties.containsKey(Store.PROPERTY_COMPRESS)) {
-                compress = Compress.valueOf(this.resourceProperties.get(Store.PROPERTY_COMPRESS).toUpperCase());
-            } else {
-                compress = Compress.NONE;
-            }
-            ret.initialize(_instance, this.resourceProperties, compress);
-
+            ret.initialize(_instance, this);
         } catch (final InstantiationException e) {
             throw new EFapsException(Store.class, "getResource.InstantiationException", e, this.resource);
         } catch (final IllegalAccessException e) {

@@ -152,9 +152,22 @@ public class Delete
     {
         final Context context = Context.getThreadContext();
         ConnectionResource con = null;
-
         try {
             con = context.getConnectionResource();
+            // first remove the storeresource, because the information needed from the general
+            // instance to actually delete will be removed in the second step
+            Resource storeRsrc = null;
+            try {
+                if (getInstance().getType().hasStore()) {
+                    storeRsrc = context.getStoreResource(getInstance());
+                    storeRsrc.delete();
+                    storeRsrc.commit();
+                }
+            } finally {
+                if ((storeRsrc != null) && storeRsrc.isOpened()) {
+                    storeRsrc.abort();
+                }
+            }
             try {
                 GeneralInstance.delete(getInstance(), con.getConnection());
                 final List<DeleteDefintion> defs = new ArrayList<DeleteDefintion>();
@@ -168,7 +181,6 @@ public class Delete
                 defs.add(new DeleteDefintion(mainTable.getSqlTable(), mainTable.getSqlColId(), getInstance().getId()));
                 final SQLDelete delete = Context.getDbType().newDelete(defs.toArray(new DeleteDefintion[defs.size()]));
                 delete.execute(con.getConnection());
-
             } catch (final SQLException e) {
                 throw new EFapsException(getClass(),
                                          "executeWithoutAccessCheck.SQLException", e, this.instance);
@@ -177,19 +189,6 @@ public class Delete
         } finally {
             if ((con != null) && con.isOpened()) {
                 con.abort();
-            }
-        }
-
-        Resource storeRsrc = null;
-        try {
-            if (getInstance().getType().hasStore()) {
-                storeRsrc = context.getStoreResource(getInstance());
-                storeRsrc.delete();
-                storeRsrc.commit();
-            }
-        } finally {
-            if ((storeRsrc != null) && storeRsrc.isOpened()) {
-                storeRsrc.abort();
             }
         }
     }
