@@ -370,7 +370,9 @@ public abstract class AbstractPrintQuery
      * @return this PrintQuery
      * @throws EFapsException   always!!
      */
-    public AbstractPrintQuery addExpression(final String _key, final String _expression) throws EFapsException
+    public AbstractPrintQuery addExpression(final String _key,
+                                            final String _expression)
+        throws EFapsException
     {
         throw new EFapsException("PrintQuery.addExpression id not yet implemented", null);
     }
@@ -431,7 +433,8 @@ public abstract class AbstractPrintQuery
      * @return  String representation of the phrase
      * @throws EFapsException on error
      */
-    public String getPhrase(final String _key) throws EFapsException
+    public String getPhrase(final String _key)
+        throws EFapsException
     {
         final Phrase phrase = this.key2Phrase.get(_key);
         return phrase == null ? null : phrase.getPhraseValue(getCurrentInstance());
@@ -534,28 +537,29 @@ public abstract class AbstractPrintQuery
      * Method to get the instances used for an select.
      *
      * @param _selectStmt   selectstatement the attribute is wanted for
-     * @return attribute for the select statement
+     * @return List of instances for the select or an empty list in case
+     *  that the onselect is not found
      * @throws EFapsException on error
      */
     public List<Instance> getInstances4Select(final String _selectStmt)
         throws EFapsException
     {
         final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectStmt);
-        return oneselect.getInstances();
+        return oneselect == null ? new ArrayList<Instance>() : oneselect.getInstances();
     }
 
     /**
      * Method to determine it the select statement returns more than one value.
      *
      * @param _selectStmt   selectstatement the attribute is wanted for
-     * @return  Attribute for the select statement
+     * @return true it the oneselect is muliple, else false
      * @throws EFapsException on error
      */
     public boolean isList4Select(final String _selectStmt)
         throws EFapsException
     {
         final OneSelect oneselect = this.selectStmt2OneSelect.get(_selectStmt);
-        return oneselect.isMultiple();
+        return oneselect == null ? false : oneselect.isMultiple();
     }
 
     /**
