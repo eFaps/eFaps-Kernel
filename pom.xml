@@ -266,6 +266,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 <version>2.6</version>
                 <configuration>
                     <configLocation>${basedir}/src/checkstyle/efaps_checks.xml</configLocation>
+                    <excludes>**/javacc/**/*.java</excludes>
                 </configuration>
             </plugin>
 
@@ -328,6 +329,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                             <version>2.6</version>
                             <configuration>
                                 <configLocation>${basedir}/src/checkstyle/efaps_checks.xml</configLocation>
+                                <excludes>**/javacc/**/*.java</excludes>
                             </configuration>
                         </plugin>
                         <!-- PMD report -->
