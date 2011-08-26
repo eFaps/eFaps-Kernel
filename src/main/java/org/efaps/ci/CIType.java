@@ -33,9 +33,9 @@ import java.util.UUID;
  * @author The eFaps Team
  * @version $Id$
  */
+//CHECKSTYLE:OFF
 public abstract class CIType
 {
-    //CHECKSTYLE:OFF
     /**
      * ID attribute. Each type must have it.
      */

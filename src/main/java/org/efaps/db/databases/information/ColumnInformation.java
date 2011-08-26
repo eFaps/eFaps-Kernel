@@ -164,7 +164,7 @@ public class ColumnInformation
      * {@link #isNullable}.
      * @return String representation of this class
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)

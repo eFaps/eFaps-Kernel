@@ -85,7 +85,7 @@ public class ForeignKeyInformation
      *
      * @return string representation for the foreign key information
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)

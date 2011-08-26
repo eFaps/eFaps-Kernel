@@ -407,8 +407,8 @@ public final class JAASSystem
                                                personMethodEmail,
                                                "person email", name, id);
                             if (method != null) {
-// TODO: person email method
-//    system.personMethodAttributes.put(Person.AttrName.Email, method);
+                                JAASSystem.LOG.debug("method '{}' not implemented yet.", method);
+                                // TODO: person email method
                             }
                             if ((roleClassName != null) && (roleClassName.trim().length() > 0)) {
                                 @SuppressWarnings("unchecked")

@@ -84,7 +84,7 @@ public class UniqueKeyInformation
      *
      * @return string representation of the unique key information
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)

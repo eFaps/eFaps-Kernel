@@ -242,7 +242,7 @@ public class TableInformation
      *
      * @return string representation of this table information
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)
@@ -259,7 +259,7 @@ public class TableInformation
      * @return table name
      * @see #name
      */
-    @Override()
+    @Override
     public String getName()
     {
         return this.name;
@@ -271,7 +271,7 @@ public class TableInformation
      * to implement interface {@link CacheObjectInterface},
      * @return nothing because an error will be always thrown
      */
-    @Override()
+    @Override
     public long getId()
     {
         throw new Error("id does not exists for the table information");
@@ -284,7 +284,7 @@ public class TableInformation
      *
      * @return nothing because an error will be always thrown
      */
-    @Override()
+    @Override
     public UUID getUUID()
     {
         throw new Error("UUID does not exists for the table information");
