@@ -55,7 +55,7 @@ public enum ChronologyType
          * @param _timeZone   time zone the chronology must use
          * @return an instance of BuddhistChronology
          */
-        @Override()
+        @Override
         public Chronology getInstance(final DateTimeZone _timeZone)
         {
             return BuddhistChronology.getInstance(_timeZone);
@@ -73,7 +73,7 @@ public enum ChronologyType
          * @param _timeZone   time zone the chronology must use
          * @return an instance of CopticChronology
          */
-        @Override()
+        @Override
         public Chronology getInstance(final DateTimeZone _timeZone)
         {
             return CopticChronology.getInstance(_timeZone);
@@ -91,7 +91,7 @@ public enum ChronologyType
          * @param _timeZone   time zone the chronology must use
          * @return an instance of EthiopicChronology
          */
-        @Override()
+        @Override
         public Chronology getInstance(final DateTimeZone _timeZone)
         {
             return EthiopicChronology.getInstance(_timeZone);
@@ -109,7 +109,7 @@ public enum ChronologyType
          * @param _timeZone   time zone the chronology must use
          * @return an instance of GregorianChronology
          */
-        @Override()
+        @Override
         public Chronology getInstance(final DateTimeZone _timeZone)
         {
             return GregorianChronology.getInstance(_timeZone);
@@ -126,7 +126,7 @@ public enum ChronologyType
          * @param _timeZone   time zone the chronology must use
          * @return an instance of GJChronology
          */
-        @Override()
+        @Override
         public Chronology getInstance(final DateTimeZone _timeZone)
         {
             return GJChronology.getInstance(_timeZone);
@@ -144,7 +144,7 @@ public enum ChronologyType
          * @param _timeZone   time zone the chronology must use
          * @return an instance of IslamicChronology
          */
-        @Override()
+        @Override
         public Chronology getInstance(final DateTimeZone _timeZone)
         {
             return IslamicChronology.getInstance(_timeZone);
@@ -161,7 +161,7 @@ public enum ChronologyType
          * @param _timeZone   time zone the chronology must use
          * @return an instance of ISOChronology
          */
-        @Override()
+        @Override
         public Chronology getInstance(final DateTimeZone _timeZone)
         {
             return ISOChronology.getInstance(_timeZone);
@@ -179,7 +179,7 @@ public enum ChronologyType
          * @param _timeZone   time zone the chronology must use
          * @return an instance of JulianChronology
          */
-        @Override()
+        @Override
         public Chronology getInstance(final DateTimeZone _timeZone)
         {
             return JulianChronology.getInstance(_timeZone);

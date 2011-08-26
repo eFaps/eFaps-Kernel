@@ -27,6 +27,7 @@ package org.efaps.db.query;
  * @author The eFaps Team
  * @version $Id$
  */
+//CHECKSTYLE:OFF
 @Deprecated
 public class CompleteStatement
 {

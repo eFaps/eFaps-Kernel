@@ -99,7 +99,7 @@ public class OracleDatabaseWithAutoSequence
      *
      * @return always <i>true</i> because supported by Oracle database
      */
-    @Override()
+    @Override
     public boolean supportsGetGeneratedKeys()
     {
         return true;
@@ -108,7 +108,7 @@ public class OracleDatabaseWithAutoSequence
     /**
      * @return always <i>true</i> because supported by Oracle database
      */
-    @Override()
+    @Override
     public boolean supportsMultiGeneratedKeys()
     {
         return true;
@@ -126,7 +126,7 @@ public class OracleDatabaseWithAutoSequence
    * @throws SQLException always, because this database driver supports auto
    *                      generating keys
    */
-    @Override()
+    @Override
     public long getNewId(final Connection _con,
                          final String _table,
                          final String _column)

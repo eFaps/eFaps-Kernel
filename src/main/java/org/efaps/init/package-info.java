@@ -17,7 +17,7 @@
  * Last Changed:    $Date$
  * Last Changed By: $Author$
  */
-
+//CHECKSTYLE:OFF
 /**
  * Class from this package should be only used if no J2EE server is used to
  * initialize the database connection and store binding. E.g. if a shell is

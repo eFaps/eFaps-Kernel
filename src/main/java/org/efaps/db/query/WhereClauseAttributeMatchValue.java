@@ -30,6 +30,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
+//CHECKSTYLE:OFF
 @Deprecated
 public class WhereClauseAttributeMatchValue extends WhereClauseAttributeCompareValueAbstract
 {

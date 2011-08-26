@@ -26,8 +26,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -336,7 +336,9 @@ public final class StartupDatabaseConnection
             Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_DATASOURCE, ref);
         } catch (final NamingException e) {
             throw new StartupException("could not bind JDBC pooling class '" + _classDSFactory + "'", e);
+            //CHECKSTYLE:OFF
         } catch (final Exception e) {
+            //CHECKSTYLE:ON
             throw new StartupException("coud not get object instance of factory '" + _classDSFactory + "'", e);
         }
     }

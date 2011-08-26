@@ -91,7 +91,7 @@ public final class DateTimeUtil
      *
      * @param _date     date to normalize
      * @return DateTime normalized for the database
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     public static DateTime normalize(final DateTime _date)
         throws EFapsException

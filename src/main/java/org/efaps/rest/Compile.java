@@ -93,7 +93,7 @@ public class Compile
 
     /**
      * @return lsit of classpath elements
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     private List<String> getClassPathElements()
         throws EFapsException

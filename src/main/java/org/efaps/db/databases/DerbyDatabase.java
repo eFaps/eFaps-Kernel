@@ -82,6 +82,7 @@ public class DerbyDatabase
                     + "and t.TABLETYPE='T'";
 
     /**
+     * Constructur.
      * TODO: specificy real column type
      */
     public DerbyDatabase()
@@ -194,18 +195,7 @@ public class DerbyDatabase
     }
 
     /**
-     * For the derby database, an eFaps SQL table is created in this steps:
-     * <ul>
-     * <li>SQL table itself with column <code>ID</code> and unique key on the
-     *     column is created</li>
-     * <li>if the table is an auto-increment table (parent table is
-     *     <code>null</code>, the column <code>ID</code> is set as
-     *     auto-increment column</li>
-     * <li>if no parent table is defined, the foreign key to the parent table is
-     *     automatically set</li>
-     * </ul>
-     *
-     * @throws SQLException if the table could not be created
+     * {@inheritDoc}
      */
     @Override
     public DerbyDatabase createTable(final Connection _con,
@@ -248,7 +238,8 @@ public class DerbyDatabase
     }
 
     /**
-     * TODO: implement
+     * {@inheritDoc}
+     *
      */
     @Override
     public DerbyDatabase defineTableAutoIncrement(final Connection _con,
@@ -277,8 +268,10 @@ public class DerbyDatabase
      * @param _isNotNull    <i>true</i> means that the column has no
      *                      <code>null</code> values
      * @throws SQLException if the column could not be added to the tables
+     * @return this
      */
     @Override
+    //CHECKSTYLE:OFF
     public DerbyDatabase addTableColumn(final Connection _con,
                                         final String _tableName,
                                         final String _columnName,
@@ -289,6 +282,7 @@ public class DerbyDatabase
                                         final boolean _isNotNull)
         throws SQLException
     {
+      //CHECKSTYLE:ON
         String defaultValue = _defaultValue;
 
         if (_isNotNull && (defaultValue == null))  {
@@ -301,6 +295,8 @@ public class DerbyDatabase
                 case STRING_LONG:
                 case STRING_SHORT:
                     defaultValue = "''";
+                    break;
+                default:
                     break;
             }
         }
@@ -410,8 +406,9 @@ public class DerbyDatabase
      * internal names and not the real names. Also if a unique key includes
      * also columns with null values, this unique keys are not included.
      *
-     * @param _metaData   database meta data
-     * @param _tableName  name of table which must be evaluated
+     * @param _con        Connection
+     * @param _sql        Statement
+     * @param _cache4Name   cache
      * @throws SQLException if unique keys could not be fetched
      */
     @Override

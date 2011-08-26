@@ -99,7 +99,7 @@ public final class Instance
      * @return id represented by this instance
      * @see #id
      */
-    @Override()
+    @Override
     public int hashCode()
     {
         return (int) this.id;
@@ -112,7 +112,7 @@ public final class Instance
      * @see #id
      * @see #type
      */
-    @Override()
+    @Override
     public boolean equals(final Object _obj)
     {
         boolean ret = false;
@@ -196,14 +196,13 @@ public final class Instance
         return this.type != null && this.id > 0;
     }
 
-
     /**
      * The method returns a string representation of the instance object. It
      * does not replace method {@link #getOid}!.
      *
      * @return string representation of this instance object
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)

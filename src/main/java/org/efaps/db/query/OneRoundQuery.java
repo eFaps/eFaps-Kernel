@@ -47,6 +47,7 @@ import org.efaps.util.EFapsException;
  * TODO: description
  * @deprecated will be removed with version 2.0
  */
+//CHECKSTYLE:OFF
 @Deprecated
 public class OneRoundQuery
 {

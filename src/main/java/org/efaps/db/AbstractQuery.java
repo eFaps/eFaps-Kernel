@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  * TODO:  description
  */
+//CHECKSTYLE:OFF
 @Deprecated
 public abstract class AbstractQuery
 {

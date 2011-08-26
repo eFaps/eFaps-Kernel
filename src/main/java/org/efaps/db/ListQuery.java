@@ -34,7 +34,7 @@ import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.query.OneRoundQuery;
 import org.efaps.util.EFapsException;
-
+//CHECKSTYLE:OFF
 /**
  * TODO:  description
  * @author The eFaps Team

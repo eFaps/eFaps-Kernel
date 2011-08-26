@@ -26,7 +26,6 @@ import java.util.UUID;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,11 +48,10 @@ public abstract class AbstractRest
      * User must be assigned to the Role "Admin_Rest".
      *
      * @return true if user is assigned to Roles "Admin_Rest", else false
-     * @throws CacheReloadException on error
      * @throws EFapsException on error
      */
     protected boolean hasAccess()
-        throws CacheReloadException, EFapsException
+        throws EFapsException
     {
         //Admin_REST
         return Context.getThreadContext().getPerson().isAssigned(Role.get(

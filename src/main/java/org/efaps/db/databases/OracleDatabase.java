@@ -73,8 +73,10 @@ public class OracleDatabase
         return false;
     }
 
-
-    @Override()
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getMaxExpressions()
     {
         return 1000;
@@ -86,7 +88,7 @@ public class OracleDatabase
      *
      * @return string <code>sysdate</code>
      */
-    @Override()
+    @Override
     public String getCurrentTimeStamp()
     {
         return "sysdate";
@@ -107,7 +109,7 @@ public class OracleDatabase
      * @param _con  sql connection
      * @throws SQLException if delete of the views, tables or sequences failed
      */
-    @Override()
+    @Override
     public void deleteAll(final Connection _con)
         throws SQLException
     {
@@ -174,7 +176,7 @@ public class OracleDatabase
     }
 
     /**
-     * For the database from vendor Oracle, an eFaps SQL table
+     * For the database from vendor Oracle. An eFaps SQL table
      * is created in this steps:
      * <ul>
      * <li>sql table itself with column <code>ID</code> and unique key on the
@@ -191,13 +193,12 @@ public class OracleDatabase
      *
      * @param _con          SQL connection
      * @param _table        name of the table to create
-     * @param _parentTable  name of the parent table
      * @throws SQLException if the table or sequence could not be created
+     * @return this
      */
-    @Override()
+    @Override
     public OracleDatabase createTable(final Connection _con,
-                                      final String _table/*,
-                                      final String _parentTable*/)
+                                      final String _table)
         throws SQLException
     {
         final Statement stmt = _con.createStatement();
@@ -241,9 +242,9 @@ public class OracleDatabase
     }
 
     /**
-     * TODO: implement
+     * {@inheritDoc}
      */
-    @Override()
+    @Override
     public OracleDatabase defineTableAutoIncrement(final Connection _con,
                                                    final String _table)
         throws SQLException
@@ -261,7 +262,7 @@ public class OracleDatabase
      * @return new ID of the used sequence
      * @throws SQLException if a new id could not be retrieved
      */
-    @Override()
+    @Override
     public long getNewId(final Connection _con,
                          final String _table,
                          final String _column)
@@ -300,7 +301,7 @@ public class OracleDatabase
     /**
      * {@inheritDoc}
      */
-    @Override()
+    @Override
     public OracleDatabase deleteSequence(final Connection _con,
                                          final String _name)
     {

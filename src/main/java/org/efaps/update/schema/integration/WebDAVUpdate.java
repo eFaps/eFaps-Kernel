@@ -36,6 +36,9 @@ import org.efaps.update.AbstractUpdate;
 public class WebDAVUpdate
     extends AbstractUpdate
 {
+    /**
+     *
+     */
     private static final Set<Link> ALLLINKS = new HashSet<Link>();
     /*{
 
@@ -65,6 +68,10 @@ public class WebDAVUpdate
         return new Definition();
     }
 
+    /**
+     * TODO comment!
+     *
+     */
     public class Definition
         extends AbstractDefinition
     {
@@ -75,7 +82,7 @@ public class WebDAVUpdate
         {
             final String value = _tags.get(0);
             if ("path".equals(value))  {
-                this.addValue("Path", value);
+                addValue("Path", value);
             } else  {
                 super.readXML(_tags, _attributes, _text);
             }

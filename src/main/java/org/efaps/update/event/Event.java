@@ -150,7 +150,9 @@ public class Event
             update.close();
         } catch (final EFapsException e) {
             Event.LOG.error("updateInDB(Instance, String)", e);
+            //CHECKSTYLE:OFF
         } catch (final Exception e) {
+          //CHECKSTYLE:ON
             Event.LOG.error("updateInDB(Instance, String)", e);
         }
         return ret;
