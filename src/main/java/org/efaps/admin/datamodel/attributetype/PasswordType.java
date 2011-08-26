@@ -55,6 +55,9 @@ public class PasswordType
      */
     private static final Logger LOG = LoggerFactory.getLogger(PasswordType.class);
 
+    /**
+     * Current Value of this Password.
+     */
     private String currentValue;
 
     /**

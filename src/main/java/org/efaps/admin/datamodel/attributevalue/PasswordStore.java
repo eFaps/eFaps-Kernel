@@ -52,22 +52,22 @@ public class PasswordStore
     /**
      * Prefix for the PropertyKey of the Digest.
      */
-    private final static String DIGEST = "Digest";
+    private static final String DIGEST = "Digest";
 
     /**
      * Prefix for the PropertyKey of the Algorithm.
      */
-    private final static String ALGORITHM = "Algorithm";
+    private static final String ALGORITHM = "Algorithm";
 
     /**
      * Prefix for the PropertyKey of the Iterations.
      */
-    private final static String ITERATIONS = "Iterations";
+    private static final String ITERATIONS = "Iterations";
 
     /**
      * Prefix for the PropertyKey of the Saltsize.
      */
-    private final static String SALTSIZE = "Saltsize";
+    private static final String SALTSIZE = "Saltsize";
 
     /**
      * Internal Properties used to store the information.
@@ -98,7 +98,6 @@ public class PasswordStore
     /**
      * Initialize the digester configuration by reading values from the kernel
      * SystemConfiguration.
-     * @throws EFapsException on error
      */
     private void initConfig()
     {
@@ -139,7 +138,7 @@ public class PasswordStore
 
     /**
      * Check the given Plain Text Password for equal on the current Hash by
-     * applying the algorithm salt etc
+     * applying the algorithm salt etc.
      * @param _plainPassword   plain text password
      * @return  true if equal, else false
      */
@@ -150,7 +149,7 @@ public class PasswordStore
 
     /**
      * Check the given Plain Text Password for equal on the Hash by
-     * applying the algorithm salt etc
+     * applying the algorithm salt etc.
      * @param _plainPassword    plain text password
      * @param _pos              position of the password to be checked
      * @return  true if equal, else false
@@ -176,7 +175,8 @@ public class PasswordStore
      * @param _plainPassword    plain text password
      * @return true if repeated, else false
      */
-    public boolean isRepeated(final String _plainPassword) {
+    public boolean isRepeated(final String _plainPassword)
+    {
         boolean ret = false;
         for (int i = 1; i < this.threshold + 1; i++) {
             ret = check(_plainPassword, i);
@@ -233,7 +233,7 @@ public class PasswordStore
         }
         int i = this.threshold + 1;
         while (this.props.contains(_key + i)) {
-            this.props.remove(_key+ i);
+            this.props.remove(_key + i);
             i++;
         }
     }
