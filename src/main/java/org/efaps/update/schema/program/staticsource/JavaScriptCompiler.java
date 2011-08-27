@@ -91,7 +91,8 @@ public class JavaScriptCompiler
                 final JavaScriptCompressor compressor = new JavaScriptCompressor(in, new ErrorReporter() {
 
                     /**
-                     * @see org.mozilla.javascript.ErrorReporter#error(java.lang.String, java.lang.String, int, java.lang.String, int)
+                     * @see org.mozilla.javascript.ErrorReporter#error(java.lang.String, java.lang.String,
+                     * int, java.lang.String, int)
                      * @param _error error to be written to the log
                      * @param _arg1 not used
                      * @param _arg2 not used
@@ -108,7 +109,8 @@ public class JavaScriptCompiler
                     }
 
                     /**
-                     * @see org.mozilla.javascript.ErrorReporter#runtimeError(java.lang.String, java.lang.String, int, java.lang.String, int)
+                     * @see org.mozilla.javascript.ErrorReporter#runtimeError(java.lang.String, java.lang.String,
+                     * int, java.lang.String, int)
                      * @param _arg0 not used
                      * @param _arg1 not used
                      * @param _arg2 not used
@@ -126,7 +128,8 @@ public class JavaScriptCompiler
                     }
 
                     /**
-                     * @see org.mozilla.javascript.ErrorReporter#warning(java.lang.String, java.lang.String, int, java.lang.String, int)
+                     * @see org.mozilla.javascript.ErrorReporter#warning(java.lang.String, java.lang.String,
+                     * int, java.lang.String, int)
                      * @param _warning  warning to be shown
                      * @param _arg1     arg1 not used
                      * @param _arg2     arg2 not used

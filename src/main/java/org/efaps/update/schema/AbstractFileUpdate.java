@@ -131,7 +131,7 @@ public abstract class AbstractFileUpdate
                 try  {
                     final InputStream in = new URL(AbstractFileUpdate.this.root + this.file).openStream();
                     try  {
-                        final Checkin checkin = new Checkin(this.instance);
+                        final Checkin checkin = new Checkin(getInstance());
                         checkin.executeWithoutAccessCheck(this.file, in, in.available());
                     } finally  {
                         in.close();

@@ -140,10 +140,10 @@ public abstract class AbstractCollectionUpdate
             final String value = _tags.get(0);
             if ("evaluate".equals(value)) {
                 if (_tags.size() == 1) {
-                    this.events.add(new Event(_attributes.get("name"), EventType.UI_TABLE_EVALUATE, _attributes
+                    getEvents().add(new Event(_attributes.get("name"), EventType.UI_TABLE_EVALUATE, _attributes
                                     .get("program"), _attributes.get("method"), _attributes.get("index")));
                 } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
-                    this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"), _text);
+                    getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);
                 } else {
                     super.readXML(_tags, _attributes, _text);
                 }
@@ -157,10 +157,10 @@ public abstract class AbstractCollectionUpdate
                 addLink(AbstractCollectionUpdate.LINK2PICKER, new LinkInstance(_attributes.get("name")));
             } else if ("trigger".equals(value)) {
                 if (_tags.size() == 1) {
-                    this.events.add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
+                    getEvents().add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
                                     _attributes.get("program"), _attributes.get("method"), _attributes.get("index")));
                 } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
-                    this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"), _text);
+                    getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);
                 } else {
                     super.readXML(_tags, _attributes, _text);
                 }
@@ -263,7 +263,7 @@ public abstract class AbstractCollectionUpdate
         {
             // cleanup fields (remove all fields from table)
             final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Field);
-            queryBldr.addWhereAttrEqValue(CIAdminUserInterface.Field.Collection, this.instance.getId());
+            queryBldr.addWhereAttrEqValue(CIAdminUserInterface.Field.Collection, getInstance().getId());
             final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             while (query.next()) {
@@ -314,7 +314,7 @@ public abstract class AbstractCollectionUpdate
                     insert = new Insert(CIAdminUserInterface.Field);
                 }
 
-                insert.add("Collection", "" + this.instance.getId());
+                insert.add("Collection", getInstance().getId());
                 insert.add("Name", field.name);
                 insert.executeWithoutAccessCheck();
                 setPropertiesInDb(insert.getInstance(), field.getProperties());

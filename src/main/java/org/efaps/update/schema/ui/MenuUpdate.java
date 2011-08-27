@@ -36,6 +36,16 @@ import org.efaps.update.LinkInstance;
 public class MenuUpdate
     extends CommandUpdate
 {
+    /**
+     * The links for the Menu to be updated.
+     */
+    protected static final Set<Link> ALLLINKS = new HashSet<Link>();
+    static  {
+        MenuUpdate.ALLLINKS.add(MenuUpdate.LINK2CHILD);
+        MenuUpdate.ALLLINKS.add(MenuUpdate.LINK2TYPE);
+        MenuUpdate.ALLLINKS.addAll(CommandUpdate.ALLLINKS);
+    }
+
     /** Link from menu to child command / menu. */
     private static final Link LINK2CHILD = new OrderedLink("Admin_UI_Menu2Command",
                                                            "FromMenu",
@@ -46,15 +56,8 @@ public class MenuUpdate
                                                    "From",
                                                    "Admin_DataModel_Type", "To");
 
-    protected final static Set<Link> ALLLINKS = new HashSet<Link>();
-    static  {
-        MenuUpdate.ALLLINKS.add(MenuUpdate.LINK2CHILD);
-        MenuUpdate.ALLLINKS.add(MenuUpdate.LINK2TYPE);
-        MenuUpdate.ALLLINKS.addAll(CommandUpdate.ALLLINKS);
-    }
-
     /**
-     *
+     * @param _url URL to the Configuration Item.
      */
     public MenuUpdate(final URL _url)
     {
@@ -63,7 +66,9 @@ public class MenuUpdate
 
     /**
      *
-     * @param _url        URL of the file
+     * @param _url        URL to the Configuration Item.
+     * @param _typeName     Name of the type
+     * @param _allLinks     link definitions
      */
     protected MenuUpdate(final URL _url,
                          final String _typeName,
@@ -84,6 +89,9 @@ public class MenuUpdate
         return new MenuDefinition();
     }
 
+    /**
+     *
+     */
     protected class MenuDefinition
         extends CommandDefinition
     {
@@ -98,8 +106,7 @@ public class MenuUpdate
                     final String subValue = _tags.get(1);
                     if ("child".equals(subValue))  {
                         // assigns / removes child commands / menus to this menu
-                        if ("remove".equals(_attributes.get("modus"))) {
-                        } else  {
+                        if (!"remove".equals(_attributes.get("modus"))) {
                             final LinkInstance child = new LinkInstance(_text);
                             final String order = _attributes.get("order");
                             if (order != null)  {

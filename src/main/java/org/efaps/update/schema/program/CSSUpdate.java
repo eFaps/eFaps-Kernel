@@ -28,7 +28,6 @@ import org.efaps.ci.CIAdminProgram;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.schema.program.staticsource.CSSImporter;
 import org.efaps.update.util.InstallationException;
-import org.efaps.util.EFapsException;
 
 /**
  * The class updates programs from type <code>Admin_Program_CSS</code> inside
@@ -86,7 +85,7 @@ public class CSSUpdate
      *
      */
     public class CSSDefinition
-        extends SourceDefinition
+        extends AbstractSourceDefinition
     {
 
         /**
@@ -108,7 +107,7 @@ public class CSSUpdate
         /**
          * Search the instance.
          *
-         * @throws EFapsException if the Java source code could not be read or
+         * @throws InstallationException if the Java source code could not be read or
          *             the file could not be accessed because of the wrong URL
          */
         @Override
@@ -129,8 +128,8 @@ public class CSSUpdate
                                 new LinkInstance(this.sourceCode.getExtendSource()));
             }
 
-            if (this.instance == null) {
-                this.instance = this.sourceCode.searchInstance();
+            if (getInstance() == null) {
+                setInstance(this.sourceCode.searchInstance());
             }
         }
 

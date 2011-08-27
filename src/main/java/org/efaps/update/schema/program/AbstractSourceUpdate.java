@@ -91,7 +91,7 @@ public abstract class AbstractSourceUpdate
     /**
      * Class used as the definition for one source.
      */
-    public abstract class SourceDefinition
+    public abstract class AbstractSourceDefinition
         extends AbstractDefinition
     {
         /**
@@ -106,7 +106,7 @@ public abstract class AbstractSourceUpdate
          *
          * @param _fileUrl  URL to the file (incl. root).
          */
-        protected SourceDefinition(final URL _fileUrl)
+        protected AbstractSourceDefinition(final URL _fileUrl)
         {
             // searched by attribute Name
             super("Name");
@@ -141,7 +141,7 @@ public abstract class AbstractSourceUpdate
             super.updateInDB(_step, _allLinkTypes);
 
             if ((_step == UpdateLifecycle.EFAPS_UPDATE) && (getValue("Name") != null))  {
-                final Checkin checkin = new Checkin(this.instance);
+                final Checkin checkin = new Checkin(getInstance());
                 try {
                     final InputStream in = this.fileUrl.openStream();
                     checkin.executeWithoutAccessCheck(getValue("Name"),

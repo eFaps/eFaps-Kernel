@@ -77,7 +77,7 @@ public class JasperReportUpdate extends AbstractSourceUpdate
      * Definition for the JasperReport.
      *
      */
-    public class JasperReportDefinition extends SourceDefinition
+    public class JasperReportDefinition extends AbstractSourceDefinition
     {
 
         /**
@@ -121,8 +121,8 @@ public class JasperReportUpdate extends AbstractSourceUpdate
 //                addLink(JasperReportUpdate.LINK2SUPER, new LinkInstance(this.jrxml.getExtendSource()));
 //            }
 
-            if (this.instance == null) {
-                this.instance = this.jrxml.searchInstance();
+            if (getInstance() == null) {
+                setInstance(this.jrxml.searchInstance());
             }
         }
 

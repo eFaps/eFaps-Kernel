@@ -206,7 +206,7 @@ public class SystemConfigurationUpdate
             try {
                 if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
                     for (final AttributeDefinition attr : this.attributes) {
-                        attr.updateInDB(this.instance);
+                        attr.updateInDB(getInstance());
                     }
                 }
             } catch (final EFapsException e) {

@@ -175,15 +175,15 @@ public class CommandUpdate extends AbstractUpdate
                     final String name = _attributes.get("name") == null
                             ? getValue("Name") + "." +  subValue : _attributes.get("name");
                     if ("evaluate".equals(subValue)) {
-                        this.events.add(new Event(name, EventType.UI_TABLE_EVALUATE,
+                        getEvents().add(new Event(name, EventType.UI_TABLE_EVALUATE,
                                                   _attributes.get("program"), _attributes.get("method"),
                                                   _attributes.get("index")));
                     } else if ("execute".equals(subValue)) {
-                        this.events.add(new Event(name, EventType.UI_COMMAND_EXECUTE,
+                        getEvents().add(new Event(name, EventType.UI_COMMAND_EXECUTE,
                                                   _attributes.get("program"), _attributes.get("method"),
                                                   _attributes.get("index")));
                     } else if ("instance".equals(subValue)) {
-                        this.events.add(new Event(name, EventType.UI_INSTANCEMANAGER,
+                        getEvents().add(new Event(name, EventType.UI_INSTANCEMANAGER,
                                                   _attributes.get("program"), _attributes.get("method"),
                                                   _attributes.get("index")));
                     } else if ("command".equals(subValue)) {
@@ -202,11 +202,11 @@ public class CommandUpdate extends AbstractUpdate
                         // assigns a table as target for this command definition.
                         addLink(CommandUpdate.LINK2TARGETTABLE, new LinkInstance(_text));
                     } else if ("trigger".equals(subValue)) {
-                        this.events.add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
+                        getEvents().add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
                                                   _attributes.get("program"), _attributes.get("method"),
                                                   _attributes.get("index")));
                     } else if ("validate".equals(subValue)) {
-                        this.events.add(new Event(name, EventType.UI_VALIDATE,
+                        getEvents().add(new Event(name, EventType.UI_VALIDATE,
                                                   _attributes.get("program"), _attributes.get("method"),
                                                   _attributes.get("index")));
                     } else if ("help".equals(subValue)) {
@@ -219,7 +219,7 @@ public class CommandUpdate extends AbstractUpdate
                     final String subValue = _tags.get(1);
                     if (("evaluate".equals(subValue) || "execute".equals(subValue) || "trigger".equals(subValue)
                                     || "validate".equals(subValue)) && "property".equals(_tags.get(2))) {
-                        this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"), _text);
+                        getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);
                     } else {
                         super.readXML(_tags, _attributes, _text);
                     }

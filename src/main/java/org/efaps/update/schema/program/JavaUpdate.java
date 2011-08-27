@@ -69,7 +69,7 @@ public class JavaUpdate
      * The Java definition holds the code and the name of the Java class.
      */
     public class JavaDefinition
-        extends SourceDefinition
+        extends AbstractSourceDefinition
     {
         /**
          * Importer for the ESJP.
@@ -107,8 +107,8 @@ public class JavaUpdate
             if (this.javaCode.getRevision() != null) {
                 addValue("Revision", this.javaCode.getRevision());
             }
-            if (this.instance == null) {
-                this.instance = this.javaCode.searchInstance();
+            if (getInstance() == null) {
+                setInstance(this.javaCode.searchInstance());
             }
         }
 
@@ -127,11 +127,9 @@ public class JavaUpdate
             throws InstallationException
         {
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
-                if (AbstractUpdate.LOG.isInfoEnabled() && (this.javaCode.getProgramName() != null)) {
-                    AbstractUpdate.LOG.info("    Update " + this.instance.getType().getName() + " '"
-                            + this.javaCode.getProgramName() + "'");
-                }
-                this.javaCode.updateDB(this.instance);
+                AbstractUpdate.LOG.info("    Update {} '{}'", getInstance().getType().getName(),
+                                this.javaCode.getProgramName());
+                this.javaCode.updateDB(getInstance());
             } else  {
                 super.updateInDB(_step, _allLinkTypes);
             }

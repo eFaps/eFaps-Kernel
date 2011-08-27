@@ -80,7 +80,7 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
      * Definition for the JavaScript.
      *
      */
-    public class JavaScriptDefinition extends SourceDefinition
+    public class JavaScriptDefinition extends AbstractSourceDefinition
     {
 
         /**
@@ -123,8 +123,8 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
                 addLink(JavaScriptUpdate.LINK2SUPER, new LinkInstance(this.sourceCode.getExtendSource()));
             }
 
-            if (this.instance == null) {
-                this.instance = this.sourceCode.searchInstance();
+            if (getInstance() == null) {
+                setInstance(this.sourceCode.searchInstance());
             }
         }
 

@@ -637,7 +637,9 @@ public class ESJPCompiler
                 checkin.executeWithoutAccessCheck(this.className,
                                                   new ByteArrayInputStream(this.out.toByteArray()),
                                                   this.out.toByteArray().length);
+                //CHECKSTYLE:OFF
             } catch (final Exception e) {
+              //CHECKSTYLE:ON
                 ESJPCompiler.LOG.error("unable to write to eFaps ESJP class '" + this.className + "'", e);
             }
         }

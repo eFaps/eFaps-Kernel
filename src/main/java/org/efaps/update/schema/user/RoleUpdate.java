@@ -55,6 +55,9 @@ public class RoleUpdate
         return new RoleDefinition();
     }
 
+    /**
+     *
+     */
     public class RoleDefinition
         extends AbstractDefinition
     {

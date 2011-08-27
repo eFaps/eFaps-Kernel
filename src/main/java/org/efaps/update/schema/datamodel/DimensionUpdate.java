@@ -234,7 +234,7 @@ public class DimensionUpdate
             } catch (final EFapsException e) {
                 throw new InstallationException("Insert failed", e);
             }
-            this.instance = _insert.getInstance();
+            setInstance(_insert.getInstance());
         }
 
         /**
@@ -259,7 +259,7 @@ public class DimensionUpdate
 
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
                 for (final UoMDefinition uom : this.uoms) {
-                    uom.updateInDB(this.instance);
+                    uom.updateInDB(getInstance());
                 }
             }
         }

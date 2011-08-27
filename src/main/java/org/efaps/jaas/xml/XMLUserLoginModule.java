@@ -84,43 +84,59 @@ public class XMLUserLoginModule
      */
     private final Map<String, XMLPersonPrincipal> allPersons = new HashMap<String, XMLPersonPrincipal>();
 
-// TODO: description
     /**
-     * @param _subject
-     * @param _callbackHandler
-     * @param _sharedState
-     * @param _options
-     * @see #readPersons
+     * Initialize this LoginModule.
+     *
+     * <p> This method is called by the <code>LoginContext</code>
+     * after this <code>LoginModule</code> has been instantiated.
+     * The purpose of this method is to initialize this
+     * <code>LoginModule</code> with the relevant information.
+     * If this <code>LoginModule</code> does not understand
+     * any of the data stored in <code>sharedState</code> or
+     * <code>options</code> parameters, they can be ignored.
+     *
+     * <p>
+     *
+     * @param _subject      the <code>Subject</code> to be authenticated. <p>
+     * @param _callbackHandler a <code>CallbackHandler</code> for communicating
+     *          with the end user (prompting for usernames and
+     *          passwords, for example). <p>
+     * @param _sharedState state shared with other configured LoginModules. <p>
+     * @param _options options specified in the login
+     *          <code>Configuration</code> for this particular
+     *          <code>LoginModule</code>.
      */
+    @Override
     public final void initialize(final Subject _subject,
                                  final CallbackHandler _callbackHandler,
                                  final Map < String, ? > _sharedState,
-                                 final Map < String, ? > _options)  {
-
+                                 final Map < String, ? > _options)
+    {
         XMLUserLoginModule.LOG.debug("Init");
         this.subject = _subject;
         this.callbackHandler = _callbackHandler;
         readPersons((String) _options.get("xmlFileName"));
     }
 
-// TODO: description
     /**
-     * @return <i>true</i> if login is allowed and user name with password is
-     *         correct
-     * @throws FailedLoginException if login is not allowed with given user name
-     *         and password (if user does not exists or password is not correct)
-     * @throws LoginException if an error occurs while calling the callback
-     *         handler or the {@link #checkLogin} method
-     * @see #checkLogin
-     * @return <i>true</i> if this login module is used to authentificate and the
-     *         user could be authentificated with this login module, otherwise
-     *         <i>false</i>
-     * @throws FailedLoginException if the user is found, but the password does
-     *         not match
-     * @throws LoginException if user or password could not be get from the
-     *         callback handler
+     * Method to authenticate a <code>Subject</code> (phase 1).
+     *
+     * <p> The implementation of this method authenticates
+     * a <code>Subject</code>.  For example, it may prompt for
+     * <code>Subject</code> information such
+     * as a username and password and then attempt to verify the password.
+     * This method saves the result of the authentication attempt
+     * as private state within the LoginModule.
+     *
+     * <p>
+     *
+     * @exception LoginException if the authentication fails
+     *
+     * @return true if the authentication succeeded, or false if this
+     *          <code>LoginModule</code> should be ignored.
      */
-    public final boolean login() throws LoginException
+    public final boolean login()
+        throws LoginException
     {
         boolean ret = false;
 
@@ -131,59 +147,73 @@ public class XMLUserLoginModule
         // Interact with the user to retrieve the username and password
         String userName = null;
         String password = null;
-        try  {
-          this.callbackHandler.handle(callbacks);
-          this.mode = ((ActionCallback) callbacks[0]).getMode();
-          userName = ((NameCallback) callbacks[1]).getName();
-          if (((PasswordCallback) callbacks[2]).getPassword() != null)  {
-            password = new String(((PasswordCallback) callbacks[2]).getPassword());
-          }
-        } catch (final IOException e)  {
-          throw new LoginException(e.toString());
-        } catch (final UnsupportedCallbackException e)  {
-          throw new LoginException(e.toString());
+        try {
+            this.callbackHandler.handle(callbacks);
+            this.mode = ((ActionCallback) callbacks[0]).getMode();
+            userName = ((NameCallback) callbacks[1]).getName();
+            if (((PasswordCallback) callbacks[2]).getPassword() != null) {
+                password = new String(((PasswordCallback) callbacks[2]).getPassword());
+            }
+        } catch (final IOException e) {
+            throw new LoginException(e.toString());
+        } catch (final UnsupportedCallbackException e) {
+            throw new LoginException(e.toString());
         }
 
-        if (this.mode == ActionCallback.Mode.ALL_PERSONS)  {
-          ret = true;
-        } else if (this.mode == ActionCallback.Mode.PERSON_INFORMATION)  {
-          this.person = this.allPersons.get(userName);
-          if (this.person != null)  {
-            if (LOG.isDebugEnabled())  {
-              LOG.debug("found '" + this.person + "'");
-            }
+        if (this.mode == ActionCallback.Mode.ALL_PERSONS) {
             ret = true;
-          }
-        } else  {
-          this.person = this.allPersons.get(userName);
-          if (this.person != null)  {
-            if ((password == null)
-                || ((password != null)
-                    && !password.equals(this.person.getPassword())))  {
+        } else if (this.mode == ActionCallback.Mode.PERSON_INFORMATION) {
+            this.person = this.allPersons.get(userName);
+            if (this.person != null) {
+                if (XMLUserLoginModule.LOG.isDebugEnabled()) {
+                    XMLUserLoginModule.LOG.debug("found '" + this.person + "'");
+                }
+                ret = true;
+            }
+        } else {
+            this.person = this.allPersons.get(userName);
+            if (this.person != null) {
+                if ((password == null)
+                                || ((password != null)
+                                && !password.equals(this.person.getPassword()))) {
 
-              LOG.error("person '" + this.person + "' tried to log in with wrong password");
-              this.person = null;
-              throw new FailedLoginException("Username or password is incorrect");
+                    XMLUserLoginModule.LOG.error("person '" + this.person + "' tried to log in with wrong password");
+                    this.person = null;
+                    throw new FailedLoginException("Username or password is incorrect");
+                }
+                if (XMLUserLoginModule.LOG.isDebugEnabled()) {
+                    XMLUserLoginModule.LOG.debug("log in of '" + this.person + "'");
+                }
+                this.mode = ActionCallback.Mode.LOGIN;
+                ret = true;
             }
-            if (LOG.isDebugEnabled())  {
-              LOG.debug("log in of '" + this.person + "'");
-            }
-            this.mode = ActionCallback.Mode.LOGIN;
-            ret = true;
-          }
         }
 
         return ret;
     }
 
     /**
-     * Adds the principal person and all related roles and groups to the
-     * {@link #subject} if the {@link #person} was found and the user could log
-     * in with this login module.
+     * Method to commit the authentication process (phase 2).
      *
-     * @return <i>true</i> if this login module is used to authentificate the
-     *         current user (checked with {@link #person} is not null),
-     *         otherwise <i>false</i>
+     * <p> This method is called if the LoginContext's
+     * overall authentication succeeded
+     * (the relevant REQUIRED, REQUISITE, SUFFICIENT and OPTIONAL LoginModules
+     * succeeded).
+     *
+     * <p> If this LoginModule's own authentication attempt
+     * succeeded (checked by retrieving the private state saved by the
+     * <code>login</code> method), then this method associates relevant
+     * Principals and Credentials with the <code>Subject</code> located in the
+     * <code>LoginModule</code>.  If this LoginModule's own
+     * authentication attempted failed, then this method removes/destroys
+     * any state that was originally saved.
+     *
+     * <p>
+     *
+     * @exception LoginException if the commit fails
+     *
+     * @return true if this method succeeded, or false if this
+     *          <code>LoginModule</code> should be ignored.
      */
     public final boolean commit()
         throws LoginException
@@ -191,12 +221,12 @@ public class XMLUserLoginModule
         boolean ret = false;
 
         if (this.mode == ActionCallback.Mode.ALL_PERSONS)  {
-            for (final XMLPersonPrincipal person : this.allPersons.values())  {
-                if (!this.subject.getPrincipals().contains(person))  {
+            for (final XMLPersonPrincipal personTmp : this.allPersons.values())  {
+                if (!this.subject.getPrincipals().contains(personTmp))  {
                     if (XMLUserLoginModule.LOG.isDebugEnabled())  {
-                        XMLUserLoginModule.LOG.debug("commit person '" + person + "'");
+                        XMLUserLoginModule.LOG.debug("commit person '" + personTmp + "'");
                     }
-                    this.subject.getPrincipals().add(person);
+                    this.subject.getPrincipals().add(personTmp);
                 }
             }
             ret = true;
@@ -219,13 +249,28 @@ public class XMLUserLoginModule
         return ret;
     }
 
-// TODO: description
     /**
-     * An abort for this login module works like the {@link #logout} method.
+     * Method to abort the authentication process (phase 2).
      *
-     * @see #logout
+     * <p> This method is called if the LoginContext's
+     * overall authentication failed.
+     * (the relevant REQUIRED, REQUISITE, SUFFICIENT and OPTIONAL LoginModules
+     * did not succeed).
+     *
+     * <p> If this LoginModule's own authentication attempt
+     * succeeded (checked by retrieving the private state saved by the
+     * <code>login</code> method), then this method cleans up any state
+     * that was originally saved.
+     *
+     * <p>
+     *
+     * @exception LoginException if the abort fails
+     *
+     * @return true if this method succeeded, or false if this
+     *          <code>LoginModule</code> should be ignored.
      */
     public final boolean abort()
+        throws LoginException
     {
         boolean ret = false;
 
@@ -284,7 +329,7 @@ public class XMLUserLoginModule
     private void readPersons(final String _fileName)
     {
         try  {
-            final File _file = new File(_fileName);
+            final File file = new File(_fileName);
 
             final Digester digester = new Digester();
             digester.setValidating(false);
@@ -328,9 +373,9 @@ public class XMLUserLoginModule
             digester.addCallMethod("persons/person/group", "addGroup", 1);
             digester.addCallParam("persons/person/group", 0);
 
-            final List<XMLPersonPrincipal> personList = (List<XMLPersonPrincipal>) digester.parse(_file);
-            for (final XMLPersonPrincipal person : personList)  {
-                this.allPersons.put(person.getName(), person);
+            final List<XMLPersonPrincipal> personList = (List<XMLPersonPrincipal>) digester.parse(file);
+            for (final XMLPersonPrincipal personTmp : personList)  {
+                this.allPersons.put(personTmp.getName(), personTmp);
             }
         } catch (final IOException e)  {
             XMLUserLoginModule.LOG.error("could not open file '" + _fileName + "'", e);

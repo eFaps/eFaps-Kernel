@@ -557,12 +557,12 @@ public abstract class AbstractUpdate
         /**
          * list of events.
          */
-        protected final List<Event> events = new ArrayList<Event>();
+        private final List<Event> events = new ArrayList<Event>();
 
         /**
          * Instance of this definition.
          */
-        protected Instance instance = null;
+        private Instance instance = null;
 
         /**
          * Default constructor for the attribute by which the object is searched
@@ -586,6 +586,11 @@ public abstract class AbstractUpdate
             this.searchAttrName = _searchAttrName;
         }
 
+        /**
+         * @param _tags         tag to reas
+         * @param _attributes   attributes
+         * @param _text         text
+         */
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
@@ -995,6 +1000,10 @@ public abstract class AbstractUpdate
             oneLink.add(_linkinstance);
         }
 
+        /**
+         * @param _linkType type the links are wanted for
+         * @return Set of links
+         */
         public Set<LinkInstance> getLinks(final Link _linkType)
         {
             return this.links.get(_linkType);
@@ -1021,8 +1030,9 @@ public abstract class AbstractUpdate
             return this.values.get(_name);
         }
 
+
         /**
-         * @see #values
+         * @param _name Name ot set
          */
         protected void setName(final String _name)
         {
@@ -1082,6 +1092,26 @@ public abstract class AbstractUpdate
         public String getType()
         {
             return this.type;
+        }
+
+        /**
+         * This is the getter method for the instance variable {@link #instance}.
+         *
+         * @return value of instance variable {@link #instance}
+         */
+        protected Instance getInstance()
+        {
+            return this.instance;
+        }
+
+        /**
+         * This is the setter method for the instance variable {@link #instance}.
+         *
+         * @param _instance value for instance variable {@link #instance}
+         */
+        protected void setInstance(final Instance _instance)
+        {
+            this.instance = _instance;
         }
 
         /**

@@ -29,7 +29,7 @@ import org.efaps.update.schema.program.staticsource.XSLImporter;
 import org.efaps.update.util.InstallationException;
 
 /**
- * TODO description
+ * TODO description!
  *
  * @author The eFaps Team
  * @version $Id$
@@ -62,8 +62,11 @@ public class XSLUpdate
         return ret;
     }
 
+    /**
+     *
+     */
     public class XSLDefinition
-        extends SourceDefinition
+        extends AbstractSourceDefinition
     {
 
         /**
@@ -101,8 +104,8 @@ public class XSLUpdate
                 addValue("UUID", this.sourceCode.getEFapsUUID().toString());
             }
 
-            if (this.instance == null) {
-                this.instance = this.sourceCode.searchInstance();
+            if (getInstance() == null) {
+                setInstance(this.sourceCode.searchInstance());
             }
         }
 

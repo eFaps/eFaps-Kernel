@@ -71,6 +71,10 @@ public class SearchUpdate
         return new SearchDefinition();
     }
 
+    /**
+     * TODO comment!
+     *
+     */
     public class SearchDefinition
         extends MenuDefinition
     {

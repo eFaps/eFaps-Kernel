@@ -55,7 +55,10 @@ public class JAASSystemUpdate
                                                      "JAASSystemLink",
                                                      "Admin_User_Group", "UserLink");
 
-    private static final Set <Link> ALLLINKS = new HashSet < Link > ();
+    /**
+     * Hold the link definitions.
+     */
+    private static final Set <Link> ALLLINKS = new HashSet<Link>();
     static {
         JAASSystemUpdate.ALLLINKS.add(JAASSystemUpdate.LINK2PERSONS);
         JAASSystemUpdate.ALLLINKS.add(JAASSystemUpdate.LINK2ROLES);
@@ -83,6 +86,9 @@ public class JAASSystemUpdate
         return new Definition();
     }
 
+    /**
+     *
+     */
     private class Definition
         extends AbstractDefinition
     {

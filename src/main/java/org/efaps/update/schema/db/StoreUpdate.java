@@ -178,7 +178,7 @@ public class StoreUpdate
                 boolean old = false;
                 final Update update;
                 final QueryBuilder queryBldr = new QueryBuilder(CIDB.Store2Resource);
-                queryBldr.addWhereAttrEqValue(CIDB.Store2Resource.From, this.instance.getId());
+                queryBldr.addWhereAttrEqValue(CIDB.Store2Resource.From, getInstance().getId());
                 final MultiPrintQuery multi = queryBldr.getPrint();
                 final SelectBuilder sel = new SelectBuilder().linkto(CIDB.Store2Resource.To).oid();
                 multi.addSelect(sel);
@@ -196,8 +196,8 @@ public class StoreUpdate
 
                 if (!old) {
                     final Insert insert = new Insert(CIDB.Store2Resource);
-                    insert.add(CIDB.Store2Resource.From, ((Long) this.instance.getId()).toString());
-                    insert.add(CIDB.Store2Resource.To, ((Long) update.getInstance().getId()).toString());
+                    insert.add(CIDB.Store2Resource.From, getInstance().getId());
+                    insert.add(CIDB.Store2Resource.To, update.getInstance().getId());
                     insert.executeWithoutAccessCheck();
                     insert.close();
                 }

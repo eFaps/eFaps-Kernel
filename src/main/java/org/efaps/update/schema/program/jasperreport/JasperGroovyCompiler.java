@@ -53,7 +53,8 @@ public class JasperGroovyCompiler
 {
 
     /**
-     * @see net.sf.jasperreports.compilers.JRGroovyCompiler#compileUnits(net.sf.jasperreports.engine.design.JRCompilationUnit[],
+     * @see net.sf.jasperreports.compilers.JRGroovyCompiler#compileUnits(
+     * net.sf.jasperreports.engine.design.JRCompilationUnit[],
      *      java.lang.String, java.io.File)
      * @param _units        compilation units for Jasper
      * @param _classpath    classpath
@@ -120,7 +121,8 @@ public class JasperGroovyCompiler
         private int classCount;
 
         /**
-         * @see org.codehaus.groovy.control.CompilationUnit.ClassgenCallback#call(groovyjarjarasm.asm.ClassVisitor, org.codehaus.groovy.ast.ClassNode)
+         * @see org.codehaus.groovy.control.CompilationUnit.ClassgenCallback#call(groovyjarjarasm.asm.ClassVisitor,
+         * org.codehaus.groovy.ast.ClassNode)
          * @param _writer   writer
          * @param _node     node
          * @throws CompilationFailedException on error

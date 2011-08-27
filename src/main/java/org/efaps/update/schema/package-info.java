@@ -18,26 +18,8 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.jaas.xml;
-
 /**
- * The class implements the {@link java.security.Principal} interface for a
- * role. The class is used from the {@link XMLUserLoginModule} class to implement
- * a JAAS login module and set the role principals.
- *
- * @author The eFaps Team
- * @version $Id$
+ * Update classed for all Items defined by Configuration Items.
  */
-public final class XMLRolePrincipal
-    extends AbstractXMLPrincipal
-{
-    /**
-     * Constructor used to create a new role principal instance.
-     *
-     * @param _name name of the user
-     */
-    XMLRolePrincipal(final String _name)
-    {
-        setName(_name);
-    }
-}
+package org.efaps.update.schema;
+

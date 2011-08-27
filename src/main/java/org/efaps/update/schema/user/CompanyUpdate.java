@@ -55,6 +55,9 @@ public class CompanyUpdate
     }
 
 
+    /**
+     *
+     */
     public class CompanyDefinition
         extends AbstractDefinition
     {

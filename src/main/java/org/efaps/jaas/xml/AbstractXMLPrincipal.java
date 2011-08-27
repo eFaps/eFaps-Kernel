@@ -31,7 +31,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class XMLAbstractPrincipal
+public abstract class AbstractXMLPrincipal
     implements Principal
 {
     /**
@@ -74,7 +74,7 @@ public abstract class XMLAbstractPrincipal
      *
      * @return string representation of this principal
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)

@@ -29,7 +29,7 @@ package org.efaps.jaas.xml;
  * @version $Id$
  */
 public final class XMLGroupPrincipal
-    extends XMLAbstractPrincipal
+    extends AbstractXMLPrincipal
 {
     /**
      * Constructor used to create a new group principal instance.

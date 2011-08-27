@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.yahoo.platform.yui.compressor.CssCompressor;
 
 /**
- * TODO description
+ * TODO description!
  *
  * @author The eFaps Team
  * @version $Id$
@@ -126,6 +126,10 @@ public class CSSCompiler
         extends AbstractSource
     {
 
+        /**
+         * @param _name     Name
+         * @param _instance Instance
+         */
         public OneCSS(final String _name,
                       final Instance _instance)
         {

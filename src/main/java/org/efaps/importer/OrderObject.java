@@ -109,6 +109,7 @@ public class OrderObject
     /**
      * @param _arg0     first argument
      * @param _arg1     second argument
+     * @return result of compare
      */
     public int compare(final AbstractObject _arg0,
                        final AbstractObject _arg1)

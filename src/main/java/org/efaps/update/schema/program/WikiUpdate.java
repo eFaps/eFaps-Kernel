@@ -76,7 +76,7 @@ public class WikiUpdate extends AbstractSourceUpdate
      * Definition for the JasperReport.
      *
      */
-    public class WikiDefinition extends SourceDefinition
+    public class WikiDefinition extends AbstractSourceDefinition
     {
 
         /**
@@ -116,8 +116,8 @@ public class WikiUpdate extends AbstractSourceUpdate
                 addValue("UUID", this.wiki.getEFapsUUID().toString());
             }
 
-            if (this.instance == null) {
-                this.instance = this.wiki.searchInstance();
+            if (getInstance() == null) {
+                setInstance(this.wiki.searchInstance());
             }
         }
 

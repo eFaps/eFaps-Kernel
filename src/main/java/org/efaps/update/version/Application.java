@@ -294,7 +294,9 @@ public final class Application
             } else {
                 throw new InstallationException("Could not open / read version file '" + _versionUrl + "'");
             }
+          //CHECKSTYLE:OFF
         } catch (final Exception e) {
+          //CHECKSTYLE:ON
             throw new InstallationException("Error while parsing file '" + _versionUrl + "'", e);
         }
         return appl;
@@ -346,7 +348,9 @@ public final class Application
             }
         } catch (final IOException e) {
             throw new InstallationException("Could not open / read version file " + "'" + _versionFile + "'", e);
+          //CHECKSTYLE:OFF
         } catch (final Exception e) {
+          //CHECKSTYLE:ON
             throw new InstallationException("Read version file '" + _versionFile + "' failed", e);
         }
         return appl;
@@ -571,7 +575,9 @@ public final class Application
                 try {
                     // TODO: correct exception handling in the installation
                     version.install(this.install, getLastVersion().getNumber(), _userName, _password);
+                  //CHECKSTYLE:OFF
                 } catch (final Exception e) {
+                  //CHECKSTYLE:ON
                     throw new InstallationException("Installation failed", e);
                 }
                 storeVersion(_userName, version.getNumber());
@@ -592,7 +598,7 @@ public final class Application
      * @param _userName name of logged in user
      * @param _password password of logged in user TODO: throw Exceptions
      *            instead of logging errors
-     * @throws Exception
+     * @throws Exception on error
      */
     public void updateLastVersion(final String _userName,
                                   final String _password)

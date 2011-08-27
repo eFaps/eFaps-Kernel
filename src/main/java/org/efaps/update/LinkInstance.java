@@ -24,27 +24,48 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * TODO description
+ * TODO description!
  *
- * @author jmox
+ * @author The eFaps Team
  * @version $Id$
  *
  */
 public class LinkInstance
 {
 
+    /**
+     * Mapping for the values.
+     */
     private final Map<String, String> valuesMap = new HashMap<String, String>();
 
+    /**
+     * Order of this link.
+     */
     private int order = 0;;
 
+    /**
+     * Id of the child.
+     */
     private Long childId;
 
+    /**
+     * Id.
+     */
     private Long id;
 
+    /**
+     * OID.
+     */
     private String oid;
 
+    /**
+     * To be updated.
+     */
     private boolean update = false;
 
+    /**
+     * To be updated.
+     */
     private boolean insert = false;
 
     /**

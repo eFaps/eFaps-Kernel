@@ -108,7 +108,7 @@ public class NumberGeneratorUpdate
             } catch (final EFapsException e) {
                 throw new InstallationException("Connection resource could not be fetched", e);
             }
-            final String name = "numgen_" + ((Long) this.instance.getId()).toString() + "_seq";
+            final String name = "numgen_" + ((Long) getInstance().getId()).toString() + "_seq";
             try {
                 if (!Context.getDbType().existsSequence(con.getConnection(), name)) {
                     Context.getDbType().createSequence(con.getConnection(), name, this.startvalue);

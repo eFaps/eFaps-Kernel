@@ -36,7 +36,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @version $Id$
  */
 public class XMLPersonPrincipal
-    extends XMLAbstractPrincipal
+    extends AbstractXMLPrincipal
 {
     /***
      * The password of this person is stored in this instance variable.
@@ -421,7 +421,7 @@ public class XMLPersonPrincipal
      *
      * @return string representation of this person principal
      */
-    @Override()
+    @Override
     public String toString()
     {
         return new ToStringBuilder(this)
