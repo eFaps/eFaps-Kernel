@@ -325,7 +325,9 @@ public class JCRStoreResource
     public void delete()
         throws EFapsException
     {
-        if ("TRUE".equalsIgnoreCase(getProperties().get(JCRStoreResource.PROPERTY_ENABLEDELETION))) {
+        // only delete if it actually exists and deletion is configured
+        if (getExist()[0] && getExist()[1]
+                        && "TRUE".equalsIgnoreCase(getProperties().get(JCRStoreResource.PROPERTY_ENABLEDELETION))) {
             try {
                 final Node fileNode = this.session.getNodeByIdentifier(this.identifier);
                 fileNode.remove();

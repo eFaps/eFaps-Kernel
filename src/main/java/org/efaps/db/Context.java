@@ -451,17 +451,19 @@ public final class Context
      * Method to get the sore resource.
      *
      * @param _instance Instance to get the StoreResource for
+     * @param _event    StorEvent the store is wanted for
      * @throws EFapsException on error
      * @return StoreResource
      * @see #getStoreResource(Type,long)
      */
-    public Resource getStoreResource(final Instance _instance)
+    public Resource getStoreResource(final Instance _instance,
+                                     final Resource.StoreEvent _event)
         throws EFapsException
     {
         Resource storeRsrc = null;
         final Store store = Store.get(_instance.getType().getStoreId());
         storeRsrc = store.getResource(_instance);
-        storeRsrc.open();
+        storeRsrc.open(_event);
         this.storeStore.add(storeRsrc);
         return storeRsrc;
     }

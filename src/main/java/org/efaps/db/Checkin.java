@@ -81,7 +81,7 @@ public class Checkin
         if (!hasAccess) {
             throw new EFapsException(this.getClass(), "execute.NoAccess");
         }
-        this.executeWithoutAccessCheck(_fileName, _in, _size);
+        executeWithoutAccessCheck(_fileName, _in, _size);
     }
 
     /**
@@ -107,11 +107,11 @@ public class Checkin
                                           final int _size)
         throws EFapsException
     {
-        this.executeEvents(EventType.CHECKIN_PRE);
-        if (!this.executeEvents(EventType.CHECKIN_OVERRIDE)) {
-            this.executeWithoutTrigger(_fileName, _in, _size);
+        executeEvents(EventType.CHECKIN_PRE);
+        if (!executeEvents(EventType.CHECKIN_OVERRIDE)) {
+            executeWithoutTrigger(_fileName, _in, _size);
         }
-        this.executeEvents(EventType.CHECKIN_POST);
+        executeEvents(EventType.CHECKIN_POST);
     }
 
     /**
@@ -138,8 +138,8 @@ public class Checkin
         Resource storeRsrc = null;
         boolean ok = false;
         try {
-            this.getInstance().getType();
-            storeRsrc = context.getStoreResource(this.getInstance());
+            getInstance().getType();
+            storeRsrc = context.getStoreResource(getInstance(), Resource.StoreEvent.WRITE);
             storeRsrc.write(_in, _size, _fileName);
             storeRsrc.commit();
             storeRsrc = null;

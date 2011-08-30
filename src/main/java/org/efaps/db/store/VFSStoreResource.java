@@ -23,6 +23,7 @@ package org.efaps.db.store;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -66,29 +67,6 @@ import org.slf4j.LoggerFactory;
 public class VFSStoreResource
     extends AbstractStoreResource
 {
-    /**
-     * The virtual file system store resource could handle three different
-     * events:
-     * <ul>
-     * <li>delete</li>
-     * <li>write</li>
-     * <li>read</li>
-     * </ul>
-     * These three events are defined here and set in instance variable
-     * {@link #storeEvent}.
-     */
-    private enum StoreEvent
-    {
-        /** delete. */
-        DELETE,
-        /** write. */
-        WRITE,
-        /** read. */
-        READ,
-        /** unknown. */
-        UNKNOWN
-    };
-
     /**
      * Extension of the temporary file in the store used in the transaction
      * that the original file is not overwritten.
@@ -143,11 +121,6 @@ public class VFSStoreResource
      * @see #write(InputStream, int)
      */
     private final byte[] buffer = new byte[1024];
-
-    /**
-     * @see #StoreEvent
-     */
-    private StoreEvent storeEvent = VFSStoreResource.StoreEvent.UNKNOWN;
 
     /**
      * Stores the name of the file including the correct directory.
@@ -295,7 +268,6 @@ public class VFSStoreResource
         throws EFapsException
     {
         try  {
-            this.storeEvent = VFSStoreResource.StoreEvent.WRITE;
             long size = _size;
             final FileObject tmpFile = this.manager.resolveFile(this.manager.getBaseFile(),
                                             this.storeFileName + VFSStoreResource.EXTENSION_TEMP);
@@ -345,6 +317,14 @@ public class VFSStoreResource
     }
 
     /**
+     * Deletes the file defined in {@link #fileId}.
+     */
+    public void delete()
+    {
+        //Deletion is done on commit
+    }
+
+    /**
      * Returns for the file the input stream.
      *
      * @return input stream of the file with the content
@@ -355,7 +335,6 @@ public class VFSStoreResource
     {
         StoreResourceInputStream in = null;
         try  {
-            this.storeEvent = VFSStoreResource.StoreEvent.READ;
             final FileObject file = this.manager.resolveFile(this.storeFileName + VFSStoreResource.EXTENSION_NORMAL);
             if (!file.isReadable())  {
                 VFSStoreResource.LOG.error("file for " + this.storeFileName + " not readable");
@@ -370,18 +349,6 @@ public class VFSStoreResource
             throw new EFapsException(VFSStoreResource.class, "read.Throwable", e);
         }
         return in;
-    }
-
-    /**
-     * Marks the file defined in {@link #fileId} as deleted. Because of
-     * transaction handling, the delete itself is done inside {@link #commit}.
-     *
-     * @throws EFapsException on error
-     */
-    public void delete()
-        throws EFapsException
-    {
-        this.storeEvent = VFSStoreResource.StoreEvent.DELETE;
     }
 
     /**
@@ -451,7 +418,7 @@ public class VFSStoreResource
         if (VFSStoreResource.LOG.isDebugEnabled())  {
             VFSStoreResource.LOG.debug("transaction commit");
         }
-        if (this.storeEvent == VFSStoreResource.StoreEvent.WRITE) {
+        if (getStoreEvent() == VFSStoreResource.StoreEvent.WRITE) {
             try {
                 final FileObject tmpFile = this.manager.resolveFile(this.manager.getBaseFile(),
                         this.storeFileName + VFSStoreResource.EXTENSION_TEMP);
@@ -480,7 +447,7 @@ public class VFSStoreResource
                 xa.initCause(e);
                 throw xa;
             }
-        } else if (this.storeEvent == VFSStoreResource.StoreEvent.DELETE) {
+        } else if (getStoreEvent() == VFSStoreResource.StoreEvent.DELETE) {
             try {
                 final FileObject curFile = this.manager.resolveFile(this.manager.getBaseFile(),
                             this.storeFileName + VFSStoreResource.EXTENSION_NORMAL);

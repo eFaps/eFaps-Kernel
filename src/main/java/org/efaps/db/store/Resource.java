@@ -52,6 +52,45 @@ public interface Resource
     };
 
     /**
+     * The store resource could handle three different
+     * events:
+     * <ul>
+     * <li>delete</li>
+     * <li>write</li>
+     * <li>read</li>
+     * </ul>
+     * These three events are defined here and set in instance variable
+     * {@link #storeEvent}.
+     */
+    enum StoreEvent
+    {
+        /** delete. */
+        DELETE,
+        /** write. */
+        WRITE,
+        /** read. */
+        READ,
+        /** not known yet.    **/
+        UNKNOWN;
+    };
+
+    /**
+     * Method to open the Resource.
+     *
+     * @param _event Event the store is opened for
+     * @throws EFapsException on error
+     */
+    void open(StoreEvent _event) throws EFapsException;
+
+    /**
+     * The input stream with the attached content of the object returned.
+     *
+     * @return input stream with the content of the file
+     * @throws EFapsException if an error occurs
+     */
+    InputStream read() throws EFapsException;
+
+    /**
      * Writes the file with the given input stream.
      *
      * @param _in       input stream
@@ -67,11 +106,11 @@ public interface Resource
         throws EFapsException;
 
     /**
-     * Method to open the Resource.
+     * Will delete the file.
      *
-     * @throws EFapsException on error
+     * @throws EFapsException if an error occurs
      */
-    void open() throws EFapsException;
+    void delete() throws EFapsException;
 
     /**
      * Method to commit the Resource.
@@ -91,14 +130,6 @@ public interface Resource
      * @throws EFapsException on error
      */
     void abort() throws EFapsException;
-
-    /**
-     * The input stream with the attached content of the object returned.
-     *
-     * @return input stream with the content of the file
-     * @throws EFapsException if an error occurs
-     */
-    InputStream read() throws EFapsException;
 
     /**
      * The output stream is written with the content of the file. From method
@@ -124,13 +155,6 @@ public interface Resource
      * @throws EFapsException on error
      */
     Long getFileLength() throws EFapsException;
-
-    /**
-     * Will delete the file.
-     *
-     * @throws EFapsException if an error occurs
-     */
-    void delete() throws EFapsException;
 
     /**
      * Method called to initialize this StoreResource.

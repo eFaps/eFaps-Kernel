@@ -86,6 +86,11 @@ public abstract class AbstractStoreResource
                                                     .leftJoin(AbstractStoreResource.TABLENAME_STORE, 1, "ID", 0, "ID");
 
     /**
+     * @see #StoreEvent
+     */
+    private StoreEvent storeEvent = StoreEvent.UNKNOWN;
+
+    /**
      * Buffer used to copy from the input stream to the output stream.
      *
      * @see #read()
@@ -147,11 +152,14 @@ public abstract class AbstractStoreResource
      * {@inheritDoc}
      */
     @Override
-    public void open()
+    public void open(final StoreEvent _event)
         throws EFapsException
     {
+        this.storeEvent = _event;
         super.open();
-        insertDefaults();
+        if (getStoreEvent().equals(StoreEvent.READ) || getStoreEvent().equals(StoreEvent.WRITE)) {
+            insertDefaults();
+        }
     }
 
     /**
@@ -424,6 +432,16 @@ public abstract class AbstractStoreResource
     protected Long getGeneralID()
     {
         return this.generalID;
+    }
+
+    /**
+     * Getter method for instance variable {@link #storeEvent}.
+     *
+     * @return value of instance variable {@link #storeEvent}
+     */
+    protected StoreEvent getStoreEvent()
+    {
+        return this.storeEvent;
     }
 
     /**

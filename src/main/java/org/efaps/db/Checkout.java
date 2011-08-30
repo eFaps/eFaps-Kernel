@@ -120,11 +120,11 @@ public class Checkout
     public void executeWithoutAccessCheck(final OutputStream _out)
         throws EFapsException
     {
-        this.executeEvents(EventType.CHECKOUT_PRE);
-        if (!this.executeEvents(EventType.CHECKOUT_OVERRIDE)) {
+        executeEvents(EventType.CHECKOUT_PRE);
+        if (!executeEvents(EventType.CHECKOUT_OVERRIDE)) {
             this.executeWithoutTrigger(_out);
         }
-        this.executeEvents(EventType.CHECKOUT_POST);
+        executeEvents(EventType.CHECKOUT_POST);
     }
 
     /**
@@ -139,7 +139,7 @@ public class Checkout
     {
         Resource storeRsrc = null;
         try {
-            storeRsrc = Context.getThreadContext().getStoreResource(this.getInstance());
+            storeRsrc = Context.getThreadContext().getStoreResource(getInstance(), Resource.StoreEvent.READ);
             storeRsrc.read(_out);
             this.fileLength = storeRsrc.getFileLength();
             this.fileName = storeRsrc.getFileName();
@@ -194,11 +194,11 @@ public class Checkout
         throws EFapsException
     {
         InputStream ret = null;
-        this.executeEvents(EventType.CHECKOUT_PRE);
-        if (!this.executeEvents(EventType.CHECKOUT_OVERRIDE)) {
+        executeEvents(EventType.CHECKOUT_PRE);
+        if (!executeEvents(EventType.CHECKOUT_OVERRIDE)) {
             ret = this.executeWithoutTrigger();
         }
-        this.executeEvents(EventType.CHECKOUT_POST);
+        executeEvents(EventType.CHECKOUT_POST);
         return ret;
     }
 
@@ -217,7 +217,7 @@ public class Checkout
         Resource storeRsrc = null;
         InputStream in = null;
         try {
-            storeRsrc = Context.getThreadContext().getStoreResource(this.getInstance());
+            storeRsrc = Context.getThreadContext().getStoreResource(getInstance(), Resource.StoreEvent.READ);
             in = storeRsrc.read();
             this.fileLength = storeRsrc.getFileLength();
             this.fileName = storeRsrc.getFileName();

@@ -159,7 +159,7 @@ public class Delete
             Resource storeRsrc = null;
             try {
                 if (getInstance().getType().hasStore()) {
-                    storeRsrc = context.getStoreResource(getInstance());
+                    storeRsrc = context.getStoreResource(getInstance(), Resource.StoreEvent.DELETE);
                     storeRsrc.delete();
                     storeRsrc.commit();
                 }
