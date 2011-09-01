@@ -36,15 +36,6 @@ import org.efaps.update.LinkInstance;
 public class MenuUpdate
     extends CommandUpdate
 {
-    /**
-     * The links for the Menu to be updated.
-     */
-    protected static final Set<Link> ALLLINKS = new HashSet<Link>();
-    static  {
-        MenuUpdate.ALLLINKS.add(MenuUpdate.LINK2CHILD);
-        MenuUpdate.ALLLINKS.add(MenuUpdate.LINK2TYPE);
-        MenuUpdate.ALLLINKS.addAll(CommandUpdate.ALLLINKS);
-    }
 
     /** Link from menu to child command / menu. */
     private static final Link LINK2CHILD = new OrderedLink("Admin_UI_Menu2Command",
@@ -55,6 +46,16 @@ public class MenuUpdate
     private static final Link LINK2TYPE = new Link("Admin_UI_LinkIsTypeTreeFor",
                                                    "From",
                                                    "Admin_DataModel_Type", "To");
+
+    /**
+     * The links for the Menu to be updated.
+     */
+    protected static final Set<Link> ALLLINKS = new HashSet<Link>();
+    static  {
+        MenuUpdate.ALLLINKS.add(MenuUpdate.LINK2CHILD);
+        MenuUpdate.ALLLINKS.add(MenuUpdate.LINK2TYPE);
+        MenuUpdate.ALLLINKS.addAll(CommandUpdate.ALLLINKS);
+    }
 
     /**
      * @param _url URL to the Configuration Item.
