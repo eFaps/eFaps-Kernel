@@ -31,11 +31,14 @@ import org.efaps.update.LinkInstance;
 /**
  * @author The eFaps Team
  * @version $Id$
- * TODO:  description
  */
 public class MenuUpdate
     extends CommandUpdate
 {
+    /**
+     * The links for the Menu to be updated.
+     */
+    protected static final Set<Link> ALLLINKS = new HashSet<Link>();
 
     /** Link from menu to child command / menu. */
     private static final Link LINK2CHILD = new OrderedLink("Admin_UI_Menu2Command",
@@ -47,10 +50,6 @@ public class MenuUpdate
                                                    "From",
                                                    "Admin_DataModel_Type", "To");
 
-    /**
-     * The links for the Menu to be updated.
-     */
-    protected static final Set<Link> ALLLINKS = new HashSet<Link>();
     static  {
         MenuUpdate.ALLLINKS.add(MenuUpdate.LINK2CHILD);
         MenuUpdate.ALLLINKS.add(MenuUpdate.LINK2TYPE);

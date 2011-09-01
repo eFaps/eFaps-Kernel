@@ -32,7 +32,7 @@ import org.xml.sax.Attributes;
  *
  * @author The eFaps Team
  */
-public class OrderObjectFactory
+public class OrderObjectBuilder
     implements ObjectCreationFactory
 {
     /**

@@ -57,11 +57,11 @@ public class DateType
         if ((_value == null) || (_value.length == 0) || (_value[0] == null)) {
             ret = null;
         } else  {
-            DateTime dateTime = new DateTime();;
+            DateTime dateTime = new DateTime();
             if (_value[0] instanceof Date) {
                 dateTime = new DateTime(_value[0]);
             } else if (_value[0] instanceof DateTime) {
-                dateTime = ((DateTime) _value[0]);
+                dateTime = (DateTime) _value[0];
             } else if (_value[0] instanceof String) {
                 dateTime = ISODateTimeFormat.dateTime().withOffsetParsed().parseDateTime((String) _value[0]);
             }

@@ -25,11 +25,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
+import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.efaps.db.SearchQuery;
-import org.efaps.util.EFapsException;
 
 /**
  * This class presents an Object which is connected to an
@@ -65,7 +66,7 @@ public class ForeignObject
      *
      * @see #setLinkAttribute(String, String, String)
      */
-    private String select;
+    private String attribute;
 
     /**
      * Adds an attribute, which will be used to construct the query.
@@ -92,7 +93,7 @@ public class ForeignObject
     {
         this.linkattribute = _name;
         this.type = _type;
-        this.select = _select != null ? _select : "ID";
+        this.attribute = _select != null ? _select : "ID";
     }
 
     /**
@@ -118,19 +119,17 @@ public class ForeignObject
      */
     public String dbGetValue()
     {
-        final SearchQuery query = new SearchQuery();
         String value = null;
         try {
-            query.setQueryTypes(this.type);
-            query.addSelect(this.select);
-            query.setExpandChildTypes(true);
-
+            final QueryBuilder  query = new QueryBuilder(Type.get(this.type));
             for (final Entry<String, String> element : this.attributes.entrySet()) {
-                query.addWhereExprEqValue(element.getKey().toString(), element.getValue().toString());
+                query.addWhereAttrEqValue(element.getKey().toString(), element.getValue().toString());
             }
-            query.executeWithoutAccessCheck();
-            if (query.next()) {
-                value = query.get(this.select).toString();
+            final MultiPrintQuery multi = query.getPrint();
+            multi.addAttribute(this.attribute);
+            multi.executeWithoutAccessCheck();
+            if (multi.next()) {
+                value = multi.getAttribute(this.attribute).toString();
             } else {
                 value = DefaultObject.getDefault(this.type, this.linkattribute);
                 if (value != null) {
@@ -139,7 +138,6 @@ public class ForeignObject
                     ForeignObject.LOG.error("the Search for a ForeignObject did return no Result!: - " + toString());
                 }
             }
-            query.close();
         } catch (final EFapsException e) {
             ForeignObject.LOG.error("getID()", e);
             value = null;

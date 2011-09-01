@@ -38,7 +38,8 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
@@ -119,7 +120,7 @@ public class InsertObject
 
     /**
      * Constructor used by
-     * {@link InsertObjectFactory#createObject(org.xml.sax.Attributes)}.
+     * {@link InsertObjectBuilder#createObject(org.xml.sax.Attributes)}.
      *
      * @param _type     type of the insert object
      */
@@ -264,49 +265,42 @@ public class InsertObject
         for (final List<AbstractObject> list : this.childs.values()) {
             for (final AbstractObject object : list) {
                 noInsert = false;
-                if (InsertObject.LOG.isInfoEnabled()) {
-                    InsertObject.LOG.info("adding Child:" + object.getType());
-                }
-                if (InsertObject.LOG.isDebugEnabled()) {
-                    InsertObject.LOG.debug("this: " + toString());
-                    InsertObject.LOG.debug("Cild: " + object.toString());
-                }
+                InsertObject.LOG.info("adding Child: {}", object.getType());
+                InsertObject.LOG.debug("this: {}", toString());
+                InsertObject.LOG.debug("Cild: {}", object.toString());
                 try {
                     if (object.getUniqueAttributes().size() > 0) {
-
-                        final SearchQuery query = new SearchQuery();
-                        query.setQueryTypes(object.getType());
-                        query.addSelect("ID");
+                        final QueryBuilder queryBldr = new QueryBuilder(Type.get(object.getType()));
                         for (final String element : object.getUniqueAttributes()) {
                             if (object.getAttributes().get(element) != null) {
-                                query.addWhereExprEqValue(element, object.getAttributes().get(element).toString());
+                                queryBldr.addWhereAttrEqValue(element, object.getAttributes().get(element).toString());
                             }
                             if (object.getParrentAttribute() != null
                                     && object.getParrentAttribute().equals(element)) {
-                                query.addWhereExprEqValue(element, this.id);
+                                queryBldr.addWhereAttrEqValue(element, this.id);
                             }
                             for (final ForeignObject link : object.getLinks()) {
                                 if (link.getLinkAttribute().equals(element)) {
                                     final String foreignValue = link.dbGetValue();
                                     if (foreignValue != null) {
-                                        query.addWhereExprEqValue(element, foreignValue);
+                                        queryBldr.addWhereAttrEqValue(element, foreignValue);
                                     } else {
                                         noInsert = true;
                                     }
                                 }
                             }
                         }
+                        final InstanceQuery query = queryBldr.getQuery();
                         query.executeWithoutAccessCheck();
                         if (query.next() && !noInsert) {
-                            newId = object.dbUpdateOrInsert(this, (Long) query.get("ID"));
+                            newId = object.dbUpdateOrInsert(this, query.getCurrentValue().getId());
                         } else {
                             if (noInsert && !object.hasChilds()) {
-                                InsertObject.LOG.error("sskipt: " + object.toString());
+                                InsertObject.LOG.error("skipt: " + object.toString());
                             } else {
                                 newId = object.dbUpdateOrInsert(this, 0);
                             }
                         }
-                        query.close();
                     } else {
                         newId = object.dbUpdateOrInsert(this, 0);
                     }
@@ -317,7 +311,9 @@ public class InsertObject
                     }
                 } catch (final EFapsException e) {
                     InsertObject.LOG.error("dbAddChilds() " + toString(), e);
+                  //CHECKSTYLE:OFF
                 } catch (final Exception e) {
+                  //CHECKSTYLE:ON
                     InsertObject.LOG.error("dbAddChilds() " + toString(), e);
                 }
             }
@@ -380,7 +376,9 @@ public class InsertObject
         } catch (final EFapsException e) {
             InsertObject.LOG.error("dbUpdateOrInsert() " + toString(), e);
             newId = null;
+            //CHECKSTYLE:OFF
         } catch (final Exception e) {
+          //CHECKSTYLE:ON
             InsertObject.LOG.error("dbUpdateOrInsert() " + toString(), e);
             newId = null;
         }
@@ -423,10 +421,10 @@ public class InsertObject
                 || attribute.getAttributeType().getClassRepr().getName().equals(
                     "org.efaps.admin.datamodel.attributetype.CreatedType")) {
                 final DateTimeFormatter fmt;
-                if (RootObject.DATEFORMAT == null) {
+                if (RootObject.getDateFormat() == null) {
                     fmt = ISODateTimeFormat.dateTime();
                 } else {
-                    fmt = DateTimeFormat.forPattern(RootObject.DATEFORMAT);
+                    fmt = DateTimeFormat.forPattern(RootObject.getDateFormat());
                 }
                 final DateTime date = fmt.parseDateTime(element.getValue().toString());
                 this.attributes.put(element.getKey(), date);
@@ -438,7 +436,7 @@ public class InsertObject
     @Override
     public Object getAttribute(final String _attribute)
     {
-        return (this.attributes.get(_attribute));
+        return this.attributes.get(_attribute);
     }
 
     @Override
@@ -495,7 +493,7 @@ public class InsertObject
     @Override
     public boolean isCheckinObject()
     {
-        return (this.checkInObject != null);
+        return this.checkInObject != null;
     }
 
     @Override

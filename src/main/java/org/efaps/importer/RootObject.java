@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.efaps.db.Insert;
 import org.efaps.util.EFapsException;
@@ -50,31 +50,64 @@ public class RootObject
      */
     private static final Logger LOG = LoggerFactory.getLogger(RootObject.class);
 
-    private final static Map<String, OrderObject> ORDER = new HashMap<String, OrderObject>();
+    /**
+     * Mapping for odered objects.
+     */
+    private static final Map<String, OrderObject> ORDER = new HashMap<String, OrderObject>();
 
-    //default is yyyy-MM-dd'T'HH:mm:ss.SSSZZ
-    static String DATEFORMAT;
+    /**
+     * Format for Date values.
+     * default is yyyy-MM-dd'T'HH:mm:ss.SSSZZ
+     */
+    private static String DATEFORMAT;
 
+    /**
+     * Children for this rootobject.
+     */
     private final List<AbstractObject> childs = new ArrayList<AbstractObject>();
 
 
-    public static void setDateFormat(final String _DateFormat)
+    /**
+     * Setter method for the variable {@link #${RootObject.DATEFORMAT}}.
+     *
+     * @param  _dateFormat value for variable {@link #${RootObject.DATEFORMAT}}
+     */
+    protected static void setDateFormat(final String _dateFormat)
     {
-        RootObject.DATEFORMAT = _DateFormat;
+        RootObject.DATEFORMAT = _dateFormat;
     }
 
-    public static void addOrder(final OrderObject _order)
+    /**
+     * Getter method for the variable {@link #${RootObject.DATEFORMAT}}.
+     *
+     * @return value of variable {@link #${RootObject.DATEFORMAT}}
+     */
+    protected static String getDateFormat()
+    {
+        return RootObject.DATEFORMAT;
+    }
+
+    /**
+     * @param _order add to the order
+     */
+    protected static void addOrder(final OrderObject _order)
     {
         RootObject.ORDER.put(_order.getType(), _order);
     }
 
-    public static OrderObject getOrder(final String _type)
+    /**
+     * @param _type tyep the order is wanted for
+     * @return order
+     */
+    protected static OrderObject getOrder(final String _type)
     {
         return RootObject.ORDER.get(_type);
     }
 
-
-    public void addChild(final AbstractObject _object)
+    /**
+     * @param _object add a child
+     */
+    protected void addChild(final AbstractObject _object)
     {
         this.childs.add(_object);
     }
@@ -108,7 +141,9 @@ public class RootObject
 
             } catch (final EFapsException e) {
                 RootObject.LOG.error("insertDB()", e);
+                //CHECKSTYLE:OFF
             } catch (final Exception e) {
+              //CHECKSTYLE:ON
                 RootObject.LOG.error("insertDB()", e);
             }
         }

@@ -34,7 +34,7 @@ import org.xml.sax.Attributes;
  * @author The eFaps Team
  * @version $Id$
  */
-public class InsertObjectFactory
+public class InsertObjectBuilder
     implements ObjectCreationFactory
 {
     /**

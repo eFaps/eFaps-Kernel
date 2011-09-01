@@ -105,7 +105,7 @@ public class DataImport
             digester.addCallParam(def + "/date", 0, "format");
 
             // Read OrderObject
-            digester.addFactoryCreate(def + "/order", new OrderObjectFactory(), false);
+            digester.addFactoryCreate(def + "/order", new OrderObjectBuilder(), false);
             digester.addCallMethod(def + "/order/attribute",
                     "addAttribute", 3, new Class[] { Integer.class, String.class, String.class });
             digester.addCallParam(def + "/order/attribute", 0, "index");
@@ -133,7 +133,7 @@ public class DataImport
             digester.addSetNext(def + "/default/linkattribute", "addLink", "org.efaps.importer.ForeignObject");
 
             // create the objects
-            digester.addFactoryCreate("*/object", new InsertObjectFactory(), false);
+            digester.addFactoryCreate("*/object", new InsertObjectBuilder(), false);
 
             digester.addCallMethod("*/object/attribute", "addAttribute", 3);
             digester.addCallParam("*/object/attribute", 0, "name");
