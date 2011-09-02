@@ -107,7 +107,7 @@ public class RootObject
     /**
      * @param _object add a child
      */
-    protected void addChild(final AbstractObject _object)
+    public void addChild(final AbstractObject _object)
     {
         this.childs.add(_object);
     }
