@@ -334,7 +334,7 @@ public class FieldValue implements Comparable<Object>
     }
 
     /**
-     * Method is used to retrieve the value that mut be used for comparison.
+     * Method is used to retrieve the value that must be used for comparison.
      *
      * @return Object
      * @throws EFapsException on error

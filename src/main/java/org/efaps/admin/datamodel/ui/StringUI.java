@@ -183,4 +183,14 @@ public class StringUI
         }
         return ret;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object getObject4Compare(final FieldValue _fieldValue)
+        throws EFapsException
+    {
+        return _fieldValue.getValue();
+    }
 }
