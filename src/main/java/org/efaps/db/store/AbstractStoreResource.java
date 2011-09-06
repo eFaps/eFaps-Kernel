@@ -324,7 +324,7 @@ public abstract class AbstractStoreResource
                 }
                 this.fileLength = rs.getLong(3);
                 for (int i = 0; i < this.exist.length; i++) {
-                    this.exist[i] = rs.getLong(4 + i) > 1;
+                    this.exist[i] = rs.getLong(4 + i) > 0;
                 }
                 getAdditionalInfo(rs);
             }
