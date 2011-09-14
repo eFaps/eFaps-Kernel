@@ -30,7 +30,7 @@ import org.efaps.admin.datamodel.Dimension.UoM;
  * @version $Id$
  * @see UoM
  */
-public abstract class AbstractWithUoM<VALUE extends Number>
+public abstract class AbstractWithUoM<VALUE>
 {
     /**
      * Link to the unit of measure instance.
@@ -92,6 +92,6 @@ public abstract class AbstractWithUoM<VALUE extends Number>
     {
         return (this.value == null) || (this.uom == null)
                ? null
-               : this.uom.getBaseDouble(this.value.doubleValue());
+               : this.uom.getBaseDouble(((Number) this.value).doubleValue());
     }
 }
