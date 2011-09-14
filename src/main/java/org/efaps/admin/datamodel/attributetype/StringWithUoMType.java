@@ -99,12 +99,12 @@ public class StringWithUoMType
     {
         final String ret;
         if (_object instanceof String) {
-            ret = ((String) _object);
+            ret = (String) _object;
         } else if (_object != null) {
             ret = _object.toString();
         } else  {
             ret = null;
         }
-        return ret;
+        return ret == null ? ret : ret.toString();
     }
 }
