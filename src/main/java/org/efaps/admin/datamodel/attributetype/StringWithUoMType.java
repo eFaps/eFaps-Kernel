@@ -105,6 +105,6 @@ public class StringWithUoMType
         } else  {
             ret = null;
         }
-        return ret == null ? ret : ret.toString();
+        return ret == null ? ret : ret.trim();
     }
 }
