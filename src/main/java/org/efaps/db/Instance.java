@@ -28,6 +28,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.util.EFapsException;
 
 /**
  * The class is used to store one object id of an instance (defined with type
@@ -64,6 +65,11 @@ public final class Instance
      * Key for this instance.
      */
     private final String key;
+
+    /**
+     * The generalId of this Instance;
+     */
+    private long generalId = 0;
 
     /**
      * Constructor used if the type and the database id is known.
@@ -194,6 +200,22 @@ public final class Instance
     public boolean isValid()
     {
         return this.type != null && this.id > 0;
+    }
+
+    /**
+     * Get the id of the general instance for this instance.
+     * <b>Attention this method is actually executing a Query against
+     * the eFaps Database the first time it is called!</b>
+     * @return 0 if no general instance exits
+     * @throws EFapsException on error
+     */
+    public long getGeneralId()
+        throws EFapsException
+    {
+        if (this.type.isGeneralInstance() && this.generalId == 0) {
+            this.generalId = GeneralInstance.getId(this);
+        }
+        return this.generalId;
     }
 
     /**

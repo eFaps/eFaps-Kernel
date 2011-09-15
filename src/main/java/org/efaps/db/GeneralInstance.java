@@ -29,6 +29,7 @@ import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.store.AbstractStoreResource;
 import org.efaps.db.store.JCRStoreResource;
 import org.efaps.db.store.JDBCStoreResource;
+import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.util.EFapsException;
@@ -80,10 +81,11 @@ public final class GeneralInstance
      * @param _con      Connection the insert will be executed in
      * @throws EFapsException on  error
      */
-    protected static void insert(final Instance _instance,
+    protected static long insert(final Instance _instance,
                                  final Connection _con)
         throws EFapsException
     {
+        long ret = 0;
         if (_instance.isValid() && _instance.getType().isGeneralInstance()) {
             try {
                 final SQLInsert insert = Context.getDbType().newInsert(GeneralInstance.TABLENAME,
@@ -91,12 +93,13 @@ public final class GeneralInstance
                                 true);
                 insert.column(GeneralInstance.ISTYPECOLUMN, _instance.getType().getId());
                 insert.column(GeneralInstance.ISIDCOLUMN, _instance.getId());
-                insert.execute(_con);
+                ret = insert.execute(_con);
             } catch (final SQLException e) {
                 GeneralInstance.LOG.error("executeOneStatement", e);
                 throw new EFapsException(GeneralInstance.class, "create", e);
             }
         }
+        return ret;
     }
 
     /**
@@ -209,6 +212,29 @@ public final class GeneralInstance
             } catch (final SQLException e) {
                 GeneralInstance.LOG.error("executeOneStatement", e);
                 throw new EFapsException(GeneralInstance.class, "create", e);
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * @param _instance Instance the id of the GeneralInstance will be retrieved for.
+     * @throws EFapsException on  error
+     * @return id of the current General Instance
+     */
+    protected static long getId(final Instance _instance)
+        throws EFapsException
+    {
+        long ret = 0;
+        final Context context = Context.getThreadContext();
+        ConnectionResource con = null;
+        try {
+            con = context.getConnectionResource();
+            ret = GeneralInstance.getId(_instance, con.getConnection());
+            con.commit();
+        } finally {
+            if (con != null && con.isOpened()) {
+                con.abort();
             }
         }
         return ret;

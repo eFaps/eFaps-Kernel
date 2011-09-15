@@ -624,6 +624,14 @@ public class Attribute
     }
 
     /**
+     * @return the key for the DBProperties value
+     */
+    public String getLabelKey()
+    {
+        return getParent().getName() + "/" + getName() + ".Label";
+    }
+
+    /**
      * Method to initialize this Cache.
      * @param _class clas that called this method
      * @throws CacheReloadException on error
