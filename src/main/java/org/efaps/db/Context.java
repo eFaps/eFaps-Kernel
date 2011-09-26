@@ -103,7 +103,17 @@ public final class Context
     static {
         try {
             final InitialContext initCtx = new InitialContext();
-            final javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:/comp/env");
+            javax.naming.Context envCtx = null;
+            try {
+                envCtx = (javax.naming.Context) initCtx.lookup("java:/comp/env");
+            } catch (final NamingException e) {
+                Context.LOG.error("NamingException", e);
+            }
+            // for a build in jetty the context is different, try this before surrender
+            if (envCtx == null) {
+                envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
+            }
+
             Context.DATASOURCE = (DataSource) envCtx.lookup(INamingBinds.RESOURCE_DATASOURCE);
             Context.DBTYPE = DataBaseFactory.getDatabase(Context.DATASOURCE.getConnection());
             Context.TRANSMANAG = (TransactionManager) envCtx.lookup(INamingBinds.RESOURCE_TRANSMANAG);
