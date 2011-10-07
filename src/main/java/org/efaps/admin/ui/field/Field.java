@@ -187,6 +187,11 @@ public class Field
     private boolean showTypeIcon = false;
 
     /**
+     * The numbering for the field is activated/deactivated.
+     */
+    private boolean showNumbering = false;
+
+    /**
      * The class is used to generate for a field user specific field values.
      *
      * @see #setClassUI
@@ -536,6 +541,16 @@ public class Field
     public boolean isShowTypeIcon()
     {
         return this.showTypeIcon;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #showNumbering}
+     *
+     * @return value of instance variable {@link #showNumbering}
+     */
+    public boolean isShowNumbering()
+    {
+        return this.showNumbering;
     }
 
     /**
@@ -916,6 +931,8 @@ public class Field
             this.rowSpan = Integer.parseInt(_value);
         } else if ("ShowTypeIcon".equals(_name)) {
             this.showTypeIcon = "true".equalsIgnoreCase(_value);
+        } else if ("ShowNumbering".equals(_name)) {
+                this.showNumbering = "true".equalsIgnoreCase(_value);
         } else if ("Target".equals(_name)) {
             if ("content".equals(_value)) {
                 this.target = Target.CONTENT;
