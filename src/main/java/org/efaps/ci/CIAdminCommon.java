@@ -310,4 +310,45 @@ public class CIAdminCommon
         public final CIAttribute InstanceTypeID = new CIAttribute(this, "InstanceTypeID");
         public final CIAttribute InstanceID = new CIAttribute(this, "InstanceID");
     }
+
+
+    public static final _JmsAbstract JmsAbstract = new _JmsAbstract("3c3e0af6-73ee-44f4-abec-a19ca06010aa");
+
+    public static class _JmsAbstract
+        extends CIType
+    {
+        protected _JmsAbstract(final String _uuid)
+        {
+            super(_uuid);
+        }
+        public final CIAttribute ConnectionFactoryJNDI = new CIAttribute(this, "ConnectionFactoryJNDI");
+        public final CIAttribute DestinationJNDI = new CIAttribute(this, "DestinationJNDI");
+        public final CIAttribute ESJPLink = new CIAttribute(this, "ESJPLink");
+        public final CIAttribute Creator = new CIAttribute(this, "Creator");
+        public final CIAttribute Created = new CIAttribute(this, "Created");
+        public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
+        public final CIAttribute Modified = new CIAttribute(this, "Modified");
+    }
+
+    public static final _JmsConsumer JmsConsumer = new _JmsConsumer("265b352d-671a-4d7e-8f74-2f8b37387444");
+
+    public static class _JmsConsumer
+        extends _JmsAbstract
+    {
+        protected _JmsConsumer(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
+    public static final _JmsProducer JmsProducer = new _JmsProducer("416756d9-e5c6-4f65-b314-f0ba37366891");
+
+    public static class _JmsProducer
+        extends _JmsAbstract
+    {
+        protected _JmsProducer(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
 }
