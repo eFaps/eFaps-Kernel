@@ -321,6 +321,7 @@ public class CIAdminCommon
         {
             super(_uuid);
         }
+        public final CIAttribute Name = new CIAttribute(this, "Name");
         public final CIAttribute ConnectionFactoryJNDI = new CIAttribute(this, "ConnectionFactoryJNDI");
         public final CIAttribute DestinationJNDI = new CIAttribute(this, "DestinationJNDI");
         public final CIAttribute ESJPLink = new CIAttribute(this, "ESJPLink");
@@ -330,23 +331,79 @@ public class CIAdminCommon
         public final CIAttribute Modified = new CIAttribute(this, "Modified");
     }
 
-    public static final _JmsConsumer JmsConsumer = new _JmsConsumer("265b352d-671a-4d7e-8f74-2f8b37387444");
+    public static final _JmsQueueAbstract JmsQueueAbstract = new _JmsQueueAbstract("1c9e97aa-f5c9-4fb4-a500-985bc379d35a");
 
-    public static class _JmsConsumer
+    public static class _JmsQueueAbstract
         extends _JmsAbstract
     {
-        protected _JmsConsumer(final String _uuid)
+        protected _JmsQueueAbstract(final String _uuid)
         {
             super(_uuid);
         }
     }
 
-    public static final _JmsProducer JmsProducer = new _JmsProducer("416756d9-e5c6-4f65-b314-f0ba37366891");
+    public static final _JmsQueueConsumer JmsQueueConsumer = new _JmsQueueConsumer("265b352d-671a-4d7e-8f74-2f8b37387444");
 
-    public static class _JmsProducer
+    public static class _JmsQueueConsumer
+        extends _JmsQueueAbstract
+    {
+        protected _JmsQueueConsumer(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
+    public static final _JmsQueueProducer JmsQueueProducer = new _JmsQueueProducer("416756d9-e5c6-4f65-b314-f0ba37366891");
+
+    public static class _JmsQueueProducer
+        extends _JmsQueueAbstract
+    {
+        protected _JmsQueueProducer(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
+
+    public static final _JmsTopicAbstract JmsTopicAbstract = new _JmsTopicAbstract("ee745cb8-f76d-498e-a26d-a3ea940b9521");
+
+    public static class _JmsTopicAbstract
         extends _JmsAbstract
     {
-        protected _JmsProducer(final String _uuid)
+        protected _JmsTopicAbstract(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
+    public static final _JmsTopicConsumer JmsTopicConsumer = new _JmsTopicConsumer("265bc11d-5a9f-49f8-8ec7-4ba569cd1add");
+
+    public static class _JmsTopicConsumer
+        extends _JmsTopicAbstract
+    {
+        protected _JmsTopicConsumer(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
+    public static final _JmsTopicDurableConsumer JmsTopicDurableConsumer = new _JmsTopicDurableConsumer("d4578af8-c942-478d-aa2e-26fa0d4e8092");
+
+    public static class _JmsTopicDurableConsumer
+        extends _JmsTopicAbstract
+    {
+        protected _JmsTopicDurableConsumer(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
+    public static final _JmsTopicProducer JmsTopicProducer = new _JmsTopicProducer("1ddbfe99-bd64-4a8d-87e0-23a0b23bb43b");
+
+    public static class _JmsTopicProducer
+        extends _JmsTopicAbstract
+    {
+        protected _JmsTopicProducer(final String _uuid)
         {
             super(_uuid);
         }
