@@ -20,7 +20,10 @@
 
 package org.efaps.test;
 
-import org.efaps.db.Context;
+import java.util.Hashtable;
+
+import javax.naming.Context;
+
 import org.efaps.init.StartupDatabaseConnection;
 import org.efaps.init.StartupException;
 import org.testng.annotations.AfterTest;
@@ -44,12 +47,12 @@ public abstract class AbstractTest
     @BeforeTest(description = "connects to the eFaps database",
                  groups = "connect")
     @Parameters("bootstrap")
-    public void connect(@Optional("postgresql") final String _bootstrap)
+    public void connect(@Optional final String _bootstrap)
         throws StartupException
     {
-        System.out.println("connect to " + _bootstrap);
+        final Hashtable<String, String> env = new Hashtable<String, String>();
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.eclipse.jetty.jndi.InitialContextFactory");
         StartupDatabaseConnection.startup(_bootstrap);
-        System.out.println("... using class "+Context.getDbType().getClass());
     }
 
     /**

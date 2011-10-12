@@ -21,8 +21,8 @@
 package org.efaps.init;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,27 +74,27 @@ public final class StartupDatabaseConnection
     /**
      * Name of the property for the database type class.
      */
-    private static final String PROP_DBTYPE_CLASS = "databaseTypeClass";
+    private static final String PROP_DBTYPE_CLASS = "org.efaps.db.type";
 
     /**
      * Name of the property for the database factory class.
      */
-    private static final String PROP_DBFACTORY_CLASS = "databaseSourceFactoryClass";
+    private static final String PROP_DBFACTORY_CLASS = "org.efaps.db.factory";
 
     /**
      * Name of the property for the database connection.
      */
-    private static final String PROP_DBCONNECTION = "databaseConnection";
+    private static final String PROP_DBCONNECTION = "org.efaps.db.connection";
 
     /**
      * Name of the property for the transaction manager class.
      */
-    private static final String PROP_TM_CLASS = "transactionManagerClass";
+    private static final String PROP_TM_CLASS = "org.efaps.transaction.manager";
 
     /**
      * Name of the property for the timeout of the transaction manager.
      */
-    private static final String PROP_TM_TIMEOUT = "transactionManagerTimeout";
+    private static final String PROP_TM_TIMEOUT = "org.efaps.transaction.timeout";
 
     /**
      * Name of the default bootstrap path in the user home directory.
@@ -104,12 +104,7 @@ public final class StartupDatabaseConnection
     /**
      * Name of the default bootstrap file.
      */
-    private static final String DEFAULT_BOOTSTRAP_FILE = "default.efaps";
-
-    /**
-     * File extension of the bootstrap file.
-     */
-    private static final String BOOTSTRAP_EXTENSION = ".efaps";
+    private static final String DEFAULT_BOOTSTRAP_FILE = "default.efaps.xml";
 
     /**
      * Constructor is hidden to prevent instantiation.
@@ -198,6 +193,7 @@ public final class StartupDatabaseConnection
         }
         // evaluate bootstrap file
         final String bsFile;
+        File bootstrap = null;
         if (_bootstrapFile != null)  {
             bsFile = _bootstrapFile;
         } else  {
@@ -208,12 +204,15 @@ public final class StartupDatabaseConnection
                 bsFile = StartupDatabaseConnection.DEFAULT_BOOTSTRAP_FILE;
             }
         }
-        final File bootstrap = new File(bsPath, bsFile + StartupDatabaseConnection.BOOTSTRAP_EXTENSION);
+        bootstrap = new File(bsFile);
+        if (bootstrap == null || !bootstrap.exists()) {
+            bootstrap = new File(bsPath, bsFile);
+        }
 
         // read bootstrap file
         final Properties props = new Properties();
         try {
-            props.load(new FileReader(bootstrap));
+            props.loadFromXML(new FileInputStream(bootstrap));
         } catch (final FileNotFoundException e) {
             throw new StartupException("bootstrap file " + bootstrap + " not found", e);
         } catch (final IOException e) {
