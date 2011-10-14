@@ -18,10 +18,11 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.common;
+package org.efaps.jms;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
@@ -40,6 +41,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.ci.CIAdminCommon;
@@ -54,7 +56,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public final class Jms
+public final class JmsHandler
 {
 
     /**
@@ -76,7 +78,7 @@ public final class Jms
     /**
      * Create Singelton.
      */
-    private Jms()
+    private JmsHandler()
     {
     }
 
@@ -88,10 +90,19 @@ public final class Jms
         throws EFapsException
     {
         try {
+            //Kernel-Configuration
+            final SystemConfiguration config = SystemConfiguration.get(
+                            UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+            if (config != null) {
+                final int timeout = config.getAttributeValueAsInteger(JmsSession.SESSIONTIMEOUTKEY);
+                if (timeout > 0) {
+                    JmsSession.setSessionTimeout(timeout);
+                }
+            }
             // this check is necessary for first install and update
             if (CIAdminCommon.JmsAbstract.getType() != null) {
                 // remove any existing
-                Jms.stop();
+                JmsHandler.stop();
                 final Context ctx = new InitialContext();
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.JmsAbstract);
                 final MultiPrintQuery multi = queryBldr.getPrint();
@@ -117,12 +128,12 @@ public final class Jms
                         final QueueConnectionFactory queueConnectionFactory = (QueueConnectionFactory) ctx
                                         .lookup(connectionFactoryJNDI);
                         final QueueConnection queueConnection;
-                        if (Jms.QUEUE2QUECONN.containsKey(connectionFactoryJNDI)) {
-                            queueConnection = Jms.QUEUE2QUECONN.get(connectionFactoryJNDI);
+                        if (JmsHandler.QUEUE2QUECONN.containsKey(connectionFactoryJNDI)) {
+                            queueConnection = JmsHandler.QUEUE2QUECONN.get(connectionFactoryJNDI);
                         } else {
                             queueConnection = queueConnectionFactory.createQueueConnection();
                         }
-                        Jms.QUEUE2QUECONN.put(connectionFactoryJNDI, queueConnection);
+                        JmsHandler.QUEUE2QUECONN.put(connectionFactoryJNDI, queueConnection);
                         session = queueConnection.createQueueSession(false,
                                         Session.AUTO_ACKNOWLEDGE);
                         queueConnection.start();
@@ -130,12 +141,12 @@ public final class Jms
                         final TopicConnectionFactory topicConnectionFactory = (TopicConnectionFactory) ctx
                                         .lookup(connectionFactoryJNDI);
                         final TopicConnection topicConn;
-                        if (Jms.TOPIC2QUECONN.containsKey(connectionFactoryJNDI)) {
-                            topicConn = Jms.TOPIC2QUECONN.get(connectionFactoryJNDI);
+                        if (JmsHandler.TOPIC2QUECONN.containsKey(connectionFactoryJNDI)) {
+                            topicConn = JmsHandler.TOPIC2QUECONN.get(connectionFactoryJNDI);
                         } else {
                             topicConn = topicConnectionFactory.createTopicConnection();
                         }
-                        Jms.TOPIC2QUECONN.put(connectionFactoryJNDI, topicConn);
+                        JmsHandler.TOPIC2QUECONN.put(connectionFactoryJNDI, topicConn);
                         if (type.isKindOf(CIAdminCommon.JmsTopicDurableConsumer.getType())) {
                             topicConn.setClientID(org.efaps.db.Context.getThreadContext().getPath() + ":" + name);
                         }
@@ -153,8 +164,7 @@ public final class Jms
                             producer = ((TopicSession) session).createPublisher((Topic) dest);
                         }
                         producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-                        Jms.NAME2DEF.put(name, new JmsDefinition(name, producer, session));
-
+                        JmsHandler.NAME2DEF.put(name, new JmsDefinition(name, producer, session));
                     } else {
                         final MessageConsumer consumer;
                         if (type.isKindOf(CIAdminCommon.JmsQueueConsumer.getType())) {
@@ -164,9 +174,9 @@ public final class Jms
                         } else {
                             consumer = ((TopicSession) session).createSubscriber((Topic) dest);
                         }
-                        @SuppressWarnings("unchecked") final Class<? extends MessageListener> clazz =
-                                        (Class<? extends MessageListener>) Class.forName(esjp.trim(), false,
-                                                        new EFapsClassLoader(Jms.class.getClassLoader()));
+                        @SuppressWarnings("unchecked")
+                        final Class<? extends MessageListener> clazz = (Class<? extends MessageListener>) Class.forName(
+                                        esjp.trim(), false, new EFapsClassLoader(JmsHandler.class.getClassLoader()));
                         final MessageListener myListener = clazz.newInstance();
                         consumer.setMessageListener(myListener);
                     }
@@ -197,7 +207,15 @@ public final class Jms
      */
     public static JmsDefinition getJmsDefinition(final String _name)
     {
-        return Jms.NAME2DEF.get(_name);
+        return JmsHandler.NAME2DEF.get(_name);
+    }
+
+    /**
+     * @param _jmsDefinition JmsDefinition to add
+     */
+    public static void addJmsDefintion(final JmsDefinition _jmsDefinition)
+    {
+        JmsHandler.NAME2DEF.put(_jmsDefinition.getName(), _jmsDefinition);
     }
 
     /**
@@ -205,7 +223,7 @@ public final class Jms
      */
     public static void stop()
     {
-        for (final QueueConnection queCon : Jms.QUEUE2QUECONN.values()) {
+        for (final QueueConnection queCon : JmsHandler.QUEUE2QUECONN.values()) {
             try {
                 queCon.close();
             } catch (final JMSException e) {
@@ -213,7 +231,7 @@ public final class Jms
                 e.printStackTrace();
             }
         }
-        for (final TopicConnection queCon : Jms.TOPIC2QUECONN.values()) {
+        for (final TopicConnection queCon : JmsHandler.TOPIC2QUECONN.values()) {
             try {
                 queCon.close();
             } catch (final JMSException e) {
@@ -221,9 +239,9 @@ public final class Jms
                 e.printStackTrace();
             }
         }
-        Jms.TOPIC2QUECONN.clear();
-        Jms.QUEUE2QUECONN.clear();
-        Jms.NAME2DEF.clear();
+        JmsHandler.TOPIC2QUECONN.clear();
+        JmsHandler.QUEUE2QUECONN.clear();
+        JmsHandler.NAME2DEF.clear();
     }
 
     /**
@@ -252,9 +270,9 @@ public final class Jms
          * @param _producer MessageProducer
          * @param _session  Session
          */
-        protected JmsDefinition(final String _name,
-                                final MessageProducer _producer,
-                                final Session _session)
+        public JmsDefinition(final String _name,
+                             final MessageProducer _producer,
+                             final Session _session)
         {
             this.name = _name;
             this.messageProducer = _producer;
