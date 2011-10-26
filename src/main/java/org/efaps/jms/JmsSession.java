@@ -149,11 +149,11 @@ public final class JmsSession
         if (isLogedIn()) {
             if (!Context.isTMActive()) {
                 if (!this.sessionAttributes.containsKey(UserAttributesSet.CONTEXTMAPKEY)) {
-                    Context.begin();
+                    Context.begin(null, false);
                     this.sessionAttributes.put(UserAttributesSet.CONTEXTMAPKEY, new UserAttributesSet(this.userName));
                     Context.rollback();
                 }
-                Context.begin(this.userName, null, this.sessionAttributes, null, null, true);
+                Context.begin(this.userName, null, this.sessionAttributes, null, null, false);
                 this.timeStamp = new Date();
             }
         }
@@ -245,14 +245,13 @@ public final class JmsSession
                                       final String _passwd,
                                       final String _applicationKey)
     {
-
         boolean loginOk = false;
+        Context context = null;
         try {
-            Context context = null;
             if (Context.isTMActive()) {
                 context = Context.getThreadContext();
             } else {
-                context = Context.begin();
+                context = Context.begin(null, false);
             }
             boolean ok = false;
 
@@ -281,6 +280,8 @@ public final class JmsSession
             }
         } catch (final EFapsException e) {
             JmsSession.LOG.error("could not check name and password", e);
+        } finally {
+            context.close();
         }
         return loginOk;
     }
