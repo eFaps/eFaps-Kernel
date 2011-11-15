@@ -22,7 +22,6 @@ package org.efaps.admin.datamodel.ui;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
 
@@ -63,14 +62,14 @@ public class FormatedStringUI
                     } else {
                         ret.append("<br/>");
                     }
-                    ret.append(StringEscapeUtils.escapeHtml(tmp));
+                    ret.append(tmp);
                 }
             }
         } else {
             final String tmp = value != null ? value.toString() : "";
             if (tmp != null) {
                 ret.append("<span name=\"").append(field.getName()).append("\" ").append(UIInterface.EFAPSTMPTAG)
-                    .append(">").append(StringEscapeUtils.escapeHtml(tmp)).append("</span>");
+                    .append(">").append(tmp).append("</span>");
             }
         }
         return ret.toString();
