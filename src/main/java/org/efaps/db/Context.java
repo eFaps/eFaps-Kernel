@@ -1186,7 +1186,7 @@ public final class Context
      * Interfaces defining file parameters used to access file parameters (e.g.
      * uploads from the user within the web application).
      */
-    public static interface FileParameter
+    public interface FileParameter
     {
 
         /**

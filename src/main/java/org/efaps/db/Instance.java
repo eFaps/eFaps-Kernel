@@ -67,7 +67,7 @@ public final class Instance
     private final String key;
 
     /**
-     * The generalId of this Instance;
+     * The generalId of this Instance.
      */
     private long generalId = 0;
 

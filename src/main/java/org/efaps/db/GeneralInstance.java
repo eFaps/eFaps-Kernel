@@ -79,6 +79,7 @@ public final class GeneralInstance
     /**
      * @param _instance Instance the GeneralInstance will be created for.
      * @param _con      Connection the insert will be executed in
+     * @return id of the new instance
      * @throws EFapsException on  error
      */
     protected static long insert(final Instance _instance,
