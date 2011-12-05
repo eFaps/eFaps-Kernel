@@ -288,7 +288,7 @@ public class SelectBuilder
      */
     public SelectBuilder attributeset(final CIAttribute _attribute)
     {
-        return attribute(_attribute.name);
+        return attributeset(_attribute.name);
     }
 
     /**
