@@ -142,16 +142,16 @@ public final class JasperUtil
     public static JasperPrint generateJasperPrint(final DynamicReport _dynReport,
                                                   final LayoutManager _layoutManager,
                                                   final JRDataSource _dataSource,
-                                                  final Map<?, ?> _parameters,
+                                                  final Map<String, Object> _parameters,
                                                   final JasperDesign _template)
         throws EFapsException
     {
 
         JasperPrint jp = null;
         try {
-            Map<?, ?> parameters;
+            Map<String, Object> parameters;
             if (_parameters == null) {
-                parameters = new HashMap<Object, Object>();
+                parameters = new HashMap<String, Object>();
             } else {
                 parameters = _parameters;
             }
