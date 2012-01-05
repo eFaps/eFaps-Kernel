@@ -379,7 +379,9 @@ public class PostgreSQLDatabase
         stmt = _con.prepareStatement(cmd.toString());
         stmt.execute();
         stmt.close();
-        _con.commit();
+        if (!_con.getAutoCommit()) {
+            _con.commit();
+        }
 
         nextSequence(_con, _name);
 
