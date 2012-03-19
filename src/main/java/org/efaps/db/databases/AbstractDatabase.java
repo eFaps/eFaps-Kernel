@@ -20,6 +20,7 @@
 
 package org.efaps.db.databases;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -1128,5 +1129,11 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                 throw new CacheReloadException("cache for table information could not be read", e);
             }
         }
+    }
+
+    public String getConstrainName(final String _name)
+        throws IOException
+    {
+        return _name;
     }
 }

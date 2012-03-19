@@ -20,11 +20,18 @@
 
 package org.efaps.db.databases;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
+import java.util.zip.Adler32;
+import java.util.zip.CheckedInputStream;
 
+import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +54,50 @@ public class OracleDatabase
     private static final Logger LOG = LoggerFactory.getLogger(OracleDatabase.class);
 
     /**
+     * Select statement to select all unique keys for current logged in
+     * PostgreSQL database user.
+     *
+     * @see #initTableInfoUniqueKeys(Connection, String, Map)
+     */
+    private static final String SQL_UNIQUE_KEYS = "select "
+            + "a.index_name as INDEX_NAME, "
+            + "a.table_name as TABLE_NAME, "
+            + "b.column_name as COLUMN_NAME, "
+            + "b.position as ORDINAL_POSITION "
+        + "from "
+            + "user_constraints a, "
+            + "user_cons_columns b "
+        + "where "
+            + "a.constraint_type='U' "
+            + "and a.index_name = b.constraint_name";
+
+    /**
+     * Select statement for all foreign keys for current logged in PostgreSQL
+     * database user.
+     *
+     * @see #initTableInfoForeignKeys(Connection, String, Map)
+     */
+    private static final String SQL_FOREIGN_KEYS = "select "
+            + "ucc1.TABLE_NAME as TABLE_NAME, "
+            + "uc.constraint_name as FK_NAME, "
+            + "ucc1.column_name as FKCOLUMN_NAME, "
+            + "case "
+                    + "when uc.delete_rule='NO ACTION' then '" + DatabaseMetaData.importedKeyNoAction + "' "
+                    + "when uc.delete_rule='CASCASE' then '" + DatabaseMetaData.importedKeyCascade + "' "
+                    + "else '' end as DELETE_RULE, "
+            + "ucc2.table_name as PKTABLE_NAME, "
+            + "ucc2.column_name as PKCOLUMN_NAME "
+        + "from "
+            + "user_constraints uc, "
+            + "user_cons_columns ucc1, "
+            + "user_cons_columns ucc2 "
+        + "where "
+            + "uc.constraint_name = ucc1.constraint_name "
+            + "and uc.r_constraint_name = ucc2.constraint_name "
+            + "and ucc1.POSITION = ucc2.POSITION "
+            + "and uc.constraint_type = 'R'";
+
+    /**
      * The instance is initialised and sets the columns map used for this
      * database.
      */
@@ -55,9 +106,9 @@ public class OracleDatabase
         super();
         addMapping(ColumnType.INTEGER,      "number",     "null", "number");
         addMapping(ColumnType.REAL,         "number",     "null", "number");
-        addMapping(ColumnType.STRING_SHORT, "nvarchar2",  "null", "nvarchar2");
-        addMapping(ColumnType.STRING_LONG,  "nvarchar2",  "null", "nvarchar2");
-        addMapping(ColumnType.DATETIME,     "timestamp",  "null", "timestamp");
+        addMapping(ColumnType.STRING_SHORT, "varchar2",   "null", "varchar2");
+        addMapping(ColumnType.STRING_LONG,  "varchar2",   "null", "varchar2");
+        addMapping(ColumnType.DATETIME,     "timestamp",  "null", "timestamp", "timestamp(6)");
         addMapping(ColumnType.BLOB,         "blob",       "null", "blob");
         addMapping(ColumnType.CLOB,         "nclob",      "null", "nclob");
         addMapping(ColumnType.BOOLEAN,      "number",     "null", "number");
@@ -340,4 +391,69 @@ public class OracleDatabase
     {
         throw new Error("not implemented");
     }
+
+    /**
+     * Overwrites the original method to specify SQL statement
+     * {@link #SQL_UNIQUE_KEYS} as replacement because the JDBC driver for
+     * PostgreSQL does not handle matching table names.
+     *
+     * @param _con          SQL connection
+     * @param _sql          SQL statement (not used)
+     * @param _cache4Name   map used to fetch depending on the table name the
+     *                      related table information
+     * @throws SQLException if unique keys could not be fetched
+     * @see #SQL_UNIQUE_KEYS
+     */
+    @Override
+    protected void initTableInfoUniqueKeys(final Connection _con,
+                                           final String _sql,
+                                           final Map<String, TableInformation> _cache4Name)
+        throws SQLException
+    {
+        super.initTableInfoUniqueKeys(_con, OracleDatabase.SQL_UNIQUE_KEYS, _cache4Name);
+    }
+
+    /**
+     * Overwrites the original method to specify SQL statement
+     * {@link #SQL_FOREIGN_KEYS} as replacement because the JDBC driver for
+     * PostgreSQL does not handle matching table names.
+     *
+     * @param _con          SQL connection
+     * @param _sql          SQL statement (not used)
+     * @param _cache4Name   map used to fetch depending on the table name the
+     *                      related table information
+     * @throws SQLException if foreign keys could not be fetched
+     * @see #SQL_FOREIGN_KEYS
+     */
+    @Override
+    protected void initTableInfoForeignKeys(final Connection _con,
+                                            final String _sql,
+                                            final Map<String, TableInformation> _cache4Name)
+        throws SQLException
+    {
+        super.initTableInfoForeignKeys(_con, OracleDatabase.SQL_FOREIGN_KEYS, _cache4Name);
+    }
+
+    @Override
+    public String getConstrainName(final String _name) throws IOException
+    {
+        String ret = _name;
+        if (_name.length() > 30) {
+            final byte buffer[] = _name.getBytes();
+            final ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
+            final CheckedInputStream cis = new CheckedInputStream(bais, new Adler32());
+            final byte readBuffer[] = new byte[5];
+            long value = 0;
+            if (cis.read(readBuffer) >= 0){
+                value = cis.getChecksum().getValue();
+            }
+
+            final String valueSt = String.valueOf(value);
+            ret = ret.substring(0, 30);
+            final int sizeSuf = ret.length() - valueSt.length();
+            ret = ret.substring(0, sizeSuf) + value;
+        }
+        return ret;
+    }
+
 }

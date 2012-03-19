@@ -22,6 +22,7 @@ package org.efaps.db.databases;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * The database driver is used for Oracle databases starting with version 9i.
@@ -93,6 +94,43 @@ public class OracleDatabaseWithAutoSequence
         return this;
     }
 */
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public OracleDatabase defineTableAutoIncrement(final Connection _con,
+                                                       final String _table)
+        throws SQLException
+    {
+        final Statement stmt = _con.createStatement();
+        try {
+            // create sequence
+            StringBuilder cmd = new StringBuilder()
+                .append("create sequence ").append(_table).append("_SEQ ")
+                .append("  increment by 1 ")
+                .append("  start with 1 ")
+                .append("  nocache");
+            stmt.executeUpdate(cmd.toString());
+
+            // create trigger for auto increment
+            cmd = new StringBuilder()
+                .append("create trigger ").append(_table).append("_TRG")
+                .append("  before insert on ").append(_table)
+                .append("  for each row ")
+                .append("begin")
+                .append("  select ").append(_table).append("_SEQ.nextval ")
+                .append("      into :new.ID from dual;")
+                .append("end;");
+            stmt.executeUpdate(cmd.toString());
+
+        } finally {
+            stmt.close();
+        }
+        return this;
+    }
+
     /**
      * This implementation of the vendor specific database driver implements
      * the auto generated keys. So always <i>true</i> is returned.

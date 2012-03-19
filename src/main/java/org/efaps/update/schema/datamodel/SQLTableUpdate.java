@@ -186,7 +186,7 @@ public class SQLTableUpdate
         private UniqueKey(final String _name,
                           final String _columns)
         {
-            this.name = _name;
+            this.name = Context.getDbType().getConstrainName(_name);
             this.columns = _columns;
         }
 
@@ -243,7 +243,8 @@ public class SQLTableUpdate
                            final String _reference,
                            final boolean _cascade)
         {
-            this.name = _name;
+
+            this.name =  Context.getDbType().getConstrainName(_name);
             this.key = _key;
             this.reference = _reference;
             this.cascade = _cascade;
