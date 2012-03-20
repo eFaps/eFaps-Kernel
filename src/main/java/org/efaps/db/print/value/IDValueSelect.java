@@ -20,10 +20,13 @@
 
 package org.efaps.db.print.value;
 
+import java.math.BigDecimal;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.print.OneSelect;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.util.EFapsException;
 
 /**
  * Class is used to select an id.
@@ -66,6 +69,20 @@ public class IDValueSelect
             this.attribute = _type.getAttribute("ID");
         }
         return ret;
+    }
+
+    @Override
+    public Object getValue(final Object _object)
+        throws EFapsException
+    {
+        Long tempId;
+        // check is necessary because Oracle JDBC returns for getObject always a BigDecimal
+        if (_object instanceof BigDecimal) {
+            tempId = ((BigDecimal) _object).longValue();
+        } else {
+            tempId = (Long) _object;
+        }
+        return tempId;
     }
 
     /**

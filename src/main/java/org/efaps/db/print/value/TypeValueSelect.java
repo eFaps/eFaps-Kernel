@@ -20,6 +20,8 @@
 
 package org.efaps.db.print.value;
 
+import java.math.BigDecimal;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.print.OneSelect;
@@ -77,7 +79,12 @@ public class TypeValueSelect
         Object ret = null;
         Type tempType;
         if (this.type.getMainTable().getSqlColType() != null && _currentObject != null) {
-            tempType = Type.get((Long) _currentObject);
+            // check is necessary because Oracle JDBC returns for getObject always a BigDecimal
+            if (_currentObject instanceof BigDecimal) {
+                tempType = Type.get(((BigDecimal) _currentObject).longValue());
+            } else {
+                tempType = Type.get((Long) _currentObject);
+            }
         } else {
             tempType = this.type;
         }
