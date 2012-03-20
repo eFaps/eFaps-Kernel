@@ -20,6 +20,7 @@
 
 package org.efaps.update.schema.datamodel;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -186,7 +187,13 @@ public class SQLTableUpdate
         private UniqueKey(final String _name,
                           final String _columns)
         {
-            this.name = Context.getDbType().getConstrainName(_name);
+            String name = null;
+            try {
+                name = Context.getDbType().getConstrainName(_name);
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+            this.name = name;
             this.columns = _columns;
         }
 
@@ -243,8 +250,14 @@ public class SQLTableUpdate
                            final String _reference,
                            final boolean _cascade)
         {
-
-            this.name =  Context.getDbType().getConstrainName(_name);
+            String name = null;
+            try {
+                name =  Context.getDbType().getConstrainName(_name);
+            } catch (final IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            this.name = name;
             this.key = _key;
             this.reference = _reference;
             this.cascade = _cascade;
