@@ -304,7 +304,8 @@ public class DBProperties
                     map = new HashMap<String, String>();
                     DBProperties.PROPERTIESCACHE.put(language, map);
                 }
-                map.put(propKey, resultset.getString(2).trim());
+                final String value = resultset.getString(2);
+                map.put(propKey, value == null ? "" : value.trim());
             }
             DBProperties.INITIALIZED = true;
             resultset.close();
