@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,14 +93,31 @@ public abstract class AbstractLinkType
         throws EFapsException
     {
         Object ret = null;
-        if (_objectList.size() > 0) {
-            if (_objectList.size() > 1) {
-                final List<Object> list = new ArrayList<Object>();
-                ret = list;
-                list.addAll(_objectList);
-            } else {
-                ret = _objectList.get(0);
+        if (_objectList.size() < 1) {
+            ret = null;
+        } else if (_objectList.size() > 1) {
+            final List<Object> list = new ArrayList<Object>();
+            Object temp = null;
+            for (final Object object : _objectList) {
+                // Oracle database stores all IDs as Decimal
+                if (object instanceof BigDecimal) {
+                    temp = ((BigDecimal) object).longValue();
+                } else {
+                    temp = object;
+                }
+                list.add( temp);
             }
+            ret = list;
+        } else {
+            final Object object = _objectList.get(0);
+            Object temp = null;
+            // Oracle database stores all IDs as Decimal
+            if (object instanceof BigDecimal) {
+                temp = ((BigDecimal) object).longValue();
+            } else {
+                temp = object;
+            }
+            ret = temp;
         }
         return ret;
     }
