@@ -104,11 +104,12 @@ public class OracleDatabase
     public OracleDatabase()
     {
         super();
-        addMapping(ColumnType.INTEGER,      "number",     "null", "number");
+        addMapping(ColumnType.INTEGER,      "number(*,0)",     "null", "number(38,0)");
+        addMapping(ColumnType.DECIMAL,      "numeric",    "null", "decimal", "numeric");
         addMapping(ColumnType.REAL,         "number",     "null", "number");
-        addMapping(ColumnType.STRING_SHORT, "varchar2",   "null", "varchar2");
+        addMapping(ColumnType.STRING_SHORT, "varchar2",   "null", "varchar2", "char");
         addMapping(ColumnType.STRING_LONG,  "varchar2",   "null", "varchar2");
-        addMapping(ColumnType.DATETIME,     "timestamp",  "null", "timestamp", "timestamp(6)");
+        addMapping(ColumnType.DATETIME,     "timestamp",  "null", "timestamp", "timestamp(6)", "date");
         addMapping(ColumnType.BLOB,         "blob",       "null", "blob");
         addMapping(ColumnType.CLOB,         "nclob",      "null", "nclob");
         addMapping(ColumnType.BOOLEAN,      "number",     "null", "number");
@@ -260,31 +261,16 @@ public class OracleDatabase
             final StringBuilder cmd = new StringBuilder()
                 .append("create table ").append(_table).append(" (")
                 .append("  ID number not null,")
-                .append("  constraint ").append(_table).append("_UK_ID unique(ID)");
+                .append("  constraint ");
 
-            // foreign key to parent SQL table
-/* TODO
-            if (_parentTable != null)  {
-                cmd.append(",")
-                    .append("constraint ").append(_table).append("_FK_ID ")
-                    .append("  foreign key(ID) ")
-                    .append("  references ").append(_parentTable).append("(ID)");
-            }
-*/
+            final String consName = getConstrainName(_table + "_UK_ID");
+            cmd.append(consName).append(" unique(ID)");
+
             cmd.append(")");
             stmt.executeUpdate(cmd.toString());
 
-/* TODO
-            if (_parentTable == null)  {
-                // create sequence
-                cmd = new StringBuilder()
-                    .append("create sequence ").append(_table).append("_SEQ ")
-                    .append("  increment by 1 ")
-                    .append("  start with 1 ")
-                    .append("  nocache");
-                stmt.executeUpdate(cmd.toString());
-            }
-*/
+        } catch (final IOException e) {
+            e.printStackTrace();
         } finally  {
             stmt.close();
         }
@@ -346,27 +332,63 @@ public class OracleDatabase
                                          final long _startValue)
         throws SQLException
     {
-        throw new Error("not implemented");
+        final Statement stmt = _con.createStatement();
+        // create sequence
+        final StringBuilder cmd = new StringBuilder()
+            .append("create sequence ").append(_name)
+            .append("  increment by 1 ")
+            .append("  start with ").append(_startValue)
+            .append("  nocache");
+        stmt.executeUpdate(cmd.toString());
+
+        nextSequence(_con, _name);
+        return this;
     }
 
     /**
      * {@inheritDoc}
+     * @throws SQLException
      */
     @Override
     public OracleDatabase deleteSequence(final Connection _con,
                                          final String _name)
+        throws SQLException
     {
-        throw new Error("not implemented");
+        final String cmd = new StringBuilder()
+                        .append("drop sequence ").append(_name)
+                        .toString();
+        final Statement stmt = _con.createStatement();
+        try {
+            stmt.executeUpdate(cmd);
+        } finally {
+            stmt.close();
+        }
+        return this;
     }
 
     /**
      * {@inheritDoc}
+     * @throws SQLException
      */
     @Override
     public boolean existsSequence(final Connection _con,
                                   final String _name)
+        throws SQLException
     {
-        throw new Error("not implemented");
+        final boolean ret;
+        final String cmd = new StringBuilder()
+                        .append("SELECT sequence_name FROM user_sequences WHERE sequence_name='")
+                        .append(_name.toLowerCase()).append("'")
+                        .toString();
+        final Statement stmt = _con.createStatement();
+        try {
+            final ResultSet resultset = stmt.executeQuery(cmd);
+            ret = resultset.next();
+            resultset.close();
+        } finally {
+            stmt.close();
+        }
+        return ret;
     }
 
     /**
@@ -377,7 +399,23 @@ public class OracleDatabase
                              final String _name)
         throws SQLException
     {
-        throw new Error("not implemented");
+        final long ret;
+        final String cmd = new StringBuilder()
+                .append("SELECT " + _name + ".nextval from dual")
+                .toString();
+        final Statement stmt = _con.createStatement();
+        try {
+            final ResultSet resultset = stmt.executeQuery(cmd);
+            if (resultset.next()) {
+                ret = resultset.getLong(1);
+            } else  {
+                throw new SQLException("fetching new value from sequence '" + _name + "' failed");
+            }
+            resultset.close();
+        } finally {
+            stmt.close();
+        }
+        return ret;
     }
 
     /**
@@ -389,7 +427,9 @@ public class OracleDatabase
                                       final long _value)
         throws SQLException
     {
-        throw new Error("not implemented");
+        deleteSequence(_con, _name);
+        createSequence(_con, _name, _value);
+        return this;
     }
 
     /**
@@ -444,7 +484,7 @@ public class OracleDatabase
             final CheckedInputStream cis = new CheckedInputStream(bais, new Adler32());
             final byte readBuffer[] = new byte[5];
             long value = 0;
-            if (cis.read(readBuffer) >= 0){
+            while (cis.read(readBuffer) >= 0){
                 value = cis.getChecksum().getValue();
             }
 
@@ -454,6 +494,18 @@ public class OracleDatabase
             ret = ret.substring(0, sizeSuf) + value;
         }
         return ret;
+    }
+
+    /**
+     * Returns a single reversed apostrophe &#96; used to select columns within
+     * SQL statements for a MySQL database..
+     *
+     * @return always single reversed apostrophe
+     */
+    @Override
+    public String getColumnQuote()
+    {
+        return "\"";
     }
 
 }
