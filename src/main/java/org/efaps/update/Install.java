@@ -403,7 +403,7 @@ public class Install
     /**
      * Class is used as a container for one file that must be installed.
      */
-    private class InstallFile
+    public static class InstallFile
     {
         /**
          * URL to the file.

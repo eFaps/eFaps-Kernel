@@ -783,6 +783,26 @@ public final class Application
     }
 
     /**
+     * Getter method for the instance variable {@link #install}.
+     *
+     * @return value of instance variable {@link #install}
+     */
+    public Install getInstall()
+    {
+        return this.install;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #dependencies}.
+     *
+     * @return value of instance variable {@link #dependencies}
+     */
+    public Map<Integer, Dependency> getDependencies()
+    {
+        return this.dependencies;
+    }
+
+    /**
      * This is the setter method for instance variable {@link #application}.
      *
      * @param _application new value for instance variable {@link #application}
