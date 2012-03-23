@@ -92,13 +92,23 @@ public abstract class AbstractLinkType
                             final List<Object> _objectList)
         throws EFapsException
     {
-        Object ret = null;
-        if (_objectList.size() < 1) {
-            ret = null;
-        } else if (_objectList.size() > 1) {
-            final List<Object> list = new ArrayList<Object>();
-            Object temp = null;
-            for (final Object object : _objectList) {
+        final List<Object> list = new ArrayList<Object>();
+        Object temp = null;
+        for (final Object object : _objectList) {
+            if (object instanceof Object[]) {
+                final List<Object> list2 = new ArrayList<Object>();
+                Object temp2 = null;
+                for (final Object object2 : (Object[]) object) {
+                    // Oracle database stores all IDs as Decimal
+                    if (object2 instanceof BigDecimal) {
+                        temp2 = ((BigDecimal) object2).longValue();
+                    } else {
+                        temp2 = object2;
+                    }
+                    list2.add(temp2);
+                }
+                list.add(list2.toArray());
+            } else {
                 // Oracle database stores all IDs as Decimal
                 if (object instanceof BigDecimal) {
                     temp = ((BigDecimal) object).longValue();
@@ -107,18 +117,7 @@ public abstract class AbstractLinkType
                 }
                 list.add( temp);
             }
-            ret = list;
-        } else {
-            final Object object = _objectList.get(0);
-            Object temp = null;
-            // Oracle database stores all IDs as Decimal
-            if (object instanceof BigDecimal) {
-                temp = ((BigDecimal) object).longValue();
-            } else {
-                temp = object;
-            }
-            ret = temp;
         }
-        return ret;
+        return _objectList.size() > 0 ? (list.size() > 1 ? list : list.get(0)) : null;
     }
 }
