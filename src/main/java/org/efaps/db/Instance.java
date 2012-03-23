@@ -31,8 +31,8 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.util.EFapsException;
 
 /**
- * The class is used to store one object id of an instance (defined with type
- * and id). The string representation is the type id plus point plus id.
+ * The class is used to store one object id of an instance (defined with type and id). The string representation is the
+ * type id plus point plus id.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -40,22 +40,21 @@ import org.efaps.util.EFapsException;
 public final class Instance
     implements Serializable
 {
+
     /**
      * Serial Version unique identifier.
      */
     private static final long serialVersionUID = -5587167060980613742L;
 
     /**
-     * The instance variable stores the type definition for which this class is
-     * the instance.
+     * The instance variable stores the type definition for which this class is the instance.
      *
      * @see #getType()
      */
     private transient Type type;
 
     /**
-     * The instance variable stores the database id of the instance in the
-     * database.
+     * The instance variable stores the database id of the instance in the database.
      *
      * @see #getId()
      */
@@ -67,16 +66,31 @@ public final class Instance
     private final String key;
 
     /**
+     * Is the information of GeneralId retrieved from the eFaps DataBase.
+     */
+    private boolean generalised;
+
+    /**
      * The generalId of this Instance.
      */
     private long generalId = 0;
 
     /**
+     * The ExhangeID of this Instance.
+     */
+    private long exchangeId = 0;
+
+    /**
+     * The ExchangeSystemID of this Instance.
+     */
+    private long exchangeSystemId = 0;
+
+    /**
      * Constructor used if the type and the database id is known.
      *
-     * @param _type         type of the instance
-     * @param _id           id in the database of the instance
-     * @param _instanceKey  key to this instance
+     * @param _type type of the instance
+     * @param _id id in the database of the instance
+     * @param _instanceKey key to this instance
      */
     private Instance(final Type _type,
                      final long _id,
@@ -85,20 +99,6 @@ public final class Instance
         this.type = _type;
         this.id = _id;
         this.key = _instanceKey;
-    }
-
-    /**
-     * The string representation which is defined by this instance is returned.
-     *
-     * @return string representation of the object id
-     */
-    public String getOid()
-    {
-        String ret = null;
-        if ((getType() != null) && (getId() != 0)) {
-            ret = getType().getId() + "." + getId();
-        }
-        return ret;
     }
 
     /**
@@ -113,8 +113,7 @@ public final class Instance
 
     /**
      * @param _obj Object to compare
-     * @return <i>true</i> if the given object in _obj is an instance and holds
-     *         the same type and id
+     * @return <i>true</i> if the given object in _obj is an instance and holds the same type and id
      * @see #id
      * @see #type
      */
@@ -130,11 +129,10 @@ public final class Instance
     }
 
     /**
-     * First, all not transient instance variables are stored, then the UUID of
-     * the type is stored.
+     * First, all not transient instance variables are stored, then the UUID of the type is stored.
      *
-     * @param _out    object output stream
-     * @throws IOException            from inside called methods
+     * @param _out object output stream
+     * @throws IOException from inside called methods
      */
     private void writeObject(final ObjectOutputStream _out)
         throws IOException
@@ -144,13 +142,12 @@ public final class Instance
     }
 
     /**
-     * First all not transient instance variables are read, then the UUID of
-     * the type is read and the type is initialized.
+     * First all not transient instance variables are read, then the UUID of the type is read and the type is
+     * initialized.
      *
-     * @param _in   object input stream
-     * @throws IOException            from inside called methods
-     * @throws ClassNotFoundException if a class not found
-     * TODO: update type instance if it is final....
+     * @param _in object input stream
+     * @throws IOException from inside called methods
+     * @throws ClassNotFoundException if a class not found TODO: update type instance if it is final....
      */
     private void readObject(final ObjectInputStream _in)
         throws IOException, ClassNotFoundException
@@ -182,6 +179,20 @@ public final class Instance
     }
 
     /**
+     * The string representation which is defined by this instance is returned.
+     *
+     * @return string representation of the object id
+     */
+    public String getOid()
+    {
+        String ret = null;
+        if ((getType() != null) && (getId() != 0)) {
+            ret = getType().getId() + "." + getId();
+        }
+        return ret;
+    }
+
+    /**
      * Getter method for instance variable {@link #key}.
      *
      * @return value of instance variable {@link #key}
@@ -192,8 +203,7 @@ public final class Instance
     }
 
     /**
-     * Method to evaluate if this instance is an valid instance.
-     * Meaning that it has a valid type and a valid id.
+     * Method to evaluate if this instance is an valid instance. Meaning that it has a valid type and a valid id.
      *
      * @return true if valid, else false
      */
@@ -202,25 +212,129 @@ public final class Instance
         return this.type != null && this.id > 0;
     }
 
+    private void check4Generalised()
+        throws EFapsException
+    {
+        if (this.type.isGeneralInstance() && !this.generalised) {
+            GeneralInstance.generaliseInstance(this);
+            this.generalised = true;
+        }
+    }
+
     /**
-     * Get the id of the general instance for this instance.
-     * <b>Attention this method is actually executing a Query against
-     * the eFaps Database the first time it is called!</b>
+     * Get the id of the general instance for this instance.<br/>
+     * <b>Attention this method is actually executing a Query against the eFaps Database the first time this method or
+     * {@link #getExchangeSystemId()} or {@link #getExchangeId()}is called!</b>
+     *
      * @return 0 if no general instance exits
      * @throws EFapsException on error
      */
     public long getGeneralId()
         throws EFapsException
     {
-        if (this.type.isGeneralInstance() && this.generalId == 0) {
-            this.generalId = GeneralInstance.getId(this);
-        }
+        check4Generalised();
         return this.generalId;
     }
 
     /**
-     * The method returns a string representation of the instance object. It
-     * does not replace method {@link #getOid}!.
+     * Setter method for instance variable {@link #generalId}.
+     *
+     * @param _generalId value for instance variable {@link #generalId}
+     */
+    protected void setGeneralId(final long _generalId)
+    {
+        this.generalId = _generalId;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #exchangeId}.<br/>
+     * <b>Attention this method is actually executing a Query against the eFaps Database the first time this method or
+     * {@link #getExchangeSystemId()} or {@link #getGeneralId()}is called!</b>
+     *
+     * @return value of instance variable {@link #exchangeId}
+     * @throws EFapsException on error
+     */
+    public long getExchangeId()
+        throws EFapsException
+    {
+        return this.getExchangeId(true);
+    }
+
+    /**
+     * Getter method for the instance variable {@link #exchangeId}.<br/>
+     * <b>Attention this method is actually executing a Query against
+     * the eFaps Database the first time this method or
+     * {@link #getExchangeSystemId()} or {@link #getGeneralId()}is called!</b>
+     *
+     * @param _request must the eFaps Database be requested
+     * @return value of instance variable {@link #exchangeId}
+     * @throws EFapsException on error
+     */
+    protected long getExchangeId(final boolean _request)
+        throws EFapsException
+    {
+        if (_request) {
+            check4Generalised();
+        }
+        return this.exchangeId;
+    }
+
+    /**
+     * Setter method for instance variable {@link #exchangeId}.
+     *
+     * @param _exchangeId value for instance variable {@link #exchangeId}
+     */
+    protected void setExchangeId(final long _exchangeId)
+    {
+        this.exchangeId = _exchangeId;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #exchangeSystemId}.<br/>
+     * <b>Attention this method is actually executing a Query against the
+     * eFaps Database the first time this method or
+     * {@link #getExchangeId()} or {@link #getGeneralId()}is called!</b>
+     *
+     * @return value of instance variable {@link #exchangeSystemId}
+     * @throws EFapsException on error
+     */
+    public long getExchangeSystemId()
+        throws EFapsException
+    {
+        return this.getExchangeSystemId(true);
+    }
+
+    /**
+     * Getter method for the instance variable {@link #exchangeSystemId}.<br/>
+     * <b>Attention this method is actually executing a Query against the
+     * eFaps Database the first time this method or
+     * {@link #getExchangeId()} or {@link #getGeneralId()}is called!</b>
+     *
+     * @param _request must the eFaps Database be requested
+     * @return value of instance variable {@link #exchangeSystemId}
+     * @throws EFapsException on error
+     */
+    public long getExchangeSystemId(final boolean _request)
+        throws EFapsException
+    {
+        if (_request) {
+            check4Generalised();
+        }
+        return this.exchangeSystemId;
+    }
+
+    /**
+     * Setter method for instance variable {@link #exchangeSystemId}.
+     *
+     * @param _exchangeSystemId value for instance variable {@link #exchangeSystemId}
+     */
+    protected void setExchangeSystemId(final long _exchangeSystemId)
+    {
+        this.exchangeSystemId = _exchangeSystemId;
+    }
+
+    /**
+     * The method returns a string representation of the instance object. It does not replace method {@link #getOid}!.
      *
      * @return string representation of this instance object
      */
@@ -228,17 +342,17 @@ public final class Instance
     public String toString()
     {
         return new ToStringBuilder(this)
-            .appendSuper(super.toString())
-            .append("oid", getOid())
-            .append("type", getType())
-            .append("id", getId())
-            .toString();
+                        .appendSuper(super.toString())
+                        .append("oid", getOid())
+                        .append("type", getType())
+                        .append("id", getId())
+                        .toString();
     }
 
     /**
      *
-     * @param _type     type of the instance
-     * @param _id       id of the instance
+     * @param _type type of the instance
+     * @param _id id of the instance
      * @return instance
      */
     public static Instance get(final Type _type,
@@ -253,9 +367,9 @@ public final class Instance
 
     /**
      *
-     * @param _type     type of the instance
-     * @param _id       id of the instance
-     * @param _key      key of the instance
+     * @param _type type of the instance
+     * @param _id id of the instance
+     * @param _key key of the instance
      * @return instance
      */
     public static Instance get(final Type _type,
@@ -267,8 +381,8 @@ public final class Instance
 
     /**
      *
-     * @param _type     type of the instance
-     * @param _id       id of the instance as string
+     * @param _type type of the instance
+     * @param _id id of the instance as string
      * @return instance
      */
     public static Instance get(final Type _type,
@@ -279,9 +393,9 @@ public final class Instance
 
     /**
      *
-     * @param _type     type of the instance
-     * @param _id       id of the instance
-     * @param _key      key of the instance
+     * @param _type type of the instance
+     * @param _id id of the instance
+     * @param _key key of the instance
      * @return instance
      */
     public static Instance get(final Type _type,
@@ -299,8 +413,8 @@ public final class Instance
 
     /**
      *
-     * @param _type     type of the instance
-     * @param _id       id of the instance
+     * @param _type type of the instance
+     * @param _id id of the instance
      * @return instance
      */
     public static Instance get(final String _type,
@@ -311,9 +425,9 @@ public final class Instance
 
     /**
      *
-     * @param _type     type of the instance
-     * @param _id       id of the instance
-     * @param _key      key of the instance
+     * @param _type type of the instance
+     * @param _id id of the instance
+     * @param _key key of the instance
      * @return instance
      */
     public static Instance get(final String _type,
@@ -329,7 +443,7 @@ public final class Instance
 
     /**
      *
-     * @param _oid  eFaps object id of the instance
+     * @param _oid eFaps object id of the instance
      * @return instance
      */
     public static Instance get(final String _oid)

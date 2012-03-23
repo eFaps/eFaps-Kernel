@@ -65,6 +65,16 @@ public final class GeneralInstance
     public static final String ISIDCOLUMN = "INSTID";
 
     /**
+     * Name of the Exchange ID Column.
+     */
+    public static final String EXIDCOLUMN = "EXID";
+
+    /**
+     * Name of the Exchange System ID Column.
+     */
+    public static final String EXSYSIDCOLUMN = "EXSYSID";
+
+    /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(GeneralInstance.class);
@@ -94,6 +104,8 @@ public final class GeneralInstance
                                 true);
                 insert.column(GeneralInstance.ISTYPECOLUMN, _instance.getType().getId());
                 insert.column(GeneralInstance.ISIDCOLUMN, _instance.getId());
+                insert.column(GeneralInstance.EXIDCOLUMN, _instance.getExchangeId(false));
+                insert.column(GeneralInstance.EXSYSIDCOLUMN, _instance.getExchangeSystemId(false));
                 ret = insert.execute(_con);
             } catch (final SQLException e) {
                 GeneralInstance.LOG.error("executeOneStatement", e);
@@ -113,7 +125,7 @@ public final class GeneralInstance
         throws EFapsException
     {
         if (_instance.isValid() && _instance.getType().isGeneralInstance()) {
-            final long id = GeneralInstance.getId(_instance, _con);
+            final long id = _instance.getGeneralId();
             if (id > 0) {
                 if (_instance.getType().getStoreId() > 0) {
                     GeneralInstance.del4Table(id, _con, JDBCStoreResource.TABLENAME_STORE);
@@ -170,11 +182,10 @@ public final class GeneralInstance
      * @throws EFapsException on  error
      * @return id of the current General Instance
      */
-    protected static long getId(final Instance _instance,
-                                final Connection _con)
+    protected static void generaliseInstance(final Instance _instance,
+                                             final Connection _con)
         throws EFapsException
     {
-        long ret = 0;
         if (_instance.isValid() && _instance.getType().isGeneralInstance()) {
             try {
                 final Statement queryStmt = _con.createStatement();
@@ -184,6 +195,12 @@ public final class GeneralInstance
                 cmd.append(db.getSQLPart(SQLPart.SELECT)).append(" ")
                     .append(db.getColumnQuote())
                     .append(GeneralInstance.IDCOLUMN)
+                    .append(db.getColumnQuote()).append(", ")
+                    .append(db.getColumnQuote())
+                    .append(GeneralInstance.EXSYSIDCOLUMN)
+                    .append(db.getColumnQuote()).append(", ")
+                    .append(db.getColumnQuote())
+                    .append(GeneralInstance.EXIDCOLUMN)
                     .append(db.getColumnQuote()).append(" ")
                     .append(db.getSQLPart(SQLPart.FROM)).append(" ")
                     .append(db.getTableQuote())
@@ -204,7 +221,9 @@ public final class GeneralInstance
 
                 final ResultSet rs = queryStmt.executeQuery(cmd.toString());
                 while (rs.next()) {
-                    ret = rs.getLong(1);
+                    _instance.setGeneralId(rs.getLong(1));
+                    _instance.setExchangeSystemId(rs.getLong(2));
+                    _instance.setExchangeId(rs.getLong(3));
                 }
                 queryStmt.close();
                 if (GeneralInstance.LOG.isDebugEnabled()) {
@@ -215,7 +234,6 @@ public final class GeneralInstance
                 throw new EFapsException(GeneralInstance.class, "create", e);
             }
         }
-        return ret;
     }
 
     /**
@@ -223,21 +241,19 @@ public final class GeneralInstance
      * @throws EFapsException on  error
      * @return id of the current General Instance
      */
-    protected static long getId(final Instance _instance)
+    protected static void generaliseInstance(final Instance _instance)
         throws EFapsException
     {
-        long ret = 0;
         final Context context = Context.getThreadContext();
         ConnectionResource con = null;
         try {
             con = context.getConnectionResource();
-            ret = GeneralInstance.getId(_instance, con.getConnection());
+            GeneralInstance.generaliseInstance(_instance, con.getConnection());
             con.commit();
         } finally {
             if (con != null && con.isOpened()) {
                 con.abort();
             }
         }
-        return ret;
     }
 }
