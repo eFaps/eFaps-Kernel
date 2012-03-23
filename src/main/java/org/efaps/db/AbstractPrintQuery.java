@@ -653,14 +653,20 @@ public abstract class AbstractPrintQuery
         }
 
         select.addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
-        boolean first = true;
+
+        int i = 0;
         for (final Instance instance : getInstanceList()) {
-            if (first) {
-                first = false;
-            } else {
+            if (i > Context.getDbType().getMaxExpressions()) {
+                select.addPart(SQLPart.PARENTHESIS_CLOSE)
+                    .addPart(SQLPart.OR)
+                    .addColumnPart(0, "ID").addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
+                i = 0;
+            }
+            if (i > 0) {
                 select.addPart(SQLPart.COMMA);
             }
             select.addValuePart(instance.getId());
+            i++;
         }
         select.addPart(SQLPart.PARENTHESIS_CLOSE);
 
