@@ -22,6 +22,8 @@
 package org.efaps.db.search.section;
 
 import org.efaps.db.AbstractObjectQuery;
+import org.efaps.db.Context;
+import org.efaps.db.databases.OracleDatabase;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -57,8 +59,10 @@ public class QLimitSection
     public QLimitSection appendSQL(final SQLSelect _select)
         throws EFapsException
     {
-
-        _select.addPart(SQLPart.LIMIT).addValuePart(this.limit);
+        // TODO it should be checked if can to be used in Oracle.
+        if (!(Context.getDbType() instanceof OracleDatabase)) {
+            _select.addPart(SQLPart.LIMIT).addValuePart(this.limit);
+        }
         return this;
     }
 
