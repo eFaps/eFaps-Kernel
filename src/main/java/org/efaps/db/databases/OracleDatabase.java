@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedInputStream;
 
@@ -117,12 +118,23 @@ public class OracleDatabase
 
     /**
      * {@inheritDoc}
+     * @throws SQLException
      */
     @Override
     public boolean isConnected(final Connection _connection)
+        throws SQLException
     {
-        // FIXME must be implemented
-        return false;
+        boolean ret = false;
+        final Statement stmt = _connection.createStatement();
+        try {
+            final ResultSet resultset = stmt
+                        .executeQuery("select product from product_component_version where product like 'Oracle%';");
+            ret = resultset.next();
+            resultset.close();
+        } finally {
+            stmt.close();
+        }
+        return ret;
     }
 
     /**
@@ -131,7 +143,7 @@ public class OracleDatabase
     @Override
     public int getMaxExpressions()
     {
-        return 1000;
+        return 999;
     }
 
     /**
@@ -144,6 +156,29 @@ public class OracleDatabase
     public String getCurrentTimeStamp()
     {
         return "sysdate";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getTimestampValue(final String _isoDateTime)
+    {
+        final String format = "'yyyy-mm-dd\"T\"hh24:mi:ss.ff3'";
+        return "to_timestamp('" + _isoDateTime + "', " + format + ")";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object getBooleanValue(final Boolean _value)
+    {
+        Integer ret = 0;
+        if (_value) {
+            ret = 1;
+        }
+        return ret;
     }
 
     /**
@@ -475,6 +510,37 @@ public class OracleDatabase
     }
 
     @Override
+    protected void initTableInfoColumns(final Connection _con,
+                                        final String _sql,
+                                        final Map<String, TableInformation> _cache4Name)
+        throws SQLException
+    {
+        final ResultSet rsc = (_sql == null)
+                              ? _con.getMetaData().getColumns(null, "EFAPS", "%", "%")
+                              : _con.createStatement().executeQuery(_sql);
+        try  {
+            while (rsc.next())  {
+                final String tableName = rsc.getString("TABLE_NAME").toUpperCase();
+                if (_cache4Name.containsKey(tableName))  {
+                    final String colName = rsc.getString("COLUMN_NAME").toUpperCase();
+                    final String typeName = rsc.getString("TYPE_NAME").toLowerCase();
+                    final Set<AbstractDatabase.ColumnType> colTypes
+                        = OracleDatabase.this.getReadColumnTypes(typeName);
+                    if (colTypes == null)  {
+                        throw new SQLException("read unknown column type '" + typeName + "'");
+                    }
+                    final int size = rsc.getInt("COLUMN_SIZE");
+                    final int scale = rsc.getInt("DECIMAL_DIGITS");
+                    final boolean isNullable = !"NO".equalsIgnoreCase(rsc.getString("IS_NULLABLE"));
+                    _cache4Name.get(tableName).addColInfo(colName, colTypes, size, scale, isNullable);
+                }
+            }
+        } finally  {
+            rsc.close();
+        }
+    }
+
+    @Override
     public String getConstrainName(final String _name) throws IOException
     {
         String ret = _name;
@@ -497,8 +563,8 @@ public class OracleDatabase
     }
 
     /**
-     * Returns a single reversed apostrophe &#96; used to select columns within
-     * SQL statements for a MySQL database..
+     * Returns a single " used to select columns within
+     * SQL statements for a Oracle database..
      *
      * @return always single reversed apostrophe
      */

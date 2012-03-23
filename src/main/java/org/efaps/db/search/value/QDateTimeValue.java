@@ -22,7 +22,6 @@
 package org.efaps.db.search.value;
 
 import org.efaps.admin.datamodel.attributetype.DateTimeType;
-import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
@@ -57,7 +56,7 @@ public class QDateTimeValue
     public QDateTimeValue appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
-        _sql.addPart(SQLPart.TIMESTAMP).addEscapedValuePart(new DateTimeType().toString4Where(this.value));
+        _sql.addTimestampValue(new DateTimeType().toString4Where(this.value));
         return this;
     }
 }

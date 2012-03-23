@@ -136,8 +136,7 @@ public class PostgreSQLDatabase
     }
 
     /**
-     * @see org.efaps.db.databases.AbstractDatabase#getCurrentTimeStamp()
-     * @return "current_timestamp"
+     * {@inheritDoc}
      */
     @Override
     public String getCurrentTimeStamp()
@@ -145,7 +144,26 @@ public class PostgreSQLDatabase
         return "current_timestamp";
     }
 
-  /**
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getTimestampValue(final String _isoDateTime)
+    {
+        return "timestamp '" + _isoDateTime + "'";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object getBooleanValue(final Boolean _value)
+    {
+        return _value;
+    }
+
+
+/**
      * <p>This is the PostgreSQL specific implementation of an all deletion.
      * Following order is used to remove all eFaps specific information:
      * <ul>

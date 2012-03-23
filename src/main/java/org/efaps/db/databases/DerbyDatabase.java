@@ -107,10 +107,29 @@ public class DerbyDatabase
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getCurrentTimeStamp()
     {
         return "current_timestamp";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getTimestampValue(final String _isoDateTime)
+    {
+        return "timestamp '" + _isoDateTime + "'";
+    }
+
+    @Override
+    public Object getBooleanValue(final Boolean _value)
+    {
+        // TODO Auto-generated method stub
+        return _value;
     }
 
     /**

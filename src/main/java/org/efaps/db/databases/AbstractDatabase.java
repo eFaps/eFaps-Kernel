@@ -287,6 +287,23 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      */
     public abstract String getCurrentTimeStamp();
 
+
+    /**
+     * Get the vendor specific Timestamp cast implementation.
+     *
+     * @param _isoDateTime dateTime that will be casted to an timestamp
+     * @return vendor specific implementation of timestamp
+     */
+    public abstract String getTimestampValue(final String _isoDateTime);
+
+    /**
+     * Get the vendor specific Boolean cast implementation.
+     *
+     * @param _value boolean that will be casted to an number for oracle
+     * @return vendor specific implementation of boolean
+     */
+    public abstract Object getBooleanValue(final Boolean _value);
+
     /**
      * The method implements a delete all of database user specific objects
      * (e.g. tables, views etc...). The method is called before a complete
