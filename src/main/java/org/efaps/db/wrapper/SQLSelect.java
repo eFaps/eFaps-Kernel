@@ -359,6 +359,28 @@ public class SQLSelect
     }
 
     /**
+     * Add a timestamp value to the select.
+     * @param __timestampString String to be casted to a timestamp
+     * @return this
+     */
+    public SQLSelect addTimestampValue(final String _isoDateTime)
+    {
+        this.parts.add(new Value(Context.getDbType().getTimestampValue(_isoDateTime)));
+        return this;
+    }
+
+    /**
+     * Add a timestamp value to the select.
+     * @param __timestampString String to be casted to a timestamp
+     * @return this
+     */
+    public SQLSelect addBooleanValue(final Boolean _value)
+    {
+        this.parts.add(new BooleanValue(_value));
+        return this;
+    }
+
+    /**
      * @return get a new instance of this SQLSelect
      */
     public SQLSelect getCopy()
@@ -723,6 +745,40 @@ public class SQLSelect
     }
 
     /**
+     * Value to be escaped.
+     */
+    protected static class BooleanValue
+        extends SQLSelectPart
+    {
+
+        /**
+         * Value.
+         */
+        private final Boolean value;
+
+        /**
+         * @param _value Value
+         */
+        public BooleanValue(final Boolean _value)
+        {
+            this.value = _value;
+        }
+
+        @Override
+        public void appendSQL(final StringBuilder _cmd)
+        {
+            _cmd.append(Context.getDbType().getBooleanValue(this.value));
+        }
+
+        @Override
+        public String toString()
+        {
+            final String ret = Context.getDbType().getBooleanValue(this.value).toString();
+            return ret;
+        }
+    }
+
+    /**
      *
      */
     public static class SQLSelectPart
@@ -803,9 +859,9 @@ public class SQLSelect
             if (this.tableIndex != null) {
                 _cmd.append("T").append(this.tableIndex).append(".");
             }
-            _cmd.append(Context.getDbType().getTableQuote())
+            _cmd.append(Context.getDbType().getColumnQuote())
                             .append(this.columnName)
-                            .append(Context.getDbType().getTableQuote());
+                            .append(Context.getDbType().getColumnQuote());
         }
 
         @Override

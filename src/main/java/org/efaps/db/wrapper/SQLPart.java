@@ -92,8 +92,6 @@ public enum SQLPart {
     SET("set"),
     /** .*/
     SPACE(" "),
-    /** timestamp. */
-    TIMESTAMP("timestamp"),
     /** TRUE. */
     TRUE("TRUE"),
     /** union. */
