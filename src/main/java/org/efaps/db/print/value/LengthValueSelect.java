@@ -21,10 +21,13 @@
 
 package org.efaps.db.print.value;
 
+import java.math.BigDecimal;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.print.OneSelect;
 import org.efaps.db.store.AbstractStoreResource;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.util.EFapsException;
 
 
 /**
@@ -67,5 +70,19 @@ public class LengthValueSelect
     public String getValueType()
     {
         return "length";
+    }
+
+    @Override
+    public Object getValue(final Object _object)
+        throws EFapsException
+    {
+        Object tempId;
+        // check is necessary because Oracle JDBC returns for getObject always a BigDecimal
+        if (_object instanceof BigDecimal) {
+            tempId = ((BigDecimal) _object).longValue();
+        } else {
+            tempId = _object;
+        }
+        return tempId;
     }
 }

@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -75,9 +76,21 @@ public class TypeType
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
     {
-        Type ret;
+        Object ret;
         if (!_attribute.getSqlColNames().isEmpty()) {
-            ret = Type.get((Long) _objectList.get(0));
+            if (_objectList.size() < 1) {
+                ret = null;
+            } else {
+                final Object object = _objectList.get(0);
+                Object temp = null;
+                // Oracle database stores all IDs as Decimal
+                if (object instanceof BigDecimal) {
+                    temp = ((BigDecimal) object).longValue();
+                } else {
+                    temp = object;
+                }
+                ret = Type.get((Long) temp);
+            }
         } else {
             ret = _attribute.getParent();
         }

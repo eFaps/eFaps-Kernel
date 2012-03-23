@@ -159,7 +159,7 @@ public class DateTimeType
     {
         String ret = "";
         if (_value instanceof ReadableDateTime) {
-            ret = ((ReadableDateTime) _value).toDateTime().toString(ISODateTimeFormat.dateTime());
+            ret = ((ReadableDateTime) _value).toDateTime().toString(ISODateTimeFormat.dateHourMinuteSecondFraction());
         } else if (_value instanceof String) {
             ret = (String) _value;
         }
