@@ -821,11 +821,11 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * "SELECT...WHERE..IN (val1,val2,val3,...valn)" The integer is the maximum
      * value for n before making a new Select.</p>
      *
-     * @return max Number of Value in an Expression, 0 if no max is known
+     * @return max Number of Value in an Expression, -1 if no max is known
      */
     public int getMaxExpressions()
     {
-        return 0;
+        return -1;
     }
 
     /**
