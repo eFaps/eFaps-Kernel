@@ -309,6 +309,8 @@ public class CIAdminCommon
         }
         public final CIAttribute InstanceTypeID = new CIAttribute(this, "InstanceTypeID");
         public final CIAttribute InstanceID = new CIAttribute(this, "InstanceID");
+        public final CIAttribute ExchangeSystemID = new CIAttribute(this, "ExchangeSystemID");
+        public final CIAttribute ExchangeID = new CIAttribute(this, "ExchangeID");
     }
 
 

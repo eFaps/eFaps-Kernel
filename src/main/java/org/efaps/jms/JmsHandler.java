@@ -184,20 +184,15 @@ public final class JmsHandler
                 }
             }
         } catch (final NamingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException("NamingException", e);
         } catch (final JMSException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException("JMSException", e);
         } catch (final ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException("ClassNotFoundException", e);
         } catch (final InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException("InstantiationException", e);
         } catch (final IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new EFapsException("IllegalAccessException", e);
         }
     }
 
@@ -220,23 +215,23 @@ public final class JmsHandler
 
     /**
      * Stop the jms.
+     * @throws EFapsException
      */
     public static void stop()
+        throws EFapsException
     {
         for (final QueueConnection queCon : JmsHandler.QUEUE2QUECONN.values()) {
             try {
                 queCon.close();
             } catch (final JMSException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new EFapsException("JMSException", e);
             }
         }
         for (final TopicConnection queCon : JmsHandler.TOPIC2QUECONN.values()) {
             try {
                 queCon.close();
             } catch (final JMSException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new EFapsException("JMSException", e);
             }
         }
         JmsHandler.TOPIC2QUECONN.clear();

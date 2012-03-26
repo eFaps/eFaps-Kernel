@@ -55,6 +55,16 @@ public class Insert
     private static final Logger LOG = LoggerFactory.getLogger(Insert.class);
 
     /**
+     * The Exchnageid for the newly created Object.
+     */
+    private long exchangeId = 0;
+
+    /**
+     * The exhange system id for the newly created object.
+     */
+    private long exchangeSystemId = 0;
+
+    /**
      * @param _type type of instance to insert
      * @see #addCreateUpdateAttributes
      * @see #addTables
@@ -133,6 +143,20 @@ public class Insert
     }
 
     /**
+     * Set the excghangeids for the new object.
+     * @param _exchangeSystemId exchange system id
+     * @param _exchangeId       exhange id
+     * @return this
+     */
+    public Insert setExchangeIds(final Long _exchangeSystemId,
+                                 final Long _exchangeId)
+    {
+        this.exchangeSystemId = _exchangeSystemId;
+        this.exchangeId = _exchangeId;
+        return this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -197,6 +221,9 @@ public class Insert
             final long id = executeOneStatement(con, mainTable, getExpr4Tables().get(mainTable).values(), 0);
 
             setInstance(Instance.get(getInstance().getType(), id));
+
+            getInstance().setExchangeId(this.exchangeId);
+            getInstance().setExchangeSystemId(this.exchangeSystemId);
 
             GeneralInstance.insert(getInstance(), con.getConnection());
 
