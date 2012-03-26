@@ -656,7 +656,7 @@ public abstract class AbstractPrintQuery
 
         int i = 0;
         for (final Instance instance : getInstanceList()) {
-            if (i > Context.getDbType().getMaxExpressions()) {
+            if (Context.getDbType().getMaxExpressions() > -1 && i > Context.getDbType().getMaxExpressions()) {
                 select.addPart(SQLPart.PARENTHESIS_CLOSE)
                     .addPart(SQLPart.OR)
                     .addColumnPart(0, "ID").addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
