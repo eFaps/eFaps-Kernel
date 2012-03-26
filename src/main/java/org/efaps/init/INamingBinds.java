@@ -50,7 +50,7 @@ public interface INamingBinds
     String RESOURCE_USERTRANSACTION = "eFaps/usrTransaction";
 
     /**
-     * Resource name of the transaction manager.
+     * Resource name of the transaction manager Timeout value.
      */
-    String RESOURCE_TRANSMANAGTIMEOUT = "eFaps/transactionManagerTimeout";
+    String RESOURCE_CONFIGPROPERTIES = "eFaps/configProperties";
 }

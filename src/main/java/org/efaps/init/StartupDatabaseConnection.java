@@ -37,7 +37,6 @@ import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import javax.sql.DataSource;
-import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
 import org.efaps.db.databases.AbstractDatabase;
@@ -55,6 +54,7 @@ import org.slf4j.LoggerFactory;
 public final class StartupDatabaseConnection
     implements INamingBinds
 {
+
     /**
      * Logging instance used to give logging information of this class.
      */
@@ -66,8 +66,7 @@ public final class StartupDatabaseConnection
     private static final String ENV_PATH = "EFAPS_BOOTSTRAP_PATH";
 
     /**
-     * Name of the environment variable to define the name of the bootstrap
-     * file.
+     * Name of the environment variable to define the name of the bootstrap file.
      */
     private static final String ENV_FILE = "EFAPS_BOOTSTRAP_FILE";
 
@@ -94,7 +93,7 @@ public final class StartupDatabaseConnection
     /**
      * Name of the property for the timeout of the transaction manager.
      */
-    private static final String PROP_TM_TIMEOUT = "org.efaps.transaction.timeout";
+    private static final String PROP_CONFIGPROP = "org.efaps.configuration.properties";
 
     /**
      * Name of the default bootstrap path in the user home directory.
@@ -114,9 +113,8 @@ public final class StartupDatabaseConnection
     }
 
     /**
-     * Startups the eFaps kernel with the bootstrap configuration defined as
-     * shell variable. If the bootstrap configuration is not defined as shell
-     * variables, the default bootstrap definition is used.
+     * Startups the eFaps kernel with the bootstrap configuration defined as shell variable. If the bootstrap
+     * configuration is not defined as shell variables, the default bootstrap definition is used.
      *
      * @throws StartupException if startup failed
      * @see #startup(String, String)
@@ -128,12 +126,11 @@ public final class StartupDatabaseConnection
     }
 
     /**
-     * Startups the eFaps kernel with the bootstrap path defined as shell
-     * variable (or if not defined the default bootstrap path is used).
+     * Startups the eFaps kernel with the bootstrap path defined as shell variable (or if not defined the default
+     * bootstrap path is used).
      *
-     * @param _bootstrapFile    name of the bootstrap file (without file
-     *                          extension); <code>null</code> means the the
-     *                          name of the bootstrap is not predefined
+     * @param _bootstrapFile name of the bootstrap file (without file extension); <code>null</code> means the the name
+     *            of the bootstrap is not predefined
      * @throws StartupException if startup failed
      * @see #startup(String, String)
      */
@@ -144,35 +141,40 @@ public final class StartupDatabaseConnection
     }
 
     /**
-     * <p>Startups he kernel depending on a bootstrap definition.</p>
+     * <p>
+     * Startups he kernel depending on a bootstrap definition.
+     * </p>
      *
-     * <p>Following rules applies for the bootstrap path:
+     * <p>
+     * Following rules applies for the bootstrap path:
      * <ul>
-     * <li>if <code>_bootstrapPath</code> is not <code>null</code>,
-     *     <code>_bootstrapPath</code> is used as bootstrap path</li>
-     * <li>if in the system environment the shell variable {@link #ENV_PATH} is
-     *     defined, this value of this shell variable is used</li>
+     * <li>if <code>_bootstrapPath</code> is not <code>null</code>, <code>_bootstrapPath</code> is used as bootstrap
+     * path</li>
+     * <li>if in the system environment the shell variable {@link #ENV_PATH} is defined, this value of this shell
+     * variable is used</li>
      * <li>in all other cases {@link #DEFAULT_BOOTSTRAP_PATH} is used</li>
-     * </ul></p>
+     * </ul>
+     * </p>
      *
-     * <p>Following rules applies for the bootstrap name:
+     * <p>
+     * Following rules applies for the bootstrap name:
      * <ul>
-     * <li>if <code>_bootstrapFile</code> is not <code>null</code>,
-     *     <code>_bootstrapFile</code> is used as bootstrap name</li>
-     * <li>if in the system environment the shell variable {@link #ENV_FILE} is
-     *     defined, this value of this shell variable is used</li>
+     * <li>if <code>_bootstrapFile</code> is not <code>null</code>, <code>_bootstrapFile</code> is used as bootstrap
+     * name</li>
+     * <li>if in the system environment the shell variable {@link #ENV_FILE} is defined, this value of this shell
+     * variable is used</li>
      * <li>in all other cases {@link #DEFAULT_BOOTSTRAP_FILE} is used</li>
-     * </ul></p>
+     * </ul>
+     * </p>
      *
-     * <p>After the used bootstrap file is identified, this file is opened and
-     * the keys are read and evaluated.</p>
+     * <p>
+     * After the used bootstrap file is identified, this file is opened and the keys are read and evaluated.
+     * </p>
      *
-     * @param _bootstrapPath    path where the bootstrap files are located;
-     *                          <code>null</code> means that the path is not
-     *                          predefined
-     * @param _bootstrapFile    name of the bootstrap file (without file
-     *                          extension); <code>null</code> means the the
-     *                          name of the bootstrap is not predefined
+     * @param _bootstrapPath path where the bootstrap files are located; <code>null</code> means that the path is not
+     *            predefined
+     * @param _bootstrapFile name of the bootstrap file (without file extension); <code>null</code> means the the name
+     *            of the bootstrap is not predefined
      * @throws StartupException if startup failed
      */
     public static void startup(final String _bootstrapPath,
@@ -181,26 +183,26 @@ public final class StartupDatabaseConnection
     {
         // evaluate bootstrap path
         final File bsPath;
-        if (_bootstrapPath != null)  {
+        if (_bootstrapPath != null) {
             bsPath = new File(_bootstrapPath);
-        } else  {
+        } else {
             final String envPath = System.getenv(StartupDatabaseConnection.ENV_PATH);
-            if (envPath != null)  {
+            if (envPath != null) {
                 bsPath = new File(envPath);
-            } else  {
+            } else {
                 bsPath = new File(System.getProperty("user.home"), StartupDatabaseConnection.DEFAULT_BOOTSTRAP_PATH);
             }
         }
         // evaluate bootstrap file
         final String bsFile;
         File bootstrap = null;
-        if (_bootstrapFile != null)  {
+        if (_bootstrapFile != null) {
             bsFile = _bootstrapFile;
-        } else  {
+        } else {
             final String envFile = System.getenv(StartupDatabaseConnection.ENV_FILE);
-            if (envFile != null)  {
+            if (envFile != null) {
                 bsFile = envFile;
-            } else  {
+            } else {
                 bsFile = StartupDatabaseConnection.DEFAULT_BOOTSTRAP_FILE;
             }
         }
@@ -220,31 +222,30 @@ public final class StartupDatabaseConnection
         }
 
         // and startup
-        final Integer timeout;
-        if (props.containsKey(StartupDatabaseConnection.PROP_TM_TIMEOUT))  {
-            timeout = Integer.parseInt(props.getProperty(StartupDatabaseConnection.PROP_TM_TIMEOUT));
-        } else  {
-            timeout = null;
+        final Map<String, String> eFapsProps;
+        if (props.containsKey(StartupDatabaseConnection.PROP_CONFIGPROP)) {
+            eFapsProps = StartupDatabaseConnection.convertToMap(props
+                            .getProperty(StartupDatabaseConnection.PROP_CONFIGPROP));
+        } else {
+            eFapsProps = new HashMap<String, String>();
         }
         StartupDatabaseConnection.startup(props.getProperty(StartupDatabaseConnection.PROP_DBTYPE_CLASS),
-                                          props.getProperty(StartupDatabaseConnection.PROP_DBFACTORY_CLASS),
-                                          props.getProperty(StartupDatabaseConnection.PROP_DBCONNECTION),
-                                          props.getProperty(StartupDatabaseConnection.PROP_TM_CLASS),
-                                          timeout);
+                        props.getProperty(StartupDatabaseConnection.PROP_DBFACTORY_CLASS),
+                        props.getProperty(StartupDatabaseConnection.PROP_DBCONNECTION),
+                        props.getProperty(StartupDatabaseConnection.PROP_TM_CLASS),
+                        eFapsProps);
     }
 
     /**
      * Initialize the database information set for given parameter values.
      *
-     * @param _classDBType      class name of the database type
-     * @param _classDSFactory   class name of the SQL data source factory
-     * @param _propConnection   string with properties for the JDBC connection
-     * @param _classTM          class name of the transaction manager
-     * @param _timeout          timeout for the transaction manager in seconds,
-     *                          if null the default from the transaction manager
-     *                          will be used
-     * @throws StartupException if the database connection or transaction
-     *             manager could not be initialized
+     * @param _classDBType class name of the database type
+     * @param _classDSFactory class name of the SQL data source factory
+     * @param _propConnection string with properties for the JDBC connection
+     * @param _classTM class name of the transaction manager
+     * @param _timeout timeout for the transaction manager in seconds, if null the default from the transaction manager
+     *            will be used
+     * @throws StartupException if the database connection or transaction manager could not be initialized
      * @see StartupDatabaseConnection#startup(String, String, Map, String, Integer)
      * @see StartupDatabaseConnection#convertToMap(String)
      */
@@ -252,34 +253,31 @@ public final class StartupDatabaseConnection
                                final String _classDSFactory,
                                final String _propConnection,
                                final String _classTM,
-                               final Integer _timeout)
+                               final Map<String, String> _eFapsProps)
         throws StartupException
     {
         StartupDatabaseConnection.startup(_classDBType,
-                                          _classDSFactory,
-                                          StartupDatabaseConnection.convertToMap(_propConnection),
-                                          _classTM,
-                                          _timeout);
+                        _classDSFactory,
+                        StartupDatabaseConnection.convertToMap(_propConnection),
+                        _classTM,
+                        _eFapsProps);
     }
 
     /**
      * Initialize the database information set for given parameter values.
      * <ul>
      * <li>configure the database type</li>
-     * <li>initialize the SQL data source (JDBC connection to the database)
-     *     </li>
+     * <li>initialize the SQL data source (JDBC connection to the database)</li>
      * <li>initialize transaction manager</li>
      * </ul>
      *
-     * @param _classDBType      class name of the database type
-     * @param _classDSFactory   class name of the SQL data source factory
-     * @param _propConnection   map of properties for the JDBC connection
-     * @param _classTM          class name of the transaction manager
-     * @param _timeout          timeout for the transaction manager in seconds,
-     *                          if null the default from the transaction manager
-     *                          will be used
-     * @throws StartupException if the database connection or transaction
-     *                          manager could not be initialized
+     * @param _classDBType class name of the database type
+     * @param _classDSFactory class name of the SQL data source factory
+     * @param _propConnection map of properties for the JDBC connection
+     * @param _classTM class name of the transaction manager
+     * @param _timeout timeout for the transaction manager in seconds, if null the default from the transaction manager
+     *            will be used
+     * @throws StartupException if the database connection or transaction manager could not be initialized
      * @see #configureDBType(Context, String)
      * @see #configureDataSource(Context, String, Map)
      * @see #configureTransactionManager(Context, String, Integer)
@@ -288,7 +286,7 @@ public final class StartupDatabaseConnection
                                final String _classDSFactory,
                                final Map<String, String> _propConnection,
                                final String _classTM,
-                               final Integer _timeout)
+                               final Map<String, String> _eFapsProps)
         throws StartupException
     {
         if (StartupDatabaseConnection.LOG.isInfoEnabled()) {
@@ -303,23 +301,38 @@ public final class StartupDatabaseConnection
             throw new StartupException("Could not initialize JNDI", e);
         }
 
+        StartupDatabaseConnection.configureEFapsProperties(compCtx, _eFapsProps);
         StartupDatabaseConnection.configureDBType(compCtx, _classDBType);
         StartupDatabaseConnection.configureDataSource(compCtx, _classDSFactory, _propConnection);
-        StartupDatabaseConnection.configureTransactionManager(compCtx, _classTM, _timeout);
+        StartupDatabaseConnection.configureTransactionManager(compCtx, _classTM);
 
         // and reset eFaps context (to be sure..)
         org.efaps.db.Context.reset();
     }
 
+    protected static void configureEFapsProperties(final Context _compCtx,
+                                                   final Map<String, String> _eFapsProps)
+        throws StartupException
+    {
+        try {
+            Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_CONFIGPROPERTIES, _eFapsProps);
+        } catch (final NamingException e) {
+            throw new StartupException("could not bind eFaps Properties '" + _eFapsProps + "'", e);
+            // CHECKSTYLE:OFF
+        } catch (final Exception e) {
+            // CHECKSTYLE:ON
+            throw new StartupException("could not bind eFaps Properties '" + _eFapsProps + "'", e);
+        }
+    }
+
     /**
-     * The class defined with parameter <code>_classDSFactory</code>
-     * initialized and bind to {@link #RESOURCE_DATASOURCE}. The initialized
-     * class must implement interface {@link DataSource}. As JDBC connection
-     * properties the map <code>_propConneciton</code> is used.
+     * The class defined with parameter <code>_classDSFactory</code> initialized and bind to
+     * {@link #RESOURCE_DATASOURCE}. The initialized class must implement interface {@link DataSource}. As JDBC
+     * connection properties the map <code>_propConneciton</code> is used.
      *
-     * @param _compCtx          Java root naming context
-     * @param _classDSFactory   class name of the SQL data source factory
-     * @param _propConnection   map of properties for the JDBC connection
+     * @param _compCtx Java root naming context
+     * @param _classDSFactory class name of the SQL data source factory
+     * @param _propConnection map of properties for the JDBC connection
      * @throws StartupException on error
      */
     protected static void configureDataSource(final Context _compCtx,
@@ -335,22 +348,21 @@ public final class StartupDatabaseConnection
             Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_DATASOURCE, ref);
         } catch (final NamingException e) {
             throw new StartupException("could not bind JDBC pooling class '" + _classDSFactory + "'", e);
-            //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception e) {
-            //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             throw new StartupException("coud not get object instance of factory '" + _classDSFactory + "'", e);
         }
     }
 
     /**
-     * The class defined with parameter _classDBType initialized and bind to
-     * {@link #RESOURCE_DBTYPE}. The initialized class must be extended from
-     * class {@link AbstractDatabase}.
+     * The class defined with parameter _classDBType initialized and bind to {@link #RESOURCE_DBTYPE}. The initialized
+     * class must be extended from class {@link AbstractDatabase}.
      *
-     * @param _compCtx      Java root naming context
-     * @param _classDBType  class name of the database type
-     * @throws StartupException if the database type class could not be found,
-     *             initialized, accessed or bind to the context
+     * @param _compCtx Java root naming context
+     * @param _classDBType class name of the database type
+     * @throws StartupException if the database type class could not be found, initialized, accessed or bind to the
+     *             context
      */
     protected static void configureDBType(final Context _compCtx,
                                           final String _classDBType)
@@ -375,20 +387,18 @@ public final class StartupDatabaseConnection
     }
 
     /**
-     * The class defined with parameter _classTM initialized and bind to
-     * {@link #RESOURCE_TRANSMANAG}. The initialized class must implement
-     * interface {@link TransactionManager}.
+     * The class defined with parameter _classTM initialized and bind to {@link #RESOURCE_TRANSMANAG}. The initialized
+     * class must implement interface {@link TransactionManager}.
      *
-     * @param _compCtx  Java root naming context
-     * @param _classTM  class name of the transaction manager
-     * @param _timeout  timeout for the transaction manager in seconds, if null the
-     *                  default from the transaction manager will be used
-     * @throws StartupException if the transaction manager class could not be
-     *             found, initialized, accessed or bind to the context
+     * @param _compCtx Java root naming context
+     * @param _classTM class name of the transaction manager
+     * @param _timeout timeout for the transaction manager in seconds, if null the default from the transaction manager
+     *            will be used
+     * @throws StartupException if the transaction manager class could not be found, initialized, accessed or bind to
+     *             the context
      */
     protected static void configureTransactionManager(final Context _compCtx,
-                                                      final String _classTM,
-                                                      final Integer _timeout)
+                                                      final String _classTM)
         throws StartupException
     {
         try {
@@ -396,14 +406,8 @@ public final class StartupDatabaseConnection
             if (tm == null) {
                 throw new StartupException("could not initaliase database type");
             } else {
-                if (_timeout != null) {
-                    tm.setTransactionTimeout(_timeout);
-                    Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_TRANSMANAGTIMEOUT, _timeout);
-                } else {
-                    Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_TRANSMANAGTIMEOUT, 0);
-                }
                 Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_TRANSMANAG, tm);
-                Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_USERTRANSACTION,  new DelegatingUserTransaction(tm));
+                Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_USERTRANSACTION, new DelegatingUserTransaction(tm));
             }
         } catch (final ClassNotFoundException e) {
             throw new StartupException("could not found transaction manager class '" + _classTM + "'", e);
@@ -413,19 +417,20 @@ public final class StartupDatabaseConnection
             throw new StartupException("could not access transaction manager class '" + _classTM + "'", e);
         } catch (final NamingException e) {
             throw new StartupException("could not bind transaction manager class '" + _classTM + "'", e);
-        } catch (final SystemException e) {
-            throw new StartupException("could not set transaction timeout for class '" + _classTM + "'", e);
         }
     }
 
     /**
-     * <p>Separates all key / value pairs of given text string.</p>
-     * <p><b>Evaluation algorithm:</b><br/>
-     * Separates the text by all found commas (only if in front of the comma is
-     * no back slash). This are the key / value pairs. A key / value pair is
-     * separated by the first equal ('=') sign.</p>
+     * <p>
+     * Separates all key / value pairs of given text string.
+     * </p>
+     * <p>
+     * <b>Evaluation algorithm:</b><br/>
+     * Separates the text by all found commas (only if in front of the comma is no back slash). This are the key / value
+     * pairs. A key / value pair is separated by the first equal ('=') sign.
+     * </p>
      *
-     * @param _text   text string to convert to a key / value map
+     * @param _text text string to convert to a key / value map
      * @return Map of strings with all found key / value pairs
      */
     protected static Map<String, String> convertToMap(final String _text)
@@ -436,17 +441,17 @@ public final class StartupDatabaseConnection
         final Pattern pattern = Pattern.compile("(([^\\\\,])|(\\\\,)|(\\\\))*");
         final Matcher matcher = pattern.matcher(_text);
 
-        while (matcher.find())  {
+        while (matcher.find()) {
             final String group = matcher.group().trim();
-            if (group.length() > 0)  {
+            if (group.length() > 0) {
                 // separated key from value
                 final int index = group.indexOf('=');
                 final String key = (index > 0)
-                                   ? group.substring(0, index).trim()
-                                   : group.trim();
+                                ? group.substring(0, index).trim()
+                                : group.trim();
                 final String value = (index > 0)
-                                     ? group.substring(index + 1).trim()
-                                     : "";
+                                ? group.substring(index + 1).trim()
+                                : "";
                 properties.put(key, value);
             }
         }
@@ -468,12 +473,12 @@ public final class StartupDatabaseConnection
         } catch (final NamingException e) {
             throw new StartupException("Could not initialize JNDI", e);
         }
-        try  {
+        try {
             Util.unbind(compCtx, "env/" + INamingBinds.RESOURCE_DATASOURCE);
             Util.unbind(compCtx, "env/" + INamingBinds.RESOURCE_DBTYPE);
-            Util.unbind(compCtx, "env/" + INamingBinds.RESOURCE_TRANSMANAGTIMEOUT);
+            Util.unbind(compCtx, "env/" + INamingBinds.RESOURCE_CONFIGPROPERTIES);
             Util.unbind(compCtx, "env/" + INamingBinds.RESOURCE_TRANSMANAG);
-        } catch (final NamingException e)  {
+        } catch (final NamingException e) {
             throw new StartupException("unbind of the database connection failed", e);
         }
     }
