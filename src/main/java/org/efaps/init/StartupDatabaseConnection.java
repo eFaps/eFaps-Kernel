@@ -310,6 +310,12 @@ public final class StartupDatabaseConnection
         org.efaps.db.Context.reset();
     }
 
+    /**
+     * Add the eFaps Properties to the JNDI binding.
+     * @param _compCtx      Java root naming context
+     * @param _eFapsProps   Properties to bind
+     * @throws StartupException on error
+     */
     protected static void configureEFapsProperties(final Context _compCtx,
                                                    final Map<String, String> _eFapsProps)
         throws StartupException
@@ -392,8 +398,6 @@ public final class StartupDatabaseConnection
      *
      * @param _compCtx Java root naming context
      * @param _classTM class name of the transaction manager
-     * @param _timeout timeout for the transaction manager in seconds, if null the default from the transaction manager
-     *            will be used
      * @throws StartupException if the transaction manager class could not be found, initialized, accessed or bind to
      *             the context
      */

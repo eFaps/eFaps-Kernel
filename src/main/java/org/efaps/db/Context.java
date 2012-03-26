@@ -53,6 +53,7 @@ import org.efaps.db.store.Resource;
 import org.efaps.db.store.Store;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.init.INamingBinds;
+import org.efaps.init.IeFapsProperties;
 import org.efaps.init.StartupException;
 import org.efaps.util.EFapsException;
 import org.joda.time.Chronology;
@@ -118,7 +119,14 @@ public final class Context
             Context.DBTYPE = DataBaseFactory.getDatabase(Context.DATASOURCE.getConnection());
             Context.TRANSMANAG = (TransactionManager) envCtx.lookup(INamingBinds.RESOURCE_TRANSMANAG);
             try {
-                Context.TRANSMANAGTIMEOUT = (Integer) envCtx.lookup(INamingBinds.RESOURCE_TRANSMANAGTIMEOUT);
+                Context.TRANSMANAGTIMEOUT = 0;
+                final Map<?, ?> props = (Map<?, ?>) envCtx.lookup(INamingBinds.RESOURCE_CONFIGPROPERTIES);
+                if (props != null) {
+                    final String transactionTimeoutString = (String) props.get(IeFapsProperties.TRANSACTIONTIMEOUT);
+                    if (transactionTimeoutString != null) {
+                        Context.TRANSMANAGTIMEOUT = Integer.parseInt(transactionTimeoutString);
+                    }
+                }
             } catch (final NamingException e) {
                 // this is actual no error, so nothing is presented
                 Context.TRANSMANAGTIMEOUT = 0;
@@ -1172,7 +1180,14 @@ public final class Context
             Context.DATASOURCE = (DataSource) envCtx.lookup(INamingBinds.RESOURCE_DATASOURCE);
             Context.TRANSMANAG = (TransactionManager) envCtx.lookup(INamingBinds.RESOURCE_TRANSMANAG);
             try {
-                Context.TRANSMANAGTIMEOUT = (Integer) envCtx.lookup(INamingBinds.RESOURCE_TRANSMANAGTIMEOUT);
+                Context.TRANSMANAGTIMEOUT = 0;
+                final Map<?, ?> props = (Map<?, ?>) envCtx.lookup(INamingBinds.RESOURCE_CONFIGPROPERTIES);
+                if (props != null) {
+                    final String transactionTimeoutString = (String) props.get(IeFapsProperties.TRANSACTIONTIMEOUT);
+                    if (transactionTimeoutString != null) {
+                        Context.TRANSMANAGTIMEOUT = Integer.parseInt(transactionTimeoutString);
+                    }
+                }
             } catch (final NamingException e) {
                 // this is actual no error, so nothing is presented
                 Context.TRANSMANAGTIMEOUT = 0;
