@@ -43,5 +43,5 @@ public interface IeFapsProperties
     /**
      *  Key to the DB Catalog used in Database connection.
      */
-    String DBCATALOG = " org.efaps.db.catalog";
+    String DBCATALOG = "org.efaps.db.catalog";
 }

@@ -32,6 +32,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.TableInformation;
@@ -41,6 +44,8 @@ import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLUpdate;
+import org.efaps.init.INamingBinds;
+import org.efaps.init.IeFapsProperties;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.AbstractCache;
@@ -85,6 +90,34 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         CLOB,
         /** boolean. */
         BOOLEAN,
+    }
+
+
+    protected static String SCHEMAPATTERN = null;
+    protected static String CATALOG = null;
+
+    static {
+        try {
+            final InitialContext initCtx = new InitialContext();
+            javax.naming.Context envCtx = null;
+            try {
+                envCtx = (javax.naming.Context) initCtx.lookup("java:/comp/env");
+            } catch (final NamingException e) {
+                AbstractDatabase.LOG.error("NamingException", e);
+            }
+            // for a build in jetty the context is different, try this before
+            // surrender
+            if (envCtx == null) {
+                envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
+            }
+            final Map<?, ?> props = (Map<?, ?>) envCtx.lookup(INamingBinds.RESOURCE_CONFIGPROPERTIES);
+            if (props != null) {
+                SCHEMAPATTERN = (String) props.get(IeFapsProperties.DBSCHEMAPATTERN);
+                CATALOG = (String) props.get(IeFapsProperties.DBCATALOG);
+            }
+        } catch (final NamingException e) {
+            AbstractDatabase.LOG.error("NamingException", e);
+        }
     }
 
     /**

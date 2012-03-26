@@ -516,7 +516,8 @@ public class OracleDatabase
         throws SQLException
     {
         final ResultSet rsc = (_sql == null)
-                              ? _con.getMetaData().getColumns(null, "EFAPS", "%", "%")
+                              ? _con.getMetaData().getColumns(OracleDatabase.CATALOG,
+                                              OracleDatabase.SCHEMAPATTERN, "%", "%")
                               : _con.createStatement().executeQuery(_sql);
         try  {
             while (rsc.next())  {
