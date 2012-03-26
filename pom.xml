@@ -23,21 +23,27 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.efaps</groupId>
+        <artifactId>efaps-parent</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
 
     <!-- ************************************************************************
     * Module Definition
     ************************************************************************* -->
     <packaging>jar</packaging>
-    <groupId>org.efaps</groupId>
     <artifactId>efaps-kernel</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+
     <description>eFaps is a framework used to map objects with or without attached files to
 a relational database and optional file systems (only for attaches files). Configurable access control can be provided down to object and attribute level depending on implementation and use case. Depending on requirements, events (like triggers) allow to implement business logic and to separate business logic from user interface.
 The framework includes integrations (e.g. webdav, full text search) and a web application as 'simple' configurable user interface. Some best practises, example web application modules (e.g. team work module) support administrators and implementers using this framework.
     </description>
-    <name>eFaps</name>
+    <name>eFaps Kernel</name>
     <url>http://maven-efaps-plugin.efaps.org</url>
     <licenses>
         <license>
@@ -106,121 +112,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         </repository>
     </distributionManagement>
 
-    <!-- correct encoding -->
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <!-- ************************************************************************
-    * Profiles
-    ************************************************************************* -->
-    <profiles>
-        <!--
-            Release Profile is done without tests, but with source and JavaDoc!
-        -->
-        <profile>
-            <id>release-profile</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <!-- No test.. -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                   <!-- Attach Sources -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>2.1.2</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- Attach JavaDoc -->
-                    <plugin>
-                        <inherited>true</inherited>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.8</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- Update Release Info -->
-                    <plugin>
-                        <inherited>true</inherited>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <version>2.7</version>
-                        <configuration>
-                            <updateReleaseInfo>true</updateReleaseInfo>
-                        </configuration>
-                    </plugin>
-                     <!-- signing the artefact with gpg -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.4</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
-
-    <!-- ************************************************************************
-    * Reporting
-    ************************************************************************* -->
-
-
     <!-- ************************************************************************
     * Project itself
     ************************************************************************* -->
     <build>
         <plugins>
-            <!--
-                Compiler Settings:
-                - Java 1.6 is needed!
-            -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-
             <!--
                 JavaCC Settings:
                 - Target package must be set
@@ -238,119 +134,17 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     </execution>
                 </executions>
             </plugin>
-            <!--
-                Test configuration
-            -->
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.11</version>
-                <configuration>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>${basedir}/src/test/resources/testng.xml</suiteXmlFile>
-                    </suiteXmlFiles>
-                </configuration>
-            </plugin>
-
-             <plugin>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.2.1</version>
-                <configuration>
-                    <mavenExecutorId>forked-path</mavenExecutorId>
-                </configuration>
-            </plugin>
-
-            <!-- checkstyle -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.8</version>
-                <configuration>
-                    <configLocation>${basedir}/src/checkstyle/efaps_checks.xml</configLocation>
-                    <excludes>**/javacc/**/*.java</excludes>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.0</version>
                 <configuration>
                     <reportPlugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-project-info-reports-plugin</artifactId>
-                            <reportSets>
-                                <reportSet>
-                                    <reports>
-                                        <report>index</report>
-                                        <report>summary</report>
-                                        <report>dependencies</report>
-                                        <report>project-team</report>
-                                        <!--   <report>mailing-list</report>-->
-                                        <!-- <report>cim</report> -->
-                                        <report>issue-tracking</report>
-                                        <report>license</report>
-                                        <report>scm</report>
-                                    </reports>
-                                </reportSet>
-                            </reportSets>
-                        </plugin>
                         <!-- JavaCC reporting -->
                         <plugin>
                             <groupId>org.codehaus.mojo</groupId>
                             <artifactId>javacc-maven-plugin</artifactId>
                         </plugin>
-                        <!-- java doc -->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>2.7</version>
-                            <configuration>
-                                <minmemory>128m</minmemory>
-                                <maxmemory>1g</maxmemory>
-                                <level>private</level>
-                                <detectLinks />
-                            </configuration>
-                        </plugin>
-                        <!-- source code -->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-jxr-plugin</artifactId>
-                            <version>2.2</version>
-                            <configuration>
-                                <linkJavadoc>false</linkJavadoc>
-                                <javadocDir>apidocs</javadocDir>
-                            </configuration>
-                        </plugin>
-                        <!-- checkstyle -->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-checkstyle-plugin</artifactId>
-                            <version>2.8</version>
-                            <configuration>
-                                <configLocation>${basedir}/src/checkstyle/efaps_checks.xml</configLocation>
-                                <excludes>**/javacc/**/*.java</excludes>
-                            </configuration>
-                        </plugin>
-                        <!-- PMD report -->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-pmd-plugin</artifactId>
-                            <version>2.5</version>
-                            <configuration>
-                                <linkXref>true</linkXref>
-                                <sourceEncoding>utf-8</sourceEncoding>
-                                <targetJdk>1.5</targetJdk>
-                            </configuration>
-                        </plugin>
-                        <!--  findbugs report -->
-                        <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>findbugs-maven-plugin</artifactId>
-                            <version>2.3.1</version>
-                            <configuration />
-                        </plugin>
-                    </reportPlugins>
+                   </reportPlugins>
                 </configuration>
             </plugin>
             <!-- produce a test jar -->
@@ -367,15 +161,6 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 </executions>
             </plugin>
         </plugins>
-
-        <!-- Needed for the upload of the site -->
-        <extensions>
-            <extension>
-                <groupId>org.jvnet.wagon-svn</groupId>
-                <artifactId>wagon-svn</artifactId>
-                <version>1.11</version>
-            </extension>
-        </extensions>
     </build>
 
     <!-- ************************************************************************
@@ -727,7 +512,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-jndi</artifactId>
-            <version>7.5.4.v20111024</version>
+            <version>${jetty.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -739,13 +524,13 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-util</artifactId>
-            <version>7.5.4.v20111024</version>
+            <version>${jetty.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <version>7.5.4.v20111024</version>
+            <version>${jetty.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- connection Pooling, used as J2EE resource -->
