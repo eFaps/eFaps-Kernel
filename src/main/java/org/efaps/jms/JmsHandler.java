@@ -49,6 +49,8 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.SelectBuilder;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -58,6 +60,10 @@ import org.efaps.util.EFapsException;
  */
 public final class JmsHandler
 {
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(JmsHandler.class);
 
     /**
      * Mapping of JNDI-Name of the ConnectionFactory to QueueConnection.
@@ -113,7 +119,9 @@ public final class JmsHandler
                 final SelectBuilder sel = new SelectBuilder().linkto(CIAdminCommon.JmsAbstract.ESJPLink)
                                 .file().label();
                 multi.addSelect(sel);
-                multi.executeWithoutAccessCheck();
+                if (multi.executeWithoutAccessCheck()) {
+                    JmsResourceConfig.getResourceConfig().init();
+                }
                 while (multi.next()) {
                     final Type type = multi.<Type>getAttribute(CIAdminCommon.JmsAbstract.Type);
                     final String connectionFactoryJNDI = multi
@@ -184,7 +192,8 @@ public final class JmsHandler
                 }
             }
         } catch (final NamingException e) {
-            throw new EFapsException("NamingException", e);
+            // this means that a definition cannot be found.
+            JmsHandler.LOG.error("Naming exception in JMS:", e);
         } catch (final JMSException e) {
             throw new EFapsException("JMSException", e);
         } catch (final ClassNotFoundException e) {
