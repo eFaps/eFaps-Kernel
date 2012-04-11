@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -43,6 +43,7 @@ import org.efaps.util.cache.CacheReloadException;
 import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.BodyPartEntity;
 import com.sun.jersey.multipart.MultiPart;
+import com.sun.jersey.multipart.MultiPartMediaTypes;
 
 /**
  * Rest API to update files in eFaps.
@@ -60,7 +61,7 @@ public class Update
      * @param _multiPart Mulitpart containing the update files
      */
     @POST
-    @Consumes("multipart/mixed")
+    @Consumes(MultiPartMediaTypes.MULTIPART_MIXED)
     public void updateFromFile(final MultiPart _multiPart)
     {
         try {
