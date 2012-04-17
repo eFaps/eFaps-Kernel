@@ -394,7 +394,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>com.sun.jersey.contribs</groupId>
             <artifactId>jersey-multipart</artifactId>
-            <version>1.11</version>
+            <version>1.12</version>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -404,7 +404,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
-            <version>1.11</version>
+            <version>1.12</version>
         </dependency>
 
         <!-- timer for background prozesses -->
