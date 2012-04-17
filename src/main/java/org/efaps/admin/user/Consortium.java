@@ -44,36 +44,46 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public final class Company
+public final class Consortium
     extends AbstractUserObject
 {
     /**
      * Logging instance used in this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(Company.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Consortium.class);
 
     /**
-     * This is the sql select statement to select all roles from the database.
+     * This is the sql select statement to select all consortium from the database.
      */
     private static final SQLSelect SQL_SELECT = new SQLSelect()
                                                         .column("ID")
                                                         .column("UUID")
                                                         .column("NAME")
                                                         .column("STATUS")
-                                                        .from("V_USERCOMPANY");
+                                                        .from("V_USERCONSORTIUM");
 
     /**
-     * The company belonging to this Consortiums.
+     * This is the sql select statement to select all consortium 2 company
+     * relations from the database.
      */
-    private final Set<Consortium> consortiums = new HashSet<Consortium>();
-
+    private static final SQLSelect SQL_SELECTREL = new SQLSelect()
+                                                        .column("ID")
+                                                        .column("USERABSTRACTFROM")
+                                                        .column("USERABSTRACTTO")
+                                                        .column("JAASSYSID")
+                                                        .from("V_CONSORTIUM2COMPANY");
 
     /**
-     * Stores all instances of class {@link Company}.
+     * Stores all instances of class {@link Consortium}.
      *
      * @see #getCache
      */
-    private static final CompanyCache CACHE = new CompanyCache();
+    private static final ConsortiumCache CACHE = new ConsortiumCache();
+
+    /**
+     * The companies belonging to this Consortium.
+     */
+    private final Set<Company> companies = new HashSet<Company>();
 
     /**
      * @param _id       id for this company
@@ -81,38 +91,29 @@ public final class Company
      * @param _name     name for this company
      * @param _status    status for this company
      */
-    private Company(final long _id,
-                    final String _uuid,
-                    final String _name,
-                    final boolean _status)
+    private Consortium(final long _id,
+                       final String _uuid,
+                       final String _name,
+                       final boolean _status)
     {
         super(_id, _uuid, _name, _status);
     }
 
     /**
-     * @param _consortium Consortium to add to this Company
+     * @param _company Company to add to this Consortium
      */
-    protected void addConsortium(final Consortium  _consortium)
+    protected void addCompany(final Company _company)
     {
-        this.consortiums.add(_consortium);
+        this.companies.add(_company);
     }
 
     /**
-     * Get the related Consortium (unmodifiable).
-     * @return the set of related Consortiums
+     * Get the related Companies (unmodifiable).
+     * @return the set of related Companies
      */
-    public Set<Consortium> getConsortiums()
+    public Set<Company> getCompanies()
     {
-        return Collections.unmodifiableSet(this.consortiums);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasChildPerson(final Person _person)
-    {
-        return _person.isAssigned(this);
+        return Collections.unmodifiableSet(this.companies);
     }
 
     /**
@@ -131,9 +132,19 @@ public final class Company
                 ret = true;
             }
         } catch (final EFapsException e) {
-            Company.LOG.error("could not read Company or Person from Context ", e);
+            Consortium.LOG.error("could not read Company or Person from Context ", e);
         }
         return ret;
+    }
+
+    /* (non-Javadoc)
+     * @see org.efaps.admin.user.AbstractUserObject#hasChildPerson(org.efaps.admin.user.Person)
+     */
+    @Override
+    public boolean hasChildPerson(final Person _person)
+    {
+        // TODO Auto-generated method stub
+        return false;
     }
 
     /**
@@ -141,73 +152,73 @@ public final class Company
      */
     public static void initialize()
     {
-        Company.CACHE.initialize(Company.class);
+        Consortium.CACHE.initialize(Consortium.class);
     }
 
    /**
-    * Returns for given parameter <i>_id</i> the instance of class {@link Company}.
+    * Returns for given parameter <i>_id</i> the instance of class {@link Consortium}.
     *
     * @param _id    id to search in the cache
-    * @return instance of class {@link Company}
+    * @return instance of class {@link Consortium}
     * @throws CacheReloadException on error
     * @see #getCache
     */
-    public static Company get(final long _id)
+    public static Consortium get(final long _id)
         throws CacheReloadException
     {
-        return Company.CACHE.get(_id);
+        return Consortium.CACHE.get(_id);
     }
 
    /**
     * Returns for given parameter <i>_name</i> the instance of class
-    * {@link Company}.
+    * {@link Consortium}.
     *
     * @param _name   name to search in the cache
-    * @return instance of class {@link Company}
+    * @return instance of class {@link Consortium}
     * @throws CacheReloadException on error
     * @see #getCache
     */
-    public static Company get(final String _name)
+    public static Consortium get(final String _name)
         throws CacheReloadException
     {
-        return Company.CACHE.get(_name);
+        return Consortium.CACHE.get(_name);
     }
 
     /**
      * Returns for given parameter <i>_uuid</i> the instance of class
-     * {@link Company}.
+     * {@link Consortium}.
      * @param _uuid UUI to search for
-     * @return instance of class {@link Company}
+     * @return instance of class {@link Consortium}
      * @throws CacheReloadException on error
      */
-    public static Company get(final UUID _uuid)
+    public static Consortium get(final UUID _uuid)
         throws CacheReloadException
     {
-        return Company.CACHE.get(_uuid);
+        return Consortium.CACHE.get(_uuid);
     }
 
     /**
      * Method to get the Cache for Company.
      * @return Cache
      */
-    public static AbstractCache<Company> getCache()
+    public static AbstractCache<Consortium> getCache()
     {
-        return Company.CACHE;
+        return Consortium.CACHE;
     }
 
     /**
      * Cache for Companies.
      */
-    private static final class CompanyCache
-        extends AbstractCache<Company>
+    private static final class ConsortiumCache
+        extends AbstractCache<Consortium>
     {
         /**
          * {@inheritDoc}
          */
         @Override
-        protected void readCache(final Map<Long, Company> _cache4Id,
-                                 final Map<String, Company> _cache4Name,
-                                 final Map<UUID, Company> _cache4UUID)
+        protected void readCache(final Map<Long, Consortium> _cache4Id,
+                                 final Map<String, Consortium> _cache4Name,
+                                 final Map<UUID, Consortium> _cache4UUID)
             throws CacheReloadException
         {
             ConnectionResource con = null;
@@ -216,23 +227,36 @@ public final class Company
 
                 Statement stmt = null;
                 try {
-
                     stmt = con.getConnection().createStatement();
-
-                    final ResultSet resulset = stmt.executeQuery(Company.SQL_SELECT.getSQL());
+                    final ResultSet resulset = stmt.executeQuery(Consortium.SQL_SELECT.getSQL());
                     while (resulset.next()) {
                         final long id = resulset.getLong(1);
                         final String uuid = resulset.getString(2);
                         final String name = resulset.getString(3).trim();
                         final boolean status = resulset.getBoolean(4);
 
-                        Company.LOG.debug("read company '" + name + "' (id = " + id + ")");
-                        final Company company = new Company(id, uuid, name, status);
-                        _cache4Id.put(company.getId(), company);
-                        _cache4Name.put(company.getName(), company);
-                        _cache4UUID.put(company.getUUID(), company);
+                        Consortium.LOG.debug("read consortium '" + name + "' (id = " + id + ")");
+                        final Consortium consortium = new Consortium(id, uuid, name, status);
+                        _cache4Id.put(consortium.getId(), consortium);
+                        _cache4Name.put(consortium.getName(), consortium);
+                        _cache4UUID.put(consortium.getUUID(), consortium);
                     }
                     resulset.close();
+
+                    final ResultSet relResulset = stmt.executeQuery(Consortium.SQL_SELECTREL.getSQL());
+                    while (relResulset.next()) {
+                        final long id = relResulset.getLong(1);
+                        final long consortiumId = relResulset.getLong(2);
+                        final long companyId = relResulset.getLong(3);
+                        final Consortium consortium = Consortium.CACHE.get(consortiumId);
+                        final Company company = Company.getCache().get(companyId);
+                        Consortium.LOG.debug("read consortium 2 company relation '{} - {}' (relationid = {})",
+                                        new Object[] { consortium.getName(), company.getName(), id});
+                        consortium.addCompany(company);
+                        company.addConsortium(consortium);
+                    }
+                    relResulset.close();
+
                 } finally {
                     if (stmt != null) {
                         stmt.close();
@@ -240,18 +264,20 @@ public final class Company
                 }
                 con.commit();
             } catch (final SQLException e) {
-                throw new CacheReloadException("could not read roles", e);
+                throw new CacheReloadException("could not read consortiums", e);
             } catch (final EFapsException e) {
-                throw new CacheReloadException("could not read roles", e);
+                throw new CacheReloadException("could not read consortiums", e);
             } finally {
                 if ((con != null) && con.isOpened()) {
                     try {
                         con.abort();
                     } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read roles", e);
+                        throw new CacheReloadException("could not read consortiums", e);
                     }
                 }
             }
         }
     }
+
+
 }

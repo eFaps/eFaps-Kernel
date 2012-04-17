@@ -299,8 +299,8 @@ public abstract class AbstractUserObject
     /**
      * Returns for given parameter <i>_id</i> the instance of class
      * {@link AbstractUserObject}. The returned AbstractUserObject can be a
-     * {@link Person}, {@link Role} or {@link Group}. The method searches in
-     * sequence for Role, Group, Company and last User. User is searched last
+     * {@link Role}, {@link Group}, {@link Company}, {@link Consortium}
+     * or {@link Person}. It is searched in the given sequence. User is searched last
      * due to the reason that it is the only object that is not always stored
      * in a cache an might produce queries against the DataBase
      *
@@ -319,6 +319,9 @@ public abstract class AbstractUserObject
             ret = Company.get(_id);
         }
         if (ret == null) {
+            ret = Consortium.get(_id);
+        }
+        if (ret == null) {
             ret = Person.get(_id);
         }
         return ret;
@@ -327,9 +330,9 @@ public abstract class AbstractUserObject
     /**
      * Returns for given parameter <i>_name</i> the instance of class
      * {@link AbstractUserObject}.The returned AbstractUserObject can be a
-     * {@link Person}, {@link Role} or {@link Group}. he method searches in
-     * sequence for Role, Group, Company and last User. User is searched last
-     * due to the reason that it is the only object that is not always stored
+     * {@link Role}, {@link Group}, {@link Company}, {@link Consortium}
+     * or {@link Person}. It is searched in the given sequence. User is searched
+     * last due to the reason that it is the only object that is not always stored
      * in a cache an might produce queries against the DataBase
      *
      * @param _name name to search in the cache
@@ -345,6 +348,9 @@ public abstract class AbstractUserObject
         }
         if (ret == null) {
             ret = Company.get(_name);
+        }
+        if (ret == null) {
+            ret = Consortium.get(_name);
         }
         if (ret == null) {
             ret = Person.get(_name);

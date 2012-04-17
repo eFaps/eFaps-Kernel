@@ -29,6 +29,8 @@ import java.util.Map;
 
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.attributetype.ConsortiumLinkType;
+import org.efaps.admin.user.Consortium;
 import org.efaps.db.search.QAnd;
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.compare.QEqual;
@@ -356,8 +358,17 @@ public abstract class AbstractObjectQuery<T>
             if (Context.getThreadContext().getCompany() == null) {
                 throw new EFapsException(InstanceQuery.class, "noCompany");
             }
-            final QEqual eqPart = new QEqual(new QAttribute(this.baseType.getCompanyAttribute()),
-                                           new QNumberValue(Context.getThreadContext().getCompany().getId()));
+            final QEqual eqPart = new QEqual(new QAttribute(this.baseType.getCompanyAttribute()));
+
+            if (this.baseType.getCompanyAttribute().getAttributeType().getClassRepr().equals(
+                            ConsortiumLinkType.class)) {
+                for (final Consortium consortium : Context.getThreadContext().getCompany().getConsortiums()) {
+                    eqPart.addValue(new QNumberValue(consortium.getId()));
+                }
+            } else {
+                eqPart.addValue(new QNumberValue(Context.getThreadContext().getCompany().getId()));
+            }
+
             if (this.where == null) {
                 this.where = new QWhereSection(eqPart);
             } else {

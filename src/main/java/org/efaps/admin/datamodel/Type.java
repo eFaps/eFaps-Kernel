@@ -36,6 +36,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
 import org.efaps.admin.datamodel.attributetype.CompanyLinkType;
+import org.efaps.admin.datamodel.attributetype.ConsortiumLinkType;
 import org.efaps.admin.datamodel.attributetype.StatusType;
 import org.efaps.admin.datamodel.attributetype.TypeType;
 import org.efaps.admin.dbproperty.DBProperties;
@@ -349,7 +350,8 @@ public class Type
             this.statusAttributeName = _attribute.getName();
         }
         // evaluate for company
-        if (_attribute.getAttributeType().getClassRepr().equals(CompanyLinkType.class)) {
+        if (_attribute.getAttributeType().getClassRepr().equals(CompanyLinkType.class)
+                        || _attribute.getAttributeType().getClassRepr().equals(ConsortiumLinkType.class)) {
             this.companyAttributeName = _attribute.getName();
         }
         // evaluate for type attribute
