@@ -65,6 +65,19 @@ public class LabelValueSelect
      * {@inheritDoc}
      */
     @Override
+    public Object getValue(final Object _object)
+    {
+        Object ret = _object;
+        if (_object != null && _object instanceof String) {
+            ret = ((String) _object).trim();
+        }
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int append2SQLSelect(final Type _type,
                                 final SQLSelect _select,
                                 final int _tableIndex,
