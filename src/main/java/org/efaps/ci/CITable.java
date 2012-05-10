@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2011 The eFaps Team
+ * Copyright 2003 - 2012 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ package org.efaps.ci;
 
 /**
  * Each class that extends this abstract class represents a configuration
- * item for a type from eFaps. It is used to have easy access during the
+ * item for a table from eFaps. It is used to have easy access during the
  * coding of esjp etc. to the configuration items without having the problem
  * of using strings to access them. The classes are created automatically
  * with a maven target.
@@ -33,30 +33,16 @@ package org.efaps.ci;
  * @version $Id$
  */
 //CHECKSTYLE:OFF
-public abstract class CIType
-    extends CIObject
+public abstract class CITable
+    extends CICollection
 {
-    /**
-     * ID attribute. Each type must have it.
-     */
-    public final CIAttribute ID = new CIAttribute(this, "ID");
-
-    /**
-     * OID attribute.Each type must have it.
-     */
-    public final CIAttribute OID = new CIAttribute(this, "OID");
-
-    /**
-     * Type attribute.Each type must have it.
-     */
-    public final CIAttribute Type = new CIAttribute(this, "Type");
 //CHECKSTYLE:ON
 
     /**
      * Constructor setting the uuid.
      * @param _uuid UUID of this type
      */
-    protected CIType(final String _uuid)
+    protected CITable(final String _uuid)
     {
         super(_uuid);
     }
@@ -65,8 +51,8 @@ public abstract class CIType
      * Get the type this Configuration item represents.
      * @return Type
      */
-    public org.efaps.admin.datamodel.Type getType()
+    public org.efaps.admin.ui.Table getType()
     {
-        return org.efaps.admin.datamodel.Type.get(this.uuid);
+        return org.efaps.admin.ui.Table.get(this.uuid);
     }
 }
