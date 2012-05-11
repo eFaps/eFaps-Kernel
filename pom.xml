@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.efaps</groupId>
         <artifactId>efaps-parent</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.1-SNAPSHOT</version>
     </parent>
 
     <!-- ************************************************************************
@@ -86,9 +86,9 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
 
     <!-- SubVersion Repository -->
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-kernel/tags/V.2.0.0</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-kernel/tags/V.2.0.0</developerConnection>
-        <url>http://efaps.googlecode.com/svn/eFaps-kernel/tags/V.2.0.0</url>
+        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-kernel/trunk</connection>
+        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-kernel/trunk</developerConnection>
+        <url>http://efaps.googlecode.com/svn/eFaps-kernel/</url>
     </scm>
 
     <!-- Distribution Repository -->
