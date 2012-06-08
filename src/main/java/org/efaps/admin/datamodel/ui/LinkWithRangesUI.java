@@ -21,6 +21,7 @@
 package org.efaps.admin.datamodel.ui;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -65,8 +66,8 @@ public class LinkWithRangesUI
                 for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE,
                                                            ParameterValues.UIOBJECT, _fieldValue,
                                                            ParameterValues.ACCESSMODE, _fieldValue.getTargetMode())) {
-                    final TreeMap<?, ?> treemap = (TreeMap<?, ?>) values.get(ReturnValues.VALUES);
-                    for (final Entry<?, ?> entry : treemap.entrySet()) {
+                    final Map<?, ?> map = (Map<?, ?>) values.get(ReturnValues.VALUES);
+                    for (final Entry<?, ?> entry : map.entrySet()) {
                         if (entry.getValue().equals(_fieldValue.getValue().toString())) {
                             ret.append(entry.getKey().toString());
                         }
@@ -129,5 +130,26 @@ public class LinkWithRangesUI
         throws EFapsException
     {
         return _fieldValue.getValue().toString().compareTo(_fieldValue2.getValue().toString());
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object getValue(final UIValue _uiValue)
+        throws EFapsException
+    {
+        final Map<Object,Object> ret = new TreeMap<Object,Object>();
+        final Attribute attribute = _uiValue.getAttribute();
+        if (attribute != null && attribute.hasEvents(EventType.RANGE_VALUE)) {
+            for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE,
+                                                       ParameterValues.UIOBJECT, _uiValue,
+                                                       ParameterValues.ACCESSMODE, _uiValue.getTargetMode())) {
+                ret.putAll((Map<Object, Object>) values.get(ReturnValues.VALUES));
+            }
+        }
+        return ret;
     }
 }

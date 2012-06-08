@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -105,6 +106,11 @@ public class AttributeType
     private boolean createUpdate = false;
 
     /**
+     * The instance for the user interface provider.
+     */
+    private IUIProvider uiProvider;
+
+    /**
      * This is the constructor for class {@link Attribute}. Every instance of
      * class {@link Attribute} must have a name (parameter <i>_name</i>) and an
      * identifier (parameter <i>_id</i>).
@@ -138,6 +144,7 @@ public class AttributeType
 
         try {
             this.uiAttrType = (UIInterface) Class.forName(_uiAttrTypeName).newInstance();
+            this.uiProvider = (IUIProvider) Class.forName(_uiAttrTypeName).newInstance();
         } catch (final ClassNotFoundException e) {
             throw new EFapsException(getClass(), "setUIClass.ClassNotFoundException", e, _uiAttrTypeName);
         } catch (final InstantiationException e) {
@@ -182,6 +189,16 @@ public class AttributeType
     public UIInterface getUI()
     {
         return this.uiAttrType;
+    }
+
+    /**
+     * This is the getter method for instance variable {@link #uiProvider}.
+     *
+     * @return value of instance variable {@link #uiProvider}
+     */
+    public IUIProvider getUIProvider()
+    {
+        return this.uiProvider;
     }
 
     /**

@@ -33,7 +33,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public abstract class AbstractUI
-    implements UIInterface, Serializable
+    implements IUIProvider, UIInterface, Serializable
 {
     /**
      * Needed for serialization.
@@ -122,5 +122,15 @@ public abstract class AbstractUI
         throws EFapsException
     {
         return _object;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object getValue(final UIValue _uiValue)
+        throws EFapsException
+    {
+        return _uiValue.getDbValue();
     }
 }
