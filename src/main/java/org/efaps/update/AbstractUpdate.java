@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
@@ -218,15 +219,19 @@ public abstract class AbstractUpdate
      * {@link #instance}.
      *
      * @param _jexlContext context used to evaluate JEXL expressions
-     * @param _step current step of the update life cycle
+     * @param _step         current step of the update life cycle
+     * @param _profile      the Profile assigned
      * @throws InstallationException from called update methods
      */
     public void updateInDB(final JexlContext _jexlContext,
-                           final UpdateLifecycle _step)
+                           final UpdateLifecycle _step,
+                           final Set<Profile> _profile)
         throws InstallationException
     {
         for (final AbstractDefinition def : this.definitions) {
-            if (def.isValidVersion(_jexlContext)) {
+            if (def.isValidVersion(_jexlContext)
+                            && (def.getProfiles().isEmpty()
+                                            || CollectionUtils.containsAny(_profile, def.getProfiles()))) {
                 if ((this.url != null) && AbstractUpdate.LOG.isDebugEnabled()) {
                     AbstractUpdate.LOG.debug("Executing '" + this.url.toString() + "'");
                 }
@@ -565,6 +570,11 @@ public abstract class AbstractUpdate
         private Instance instance = null;
 
         /**
+         * Profiles this Definition is activated for.
+         */
+        private final Set<Profile> profiles = new HashSet<Profile>();
+
+        /**
          * Default constructor for the attribute by which the object is searched
          * is &quot;UUID&quot;.
          */
@@ -602,6 +612,13 @@ public abstract class AbstractUpdate
                 this.properties.put(_attributes.get("name"), _text);
             } else if ("version-expression".equals(value)) {
                 this.expression = _text;
+            } else if ("profiles".equals(value))  {
+                if (_tags.size() > 1)  {
+                    final String subValue = _tags.get(1);
+                    if ("profile".equals(subValue))  {
+                        this.profiles.add(Profile.getProfile(_attributes.get("name")));
+                    }
+                }
             } else {
                 throw new Error("Unknown Tag '" + _tags + "' (file " + AbstractUpdate.this.url + ")");
             }
@@ -636,6 +653,18 @@ public abstract class AbstractUpdate
                 throw new InstallationException("isValidVersion.JEXLExpressionNotEvaluatable", e);
             }
             return exec;
+        }
+
+        /**
+         * In case that this Definition does not have a profile assigned,
+         * the Default Profile will be assigned on the first call of this method.
+         * @param _profile Profile to be checked
+         * @return true if this Definition belongs to the given Profile,
+         *   else false
+         */
+        public boolean assignedTo(final Profile _profile)
+        {
+            return this.profiles.isEmpty() ? true : this.profiles.contains(_profile);
         }
 
         /**
@@ -1122,6 +1151,16 @@ public abstract class AbstractUpdate
         public void setType(final String _type)
         {
             this.type = _type;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #profiles}.
+         *
+         * @return value of instance variable {@link #profiles}
+         */
+        public Set<Profile> getProfiles()
+        {
+            return this.profiles;
         }
     }
 }

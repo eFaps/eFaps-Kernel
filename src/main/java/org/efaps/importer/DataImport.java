@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.commons.digester.Digester;
+import org.apache.commons.digester3.Digester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -78,7 +78,7 @@ public class DataImport
     public void readFile(final File _xml)
         throws MalformedURLException
     {
-        readFile(_xml.toURI().toURL());
+        DataImport.readFile(_xml.toURI().toURL());
     }
 
     /**
@@ -105,7 +105,7 @@ public class DataImport
             digester.addCallParam(def + "/date", 0, "format");
 
             // Read OrderObject
-            digester.addFactoryCreate(def + "/order", new OrderObjectBuilder(), false);
+            digester.addFactoryCreate(def + "/order", OrderObjectBuilder.class, false);
             digester.addCallMethod(def + "/order/attribute",
                     "addAttribute", 3, new Class[] { Integer.class, String.class, String.class });
             digester.addCallParam(def + "/order/attribute", 0, "index");

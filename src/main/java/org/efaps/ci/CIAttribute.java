@@ -39,15 +39,23 @@ public class CIAttribute
      * Type this attribute belongs to.
      */
     public final CIType ciType;
+
+    /**
+     * Profiles this attribute is related to.
+     */
+    public final String[] profiles;
     //CHECKSTYLE:ON
     /**
-     * @param _type type this attribute belongs to
-     * @param _name name of this attribute
+     * @param _type         type this attribute belongs to
+     * @param _name         name of this attribute
+     * @param _profiles     Profiles this attribute is related to.
      */
     public CIAttribute(final CIType _type,
-                       final String _name)
+                       final String _name,
+                       final String... _profiles)
     {
         this.ciType = _type;
         this.name = _name;
+        this.profiles = _profiles;
     }
 }

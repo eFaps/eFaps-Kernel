@@ -40,16 +40,24 @@ public class CIField
      * Type this attribute belongs to.
      */
     public final CICollection ciCollection;
+
+    /**
+     * Profiles this field is related to.
+     */
+    public final String[] profiles;
     //CHECKSTYLE:ON
 
     /**
      * @param _ciCollection     Collection this field belongs to
      * @param _name             name of this field
+     * @param _profiles         Profiles this field is related to.
      */
     public CIField(final CICollection _ciCollection,
-                   final String _name)
+                   final String _name,
+                   final String... _profiles)
     {
         this.ciCollection = _ciCollection;
         this.name = _name;
+        this.profiles = _profiles;
     }
 }

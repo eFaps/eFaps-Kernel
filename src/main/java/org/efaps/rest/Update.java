@@ -108,7 +108,7 @@ public class Update
                     AbstractRest.LOG.info("...Updating " + entry.getKey().getName());
                     final Install install = new Install();
                     install.addFile(entry.getKey().toURI().toURL(), entry.getValue().getType());
-                    install.updateLatest();
+                    install.updateLatest(null);
                 }
                 AbstractRest.LOG.info("===End of Update via REST===");
             }

@@ -34,11 +34,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.digester3.annotations.rules.CallMethod;
+import org.apache.commons.digester3.annotations.rules.CallParam;
+import org.apache.commons.digester3.annotations.rules.ObjectCreate;
+import org.apache.commons.digester3.annotations.rules.SetProperty;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.Context;
 import org.efaps.update.Install;
+import org.efaps.update.Profile;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
@@ -55,6 +60,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  * TODO: in case of a script: it must be possible to deactivate the context
  */
+@ObjectCreate(pattern = "install/version")
 public class ApplicationVersion
     implements Comparable<ApplicationVersion>
 {
@@ -69,7 +75,8 @@ public class ApplicationVersion
      * @see #setNumber
      * @see #getNumber
      */
-    private long number = 0;
+    @SetProperty(pattern = "install/version", attributeName = "number")
+    private Long number = Long.valueOf(0);
 
     /**
      * Store the information weather a compile must be done after installing
@@ -77,6 +84,7 @@ public class ApplicationVersion
      *
      * @see #setCompile(boolean)
      */
+    @SetProperty(pattern = "install/version", attributeName = "compile")
     private boolean compile = false;
 
     /**
@@ -86,6 +94,7 @@ public class ApplicationVersion
      *
      * @see #setLoginNeeded(boolean)
      */
+    @SetProperty(pattern = "install/version", attributeName = "login")
     private boolean loginNeeded = true;
 
     /**
@@ -95,6 +104,7 @@ public class ApplicationVersion
      *
      * @see #setReloadCacheNeeded
      */
+    @SetProperty(pattern = "install/version", attributeName = "reloadCache")
     private boolean reloadCacheNeeded = true;
 
     /**
@@ -131,12 +141,14 @@ public class ApplicationVersion
      * @param _install install instance with all cached XML definitions
      * @param _latestVersionNumber latest version number (defined in the
      *            version.xml file)
+     * @param _profiles
      * @param _userName name of logged in user
      * @param _password password of logged in user
      * @throws InstallationException on error
      */
     public void install(final Install _install,
                         final long _latestVersionNumber,
+                        final Set<Profile> _profiles,
                         final String _userName,
                         final String _password)
         throws InstallationException
@@ -153,7 +165,7 @@ public class ApplicationVersion
                 Context.begin();
             }
 
-            _install.install(this.number, _latestVersionNumber, this.ignoredSteps);
+            _install.install(this.number, _latestVersionNumber, _profiles, this.ignoredSteps);
 
             // commit transaction
             Context.commit();
@@ -180,10 +192,12 @@ public class ApplicationVersion
      * @param _name     file name of the script
      * @param _function name of function which is called
      */
-    public void addScript(final String _code,
-                          final String _type,
-                          final String _name,
-                          final String _function)
+    @CallMethod(pattern = "install/version/script")
+    public void addScript(@CallParam(pattern = "install/version/script") final String _code,
+                          @CallParam(pattern = "install/version/script", attributeName = "type") final String _type,
+                          @CallParam(pattern = "install/version/script", attributeName = "name") final String _name,
+                          @CallParam(pattern = "install/version/script", attributeName = "function")
+                            final String _function)
     {
         AbstractScript script = null;
         if ("rhino".equalsIgnoreCase(_type)) {
@@ -202,7 +216,8 @@ public class ApplicationVersion
      * @param _desc text of description to append
      * @see #description
      */
-    public void appendDescription(final String _desc)
+    @CallMethod(pattern = "install/version/description")
+    public void appendDescription(@CallParam(pattern = "install/version/description") final String _desc)
     {
         if (_desc != null) {
             this.description.append(_desc.trim()).append("\n");
@@ -235,7 +250,9 @@ public class ApplicationVersion
      * @param _step ignored step
      * @see #ignoredSteps
      */
-    public void addIgnoredStep(final String _step)
+    @CallMethod(pattern = "install/version/lifecyle/ignore")
+    public void addIgnoredStep(@CallParam(pattern = "install/version/lifecyle/ignore", attributeName = "step")
+                                final String _step)
     {
         this.ignoredSteps.add(UpdateLifecycle.valueOf(_step.toUpperCase()));
     }
@@ -264,7 +281,7 @@ public class ApplicationVersion
      * @see #number
      * @see #getNumber
      */
-    public void setNumber(final long _number)
+    public void setNumber(final Long _number)
     {
         this.number = _number;
     }

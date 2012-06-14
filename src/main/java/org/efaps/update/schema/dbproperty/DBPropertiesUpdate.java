@@ -29,8 +29,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.jexl.JexlContext;
 import org.efaps.admin.datamodel.Type;
@@ -41,6 +42,7 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.IUpdate;
+import org.efaps.update.Profile;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
@@ -439,7 +441,8 @@ public class DBPropertiesUpdate
      */
     @Override
     public void updateInDB(final JexlContext _jexlContext,
-                           final UpdateLifecycle _step)
+                           final UpdateLifecycle _step,
+                           final Set<Profile> _profile)
         throws InstallationException
     {
         if (_step == UpdateLifecycle.DBPROPERTIES_UPDATE) {

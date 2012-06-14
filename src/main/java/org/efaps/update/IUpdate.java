@@ -22,6 +22,7 @@ package org.efaps.update;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.jexl.JexlContext;
 import org.efaps.update.util.InstallationException;
@@ -40,10 +41,12 @@ public interface IUpdate
      *
      * @param _jexlContext  context used to evaluate JEXL expressions
      * @param _step         current step of the update life cycle
+     * @param _profile      the Profiles that will be executed
      * @throws InstallationException from called update methods
      */
     void updateInDB(final JexlContext _jexlContext,
-                    final UpdateLifecycle _step)
+                    final UpdateLifecycle _step,
+                    final Set<Profile> _profiles)
         throws InstallationException;
 
     /**

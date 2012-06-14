@@ -20,8 +20,8 @@
 
 package org.efaps.importer;
 
-import org.apache.commons.digester.Digester;
-import org.apache.commons.digester.ObjectCreationFactory;
+import org.apache.commons.digester3.Digester;
+import org.apache.commons.digester3.ObjectCreationFactory;
 import org.xml.sax.Attributes;
 
 /**
@@ -33,7 +33,7 @@ import org.xml.sax.Attributes;
  * @author The eFaps Team
  */
 public class OrderObjectBuilder
-    implements ObjectCreationFactory
+    implements ObjectCreationFactory<OrderObject>
 {
     /**
      * Returns a new instance of the order object for given type and direction
@@ -43,7 +43,7 @@ public class OrderObjectBuilder
      *                      object
      * @return new order object instance
      */
-    public Object createObject(final Attributes _attributes)
+    public OrderObject createObject(final Attributes _attributes)
     {
         return new OrderObject(_attributes.getValue("type"), _attributes.getValue("direction"));
     }

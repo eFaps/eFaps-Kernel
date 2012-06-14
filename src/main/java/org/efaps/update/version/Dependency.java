@@ -24,8 +24,15 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.digester3.annotations.rules.BeanPropertySetter;
+import org.apache.commons.digester3.annotations.rules.CallMethod;
+import org.apache.commons.digester3.annotations.rules.CallParam;
+import org.apache.commons.digester3.annotations.rules.ObjectCreate;
+import org.apache.commons.digester3.annotations.rules.SetProperty;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.ivy.Ivy;
 import org.apache.ivy.core.cache.ArtifactOrigin;
@@ -36,6 +43,7 @@ import org.apache.ivy.core.resolve.DownloadOptions;
 import org.apache.ivy.core.resolve.ResolveOptions;
 import org.apache.ivy.core.resolve.ResolvedModuleRevision;
 import org.apache.ivy.core.settings.IvySettings;
+import org.efaps.update.Profile;
 import org.efaps.update.util.InstallationException;
 
 /**
@@ -45,22 +53,27 @@ import org.efaps.update.util.InstallationException;
  * @author The eFaps Team
  * @version $Id$
  */
+@ObjectCreate(pattern = "install/dependencies/dependency")
 public class Dependency
 {
     /**
      * Group identifier.
      */
-    private final String groupId;
+    @BeanPropertySetter(pattern = "install/dependencies/dependency/groupId")
+    private String groupId;
+
 
     /**
      * Artifact identifier.
      */
-    private final String artifactId;
+    @BeanPropertySetter(pattern = "install/dependencies/dependency/artifactId")
+    private String artifactId;
 
     /**
      * Version.
      */
-    private final String version;
+    @BeanPropertySetter(pattern = "install/dependencies/dependency/version")
+    private String version;
 
     /**
      * Link to the class file which is defined by this dependency.
@@ -70,19 +83,15 @@ public class Dependency
     private File jarFile;
 
     /**
-     *
-     * @param _groupId      group ID of the dependency
-     * @param _artifactId   artifact ID of the dependency
-     * @param _version      version of the dependency
+     * Order position of this dependency.
      */
-    Dependency(final String _groupId,
-               final String _artifactId,
-               final String _version)
-    {
-        this.groupId = _groupId;
-        this.artifactId = _artifactId;
-        this.version = _version;
-    }
+    @SetProperty(pattern = "install/dependencies/dependency/", attributeName = "order")
+    private Integer order;
+
+    /**
+     * List of related profiles.
+     */
+    private final Set<String> profileNames = new HashSet<String>();
 
     /**
      * Resolves this dependency.
@@ -94,52 +103,48 @@ public class Dependency
     public void resolve()
         throws InstallationException
     {
-        if (true)  {
-            final IvySettings ivySettings = new IvySettings();
-            try  {
-                ivySettings.load(this.getClass().getResource("/org/efaps/update/version/ivy.xml"));
-            } catch (final IOException e)  {
-                throw new InstallationException("IVY setting file could not be read", e);
-            } catch (final ParseException e)  {
-                throw new InstallationException("IVY setting file could not be parsed", e);
-            }
-
-            final Ivy ivy = Ivy.newInstance(ivySettings);
-            ivy.getLoggerEngine().pushLogger(new IvyOverSLF4JLogger());
-
-            final Map<String, String> attr = new HashMap<String, String>();
-            attr.put("changing", "true");
-
-            final ModuleRevisionId modRevId = ModuleRevisionId.newInstance(this.groupId,
-                                                                           this.artifactId,
-                                                                           this.version,
-                                                                           attr);
-
-            final ResolveOptions options = new ResolveOptions();
-            options.setConfs(new String[] {"runtime"});
-
-
-            final ResolvedModuleRevision resModRev = ivy.findModule(modRevId);
-
-            Artifact dw = null;
-            for (final Artifact artifact : resModRev.getDescriptor().getAllArtifacts())  {
-                if ("jar".equals(artifact.getType()))  {
-                    dw = artifact;
-                    break;
-                }
-            }
-
-            final DownloadOptions dwOptions = new DownloadOptions();
-
-//            dwOptions.setLog(DownloadOptions.LOG_QUIET);
-
-            final ArtifactOrigin ao = resModRev.getArtifactResolver().locate(dw);
-            resModRev.getArtifactResolver().getRepositoryCacheManager().clean();
-
-            final ArtifactDownloadReport adw = resModRev.getArtifactResolver().download(ao, dwOptions);
-
-            this.jarFile = adw.getLocalFile();
+        final IvySettings ivySettings = new IvySettings();
+        try  {
+            ivySettings.load(this.getClass().getResource("/org/efaps/update/version/ivy.xml"));
+        } catch (final IOException e)  {
+            throw new InstallationException("IVY setting file could not be read", e);
+        } catch (final ParseException e)  {
+            throw new InstallationException("IVY setting file could not be parsed", e);
         }
+
+        final Ivy ivy = Ivy.newInstance(ivySettings);
+        ivy.getLoggerEngine().pushLogger(new IvyOverSLF4JLogger());
+
+        final Map<String, String> attr = new HashMap<String, String>();
+        attr.put("changing", "true");
+
+        final ModuleRevisionId modRevId = ModuleRevisionId.newInstance(this.groupId,
+                                                                       this.artifactId,
+                                                                       this.version,
+                                                                       attr);
+
+        final ResolveOptions options = new ResolveOptions();
+        options.setConfs(new String[] {"runtime"});
+
+
+        final ResolvedModuleRevision resModRev = ivy.findModule(modRevId);
+
+        Artifact dw = null;
+        for (final Artifact artifact : resModRev.getDescriptor().getAllArtifacts())  {
+            if ("jar".equals(artifact.getType()))  {
+                dw = artifact;
+                break;
+            }
+        }
+
+        final DownloadOptions dwOptions = new DownloadOptions();
+
+        final ArtifactOrigin ao = resModRev.getArtifactResolver().locate(dw);
+        resModRev.getArtifactResolver().getRepositoryCacheManager().clean();
+
+        final ArtifactDownloadReport adw = resModRev.getArtifactResolver().download(ao, dwOptions);
+
+        this.jarFile = adw.getLocalFile();
     }
 
     /**
@@ -154,6 +159,114 @@ public class Dependency
     }
 
     /**
+     * Getter method for the instance variable {@link #order}.
+     *
+     * @return value of instance variable {@link #order}
+     */
+    public Integer getOrder()
+    {
+        return this.order;
+    }
+
+    /**
+     * Setter method for instance variable {@link #order}.
+     *
+     * @param _order value for instance variable {@link #order}
+     */
+
+    public void setOrder(final Integer _order)
+    {
+        this.order = _order;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #groupId}.
+     *
+     * @return value of instance variable {@link #groupId}
+     */
+    public String getGroupId()
+    {
+        return this.groupId;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #groupId}.
+     *
+     * @param _groupId value for instance variable {@link #groupId}
+     */
+
+    public void setGroupId(final String _groupId)
+    {
+        this.groupId = _groupId;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #artifactId}.
+     *
+     * @return value of instance variable {@link #artifactId}
+     */
+    public String getArtifactId()
+    {
+        return this.artifactId;
+    }
+
+
+    /**
+     * Setter method for instance variable {@link #artifactId}.
+     *
+     * @param _artifactId value for instance variable {@link #artifactId}
+     */
+
+    public void setArtifactId(final String _artifactId)
+    {
+        this.artifactId = _artifactId;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #version}.
+     *
+     * @return value of instance variable {@link #version}
+     */
+    public String getVersion()
+    {
+        return this.version;
+    }
+
+    /**
+     * Setter method for instance variable {@link #version}.
+     *
+     * @param _version value for instance variable {@link #version}
+     */
+
+    public void setVersion(final String _version)
+    {
+        this.version = _version;
+    }
+
+
+    /**
+     * @param _name name to add
+     */
+    @CallMethod(pattern = "install/dependencies/dependency/profiles/profile")
+    public void addProfileName(@CallParam(pattern = "install/dependencies/dependency/profiles/profile",
+                                                attributeName = "name") final String _name)
+    {
+        this.profileNames.add(_name);
+    }
+
+    public Set<Profile> getProfiles()
+    {
+        final Set<Profile> ret = new HashSet<Profile>();
+        for (final String name : this.profileNames) {
+            ret.add(Profile.getProfile(name));
+        }
+        return ret;
+    }
+
+    /**
      * Returns the information about this dependency as string representation.
      *
      * @return string representation
@@ -165,6 +278,7 @@ public class Dependency
                 .append("groupId", this.groupId)
                 .append("artifactId", this.artifactId)
                 .append("version", this.version)
+                .append("order", this.order)
                 .append("jarFile", this.jarFile)
                 .toString();
     }

@@ -23,6 +23,7 @@ package org.efaps.update;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.jexl.JexlContext;
 import org.efaps.update.util.InstallationException;
@@ -44,16 +45,6 @@ public class ImportUpdate
      * {@inheritDoc}
      */
     @Override
-    public void updateInDB(final JexlContext _jexlContext,
-                           final UpdateLifecycle _step)
-        throws InstallationException
-    {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getFileApplication()
     {
         return null;
@@ -67,6 +58,17 @@ public class ImportUpdate
                         final Map<String, String> _attributes,
                         final String _text)
         throws SAXException
+    {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateInDB(final JexlContext _jexlContext,
+                           final UpdateLifecycle _step,
+                           final Set<Profile> _profile)
+        throws InstallationException
     {
     }
 }

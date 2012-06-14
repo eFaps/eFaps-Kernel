@@ -95,6 +95,7 @@ public class Install
      * @param _number           number to install
      * @param _latestNumber     latest version number to install (e..g. defined
      *                          in the version.xml file)
+     * @param _profiles
      * @param _ignoredSteps     set of ignored life cycle steps which are not
      *                          executed
      * @throws InstallationException on error
@@ -103,6 +104,7 @@ public class Install
     @SuppressWarnings("unchecked")
     public void install(final Long _number,
                         final Long _latestNumber,
+                        final Set<Profile> _profiles,
                         final Set<UpdateLifecycle> _ignoredSteps)
         throws InstallationException
     {
@@ -136,7 +138,7 @@ public class Install
                 }
                 for (final Map.Entry<Class<? extends IUpdate>, List<IUpdate>> entry : this.cache.entrySet()) {
                     for (final IUpdate update : entry.getValue()) {
-                        update.updateInDB(jexlContext, step);
+                        update.updateInDB(jexlContext, step, _profiles);
                         if (!bigTrans) {
                             try {
                                 Context.commit();
@@ -188,7 +190,7 @@ public class Install
      * @throws InstallationException if update failed
      */
     @SuppressWarnings("unchecked")
-    public void updateLatest()
+    public void updateLatest(final Set<Profile> _profiles)
         throws InstallationException
     {
         final boolean bigTrans = Context.getDbType().supportsBigTransactions();
@@ -223,7 +225,7 @@ public class Install
                         jexlContext.getVars().put("latest", latestVersion);
                     }
                     // and create
-                    update.updateInDB(jexlContext, step);
+                    update.updateInDB(jexlContext, step, _profiles);
                     if (!bigTrans) {
                         if (!bigTrans) {
                             try {

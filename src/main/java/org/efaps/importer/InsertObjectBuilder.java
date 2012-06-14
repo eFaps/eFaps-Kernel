@@ -20,8 +20,8 @@
 
 package org.efaps.importer;
 
-import org.apache.commons.digester.Digester;
-import org.apache.commons.digester.ObjectCreationFactory;
+import org.apache.commons.digester3.Digester;
+import org.apache.commons.digester3.ObjectCreationFactory;
 import org.xml.sax.Attributes;
 
 /**
@@ -35,7 +35,7 @@ import org.xml.sax.Attributes;
  * @version $Id$
  */
 public class InsertObjectBuilder
-    implements ObjectCreationFactory
+    implements ObjectCreationFactory<InsertObject>
 {
     /**
      * Returns a new instance of the insert object for given type defined in
@@ -45,7 +45,7 @@ public class InsertObjectBuilder
      *                      object
      * @return new insert object instance
      */
-    public Object createObject(final Attributes _attributes)
+    public InsertObject createObject(final Attributes _attributes)
     {
         return new InsertObject(_attributes.getValue("type"));
     }

@@ -25,17 +25,25 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.digester.Digester;
-import org.apache.commons.digester.Rule;
+import org.apache.commons.digester3.Digester;
+import org.apache.commons.digester3.annotations.FromAnnotationsRuleModule;
+import org.apache.commons.digester3.annotations.rules.BeanPropertySetter;
+import org.apache.commons.digester3.annotations.rules.CallMethod;
+import org.apache.commons.digester3.annotations.rules.CallParam;
+import org.apache.commons.digester3.annotations.rules.ObjectCreate;
+import org.apache.commons.digester3.annotations.rules.SetNext;
+import org.apache.commons.digester3.binder.DigesterLoader;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.tools.ant.DirectoryScanner;
 import org.efaps.admin.datamodel.Type;
@@ -47,18 +55,19 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.update.FileType;
 import org.efaps.update.Install;
+import org.efaps.update.Profile;
 import org.efaps.update.schema.program.esjp.ESJPCompiler;
 import org.efaps.update.schema.program.staticsource.AbstractStaticSourceCompiler;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
 
 /**
  * @author The eFaps Team
  * @version $Id$
  */
+@ObjectCreate(pattern = "install")
 public final class Application
 {
 
@@ -113,7 +122,9 @@ public final class Application
      *
      * @see #setApplication
      */
+    @BeanPropertySetter(pattern = "install/application")
     private String application = null;
+
 
     /**
      * Stores all versions of this application which must be installed.
@@ -147,15 +158,12 @@ public final class Application
      * @see #Application(URL, List)
      * @see #getClassPathElements()
      */
-    private final List<String> classpathElements;
+    private List<String> classpathElements;
 
     /**
-     * Dependencies to other applications for this application ordered by the
-     * key (which represents the order number of the dependency).
-     *
-     * @see #defineDependency(String, String, String)
+     * Dependencies to other applications for this application ordered.
      */
-    private final Map<Integer, Dependency> dependencies = new TreeMap<Integer, Dependency>();
+    private final List<Dependency> dependencies = new ArrayList<Dependency>();
 
     /**
      * Root URL where the source files are located. Could be a file directory (
@@ -164,12 +172,19 @@ public final class Application
      * @see #Application(URL, List)
      * @see #getRootUrl()
      */
-    private final URL rootUrl;
+    private URL rootUrl;
 
     /**
      * Stores the name of the rootPackage.
      */
+    @BeanPropertySetter(pattern = "install/rootPackage")
     private String rootPackageName;
+
+
+    /**
+     * USed in combination with the digester.
+     */
+    private Map<String, String> tmpElements = new HashMap<String, String>();
 
     /**
      * Initializes the {@link #rootUrl root URL} of this application.
@@ -183,6 +198,13 @@ public final class Application
     {
         this.rootUrl = _rootUrl;
         this.classpathElements = _classpathElements;
+    }
+
+    /**
+     * Constructor used by Digester.
+     */
+    public Application()
+    {
     }
 
     /**
@@ -205,89 +227,37 @@ public final class Application
     {
         Application appl = null;
         try {
-            final Digester digester = new Digester();
-            digester.setValidating(false);
-
-            digester.addRule("install", new Rule() {
-
-                /**
-                 * Process the beginning of this element.
-                 *
-                 * @param attributes The attribute list of this element
-                 */
+            final DigesterLoader loader = DigesterLoader.newLoader(new FromAnnotationsRuleModule()
+            {
                 @Override
-                public void begin(final Attributes _attributes)
+                protected void configureRules()
                 {
-                    this.digester.push(new Application(_rootUrl, _classpathElements));
-                }
-
-                /**
-                 * Process the end of this element.
-                 */
-                @Override
-                public void end()
-                {
-                    this.digester.pop();
+                    bindRulesFrom(Application.class);
                 }
             });
-
-            digester.addCallMethod("install/application", "setApplication", 1);
-            digester.addCallParam("install/application", 0);
-
-            digester.addCallMethod("install/rootPackage", "setRootPackageName", 1);
-            digester.addCallParam("install/rootPackage", 0, "name");
-
-            digester.addCallMethod("install/dependencies/dependency", "defineDependency", 4,
-                            new Class[] { String.class, String.class, String.class, Integer.class });
-            digester.addCallParam("install/dependencies/dependency/groupId", 0);
-            digester.addCallParam("install/dependencies/dependency/artifactId", 1);
-            digester.addCallParam("install/dependencies/dependency/version", 2);
-            digester.addCallParam("install/dependencies/dependency", 3, "order");
-
-            digester.addCallMethod("install/files/file", "addClassPathFile", 2);
-            digester.addCallParam("install/files/file", 0, "name");
-            digester.addCallParam("install/files/file", 1, "type");
-
-            digester.addObjectCreate("install/version", ApplicationVersion.class);
-            digester.addSetNext("install/version", "addVersion");
-
-            digester.addCallMethod("install/version", "setNumber", 1, new Class[] { Long.class });
-            digester.addCallParam("install/version", 0, "number");
-
-            digester.addCallMethod("install/version", "setCompile", 1, new Class[] { Boolean.class });
-            digester.addCallParam("install/version", 0, "compile");
-
-            digester.addCallMethod("install/version", "setReloadCacheNeeded", 1, new Class[] { Boolean.class });
-            digester.addCallParam("install/version", 0, "reloadCache");
-
-            digester.addCallMethod("install/version", "setLoginNeeded", 1, new Class[] { Boolean.class });
-            digester.addCallParam("install/version", 0, "login");
-
-            digester.addCallMethod("install/version/description", "appendDescription", 1);
-            digester.addCallParam("install/version/description", 0);
-
-            digester.addCallMethod("install/version/lifecyle/ignore", "addIgnoredStep", 1);
-            digester.addCallParam("install/version/lifecyle/ignore", 0, "step");
-
-            digester.addCallMethod("install/version/script", "addScript", 4);
-            digester.addCallParam("install/version/script", 0);
-            digester.addCallParam("install/version/script", 1, "type");
-            digester.addCallParam("install/version/script", 2, "name");
-            digester.addCallParam("install/version/script", 3, "function");
-
+            final Digester digester = loader.newDigester();
             appl = (Application) digester.parse(_versionUrl);
+            appl.rootUrl = _rootUrl;
+            appl.classpathElements = _classpathElements;
+            for (final Entry<String, String> entry : appl.tmpElements.entrySet()) {
+                appl.addURL(new URL(_rootUrl, entry.getKey()), entry.getValue());
+            }
+            appl.tmpElements = null;
+            Collections.sort(appl.dependencies, new Comparator<Dependency>()
+            {
 
+                @Override
+                public int compare(final Dependency _dependency0,
+                                   final Dependency _dependency1)
+                {
+                    return _dependency0.getOrder().compareTo(_dependency1.getOrder());
+                }
+            });
             for (final ApplicationVersion applVers : appl.getVersions()) {
                 applVers.setApplication(appl);
                 appl.setMaxVersion(applVers.getNumber());
             }
-            /*
-             * } catch (final InvocationTargetException e) { if (e.getCause()
-             * instanceof InstallationException) { throw (InstallationException)
-             * e.getCause(); } else { throw new
-             * InstallationException("Could not parsing the version file '" +
-             * _versionUrl + "'", e); }
-             */
+
         } catch (final IOException e) {
             if (e.getCause() instanceof InstallationException) {
                 throw (InstallationException) e.getCause();
@@ -305,10 +275,11 @@ public final class Application
     /**
      * Returns the application definition read from a source directory.
      *
-     * @param _versionFile version file which defines the application
-     * @param _classpathElements class path elements (required to compile)
-     * @param _eFapsDir root directory with the XML installation files
-     * @param _outputDir directory used as target for generated code
+     * @param _versionFile          version file which defines the application
+     * @param _classpathElements    class path elements (required to compile)
+     * @param _eFapsDir             root directory with the XML installation
+     *                              files
+     * @param _outputDir            directory used as target for generated code
      * @param _includes list of includes; if <code>null</code>
      *            {@link #DEFAULT_INCLUDES} are used
      * @param _excludes list of excludes; if <code>null</code>
@@ -412,9 +383,7 @@ public final class Application
             while (urlEnum.hasMoreElements()) {
                 // TODO: why class path?
                 final URL url = urlEnum.nextElement();
-                final Application appl = Application.getApplication(url,
-                                new URL(url, "../../../"),
-                                _classpath);
+                final Application appl = Application.getApplication(url, new URL(url, "../../../"), _classpath);
                 appls.put(appl.getApplication(), appl);
             }
         } catch (final IOException e) {
@@ -508,10 +477,11 @@ public final class Application
      * @see #install(String, String, boolean)
      */
     public void install(final String _userName,
-                        final String _password)
+                        final String _password,
+                        final Set<Profile> _profiles)
         throws InstallationException
     {
-        this.install(_userName, _password, true);
+        this.install(_userName, _password, _profiles, true);
     }
 
     /**
@@ -527,16 +497,18 @@ public final class Application
      */
     protected void install(final String _userName,
                            final String _password,
-                           final boolean _withDependency)
+                           final Set<Profile> _profiles,
+                           final boolean _withDependency
+                           )
         throws InstallationException
     {
         // install dependency if required
         if (_withDependency) {
-            for (final Dependency dependency : this.dependencies.values()) {
+            for (final Dependency dependency : this.dependencies) {
                 dependency.resolve();
                 final Application appl = Application.getApplicationFromJarFile(
                                 dependency.getJarFile(), this.classpathElements);
-                appl.install(_userName, _password, false);
+                appl.install(_userName, _password, dependency.getProfiles(), false);
             }
         }
 
@@ -574,7 +546,7 @@ public final class Application
                 }
                 try {
                     // TODO: correct exception handling in the installation
-                    version.install(this.install, getLastVersion().getNumber(), _userName, _password);
+                    version.install(this.install, getLastVersion().getNumber(), _profiles, _userName, _password);
                   //CHECKSTYLE:OFF
                 } catch (final Exception e) {
                   //CHECKSTYLE:ON
@@ -601,7 +573,8 @@ public final class Application
      * @throws Exception on error
      */
     public void updateLastVersion(final String _userName,
-                                  final String _password)
+                                  final String _password,
+                                  final Set<Profile> _profiles)
         throws Exception
     {
         // reload cache (if possible)
@@ -622,7 +595,7 @@ public final class Application
                                 + this.application
                                 + "'");
             }
-            version.install(this.install, version.getNumber(), _userName, _password);
+            version.install(this.install, version.getNumber(), null, _userName, _password);
             if (Application.LOG.isInfoEnabled()) {
                 Application.LOG.info("Finished update of version " + version.getNumber());
             }
@@ -689,26 +662,12 @@ public final class Application
 
     /**
      *
-     * @param _groupId group id of the dependency
-     * @param _artifactId artifact id of the dependency
-     * @param _version version of the dependency
-     * @param _order number order (used to define in which order the dependent
-     *            applications are installed)
-     * @throws InstallationException if an order number is defined more than one
-     *             time
+     * @param _dependency  dependency
      */
-    public void defineDependency(final String _groupId,
-                                 final String _artifactId,
-                                 final String _version,
-                                 final int _order)
-        throws InstallationException
+    @SetNext
+    public void addDependency(final Dependency _dependency)
     {
-        if (this.dependencies.containsKey(_order)) {
-            throw new InstallationException("Order " + _order + " defined for '" + _groupId + "' '"
-                            + _artifactId + "' '" + _version + "' is already defined within the dependencies for "
-                            + this.dependencies.get(_order));
-        }
-        this.dependencies.put(_order, new Dependency(_groupId, _artifactId, _version));
+        this.dependencies.add(_dependency);
     }
 
     /**
@@ -737,6 +696,7 @@ public final class Application
      *
      * @param _version new application version to add
      */
+    @SetNext
     public void addVersion(final ApplicationVersion _version)
     {
         this.versions.add(_version);
@@ -751,6 +711,18 @@ public final class Application
     {
         return (ApplicationVersion) this.versions.toArray()[this.versions.size() - 1];
     }
+
+    /**
+     * Setter method for instance variable {@link #application}.
+     *
+     * @param _application value for instance variable {@link #application}
+     */
+
+    public void setApplication(final String _application)
+    {
+        this.application = _application;
+    }
+
 
     /**
      * Adds a new URL with the XML definition file.
@@ -775,11 +747,13 @@ public final class Application
      * @throws MalformedURLException on error with the URL
      * @see #addURL(URL, String)
      */
-    public void addClassPathFile(final String _classPathFile,
-                                 final String _type)
+    @CallMethod(pattern = "install/files/file")
+    public void addClassPathFile(
+                        @CallParam(pattern = "install/files/file", attributeName = "name") final String _classPathFile,
+                        @CallParam(pattern = "install/files/file", attributeName = "type") final String _type)
         throws MalformedURLException
     {
-        addURL(new URL(this.rootUrl, _classPathFile), _type);
+        this.tmpElements.put(_classPathFile, _type);
     }
 
     /**
@@ -797,20 +771,9 @@ public final class Application
      *
      * @return value of instance variable {@link #dependencies}
      */
-    public Map<Integer, Dependency> getDependencies()
+    public List<Dependency> getDependencies()
     {
         return this.dependencies;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #application}.
-     *
-     * @param _application new value for instance variable {@link #application}
-     * @see #application
-     */
-    public void setApplication(final String _application)
-    {
-        this.application = _application;
     }
 
     /**
