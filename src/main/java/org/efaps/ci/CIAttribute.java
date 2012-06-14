@@ -45,6 +45,17 @@ public class CIAttribute
      */
     public final String[] profiles;
     //CHECKSTYLE:ON
+
+    /**
+     * @param _type         type this attribute belongs to
+     * @param _name         name of this attribute
+     */
+    public CIAttribute(final CIType _type,
+                       final String _name)
+    {
+        this(_type, _name, (String[]) null);
+    }
+
     /**
      * @param _type         type this attribute belongs to
      * @param _name         name of this attribute
