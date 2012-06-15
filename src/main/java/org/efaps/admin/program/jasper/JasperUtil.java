@@ -156,7 +156,7 @@ public final class JasperUtil
                 parameters = _parameters;
             }
             DynamicJasperHelper.visitSubreports(_dynReport, parameters);
-            DynamicJasperHelper.compileOrLoadSubreports(_dynReport, parameters);
+            DynamicJasperHelper.compileOrLoadSubreports(_dynReport, parameters, "");
 
             final DynamicJasperDesign jd = JasperUtil.generateJasperDesign(_dynReport, _template);
             JasperUtil.registerEntities(jd, _dynReport, _layoutManager);
