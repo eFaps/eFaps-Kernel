@@ -141,7 +141,7 @@ public class LinkWithRangesUI
     public Object getValue(final UIValue _uiValue)
         throws EFapsException
     {
-        final Map<Object,Object> ret = new TreeMap<Object,Object>();
+        final Map<Object, Object> ret = new TreeMap<Object, Object>();
         final Attribute attribute = _uiValue.getAttribute();
         if (attribute != null && attribute.hasEvents(EventType.RANGE_VALUE)) {
             for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE,

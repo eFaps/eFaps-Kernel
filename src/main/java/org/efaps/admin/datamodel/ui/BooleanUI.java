@@ -20,10 +20,14 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.util.EFapsException;
 
 /**
  * A boolean value is shown in create mode with radio boxen which are only
@@ -197,4 +201,16 @@ public class BooleanUI
         }
         return ret;
     }
+
+    @Override
+    public Object getValue(final UIValue _uiValue)
+        throws EFapsException
+    {
+        final Map<Object, Object> ret = new TreeMap<Object, Object>();
+        final Attribute attribute = _uiValue.getAttribute();
+        ret.put(getTrue(attribute), Boolean.TRUE);
+        ret.put(getFalse(attribute), Boolean.FALSE);
+        return ret;
+    }
+
 }
