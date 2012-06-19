@@ -116,6 +116,18 @@ public class CIAdminUser
         public final CIAttribute LoginTriesCounter = new CIAttribute(this, "LoginTriesCounter");
     }
 
+    public static final _Role Role = new _Role("fe9d94fd-2ed8-4c44-b1f0-00e150555888");
+
+    public static class _Role
+        extends _Abstract
+    {
+        protected _Role(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
+
     public static final _Person2Role Person2Role = new _Person2Role("37deb6ae-3e1c-4642-8823-715120386fc3");
 
     public static class _Person2Role
