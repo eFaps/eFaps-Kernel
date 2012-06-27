@@ -246,7 +246,6 @@ public class Dependency
         this.version = _version;
     }
 
-
     /**
      * @param _name name to add
      */
@@ -257,11 +256,22 @@ public class Dependency
         this.profileNames.add(_name);
     }
 
+    /**
+     * Get the profiles for this dependency. In case that there are no profiles
+     * defined in {@link #profileNames} it will return a set containing the
+     * default profile.
+     *
+     * @return profiles applied for this dependency
+     */
     public Set<Profile> getProfiles()
     {
         final Set<Profile> ret = new HashSet<Profile>();
-        for (final String name : this.profileNames) {
-            ret.add(Profile.getProfile(name));
+        if (this.profileNames.isEmpty()) {
+            ret.add(Profile.getDefaultProfile());
+        } else {
+            for (final String name : this.profileNames) {
+                ret.add(Profile.getProfile(name));
+            }
         }
         return ret;
     }
