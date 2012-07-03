@@ -87,8 +87,7 @@ public class EFapsResourceConfig
      */
     public void init()
     {
-        final AnnotationScannerListener asl = new PathProviderScannerListener(new EFapsClassLoader(this.getClass()
-                        .getClassLoader()));
+        final AnnotationScannerListener asl = new PathProviderScannerListener(EFapsClassLoader.getInstance());
 
         this.scanner.scan(asl);
 

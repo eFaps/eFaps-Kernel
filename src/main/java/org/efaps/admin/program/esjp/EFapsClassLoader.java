@@ -44,6 +44,9 @@ import org.slf4j.LoggerFactory;
 public class EFapsClassLoader
     extends ClassLoader
 {
+
+    private static EFapsClassLoader CLASSLOADER;
+
     /**
      * Logger for this class.
      */
@@ -161,5 +164,21 @@ public class EFapsClassLoader
     public byte[] getLoadedClasse(final String _resourceName)
     {
         return EFapsClassLoader.LOADEDCLASSES.get(_resourceName);
+    }
+
+    /**
+     * Get the current EFapsClassLoader.
+     * This static method is used to provide a way to use the same classloader
+     * in different threads, due to the reason that using different classloader
+     * instances might bring the problem of "instanceof" return unexpected results.
+     *
+     * @return the current EFapsClassLoader
+     */
+    public static synchronized EFapsClassLoader getInstance()
+    {
+        if (EFapsClassLoader.CLASSLOADER == null) {
+            EFapsClassLoader.CLASSLOADER = new EFapsClassLoader(EFapsClassLoader.class.getClassLoader());
+        }
+        return EFapsClassLoader.CLASSLOADER;
     }
 }

@@ -184,7 +184,7 @@ public final class JmsHandler
                         }
                         @SuppressWarnings("unchecked")
                         final Class<? extends MessageListener> clazz = (Class<? extends MessageListener>) Class.forName(
-                                        esjp.trim(), false, new EFapsClassLoader(JmsHandler.class.getClassLoader()));
+                                        esjp.trim(), false, EFapsClassLoader.getInstance());
                         final MessageListener myListener = clazz.newInstance();
                         consumer.setMessageListener(myListener);
                     }

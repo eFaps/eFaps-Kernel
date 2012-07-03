@@ -90,7 +90,7 @@ public class JmsResourceConfig
     {
         @SuppressWarnings("unchecked")
         final AnnotationScannerListener asl = new AnnotationScannerListener(
-                        new EFapsClassLoader(this.getClass().getClassLoader()),
+                            EFapsClassLoader.getInstance(),
                             XmlAccessorType.class,
                             XmlType.class,
                             XmlElementWrapper.class,
