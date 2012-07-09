@@ -259,7 +259,9 @@ public class OracleDatabase
                                      final String _name)
         throws SQLException
     {
-        throw new Error("not implemented");
+        final Statement stmtExec = _con.createStatement();
+        stmtExec.execute("drop view " + _name);
+        return this;
     }
 
     /**
