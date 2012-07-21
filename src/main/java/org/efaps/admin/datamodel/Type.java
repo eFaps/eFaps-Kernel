@@ -890,6 +890,18 @@ public class Type
                         .toString();
     }
 
+    @Override
+    public boolean equals(final Object _obj)
+    {
+        boolean ret;
+        if (_obj instanceof Type) {
+            ret = ((Type) _obj).getId() == getId();
+        } else {
+            ret = super.equals(_obj);
+        }
+        return ret;
+    }
+
     /**
      * Method to initialize the Cache of this CacheObjectInterface.
      *
