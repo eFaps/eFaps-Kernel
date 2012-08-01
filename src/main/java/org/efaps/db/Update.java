@@ -38,8 +38,8 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ci.CIAttribute;
 import org.efaps.db.transaction.ConnectionResource;
@@ -162,7 +162,7 @@ public class Update
             final Attribute attr = (Attribute) entry.getValue();
             final AttributeType attrType = attr.getAttributeType();
             if (attrType.isAlwaysUpdate()) {
-                add(attr, false, (Object) null);
+                addInternal(attr, false, (Object[]) null);
             }
         }
     }
@@ -263,9 +263,9 @@ public class Update
      * @return Status
      * @throws EFapsException on error
      */
-    protected Status add(final Attribute _attr,
-                         final boolean _triggerRelevant,
-                         final Object... _value)
+    protected Status addInternal(final Attribute _attr,
+                                 final boolean _triggerRelevant,
+                                 final Object... _value)
         throws EFapsException
     {
         Status ret = Update.STATUSOK;

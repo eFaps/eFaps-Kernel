@@ -134,10 +134,10 @@ public class Insert
             final Attribute attr = (Attribute) entry.getValue();
             final AttributeType attrType = attr.getAttributeType();
             if (attrType.isCreateUpdate()) {
-                add(attr, false, (Object) null);
+                addInternal(attr, false, (Object) null);
             }
             if (attr.getDefaultValue() != null) {
-                add(attr, false, attr.getDefaultValue());
+                addInternal(attr, false, attr.getDefaultValue());
             }
         }
     }
