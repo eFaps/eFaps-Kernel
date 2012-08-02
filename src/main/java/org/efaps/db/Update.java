@@ -236,7 +236,7 @@ public class Update
                       final Object... _values)
         throws EFapsException
     {
-        return add(_attr, true, _values);
+        return addInternal(_attr, true, _values);
     }
 
     /**
