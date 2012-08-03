@@ -24,6 +24,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -166,7 +168,8 @@ public abstract class AbstractAdminObject
      * @param _eventdef EventDefinition to add
      * @see #events
      */
-    public void addEvent(final EventType _eventtype, final EventDefinition _eventdef)
+    public void addEvent(final EventType _eventtype,
+                         final EventDefinition _eventdef)
     {
         List<EventDefinition> evenList = this.events.get(_eventtype);
         if (evenList == null) {
@@ -174,14 +177,20 @@ public abstract class AbstractAdminObject
             this.events.put(_eventtype, evenList);
         }
         if (!evenList.contains(_eventdef)) {
-            int pos = 0;
-            for (final EventDefinition cur : evenList) {
-                if (_eventdef.getIndexPos() > cur.getIndexPos()) {
-                    break;
+            evenList.add(_eventdef);
+        }
+        // if there are more than one event the y must be sorted by their index
+        // position
+        if (evenList.size() > 1) {
+            Collections.sort(evenList, new Comparator<EventDefinition>()
+            {
+                @Override
+                public int compare(final EventDefinition _eventDef0,
+                                   final EventDefinition _eventDef1)
+                {
+                    return Long.valueOf(_eventDef0.getIndexPos()).compareTo(Long.valueOf(_eventDef1.getIndexPos()));
                 }
-                pos++;
-            }
-            evenList.add(pos, _eventdef);
+            });
         }
     }
 
@@ -218,7 +227,8 @@ public abstract class AbstractAdminObject
      * @return List with Returns
      * @throws EFapsException on error
      */
-    public List<Return> executeEvents(final EventType _eventtype, final Object... _args)
+    public List<Return> executeEvents(final EventType _eventtype,
+                                      final Object... _args)
         throws EFapsException
     {
         final List<Return> ret = new ArrayList<Return>();
@@ -246,7 +256,8 @@ public abstract class AbstractAdminObject
      * @return List with Returns
      * @throws EFapsException on error
      */
-    public List<Return> executeEvents(final EventType _eventtype, final Parameter _param)
+    public List<Return> executeEvents(final EventType _eventtype,
+                                      final Parameter _param)
         throws EFapsException
     {
         final List<Return> ret = new ArrayList<Return>();
