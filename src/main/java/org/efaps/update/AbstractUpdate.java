@@ -218,20 +218,20 @@ public abstract class AbstractUpdate
      * The new created object is stored as instance information in
      * {@link #instance}.
      *
-     * @param _jexlContext context used to evaluate JEXL expressions
+     * @param _jexlContext  context used to evaluate JEXL expressions
      * @param _step         current step of the update life cycle
-     * @param _profile      the Profile assigned
+     * @param _profiles     the Profiles assigned
      * @throws InstallationException from called update methods
      */
     public void updateInDB(final JexlContext _jexlContext,
                            final UpdateLifecycle _step,
-                           final Set<Profile> _profile)
+                           final Set<Profile> _profiles)
         throws InstallationException
     {
         for (final AbstractDefinition def : this.definitions) {
             if (def.isValidVersion(_jexlContext)
                             && (def.getProfiles().isEmpty()
-                                            || CollectionUtils.containsAny(_profile, def.getProfiles()))) {
+                                            || CollectionUtils.containsAny(_profiles, def.getProfiles()))) {
                 if ((this.url != null) && AbstractUpdate.LOG.isDebugEnabled()) {
                     AbstractUpdate.LOG.debug("Executing '" + this.url.toString() + "'");
                 }

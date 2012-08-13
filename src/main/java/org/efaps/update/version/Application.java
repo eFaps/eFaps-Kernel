@@ -571,6 +571,7 @@ public final class Application
      * @param _userName name of logged in user
      * @param _password password of logged in user TODO: throw Exceptions
      *            instead of logging errors
+     * @param _profiles Profiles to be applied
      * @throws Exception on error
      */
     public void updateLastVersion(final String _userName,
@@ -596,7 +597,7 @@ public final class Application
                                 + this.application
                                 + "'");
             }
-            version.install(this.install, version.getNumber(), null, _userName, _password);
+            version.install(this.install, version.getNumber(), _profiles, _userName, _password);
             if (Application.LOG.isInfoEnabled()) {
                 Application.LOG.info("Finished update of version " + version.getNumber());
             }

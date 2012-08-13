@@ -141,7 +141,7 @@ public class ApplicationVersion
      * @param _install install instance with all cached XML definitions
      * @param _latestVersionNumber latest version number (defined in the
      *            version.xml file)
-     * @param _profiles
+     * @param _profiles profiles to be applied
      * @param _userName name of logged in user
      * @param _password password of logged in user
      * @throws InstallationException on error

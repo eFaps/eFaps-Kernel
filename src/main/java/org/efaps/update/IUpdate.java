@@ -41,7 +41,7 @@ public interface IUpdate
      *
      * @param _jexlContext  context used to evaluate JEXL expressions
      * @param _step         current step of the update life cycle
-     * @param _profile      the Profiles that will be executed
+     * @param _profiles     the Profiles that will be executed
      * @throws InstallationException from called update methods
      */
     void updateInDB(final JexlContext _jexlContext,

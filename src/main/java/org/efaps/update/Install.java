@@ -95,7 +95,7 @@ public class Install
      * @param _number           number to install
      * @param _latestNumber     latest version number to install (e..g. defined
      *                          in the version.xml file)
-     * @param _profiles
+     * @param _profiles         profiles to be applied
      * @param _ignoredSteps     set of ignored life cycle steps which are not
      *                          executed
      * @throws InstallationException on error
