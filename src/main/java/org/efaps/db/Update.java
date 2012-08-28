@@ -23,11 +23,13 @@ package org.efaps.db;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.access.AccessTypeEnums;
@@ -354,7 +356,15 @@ public class Update
     public void execute()
         throws EFapsException
     {
-        final boolean hasAccess = getType().hasAccess(getInstance(), AccessTypeEnums.MODIFY.getAccessType());
+        final Set<Attribute> attributes = new HashSet<Attribute>();
+        for (final Attribute attr : this.attr2values.keySet()) {
+            final AttributeType attrType = attr.getAttributeType();
+            if (!attrType.isAlwaysUpdate()) {
+                attributes.add(attr);
+            }
+        }
+        final boolean hasAccess = getType().hasAccess(getInstance(), AccessTypeEnums.MODIFY.getAccessType(),
+                        attributes);
 
         if (!hasAccess) {
             throw new EFapsException(getClass(), "execute.NoAccess");

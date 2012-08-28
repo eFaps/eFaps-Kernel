@@ -516,6 +516,7 @@ public class Type
         return value;
     }
 
+
     /**
      * Checks, if the current context user has all access defined in the list of
      * access types for the given instance.
@@ -529,12 +530,32 @@ public class Type
                              final AccessType _accessType)
         throws EFapsException
     {
+        return hasAccess(_instance, _accessType, null);
+    }
+
+
+    /**
+     * Checks, if the current context user has all access defined in the list of
+     * access types for the given instance.
+     *
+     * @param _instance instance for which the access must be checked
+     * @param _accessType list of access types which must be checked
+     * @param _newValues objects that will be passed to esjp as <code>NEW_VALUES</code>
+     * @throws EFapsException on error
+     * @return true if user has access, else false
+     */
+    public boolean hasAccess(final Instance _instance,
+                             final AccessType _accessType,
+                             final Object _newValues)
+        throws EFapsException
+    {
         boolean hasAccess = true;
         final List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);
         if (events != null) {
             final Parameter parameter = new Parameter();
             parameter.put(ParameterValues.INSTANCE, _instance);
             parameter.put(ParameterValues.ACCESSTYPE, _accessType);
+            parameter.put(ParameterValues.NEW_VALUES, _newValues);
 
             for (final EventDefinition event : events) {
                 final Return ret = event.execute(parameter);
