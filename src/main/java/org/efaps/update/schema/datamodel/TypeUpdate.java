@@ -818,6 +818,9 @@ public class TypeUpdate
             multi.executeWithoutAccessCheck();
             while (multi.next()) {
                 if (!attrNames.contains(multi.getAttribute(CIAdminDataModel.Attribute.Name))) {
+                    // Delete the related Properties first
+                    setPropertiesInDb(multi.getCurrentInstance(), null);
+
                     final Delete delete = new Delete(multi.getCurrentInstance());
                     delete.executeWithoutAccessCheck();
                 }
