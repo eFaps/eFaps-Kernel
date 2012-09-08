@@ -32,6 +32,7 @@ import java.util.Map;
 
 import net.sf.jasperreports.compilers.JRGroovyCompiler;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.design.JRCompilationUnit;
 
 import org.codehaus.groovy.ast.ClassNode;
@@ -51,6 +52,13 @@ import org.codehaus.groovy.control.Phases;
 public class JasperGroovyCompiler
     extends JRGroovyCompiler
 {
+
+    /**
+     * @param _context report context
+     */
+    public JasperGroovyCompiler(final JasperReportsContext _context) {
+        super(_context);
+    }
 
     /**
      * @see net.sf.jasperreports.compilers.JRGroovyCompiler#compileUnits(
