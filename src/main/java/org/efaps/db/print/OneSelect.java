@@ -539,9 +539,9 @@ public class OneSelect
     {
         Object ret = null;
         // inside a fromobject the correct value must be set
-        if (_object instanceof Long && this.fromSelect != null) {
+        if (_object instanceof Number && this.fromSelect != null) {
             final List<Object> tmpList = new ArrayList<Object>();
-            final Long id = (Long) _object;
+            final Long id = ((Number) _object).longValue();
             final Iterator<Long> relIter = this.relIdList.iterator();
             final Iterator<Object> objIter = this.objectList.iterator();
             while (relIter.hasNext()) {
