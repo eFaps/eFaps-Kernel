@@ -96,8 +96,8 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
     <distributionManagement>
         <site>
             <id>efaps.googlecode.com</id>
-            <name>Maven eFaps Plug-In Site</name>
-            <url>svn:https://efaps.googlecode.com/svn/site/eFaps-Kernel</url>
+            <name>eFaps-Kernel WebPage</name>
+            <url>scm:svn:https://efaps.googlecode.com/svn/site/eFaps-Kernel</url>
         </site>
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
@@ -141,19 +141,6 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <reportPlugins>
-                        <!-- JavaCC reporting -->
-                        <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>javacc-maven-plugin</artifactId>
-                        </plugin>
-                   </reportPlugins>
-                </configuration>
             </plugin>
             <!-- produce a test jar -->
             <plugin>
