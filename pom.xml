@@ -46,7 +46,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
     <url>http://maven-efaps-plugin.efaps.org</url>
     <licenses>
         <license>
-            <name>Apache 2.0 License</name>
+            <name>The Apache Software License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
