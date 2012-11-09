@@ -32,6 +32,7 @@ import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
+import org.efaps.ci.CIAdminCommon;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.ci.CIType;
 import org.efaps.db.Delete;
@@ -818,11 +819,18 @@ public class TypeUpdate
             multi.executeWithoutAccessCheck();
             while (multi.next()) {
                 if (!attrNames.contains(multi.getAttribute(CIAdminDataModel.Attribute.Name))) {
-                    // Delete the related Properties first
-                    setPropertiesInDb(multi.getCurrentInstance(), null);
-
-                    final Delete delete = new Delete(multi.getCurrentInstance());
-                    delete.executeWithoutAccessCheck();
+                    // check if the attribute is used as type (attributeset)
+                    final QueryBuilder queryBldr2 = new QueryBuilder(CIAdminCommon.GeneralInstance);
+                    queryBldr2.addWhereAttrEqValue(CIAdminCommon.GeneralInstance.Type,
+                                    multi.getCurrentInstance().getId());
+                    final InstanceQuery query = queryBldr2.getQuery();
+                    query.execute();
+                    if (!query.next()) {
+                        // Delete the related Properties first
+                        setPropertiesInDb(multi.getCurrentInstance(), null);
+                        final Delete delete = new Delete(multi.getCurrentInstance());
+                        delete.executeWithoutAccessCheck();
+                    }
                 }
             }
         }
