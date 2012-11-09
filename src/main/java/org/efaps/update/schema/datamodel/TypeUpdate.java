@@ -821,7 +821,7 @@ public class TypeUpdate
                 if (!attrNames.contains(multi.getAttribute(CIAdminDataModel.Attribute.Name))) {
                     // check if the attribute is used as type (attributeset)
                     final QueryBuilder queryBldr2 = new QueryBuilder(CIAdminCommon.GeneralInstance);
-                    queryBldr2.addWhereAttrEqValue(CIAdminCommon.GeneralInstance.Type,
+                    queryBldr2.addWhereAttrEqValue(CIAdminCommon.GeneralInstance.InstanceTypeID,
                                     multi.getCurrentInstance().getId());
                     final InstanceQuery query = queryBldr2.getQuery();
                     query.execute();
