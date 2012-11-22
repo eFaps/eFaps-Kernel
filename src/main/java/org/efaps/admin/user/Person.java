@@ -20,6 +20,7 @@
 
 package org.efaps.admin.user;
 
+import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -65,7 +66,12 @@ import org.slf4j.LoggerFactory;
  */
 public final class Person
     extends AbstractUserObject
+
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Enum for all known and updated attributes from a person. Only this could
@@ -1508,7 +1514,13 @@ public final class Person
      */
     private static final class PersonCache
         extends AbstractCache<Person>
+        implements Serializable
     {
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
         /**
          * Method is overwritten because the map is stored in the context.
          *
@@ -1644,10 +1656,9 @@ public final class Person
                     try {
                         size = EFapsSystemConfiguration.KERNEL.get().getAttributeValueAsInteger("Cache4PersonMaxSize");
                     } catch (final EFapsException e) {
-                       Person.LOG.debug("error", e);
+                        Person.LOG.debug("error", e);
                     }
                 }
-
                 if (size < 1) {
                     size = 100;
                 }

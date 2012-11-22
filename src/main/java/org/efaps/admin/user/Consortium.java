@@ -48,6 +48,11 @@ public final class Consortium
     extends AbstractUserObject
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(Consortium.class);

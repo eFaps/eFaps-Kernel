@@ -20,6 +20,7 @@
 
 package org.efaps.admin.user;
 
+import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -39,7 +40,13 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractUserObject
     extends AbstractAdminObject
+    implements Serializable
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * Logging instance used to give logging information of this class.
      */
