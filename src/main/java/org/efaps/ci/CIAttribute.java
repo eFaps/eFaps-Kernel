@@ -21,6 +21,8 @@
 
 package org.efaps.ci;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 /**
  * TODO comment!
  *
@@ -68,5 +70,11 @@ public class CIAttribute
         this.ciType = _type;
         this.name = _name;
         this.profiles = _profiles;
+    }
+
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this).append("name", this.name).append("ciType", this.ciType).toString();
     }
 }
