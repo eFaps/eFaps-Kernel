@@ -223,7 +223,7 @@ public class Update
     {
         final Attribute attr = getInstance().getType().getAttribute(_attr);
         if (attr == null) {
-            throw new EFapsException(getClass(), "add.UnknownAttributeName");
+            throw new EFapsException(getClass(), "add.UnknownAttributeName", _attr);
         }
         return add(attr, _values);
     }
@@ -253,7 +253,7 @@ public class Update
     {
         final Attribute attr = getInstance().getType().getAttribute(_attr.name);
         if (attr == null) {
-            throw new EFapsException(getClass(), "add.UnknownAttributeName");
+            throw new EFapsException(getClass(), "add.UnknownAttributeName", _attr);
         }
         return add(attr, _values);
     }
