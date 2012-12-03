@@ -24,6 +24,8 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * The class is the exception class used to throw exception. This exceptions
  * are shown in the user interface (web browser). The exception text stands
@@ -73,7 +75,7 @@ public class EFapsException
                           final String _id,
                           final Object... _args)
     {
-        super("error in " + _className.getName() + "(" + _id + "," + _args + ")");
+        super("error in " + _className.getName() + "(" + _id + "," + ArrayUtils.toString(_args, "Null ARRAY ") + ")");
         this.id = _id;
         this.className = _className;
         if (_args != null && _args.length > 0 && _args[0] instanceof Throwable)  {
