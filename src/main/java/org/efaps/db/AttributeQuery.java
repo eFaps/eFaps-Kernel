@@ -26,8 +26,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
@@ -151,7 +151,7 @@ public class AttributeQuery
     {
         prepareQuery();
         final SQLSelect select = new SQLSelect()
-            .column(0, this.attribute.getSqlColNames().get(0))
+            .column(getSqlTable2Index().get(this.attribute.getTable()), this.attribute.getSqlColNames().get(0))
             .from(getBaseType().getMainTable().getSqlTable(), 0);
 
         // add child tables
