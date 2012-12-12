@@ -364,11 +364,7 @@ public class Type
             getTables().add(_attribute.getTable());
             _attribute.getTable().add(this);
             if (getMainTable() == null) {
-                if (_attribute.getTable().getMainTable() != null) {
-                    setMainTable(_attribute.getTable().getMainTable());
-                } else if (_attribute.getTable().getMainTable() == null) {
-                    setMainTable(_attribute.getTable());
-                }
+                setMainTable(_attribute.getTable());
             }
         }
         for (final Type child : getChildTypes()) {
@@ -809,7 +805,11 @@ public class Type
      */
     private void setMainTable(final SQLTable _mainTable)
     {
-        this.mainTable = _mainTable;
+        SQLTable table = _mainTable;
+        while (table.getMainTable() != null) {
+            table = table.getMainTable();
+        }
+        this.mainTable = table;
     }
 
     /**
