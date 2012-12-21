@@ -56,15 +56,15 @@ public class TempFileBundle
     private static File TMPFOLDER = new File("");
     static {
         try {
-            final File tmp = File.createTempFile("eFapsTemp", null).getParentFile();
-            TempFileBundle.TMPFOLDER = new File(tmp.getAbsolutePath() + "/eFapsTemp");
+            final File tmp = File.createTempFile("eFapsTemp", null);
+            TempFileBundle.TMPFOLDER = new File(tmp.getParentFile().getAbsolutePath() + "/eFapsTemp");
             if (!TempFileBundle.TMPFOLDER.exists()) {
                 final boolean mkdir = TempFileBundle.TMPFOLDER.mkdir();
                 if (!mkdir) {
                     TempFileBundle.LOG.error("Temp folder was not created");
                 }
             }
-            tmp.deleteOnExit();
+            tmp.delete();
         } catch (final IOException e) {
             TempFileBundle.LOG.error("Temp archive could not be created");
         }
@@ -117,12 +117,12 @@ public class TempFileBundle
         InputStream ret = null;
         try {
             if (_gziped) {
-                if (this.gzipFile == null) {
+                if (this.gzipFile == null  || !this.gzipFile.exists()) {
                     this.gzipFile = setFile(true);
                 }
                 ret = new FileInputStream(this.gzipFile);
             } else {
-                if (this.file == null) {
+                if (this.file == null || !this.file.exists()) {
                     this.file = setFile(false);
                 }
                 ret = new FileInputStream(this.file);
