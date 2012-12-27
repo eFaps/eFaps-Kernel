@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.ui.AbstractCollection;
 import org.efaps.admin.ui.AbstractCommand.Target;
@@ -544,7 +545,7 @@ public class Field
     }
 
     /**
-     * This is the getter method for the instance variable {@link #showNumbering}
+     * This is the getter method for the instance variable {@link #showNumbering}.
      *
      * @return value of instance variable {@link #showNumbering}
      */
@@ -563,6 +564,16 @@ public class Field
     public UIInterface getClassUI()
     {
         return this.classUI;
+    }
+
+    /**
+     * This is the getter method for instance variable {@link #classUI}.
+     *
+     * @return value of instance variable {@link #classUI}
+     */
+    public IUIProvider getUIProvider()
+    {
+        return (IUIProvider) this.classUI;
     }
 
     /**

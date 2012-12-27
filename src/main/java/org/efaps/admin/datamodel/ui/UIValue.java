@@ -63,7 +63,7 @@ public final class UIValue
     private final long fieldId;
 
     /**
-     * Id fo the Attribute this value belongs to.
+     * Id of the Attribute this value belongs to.
      */
     private final long attributeId;
 
@@ -71,17 +71,16 @@ public final class UIValue
      * Stores he display mode for this field.
      */
     private Display display;
+
     /**
      * The TargetMode the value is wanted for.
      */
     private TargetMode targetMode;
 
-
-
     /**
-     * @param _field
-     * @param _attribute
-     * @param _value
+     * @param _field        Field
+     * @param _attribute    attribute
+     * @param _value        value
      */
     private UIValue(final Field _field,
                     final Attribute _attribute,
@@ -92,6 +91,12 @@ public final class UIValue
         this.dbValue = _value;
     }
 
+    /**
+     * @param _field        Field
+     * @param _attribute    attribute
+     * @param _value        value
+     * @return  UIValue
+     */
     public static UIValue get(final Field _field,
                               final Attribute _attribute,
                               final Object _value)
@@ -108,6 +113,9 @@ public final class UIValue
         return ret;
     }
 
+    /**
+     * @return the field belonging to this UIValue
+     */
     public Field getField()
     {
         return Field.get(this.fieldId);
@@ -168,11 +176,20 @@ public final class UIValue
         return ret;
     }
 
-
+    /**
+     * @return the UIProvider for this value
+     * @throws CacheReloadException on eror
+     */
     public IUIProvider getUIProvider()
         throws CacheReloadException
     {
-        return getAttribute().getAttributeType().getUIProvider();
+        IUIProvider ret;
+        if (this.attributeId > 0) {
+            ret =  getAttribute().getAttributeType().getUIProvider();
+        } else {
+            ret = getField().getUIProvider();
+        }
+        return ret;
     }
 
     /**
@@ -195,12 +212,15 @@ public final class UIValue
         return this.dbValue;
     }
 
+    /**
+     * @return Attribute
+     * @throws CacheReloadException on error
+     */
     public Attribute getAttribute()
         throws CacheReloadException
     {
         return Attribute.get(this.attributeId);
     }
-
 
     /**
      * Getter method for the instance variable {@link #targetMode}.
@@ -215,7 +235,8 @@ public final class UIValue
     /**
      * Executes the field value events for a field.
      *
-     * @param _eventType type of event to be executed
+     * @param _eventType    type of event to be executed
+     * @param _targetMode   targetmode
      * @throws EFapsException on error
      * @return string from called field value events or <code>null</code> if no
      *         field value event is defined
