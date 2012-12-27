@@ -69,7 +69,7 @@ public class ValueValueSelect
     {
         final Object ret;
         if (_attribute.getAttributeType().getDbAttrType() instanceof RateType) {
-            ret = getRate(_object);
+            ret = getRate(_attribute, _object);
         } else if (_attribute.getAttributeType().getDbAttrType() instanceof AbstractWithUoMType) {
             ret = getValueUOM(_object);
         } else {
@@ -79,11 +79,13 @@ public class ValueValueSelect
     }
 
     /**
-     * @param _object object the rate is wanted for
+     * @param _attribute    Attribute the rate is wanted for
+     * @param _object       object the rate is wanted for
      * @return Object
      * @throws EFapsException on error
      */
-    protected Object getRate(final Object _object)
+    protected Object getRate(final Attribute _attribute,
+                             final Object _object)
         throws EFapsException
     {
         Object ret = null;
@@ -101,6 +103,16 @@ public class ValueValueSelect
                 denominator = (BigDecimal) values[1];
             } else {
                 denominator = DecimalType.parseLocalized(values[1].toString());
+            }
+            // the oracle jdbc returns BigDecimal from the database that does not have the scale as
+            // it is set explicitly, therefore it is forced here (before calculation)
+            if (_attribute != null) {
+                if (numerator.scale() < _attribute.getScale()) {
+                    numerator = numerator.setScale(_attribute.getScale());
+                }
+                if (denominator.scale() < _attribute.getScale()) {
+                    denominator = denominator.setScale(_attribute.getScale());
+                }
             }
             ret = numerator.divide(denominator,
                                 numerator.scale() > denominator.scale() ? numerator.scale() : denominator.scale(),
