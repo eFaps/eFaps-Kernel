@@ -380,7 +380,7 @@ public class FieldValue implements Comparable<Object>
                 ret = 1;
             }
         } else {
-            if (getClassUI().equals(target.getClassUI())) {
+            if (getClassUI().getClass().isInstance(target.getClassUI())) {
                 try {
                     ret = getClassUI().compare(this, target);
                 } catch (final EFapsException e) {
