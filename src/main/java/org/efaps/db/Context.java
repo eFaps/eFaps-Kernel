@@ -668,6 +668,15 @@ public final class Context
     }
 
     /**
+     * Remove a attribute form the Session.
+     * @param _key key of the session attribute to be removed.
+     */
+    public void removeSessionAttribute(final String _key)
+    {
+        this.sessionAttributes.remove(_key);
+    }
+
+    /**
      * This method retrieves a UserAttribute of the Person this Context belongs
      * to. The UserAttributes are stored in the {@link #sessionAttributes} Map,
      * therefore are thought to be valid for one session.
