@@ -39,6 +39,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.user.AbstractUserObject;
 import org.efaps.admin.user.Company;
 import org.efaps.ci.CIAdmin;
@@ -286,6 +287,7 @@ public abstract class AbstractUserInterfaceObject
     public static void initialize()
         throws CacheReloadException
     {
+        Field.initialize();
         Image.getCache().initialize(AbstractUserInterfaceObject.class);
         Command.getCache().initialize(AbstractUserInterfaceObject.class);
         Menu.getCache().initialize(AbstractUserInterfaceObject.class);

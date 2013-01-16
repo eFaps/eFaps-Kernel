@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ package org.efaps.admin.ui.field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.IUIProvider;
@@ -70,6 +71,12 @@ public class Field
      */
     private static final Logger LOG = LoggerFactory.getLogger(Field.class);
 
+
+    /**
+     * Used to cache fields.
+     */
+    private static final Map<Long, Field> CACHE = new ConcurrentHashMap<Long, Field>();
+
     /**
      * This is the value in the create process. Default value is <i>null</i>.
      *
@@ -87,38 +94,9 @@ public class Field
     private String label = null;
 
     /**
-     * This field has got a filter. Only if this is set to true
-     * {@link #filterMemoryBased}, {@link #filterRequired},
-     * {@link #filterPickList} should be evaluated.
+     * The filter for this field.
      */
-    private boolean filter = false;
-
-    /**
-     * Is the filter a picklist or a FreeText filter.
-     */
-    private boolean filterPickList = true;
-
-    /**
-     * Is the filter memory or database based.
-     */
-    private boolean filterMemoryBased = true;
-
-    /**
-     * Is this filter required.
-     */
-    private boolean filterRequired = false;
-
-    /**
-     * Set the default value for a filter.
-     */
-    private String filterDefault;
-
-    /**
-     * String containing the attributes to be used for the filter. It may
-     * contain up to two attributes separated by a comma. This allows to filter
-     * by an attribute and display a phrase.
-     */
-    private String filterAttributes;
+    private final Filter filter = new Filter();
 
     /**
      * Is a field multi line? If yes, the value must be higher than the default
@@ -264,6 +242,12 @@ public class Field
      */
     private UUID collectionUUID;
 
+
+    /**
+     * Stores the classification for this field.
+     */
+    private String classificationName;
+
     /**
      * This is the constructor of the field class.
      *
@@ -319,66 +303,6 @@ public class Field
     public boolean isTargetHidden()
     {
         return getTarget() == Target.HIDDEN;
-    }
-
-    /**
-     * Getter method for instance variable {@link #filter}.
-     *
-     * @return value of instance variable {@link #filter}
-     */
-    public boolean isFilter()
-    {
-        return this.filter;
-    }
-
-    /**
-     * Getter method for instance variable {@link #filterPickList}.
-     *
-     * @return value of instance variable {@link #filterPickList}
-     */
-    public boolean isFilterPickList()
-    {
-        return this.filterPickList;
-    }
-
-    /**
-     * Getter method for instance variable {@link #filterMemoryBased}.
-     *
-     * @return value of instance variable {@link #filterMemoryBased}
-     */
-    public boolean isFilterMemoryBased()
-    {
-        return this.filterMemoryBased;
-    }
-
-    /**
-     * Getter method for instance variable {@link #filterRequired}.
-     *
-     * @return value of instance variable {@link #filterRequired}
-     */
-    public boolean isFilterRequired()
-    {
-        return this.filterRequired;
-    }
-
-    /**
-     * Getter method for instance variable {@link #filterDefault}.
-     *
-     * @return value of instance variable {@link #filterDefault}
-     */
-    public String getFilterDefault()
-    {
-        return this.filterDefault;
-    }
-
-    /**
-     * Getter method for instance variable {@link #filterAttributes}.
-     *
-     * @return value of instance variable {@link #filterAttributes}
-     */
-    public String getFilterAttributes()
-    {
-        return this.filterAttributes;
     }
 
     /**
@@ -645,6 +569,16 @@ public class Field
     }
 
     /**
+     * Getter method for the instance variable {@link #filter}.
+     *
+     * @return value of instance variable {@link #filter}
+     */
+    public Filter getFilter()
+    {
+        return this.filter;
+    }
+
+    /**
      * Getter method for the instance variable {@link #collectionOID}.
      *
      * @return value of instance variable {@link #collectionOID}
@@ -808,6 +742,16 @@ public class Field
     }
 
     /**
+     * Getter method for instance variable {@link #classificationName}.
+     *
+     * @return value of instance variable {@link #classificationName}
+     */
+    public String getClassificationName()
+    {
+        return this.classificationName;
+    }
+
+    /**
      * Returns for given parameter <i>_id</i> the instance of class
      * {@link Field}.
      *
@@ -816,26 +760,44 @@ public class Field
      */
     public static Field get(final long _id)
     {
-        AbstractCollection col = null;
+        Field ret = null;
+        if (Field.CACHE.containsKey(_id)) {
+            ret = Field.CACHE.get(_id);
+        } else {
+            AbstractCollection col = null;
+            try {
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Field);
+                queryBldr.addWhereAttrEqValue(CIAdminUserInterface.Field.ID, _id);
+                final MultiPrintQuery multi = queryBldr.getPrint();
+                multi.addAttribute(CIAdminUserInterface.Field.Collection);
+                multi.executeWithoutAccessCheck();
 
-        try {
-            final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.Field);
-            queryBldr.addWhereAttrEqValue(CIAdminUserInterface.Field.ID, _id);
-            final MultiPrintQuery multi = queryBldr.getPrint();
-            multi.addAttribute(CIAdminUserInterface.Field.Collection);
-            multi.executeWithoutAccessCheck();
-
-            if (multi.next()) {
-                final Long colId = multi.<Long> getAttribute(CIAdminUserInterface.Field.Collection);
-                col = Form.get(colId);
-                if (col == null) {
-                    col = Table.get(colId);
+                if (multi.next()) {
+                    final Long colId = multi.<Long> getAttribute(CIAdminUserInterface.Field.Collection);
+                    col = Form.get(colId);
+                    if (col == null) {
+                        col = Table.get(colId);
+                    }
+                }
+            } catch (final EFapsException e) {
+                Field.LOG.error("get(long)", e);
+            }
+            if (col != null) {
+                ret = col.getFieldsMap().get(_id);
+                if (ret != null) {
+                    Field.CACHE.put(_id, ret);
                 }
             }
-        } catch (final EFapsException e) {
-            Field.LOG.error("get(long)", e);
         }
-        return col.getFieldsMap().get(_id);
+        return ret;
+    }
+
+    /**
+     * Reset the cache.
+     */
+    public static void initialize()
+    {
+        Field.CACHE.clear();
     }
 
     /**
@@ -889,6 +851,8 @@ public class Field
             }
         } else if ("Columns".equals(_name)) {
             this.cols = Integer.parseInt(_value);
+        } else if ("Classification".equals(_name)) {
+            this.classificationName = _value;
         } else if ("CreateValue".equals(_name)) {
             this.createValue = _value;
         } else if ("SelectAlternateOID".equals(_name)) {
@@ -904,16 +868,15 @@ public class Field
         } else if ("SortAble".equals(_name)) {
             this.sortAble = !"false".equals(_value);
         } else if ("FilterBase".equals(_name)) {
-            this.filterMemoryBased = !"DATABASE".equalsIgnoreCase(_value);
+            this.filter.evalBase(_value);
         } else if ("FilterDefault".equals(_name)) {
-            this.filterDefault = _value.trim();
+            this.filter.setDefaultValue(_value.trim());
         } else if ("FilterType".equals(_name)) {
-            this.filter = true;
-            this.filterPickList = !"FREETEXT".equalsIgnoreCase(_value);
+            this.filter.evalType(_value);
         } else if ("FilterRequired".equals(_name)) {
-            this.filterRequired = "TRUE".equalsIgnoreCase(_value);
+            this.filter.setRequired("TRUE".equalsIgnoreCase(_value));
         } else if ("FilterAttributes".equals(_name)) {
-            this.filterAttributes = _value;
+            this.filter.setAttributes(_value);
         } else if ("HideLabel".equals(_name)) {
             this.hideLabel = "true".equals(_value);
         } else if ("HRef".equals(_name)) {
@@ -943,7 +906,7 @@ public class Field
         } else if ("ShowTypeIcon".equals(_name)) {
             this.showTypeIcon = "true".equalsIgnoreCase(_value);
         } else if ("ShowNumbering".equals(_name)) {
-                this.showNumbering = "true".equalsIgnoreCase(_value);
+            this.showNumbering = "true".equalsIgnoreCase(_value);
         } else if ("Target".equals(_name)) {
             if ("content".equals(_value)) {
                 this.target = Target.CONTENT;

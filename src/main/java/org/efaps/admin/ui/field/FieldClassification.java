@@ -34,7 +34,6 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -45,11 +44,6 @@ import org.efaps.util.cache.CacheReloadException;
 public class FieldClassification
     extends Field
 {
-
-    /**
-     * Stores the classification for this field.
-     */
-    private String classificationName;
 
     /**
      * This is the constructor of the field class.
@@ -66,16 +60,6 @@ public class FieldClassification
     }
 
     /**
-     * Getter method for instance variable {@link #classificationName}.
-     *
-     * @return value of instance variable {@link #classificationName}
-     */
-    public String getClassificationName()
-    {
-        return this.classificationName;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -84,8 +68,8 @@ public class FieldClassification
         throws EFapsException
     {
         boolean ret = false;
-        if (Type.get(this.classificationName) != null
-                        && ((Classification) Type.get(this.classificationName))
+        if (Type.get(getClassificationName()) != null
+                        && ((Classification) Type.get(getClassificationName()))
                             .isAssigendTo(Context.getThreadContext().getCompany())
                         && !AppAccessHandler.excludeMode()) {
             ret = true;
@@ -104,23 +88,5 @@ public class FieldClassification
             }
         }
         return ret;
-    }
-
-    /**
-     * @see org.efaps.admin.ui.field.Field#setProperty(java.lang.String, java.lang.String)
-     * @param _name     name of the property
-     * @param _value    value for the property
-     * @throws CacheReloadException on error
-     */
-    @Override
-    protected void setProperty(final String _name,
-                               final String _value)
-        throws CacheReloadException
-    {
-        if ("Classification".equals(_name)) {
-            this.classificationName = _value;
-        } else {
-            super.setProperty(_name, _value);
-        }
     }
 }
