@@ -41,6 +41,7 @@ import org.efaps.db.print.value.BaseValueSelect;
 import org.efaps.db.print.value.ClassificationValueSelect;
 import org.efaps.db.print.value.FormatValueSelect;
 import org.efaps.db.print.value.IDValueSelect;
+import org.efaps.db.print.value.InstanceValueSelect;
 import org.efaps.db.print.value.LabelValueSelect;
 import org.efaps.db.print.value.LengthValueSelect;
 import org.efaps.db.print.value.OIDValueSelect;
@@ -484,6 +485,8 @@ public class OneSelect
                 currentSelect.addValueSelect(new OIDValueSelect(currentSelect));
             } else if (part.equalsIgnoreCase("type")) {
                 currentSelect.addValueSelect(new TypeValueSelect(currentSelect));
+            } else if (part.equalsIgnoreCase("instance")) {
+                currentSelect.addValueSelect(new InstanceValueSelect(currentSelect));
             } else if (part.equalsIgnoreCase("label")) {
                 currentSelect.addValueSelect(new LabelValueSelect(currentSelect));
             } else if (part.equalsIgnoreCase("id")) {
