@@ -350,6 +350,9 @@ public final class EventDefinition
                 //CHECKSTYLE:OFF
             } catch (final Exception e) {
                 //CHECKSTYLE:ON
+                EventDefinition.LOG.error("Instance: {}, eventType: {}, eventName: {}, eventPos: {}, parentId: {}, " +
+                        "programId: {}, MethodresName: {}, , arguments: {}",
+                         inst, eventType, eventName, eventPos, abstractID, programId, method, resName);
                 if (e instanceof EFapsException) {
                     throw (EFapsException) e;
                 } else {
