@@ -111,6 +111,12 @@ public class FieldValue implements Comparable<Object>
     private Display display;
 
     /**
+     * Object that will be passed to the event as CLASS.
+     */
+    private Object classObject;
+
+
+    /**
      * Constructor used to evaluate the value from the database by using one of
      * the getter methods for html. Used normally on create when no instances
      * are given.
@@ -161,12 +167,36 @@ public class FieldValue implements Comparable<Object>
                       final Instance _callInstance,
                       final List<Instance> _requestInstances)
     {
+        this(_field, _attr, _value, _valueInstance, _callInstance, _requestInstances, null);
+    }
+
+    /**
+     * Constructor used to evaluate the value from the database by using one of
+     * the getter methods for html.
+     *
+     * @param _field            field this value belongs to
+     * @param _attr             attribute the value belongs to
+     * @param _value            value of the FieldValue
+     * @param _valueInstance    Instance the Value belongs to
+     * @param _callInstance     Instance that called Value for edit, view etc.
+     * @param _requestInstances Instance called in the same request
+     * @param _classObject      Object that will be passed to the esjp
+     */
+    public FieldValue(final Field _field,
+                      final Attribute _attr,
+                      final Object _value,
+                      final Instance _valueInstance,
+                      final Instance _callInstance,
+                      final List<Instance> _requestInstances,
+                      final Object _classObject)
+    {
         this.field = _field;
         this.attribute = _attr;
         this.value = _value;
         this.instance = _valueInstance;
         this.callInstance = _callInstance;
         this.requestInstances = _requestInstances;
+        this.classObject = _classObject;
         this.ui = (_attr == null)
             ? (this.field.getClassUI() == null ? new StringUI()
             : this.field.getClassUI()) : _attr.getAttributeType().getUI();
@@ -314,6 +344,7 @@ public class FieldValue implements Comparable<Object>
                 parameter.put(ParameterValues.CALL_INSTANCE, this.callInstance);
                 parameter.put(ParameterValues.INSTANCE, this.instance);
                 parameter.put(ParameterValues.REQUEST_INSTANCES, this.requestInstances);
+                parameter.put(ParameterValues.CLASS, this.classObject);
                 if (parameter.get(ParameterValues.PARAMETERS) == null) {
                     parameter.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
                 }
@@ -433,6 +464,16 @@ public class FieldValue implements Comparable<Object>
     public void setValue(final Object _value)
     {
         this.value = _value;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #classObject}.
+     *
+     * @return value of instance variable {@link #classObject}
+     */
+    public Object getClassObject()
+    {
+        return this.classObject;
     }
 
     /**
