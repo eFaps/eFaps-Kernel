@@ -85,6 +85,7 @@ public class QueryBuilder
      */
     private final UUID typeUUID;
 
+
     /**
      * Query this QueryBuilder will return.
      */
@@ -636,6 +637,16 @@ public class QueryBuilder
     {
         this.or = _or;
         return this;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #typeUUID}.
+     *
+     * @return value of instance variable {@link #typeUUID}
+     */
+    public UUID getTypeUUID()
+    {
+        return this.typeUUID;
     }
 
     /**
