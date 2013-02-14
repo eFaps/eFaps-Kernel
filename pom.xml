@@ -392,6 +392,16 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <version>1.1</version>
         </dependency>
 
+
+<dependency>
+    <groupId>org.infinispan</groupId>
+    <artifactId>infinispan-core</artifactId>
+    <version>5.2.0.Final</version>
+</dependency>
+
+
+
+
         <!-- test -->
         <dependency>
             <groupId>org.testng</groupId>
@@ -496,6 +506,10 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <version>1.4</version>
             <scope>test</scope>
         </dependency>
+
+
+
+
    </dependencies>
 </project>
 

@@ -445,10 +445,13 @@ public final class Context
                 throw new EFapsException(getClass(), "getConnectionResource.SQLException", e);
             }
             this.connectionStore.add(con);
+            this.connectionStack.push(con);
         } else {
             con = this.connectionStack.pop();
         }
-        con.open();
+        if (!con.isOpened()) {
+            con.open();
+        }
         return con;
     }
 
