@@ -20,17 +20,20 @@
 
 package org.efaps.admin.user;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
-import java.util.UUID;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,14 +58,34 @@ public final class Group
     private static final Logger LOG = LoggerFactory.getLogger(Group.class);
 
     /**
-     * This is the SQL select statement to select all groups from the database.
+     * This is the SQL select statement to select a Group from the database by ID.
      */
-    private static final String SQL_SELECT = "select ID, NAME, STATUS from V_USERGROUP";
+    private static final String SQL_ID = new SQLSelect().column("ID")
+                    .column("NAME")
+                    .column("STATUS")
+                    .from("V_USERGROUP", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
     /**
-     * Cache for all existing groups.
+     * This is the SQL select statement to select a Group from the database by Name.
      */
-    private static GroupCache CACHE = new GroupCache();
+    private static final String SQL_NAME = new SQLSelect().column("ID")
+                    .column("NAME")
+                    .column("STATUS")
+                    .from("V_USERGROUP", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * Name of the Cache by ID.
+     */
+    private static String IDCACHE = "Group4ID";
+
+    /**
+     * Name of the Cache by Name.
+     */
+    private static String NAMECACHE = "Group4Name";
+
 
     /**
      * Create a new group instance. The method is used from the static method
@@ -114,33 +137,112 @@ public final class Group
      */
     public static void initialize()
     {
-        Group.CACHE.initialize(Group.class);
+        if (InfinispanCache.get().exists(Group.IDCACHE)) {
+            InfinispanCache.get().<Long, Group>getCache(Group.IDCACHE).clear();
+        } else {
+            InfinispanCache.get().<Long, Group>getCache(Group.IDCACHE).addListener(new CacheLogListener(Group.LOG));
+        }
+        if (InfinispanCache.get().exists(Group.NAMECACHE)) {
+            InfinispanCache.get().<String, Group>getCache(Group.NAMECACHE).clear();
+        } else {
+            InfinispanCache.get().<String, Group>getCache(Group.NAMECACHE).addListener(new CacheLogListener(Group.LOG));
+        }
     }
 
     /**
      * Returns for given parameter <i>_id</i> the instance of class
      * {@link Group}.
      *
-     * @param _id   id to search in the cache
+     * @param _id id to search in the cache
      * @return instance of class {@link Group}
      * @see #CACHE
      */
     public static Group get(final long _id)
+        throws CacheReloadException
     {
-        return Group.CACHE.get(_id);
+        final Cache<Long, Group> cache = InfinispanCache.get().<Long, Group>getCache(Group.IDCACHE);
+        if (!cache.containsKey(_id)) {
+            Group.getGroupFromDB(Group.SQL_ID, _id);
+        }
+        return cache.get(_id);
     }
 
     /**
      * Returns for given parameter <i>_name</i> the instance of class
      * {@link Group}.
      *
-     * @param _name     name to search in the cache
+     * @param _name name to search in the cache
      * @return instance of class {@link Group}
      * @see #CACHE
      */
     public static Group get(final String _name)
+        throws CacheReloadException
     {
-        return Group.CACHE.get(_name);
+        final Cache<String, Group> cache = InfinispanCache.get().<String, Group>getCache(Group.IDCACHE);
+        if (!cache.containsKey(_name)) {
+            Group.getGroupFromDB(Group.SQL_NAME, _name);
+        }
+        return cache.get(_name);
+    }
+
+    /**
+     * @param _group Group to be cached
+     */
+    private static void cacheGroup(final Group _group) {
+        final Cache<String, Group> nameCache = InfinispanCache.get().<String, Group>getCache(Group.NAMECACHE);
+        if (!nameCache.containsKey(_group.getName())) {
+            nameCache.put(_group.getName(), _group);
+        }
+        final Cache<Long, Group> idCache = InfinispanCache.get().<Long, Group>getCache(Group.IDCACHE);
+        if (!idCache.containsKey(_group.getId())) {
+            idCache.put(_group.getId(), _group);
+        }
+    }
+
+    /**
+     * @param _sqlId
+     * @param _id
+     */
+    private static void getGroupFromDB(final String _sql,
+                                       final Object _criteria)
+        throws CacheReloadException
+    {
+        ConnectionResource con = null;
+        try {
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
+            try {
+                stmt = con.getConnection().prepareStatement(_sql);
+                stmt.setObject(1, _criteria);
+                final ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    final long id = rs.getLong(1);
+                    final String name = rs.getString(2).trim();
+                    final boolean status = rs.getBoolean(3);
+                    Group.LOG.debug("read group '" + name + "' (id = " + id + ")");
+                    final Group group = new Group(id, name, status);
+                    Group.cacheGroup(group);
+                }
+                rs.close();
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read Groups", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read Groups", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read Groups", e);
+                }
+            }
+        }
     }
 
     /**
@@ -199,70 +301,5 @@ public final class Group
             }
         }
         return Group.get(groupId);
-    }
-
-    /**
-     * Class to cache all group instances.
-     */
-    private static class GroupCache
-        extends AbstractCache<Group>
-    {
-        /**
-         * Reads the information for groups from the database and stores them
-         * in the maps for the cache.
-         *
-         * @param _cache4Id     map between id and group instance used for
-         *                      caching
-         * @param _cache4Name   map between name and group instance used for
-         *                      caching
-         * @param _cache4UUID   map between UUID and group instance used for
-         *                      caching
-         * @throws CacheReloadException if reload of the cache failed
-         */
-        @Override
-        protected void readCache(final Map<Long, Group> _cache4Id,
-                                 final Map<String, Group> _cache4Name,
-                                 final Map<UUID, Group> _cache4UUID)
-            throws CacheReloadException
-        {
-            ConnectionResource con = null;
-            try {
-                con = Context.getThreadContext().getConnectionResource();
-
-                Statement stmt = null;
-                try {
-                    stmt = con.getConnection().createStatement();
-                    final ResultSet resultset = stmt.executeQuery(Group.SQL_SELECT);
-                    while (resultset.next()) {
-                        final long id = resultset.getLong(1);
-                        final String name = resultset.getString(2).trim();
-                        final boolean status = resultset.getBoolean(3);
-                        Group.LOG.debug("read group '" + name + "' (id = " + id + ")");
-                        final Group group = new Group(id, name, status);
-                        _cache4Id.put(group.getId(), group);
-                        _cache4Name.put(group.getName(), group);
-                        _cache4UUID.put(group.getUUID(), group);
-                    }
-                    resultset.close();
-                } finally {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                }
-                con.commit();
-            } catch (final SQLException e) {
-                throw new CacheReloadException("could not read groups", e);
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("could not read groups", e);
-            } finally  {
-                if ((con != null) && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read groups", e);
-                    }
-                }
-            }
-        }
     }
 }

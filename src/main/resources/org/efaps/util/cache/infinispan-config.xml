@@ -59,5 +59,46 @@
         <eviction maxEntries="5000" strategy="LIRS"/>
     </namedCache>
 
+
+    <namedCache name="Person4ID">
+        <eviction maxEntries="20" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Person4Name">
+        <eviction maxEntries="20" strategy="LIRS"/>
+    </namedCache>
+
+    <namedCache name="Role4UUID">
+        <eviction maxEntries="50" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Role4ID">
+        <eviction maxEntries="50" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Role4Name">
+        <eviction maxEntries="50" strategy="LIRS"/>
+    </namedCache>
+
+    <namedCache name="Company4UUID">
+        <eviction maxEntries="5" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Company4ID">
+        <eviction maxEntries="5" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Company4Name">
+        <eviction maxEntries="5" strategy="LIRS"/>
+    </namedCache>
+
+    <namedCache name="Consortium4ID">
+        <eviction maxEntries="5" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Consortium4Name">
+        <eviction maxEntries="5" strategy="LIRS"/>
+    </namedCache>
+
+    <namedCache name="Group4ID">
+        <eviction maxEntries="20" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Group4Name">
+        <eviction maxEntries="20" strategy="LIRS"/>
+    </namedCache>
 </infinispan>
 

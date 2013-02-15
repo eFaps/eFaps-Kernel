@@ -20,20 +20,18 @@
 
 package org.efaps.admin.user;
 
-import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.EFapsSystemConfiguration;
@@ -46,12 +44,15 @@ import org.efaps.db.PrintQuery;
 import org.efaps.db.Update;
 import org.efaps.db.Update.Status;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.util.ChronologyType;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractCache;
-import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.CacheLogListener;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -125,27 +126,28 @@ public final class Person
         }
     }
 
+
+    private static final String SQL_ID = new SQLSelect()
+    .column("ID")
+    .column("NAME")
+    .column("STATUS")
+    .from("V_USERPERSON", 0)
+    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+
+    private static final String SQL_NAME = new SQLSelect()
+    .column("ID")
+    .column("NAME")
+    .column("STATUS")
+    .from("V_USERPERSON", 0)
+    .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+
+    private static String IDCACHE = "Person4ID";
+    private static String NAMECACHE = "Person4Name";
+
     /**
      * Logging instance used to give logging information of this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(Person.class);
-
-    /**
-     * Stores all instances of class {@link Person}.
-     *
-     * @see #getCache
-     */
-    private static final AbstractCache<Person> CACHE = new PersonCache();
-
-    /**
-     * Key to access the cache4Name in the Context.
-     */
-    private static final String CACHE4NAMEKEY = "org.efaps.admin.user.Person.eFapsPersonCache4Name";
-
-    /**
-     * Key to access the cache4ID in the Context.
-     */
-    private static final String CACHE4IDKEY = "org.efaps.admin.user.Person.eFapsPersonCache4Id";
 
     /**
      * HashSet instance variable to hold all id of roles for this person.
@@ -772,6 +774,7 @@ public final class Person
         final Set<Company> ret = new HashSet<Company>();
         ConnectionResource rsrc = null;
         try {
+            final List<Long> companyIds = new ArrayList<Long>();
             rsrc = Context.getThreadContext().getConnectionResource();
 
             Statement stmt = null;
@@ -788,7 +791,7 @@ public final class Person
                 stmt = rsrc.getConnection().createStatement();
                 final ResultSet resultset = stmt.executeQuery(cmd.toString());
                 while (resultset.next()) {
-                    ret.add(Company.get(resultset.getLong(1)));
+                    companyIds.add(resultset.getLong(1));
                 }
                 resultset.close();
 
@@ -804,6 +807,10 @@ public final class Person
                 }
             }
             rsrc.commit();
+            for (final Long companyId : companyIds) {
+                final Company company = Company.get(companyId);
+                ret.add(company);
+            }
         } finally {
             if ((rsrc != null) && rsrc.isOpened()) {
                 rsrc.abort();
@@ -869,10 +876,9 @@ public final class Person
         final Set<Role> ret = new HashSet<Role>();
         ConnectionResource rsrc = null;
         try {
+            final List<Long> roleIds = new ArrayList<Long>();
             rsrc = Context.getThreadContext().getConnectionResource();
-
             Statement stmt = null;
-
             try {
                 final StringBuilder cmd = new StringBuilder();
                 cmd.append("select ").append("USERABSTRACTTO ").append("from V_USERPERSON2ROLE ").append(
@@ -884,13 +890,8 @@ public final class Person
 
                 stmt = rsrc.getConnection().createStatement();
                 final ResultSet resultset = stmt.executeQuery(cmd.toString());
-                final Set<String> roleNames = AppAccessHandler.getLoginRoles();
                 while (resultset.next()) {
-                    final Role role = Role.get(resultset.getLong(1));
-                    if (!AppAccessHandler.excludeMode()
-                                    || (AppAccessHandler.excludeMode() && roleNames.contains(role.getName()))) {
-                        ret.add(role);
-                    }
+                    roleIds.add(resultset.getLong(1));
                 }
                 resultset.close();
 
@@ -906,6 +907,15 @@ public final class Person
                 }
             }
             rsrc.commit();
+
+            final Set<String> roleNames = AppAccessHandler.getLoginRoles();
+            for (final Long roleId : roleIds) {
+                final Role role = Role.get(roleId);
+                if (!AppAccessHandler.excludeMode()
+                                || (AppAccessHandler.excludeMode() && roleNames.contains(role.getName()))) {
+                    ret.add(role);
+                }
+            }
         } finally {
             if ((rsrc != null) && rsrc.isOpened()) {
                 rsrc.abort();
@@ -1006,6 +1016,7 @@ public final class Person
         final Set<Group> ret = new HashSet<Group>();
         ConnectionResource rsrc = null;
         try {
+            final List<Long> groupIds = new ArrayList<Long>();
             rsrc = Context.getThreadContext().getConnectionResource();
 
             Statement stmt = null;
@@ -1022,10 +1033,9 @@ public final class Person
                 stmt = rsrc.getConnection().createStatement();
                 final ResultSet resultset = stmt.executeQuery(cmd.toString());
                 while (resultset.next()) {
-                    ret.add(Group.get(resultset.getLong(1)));
+                    groupIds.add(resultset.getLong(1));
                 }
                 resultset.close();
-
             } catch (final SQLException e) {
                 throw new EFapsException(getClass(), "getGroupsFromDB.SQLException", e, getName());
             } finally {
@@ -1038,6 +1048,9 @@ public final class Person
                 }
             }
             rsrc.commit();
+            for (final Long groupId : groupIds) {
+                ret.add(Group.get(groupId));
+            }
         } finally {
             if ((rsrc != null) && rsrc.isOpened()) {
                 rsrc.abort();
@@ -1201,14 +1214,6 @@ public final class Person
     }
 
     /**
-     * Method to initialize the Cache of this CacheObjectInterface.
-     */
-    public static void initialize()
-    {
-        Person.CACHE.initialize(Person.class);
-    }
-
-    /**
      * Returns a string representation of this person.
      *
      * @return string representation of this person
@@ -1226,6 +1231,23 @@ public final class Person
     }
 
     /**
+     * Method to initialize the Cache of this CacheObjectInterface.
+     */
+    public static void initialize()
+    {
+        if (InfinispanCache.get().exists(Person.IDCACHE)) {
+            InfinispanCache.get().<Long, Type>getCache(Person.IDCACHE).clear();
+        } else {
+            InfinispanCache.get().<Long, Type>getCache(Person.IDCACHE).addListener(new CacheLogListener(Person.LOG));
+        }
+        if (InfinispanCache.get().exists(Person.NAMECACHE)) {
+            InfinispanCache.get().<String, Type>getCache(Person.NAMECACHE).clear();
+        } else {
+            InfinispanCache.get().<String, Type>getCache(Person.NAMECACHE).addListener(new CacheLogListener(Person.LOG));
+        }
+    }
+
+    /**
      * Returns for given parameter <i>_id</i> the instance of class
      * {@link Person}.
      *
@@ -1238,16 +1260,11 @@ public final class Person
     public static Person get(final long _id)
         throws EFapsException
     {
-        Person ret = Person.getCache().get(_id);
-        if (ret == null) {
-            ret = Person.getFromDB("select "
-                            + "V_USERPERSON.ID,"
-                            + "V_USERPERSON.NAME, "
-                            + "STATUS "
-                            + "from V_USERPERSON "
-                            + "where V_USERPERSON.ID=" + _id);
+        final Cache<Long, Person> cache = InfinispanCache.get().<Long, Person>getCache(Person.IDCACHE);
+        if (!cache.containsKey(_id)) {
+            Person.getPersonFromDB(Person.SQL_ID, _id);
         }
-        return ret;
+        return cache.get(_id);
     }
 
     /**
@@ -1263,17 +1280,24 @@ public final class Person
     public static Person get(final String _name)
         throws EFapsException
     {
-        Person ret = Person.getCache().get(_name);
-        if (ret == null) {
-            ret = Person.getFromDB("select "
-                            + "V_USERPERSON.ID,"
-                            + "V_USERPERSON.NAME, "
-                            + "STATUS "
-                            + "from V_USERPERSON "
-                            + "where V_USERPERSON.NAME='" + _name + "'");
+        final Cache<Long, Person> cache = InfinispanCache.get().<Long, Person>getCache(Person.NAMECACHE);
+        if (!cache.containsKey(_name)) {
+            Person.getPersonFromDB(Person.SQL_NAME, _name);
         }
-        return ret;
+        return cache.get(_name);
     }
+
+    private  static void cachePerson(final Person _person) {
+               final Cache<String, Person> nameCache = InfinispanCache.get().<String, Person>getCache(Person.NAMECACHE);
+        if (!nameCache.containsKey(_person.getName())) {
+            nameCache.put(_person.getName(), _person);
+        }
+        final Cache<Long, Person> idCache = InfinispanCache.get().<Long, Person>getCache(Person.IDCACHE);
+        if (!idCache.containsKey(_person.getId())) {
+            idCache.put(_person.getId(), _person);
+        }
+    }
+
 
     /**
      * The static method reads with the help of given sql statement the id and
@@ -1288,43 +1312,40 @@ public final class Person
      * @see #get(String)
      * @see #readFromDB
      */
-    private static Person getFromDB(final String _sql)
+    private static Person getPersonFromDB(final String _sql,
+                                         final Object _criteria)
         throws EFapsException
     {
         Person ret = null;
-        ConnectionResource rsrc = null;
+        ConnectionResource con = null;
         try {
-            rsrc = Context.getThreadContext().getConnectionResource();
-
-            Statement stmt = null;
-
+            con = Context.getThreadContext().getConnectionResource();
+            final PreparedStatement stmt;
             try {
-                stmt = rsrc.getConnection().createStatement();
-                final ResultSet resultset = stmt.executeQuery(_sql);
-                if (resultset.next()) {
-                    final long id = resultset.getLong(1);
-                    final String name = resultset.getString(2);
-                    final boolean status = resultset.getBoolean(3);
+                stmt = con.getConnection().prepareStatement(_sql);
+                stmt.setObject(1, _criteria);
+                final ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    final long id = rs.getLong(1);
+                    final String name = rs.getString(2);
+                    final boolean status = rs.getBoolean(3);
                     ret = new Person(id, name.trim(), status);
-                    Person.getCache().addObject(ret);
+                    Person.cachePerson(ret);
                 }
-                resultset.close();
+                rs.close();
             } catch (final SQLException e) {
                 Person.LOG.error("search for person with SQL statement '" + _sql + "' is not possible", e);
                 throw new EFapsException(Person.class, "getFromDB.SQLException", e, _sql);
             } finally {
-                try {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                } catch (final SQLException e) {
-                    Person.LOG.error("close of SQL statement is not possible", e);
+                if (con != null) {
+                    con.commit();
                 }
             }
-            rsrc.commit();
+
         } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
-                rsrc.abort();
+            if ((con != null) && con.isOpened()) {
+                con.abort();
             }
         }
         if (ret != null) {
@@ -1497,173 +1518,5 @@ public final class Person
         final Person ret = Person.get(persId);
         ret.assignToJAASSystem(_jaasSystem, _jaasKey);
         return ret;
-    }
-
-    /**
-     * Static getter method for the type hashtable {@link #CACHE}.
-     *
-     * @return value of static variable {@link #CACHE}
-     */
-    public static AbstractCache<Person> getCache()
-    {
-        return Person.CACHE;
-    }
-
-    /**
-     * This Class is used to store a Person in the Cache.
-     */
-    private static final class PersonCache
-        extends AbstractCache<Person>
-        implements Serializable
-    {
-        /**
-         * Needed for serialization.
-         */
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * Method is overwritten because the map is stored in the context.
-         *
-         * @return Map by id
-         */
-        @Override
-        @SuppressWarnings("unchecked")
-        public Map<Long, Person> getCache4Id()
-        {
-            Map<Long, Person> map = null;
-            try {
-                map = (PersonMap<Long>) Context.getThreadContext().getSessionAttribute(Person.CACHE4IDKEY);
-                if (map == null) {
-                    map = new PersonMap<Long>();
-                    Context.getThreadContext().setSessionAttribute(Person.CACHE4IDKEY, map);
-                }
-            } catch (final EFapsException e) {
-                Person.LOG.error("could not read or set a SessionAttribute for " + Person.CACHE4IDKEY, e);
-            }
-            return map;
-        }
-
-        /**
-         * Method is overwritten because the map is stored in the context.
-         *
-         * @return Map by name
-         */
-        @Override
-        @SuppressWarnings("unchecked")
-        protected Map<String, Person> getCache4Name()
-        {
-            Map<String, Person> map = null;
-            try {
-                map = (Map<String, Person>) Context.getThreadContext().getSessionAttribute(Person.CACHE4NAMEKEY);
-                if (map == null) {
-                    map = new PersonMap<String>();
-                    Context.getThreadContext().setSessionAttribute(Person.CACHE4NAMEKEY, map);
-                }
-            } catch (final EFapsException e) {
-                Person.LOG.error("could not read or set a SessionAttribute for the " + Person.CACHE4NAMEKEY, e);
-            }
-            return map;
-        }
-
-        /**
-         * Method is overwritten because the map is stored in the context.
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        protected void setCache4Id(final Map<Long, Person> _cache4Id)
-        {
-            try {
-                Context.getThreadContext().setSessionAttribute(Person.CACHE4IDKEY, _cache4Id);
-            } catch (final EFapsException e) {
-                Person.LOG.error("could set a SessionAttribute for the " + Person.CACHE4IDKEY, e);
-            }
-        }
-
-        /**
-         * Method is overwritten because the map is stored in the context.
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        protected void setCache4Name(final Map<String, Person> _cache4Name)
-        {
-            try {
-                Context.getThreadContext().setSessionAttribute(Person.CACHE4NAMEKEY, _cache4Name);
-            } catch (final EFapsException e) {
-                Person.LOG.error("could not set a SessionAttribute for the " + Person.CACHE4NAMEKEY, e);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected Map<Long, Person> getNewCache4Id()
-        {
-            return new PersonMap<Long>();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected Map<String, Person> getNewCache4Name()
-        {
-            return new PersonMap<String>();
-        }
-
-        /**
-         * Method must not be overwritten (used), because the person cache is
-         * stored inside the session and is growing dynamically during the
-         * session up to a maximum value defined by a SystemAttribute.
-         *
-         * @param _cache4Id     cache 4 id
-         * @param _cache4Name   cache 4 name
-         * @param _cache4UUID   not used
-         * @throws CacheReloadException on error
-         */
-        @Override
-        protected void readCache(final Map<Long, Person> _cache4Id,
-                                 final Map<String, Person> _cache4Name,
-                                 final Map<UUID, Person> _cache4UUID)
-            throws CacheReloadException
-        {
-            try {
-                Context.getThreadContext().setSessionAttribute(Person.CACHE4NAMEKEY, _cache4Name);
-                Context.getThreadContext().setSessionAttribute(Person.CACHE4IDKEY, _cache4Id);
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("error in reading cache for Person", e);
-            }
-        }
-
-        /**
-         * Implementation of a LinkedHashMap with limited capacity.
-         */
-        public class PersonMap<T> extends LinkedHashMap<T, Person>
-        {
-            /**
-             * Needed for serialization.
-             */
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected boolean removeEldestEntry(final Entry<T, Person> _eldest)
-            {
-                int size = 0;
-                final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
-                if (config != null) {
-                    try {
-                        size = EFapsSystemConfiguration.KERNEL.get().getAttributeValueAsInteger("Cache4PersonMaxSize");
-                    } catch (final EFapsException e) {
-                        Person.LOG.debug("error", e);
-                    }
-                }
-                if (size < 1) {
-                    size = 100;
-                }
-                return size() > size;
-            }
-        }
     }
 }

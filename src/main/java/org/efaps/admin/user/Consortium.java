@@ -20,21 +20,25 @@
 
 package org.efaps.admin.user;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,32 +62,62 @@ public final class Consortium
     private static final Logger LOG = LoggerFactory.getLogger(Consortium.class);
 
     /**
-     * This is the sql select statement to select all consortium from the database.
-     */
-    private static final SQLSelect SQL_SELECT = new SQLSelect()
-                                                        .column("ID")
-                                                        .column("UUID")
-                                                        .column("NAME")
-                                                        .column("STATUS")
-                                                        .from("V_USERCONSORTIUM");
-
-    /**
      * This is the sql select statement to select all consortium 2 company
      * relations from the database.
      */
-    private static final SQLSelect SQL_SELECTREL = new SQLSelect()
-                                                        .column("ID")
-                                                        .column("USERABSTRACTFROM")
+    private static final String SQL_SELECTREL = new SQLSelect()
                                                         .column("USERABSTRACTTO")
-                                                        .column("JAASSYSID")
-                                                        .from("V_CONSORTIUM2COMPANY");
+                                                        .from("V_CONSORTIUM2COMPANY")
+                                                        .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
     /**
-     * Stores all instances of class {@link Consortium}.
-     *
-     * @see #getCache
+     * This is the SQL select statement to select a Consortium from the database by ID.
      */
-    private static final ConsortiumCache CACHE = new ConsortiumCache();
+    private static final String SQL_ID = new SQLSelect().column("ID")
+                    .column("UUID")
+                    .column("NAME")
+                    .column("STATUS")
+                    .from("V_USERCONSORTIUM", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+
+    /**
+     * This is the SQL select statement to select a role from the database by Name.
+     */
+    private static final String SQL_NAME = new SQLSelect().column("ID")
+                    .column("UUID")
+                    .column("NAME")
+                    .column("STATUS")
+                    .from("V_USERCONSORTIUM", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * This is the SQL select statement to select a role from the database by UUID.
+     */
+    private static final String SQL_UUID = new SQLSelect().column("ID")
+                    .column("UUID")
+                    .column("NAME")
+                    .column("STATUS")
+                    .from("V_USERCONSORTIUM", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "UUID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * Name of the Cache by UUID.
+     */
+    private static String UUIDCACHE = "Consortium4UUID";
+
+    /**
+     * Name of the Cache by ID.
+     */
+    private static String IDCACHE = "Consortium4ID";
+
+    /**
+     * Name of the Cache by Name.
+     */
+    private static String NAMECACHE = "Consortium4Name";
+
+
 
     /**
      * The companies belonging to this Consortium.
@@ -157,7 +191,24 @@ public final class Consortium
      */
     public static void initialize()
     {
-        Consortium.CACHE.initialize(Consortium.class);
+        if (InfinispanCache.get().exists(Consortium.UUIDCACHE)) {
+            InfinispanCache.get().<UUID, Consortium>getCache(Consortium.UUIDCACHE).clear();
+        } else {
+            InfinispanCache.get().<UUID, Consortium>getCache(Consortium.UUIDCACHE)
+                            .addListener(new CacheLogListener(Consortium.LOG));
+        }
+        if (InfinispanCache.get().exists(Consortium.IDCACHE)) {
+            InfinispanCache.get().<Long, Consortium>getCache(Consortium.IDCACHE).clear();
+        } else {
+            InfinispanCache.get().<Long, Consortium>getCache(Consortium.IDCACHE)
+                            .addListener(new CacheLogListener(Consortium.LOG));
+        }
+        if (InfinispanCache.get().exists(Consortium.NAMECACHE)) {
+            InfinispanCache.get().<String, Consortium>getCache(Consortium.NAMECACHE).clear();
+        } else {
+            InfinispanCache.get().<String, Consortium>getCache(Consortium.NAMECACHE)
+                            .addListener(new CacheLogListener(Consortium.LOG));
+        }
     }
 
    /**
@@ -171,10 +222,14 @@ public final class Consortium
     public static Consortium get(final long _id)
         throws CacheReloadException
     {
-        return Consortium.CACHE.get(_id);
+        final Cache<Long, Consortium> cache = InfinispanCache.get().<Long, Consortium>getCache(Consortium.IDCACHE);
+        if (!cache.containsKey(_id)) {
+            Consortium.getConsortiumFromDB(Consortium.SQL_ID, _id);
+        }
+        return cache.get(_id);
     }
 
-   /**
+/**
     * Returns for given parameter <i>_name</i> the instance of class
     * {@link Consortium}.
     *
@@ -186,7 +241,11 @@ public final class Consortium
     public static Consortium get(final String _name)
         throws CacheReloadException
     {
-        return Consortium.CACHE.get(_name);
+        final Cache<String, Consortium> cache = InfinispanCache.get().<String, Consortium>getCache(Consortium.IDCACHE);
+        if (!cache.containsKey(_name)) {
+            Consortium.getConsortiumFromDB(Consortium.SQL_NAME, _name);
+        }
+        return cache.get(_name);
     }
 
     /**
@@ -199,90 +258,133 @@ public final class Consortium
     public static Consortium get(final UUID _uuid)
         throws CacheReloadException
     {
-        return Consortium.CACHE.get(_uuid);
+        final Cache<UUID, Consortium> cache = InfinispanCache.get().<UUID, Consortium>getCache(Consortium.IDCACHE);
+        if (!cache.containsKey(_uuid)) {
+            Consortium.getConsortiumFromDB(Consortium.SQL_UUID, String.valueOf(_uuid));
+        }
+        return cache.get(_uuid);
     }
 
     /**
-     * Method to get the Cache for Company.
-     * @return Cache
+     * @param _role Consortium to be cached
      */
-    public static AbstractCache<Consortium> getCache()
+    private static void cacheConsortium(final Consortium _consortium)
     {
-        return Consortium.CACHE;
+        final Cache<UUID, Consortium> cache4UUID = InfinispanCache.get().<UUID, Consortium>getCache(
+                        Consortium.UUIDCACHE);
+        if (!cache4UUID.containsKey(_consortium.getUUID())) {
+            cache4UUID.put(_consortium.getUUID(), _consortium);
+        }
+
+        final Cache<String, Consortium> nameCache = InfinispanCache.get().<String, Consortium>getCache(
+                        Consortium.NAMECACHE);
+        if (!nameCache.containsKey(_consortium.getName())) {
+            nameCache.put(_consortium.getName(), _consortium);
+        }
+        final Cache<Long, Consortium> idCache = InfinispanCache.get().<Long, Consortium>getCache(Consortium.IDCACHE);
+        if (!idCache.containsKey(_consortium.getId())) {
+            idCache.put(_consortium.getId(), _consortium);
+        }
     }
 
     /**
-     * Cache for Companies.
+     * @param _sqlId
+     * @param _id
      */
-    private static final class ConsortiumCache
-        extends AbstractCache<Consortium>
+    private static void getConsortiumFromDB(final String _sql,
+                                            final Object _criteria)
+        throws CacheReloadException
     {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void readCache(final Map<Long, Consortium> _cache4Id,
-                                 final Map<String, Consortium> _cache4Name,
-                                 final Map<UUID, Consortium> _cache4UUID)
-            throws CacheReloadException
-        {
-            ConnectionResource con = null;
+        ConnectionResource con = null;
+        try {
+            Consortium consortium = null;
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
             try {
-                con = Context.getThreadContext().getConnectionResource();
+                stmt = con.getConnection().prepareStatement(_sql);
+                stmt.setObject(1, _criteria);
+                final ResultSet rs = stmt.executeQuery();
 
-                Statement stmt = null;
-                try {
-                    stmt = con.getConnection().createStatement();
-                    final ResultSet resulset = stmt.executeQuery(Consortium.SQL_SELECT.getSQL());
-                    while (resulset.next()) {
-                        final long id = resulset.getLong(1);
-                        final String uuid = resulset.getString(2);
-                        final String name = resulset.getString(3).trim();
-                        final boolean status = resulset.getBoolean(4);
-
-                        Consortium.LOG.debug("read consortium '" + name + "' (id = " + id + ")");
-                        final Consortium consortium = new Consortium(id, uuid, name, status);
-                        _cache4Id.put(consortium.getId(), consortium);
-                        _cache4Name.put(consortium.getName(), consortium);
-                        _cache4UUID.put(consortium.getUUID(), consortium);
-                    }
-                    resulset.close();
-
-                    final ResultSet relResulset = stmt.executeQuery(Consortium.SQL_SELECTREL.getSQL());
-                    while (relResulset.next()) {
-                        final long id = relResulset.getLong(1);
-                        final long consortiumId = relResulset.getLong(2);
-                        final long companyId = relResulset.getLong(3);
-                        final Consortium consortium = Consortium.CACHE.get(consortiumId);
-                        final Company company = Company.getCache().get(companyId);
-                        Consortium.LOG.debug("read consortium 2 company relation '{} - {}' (relationid = {})",
-                                        new Object[] { consortium.getName(), company.getName(), id});
-                        consortium.addCompany(company);
-                        company.addConsortium(consortium);
-                    }
-                    relResulset.close();
-
-                } finally {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
+                if (rs.next()) {
+                    final long id = rs.getLong(1);
+                    final String uuid = rs.getString(2);
+                    final String name = rs.getString(3).trim();
+                    final boolean status = rs.getBoolean(4);
+                    Consortium.LOG.debug("read consortium '" + name + "' (id = " + id + ")");
+                    consortium = new Consortium(id, uuid, name, status);
                 }
-                con.commit();
-            } catch (final SQLException e) {
-                throw new CacheReloadException("could not read consortiums", e);
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("could not read consortiums", e);
+                rs.close();
             } finally {
-                if ((con != null) && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read consortiums", e);
-                    }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+            if (consortium != null) {
+                Consortium.cacheConsortium(consortium);
+                consortium.getCompanyRelationFromDB();
+            }
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read consortiums", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read consortiums", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read consortiums", e);
                 }
             }
         }
     }
 
+    /**
+     *
+     */
+    private void getCompanyRelationFromDB() throws CacheReloadException
+    {
+        ConnectionResource con = null;
+        try {
+            final List<Long> companyIds = new ArrayList<Long>();
+            con = Context.getThreadContext().getConnectionResource();
+                        PreparedStatement stmt = null;
+            try {
+                stmt = con.getConnection().prepareStatement(Consortium.SQL_SELECTREL);
+                stmt.setObject(1, getId());
+                final ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    companyIds.add(rs.getLong(1));
+                }
+                rs.close();
+
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+            for (final Long companyId : companyIds) {
+                final Company company = Company.get(companyId);
+                Consortium.LOG.debug("read consortium 2 company relation '{} - {}'",
+                            new Object[] {getName(), company.getName()});
+                addCompany(company);
+                company.addConsortium(this);
+            }
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read consortiums", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read consortiums", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read consortiums", e);
+                }
+            }
+        }
+    }
 
 }

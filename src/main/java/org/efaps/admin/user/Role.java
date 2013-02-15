@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,21 @@
 
 package org.efaps.admin.user;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
 import java.util.UUID;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,20 +58,51 @@ public final class Role
     private static final Logger LOG = LoggerFactory.getLogger(Role.class);
 
     /**
-     * This is the SQL select statement to select all roles from the database.
+     * This is the SQL select statement to select a role from the database by ID.
      */
-    private static final SQLSelect SQL_SELECT = new SQLSelect().column("ID")
-                                                            .column("UUID")
-                                                            .column("NAME")
-                                                            .column("STATUS")
-                                                            .from("V_USERROLE");
+    private static final String SQL_ID = new SQLSelect().column("ID")
+                    .column("UUID")
+                    .column("NAME")
+                    .column("STATUS")
+                    .from("V_USERROLE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
     /**
-     * Stores all instances of class {@link Role}.
-     *
-     * @see #getCache
+     * This is the SQL select statement to select a role from the database by Name.
      */
-    private static final RoleCache CACHE = new RoleCache();
+    private static final String SQL_NAME = new SQLSelect().column("ID")
+                    .column("UUID")
+                    .column("NAME")
+                    .column("STATUS")
+                    .from("V_USERROLE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * This is the SQL select statement to select a role from the database by UUID.
+     */
+    private static final String SQL_UUID = new SQLSelect().column("ID")
+                    .column("UUID")
+                    .column("NAME")
+                    .column("STATUS")
+                    .from("V_USERROLE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "UUID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * Name of the Cache by UUID.
+     */
+    private static String UUIDCACHE = "Role4UUID";
+
+    /**
+     * Name of the Cache by ID.
+     */
+    private static String IDCACHE = "Role4ID";
+
+    /**
+     * Name of the Cache by Name.
+     */
+    private static String NAMECACHE = "Role4Name";
 
     /**
      * Create a new role instance. The method is used from the static method
@@ -106,7 +140,21 @@ public final class Role
      */
     public static void initialize()
     {
-        Role.CACHE.initialize(Role.class);
+        if (InfinispanCache.get().exists(Role.UUIDCACHE)) {
+            InfinispanCache.get().<UUID, Role>getCache(Role.UUIDCACHE).clear();
+        } else {
+            InfinispanCache.get().<UUID, Role>getCache(Role.UUIDCACHE).addListener(new CacheLogListener(Role.LOG));
+        }
+        if (InfinispanCache.get().exists(Role.IDCACHE)) {
+            InfinispanCache.get().<Long, Role>getCache(Role.IDCACHE).clear();
+        } else {
+            InfinispanCache.get().<Long, Role>getCache(Role.IDCACHE).addListener(new CacheLogListener(Role.LOG));
+        }
+        if (InfinispanCache.get().exists(Role.NAMECACHE)) {
+            InfinispanCache.get().<String, Role>getCache(Role.NAMECACHE).clear();
+        } else {
+            InfinispanCache.get().<String, Role>getCache(Role.NAMECACHE).addListener(new CacheLogListener(Role.LOG));
+        }
     }
 
     /**
@@ -121,7 +169,11 @@ public final class Role
     public static Role get(final long _id)
         throws CacheReloadException
     {
-        return Role.CACHE.get(_id);
+        final Cache<Long, Role> cache = InfinispanCache.get().<Long, Role>getCache(Role.IDCACHE);
+        if (!cache.containsKey(_id)) {
+            Role.getRoleFromDB(Role.SQL_ID, _id);
+        }
+        return cache.get(_id);
     }
 
     /**
@@ -136,7 +188,11 @@ public final class Role
     public static Role get(final String _name)
         throws CacheReloadException
     {
-        return Role.CACHE.get(_name);
+        final Cache<String, Role> cache = InfinispanCache.get().<String, Role>getCache(Role.NAMECACHE);
+        if (!cache.containsKey(_name)) {
+            Role.getRoleFromDB(Role.SQL_NAME, _name);
+        }
+        return cache.get(_name);
     }
 
     /**
@@ -151,7 +207,78 @@ public final class Role
     public static Role get(final UUID _uuid)
         throws CacheReloadException
     {
-        return Role.CACHE.get(_uuid);
+        final Cache<UUID, Role> cache = InfinispanCache.get().<UUID, Role>getCache(Role.UUIDCACHE);
+        if (!cache.containsKey(_uuid)) {
+            Role.getRoleFromDB(Role.SQL_UUID, String.valueOf(_uuid));
+        }
+        return cache.get(_uuid);
+    }
+
+    /**
+     * @param _role Role to be cached
+     */
+    private static void cacheRole(final Role _role) {
+        final Cache<UUID, Role> cache4UUID = InfinispanCache.get().<UUID, Role>getCache(Role.UUIDCACHE);
+        if (!cache4UUID.containsKey(_role.getUUID())) {
+            cache4UUID.put(_role.getUUID(), _role);
+        }
+
+        final Cache<String, Role> nameCache = InfinispanCache.get().<String, Role>getCache(Role.NAMECACHE);
+        if (!nameCache.containsKey(_role.getName())) {
+            nameCache.put(_role.getName(), _role);
+        }
+        final Cache<Long, Role> idCache = InfinispanCache.get().<Long, Role>getCache(Role.IDCACHE);
+        if (!idCache.containsKey(_role.getId())) {
+            idCache.put(_role.getId(), _role);
+        }
+    }
+
+    /**
+     * @param _sqlId
+     * @param _id
+     */
+    private static void getRoleFromDB(final String _sql,
+                                      final Object _criteria) throws CacheReloadException
+    {
+        ConnectionResource con = null;
+        try {
+            con = Context.getThreadContext().getConnectionResource();
+                        PreparedStatement stmt = null;
+            try {
+                stmt = con.getConnection().prepareStatement(_sql);
+                stmt.setObject(1, _criteria);
+                final ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    final long id = rs.getLong(1);
+                    final String uuid = rs.getString(2);
+                    final String name = rs.getString(3).trim();
+                    final boolean status = rs.getBoolean(4);
+
+                    Role.LOG.debug("read role '" + name + "' (id = " + id + ")");
+                    final Role role = new Role(id, uuid, name, status);
+                    Role.cacheRole(role);
+                }
+                rs.close();
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read roles", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read roles", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read roles", e);
+                }
+            }
+        }
     }
 
     /**
@@ -212,78 +339,27 @@ public final class Role
         return Role.get(roleId);
     }
 
-    /**
-     * Method to get the Cache for Roles.
-     *
-     * @return Cache
-     * @see #CACHE
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
      */
-    public static AbstractCache<Role> getCache()
+    @Override
+    public boolean equals(final Object _obj)
     {
-        return Role.CACHE;
+        boolean ret;
+        if (_obj instanceof Role) {
+            ret = ((Role) _obj).getId() == getId();
+        } else {
+            ret = super.equals(_obj);
+        }
+        return ret;
     }
 
-    /**
-     * Class used as the Cache for Roles.
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
      */
-    private static final class RoleCache
-        extends AbstractCache<Role>
+    @Override
+    public int hashCode()
     {
-        /**
-         * Method to read the data into the cache.
-         *
-         * @param _cache4Id   cache with id as key
-         * @param _cache4Name cache with name as key
-         * @param _cache4UUID cache with UUID as key
-         * @throws CacheReloadException on error during reading the date
-         */
-        @Override
-        protected void readCache(final Map<Long, Role> _cache4Id,
-                                 final Map<String, Role> _cache4Name,
-                                 final Map<UUID, Role> _cache4UUID)
-            throws CacheReloadException
-        {
-            ConnectionResource con = null;
-            try {
-                con = Context.getThreadContext().getConnectionResource();
-
-                Statement stmt = null;
-                try {
-                    stmt = con.getConnection().createStatement();
-
-                    final ResultSet resulset = stmt.executeQuery(Role.SQL_SELECT.getSQL());
-                    while (resulset.next()) {
-                        final long id = resulset.getLong(1);
-                        final String uuid = resulset.getString(2);
-                        final String name = resulset.getString(3).trim();
-                        final boolean status = resulset.getBoolean(4);
-
-                        Role.LOG.debug("read role '" + name + "' (id = " + id + ")");
-                        final Role role = new Role(id, uuid, name, status);
-                        _cache4Id.put(role.getId(), role);
-                        _cache4Name.put(role.getName(), role);
-                        _cache4UUID.put(role.getUUID(), role);
-                    }
-                    resulset.close();
-                } finally {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                }
-                con.commit();
-            } catch (final SQLException e) {
-                throw new CacheReloadException("could not read roles", e);
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("could not read roles", e);
-            } finally {
-                if ((con != null) && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read roles", e);
-                    }
-                }
-            }
-        }
+        return  Long.valueOf(getId()).intValue();
     }
 }
