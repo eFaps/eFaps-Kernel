@@ -212,10 +212,6 @@ public class Insert
 
             con = context.getConnectionResource();
 
-            if (test4Unique()) {
-                throw new EFapsException(getClass(), "executeWithoutAccessCheck.UniqueKeyError");
-            }
-
             final SQLTable mainTable = getType().getMainTable();
 
             final long id = executeOneStatement(con, mainTable, getExpr4Tables().get(mainTable).values(), 0);

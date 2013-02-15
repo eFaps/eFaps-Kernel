@@ -314,8 +314,11 @@ public final class EventDefinition
                     if (EventDefinition.LOG.isDebugEnabled()) {
                         EventDefinition.LOG.debug("       Field=" + field.getName());
                     }
-
-                    field.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
+                    if (field == null) {
+                        EventDefinition.LOG.error("Could not read Field with id: {}", abstractID);
+                    } else {
+                        field.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
+                    }
 
                 } else if (CIAdminDataModel.Attribute.uuid.equals(typeUUId)
                                 || CIAdminDataModel.AttributeSetAttribute.uuid.equals(typeUUId)) {

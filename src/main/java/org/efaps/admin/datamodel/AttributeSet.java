@@ -80,7 +80,7 @@ public class AttributeSet
 
         this.attributeName = (_name == null) ? null : _name.trim();
 
-        Type.getTypeCache().addObject(this);
+        Type.cacheType(this);
         readFromDB4Properties();
 
         this.attributeType = _attributeType;

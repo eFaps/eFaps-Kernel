@@ -1,10 +1,29 @@
 <infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="urn:infinispan:config:5.1 http://www.infinispan.org/schemas/infinispan-config-5.1.xsd"
     xmlns="urn:infinispan:config:5.1">
-    
+
     <namedCache name="DBProperties">
         <eviction maxEntries="5000" strategy="LIRS"/>
-        
     </namedCache>
+
+
+    <namedCache name="Type4UUID">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Type4ID">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Type4Name">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+
+
+    <namedCache name="Attribute4Name">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Attribute4ID">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+
 </infinispan>
 

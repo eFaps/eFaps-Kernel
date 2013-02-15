@@ -20,19 +20,17 @@
 
 package org.efaps.admin.datamodel;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.UUID;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.event.EventDefinition;
@@ -44,10 +42,15 @@ import org.efaps.db.databases.information.ColumnInformation;
 import org.efaps.db.query.CachedResult;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLInsert;
+import org.efaps.db.wrapper.SQLPart;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,12 +114,28 @@ public class Attribute
      */
     private static final Logger LOG = LoggerFactory.getLogger(Attribute.class);
 
-    /**
-     * Stores all instances of attribute.
-     *
-     * @see #get
-     */
-    private static AttributeCache CACHE = new AttributeCache();
+    private static final String SQL_TYPE = new SQLSelect()
+    .column("ID")
+    .column("NAME")
+    .column("TYPEID")
+    .column("DMTABLE")
+    .column("DMATTRIBUTETYPE")
+    .column("DMTYPELINK")
+    .column("PARENTSET")
+    .column("SQLCOLUMN")
+    .column("DEFAULTVAL")
+    .column("DIMENSION")
+    .from("V_ADMINATTRIBUTE", 0)
+    .addPart(SQLPart.WHERE).addColumnPart(0, "DMTYPE").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+
+
+    private static final String SQL_Attr = new SQLSelect()
+        .column("DMTYPE")
+        .from("V_ADMINATTRIBUTE", 0)
+        .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+
+    private static String NAMECACHE = "Attribute4Name";
+    private static String IDCACHE = "Attribute4ID";
 
     /**
      * This is the instance variable for the table, where attribute is stored.
@@ -155,15 +174,6 @@ public class Attribute
      * @see #getAttributeType
      */
     private final AttributeType attributeType;
-
-    /**
-     * The collection instance variables holds all unique keys, for which this
-     * attribute belongs to.
-     *
-     * @see #getUniqueKeys
-     * @see #setUniqueKeys
-     */
-    private Collection<UniqueKey> uniqueKeys = null;
 
     /**
      * The String holds the default value as string for this Attribute.
@@ -313,21 +323,6 @@ public class Attribute
     }
 
     /**
-     * A unique key can added to this attribute instance. If no unique key is
-     * added before, the instance variable {@link #uniqueKeys} is initialised.
-     *
-     * @param _uniqueKey unique key to add to this attribute
-     * @see #uniqueKeys
-     */
-    public void addUniqueKey(final UniqueKey _uniqueKey)
-    {
-        if (getUniqueKeys() == null) {
-            setUniqueKeys(new HashSet<UniqueKey>());
-        }
-        getUniqueKeys().add(_uniqueKey);
-    }
-
-    /**
      * The method makes a clone of the current attribute instance.
      *
      * @return clone of current attribute instance
@@ -338,7 +333,6 @@ public class Attribute
                                             this.dimensionUUID, this.required, this.size, this.scale);
         ret.getSqlColNames().addAll(getSqlColNames());
         ret.setLink(getLink());
-        ret.setUniqueKeys(getUniqueKeys());
         ret.getProperties().putAll(getProperties());
         return ret;
     }
@@ -482,29 +476,6 @@ public class Attribute
     }
 
     /**
-     * This is the getter method for instance variable {@link #uniqueKeys}.
-     *
-     * @return value of instance variable {@link #uniqueKeys}
-     * @see #uniqueKeys
-     */
-    public Collection<UniqueKey> getUniqueKeys()
-    {
-        return this.uniqueKeys;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #uniqueKeys}.
-     *
-     * @param _uniqueKeys new value for instance variable {@link #uniqueKeys}
-     * @see #uniqueKeys
-     * @see #getUniqueKeys
-     */
-    private void setUniqueKeys(final Collection<UniqueKey> _uniqueKeys)
-    {
-        this.uniqueKeys = _uniqueKeys;
-    }
-
-    /**
      * This is the getter method for instance variable {@link #defaultValue}.
      *
      * @return value of instance variable {@link #defaultValue}
@@ -628,8 +599,17 @@ public class Attribute
      */
     public String getLabelKey()
     {
-        return getParent().getName() + "/" + getName() + ".Label";
+        return getKey() + ".Label";
     }
+
+    /**
+     * @return the key for the DBProperties value
+     */
+    public String getKey()
+    {
+        return getParent().getName() + "/" + getName();
+    }
+
 
     /**
      * Method to initialize this Cache.
@@ -639,7 +619,20 @@ public class Attribute
     public static void initialize(final Class<?> _class)
         throws CacheReloadException
     {
-        Attribute.CACHE.initialize(_class);
+        if (InfinispanCache.get().exists(Attribute.NAMECACHE)) {
+            InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE).clear();
+        } else {
+            InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE);
+            InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE).addListener(new CacheLogListener());
+        }
+
+        if (InfinispanCache.get().exists(Attribute.IDCACHE)) {
+            InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE).clear();
+        } else {
+            InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE);
+            InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE).addListener(new CacheLogListener());
+        }
+
     }
 
     /**
@@ -663,7 +656,11 @@ public class Attribute
     public static Attribute get(final long _id)
         throws CacheReloadException
     {
-        return Attribute.CACHE.get(_id);
+        final Cache<Long, Attribute> cache = InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE);
+        if (!cache.containsKey(_id)) {
+            Type.get(Attribute.getTypeID(_id));
+        }
+        return cache.get(_id);
     }
 
     /**
@@ -678,8 +675,22 @@ public class Attribute
     public static Attribute get(final String _name)
         throws CacheReloadException
     {
-        return Attribute.CACHE.get(_name);
+        final Cache<String, Attribute> cache = InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE);
+        return cache.get(_name);
     }
+
+    private static void cacheAttribute(final Attribute _attr) {
+        final Cache<String, Attribute> nameCache = InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE);
+        if (!nameCache.containsKey(_attr.getKey())) {
+            nameCache.put(_attr.getKey(), _attr);
+        }
+        final Cache<Long, Attribute> idCache = InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE);
+        if (!idCache.containsKey(_attr.getId())) {
+            idCache.put(_attr.getId(), _attr);
+        }
+    }
+
+
 
     /**
      * The instance method returns the string representation of this attribute.
@@ -696,6 +707,164 @@ public class Attribute
             .append("attributetype", getAttributeType().toString())
             .append("required", this.required).toString();
     }
+
+    protected static long getTypeID(final long _attrId)
+
+    {
+        long ret = 0;
+        ConnectionResource con = null;
+        try {
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
+            try {
+                stmt = con.getConnection().prepareStatement(Attribute.SQL_Attr);
+                stmt.setObject(1, _attrId);
+                final ResultSet rs = stmt.executeQuery();
+                while (rs.next()) {
+                    ret = rs.getLong(1);
+                }
+                rs.close();
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+
+
+
+        } catch (final SQLException e) {
+
+        } catch (final EFapsException e) {
+
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+
+                }
+            }
+        }
+        return ret;
+    }
+
+
+
+
+    protected static void add4Type(final Type _type)
+
+    {
+        ConnectionResource con = null;
+        try {
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
+            final List<Object[]> values = new ArrayList<Object[]>();
+            try {
+                stmt = con.getConnection().prepareStatement(Attribute.SQL_TYPE);
+                stmt.setObject(1, _type.getId());
+                final ResultSet rs = stmt.executeQuery();
+                while (rs.next()) {
+                    values.add(new Object[] {
+                                    rs.getLong(1),
+                                    rs.getString(2).trim(),
+                                    rs.getLong(3),
+                                    rs.getLong(4),
+                                    rs.getLong(5),
+                                    rs.getLong(6),
+                                    rs.getLong(7),
+                                    rs.getString(8),
+                                    rs.getString(9),
+                                    rs.getString(10)
+                    });
+                }
+                rs.close();
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+
+            final Map<Long, AttributeSet> id2Set = new HashMap<Long, AttributeSet>();
+            final Map<Attribute, Long> attribute2setId = new HashMap<Attribute, Long>();
+
+            for (final Object[] row : values) {
+                final long id = (Long) row[0];
+                final String name = (String) row[1];
+                final long typeAttrId = (Long) row[2];
+                final long tableId = (Long) row[3];
+                final long attrTypeId = (Long) row[4];
+                final long typeLinkId = (Long) row[5];
+                final long parentSetId = (Long) row[6];
+                final String sqlCol = (String) row[7];
+                final String defaultval = (String) row[8];
+                final String dimensionUUID = (String) row[9];
+
+                Attribute.LOG.debug("read attribute '{}/{}' (id = {})", _type.getName(), name, id);
+                final Type typeAttr = Type.get(typeAttrId);
+
+                if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSet.uuid)) {
+                    final AttributeSet set = new AttributeSet(id, _type, name, AttributeType.get(attrTypeId),
+                                    sqlCol, tableId, typeLinkId, dimensionUUID);
+                    id2Set.put(id, set);
+                } else {
+                    final Attribute attr = new Attribute(id, name, sqlCol, SQLTable.get(tableId),
+                                    AttributeType.get(attrTypeId), defaultval,
+                                    dimensionUUID);
+                    attr.setParent(_type);
+                    Attribute.cacheAttribute(attr);
+                    final UUID uuid = attr.getAttributeType().getUUID();
+                    if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_LINK.getUuid())
+                                    || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_LINK_WITH_RANGES.getUuid())
+                                    || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_STATUS.getUuid())) {
+                        final Type linkType = Type.get(typeLinkId);
+                        attr.setLink(linkType);
+                        linkType.addLink(attr);
+                        // in case of a PersonLink, CreatorLink or ModifierLink
+                        // a link to Admin_User_Person
+                        // must be set
+                    } else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_CREATOR_LINK.getUuid())
+                                    || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_MODIFIER_LINK.getUuid())
+                                    || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_PERSON_LINK.getUuid())) {
+                        final Type linkType = CIAdminUser.Person.getType();
+                        attr.setLink(linkType);
+                        linkType.addLink(attr);
+                    }
+
+                    attr.readFromDB4Properties();
+
+                    if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSetAttribute.uuid)) {
+                        attribute2setId.put(attr, parentSetId);
+                    } else {
+                        _type.addAttribute(attr, false);
+                    }
+
+                }
+            }
+            // make connection between set and attributes
+            for (final Entry<Attribute, Long> entry : attribute2setId.entrySet()) {
+                final AttributeSet parentset = id2Set.get(entry.getValue());
+                final Attribute childAttr = entry.getKey();
+                parentset.addAttribute(childAttr, false);
+                childAttr.setParentSet(parentset);
+            }
+
+        } catch (final SQLException e) {
+
+        } catch (final EFapsException e) {
+
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+
+                }
+            }
+        }
+    }
+
 
     /**
      * Class used as cache.
@@ -735,98 +904,7 @@ public class Attribute
                                  final Map<UUID, Attribute> _newCache4UUID)
             throws CacheReloadException
         {
-            ConnectionResource con = null;
-            try {
-                con = Context.getThreadContext().getConnectionResource();
 
-                Statement stmt = null;
-                try {
-                    stmt = con.getConnection().createStatement();
-                    final Map<Long, AttributeSet> id2Set = new HashMap<Long, AttributeSet>();
-                    final Map<Attribute, Long> attribute2setId = new HashMap<Attribute, Long>();
-                    final ResultSet rs = stmt.executeQuery(Attribute.AttributeCache.SQL_SELECT);
-                    while (rs.next()) {
-                        final long id = rs.getLong(1);
-                        final String name = rs.getString(2).trim();
-                        final long typeAttrId = rs.getLong(3);
-                        final long tableId = rs.getLong(4);
-                        final long typeId = rs.getLong(5);
-                        final long attrTypeId = rs.getLong(6);
-                        final long typeLinkId = rs.getLong(7);
-                        final long parentSetId = rs.getLong(8);
-                        final String sqlCol = rs.getString(9);
-                        final String defaultval = rs.getString(10);
-                        final String dimensionUUID = rs.getString(11);
-                        final Type type = Type.get(typeId);
-
-                        Attribute.LOG.debug("read attribute '" + type.getName() + "/" + name + "' (id = " + id + ")");
-
-                        final Type typeAttr = Type.get(typeAttrId);
-
-                        if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSet.uuid)) {
-                            final AttributeSet set = new AttributeSet(id, type, name, AttributeType.get(attrTypeId),
-                                            sqlCol, tableId, typeLinkId, dimensionUUID);
-                            id2Set.put(id, set);
-                        } else {
-                            final Attribute attr = new Attribute(id, name, sqlCol, SQLTable.get(tableId),
-                                                                 AttributeType.get(attrTypeId), defaultval,
-                                                                 dimensionUUID);
-                            attr.setParent(type);
-                            final UUID uuid = attr.getAttributeType().getUUID();
-                            if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_LINK.getUuid())
-                                         || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_LINK_WITH_RANGES.getUuid())
-                                         || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_STATUS.getUuid())) {
-                                final Type linkType = Type.get(typeLinkId);
-                                attr.setLink(linkType);
-                                linkType.addLink(attr);
-                            // in case of a PersonLink, CreatorLink or ModifierLink a link to Admin_User_Person
-                            // must be set
-                            } else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_CREATOR_LINK.getUuid())
-                                            || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_MODIFIER_LINK.getUuid())
-                                            || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_PERSON_LINK.getUuid())) {
-                                final Type linkType = CIAdminUser.Person.getType();
-                                attr.setLink(linkType);
-                                linkType.addLink(attr);
-                            }
-
-                            attr.readFromDB4Properties();
-
-                            if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSetAttribute.uuid)) {
-                                attribute2setId.put(attr, parentSetId);
-                            } else {
-                                type.addAttribute(attr, false);
-                            }
-                            _newCache4Id.put(attr.getId(), attr);
-                            _newCache4Name.put(attr.getParent().getName() + "/" + attr.getName(), attr);
-                        }
-                    }
-                    rs.close();
-                    // make connection between set and attributes
-                    for (final Entry<Attribute, Long> entry : attribute2setId.entrySet()) {
-                        final AttributeSet parentset = id2Set.get(entry.getValue());
-                        final Attribute childAttr = entry.getKey();
-                        parentset.addAttribute(childAttr, false);
-                        childAttr.setParentSet(parentset);
-                    }
-                } finally {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                }
-                con.commit();
-            } catch (final SQLException e) {
-                throw new CacheReloadException("could not read attributes", e);
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("could not read attributes", e);
-            } finally {
-                if ((con != null) && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read attributes", e);
-                    }
-                }
-            }
         }
     }
 }

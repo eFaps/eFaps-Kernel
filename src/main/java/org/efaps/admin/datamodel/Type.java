@@ -20,14 +20,15 @@
 
 package org.efaps.admin.datamodel;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -50,10 +51,14 @@ import org.efaps.ci.CIAdminDataModel;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,14 +134,44 @@ public class Type
      *
      * @see #initialise
      */
-    private static final SQLSelect SQL_SELECT = new SQLSelect()
+    private static final String SQL_UUID = new SQLSelect()
                                                     .column("ID")
                                                     .column("UUID")
                                                     .column("NAME")
                                                     .column("PURPOSE")
                                                     .column("PARENTDMTYPE")
-                                                    .column("SQLCACHEEXPR")
-                                                    .from("V_ADMINTYPE");
+                                                    .from("V_ADMINTYPE", 0)
+                                                    .addPart(SQLPart.WHERE).addColumnPart(0, "UUID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+
+
+    private static final String SQL_ID = new SQLSelect()
+    .column("ID")
+    .column("UUID")
+    .column("NAME")
+    .column("PURPOSE")
+    .column("PARENTDMTYPE")
+    .from("V_ADMINTYPE", 0)
+    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+
+
+    private static final String SQL_NAME = new SQLSelect()
+    .column("ID")
+    .column("UUID")
+    .column("NAME")
+    .column("PURPOSE")
+    .column("PARENTDMTYPE")
+    .from("V_ADMINTYPE", 0)
+    .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+
+
+    private static final String SQL_CHILD = new SQLSelect()
+    .column("ID")
+    .from("V_ADMINTYPE", 0)
+    .addPart(SQLPart.WHERE).addColumnPart(0, "PARENTDMTYPE").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+
+    private static String UUIDCACHE = "Type4UUID";
+    private static String IDCACHE = "Type4ID";
+    private static String NAMECACHE = "Type4Name";
 
     /**
      * Stores all instances of type.
@@ -195,14 +230,6 @@ public class Type
      * @see #setMainTable
      */
     private SQLTable mainTable = null;
-
-    /**
-     * The instance variable stores all unique keys of this type instance.
-     *
-     * @see #getUniqueKeys
-     * @see #setUniqueKeys
-     */
-    private Collection<UniqueKey> uniqueKeys = null;
 
     /**
      * All attributes which are used as links are stored in this map.
@@ -280,11 +307,11 @@ public class Type
         throws CacheReloadException
     {
         super(_id, _uuid, _name);
-        try {
-            addAttribute(new Attribute(0, "Type", "", (SQLTable) null, AttributeType.get("Type"), null, null), false);
-        } catch (final EFapsException e) {
-            throw new CacheReloadException("Error on reading Attribute for Type '" + _name + "'", e);
-        }
+//        try {
+//            addAttribute(new Attribute(0, "Type", "", (SQLTable) null, AttributeType.get("Type"), null, null), false);
+//        } catch (final EFapsException e) {
+//            throw new CacheReloadException("Error on reading Attribute for Type '" + _name + "'", e);
+//        }
     }
 
     /**
@@ -441,7 +468,13 @@ public class Type
      */
     public Attribute getTypeAttribute()
     {
-        return this.attributes.get(this.typeAttributeName);
+        Attribute ret;
+        if (this.typeAttributeName == null && this.parentType != null) {
+            ret = this.parentType.getTypeAttribute();
+        } else {
+            ret = this.attributes.get(this.typeAttributeName);
+        }
+        return ret;
     }
 
     /**
@@ -644,42 +677,6 @@ public class Type
     }
 
     /**
-     * The instance method sets a new property value.
-     *
-     * @param _name name of the property
-     * @param _value value of the property
-     * @see #addUniqueKey
-     * @throws CacheReloadException on error
-     */
-    @Override
-    protected void setProperty(final String _name,
-                               final String _value)
-        throws CacheReloadException
-    {
-        if (_name.startsWith("UniqueKey")) {
-            addUniqueKey(_value);
-        } else {
-            super.setProperty(_name, _value);
-        }
-    }
-
-    /**
-     * First, the instance method initialize the set of unique keys (
-     * {@link #uniqueKeys}) if needed. The a new unique key is created and added
-     * to the list of unique keys in {@link #uniqueKeys}.
-     *
-     * @param _attrList string with comma separated list of attribute names
-     * @see #setProperty
-     */
-    private void addUniqueKey(final String _attrList)
-    {
-        if (getUniqueKeys() == null) {
-            setUniqueKeys(new HashSet<UniqueKey>());
-        }
-        getUniqueKeys().add(new UniqueKey(this, _attrList));
-    }
-
-    /**
      * Add a new child type for this type. All sub child types of the child type
      * are also defined as child type of this type.<br/>
      * Also for all parent types (of this type), the child type (with sub child
@@ -793,7 +790,11 @@ public class Type
      */
     public SQLTable getMainTable()
     {
-        return this.mainTable;
+        SQLTable ret = this.mainTable;
+        if (this.mainTable == null && this.parentType != null) {
+            ret = this.parentType.getMainTable();
+        }
+        return ret;
     }
 
     /**
@@ -810,30 +811,6 @@ public class Type
             table = table.getMainTable();
         }
         this.mainTable = table;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #uniqueKeys}.
-     *
-     * @return value of instance variable {@link #uniqueKeys}
-     * @see #setUniqueKeys
-     * @see #uniqueKeys
-     */
-    public Collection<UniqueKey> getUniqueKeys()
-    {
-        return this.uniqueKeys;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #uniqueKeys}.
-     *
-     * @param _uniqueKeys new value for instance variable {@link #uniqueKeys}
-     * @see #getUniqueKeys
-     * @see #uniqueKeys
-     */
-    private void setUniqueKeys(final Collection<UniqueKey> _uniqueKeys)
-    {
-        this.uniqueKeys = _uniqueKeys;
     }
 
     /**
@@ -907,7 +884,6 @@ public class Type
     {
         return new ToStringBuilder(this).appendSuper(super.toString())
                         .append("parentType", getParentType() != null ? getParentType().getName() : "")
-                        .append("uniqueKey", getUniqueKeys())
                         .toString();
     }
 
@@ -932,19 +908,24 @@ public class Type
     public static void initialize(final Class<?> _class)
         throws CacheReloadException
     {
-        Type.CACHE.initialize(_class);
-        // initialize properties and links
-        for (final Type type : Type.CACHE.getCache4Id().values()) {
-            type.readFromDB4Properties();
-            type.readFromDB4Links();
+        if (InfinispanCache.get().exists(Type.UUIDCACHE)) {
+            InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE).clear();
+        } else {
+            InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
+            InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE).addListener(new CacheLogListener());
         }
 
-        for (final Type type : Type.CACHE.getCache4Id().values()) {
-            if (type instanceof Classification) {
-                if (((Classification) type).isRoot()) {
-                    ((Classification) type).getClassifiesType().addClassifiedByType((Classification) type);
-                }
-            }
+        if (InfinispanCache.get().exists(Type.IDCACHE)) {
+            InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE).clear();
+        } else {
+            InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
+            InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE).addListener(new CacheLogListener());
+        }
+        if (InfinispanCache.get().exists(Type.NAMECACHE)) {
+            InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE).clear();
+        } else {
+            InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE);
+            InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE).addListener(new CacheLogListener());
         }
     }
 
@@ -969,7 +950,11 @@ public class Type
      */
     public static Type get(final long _id)
     {
-        return Type.CACHE.get(_id);
+        final Cache<Long, Type> cache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
+        if (!cache.containsKey(_id)) {
+            Type.getTypeFromDB(Type.SQL_ID, _id);
+        }
+        return cache.get(_id);
     }
 
     /**
@@ -982,7 +967,27 @@ public class Type
      */
     public static Type get(final String _name)
     {
-        return Type.CACHE.get(_name);
+        final Cache<String, Type> cache = InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE);
+        if (!cache.containsKey(_name)) {
+            Type.getTypeFromDB(Type.SQL_NAME, _name);
+        }
+        return cache.get(_name);
+    }
+
+    protected static void cacheType(final Type _type) {
+        final Cache<UUID, Type> cache4UUID = InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
+        if (!cache4UUID.containsKey(_type.getUUID())) {
+            cache4UUID.put(_type.getUUID(), _type);
+        }
+
+        final Cache<String, Type> nameCache = InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE);
+        if (!nameCache.containsKey(_type.getName())) {
+            nameCache.put(_type.getName(), _type);
+        }
+        final Cache<Long, Type> idCache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
+        if (!idCache.containsKey(_type.getId())) {
+            idCache.put(_type.getId(), _type);
+        }
     }
 
     /**
@@ -995,18 +1000,146 @@ public class Type
      */
     public static Type get(final UUID _uuid)
     {
-        return Type.CACHE.get(_uuid);
+        final Cache<UUID, Type> cache = InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
+        if (!cache.containsKey(_uuid)) {
+            Type.getTypeFromDB(Type.SQL_UUID, _uuid.toString());
+        }
+        return cache.get(_uuid);
     }
 
-    /**
-     * Static getter method for the type hashtable {@link #CACHE}.
-     *
-     * @return value of static variable {@link #CACHE}
-     */
-    public static AbstractCache<Type> getTypeCache()
+    protected static List<Long> getChildTypeIDs(final long _parentID)
     {
-        return Type.CACHE;
+        final List<Long> ret = new ArrayList<Long>();
+        ConnectionResource con = null;
+        try {
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
+            try {
+                stmt = con.getConnection().prepareStatement(Type.SQL_CHILD);
+                stmt.setObject(1, _parentID);
+                final ResultSet rs = stmt.executeQuery();
+                while (rs.next()) {
+                    ret.add(rs.getLong(1));
+                }
+                rs.close();
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+
+        } catch (final SQLException e) {
+
+        } catch (final EFapsException e) {
+
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+
+                }
+            }
+        }
+        return ret;
     }
+
+
+
+    private static Type getTypeFromDB(final String _sql,
+                                      final Object _criteria)
+
+    {
+        Type ret = null;
+        ConnectionResource con = null;
+        try {
+
+            con = Context.getThreadContext().getConnectionResource();
+            final PreparedStatement stmt = con.getConnection().prepareStatement(_sql);
+            stmt.setObject(1, _criteria);
+            final ResultSet rs = stmt.executeQuery();
+            long parentTypeId = 0;
+            long id = 0;
+            if (rs.next()) {
+                id = rs.getLong(1);
+                final String uuid = rs.getString(2).trim();
+                final String name = rs.getString(3).trim();
+                final int purpose = rs.getInt(4);
+                parentTypeId = rs.getLong(5);
+
+                Type.LOG.debug("read type '{}' (id = {}) (purpose = {})", name, id, purpose);
+
+                final char[] purpose2 = ("00000000" + Integer.toBinaryString(purpose)).toCharArray();
+                ArrayUtils.reverse(purpose2);
+                final char trueCriteria = "1".toCharArray()[0];
+                if (trueCriteria == purpose2[Type.Purpose.CLASSIFICATION.getDigit()]) {
+                    ret = new Classification(id, uuid, name);
+                } else {
+                    ret = new Type(id, uuid, name);
+                }
+                ret.setAbstract(trueCriteria == purpose2[Type.Purpose.ABSTRACT.getDigit()]);
+
+                if (trueCriteria == purpose2[Type.Purpose.GENERALINSTANCE.getDigit()]) {
+                    ret.setGeneralInstance(true);
+                }
+                if (trueCriteria == purpose2[Type.Purpose.NOGENERALINSTANCE.getDigit()]) {
+                    ret.setGeneralInstance(false);
+                }
+            }
+            rs.close();
+            stmt.close();
+            con.commit();
+            if (ret != null) {
+                Type.cacheType(ret);
+                ret.readFromDB4Properties();
+                if (parentTypeId != 0) {
+                    final Type parent = Type.get(parentTypeId);
+                    // // TODO: test if loop
+                    if (ret.getId() == parent.getId()) {
+                        throw new CacheReloadException("child and parent type is equal!child is " + ret);
+                    }
+                    if (ret instanceof Classification) {
+                        ((Classification) ret).setParentClassification((Classification) parent);
+                        ((Classification) parent).getChildClassifications().add((Classification) ret);
+                        if (((Classification) ret).isRoot()) {
+                            ((Classification) ret).getClassifiesType().addClassifiedByType((Classification) ret);
+                        }
+                    } else {
+                        ret.setParentType(parent);
+                        parent.addChildType(ret);
+                        for (final Entry<String, Attribute> entry : parent.getAttributes().entrySet() ) {
+                            if (!ret.getAttributes().containsKey(entry.getKey())) {
+                                ret.addAttribute(entry.getValue().copy(), true);
+                            }
+                        }
+                    }
+                }
+                Attribute.add4Type(ret);
+                ret.readFromDB4Links();
+
+                if (ret.isAbstract()) {
+                    for (final Long aid : Type.getChildTypeIDs(ret.getId())) {
+                        Type.getTypeFromDB(Type.SQL_ID, aid);
+                    }
+                }
+            }
+        } catch (final EFapsException e) {
+            Type.LOG.error("initialiseCache()", e);
+        } catch (final SQLException e) {
+            Type.LOG.error("initialiseCache()", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+
+                }
+            }
+        }
+        return ret;
+    }
+
 
     /**
      * Cache for Types.
@@ -1029,94 +1162,94 @@ public class Type
                                  final Map<UUID, Type> _cache4UUID)
             throws CacheReloadException
         {
-            ConnectionResource con = null;
-            try {
-                // to store parent informations
-                final Map<Long, Long> parents = new HashMap<Long, Long>();
-
-                con = Context.getThreadContext().getConnectionResource();
-
-                Statement stmt = null;
-                try {
-
-                    stmt = con.getConnection().createStatement();
-
-                    final ResultSet rs = stmt.executeQuery(Type.SQL_SELECT.getSQL());
-                    while (rs.next()) {
-                        final long id = rs.getLong(1);
-                        final String uuid = rs.getString(2).trim();
-                        final String name = rs.getString(3).trim();
-                        final int purpose = rs.getInt(4);
-                        final long parentTypeId = rs.getLong(5);
-                        String sqlCacheExpr = rs.getString(6);
-                        sqlCacheExpr = sqlCacheExpr != null ? sqlCacheExpr.trim() : null;
-                        if (Type.LOG.isDebugEnabled()) {
-                            Type.LOG.debug("read type '" + name + "' (id = " + id + ") (purpose = " + purpose + ")");
-                        }
-                        Type type;
-                        final char[] purpose2 = ("00000000" + Integer.toBinaryString(purpose)).toCharArray();
-                        ArrayUtils.reverse(purpose2);
-                        final char trueCriteria = "1".toCharArray()[0];
-                        if (trueCriteria == purpose2[Type.Purpose.CLASSIFICATION.getDigit()]) {
-                            type = new Classification(id, uuid, name);
-                        } else {
-                            type = new Type(id, uuid, name);
-                        }
-                        type.setAbstract(trueCriteria == purpose2[Type.Purpose.ABSTRACT.getDigit()]);
-
-                        if (trueCriteria == purpose2[Type.Purpose.GENERALINSTANCE.getDigit()]) {
-                            type.setGeneralInstance(true);
-                        }
-                        if (trueCriteria == purpose2[Type.Purpose.NOGENERALINSTANCE.getDigit()]) {
-                            type.setGeneralInstance(false);
-                        }
-
-                        _cache4Id.put(type.getId(), type);
-                        _cache4Name.put(type.getName(), type);
-                        _cache4UUID.put(type.getUUID(), type);
-
-                        if (parentTypeId != 0) {
-                            parents.put(id, parentTypeId);
-                        }
-                    }
-                    rs.close();
-                } finally {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                }
-                con.commit();
-
-                // initialize parents
-                for (final Map.Entry<Long, Long> entry : parents.entrySet()) {
-                    final Type child = _cache4Id.get(entry.getKey());
-                    final Type parent = _cache4Id.get(entry.getValue());
-                    // TODO: test if loop
-                    if (child.getId() == parent.getId()) {
-                        throw new CacheReloadException("child and parent type is equal!child is " + child);
-                    }
-                    if (child instanceof Classification) {
-                        ((Classification) child).setParentClassification((Classification) parent);
-                        ((Classification) parent).getChildClassifications().add((Classification) child);
-                    } else {
-                        child.setParentType(parent);
-                        parent.addChildType(child);
-                    }
-                }
-
-            } catch (final SQLException e) {
-                throw new CacheReloadException("could not read types", e);
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("could not read types", e);
-            } finally {
-                if ((con != null) && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read types", e);
-                    }
-                }
-            }
+//            ConnectionResource con = null;
+//            try {
+//                // to store parent informations
+//                final Map<Long, Long> parents = new HashMap<Long, Long>();
+//
+//                con = Context.getThreadContext().getConnectionResource();
+//
+//                Statement stmt = null;
+//                try {
+//
+//                    stmt = con.getConnection().createStatement();
+//
+//                    final ResultSet rs = stmt.executeQuery(Type.SQL_SELECT.getSQL());
+//                    while (rs.next()) {
+//                        final long id = rs.getLong(1);
+//                        final String uuid = rs.getString(2).trim();
+//                        final String name = rs.getString(3).trim();
+//                        final int purpose = rs.getInt(4);
+//                        final long parentTypeId = rs.getLong(5);
+//                        String sqlCacheExpr = rs.getString(6);
+//                        sqlCacheExpr = sqlCacheExpr != null ? sqlCacheExpr.trim() : null;
+//                        if (Type.LOG.isDebugEnabled()) {
+//                            Type.LOG.debug("read type '" + name + "' (id = " + id + ") (purpose = " + purpose + ")");
+//                        }
+//                        Type type;
+//                        final char[] purpose2 = ("00000000" + Integer.toBinaryString(purpose)).toCharArray();
+//                        ArrayUtils.reverse(purpose2);
+//                        final char trueCriteria = "1".toCharArray()[0];
+//                        if (trueCriteria == purpose2[Type.Purpose.CLASSIFICATION.getDigit()]) {
+//                            type = new Classification(id, uuid, name);
+//                        } else {
+//                            type = new Type(id, uuid, name);
+//                        }
+//                        type.setAbstract(trueCriteria == purpose2[Type.Purpose.ABSTRACT.getDigit()]);
+//
+//                        if (trueCriteria == purpose2[Type.Purpose.GENERALINSTANCE.getDigit()]) {
+//                            type.setGeneralInstance(true);
+//                        }
+//                        if (trueCriteria == purpose2[Type.Purpose.NOGENERALINSTANCE.getDigit()]) {
+//                            type.setGeneralInstance(false);
+//                        }
+//
+//                        _cache4Id.put(type.getId(), type);
+//                        _cache4Name.put(type.getName(), type);
+//                        _cache4UUID.put(type.getUUID(), type);
+//
+//                        if (parentTypeId != 0) {
+//                            parents.put(id, parentTypeId);
+//                        }
+//                    }
+//                    rs.close();
+//                } finally {
+//                    if (stmt != null) {
+//                        stmt.close();
+//                    }
+//                }
+//                con.commit();
+//
+//                // initialize parents
+//                for (final Map.Entry<Long, Long> entry : parents.entrySet()) {
+//                    final Type child = _cache4Id.get(entry.getKey());
+//                    final Type parent = _cache4Id.get(entry.getValue());
+//                    // TODO: test if loop
+//                    if (child.getId() == parent.getId()) {
+//                        throw new CacheReloadException("child and parent type is equal!child is " + child);
+//                    }
+//                    if (child instanceof Classification) {
+//                        ((Classification) child).setParentClassification((Classification) parent);
+//                        ((Classification) parent).getChildClassifications().add((Classification) child);
+//                    } else {
+//                        child.setParentType(parent);
+//                        parent.addChildType(child);
+//                    }
+//                }
+//
+//            } catch (final SQLException e) {
+//                throw new CacheReloadException("could not read types", e);
+//            } catch (final EFapsException e) {
+//                throw new CacheReloadException("could not read types", e);
+//            } finally {
+//                if ((con != null) && con.isOpened()) {
+//                    try {
+//                        con.abort();
+//                    } catch (final EFapsException e) {
+//                        throw new CacheReloadException("could not read types", e);
+//                    }
+//                }
+//            }
         }
     }
 }

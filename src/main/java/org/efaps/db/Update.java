@@ -299,57 +299,6 @@ public class Update
     }
 
     /**
-     * Test for uniqueness.
-     * @return is it unique
-     * @throws EFapsException on error
-     */
-    protected boolean test4Unique()
-        throws EFapsException
-    {
-        return test4Unique(getType());
-    }
-
-    /**
-     * Test for uniqueness.
-     * @param _type type to test
-     * @return is the type unique
-     * @throws EFapsException on error
-     */
-    private boolean test4Unique(final Type _type)
-        throws EFapsException
-    {
-        boolean ret = false;
-
-        if (_type.getUniqueKeys() != null) {
-            for (final org.efaps.admin.datamodel.UniqueKey uk : _type.getUniqueKeys()) {
-                final QueryBuilder queryBldr = new QueryBuilder(_type);
-                boolean testNeeded = false;
-                for (final Attribute attr : uk.getAttributes()) {
-                    final Value value = this.attr2values.get(attr.getName());
-                    if (value != null) {
-                        queryBldr.addWhereAttrEqValue(attr, value.values[0]);
-                        testNeeded = true;
-                    }
-                }
-                if (testNeeded) {
-                    final InstanceQuery query = queryBldr.getQuery();
-                    query.executeWithoutAccessCheck();
-                    while (query.next()) {
-                        if (!query.getCurrentValue().equals(getInstance())) {
-                            ret = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        if (_type.getParentType() != null && !ret) {
-            ret = test4Unique(_type.getParentType());
-        }
-        return ret;
-    }
-
-    /**
      * @throws EFapsException thrown from {@link #executeWithoutAccessCheck}
      * @see #executeWithoutAccessCheck
      */
@@ -419,11 +368,6 @@ public class Update
             ConnectionResource con = null;
             try {
                 con = context.getConnectionResource();
-
-                if (test4Unique()) {
-                    throw new EFapsException(getClass(), "executeWithoutTrigger.UniqueKeyError");
-                }
-
                 for (final Entry<SQLTable, Map<Attribute, Value>> entry : this.expr4Tables.entrySet()) {
                     final SQLUpdate update = Context.getDbType().newUpdate(entry.getKey().getSqlTable(),
                                                                            entry.getKey().getSqlColId(),

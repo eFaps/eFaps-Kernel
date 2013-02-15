@@ -356,20 +356,26 @@ public abstract class AbstractAdminObject
             if (AbstractAdminObject.LOG.isDebugEnabled()) {
                 AbstractAdminObject.LOG.debug("Reading Links for '%s'", getName());
             }
+            final List<Object[]> values = new ArrayList<Object[]>();
             while (rs.next()) {
                 final long conTypeId = rs.getLong(1);
                 final long toId = rs.getLong(2);
                 final long toTypeId = rs.getLong(3);
                 final String toName = rs.getString(4);
-                final Type conType = Type.get(conTypeId);
-                final Type toType = Type.get(toTypeId);
-                if (conType != null && toType != null) {
-                    setLinkProperty(conType, toId, toType, toName.trim());
-                }
+                values.add(new Object[] {conTypeId, toId, toTypeId , toName.trim()});
             }
             rs.close();
             stmt.close();
             con.commit();
+
+            for (final Object[] row : values) {
+                final Type conType = Type.get((Long) row[0]);
+                final Type toType = Type.get((Long) row[2]);
+                if (conType != null && toType != null) {
+                    setLinkProperty(conType, (Long) row[1], toType, String.valueOf(row[3]));
+                }
+            }
+
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read db links for " + "'" + getName() + "'", e);
             //CHECKSTYLE:OFF
