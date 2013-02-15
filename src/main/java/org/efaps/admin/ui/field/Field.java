@@ -23,7 +23,6 @@ package org.efaps.admin.ui.field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.IUIProvider;
@@ -38,7 +37,10 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RequestHandler;
+import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,17 +67,11 @@ public class Field
         /** the field will not be displayed. */
         NONE;
     }
-
+    private static String IDCACHE = "Field";
     /**
      * Logger for this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(Field.class);
-
-
-    /**
-     * Used to cache fields.
-     */
-    private static final Map<Long, Field> CACHE = new ConcurrentHashMap<Long, Field>();
 
     /**
      * This is the value in the create process. Default value is <i>null</i>.
@@ -761,8 +757,9 @@ public class Field
     public static Field get(final long _id)
     {
         Field ret = null;
-        if (Field.CACHE.containsKey(_id)) {
-            ret = Field.CACHE.get(_id);
+        final Cache<Long, Field> cache = InfinispanCache.get().<Long, Field>getCache(Field.IDCACHE);
+        if (cache.containsKey(_id)) {
+            ret = cache.get(_id);
         } else {
             AbstractCollection col = null;
             try {
@@ -785,7 +782,7 @@ public class Field
             if (col != null) {
                 ret = col.getFieldsMap().get(_id);
                 if (ret != null) {
-                    Field.CACHE.put(_id, ret);
+                    cache.put(_id, ret);
                 }
             }
         }
@@ -797,7 +794,12 @@ public class Field
      */
     public static void initialize()
     {
-        Field.CACHE.clear();
+        if (InfinispanCache.get().exists(Field.IDCACHE)) {
+            InfinispanCache.get().<Long, Field>getCache(Field.IDCACHE).clear();
+        } else {
+            InfinispanCache.get().<Long, Field>getCache(Field.IDCACHE);
+            InfinispanCache.get().<Long, Field>getCache(Field.IDCACHE).addListener(new CacheLogListener());
+        }
     }
 
     /**
