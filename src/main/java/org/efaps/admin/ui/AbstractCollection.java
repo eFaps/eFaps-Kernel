@@ -213,21 +213,21 @@ public abstract class AbstractCollection
                 final String name =  multi.<String>getAttribute(CIAdminUserInterface.Field.Name);
                 final Type type = multi.<Type>getAttribute(CIAdminUserInterface.Field.Type);
                 final Field field;
-                if (type.getUUID().equals(CIAdminUserInterface.FieldCommand.uuid)) {
+                if (type.equals(CIAdminUserInterface.FieldCommand.getType())) {
                     field = new FieldCommand(id, null, name);
-                } else if (type.getUUID().equals(CIAdminUserInterface.FieldHeading.uuid)) {
+                } else if (type.equals(CIAdminUserInterface.FieldHeading.getType())) {
                     field = new FieldHeading(id, null, name);
-                } else if (type.getUUID().equals(CIAdminUserInterface.FieldTable.uuid)) {
+                } else if (type.equals(CIAdminUserInterface.FieldTable.getType())) {
                     field = new FieldTable(id, null, name);
-                } else if (type.getUUID().equals(CIAdminUserInterface.FieldGroup.uuid)) {
+                } else if (type.equals(CIAdminUserInterface.FieldGroup.getType())) {
                     field = new FieldGroup(id, null, name);
-                } else if (type.getUUID().equals(CIAdminUserInterface.FieldSet.uuid)) {
+                } else if (type.equals(CIAdminUserInterface.FieldSet.getType())) {
                     field = new FieldSet(id, null, name);
-                } else if (type.getUUID().equals(CIAdminUserInterface.FieldClassification.uuid)) {
+                } else if (type.equals(CIAdminUserInterface.FieldClassification.getType())) {
                     field = new FieldClassification(id, null, name);
-                } else if (type.getUUID().equals(CIAdminUserInterface.FieldPicker.uuid)) {
+                } else if (type.equals(CIAdminUserInterface.FieldPicker.getType())) {
                     field = new FieldPicker(id, null, name);
-                } else if (type.getUUID().equals(CIAdminUserInterface.FieldChart.uuid)) {
+                } else if (type.equals(CIAdminUserInterface.FieldChart.getType())) {
                     field = new FieldChart(id, null, name);
                 } else {
                     field = new Field(id, null, name);

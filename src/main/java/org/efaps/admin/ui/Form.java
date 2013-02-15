@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
@@ -139,15 +138,8 @@ public class Form
      * @return type form for given type if found; otherwise <code>null</code>.
      */
     public static Form getTypeForm(final Type _type)
+        throws EFapsException
     {
-        Form ret = Form.TYPE2FORMS.get(_type);
-        if (ret == null) {
-            if (_type.getParentType() != null) {
-                ret = Form.getTypeForm(_type.getParentType());
-            } else if (_type instanceof Classification && ((Classification) _type).getParentClassification() != null) {
-                ret = Form.getTypeForm(((Classification) _type).getParentClassification());
-            }
-        }
-        return ret;
+        return _type.getTypeForm();
     }
 }

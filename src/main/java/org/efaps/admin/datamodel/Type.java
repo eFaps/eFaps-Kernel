@@ -47,6 +47,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
 import org.efaps.ci.CIAdminDataModel;
@@ -305,12 +306,24 @@ public class Type
      * Id of the Icon defined as TypeIcon for this Type.<br/>
      * TRISTATE:<br/>
      * <ul>
-     * <li>NULL: TypeMenu not evaluated yet</li>
+     * <li>NULL: TypeIcon not evaluated yet</li>
      * <li>0: has got no TypeMenu</li>
      * <li>n: ID of the TypeMenu</li>
      * </ul>
      */
     private Long typeIcon;
+
+
+    /**
+     * Id of the From defined as TypeFrom for this Type.<br/>
+     * TRISTATE:<br/>
+     * <ul>
+     * <li>NULL: TypeFrom not evaluated yet</li>
+     * <li>0: has got no TypeMenu</li>
+     * <li>n: ID of the TypeMenu</li>
+     * </ul>
+     */
+    private Long typeForm;
 
     /**
      * This is the constructor for class Type. Every instance of class Type must
@@ -1212,6 +1225,33 @@ public class Type
            ret = getParentType().getTypeIcon();
        } else {
            ret = Image.get(this.typeIcon);
+       }
+       return ret;
+   }
+
+
+   public Form getTypeForm() throws EFapsException
+   {
+       Form ret = null;
+       if (this.typeForm == null) {
+           final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.LinkIsTypeFormFor);
+           queryBldr.addWhereAttrEqValue(CIAdminUserInterface.LinkIsTypeFormFor.To, getId());
+           final MultiPrintQuery multi = queryBldr.getPrint();
+           multi.addAttribute(CIAdminUserInterface.LinkIsTypeFormFor.From);
+           multi.executeWithoutAccessCheck();
+           if (multi.next()) {
+               final Long menuId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeFormFor.From);
+               ret = Form.get(menuId);
+               if (ret != null) {
+                   this.typeForm = ret.getId();
+               } else {
+                   this.typeForm = Long.valueOf(0);
+               }
+           }
+       } else if (this.typeForm == 0) {
+           ret = getParentType().getTypeForm();
+       } else {
+           ret = Form.get(this.typeForm);
        }
        return ret;
    }
