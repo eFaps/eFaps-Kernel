@@ -23,8 +23,11 @@ package org.efaps.util.cache;
 
 import java.io.IOException;
 
+import org.efaps.admin.dbproperty.DBProperties;
 import org.infinispan.Cache;
 import org.infinispan.manager.DefaultCacheManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -35,6 +38,12 @@ import org.infinispan.manager.DefaultCacheManager;
  */
 public class InfinispanCache
 {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(InfinispanCache.class);
+
 
     private DefaultCacheManager manager;
 
@@ -50,7 +59,7 @@ public class InfinispanCache
         try {
             this.manager = new DefaultCacheManager(this.getClass().getResourceAsStream(
                             "/org/efaps/util/cache/infinispan-config.xml"));
-            this.manager.addListener(new CacheLogListener());
+            this.manager.addListener(new CacheLogListener(InfinispanCache.LOG));
         } catch (final IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

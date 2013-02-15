@@ -67,7 +67,9 @@ public class Field
         /** the field will not be displayed. */
         NONE;
     }
+
     private static String IDCACHE = "Field";
+
     /**
      * Logger for this class.
      */
@@ -798,7 +800,7 @@ public class Field
             InfinispanCache.get().<Long, Field>getCache(Field.IDCACHE).clear();
         } else {
             InfinispanCache.get().<Long, Field>getCache(Field.IDCACHE);
-            InfinispanCache.get().<Long, Field>getCache(Field.IDCACHE).addListener(new CacheLogListener());
+            InfinispanCache.get().<Long, Field>getCache(Field.IDCACHE).addListener(new CacheLogListener(Field.LOG));
         }
     }
 

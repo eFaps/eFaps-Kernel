@@ -22,9 +22,9 @@ package org.efaps.admin.ui;
 
 import java.util.UUID;
 
-import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUserInterface;
-import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
@@ -37,11 +37,9 @@ public class Table
 {
 
     /**
-     * Stores all instances of class {@link Table}.
-     *
-     * @see #getCache()
+     * Logging instance used in this class.
      */
-    private static TableCache CACHE = new TableCache();
+    protected static final Logger LOG = LoggerFactory.getLogger(Table.class);
 
     /**
      * This is the constructor to set the id and the name.
@@ -83,7 +81,7 @@ public class Table
      */
     public static Table get(final long _id)
     {
-        return Table.CACHE.get(_id);
+        return  AbstractUserInterfaceObject.<Table>get(_id, Table.class, CIAdminUserInterface.Table.getType());
     }
 
     /**
@@ -96,7 +94,7 @@ public class Table
      */
     public static Table get(final String _name)
     {
-        return Table.CACHE.get(_name);
+        return  AbstractUserInterfaceObject.<Table>get(_name, Table.class, CIAdminUserInterface.Table.getType());
     }
 
     /**
@@ -109,42 +107,6 @@ public class Table
      */
     public static Table get(final UUID _uuid)
     {
-        return Table.CACHE.get(_uuid);
-    }
-
-    /**
-     * Static getter method for the table {@link #CACHE}.
-     *
-     * @return value of static variable {@link #CACHE}
-     */
-    protected static AbstractUserInterfaceObjectCache<Table> getCache()
-    {
-        return Table.CACHE;
-    }
-
-    /**
-     * Cache for Tables.
-     */
-    private static class TableCache
-        extends AbstractUserInterfaceObjectCache<Table>
-    {
-
-        /**
-         *
-         */
-        protected TableCache()
-        {
-            super(Table.class);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected Type getType()
-            throws EFapsException
-        {
-            return CIAdminUserInterface.Table.getType();
-        }
+        return  AbstractUserInterfaceObject.<Table>get(_uuid, Table.class, CIAdminUserInterface.Table.getType());
     }
 }

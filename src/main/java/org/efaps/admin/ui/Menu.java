@@ -42,19 +42,12 @@ public class Menu
     /**
      * Logging instance used in this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(Menu.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(Menu.class);
 
     /**
      * Stores the mapping from type to tree menu.
      */
     private static final Map<Type, Menu> TYPE2MENUS = new HashMap<Type, Menu>();
-
-    /**
-     * Stores all instances of class {@link Menu}.
-     *
-     * @see #getCache
-     */
-    private static MenuCache CACHE = new MenuCache();
 
     /**
      * Constructor to set the id and name of the menu object.
@@ -128,7 +121,7 @@ public class Menu
      */
     public static Menu get(final long _id)
     {
-        return Menu.CACHE.get(_id);
+        return AbstractUserInterfaceObject.<Menu>get(_id, Menu.class, CIAdminUserInterface.Menu.getType());
     }
 
     /**
@@ -141,7 +134,7 @@ public class Menu
      */
     public static Menu get(final String _name)
     {
-        return Menu.CACHE.get(_name);
+        return AbstractUserInterfaceObject.<Menu>get(_name, Menu.class, CIAdminUserInterface.Menu.getType());
     }
 
     /**
@@ -154,7 +147,7 @@ public class Menu
      */
     public static Menu get(final UUID _uuid)
     {
-        return Menu.CACHE.get(_uuid);
+        return AbstractUserInterfaceObject.<Menu>get(_uuid, Menu.class, CIAdminUserInterface.Menu.getType());
     }
 
     /**
@@ -173,41 +166,5 @@ public class Menu
             ret = Menu.getTypeTreeMenu(_type.getParentType());
         }
         return ret;
-    }
-
-    /**
-     * Static getter method for the type hashtable {@link #CACHE}.
-     *
-     * @return value of static variable {@link #CACHE}
-     */
-    protected static AbstractUserInterfaceObjectCache<Menu> getCache()
-    {
-        return Menu.CACHE;
-    }
-
-    /**
-     * Cache for Menus.
-     */
-    private static class MenuCache
-        extends AbstractUserInterfaceObjectCache<Menu>
-    {
-
-        /**
-         * Constructor.
-         */
-        protected MenuCache()
-        {
-            super(Menu.class);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected Type getType()
-            throws EFapsException
-        {
-            return CIAdminUserInterface.Menu.getType();
-        }
     }
 }

@@ -623,14 +623,14 @@ public class Attribute
             InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE).clear();
         } else {
             InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE);
-            InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE).addListener(new CacheLogListener());
+            InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE).addListener(new CacheLogListener(Attribute.LOG));
         }
 
         if (InfinispanCache.get().exists(Attribute.IDCACHE)) {
             InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE).clear();
         } else {
             InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE);
-            InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE).addListener(new CacheLogListener());
+            InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE).addListener(new CacheLogListener(Attribute.LOG));
         }
 
     }

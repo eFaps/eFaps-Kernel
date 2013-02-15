@@ -911,21 +911,17 @@ public class Type
         if (InfinispanCache.get().exists(Type.UUIDCACHE)) {
             InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE).clear();
         } else {
-            InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
-            InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE).addListener(new CacheLogListener());
+            InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE).addListener(new CacheLogListener(Type.LOG));
         }
-
         if (InfinispanCache.get().exists(Type.IDCACHE)) {
             InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE).clear();
         } else {
-            InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
-            InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE).addListener(new CacheLogListener());
+            InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE).addListener(new CacheLogListener(Type.LOG));
         }
         if (InfinispanCache.get().exists(Type.NAMECACHE)) {
             InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE).clear();
         } else {
-            InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE);
-            InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE).addListener(new CacheLogListener());
+            InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE).addListener(new CacheLogListener(Type.LOG));
         }
     }
 

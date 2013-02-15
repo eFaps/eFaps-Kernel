@@ -5,6 +5,40 @@
     <namedCache name="DBProperties">
         <eviction maxEntries="5000" strategy="LIRS"/>
     </namedCache>
+    <namedCache name="Field">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+
+
+    <namedCache name="Command4UUID">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Command4ID">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Command4Name">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+
+     <namedCache name="Menu4UUID">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Menu4ID">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Menu4Name">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+
+    <namedCache name="Image4UUID">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Image4ID">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Image4Name">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
 
 
     <namedCache name="Type4UUID">

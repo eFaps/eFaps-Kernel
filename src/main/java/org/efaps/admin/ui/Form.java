@@ -43,12 +43,7 @@ public class Form
     /**
      * Logging instance used in this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(Menu.class);
-
-    /**
-     * Cache for this class.
-     */
-    private static final FormCache CACHE = new FormCache();
+    protected static final Logger LOG = LoggerFactory.getLogger(Form.class);
 
     /**
      * Stores the mapping from type to tree menu.
@@ -107,7 +102,7 @@ public class Form
      */
     public static Form get(final long _id)
     {
-        return Form.CACHE.get(_id);
+        return AbstractUserInterfaceObject.<Form>get(_id, Form.class, CIAdminUserInterface.Form.getType());
     }
 
     /**
@@ -120,7 +115,7 @@ public class Form
      */
     public static Form get(final String _name)
     {
-        return Form.CACHE.get(_name);
+        return AbstractUserInterfaceObject.<Form>get(_name, Form.class, CIAdminUserInterface.Form.getType());
     }
 
     /**
@@ -133,7 +128,7 @@ public class Form
      */
     public static Form get(final UUID _uuid)
     {
-        return Form.CACHE.get(_uuid);
+        return AbstractUserInterfaceObject.<Form>get(_uuid, Form.class, CIAdminUserInterface.Form.getType());
     }
 
     /**
@@ -154,41 +149,5 @@ public class Form
             }
         }
         return ret;
-    }
-
-    /**
-     * Static getter method for the type hashtable {@link #CACHE}.
-     *
-     * @return value of static variable {@link #CACHE}
-     */
-    protected static AbstractUserInterfaceObjectCache<Form> getCache()
-    {
-        return Form.CACHE;
-    }
-
-    /**
-     * Cache for Forms.
-     */
-    private static class FormCache
-        extends AbstractUserInterfaceObjectCache<Form>
-    {
-
-        /**
-         *
-         */
-        protected FormCache()
-        {
-            super(Form.class);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected Type getType()
-            throws EFapsException
-        {
-            return CIAdminUserInterface.Form.getType();
-        }
     }
 }

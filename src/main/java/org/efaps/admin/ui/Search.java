@@ -25,6 +25,8 @@ import java.util.UUID;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
@@ -36,11 +38,9 @@ public class Search
 {
 
     /**
-     * Stores all instances of class {@link Search}.
-     *
-     * @see #getCache
+     * Logging instance used in this class.
      */
-    private static SearchCache CACHE = new SearchCache();
+    protected static final Logger LOG = LoggerFactory.getLogger(Search.class);
 
     /**
      * Stores the default search command used when the search is called.
@@ -128,7 +128,7 @@ public class Search
      */
     public static Search get(final long _id)
     {
-        return Search.CACHE.get(_id);
+        return AbstractUserInterfaceObject.<Search>get(_id, Search.class, CIAdminUserInterface.Search.getType());
     }
 
     /**
@@ -141,7 +141,7 @@ public class Search
      */
     public static Search get(final String _name)
     {
-        return Search.CACHE.get(_name);
+        return AbstractUserInterfaceObject.<Search>get(_name, Search.class, CIAdminUserInterface.Search.getType());
     }
 
     /**
@@ -154,42 +154,6 @@ public class Search
      */
     public static Search get(final UUID _uuid)
     {
-        return Search.CACHE.get(_uuid);
-    }
-
-    /**
-     * Static getter method for the type hashtable {@link #CACHE}.
-     *
-     * @return value of static variable {@link #CACHE}
-     */
-    protected static AbstractUserInterfaceObjectCache<Search> getCache()
-    {
-        return Search.CACHE;
-    }
-
-    /**
-     * Cache for Searches.
-     */
-    private static class SearchCache
-        extends AbstractUserInterfaceObjectCache<Search>
-    {
-
-        /**
-         * Constructor.
-         */
-        protected SearchCache()
-        {
-            super(Search.class);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected Type getType()
-            throws EFapsException
-        {
-            return CIAdminUserInterface.Search.getType();
-        }
+        return AbstractUserInterfaceObject.<Search>get(_uuid, Search.class, CIAdminUserInterface.Search.getType());
     }
 }

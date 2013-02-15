@@ -27,9 +27,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Type;
@@ -43,6 +43,7 @@ import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.user.AbstractUserObject;
 import org.efaps.admin.user.Company;
 import org.efaps.ci.CIAdmin;
+import org.efaps.ci.CIAttribute;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
@@ -50,8 +51,10 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.jaas.AppAccessHandler;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 
 /**
  * This Class is the Abstract Class for all UserInterfaces in eFaps.<br/>
@@ -72,7 +75,8 @@ public abstract class AbstractUserInterfaceObject
      * This enum id used to define the different Modes a Target of a Command can
      * have, like create, edit etc.
      */
-    public static enum TargetMode {
+    public static enum TargetMode
+    {
         /** TargetMode for connect. */
         CONNECT,
         /** TargetMode for connect. */
@@ -96,6 +100,9 @@ public abstract class AbstractUserInterfaceObject
      * @see #getAccess
      */
     private final Set<AbstractUserObject> access = new HashSet<AbstractUserObject>();
+
+
+    public static AbstractUserInterfaceObject NULL = new AbstractUserInterfaceObject(Long.valueOf(0), null, null) {};
 
     /**
      * Constructor to set the id, the uuid and the name of the user interface
@@ -131,6 +138,7 @@ public abstract class AbstractUserInterfaceObject
 
     /**
      * The instance method reads the access for this user interface object.
+     *
      * @throws CacheReloadException on error during reload
      */
     private void readFromDB4Access()
@@ -211,7 +219,7 @@ public abstract class AbstractUserInterfaceObject
      *
      * @param _targetMode targetmode of the access
      * @param _instance the field will represent, e.g. on edit mode
-     * @param _callCmd  the cmd that called this UI-Object
+     * @param _callCmd the cmd that called this UI-Object
      * @return <i>true</i> if context user has access, otherwise <i>false</i> is
      *         returned
      * @throws EFapsException on error
@@ -279,6 +287,140 @@ public abstract class AbstractUserInterfaceObject
         return this.access;
     }
 
+    @SuppressWarnings("unchecked")
+    protected static <V> V get(final UUID _uuid,
+                               final Class<V> _componentType,
+                               final Type _type)
+    {
+        final Cache<UUID, V> cache = InfinispanCache.get().<UUID, V>getCache(
+                        AbstractUserInterfaceObject.getUUIDCacheName(_componentType));
+        if (!cache.containsKey(_uuid)
+                        && !AbstractUserInterfaceObject
+                                        .read3FromDB(_componentType, _type, CIAdmin.Abstract.UUID, _uuid)) {
+            cache.put(_uuid, (V) AbstractUserInterfaceObject.NULL, 100, TimeUnit.SECONDS);
+        }
+        final V ret = cache.get(_uuid);
+        return ret.equals(AbstractUserInterfaceObject.NULL) ? null : ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static <V> V get(final Long _id,
+                               final Class<V> _componentType,
+                               final Type _type)
+    {
+        final Cache<Long, V> cache = InfinispanCache.get().<Long, V>getCache(
+                        AbstractUserInterfaceObject.getIDCacheName(_componentType));
+        if (!cache.containsKey(_id) && !
+                        AbstractUserInterfaceObject.read3FromDB(_componentType, _type, CIAdmin.Abstract.ID, _id)) {
+            cache.put(_id, (V) AbstractUserInterfaceObject.NULL, 100, TimeUnit.SECONDS);
+        }
+        final V ret = cache.get(_id);
+        return ret.equals(AbstractUserInterfaceObject.NULL) ? null : ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static <V> V get(final String _name,
+                               final Class<V> _componentType,
+                               final Type _type)
+    {
+        final Cache<String, V> cache = InfinispanCache.get().<String, V>getCache(
+                        AbstractUserInterfaceObject.getNameCacheName(_componentType));
+        if (!cache.containsKey(_name) && !
+                        AbstractUserInterfaceObject.read3FromDB(_componentType, _type, CIAdmin.Abstract.Name, _name)) {
+            cache.put(_name, (V) AbstractUserInterfaceObject.NULL, 100, TimeUnit.SECONDS);
+        }
+        final V ret = cache.get(_name);
+        return ret.equals(AbstractUserInterfaceObject.NULL) ? null : ret;
+    }
+
+    protected static String getUUIDCacheName(final Class<?> _componentType)
+    {
+        return _componentType.getSimpleName() + "4UUID";
+    }
+
+    protected static String getIDCacheName(final Class<?> _componentType)
+    {
+        return _componentType.getSimpleName() + "4ID";
+    }
+
+    protected static String getNameCacheName(final Class<?> _componentType)
+    {
+        return _componentType.getSimpleName() + "4Name";
+    }
+
+    protected static void cacheUIObject(final AbstractUserInterfaceObject _object)
+    {
+        final Cache<UUID, AbstractUserInterfaceObject> cache4UUID = InfinispanCache.get()
+                        .<UUID, AbstractUserInterfaceObject>getCache(
+                                        AbstractUserInterfaceObject.getUUIDCacheName(_object.getClass()));
+        if (!cache4UUID.containsKey(_object.getUUID())) {
+            cache4UUID.put(_object.getUUID(), _object);
+        }
+
+        final Cache<String, AbstractUserInterfaceObject> nameCache = InfinispanCache.get()
+                        .<String, AbstractUserInterfaceObject>getCache(
+                                        AbstractUserInterfaceObject.getNameCacheName(_object.getClass()));
+        if (!nameCache.containsKey(_object.getName())) {
+            nameCache.put(_object.getName(), _object);
+        }
+        final Cache<Long, AbstractUserInterfaceObject> idCache = InfinispanCache.get()
+                        .<Long, AbstractUserInterfaceObject>getCache(
+                                        AbstractUserInterfaceObject.getIDCacheName(_object.getClass()));
+        if (!idCache.containsKey(_object.getId())) {
+            idCache.put(_object.getId(), _object);
+        }
+    }
+
+    private static boolean read3FromDB(final Class<?> _componentType,
+                                       final Type _type,
+                                       final CIAttribute _ciAttr,
+                                       final Object _value)
+    {
+        boolean ret = false;
+        try {
+            final QueryBuilder queryBldr = new QueryBuilder(_type);
+            queryBldr.addWhereAttrEqValue(_ciAttr, _value.toString());
+            final InstanceQuery query = queryBldr.getQuery();
+            query.setIncludeChildTypes(false);
+
+            final List<Instance> instances = query.execute();
+            final MultiPrintQuery multi = new MultiPrintQuery(instances);
+            multi.addAttribute(CIAdmin.Abstract.Name,
+                            CIAdmin.Abstract.UUID);
+            multi.executeWithoutAccessCheck();
+            if (multi.next()) {
+                final long id = multi.getCurrentInstance().getId();
+                final String name = multi.<String>getAttribute(CIAdmin.Abstract.Name);
+                final String uuid = multi.<String>getAttribute(CIAdmin.Abstract.UUID);
+                final Constructor<?> uiObjConst = _componentType.getConstructor(Long.class, String.class,
+                                String.class);
+                final AbstractUserInterfaceObject uiObje = (AbstractUserInterfaceObject) uiObjConst.newInstance(id,
+                                uuid, name);
+                AbstractUserInterfaceObject.cacheUIObject(uiObje);
+                uiObje.readFromDB();
+                ret = true;
+            }
+        } catch (final NoSuchMethodException e) {
+
+        } catch (final EFapsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
     /**
      * Method to initialize the Cache of this CacheObjectInterface.
      *
@@ -288,112 +430,85 @@ public abstract class AbstractUserInterfaceObject
         throws CacheReloadException
     {
         Field.initialize();
-        Image.getCache().initialize(AbstractUserInterfaceObject.class);
-        Command.getCache().initialize(AbstractUserInterfaceObject.class);
-        Menu.getCache().initialize(AbstractUserInterfaceObject.class);
-        Search.getCache().initialize(AbstractUserInterfaceObject.class);
-        Form.getCache().initialize(AbstractUserInterfaceObject.class);
-        Table.getCache().initialize(AbstractUserInterfaceObject.class);
-        Image.getCache().readFromDB();
-        Command.getCache().readFromDB();
-        Menu.getCache().readFromDB();
-        Search.getCache().readFromDB();
-        Form.getCache().readFromDB();
-        Table.getCache().readFromDB();
-    }
 
-    /**
-     * Inner Class to store the UserInterfaces in a Cache.
-     *
-     * @param <T>
-     */
-    protected abstract static class AbstractUserInterfaceObjectCache<T extends AbstractUserInterfaceObject>
-        extends AbstractCache<T>
-    {
+        if (InfinispanCache.get().exists(AbstractUserInterfaceObject.getUUIDCacheName(Command.class))) {
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getUUIDCacheName(Command.class))
+                            .clear();
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getIDCacheName(Command.class))
+                            .clear();
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getNameCacheName(Command.class))
+                            .clear();
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getUUIDCacheName(Menu.class))
+                            .clear();
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getIDCacheName(Menu.class)).clear();
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getNameCacheName(Menu.class))
+                            .clear();
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getUUIDCacheName(Image.class))
+                            .clear();
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getIDCacheName(Image.class)).clear();
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getNameCacheName(Image.class))
+                            .clear();
 
-        /**
-         * Stores the caller class.
-         */
-        private final Class<T> callerClass;
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getUUIDCacheName(Search.class))
+                            .clear();
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getIDCacheName(Search.class))
+                            .clear();
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getNameCacheName(Search.class))
+                            .clear();
 
-        /**
-         * Constructor.
-         *
-         * @param _callerClass callerClass
-         */
-        protected AbstractUserInterfaceObjectCache(final Class<T> _callerClass)
-        {
-            this.callerClass = _callerClass;
-        }
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getUUIDCacheName(Form.class))
+                            .clear();
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getIDCacheName(Form.class)).clear();
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getNameCacheName(Form.class))
+                            .clear();
 
-        /**
-         * All cached user interface objects are read into the cache.
-         *
-         * @throws CacheReloadException
-         *
-         * @throws CacheReloadException on error during reload
-         */
-        protected void readFromDB()
-            throws CacheReloadException
-        {
-            for (final T uiObj : getCache4Id().values()) {
-                uiObj.readFromDB();
-            }
-        }
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getUUIDCacheName(Table.class))
+                            .clear();
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getIDCacheName(Table.class)).clear();
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getNameCacheName(Table.class))
+                            .clear();
+        } else {
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getUUIDCacheName(Command.class))
+                            .addListener(new CacheLogListener(Command.LOG));
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getIDCacheName(Command.class))
+                            .addListener(new CacheLogListener(Command.LOG));
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getNameCacheName(Command.class))
+                            .addListener(new CacheLogListener(Command.LOG));
 
-        /**
-         * @return type to be used
-         * @throws EFapsException on error
-         */
-        protected abstract Type getType()
-            throws EFapsException;
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getUUIDCacheName(Menu.class))
+                            .addListener(new CacheLogListener(Menu.LOG));
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getIDCacheName(Menu.class))
+                            .addListener(new CacheLogListener(Menu.LOG));
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getNameCacheName(Menu.class))
+                            .addListener(new CacheLogListener(Menu.LOG));
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void readCache(final Map<Long, T> _cache4Id,
-                                 final Map<String, T> _cache4Name,
-                                 final Map<UUID, T> _cache4UUID)
-            throws CacheReloadException
-        {
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getUUIDCacheName(Image.class))
+                            .addListener(new CacheLogListener(Image.LOG));
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getIDCacheName(Image.class))
+                            .addListener(new CacheLogListener(Image.LOG));
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getNameCacheName(Image.class))
+                            .addListener(new CacheLogListener(Image.LOG));
 
-            final Class<T> uiObjClass = this.callerClass;
-            try {
-                if (getType() != null) {
-                    final QueryBuilder queryBldr = new QueryBuilder(getType());
-                    final InstanceQuery query = queryBldr.getQuery();
-                    query.setIncludeChildTypes(false);
-                    final List<Instance> instances = query.execute();
-                    final MultiPrintQuery multi = new MultiPrintQuery(instances);
-                    multi.addAttribute(CIAdmin.Abstract.Name,
-                                       CIAdmin.Abstract.UUID);
-                    multi.executeWithoutAccessCheck();
-                    while (multi.next()) {
-                        final long id = multi.getCurrentInstance().getId();
-                        final String name = multi.<String> getAttribute(CIAdmin.Abstract.Name);
-                        final String uuid = multi.<String> getAttribute(CIAdmin.Abstract.UUID);
-                        final Constructor<T> uiObj = uiObjClass.getConstructor(Long.class, String.class,
-                                        String.class);
-                        final T uiObj2 = uiObj.newInstance(id, uuid, name);
-                        _cache4Id.put(uiObj2.getId(), uiObj2);
-                        _cache4Name.put(uiObj2.getName(), uiObj2);
-                        _cache4UUID.put(uiObj2.getUUID(), uiObj2);
-                    }
-                }
-            } catch (final NoSuchMethodException e) {
-                throw new CacheReloadException("class '" + uiObjClass.getName()
-                                + "' does not implement contructor (Long, String, String)", e);
-            } catch (final InstantiationException e) {
-                throw new CacheReloadException("could not instantiate class '" + uiObjClass.getName() + "'", e);
-            } catch (final IllegalAccessException e) {
-                throw new CacheReloadException("could not access class '" + uiObjClass.getName() + "'", e);
-            } catch (final InvocationTargetException e) {
-                throw new CacheReloadException("could not invoce constructor of class '" + uiObjClass.getName() + "'",
-                                e);
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("could not initialise cache", e);
-            }
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getUUIDCacheName(Search.class))
+                            .addListener(new CacheLogListener(Search.LOG));
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getIDCacheName(Search.class))
+                            .addListener(new CacheLogListener(Search.LOG));
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getNameCacheName(Search.class))
+                            .addListener(new CacheLogListener(Search.LOG));
+
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getUUIDCacheName(Form.class))
+                            .addListener(new CacheLogListener(Form.LOG));
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getIDCacheName(Form.class))
+                            .addListener(new CacheLogListener(Form.LOG));
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getNameCacheName(Form.class))
+                            .addListener(new CacheLogListener(Form.LOG));
+
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getUUIDCacheName(Table.class))
+                            .addListener(new CacheLogListener(Table.LOG));
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getIDCacheName(Table.class))
+                            .addListener(new CacheLogListener(Table.LOG));
+            InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getNameCacheName(Table.class))
+                            .addListener(new CacheLogListener(Table.LOG));
         }
     }
 }

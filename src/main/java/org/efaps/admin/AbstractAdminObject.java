@@ -96,6 +96,8 @@ public abstract class AbstractAdminObject
      */
     private final Map<EventType, List<EventDefinition>> events = new HashMap<EventType, List<EventDefinition>>();
 
+    private boolean eventChecked = false;
+
     /**
      * Constructor to set instance variables {@link #id}, {@link #uuid} and
      * {@link #name} of this administrational object.
@@ -202,6 +204,15 @@ public abstract class AbstractAdminObject
      */
     public List<EventDefinition> getEvents(final EventType _eventType)
     {
+        if (!this.eventChecked) {
+            this.eventChecked = true;
+            try {
+                EventDefinition.addEvents(this);
+            } catch (final EFapsException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
         return this.events.get(_eventType);
     }
 
@@ -214,6 +225,15 @@ public abstract class AbstractAdminObject
      */
     public boolean hasEvents(final EventType _eventtype)
     {
+        if (!this.eventChecked) {
+            this.eventChecked = true;
+            try {
+                EventDefinition.addEvents(this);
+            } catch (final EFapsException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
         return this.events.get(_eventtype) != null;
     }
 

@@ -22,26 +22,18 @@ package org.efaps.admin.event;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.UUID;
 
 import org.efaps.admin.AbstractAdminObject;
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
-import org.efaps.admin.ui.Command;
-import org.efaps.admin.ui.Menu;
-import org.efaps.admin.ui.field.Field;
-import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.ci.CIAdminCommon;
-import org.efaps.ci.CIAdminDataModel;
 import org.efaps.ci.CIAdminEvent;
 import org.efaps.ci.CIAdminProgram;
-import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
-import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.db.SelectBuilder;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -215,49 +207,38 @@ public final class EventDefinition
 
     }
 
-    /**
-     * Loads all events from the database and assigns them to the specific
-     * administrational type or command.
-     *
-     * @throws EFapsException on error
-     */
-    public static void initialize()
+    public static void addEvents(final AbstractAdminObject _adminObject)
         throws EFapsException
     {
         final QueryBuilder queryBldr = new QueryBuilder(CIAdminEvent.Definition);
+        queryBldr.addWhereAttrEqValue(CIAdminEvent.Definition.Abstract, _adminObject.getId());
         final MultiPrintQuery multi = queryBldr.getPrint();
+        final SelectBuilder selClass = new SelectBuilder().linkto(CIAdminEvent.Definition.JavaProg).attribute(
+                        CIAdminProgram.Java.Name);
+        multi.addSelect(selClass);
         multi.addAttribute(CIAdminEvent.Definition.Type,
-                           CIAdminEvent.Definition.Name,
-                           CIAdminEvent.Definition.Abstract,
-                           CIAdminEvent.Definition.IndexPosition,
-                           CIAdminEvent.Definition.JavaProg,
-                           CIAdminEvent.Definition.Method);
+                        CIAdminEvent.Definition.Name,
+                        CIAdminEvent.Definition.IndexPosition,
+                        CIAdminEvent.Definition.Method);
         multi.executeWithoutAccessCheck();
-
-        if (EventDefinition.LOG.isDebugEnabled()) {
-            EventDefinition.LOG.debug("initialise Triggers ---------------------------------------");
-        }
         while (multi.next()) {
-            //define all variables here so that an error can be thrown containing the
-            //values that where set correctly
+            // define all variables here so that an error can be thrown
+            // containing the
+            // values that where set correctly
             Instance inst = null;
             Type eventType = null;
             String eventName = null;
             int eventPos = 0;
-            long abstractID = 0;
-            long programId = 0;
+            final long abstractID = 0;
+            String program = "";
             String method = null;
-            String resName = null;
             try {
                 inst = multi.getCurrentInstance();
                 eventType = multi.<Type>getAttribute(CIAdminEvent.Definition.Type);
                 eventName = multi.<String>getAttribute(CIAdminEvent.Definition.Name);
                 eventPos = multi.<Integer>getAttribute(CIAdminEvent.Definition.IndexPosition);
-                abstractID = multi.<Long>getAttribute(CIAdminEvent.Definition.Abstract);
-                programId = multi.<Long>getAttribute(CIAdminEvent.Definition.JavaProg);
+                program = multi.<String>getSelect(selClass);
                 method = multi.<String>getAttribute(CIAdminEvent.Definition.Method);
-
-                resName = EventDefinition.getClassName(programId);
 
                 if (EventDefinition.LOG.isDebugEnabled()) {
                     EventDefinition.LOG.debug("   Instance=" + inst);
@@ -265,12 +246,9 @@ public final class EventDefinition
                     EventDefinition.LOG.debug("   eventName=" + eventName);
                     EventDefinition.LOG.debug("   eventPos=" + eventPos);
                     EventDefinition.LOG.debug("   parentId=" + abstractID);
-                    EventDefinition.LOG.debug("   programId=" + programId);
+                    EventDefinition.LOG.debug("   program=" + program);
                     EventDefinition.LOG.debug("   Method=" + method);
-                    EventDefinition.LOG.debug("   resName=" + resName);
                 }
-
-                final UUID typeUUId = EventDefinition.getTypeUUID(abstractID, inst, eventName);
 
                 EventType triggerEvent = null;
                 for (final EventType trigger : EventType.values()) {
@@ -284,144 +262,180 @@ public final class EventDefinition
                     }
                 }
 
-                if (CIAdminDataModel.Type.uuid.equals(typeUUId)) {
-                    final Type type = Type.get(abstractID);
-                    if (EventDefinition.LOG.isDebugEnabled()) {
-                        EventDefinition.LOG.debug("    type=" + type);
-                    }
-
-                    type.addEvent(triggerEvent,
-                                    new EventDefinition(inst, eventName, eventPos, resName, method));
-
-                } else if (CIAdminUserInterface.Command.uuid.equals(typeUUId)) {
-                    final Command command = Command.get(abstractID);
-
-                    if (EventDefinition.LOG.isDebugEnabled()) {
-                        EventDefinition.LOG.debug("    Command=" + command.getName());
-                    }
-                    command.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
-
-                } else if (CIAdminUserInterface.Field.uuid.equals(typeUUId)
-                                || CIAdminUserInterface.FieldCommand.uuid.equals(typeUUId)
-                                || CIAdminUserInterface.FieldGroup.uuid.equals(typeUUId)
-                                || CIAdminUserInterface.FieldHeading.uuid.equals(typeUUId)
-                                || CIAdminUserInterface.FieldClassification.uuid.equals(typeUUId)
-                                || CIAdminUserInterface.FieldSet.uuid.equals(typeUUId)
-                                || CIAdminUserInterface.FieldPicker.uuid.equals(typeUUId)
-                                || CIAdminUserInterface.FieldChart.uuid.equals(typeUUId)) {
-                    final Field field = Field.get(abstractID);
-
-                    if (EventDefinition.LOG.isDebugEnabled()) {
-                        EventDefinition.LOG.debug("       Field=" + field.getName());
-                    }
-                    if (field == null) {
-                        EventDefinition.LOG.error("Could not read Field with id: {}", abstractID);
-                    } else {
-                        field.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
-                    }
-
-                } else if (CIAdminDataModel.Attribute.uuid.equals(typeUUId)
-                                || CIAdminDataModel.AttributeSetAttribute.uuid.equals(typeUUId)) {
-                    final Attribute attribute = Attribute.get(abstractID);
-                    if (EventDefinition.LOG.isDebugEnabled()) {
-                        EventDefinition.LOG.debug("      Attribute=" + attribute.getName());
-                    }
-
-                    attribute.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
-
-                } else if (CIAdminUserInterface.Menu.uuid.equals(typeUUId)) {
-                    final Menu menu = Menu.get(abstractID);
-                    if (EventDefinition.LOG.isDebugEnabled()) {
-                        EventDefinition.LOG.debug("      Menu=" + menu.getName());
-                    }
-
-                    menu.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
-
-                } else if (CIAdminUserInterface.FieldTable.uuid.equals(typeUUId)) {
-
-                    final FieldTable fieldtable = FieldTable.get(abstractID);
-
-                    if (EventDefinition.LOG.isDebugEnabled()) {
-                        EventDefinition.LOG.debug("       Field=" + fieldtable.getName());
-                    }
-
-                    fieldtable.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
-
-                } else if (EventDefinition.LOG.isDebugEnabled()) {
-                    EventDefinition.LOG.debug("initialise() - unknown event trigger connection");
+                if (EventDefinition.LOG.isDebugEnabled()) {
+                    EventDefinition.LOG.debug("    type=" + _adminObject);
                 }
-                //CHECKSTYLE:OFF
+
+                _adminObject.addEvent(triggerEvent,
+                                new EventDefinition(inst, eventName, eventPos, program, method));
+
+                // CHECKSTYLE:OFF
             } catch (final Exception e) {
-                //CHECKSTYLE:ON
+                // CHECKSTYLE:ON
                 EventDefinition.LOG.error("Instance: {}, eventType: {}, eventName: {}, eventPos: {}, parentId: {}, " +
-                        "programId: {}, MethodresName: {}, , arguments: {}",
-                         inst, eventType, eventName, eventPos, abstractID, programId, method, resName);
+                                "programId: {}, MethodresName: {}, , arguments: {}",
+                                inst, eventType, eventName, eventPos, abstractID, program, method, program);
                 if (e instanceof EFapsException) {
                     throw (EFapsException) e;
                 } else {
                     throw new EFapsException(EventDefinition.class, "initialize", e, inst, eventName, eventPos,
-                                    resName, method);
+                                    program, method);
                 }
             }
         }
     }
 
     /**
-     * Get the ClassName from the Database.
+     * Loads all events from the database and assigns them to the specific
+     * administrational type or command.
      *
-     * @param _programId ID of the Program the ClassName is searched for
-     * @return ClassName
      * @throws EFapsException on error
      */
-    private static String getClassName(final Long _programId)
+    public static void initialize()
         throws EFapsException
     {
-        String ret = null;
-        final PrintQuery print = new PrintQuery(CIAdminProgram.Java.getType(), _programId);
-        print.addAttribute(CIAdminProgram.Java.Name);
 
-        if (print.executeWithoutAccessCheck()) {
-            ret = print.getAttribute(CIAdminProgram.Java.Name);
-        } else {
-            EventDefinition.LOG.error("Can't find the Name for the Program with ID: {}", _programId);
-        }
-        return ret;
-    }
-
-    /**
-     * Get the UUID of the Type from the Database.
-     *
-     * @param _abstractID   ID the Typename must be resolved
-     * @param _eventDefInst Instance of the event, only used for logging on error
-     * @param _eventName    name of the event, only used for logging error
-     * @return NAem of the Type
-     * @throws EFapsException on error
-     */
-    private static UUID getTypeUUID(final long _abstractID,
-                                    final Instance _eventDefInst,
-                                    final String _eventName)
-        throws EFapsException
-    {
-        final QueryBuilder queryBldr = new QueryBuilder(Type.get("Admin_Abstract"));
-        queryBldr.addWhereAttrEqValue("ID", _abstractID);
-        final MultiPrintQuery multi = queryBldr.getPrint();
-        multi.addAttribute("Type");
-        multi.executeWithoutAccessCheck();
-        Type type;
-        if (multi.next()) {
-            type = multi.<Type> getAttribute("Type");
-        } else {
-            // necessary, because for "Admin_Abstract" the Query does not
-            // work
-            type = Type.get(_abstractID);
-        }
-        UUID ret = null;
-        if (type == null) {
-            EventDefinition.LOG.error("Can't find the Type  with ID: {}, for event Name: {}, Instance: {}",
-                            new Object[] {_abstractID, _eventName, _eventDefInst});
-        } else {
-            ret = type.getUUID();
-        }
-        return ret;
+//        final QueryBuilder queryBldr = new QueryBuilder(CIAdminEvent.Definition);
+//        final MultiPrintQuery multi = queryBldr.getPrint();
+//        multi.addAttribute(CIAdminEvent.Definition.Type,
+//                           CIAdminEvent.Definition.Name,
+//                           CIAdminEvent.Definition.Abstract,
+//                           CIAdminEvent.Definition.IndexPosition,
+//                           CIAdminEvent.Definition.JavaProg,
+//                           CIAdminEvent.Definition.Method);
+//        multi.executeWithoutAccessCheck();
+//
+//        if (EventDefinition.LOG.isDebugEnabled()) {
+//            EventDefinition.LOG.debug("initialise Triggers ---------------------------------------");
+//        }
+//        while (multi.next()) {
+//            //define all variables here so that an error can be thrown containing the
+//            //values that where set correctly
+//            Instance inst = null;
+//            Type eventType = null;
+//            String eventName = null;
+//            int eventPos = 0;
+//            long abstractID = 0;
+//            long programId = 0;
+//            String method = null;
+//            String resName = null;
+//            try {
+//                inst = multi.getCurrentInstance();
+//                eventType = multi.<Type>getAttribute(CIAdminEvent.Definition.Type);
+//                eventName = multi.<String>getAttribute(CIAdminEvent.Definition.Name);
+//                eventPos = multi.<Integer>getAttribute(CIAdminEvent.Definition.IndexPosition);
+//                abstractID = multi.<Long>getAttribute(CIAdminEvent.Definition.Abstract);
+//                programId = multi.<Long>getAttribute(CIAdminEvent.Definition.JavaProg);
+//                method = multi.<String>getAttribute(CIAdminEvent.Definition.Method);
+//
+//                resName = EventDefinition.getClassName(programId);
+//
+//                if (EventDefinition.LOG.isDebugEnabled()) {
+//                    EventDefinition.LOG.debug("   Instance=" + inst);
+//                    EventDefinition.LOG.debug("   eventType=" + eventType);
+//                    EventDefinition.LOG.debug("   eventName=" + eventName);
+//                    EventDefinition.LOG.debug("   eventPos=" + eventPos);
+//                    EventDefinition.LOG.debug("   parentId=" + abstractID);
+//                    EventDefinition.LOG.debug("   programId=" + programId);
+//                    EventDefinition.LOG.debug("   Method=" + method);
+//                    EventDefinition.LOG.debug("   resName=" + resName);
+//                }
+//
+//                final UUID typeUUId = EventDefinition.getTypeUUID(abstractID, inst, eventName);
+//
+//                EventType triggerEvent = null;
+//                for (final EventType trigger : EventType.values()) {
+//                    final Type triggerClass = Type.get(trigger.getName());
+//                    if (eventType.isKindOf(triggerClass)) {
+//                        if (EventDefinition.LOG.isDebugEnabled()) {
+//                            EventDefinition.LOG.debug("     found trigger " + trigger + ":" + triggerClass);
+//                        }
+//                        triggerEvent = trigger;
+//                        break;
+//                    }
+//                }
+//
+//                if (CIAdminDataModel.Type.uuid.equals(typeUUId)) {
+//                    final Type type = Type.get(abstractID);
+//                    if (EventDefinition.LOG.isDebugEnabled()) {
+//                        EventDefinition.LOG.debug("    type=" + type);
+//                    }
+//
+//                    type.addEvent(triggerEvent,
+//                                    new EventDefinition(inst, eventName, eventPos, resName, method));
+//
+//                } else if (CIAdminUserInterface.Command.uuid.equals(typeUUId)) {
+//                    final Command command = Command.get(abstractID);
+//
+//                    if (EventDefinition.LOG.isDebugEnabled()) {
+//                        EventDefinition.LOG.debug("    Command=" + command.getName());
+//                    }
+//                    command.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
+//
+//                } else if (CIAdminUserInterface.Field.uuid.equals(typeUUId)
+//                                || CIAdminUserInterface.FieldCommand.uuid.equals(typeUUId)
+//                                || CIAdminUserInterface.FieldGroup.uuid.equals(typeUUId)
+//                                || CIAdminUserInterface.FieldHeading.uuid.equals(typeUUId)
+//                                || CIAdminUserInterface.FieldClassification.uuid.equals(typeUUId)
+//                                || CIAdminUserInterface.FieldSet.uuid.equals(typeUUId)
+//                                || CIAdminUserInterface.FieldPicker.uuid.equals(typeUUId)
+//                                || CIAdminUserInterface.FieldChart.uuid.equals(typeUUId)) {
+//                    final Field field = Field.get(abstractID);
+//
+//                    if (EventDefinition.LOG.isDebugEnabled()) {
+//                        EventDefinition.LOG.debug("       Field=" + field.getName());
+//                    }
+//                    if (field == null) {
+//                        EventDefinition.LOG.error("Could not read Field with id: {}", abstractID);
+//                    } else {
+//                        field.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
+//                    }
+//
+//                } else if (CIAdminDataModel.Attribute.uuid.equals(typeUUId)
+//                                || CIAdminDataModel.AttributeSetAttribute.uuid.equals(typeUUId)) {
+//                    final Attribute attribute = Attribute.get(abstractID);
+//                    if (EventDefinition.LOG.isDebugEnabled()) {
+//                        EventDefinition.LOG.debug("      Attribute=" + attribute.getName());
+//                    }
+//
+//                    attribute.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
+//
+//                } else if (CIAdminUserInterface.Menu.uuid.equals(typeUUId)) {
+//                    final Menu menu = Menu.get(abstractID);
+//                    if (EventDefinition.LOG.isDebugEnabled()) {
+//                        EventDefinition.LOG.debug("      Menu=" + menu.getName());
+//                    }
+//
+//                    menu.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
+//
+//                } else if (CIAdminUserInterface.FieldTable.uuid.equals(typeUUId)) {
+//
+//                    final FieldTable fieldtable = FieldTable.get(abstractID);
+//
+//                    if (EventDefinition.LOG.isDebugEnabled()) {
+//                        EventDefinition.LOG.debug("       Field=" + fieldtable.getName());
+//                    }
+//                    if (fieldtable == null) {
+//                        EventDefinition.LOG.error("Could not read FieldTable with id: {}", abstractID);
+//                    } else {
+//                        fieldtable.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
+//                    }
+//                } else if (EventDefinition.LOG.isDebugEnabled()) {
+//                    EventDefinition.LOG.debug("initialise() - unknown event trigger connection");
+//                }
+//                //CHECKSTYLE:OFF
+//            } catch (final Exception e) {
+//                //CHECKSTYLE:ON
+//                EventDefinition.LOG.error("Instance: {}, eventType: {}, eventName: {}, eventPos: {}, parentId: {}, " +
+//                        "programId: {}, MethodresName: {}, , arguments: {}",
+//                         inst, eventType, eventName, eventPos, abstractID, programId, method, resName);
+//                if (e instanceof EFapsException) {
+//                    throw (EFapsException) e;
+//                } else {
+//                    throw new EFapsException(EventDefinition.class, "initialize", e, inst, eventName, eventPos,
+//                                    resName, method);
+//                }
+//            }
+//        }
     }
 }

@@ -344,8 +344,7 @@ public final class DBProperties
         if (InfinispanCache.get().exists(DBProperties.CACHENAME)) {
             InfinispanCache.get().<String, String>getCache(DBProperties.CACHENAME).clear();
         } else {
-            InfinispanCache.get().<String, String>getCache(DBProperties.CACHENAME);
-            InfinispanCache.get().<String, String>getCache(DBProperties.CACHENAME).addListener(new CacheLogListener());
+            InfinispanCache.get().<String, String>getCache(DBProperties.CACHENAME).addListener(new CacheLogListener(DBProperties.LOG));
         }
     }
 }

@@ -23,14 +23,23 @@ package org.efaps.util.cache;
 
 
 import org.infinispan.notifications.Listener;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntriesEvicted;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntryActivated;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntryLoaded;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntryRemoved;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntryVisited;
+import org.infinispan.notifications.cachelistener.event.CacheEntriesEvictedEvent;
+import org.infinispan.notifications.cachelistener.event.CacheEntryActivatedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryCreatedEvent;
+import org.infinispan.notifications.cachelistener.event.CacheEntryLoadedEvent;
+import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
+import org.infinispan.notifications.cachelistener.event.CacheEntryVisitedEvent;
 import org.infinispan.notifications.cachemanagerlistener.annotation.CacheStarted;
 import org.infinispan.notifications.cachemanagerlistener.annotation.CacheStopped;
 import org.infinispan.notifications.cachemanagerlistener.event.CacheStartedEvent;
 import org.infinispan.notifications.cachemanagerlistener.event.CacheStoppedEvent;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -45,21 +54,23 @@ public class CacheLogListener
     /**
      * Logger for this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(CacheLogListener.class);
+    private final Logger log;
 
 
-    private static CacheLogListener CACHELOG;
+   public CacheLogListener(final Logger _log) {
+       this.log = _log;
+   }
 
     @CacheStarted
     public void onCacheStarted(final CacheStartedEvent _event)
     {
-        CacheLogListener.LOG.info("Cache '{}' started.", _event.getCacheName());
+        this.log.info("Cache '{}' started.", _event.getCacheName());
     }
 
     @CacheStopped
     public void onCacheStopped(final CacheStoppedEvent _event)
     {
-        CacheLogListener.LOG.info("Cache {} started.", _event.getCacheName());
+        this.log.info("Cache {} started.", _event.getCacheName());
     }
 
 
@@ -67,10 +78,41 @@ public class CacheLogListener
     public void onCacheEntryCreated(final CacheEntryCreatedEvent<?, ?> event)
     {
         if (!event.isPre()) {
-            CacheLogListener.LOG.info("Added key: '{}' to Cache '{}'. ", event.getKey(), event.getCache().getName());
+            this.log.debug("Added key: '{}' to Cache '{}'. ", event.getKey(), event.getCache().getName());
         }
     }
 
+
+    @CacheEntryLoaded
+    public void onCacheEntryLoaded(final CacheEntryLoadedEvent<?, ?> event)
+    {
+        this.log.debug("loaded key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
+    }
+
+    @CacheEntryVisited
+    public void onCacheEntryVisited(final CacheEntryVisitedEvent<?, ?> event)
+    {
+        this.log.debug("visited key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
+    }
+
+    @CacheEntryActivated
+    public void onCacheEntryActivated(final CacheEntryActivatedEvent<?, ?> event)
+    {
+        this.log.debug("activated key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
+    }
+
+    @CacheEntriesEvicted
+    public void onCacheEntriesEvicted(final CacheEntriesEvictedEvent<?, ?> event)
+    {
+        this.log.debug("evicted entries: '{}' from Cache '{}'. ", event.getEntries(), event.getCache().getName());
+    }
+
+
+    @CacheEntryRemoved
+    public void onCacheEntryRemoved(final CacheEntryRemovedEvent<?, ?> event)
+    {
+        this.log.debug("removed key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
+    }
 
 
 

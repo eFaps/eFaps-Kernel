@@ -44,19 +44,12 @@ public class Image
     /**
      * Logging instance used in this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(Menu.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(Image.class);
 
     /**
      * Stores the mapping from type to tree menu.
      */
     private static final Map<Type, Image> TYPE2IMAGE = new HashMap<Type, Image>();
-
-    /**
-     * Stores all instances of class {@link Image}.
-     *
-     * @see #getCache
-     */
-    private static ImageCache CACHE = new ImageCache();
 
     /**
      * Constructor to set the id and name of the command object.
@@ -124,7 +117,7 @@ public class Image
     public static Image get(final long _id)
             throws CacheReloadException
     {
-        return Image.CACHE.get(_id);
+        return AbstractUserInterfaceObject.<Image>get(_id, Image.class, CIAdminUserInterface.Image.getType());
     }
 
     /**
@@ -139,7 +132,7 @@ public class Image
     public static Image get(final String _name)
         throws CacheReloadException
     {
-        return Image.CACHE.get(_name);
+        return AbstractUserInterfaceObject.<Image>get(_name, Image.class, CIAdminUserInterface.Image.getType());
     }
 
     /**
@@ -154,7 +147,7 @@ public class Image
     public static Image get(final UUID _uuid)
         throws CacheReloadException
     {
-        return Image.CACHE.get(_uuid);
+        return AbstractUserInterfaceObject.<Image>get(_uuid, Image.class, CIAdminUserInterface.Image.getType());
     }
 
     /**
@@ -175,39 +168,5 @@ public class Image
         return ret;
     }
 
-    /**
-     * Static getter method for the type hashtable {@link #CACHE}.
-     *
-     * @return value of static variable {@link #CACHE}
-     */
-    protected static AbstractUserInterfaceObjectCache<Image> getCache()
-    {
-        return Image.CACHE;
-    }
 
-    /**
-     * Cache for Images.
-     */
-    private static class ImageCache
-        extends AbstractUserInterfaceObjectCache<Image>
-    {
-
-        /**
-         * Constructor.
-         */
-        protected ImageCache()
-        {
-            super(Image.class);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected Type getType()
-            throws EFapsException
-        {
-            return CIAdminUserInterface.Image.getType();
-        }
-    }
 }

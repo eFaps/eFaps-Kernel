@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ package org.efaps.admin.ui;
 
 import java.util.UUID;
 
-import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUserInterface;
-import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
@@ -36,9 +36,10 @@ public class Command
 {
 
     /**
-     * Cache for the commands.
+     * Logger for this class.
      */
-    private static final CommandCache CACHE = new CommandCache();
+    protected static final Logger LOG = LoggerFactory.getLogger(Command.class);
+
 
     /**
      * Constructor to set the id and name of the command object.
@@ -55,16 +56,6 @@ public class Command
     }
 
     /**
-     * Static getter method for the command {@link #CACHE}.
-     *
-     * @return value of static variable {@link #CACHE}
-     */
-    protected static AbstractUserInterfaceObjectCache<Command> getCache()
-    {
-        return Command.CACHE;
-    }
-
-    /**
      * Returns for given parameter <i>UUID</i> the instance of class
      * {@link Command}.
      *
@@ -74,7 +65,7 @@ public class Command
      */
     public static Command get(final UUID _uuid)
     {
-        return Command.CACHE.get(_uuid);
+        return  AbstractUserInterfaceObject.<Command>get(_uuid, Command.class, CIAdminUserInterface.Command.getType());
     }
 
     /**
@@ -87,7 +78,7 @@ public class Command
      */
     public static Command get(final long _id)
     {
-        return Command.CACHE.get(_id);
+        return  AbstractUserInterfaceObject.<Command>get(_id, Command.class, CIAdminUserInterface.Command.getType());
     }
 
     /**
@@ -100,32 +91,6 @@ public class Command
      */
     public static Command get(final String _name)
     {
-        return Command.CACHE.get(_name);
-    }
-
-    /**
-     * Cache for Commands.
-     */
-    private static class CommandCache
-        extends AbstractUserInterfaceObjectCache<Command>
-    {
-
-        /**
-         *
-         */
-        protected CommandCache()
-        {
-            super(Command.class);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected Type getType()
-            throws EFapsException
-        {
-            return CIAdminUserInterface.Command.getType();
-        }
+        return  AbstractUserInterfaceObject.<Command>get(_name, Command.class, CIAdminUserInterface.Command.getType());
     }
 }
