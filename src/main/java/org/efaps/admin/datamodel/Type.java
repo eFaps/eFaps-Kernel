@@ -47,6 +47,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.ci.CIAdminUserInterface;
@@ -299,6 +300,17 @@ public class Type
      * </ul>
      */
     private Long typeMenu;
+
+    /**
+     * Id of the Icon defined as TypeIcon for this Type.<br/>
+     * TRISTATE:<br/>
+     * <ul>
+     * <li>NULL: TypeMenu not evaluated yet</li>
+     * <li>0: has got no TypeMenu</li>
+     * <li>n: ID of the TypeMenu</li>
+     * </ul>
+     */
+    private Long typeIcon;
 
     /**
      * This is the constructor for class Type. Every instance of class Type must
@@ -1173,4 +1185,34 @@ public class Type
         }
         return ret;
     }
+
+    /**
+    * TODO its the same code.... isnt it
+    * @return
+    */
+   public Image getTypeIcon() throws EFapsException
+   {
+       Image ret = null;
+       if (this.typeIcon == null) {
+           final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.LinkIsTypeIconFor);
+           queryBldr.addWhereAttrEqValue(CIAdminUserInterface.LinkIsTypeIconFor.To, getId());
+           final MultiPrintQuery multi = queryBldr.getPrint();
+           multi.addAttribute(CIAdminUserInterface.LinkIsTypeIconFor.From);
+           multi.executeWithoutAccessCheck();
+           if (multi.next()) {
+               final Long menuId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeTreeFor.From);
+               ret = Image.get(menuId);
+               if (ret != null) {
+                   this.typeIcon = ret.getId();
+               } else {
+                   this.typeIcon = Long.valueOf(0);
+               }
+           }
+       } else if (this.typeIcon == 0) {
+           ret = getParentType().getTypeIcon();
+       } else {
+           ret = Image.get(this.typeIcon);
+       }
+       return ret;
+   }
 }

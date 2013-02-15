@@ -20,8 +20,6 @@
 
 package org.efaps.admin.ui;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
@@ -47,11 +45,6 @@ public class Image
     protected static final Logger LOG = LoggerFactory.getLogger(Image.class);
 
     /**
-     * Stores the mapping from type to tree menu.
-     */
-    private static final Map<Type, Image> TYPE2IMAGE = new HashMap<Type, Image>();
-
-    /**
      * Constructor to set the id and name of the command object.
      *
      * @param _id id of the command to set
@@ -63,36 +56,6 @@ public class Image
                  final String _name)
     {
         super(_id, _uuid, _name);
-    }
-
-    /**
-     * Sets the link properties for this object.
-     *
-     * @param _linkType type of the link property
-     * @param _toId to id
-     * @param _toType to type
-     * @param _toName to name
-     * @throws EFapsException on error
-     */
-    @Override
-    protected void setLinkProperty(final Type _linkType,
-                                   final long _toId,
-                                   final Type _toType,
-                                   final String _toName)
-        throws EFapsException
-    {
-        if (_linkType.isKindOf(CIAdminUserInterface.LinkIsTypeIconFor.getType())) {
-            final Type type = Type.get(_toId);
-            if (type == null) {
-                Image.LOG.error("Form '" + getName() + "' could not defined as type form for type '" + _toName
-                                + "'! Type does not " + "exists!");
-            } else {
-                Image.TYPE2IMAGE.put(type, this);
-            }
-        } else {
-            super.setLinkProperty(_linkType, _toId, _toType, _toName);
-        }
-
     }
 
     /**
@@ -160,13 +123,9 @@ public class Image
      *         <code>null</code>.
      */
     public static Image getTypeIcon(final Type _type)
+        throws EFapsException
     {
-        Image ret = Image.TYPE2IMAGE.get(_type);
-        if ((ret == null) && (_type != null) && (_type.getParentType() != null)) {
-            ret = Image.getTypeIcon(_type.getParentType());
-        }
-        return ret;
+        return _type.getTypeIcon();
     }
-
 
 }
