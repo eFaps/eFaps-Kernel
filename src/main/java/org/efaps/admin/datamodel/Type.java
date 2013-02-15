@@ -47,14 +47,17 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.ui.Menu;
 import org.efaps.ci.CIAdminDataModel;
+import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.InfinispanCache;
@@ -173,12 +176,6 @@ public class Type
     private static String IDCACHE = "Type4ID";
     private static String NAMECACHE = "Type4Name";
 
-    /**
-     * Stores all instances of type.
-     *
-     * @see #get
-     */
-    private static TypeCache CACHE = new TypeCache();
 
     /**
      * Instance variable for the parent type from which this type is derived.
@@ -291,6 +288,17 @@ public class Type
      * exist)
      */
     private String typeAttributeName;
+
+    /**
+     * Id of the Menu defined as TypeMenu for this Type.<br/>
+     * TRISTATE:<br/>
+     * <ul>
+     * <li>NULL: TypeMenu not evaluated yet</li>
+     * <li>0: has got no TypeMenu</li>
+     * <li>n: ID of the TypeMenu</li>
+     * </ul>
+     */
+    private Long typeMenu;
 
     /**
      * This is the constructor for class Type. Every instance of class Type must
@@ -1136,116 +1144,33 @@ public class Type
         return ret;
     }
 
-
     /**
-     * Cache for Types.
+     *
+     * @return
      */
-    private static class TypeCache
-        extends AbstractCache<Type>
+    public Menu getTypeMenu() throws EFapsException
     {
-
-        /**
-         * @see org.efaps.util.cache.AbstractCache#readCache(java.util.Map,
-         *      java.util.Map, java.util.Map)
-         * @param _cache4Id Cache for id
-         * @param _cache4Name Cache for name
-         * @param _cache4UUID Cache for UUID
-         * @throws CacheReloadException on error during reading
-         */
-        @Override
-        protected void readCache(final Map<Long, Type> _cache4Id,
-                                 final Map<String, Type> _cache4Name,
-                                 final Map<UUID, Type> _cache4UUID)
-            throws CacheReloadException
-        {
-//            ConnectionResource con = null;
-//            try {
-//                // to store parent informations
-//                final Map<Long, Long> parents = new HashMap<Long, Long>();
-//
-//                con = Context.getThreadContext().getConnectionResource();
-//
-//                Statement stmt = null;
-//                try {
-//
-//                    stmt = con.getConnection().createStatement();
-//
-//                    final ResultSet rs = stmt.executeQuery(Type.SQL_SELECT.getSQL());
-//                    while (rs.next()) {
-//                        final long id = rs.getLong(1);
-//                        final String uuid = rs.getString(2).trim();
-//                        final String name = rs.getString(3).trim();
-//                        final int purpose = rs.getInt(4);
-//                        final long parentTypeId = rs.getLong(5);
-//                        String sqlCacheExpr = rs.getString(6);
-//                        sqlCacheExpr = sqlCacheExpr != null ? sqlCacheExpr.trim() : null;
-//                        if (Type.LOG.isDebugEnabled()) {
-//                            Type.LOG.debug("read type '" + name + "' (id = " + id + ") (purpose = " + purpose + ")");
-//                        }
-//                        Type type;
-//                        final char[] purpose2 = ("00000000" + Integer.toBinaryString(purpose)).toCharArray();
-//                        ArrayUtils.reverse(purpose2);
-//                        final char trueCriteria = "1".toCharArray()[0];
-//                        if (trueCriteria == purpose2[Type.Purpose.CLASSIFICATION.getDigit()]) {
-//                            type = new Classification(id, uuid, name);
-//                        } else {
-//                            type = new Type(id, uuid, name);
-//                        }
-//                        type.setAbstract(trueCriteria == purpose2[Type.Purpose.ABSTRACT.getDigit()]);
-//
-//                        if (trueCriteria == purpose2[Type.Purpose.GENERALINSTANCE.getDigit()]) {
-//                            type.setGeneralInstance(true);
-//                        }
-//                        if (trueCriteria == purpose2[Type.Purpose.NOGENERALINSTANCE.getDigit()]) {
-//                            type.setGeneralInstance(false);
-//                        }
-//
-//                        _cache4Id.put(type.getId(), type);
-//                        _cache4Name.put(type.getName(), type);
-//                        _cache4UUID.put(type.getUUID(), type);
-//
-//                        if (parentTypeId != 0) {
-//                            parents.put(id, parentTypeId);
-//                        }
-//                    }
-//                    rs.close();
-//                } finally {
-//                    if (stmt != null) {
-//                        stmt.close();
-//                    }
-//                }
-//                con.commit();
-//
-//                // initialize parents
-//                for (final Map.Entry<Long, Long> entry : parents.entrySet()) {
-//                    final Type child = _cache4Id.get(entry.getKey());
-//                    final Type parent = _cache4Id.get(entry.getValue());
-//                    // TODO: test if loop
-//                    if (child.getId() == parent.getId()) {
-//                        throw new CacheReloadException("child and parent type is equal!child is " + child);
-//                    }
-//                    if (child instanceof Classification) {
-//                        ((Classification) child).setParentClassification((Classification) parent);
-//                        ((Classification) parent).getChildClassifications().add((Classification) child);
-//                    } else {
-//                        child.setParentType(parent);
-//                        parent.addChildType(child);
-//                    }
-//                }
-//
-//            } catch (final SQLException e) {
-//                throw new CacheReloadException("could not read types", e);
-//            } catch (final EFapsException e) {
-//                throw new CacheReloadException("could not read types", e);
-//            } finally {
-//                if ((con != null) && con.isOpened()) {
-//                    try {
-//                        con.abort();
-//                    } catch (final EFapsException e) {
-//                        throw new CacheReloadException("could not read types", e);
-//                    }
-//                }
-//            }
+        Menu ret = null;
+        if (this.typeMenu == null) {
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.LinkIsTypeTreeFor);
+            queryBldr.addWhereAttrEqValue(CIAdminUserInterface.LinkIsTypeTreeFor.To, getId());
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute(CIAdminUserInterface.LinkIsTypeTreeFor.From);
+            multi.executeWithoutAccessCheck();
+            if (multi.next()) {
+                final Long menuId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeTreeFor.From);
+                ret = Menu.get(menuId);
+                if (ret != null) {
+                    this.typeMenu = ret.getId();
+                } else {
+                    this.typeMenu = Long.valueOf(0);
+                }
+            }
+        } else if (this.typeMenu == 0) {
+            ret = getParentType().getTypeMenu();
+        } else {
+            ret = Menu.get(this.typeMenu);
         }
+        return ret;
     }
 }

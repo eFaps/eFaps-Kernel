@@ -70,7 +70,7 @@ public class CacheLogListener
     @CacheStopped
     public void onCacheStopped(final CacheStoppedEvent _event)
     {
-        this.log.info("Cache {} started.", _event.getCacheName());
+        this.log.info("Cache {} stopped.", _event.getCacheName());
     }
 
 
@@ -78,7 +78,7 @@ public class CacheLogListener
     public void onCacheEntryCreated(final CacheEntryCreatedEvent<?, ?> event)
     {
         if (!event.isPre()) {
-            this.log.debug("Added key: '{}' to Cache '{}'. ", event.getKey(), event.getCache().getName());
+            this.log.trace("Added key: '{}' to Cache '{}'. ", event.getKey(), event.getCache().getName());
         }
     }
 
@@ -86,32 +86,32 @@ public class CacheLogListener
     @CacheEntryLoaded
     public void onCacheEntryLoaded(final CacheEntryLoadedEvent<?, ?> event)
     {
-        this.log.debug("loaded key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
+        this.log.trace("loaded key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
     }
 
     @CacheEntryVisited
     public void onCacheEntryVisited(final CacheEntryVisitedEvent<?, ?> event)
     {
-        this.log.debug("visited key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
+        this.log.trace("visited key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
     }
 
     @CacheEntryActivated
     public void onCacheEntryActivated(final CacheEntryActivatedEvent<?, ?> event)
     {
-        this.log.debug("activated key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
+        this.log.trace("activated key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
     }
 
     @CacheEntriesEvicted
     public void onCacheEntriesEvicted(final CacheEntriesEvictedEvent<?, ?> event)
     {
-        this.log.debug("evicted entries: '{}' from Cache '{}'. ", event.getEntries(), event.getCache().getName());
+        this.log.trace("evicted entries: '{}' from Cache '{}'. ", event.getEntries(), event.getCache().getName());
     }
 
 
     @CacheEntryRemoved
     public void onCacheEntryRemoved(final CacheEntryRemovedEvent<?, ?> event)
     {
-        this.log.debug("removed key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
+        this.log.trace("removed key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
     }
 
 

@@ -20,8 +20,6 @@
 
 package org.efaps.admin.ui;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
@@ -43,11 +41,6 @@ public class Menu
      * Logging instance used in this class.
      */
     protected static final Logger LOG = LoggerFactory.getLogger(Menu.class);
-
-    /**
-     * Stores the mapping from type to tree menu.
-     */
-    private static final Map<Type, Menu> TYPE2MENUS = new HashMap<Type, Menu>();
 
     /**
      * Constructor to set the id and name of the menu object.
@@ -79,35 +72,6 @@ public class Menu
             add(_sortId, subMenu);
         } else {
             add(_sortId, command);
-        }
-    }
-
-    /**
-     * Sets the link properties for this object.
-     *
-     * @param _linkType type of the link property
-     * @param _toId to id
-     * @param _toType to type
-     * @param _toName to name
-     * @throws EFapsException on error
-     */
-    @Override
-    protected void setLinkProperty(final Type _linkType,
-                                   final long _toId,
-                                   final Type _toType,
-                                   final String _toName)
-        throws EFapsException
-    {
-        if (_linkType.isKindOf(CIAdminUserInterface.LinkIsTypeTreeFor.getType())) {
-            final Type type = Type.get(_toId);
-            if (type == null) {
-                Menu.LOG.error("Menu '" + getName() + "' could not defined as type " + "tree menu for type '"
-                                + _toName + "'! Type does not " + "exists!");
-            } else {
-                Menu.TYPE2MENUS.put(type, this);
-            }
-        } else {
-            super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
     }
 
@@ -160,11 +124,8 @@ public class Menu
      *         <code>null</code>.
      */
     public static Menu getTypeTreeMenu(final Type _type)
+        throws EFapsException
     {
-        Menu ret = Menu.TYPE2MENUS.get(_type);
-        if ((ret == null) && (_type.getParentType() != null)) {
-            ret = Menu.getTypeTreeMenu(_type.getParentType());
-        }
-        return ret;
+        return _type.getTypeMenu();
     }
 }
