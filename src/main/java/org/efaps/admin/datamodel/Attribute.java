@@ -46,7 +46,6 @@ import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.InfinispanCache;
@@ -730,9 +729,6 @@ public class Attribute
                 }
             }
             con.commit();
-
-
-
         } catch (final SQLException e) {
 
         } catch (final EFapsException e) {
@@ -748,9 +744,6 @@ public class Attribute
         }
         return ret;
     }
-
-
-
 
     protected static void add4Type(final Type _type)
 
@@ -862,49 +855,6 @@ public class Attribute
 
                 }
             }
-        }
-    }
-
-
-    /**
-     * Class used as cache.
-     *
-     */
-    protected static final class AttributeCache
-        extends AbstractCache<Attribute>
-    {
-
-        /**
-         * This is the sql select statement to select all types from the
-         * database.
-         */
-        private static final String SQL_SELECT = "select ID,"
-                                                    + "NAME,"
-                                                    + "TYPEID,"
-                                                    + "DMTABLE,"
-                                                    + "DMTYPE,"
-                                                    + "DMATTRIBUTETYPE,"
-                                                    + "DMTYPELINK,"
-                                                    + "PARENTSET,"
-                                                    + "SQLCOLUMN,"
-                                                    + "DEFAULTVAL, "
-                                                    + "DIMENSION "
-                                                 + "from V_ADMINATTRIBUTE";
-
-        /**
-         * @see org.efaps.util.cache.AbstractCache#readCache(java.util.Map, java.util.Map, java.util.Map)
-         * @param _newCache4Id      cache for id
-         * @param _newCache4Name    cache for name
-         * @param _newCache4UUID    cache for uuid
-         * @throws CacheReloadException on error
-         */
-        @Override
-        protected void readCache(final Map<Long, Attribute> _newCache4Id,
-                                 final Map<String, Attribute> _newCache4Name,
-                                 final Map<UUID, Attribute> _newCache4UUID)
-            throws CacheReloadException
-        {
-
         }
     }
 }

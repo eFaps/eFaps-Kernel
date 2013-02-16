@@ -186,17 +186,20 @@ public final class Company
         if (InfinispanCache.get().exists(Company.UUIDCACHE)) {
             InfinispanCache.get().<UUID, Company>getCache(Company.UUIDCACHE).clear();
         } else {
-            InfinispanCache.get().<UUID, Company>getCache(Company.UUIDCACHE).addListener(new CacheLogListener(Company.LOG));
+            InfinispanCache.get().<UUID, Company>getCache(Company.UUIDCACHE)
+                            .addListener(new CacheLogListener(Company.LOG));
         }
         if (InfinispanCache.get().exists(Company.IDCACHE)) {
             InfinispanCache.get().<Long, Company>getCache(Company.IDCACHE).clear();
         } else {
-            InfinispanCache.get().<Long, Company>getCache(Company.IDCACHE).addListener(new CacheLogListener(Company.LOG));
+            InfinispanCache.get().<Long, Company>getCache(Company.IDCACHE)
+                            .addListener(new CacheLogListener(Company.LOG));
         }
         if (InfinispanCache.get().exists(Company.NAMECACHE)) {
             InfinispanCache.get().<String, Company>getCache(Company.NAMECACHE).clear();
         } else {
-            InfinispanCache.get().<String, Company>getCache(Company.NAMECACHE).addListener(new CacheLogListener(Company.LOG));
+            InfinispanCache.get().<String, Company>getCache(Company.NAMECACHE)
+                            .addListener(new CacheLogListener(Company.LOG));
         }
     }
 
@@ -256,7 +259,7 @@ public final class Company
         return cache.get(_uuid);
     }
 
-    /**
+   /**
     * @param _role Company to be cached
     */
    private static void cacheCompany(final Company _role) {
@@ -292,7 +295,6 @@ public final class Company
                 stmt = con.getConnection().prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
-
                 if (rs.next()) {
                     final long id = rs.getLong(1);
                     final String uuid = rs.getString(2);

@@ -21,22 +21,25 @@
 package org.efaps.admin.datamodel;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.TableInformation;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the class for the table description. The table description holds
@@ -48,26 +51,73 @@ import org.efaps.util.cache.CacheReloadException;
 public final class SQLTable
     extends AbstractDataModelObject
 {
-    /**
-     * This is the SQL select statement to select all SQL tables from the
-     * database.
-     */
-    private static final SQLSelect SQL_SELECT = new SQLSelect()
-                                                    .column("ID")
-                                                    .column("UUID")
-                                                    .column("NAME")
-                                                    .column("SQLTABLE")
-                                                    .column("SQLCOLUMNID")
-                                                    .column("SQLCOLUMNTYPE")
-                                                    .column("DMTABLEMAIN")
-                                                    .from("V_ADMINSQLTABLE");
 
     /**
-     * Stores all instances of SQLTable.
-     *
-     * @see #getCache
+     * Logging instance used in this class.
      */
-    private static final SQLTableCache CACHE = new SQLTableCache();
+    private static final Logger LOG = LoggerFactory.getLogger(SQLTable.class);
+
+    /**
+     * This is the SQL select statement to select a role from the database by
+     * ID.
+     */
+    private static final String SQL_ID = new SQLSelect()
+                    .column("ID")
+                    .column("UUID")
+                    .column("NAME")
+                    .column("SQLTABLE")
+                    .column("SQLCOLUMNID")
+                    .column("SQLCOLUMNTYPE")
+                    .column("DMTABLEMAIN")
+                    .from("V_ADMINSQLTABLE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+
+    /**
+     * This is the SQL select statement to select a role from the database by
+     * Name.
+     */
+    private static final String SQL_NAME = new SQLSelect()
+                    .column("ID")
+                    .column("UUID")
+                    .column("NAME")
+                    .column("SQLTABLE")
+                    .column("SQLCOLUMNID")
+                    .column("SQLCOLUMNTYPE")
+                    .column("DMTABLEMAIN")
+                    .from("V_ADMINSQLTABLE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * This is the SQL select statement to select a role from the database by
+     * UUID.
+     */
+    private static final String SQL_UUID = new SQLSelect()
+                    .column("ID")
+                    .column("UUID")
+                    .column("NAME")
+                    .column("SQLTABLE")
+                    .column("SQLCOLUMNID")
+                    .column("SQLCOLUMNTYPE")
+                    .column("DMTABLEMAIN")
+                    .from("V_ADMINSQLTABLE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "UUID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * Name of the Cache by UUID.
+     */
+    private static final String UUIDCACHE = "SQLTable4UUID";
+
+    /**
+     * Name of the Cache by ID.
+     */
+    private static final String IDCACHE = "SQLTable4ID";
+
+    /**
+     * Name of the Cache by Name.
+     */
+    private static final String NAMECACHE = "SQLTable4Name";
 
     /**
      * Instance variable for the name of the SQL table.
@@ -117,9 +167,9 @@ public final class SQLTable
     private final Set<Type> types = new HashSet<Type>();
 
     /**
-     * The instance variables is set to <i>true</i> if this table is only a
-     * read only SQL table. This means, that no insert and no update on this
-     * table is allowed and made.
+     * The instance variables is set to <i>true</i> if this table is only a read
+     * only SQL table. This means, that no insert and no update on this table is
+     * allowed and made.
      *
      * @see #isReadOnly()
      */
@@ -130,13 +180,13 @@ public final class SQLTable
      * class {@link Attribute} must have a name (parameter <i>_name</i>) and an
      * identifier (parameter <i>_id</i>).
      *
-     * @param _con          Connection
-     * @param _id eFaps     id of the SQL table
-     * @param _uuid         unique identifier
-     * @param _name         eFaps name of the SQL table
-     * @param _sqlTable     name of the SQL Table in the database
-     * @param _sqlColId     name of column for the id within SQL table
-     * @param _sqlColType   name of column for the type within SQL table
+     * @param _con Connection
+     * @param _id eFaps id of the SQL table
+     * @param _uuid unique identifier
+     * @param _name eFaps name of the SQL table
+     * @param _sqlTable name of the SQL Table in the database
+     * @param _sqlColId name of column for the id within SQL table
+     * @param _sqlColType name of column for the type within SQL table
      * @throws SQLException on error
      */
     private SQLTable(final Connection _con,
@@ -263,11 +313,29 @@ public final class SQLTable
 
     /**
      * Method to initialize the Cache of this CacheObjectInterface.
+     *
      * @param _class Clas that started the initialization
      */
     public static void initialize(final Class<?> _class)
     {
-        SQLTable.CACHE.initialize(_class);
+        if (InfinispanCache.get().exists(SQLTable.UUIDCACHE)) {
+            InfinispanCache.get().<UUID, SQLTable>getCache(SQLTable.UUIDCACHE).clear();
+        } else {
+            InfinispanCache.get().<UUID, SQLTable>getCache(SQLTable.UUIDCACHE)
+                            .addListener(new CacheLogListener(SQLTable.LOG));
+        }
+        if (InfinispanCache.get().exists(SQLTable.IDCACHE)) {
+            InfinispanCache.get().<Long, SQLTable>getCache(SQLTable.IDCACHE).clear();
+        } else {
+            InfinispanCache.get().<Long, SQLTable>getCache(SQLTable.IDCACHE)
+                            .addListener(new CacheLogListener(SQLTable.LOG));
+        }
+        if (InfinispanCache.get().exists(SQLTable.NAMECACHE)) {
+            InfinispanCache.get().<String, SQLTable>getCache(SQLTable.NAMECACHE).clear();
+        } else {
+            InfinispanCache.get().<String, SQLTable>getCache(SQLTable.NAMECACHE)
+                            .addListener(new CacheLogListener(SQLTable.LOG));
+        }
     }
 
     /**
@@ -290,7 +358,11 @@ public final class SQLTable
     public static SQLTable get(final long _id)
         throws CacheReloadException
     {
-        return SQLTable.CACHE.get(_id);
+        final Cache<Long, SQLTable> cache = InfinispanCache.get().<Long, SQLTable>getCache(SQLTable.IDCACHE);
+        if (!cache.containsKey(_id)) {
+            SQLTable.getSQLTableFromDB(SQLTable.SQL_ID, _id);
+        }
+        return cache.get(_id);
     }
 
     /**
@@ -305,12 +377,17 @@ public final class SQLTable
     public static SQLTable get(final String _name)
         throws CacheReloadException
     {
-        return SQLTable.CACHE.get(_name);
+        final Cache<String, SQLTable> cache = InfinispanCache.get().<String, SQLTable>getCache(SQLTable.NAMECACHE);
+        if (!cache.containsKey(_name)) {
+            SQLTable.getSQLTableFromDB(SQLTable.SQL_NAME, _name);
+        }
+        return cache.get(_name);
     }
 
     /**
      * Returns for given parameter <i>_uuid</i> the instance of class
      * {@link SQLTable}.
+     *
      * @param _uuid UUID the tanel is wanted for
      * @return instance of class {@link Type}
      * @throws CacheReloadException on error
@@ -318,81 +395,91 @@ public final class SQLTable
     public static SQLTable get(final UUID _uuid)
         throws CacheReloadException
     {
-        return SQLTable.CACHE.get(_uuid);
+        final Cache<UUID, SQLTable> cache = InfinispanCache.get().<UUID, SQLTable>getCache(SQLTable.UUIDCACHE);
+        if (!cache.containsKey(_uuid)) {
+            SQLTable.getSQLTableFromDB(SQLTable.SQL_UUID, String.valueOf(_uuid));
+        }
+        return cache.get(_uuid);
     }
 
     /**
-     * Cache for SQLTable.
+     * @param _role Company to be cached
      */
-    private static class SQLTableCache
-        extends AbstractCache<SQLTable>
+    private static void cacheSQLTable(final SQLTable _sqlTable)
     {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void readCache(final Map<Long, SQLTable> _cache4Id,
-                                 final Map<String, SQLTable> _cache4Name,
-                                 final Map<UUID, SQLTable> _cache4UUID)
-            throws CacheReloadException
-        {
-            ConnectionResource con = null;
+        final Cache<UUID, SQLTable> cache4UUID = InfinispanCache.get().<UUID, SQLTable>getCache(SQLTable.UUIDCACHE);
+        if (!cache4UUID.containsKey(_sqlTable.getUUID())) {
+            cache4UUID.put(_sqlTable.getUUID(), _sqlTable);
+        }
+
+        final Cache<String, SQLTable> nameCache = InfinispanCache.get().<String, SQLTable>getCache(SQLTable.NAMECACHE);
+        if (!nameCache.containsKey(_sqlTable.getName())) {
+            nameCache.put(_sqlTable.getName(), _sqlTable);
+        }
+        final Cache<Long, SQLTable> idCache = InfinispanCache.get().<Long, SQLTable>getCache(SQLTable.IDCACHE);
+        if (!idCache.containsKey(_sqlTable.getId())) {
+            idCache.put(_sqlTable.getId(), _sqlTable);
+        }
+    }
+
+    /**
+     * @param _sqlId
+     * @param _id
+     */
+    private static boolean getSQLTableFromDB(final String _sql,
+                                             final Object _criteria)
+        throws CacheReloadException
+    {
+        final boolean ret = false;
+        ConnectionResource con = null;
+        try {
+            SQLTable table = null;
+            long tableMainId = 0;
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
             try {
-                con = Context.getThreadContext().getConnectionResource();
-
-                Statement stmt = null;
-                try {
-                    final Map<Long, Long> mainTables = new HashMap<Long, Long>();
-
-                    stmt = con.getConnection().createStatement();
-
-                    final ResultSet rs = stmt.executeQuery(SQLTable.SQL_SELECT.getSQL());
-                    while (rs.next()) {
-                        final long id = rs.getLong(1);
-                        final SQLTable table = new SQLTable(con.getConnection(),
-                                                            id,
-                                                            rs.getString(2),
-                                                            rs.getString(3),
-                                                            rs.getString(4),
-                                                            rs.getString(5),
-                                                            rs.getString(6));
-                        _cache4Id.put(table.getId(), table);
-                        _cache4Name.put(table.getName(), table);
-                        _cache4UUID.put(table.getUUID(), table);
-                        final long tableMainId = rs.getLong(7);
-                        if (tableMainId > 0) {
-                            mainTables.put(id, tableMainId);
-                        }
-                        table.readFromDB4Properties();
-                    }
-                    rs.close();
-
-                    // initialize main tables
-                    for (final Map.Entry<Long, Long> entry : mainTables.entrySet()) {
-                        final SQLTable table = _cache4Id.get(entry.getKey());
-                        final SQLTable mainTable = _cache4Id.get(entry.getValue());
-                        table.mainTable = mainTable;
-                    }
-
-                } finally {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
+                stmt = con.getConnection().prepareStatement(_sql);
+                stmt.setObject(1, _criteria);
+                final ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    final long id = rs.getLong(1);
+                    table = new SQLTable(con.getConnection(),
+                                    id,
+                                    rs.getString(2),
+                                    rs.getString(3),
+                                    rs.getString(4),
+                                    rs.getString(5),
+                                    rs.getString(6));
+                    tableMainId = rs.getLong(7);
+                    SQLTable.cacheSQLTable(table);
                 }
-                con.commit();
-            } catch (final SQLException e) {
-                throw new CacheReloadException("could not read sql tables", e);
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("could not read sql tables", e);
+                rs.close();
             } finally {
-                if ((con != null) && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read sql tables", e);
-                    }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+            if (table != null) {
+                table.readFromDB4Properties();
+                if (tableMainId > 0) {
+                    final SQLTable mainTable = SQLTable.get(tableMainId);
+                    table.mainTable = mainTable;
+                }
+            }
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read sql tables", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read sql tables", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read sql tables", e);
                 }
             }
         }
+        return ret;
     }
 }
