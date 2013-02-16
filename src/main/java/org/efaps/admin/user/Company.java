@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -58,8 +59,6 @@ public final class Company
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(Company.class);
-
-
 
     /**
      * This is the SQL select statement to select a role from the database by ID.
@@ -96,17 +95,22 @@ public final class Company
     /**
      * Name of the Cache by UUID.
      */
-    private static String UUIDCACHE = "Company4UUID";
+    private static final String UUIDCACHE = "Company4UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static String IDCACHE = "Company4ID";
+    private static final String IDCACHE = "Company4ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static String NAMECACHE = "Company4Name";
+    private static final String NAMECACHE = "Company4Name";
+
+    /**
+     * Use to mark not found and return <code>null</code>.
+     */
+    private static final Company NULL = new Company(0, null, null, false);
 
     /**
      * The company belonging to this Consortiums.
@@ -208,10 +212,11 @@ public final class Company
         throws CacheReloadException
     {
         final Cache<Long, Company> cache = InfinispanCache.get().<Long, Company>getCache(Company.IDCACHE);
-        if (!cache.containsKey(_id)) {
-            Company.getCompanyFromDB(Company.SQL_ID, _id);
+        if (!cache.containsKey(_id) && !Company.getCompanyFromDB(Company.SQL_ID, _id)) {
+            cache.put(_id, Company.NULL, 100, TimeUnit.SECONDS);
         }
-        return cache.get(_id);
+        final Company ret = cache.get(_id);
+        return ret.equals(Company.NULL) ? null : ret;
     }
 
    /**
@@ -227,10 +232,11 @@ public final class Company
         throws CacheReloadException
     {
         final Cache<String, Company> cache = InfinispanCache.get().<String, Company>getCache(Company.NAMECACHE);
-        if (!cache.containsKey(_name)) {
-            Company.getCompanyFromDB(Company.SQL_NAME, _name);
+        if (!cache.containsKey(_name) && !Company.getCompanyFromDB(Company.SQL_NAME, _name)) {
+            cache.put(_name, Company.NULL, 100, TimeUnit.SECONDS);
         }
-        return cache.get(_name);
+        final Company ret = cache.get(_name);
+        return ret.equals(Company.NULL) ? null : ret;
     }
 
     /**
@@ -273,10 +279,11 @@ public final class Company
     * @param _sqlId
     * @param _id
     */
-    private static void getCompanyFromDB(final String _sql,
-                                         final Object _criteria)
+    private static boolean getCompanyFromDB(final String _sql,
+                                            final Object _criteria)
         throws CacheReloadException
     {
+        boolean ret = false;
         ConnectionResource con = null;
         try {
             con = Context.getThreadContext().getConnectionResource();
@@ -295,6 +302,7 @@ public final class Company
                     Company.LOG.debug("read company '" + name + "' (id = " + id + ")");
                     final Company role = new Company(id, uuid, name, status);
                     Company.cacheCompany(role);
+                    ret = true;
                 }
                 rs.close();
             } finally {
@@ -316,5 +324,6 @@ public final class Company
                 }
             }
         }
+        return ret;
     }
 }

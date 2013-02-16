@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.TimeUnit;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -79,13 +80,17 @@ public final class Group
     /**
      * Name of the Cache by ID.
      */
-    private static String IDCACHE = "Group4ID";
+    private static final String IDCACHE = "Group4ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static String NAMECACHE = "Group4Name";
+    private static final String NAMECACHE = "Group4Name";
 
+    /**
+     * Use to mark not found and return <code>null</code>.
+     */
+    private static final Group NULL = new Group(0, null, false);
 
     /**
      * Create a new group instance. The method is used from the static method
@@ -161,10 +166,11 @@ public final class Group
         throws CacheReloadException
     {
         final Cache<Long, Group> cache = InfinispanCache.get().<Long, Group>getCache(Group.IDCACHE);
-        if (!cache.containsKey(_id)) {
-            Group.getGroupFromDB(Group.SQL_ID, _id);
+        if (!cache.containsKey(_id) && !Group.getGroupFromDB(Group.SQL_ID, _id)) {
+            cache.put(_id, Group.NULL, 100, TimeUnit.SECONDS);
         }
-        return cache.get(_id);
+        final Group ret = cache.get(_id);
+        return ret.equals(Group.NULL) ? null : ret;
     }
 
     /**
@@ -179,10 +185,11 @@ public final class Group
         throws CacheReloadException
     {
         final Cache<String, Group> cache = InfinispanCache.get().<String, Group>getCache(Group.IDCACHE);
-        if (!cache.containsKey(_name)) {
-            Group.getGroupFromDB(Group.SQL_NAME, _name);
+        if (!cache.containsKey(_name) && !Group.getGroupFromDB(Group.SQL_NAME, _name)) {
+            cache.put(_name, Group.NULL, 100, TimeUnit.SECONDS);
         }
-        return cache.get(_name);
+        final Group ret = cache.get(_name);
+        return ret.equals(Group.NULL) ? null : ret;
     }
 
     /**
@@ -203,10 +210,11 @@ public final class Group
      * @param _sqlId
      * @param _id
      */
-    private static void getGroupFromDB(final String _sql,
-                                       final Object _criteria)
+    private static boolean getGroupFromDB(final String _sql,
+                                          final Object _criteria)
         throws CacheReloadException
     {
+        boolean ret = false;
         ConnectionResource con = null;
         try {
             con = Context.getThreadContext().getConnectionResource();
@@ -222,6 +230,7 @@ public final class Group
                     Group.LOG.debug("read group '" + name + "' (id = " + id + ")");
                     final Group group = new Group(id, name, status);
                     Group.cacheGroup(group);
+                    ret = true;
                 }
                 rs.close();
             } finally {
@@ -243,6 +252,7 @@ public final class Group
                 }
             }
         }
+        return ret;
     }
 
     /**
@@ -269,7 +279,6 @@ public final class Group
             rsrc = Context.getThreadContext().getConnectionResource();
 
             Statement stmt = null;
-
             try {
                 final  StringBuilder cmd = new StringBuilder()
                     .append("select ").append("ID ").append("from V_USERGROUPJASSKEY ")

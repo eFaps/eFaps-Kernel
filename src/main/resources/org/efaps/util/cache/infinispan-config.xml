@@ -100,5 +100,14 @@
     <namedCache name="Group4Name">
         <eviction maxEntries="20" strategy="LIRS"/>
     </namedCache>
+
+    <namedCache name="JAASSystem4ID">
+        <eviction maxEntries="5" strategy="FIFO"/>
+    </namedCache>
+    <namedCache name="JAASSystem4Name">
+        <eviction maxEntries="5" strategy="FIFO"/>
+    </namedCache>
+
+
 </infinispan>
 

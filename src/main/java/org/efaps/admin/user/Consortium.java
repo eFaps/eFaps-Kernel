@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -105,18 +106,22 @@ public final class Consortium
     /**
      * Name of the Cache by UUID.
      */
-    private static String UUIDCACHE = "Consortium4UUID";
+    private static final String UUIDCACHE = "Consortium4UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static String IDCACHE = "Consortium4ID";
+    private static final String IDCACHE = "Consortium4ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static String NAMECACHE = "Consortium4Name";
+    private static final String NAMECACHE = "Consortium4Name";
 
+    /**
+     * Use to mark not found and return <code>null</code>.
+     */
+    private static final Consortium NULL = new Consortium(0, null, null, false);
 
 
     /**
@@ -223,10 +228,11 @@ public final class Consortium
         throws CacheReloadException
     {
         final Cache<Long, Consortium> cache = InfinispanCache.get().<Long, Consortium>getCache(Consortium.IDCACHE);
-        if (!cache.containsKey(_id)) {
-            Consortium.getConsortiumFromDB(Consortium.SQL_ID, _id);
+        if (!cache.containsKey(_id) && !Consortium.getConsortiumFromDB(Consortium.SQL_ID, _id)) {
+            cache.put(_id, Consortium.NULL, 100, TimeUnit.SECONDS);
         }
-        return cache.get(_id);
+        final Consortium ret = cache.get(_id);
+        return ret.equals(Consortium.NULL) ? null : ret;
     }
 
 /**
@@ -242,10 +248,11 @@ public final class Consortium
         throws CacheReloadException
     {
         final Cache<String, Consortium> cache = InfinispanCache.get().<String, Consortium>getCache(Consortium.IDCACHE);
-        if (!cache.containsKey(_name)) {
-            Consortium.getConsortiumFromDB(Consortium.SQL_NAME, _name);
+        if (!cache.containsKey(_name) && !Consortium.getConsortiumFromDB(Consortium.SQL_NAME, _name)) {
+            cache.put(_name, Consortium.NULL, 100, TimeUnit.SECONDS);
         }
-        return cache.get(_name);
+        final Consortium ret = cache.get(_name);
+        return ret.equals(Consortium.NULL) ? null : ret;
     }
 
     /**
@@ -291,10 +298,11 @@ public final class Consortium
      * @param _sqlId
      * @param _id
      */
-    private static void getConsortiumFromDB(final String _sql,
-                                            final Object _criteria)
+    private static boolean getConsortiumFromDB(final String _sql,
+                                               final Object _criteria)
         throws CacheReloadException
     {
+        boolean ret = false;
         ConnectionResource con = null;
         try {
             Consortium consortium = null;
@@ -321,6 +329,7 @@ public final class Consortium
             }
             con.commit();
             if (consortium != null) {
+                ret = true;
                 Consortium.cacheConsortium(consortium);
                 consortium.getCompanyRelationFromDB();
             }
@@ -337,6 +346,7 @@ public final class Consortium
                 }
             }
         }
+        return ret;
     }
 
     /**

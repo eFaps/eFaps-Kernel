@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -92,17 +93,22 @@ public final class Role
     /**
      * Name of the Cache by UUID.
      */
-    private static String UUIDCACHE = "Role4UUID";
+    private static final String UUIDCACHE = "Role4UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static String IDCACHE = "Role4ID";
+    private static final String IDCACHE = "Role4ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static String NAMECACHE = "Role4Name";
+    private static final String NAMECACHE = "Role4Name";
+
+    /**
+     * Use to mark not found and return <code>null</code>.
+     */
+    private static final Role NULL = new Role(0, null, null, false);
 
     /**
      * Create a new role instance. The method is used from the static method
@@ -170,10 +176,11 @@ public final class Role
         throws CacheReloadException
     {
         final Cache<Long, Role> cache = InfinispanCache.get().<Long, Role>getCache(Role.IDCACHE);
-        if (!cache.containsKey(_id)) {
-            Role.getRoleFromDB(Role.SQL_ID, _id);
+        if (!cache.containsKey(_id) && !Role.getRoleFromDB(Role.SQL_ID, _id)) {
+            cache.put(_id, Role.NULL, 100, TimeUnit.SECONDS);
         }
-        return cache.get(_id);
+        final Role ret = cache.get(_id);
+        return ret.equals(Role.NULL) ? null : ret;
     }
 
     /**
@@ -189,10 +196,11 @@ public final class Role
         throws CacheReloadException
     {
         final Cache<String, Role> cache = InfinispanCache.get().<String, Role>getCache(Role.NAMECACHE);
-        if (!cache.containsKey(_name)) {
-            Role.getRoleFromDB(Role.SQL_NAME, _name);
+        if (!cache.containsKey(_name) && !Role.getRoleFromDB(Role.SQL_NAME, _name)) {
+            cache.put(_name, Role.NULL, 100, TimeUnit.SECONDS);
         }
-        return cache.get(_name);
+        final Role ret = cache.get(_name);
+        return ret.equals(Role.NULL) ? null : ret;
     }
 
     /**
@@ -237,9 +245,10 @@ public final class Role
      * @param _sqlId
      * @param _id
      */
-    private static void getRoleFromDB(final String _sql,
+    private static boolean getRoleFromDB(final String _sql,
                                       final Object _criteria) throws CacheReloadException
     {
+        boolean ret = false;
         ConnectionResource con = null;
         try {
             con = Context.getThreadContext().getConnectionResource();
@@ -259,6 +268,7 @@ public final class Role
                     final Role role = new Role(id, uuid, name, status);
                     Role.cacheRole(role);
                 }
+                ret = true;
                 rs.close();
             } finally {
                 if (stmt != null) {
@@ -279,6 +289,7 @@ public final class Role
                 }
             }
         }
+        return ret;
     }
 
     /**
