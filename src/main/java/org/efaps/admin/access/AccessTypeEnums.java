@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ package org.efaps.admin.access;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * All access types which are used directly in eFaps are referenced with the
@@ -72,7 +74,6 @@ public enum AccessTypeEnums
         this.uuid = UUID.fromString(_uuid);
     }
 
-
     /**
      * The internal cached access type for the universal unique identifier in
      * {@link #uuid} is returned with the help of static method {@link
@@ -83,6 +84,7 @@ public enum AccessTypeEnums
      * @see AccessType.getAccessType(UUID)
      */
     public AccessType getAccessType()
+        throws CacheReloadException
     {
         return AccessType.getAccessType(this.uuid);
     }
@@ -94,6 +96,7 @@ public enum AccessTypeEnums
      * @see #getAccessType
      */
     public List<AccessType> getAccessTypeAsList()
+        throws CacheReloadException
     {
         final List<AccessType> ret = new ArrayList<AccessType>(1);
         ret.add(getAccessType());

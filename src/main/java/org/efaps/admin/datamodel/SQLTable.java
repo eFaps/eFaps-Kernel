@@ -443,15 +443,17 @@ public final class SQLTable
                 final ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     final long id = rs.getLong(1);
+                    final String name = rs.getString(3).trim();
                     table = new SQLTable(con.getConnection(),
                                     id,
                                     rs.getString(2),
-                                    rs.getString(3),
+                                    name,
                                     rs.getString(4),
                                     rs.getString(5),
                                     rs.getString(6));
                     tableMainId = rs.getLong(7);
                     SQLTable.cacheSQLTable(table);
+                    SQLTable.LOG.debug("read SQLTable '{}' (id = {}))", name, id);
                 }
                 rs.close();
             } finally {

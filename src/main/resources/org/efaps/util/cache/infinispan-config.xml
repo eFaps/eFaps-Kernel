@@ -5,10 +5,13 @@
     <namedCache name="DBProperties">
         <eviction maxEntries="5000" strategy="LIRS"/>
     </namedCache>
+
+
+
+    <!-- UserInterface -->
     <namedCache name="Field">
         <eviction maxEntries="5000" strategy="LIRS"/>
     </namedCache>
-
 
     <namedCache name="Command4UUID">
         <eviction maxEntries="5000" strategy="LIRS"/>
@@ -40,6 +43,8 @@
         <eviction maxEntries="5000" strategy="LIRS"/>
     </namedCache>
 
+
+    <!-- DateModel -->
     <namedCache name="SQLTable4UUID">
         <eviction maxEntries="500" strategy="LIRS"/>
     </namedCache>
@@ -50,6 +55,36 @@
         <eviction maxEntries="500" strategy="LIRS"/>
     </namedCache>
 
+    <namedCache name="AccessType4UUID">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="AccessType4ID">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="AccessType4Name">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+
+    <namedCache name="Type4UUID">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Type4ID">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Type4Name">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+
+    <namedCache name="Attribute4Name">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Attribute4ID">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+
+
+
+    <!-- User -->
     <namedCache name="Company4UUID">
         <eviction maxEntries="5" strategy="LIRS"/>
     </namedCache>
@@ -59,16 +94,6 @@
     <namedCache name="Company4Name">
         <eviction maxEntries="5" strategy="LIRS"/>
     </namedCache>
-
-
-
-    <namedCache name="Attribute4Name">
-        <eviction maxEntries="5000" strategy="LIRS"/>
-    </namedCache>
-    <namedCache name="Attribute4ID">
-        <eviction maxEntries="5000" strategy="LIRS"/>
-    </namedCache>
-
 
     <namedCache name="Person4ID">
         <eviction maxEntries="20" strategy="LIRS"/>
