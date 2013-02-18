@@ -31,6 +31,8 @@ import org.efaps.db.AbstractPrintQuery;
 import org.efaps.db.AbstractQuery;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class work together with the generated classes of the kernel
@@ -44,6 +46,11 @@ import org.efaps.util.EFapsException;
  */
 public class ValueList
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ValueList.class);
+
     /**
      * Enum used to differ expression parts from text parts.
      */
@@ -143,13 +150,22 @@ public class ValueList
      * @throws EFapsException on error
      * @see {@link #makeString(AbstractQuery)}
      */
-    public void makeSelect(final AbstractPrintQuery _print) throws EFapsException
+    public void makeSelect(final AbstractPrintQuery _print)
+        throws EFapsException
     {
         for (final String expression : getExpressions()) {
-            if (expression.contains("[")) {
+            // TODO remove, only selects allowed
+            if (_print.getMainType().getAttributes().containsKey(expression)) {
+                _print.addAttribute(expression);
+                ValueList.LOG.warn(
+                               "The arguments for ValueList must only contain selects. Invalid: '{}' for ValueList: {}",
+                                expression, getValueList());
+            } else if (expression.contains("[") || expression.equals(expression.toLowerCase())) {
                 _print.addSelect(expression);
             } else {
-                _print.addAttribute(expression);
+                    ValueList.LOG.warn(
+                               "The arguments for ValueList must only contain selects. Invalid: '{}' for ValueList: {}",
+                                    expression, getValueList());
             }
         }
     }
@@ -213,16 +229,20 @@ public class ValueList
         for (final Token token : this.tokens) {
             switch (token.type) {
                 case EXPRESSION:
-                    final Attribute attr;
-                    final Object value;
-                    if (token.value.contains("[")) {
-                        attr = _print.getAttribute4Select(token.value);
-                        value = _print.getSelect(token.value);
-                    } else {
+                    Attribute attr = null;
+                    Object value = null;
+                    if (_print.getMainType().getAttributes().containsKey(token.value)) {
                         attr = _print.getAttribute4Attribute(token.value);
                         value = _print.getAttribute(token.value);
+                    } else {
+                        attr = _print.getAttribute4Select(token.value);
+                        value = _print.getSelect(token.value);
                     }
-                    buf.append((new FieldValue(null, attr, value, null, _callInstance)).getStringValue(_mode));
+                    if (attr != null ) {
+                        buf.append((new FieldValue(null, attr, value, null, _callInstance)).getStringValue(_mode));
+                    } else if (value != null) {
+                        buf.append(value);
+                    }
                     break;
                 case TEXT:
                     buf.append(token.value);

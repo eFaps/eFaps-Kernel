@@ -349,9 +349,8 @@ public final class AccessSet
                     AccessSet.LOG.error("could not found status with id " + "'" + statusId + "'");
                 } else {
                     AccessSet.LOG.debug(
-                                "read link from AccessSet '{}' (id = {}, uuid = {}) to status '{}' (id = {} uuid = {})",
-                                    getName(), getId(), getUUID(), status.getName(), status.getId(),
-                                    status.getUUID());
+                                "read link from AccessSet '{}' (id = {}, uuid = {}) to status '{}' (id = {})",
+                                    getName(), getId(), getUUID(), status.getKey(), status.getId());
                     getStati().add(status);
                 }
             }
