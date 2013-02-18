@@ -23,7 +23,6 @@ package org.efaps.util.cache;
 
 import java.io.IOException;
 
-import org.efaps.admin.dbproperty.DBProperties;
 import org.infinispan.Cache;
 import org.infinispan.manager.DefaultCacheManager;
 import org.slf4j.Logger;
@@ -36,24 +35,33 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public class InfinispanCache
+public final class InfinispanCache
 {
-
     /**
      * Logger for this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(InfinispanCache.class);
 
-
-    private DefaultCacheManager manager;
-
+    /**
+     * The instance used for singelton.
+     */
     private static InfinispanCache CACHEINSTANCE;
 
+    /**
+     * The manager for Infinspan.
+     */
+    private DefaultCacheManager manager;
+
+    /**
+     * Singelton is wanted.
+     */
     private InfinispanCache()
     {
-
     }
 
+    /**
+     * init this instance.
+     */
     private void init()
     {
         try {
@@ -66,23 +74,29 @@ public class InfinispanCache
         }
     }
 
+    /**
+     * @param _cacheName cache wanted
+     * @param <K> Key
+     * @param <V> Value
+     * @return a cache from Infinspan
+     */
     public <K, V> Cache<K, V> getCache(final String _cacheName)
     {
         return this.manager.getCache(_cacheName);
     }
 
-    public boolean exists(final String _cacheName) {
+    /**
+     * @param _cacheName cache wanted
+     * @return true if cache exists
+     */
+    public boolean exists(final String _cacheName)
+    {
         return this.manager.cacheExists(_cacheName);
     }
 
-
-
-
-    public void clearAll()
-    {
-        this.manager.getCache("DBProperties").clearAsync();
-    }
-
+    /**
+     * @return the InfinispanCache
+     */
     public static InfinispanCache get()
     {
         if (InfinispanCache.CACHEINSTANCE == null) {
