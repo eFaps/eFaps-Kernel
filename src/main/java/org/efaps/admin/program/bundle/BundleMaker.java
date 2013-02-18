@@ -21,6 +21,7 @@
 package org.efaps.admin.program.bundle;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,7 +52,6 @@ public final class BundleMaker
      * Name of the Cache by Name.
      */
     private static final String CACHE4BUNDLEMAP = "BundleMapper";
-
 
     /**
      * Name of the Cache by Name.
@@ -84,11 +84,15 @@ public final class BundleMaker
     {
         BundleMaker.mergeList(_names);
         String key;
-
         final Cache<List<String>, String> cache = InfinispanCache.get()
                         .<List<String>, String>getCache(BundleMaker.CACHE4BUNDLEMAP);
+        final Cache<String, BundleInterface> cache4bundle = InfinispanCache.get()
+                        .<String, BundleInterface>getCache(BundleMaker.CACHE4BUNDLE);
         if (cache.containsKey(_names)) {
             key = cache.get(_names);
+            if (!cache4bundle.containsKey(key)) {
+                BundleMaker.createNewKey(_names, _bundleclass);
+            }
         } else {
             key = BundleMaker.createNewKey(_names, _bundleclass);
             cache.put(_names, key);
@@ -104,8 +108,8 @@ public final class BundleMaker
      */
     private static void mergeList(final List<String> _names)
     {
+        Collections.sort(_names);
         final Set<String> compare = new HashSet<String>();
-
         for (int i = _names.size() - 1; i > -1; i--) {
             if (compare.contains(_names.get(i))) {
                 _names.remove(i);
@@ -206,9 +210,6 @@ public final class BundleMaker
 
     /**
      * This class represents one StaticCompiledSource from the eFaps-DataBase.
-     *
-     * @author jmox
-     * @version $Id$
      */
     private static class StaticCompiledSource
         implements CacheObjectInterface

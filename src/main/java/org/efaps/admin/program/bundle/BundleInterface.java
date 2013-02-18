@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,5 +54,6 @@ public interface BundleInterface
      * @param _key key
      * @param _oids list of oids
      */
-    void setKey(final String _key, final List<String> _oids);
+    void setKey(final String _key,
+                final List<String> _oids);
 }
