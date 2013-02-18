@@ -89,6 +89,20 @@
         <eviction maxEntries="5000" strategy="LIRS"/>
     </namedCache>
 
+    <namedCache name="Dimension4UUID">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Dimension4ID">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Dimension4Name">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="UoM4ID">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+
+
 
 
     <!-- User -->

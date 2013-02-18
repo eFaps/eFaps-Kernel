@@ -21,22 +21,23 @@
 package org.efaps.admin.datamodel;
 
 import java.io.Serializable;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,53 +50,100 @@ import org.slf4j.LoggerFactory;
 public class Dimension
     extends AbstractAdminObject
 {
-    /**
-     * Needed for serialization.
-     */
-    private static final long serialVersionUID = 1L;
 
     /**
-     * This is the sql select statement to select all dimension from the
-     * database.
-     *
-     * @see #initialise
+     * Logging instance used in this class.
      */
-    private static final SQLSelect SQL_SELECT_DIM  = new SQLSelect()
-                                                        .column("ID")
-                                                        .column("NAME")
-                                                        .column("UUID")
-                                                        .column("DESCR")
-                                                        .column("BASEUOM")
-                                                        .from("T_DMDIM");
+    private static final Logger LOG = LoggerFactory.getLogger(Dimension.class);
 
     /**
      * This is the sql select statement to select all UoM from the database.
      *
      * @see #initialise
      */
-    private static final SQLSelect SQL_SELECT_UOM  = new SQLSelect()
-                                                        .column("ID")
-                                                        .column("DIMID")
-                                                        .column("NAME")
-                                                        .column("NUMERATOR")
-                                                        .column("DENOMINATOR")
-                                                        .from("T_DMUOM");
+    private static final String SQL_SELECT_UOM4DIMID = new SQLSelect()
+                    .column("ID")
+                    .column("DIMID")
+                    .column("NAME")
+                    .column("NUMERATOR")
+                    .column("DENOMINATOR")
+                    .from("T_DMUOM", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "DIMID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
     /**
-     * Stores all instances of type.
+     * This is the sql select statement to select all UoM from the database.
      *
-     * @see #get
+     * @see #initialise
      */
-    private static DimensionCache CACHE = new DimensionCache();
+    private static final String SQL_SELECT_UOM4ID = new SQLSelect()
+                    .column("ID")
+                    .column("DIMID")
+                    .column("NAME")
+                    .column("NUMERATOR")
+                    .column("DENOMINATOR")
+                    .from("T_DMUOM", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
     /**
-     * Mapping of UoMId to UoM.
+     * This is the SQL select statement to select a role from the database by
+     * ID.
      */
-    private static Map<Long, UoM> ID2UOM = new HashMap<Long, UoM>();
+    private static final String SQL_ID = new SQLSelect()
+                    .column("ID")
+                    .column("NAME")
+                    .column("UUID")
+                    .column("DESCR")
+                    .column("BASEUOM")
+                    .from("T_DMDIM", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+
     /**
-     * Logging instance used in this class.
+     * This is the SQL select statement to select a role from the database by
+     * Name.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(Dimension.class);
+    private static final String SQL_NAME = new SQLSelect()
+                    .column("ID")
+                    .column("NAME")
+                    .column("UUID")
+                    .column("DESCR")
+                    .column("BASEUOM")
+                    .from("T_DMDIM", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * This is the SQL select statement to select a role from the database by
+     * UUID.
+     */
+    private static final String SQL_UUID = new SQLSelect()
+                    .column("ID")
+                    .column("NAME")
+                    .column("UUID")
+                    .column("DESCR")
+                    .column("BASEUOM")
+                    .from("T_DMDIM", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "UUID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * Name of the Cache by UUID.
+     */
+    private static final String UUIDCACHE = "Dimension4UUID";
+
+    /**
+     * Name of the Cache by ID.
+     */
+    private static final String IDCACHE = "Dimension4ID";
+
+    /**
+     * Name of the Cache by Name.
+     */
+    private static final String NAMECACHE = "Dimension4Name";
+
+    /**
+     * Name of the Cache by ID.
+     */
+    private static final String IDCACHE4UOM = "UoM4ID";
 
     /**
      * List of UoM belonging to this Dimension.
@@ -173,7 +221,30 @@ public class Dimension
     public static void initialize(final Class<?> _class)
         throws CacheReloadException
     {
-        Dimension.CACHE.initialize(_class);
+        if (InfinispanCache.get().exists(Dimension.UUIDCACHE)) {
+            InfinispanCache.get().<UUID, Dimension>getCache(Dimension.UUIDCACHE).clear();
+        } else {
+            InfinispanCache.get().<UUID, Dimension>getCache(Dimension.UUIDCACHE)
+                            .addListener(new CacheLogListener(Dimension.LOG));
+        }
+        if (InfinispanCache.get().exists(Dimension.IDCACHE)) {
+            InfinispanCache.get().<Long, Dimension>getCache(Dimension.IDCACHE).clear();
+        } else {
+            InfinispanCache.get().<Long, Dimension>getCache(Dimension.IDCACHE)
+                            .addListener(new CacheLogListener(Dimension.LOG));
+        }
+        if (InfinispanCache.get().exists(Dimension.NAMECACHE)) {
+            InfinispanCache.get().<String, Dimension>getCache(Dimension.NAMECACHE).clear();
+        } else {
+            InfinispanCache.get().<String, Dimension>getCache(Dimension.NAMECACHE)
+                            .addListener(new CacheLogListener(Dimension.LOG));
+        }
+        if (InfinispanCache.get().exists(Dimension.IDCACHE4UOM)) {
+            InfinispanCache.get().<Long, UoM>getCache(Dimension.IDCACHE4UOM).clear();
+        } else {
+            InfinispanCache.get().<Long, UoM>getCache(Dimension.IDCACHE4UOM)
+                            .addListener(new CacheLogListener(Dimension.LOG));
+        }
     }
 
     /**
@@ -193,11 +264,16 @@ public class Dimension
      *
      * @param _id id of the type to get
      * @return instance of class {@link Dimension}
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public static Dimension get(final long _id)
+        throws CacheReloadException
     {
-        return Dimension.CACHE.get(_id);
+        final Cache<Long, Dimension> cache = InfinispanCache.get().<Long, Dimension>getCache(Dimension.IDCACHE);
+        if (!cache.containsKey(_id)) {
+            Dimension.getDimensionFromDB(Dimension.SQL_ID, _id);
+        }
+        return cache.get(_id);
     }
 
     /**
@@ -206,11 +282,16 @@ public class Dimension
      *
      * @param _name name of the type to get
      * @return instance of class {@link Dimension}
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public static Dimension get(final String _name)
+        throws CacheReloadException
     {
-        return Dimension.CACHE.get(_name);
+        final Cache<String, Dimension> cache = InfinispanCache.get().<String, Dimension>getCache(Dimension.NAMECACHE);
+        if (!cache.containsKey(_name)) {
+            Dimension.getDimensionFromDB(Dimension.SQL_NAME, _name);
+        }
+        return cache.get(_name);
     }
 
     /**
@@ -219,21 +300,16 @@ public class Dimension
      *
      * @param _uuid uuid of the type to get
      * @return instance of class {@link Dimension}
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public static Dimension get(final UUID _uuid)
+        throws CacheReloadException
     {
-        return Dimension.CACHE.get(_uuid);
-    }
-
-    /**
-     * Static getter method for the type hashtable {@link #CACHE}.
-     *
-     * @return value of static variable {@link #CACHE}
-     */
-    public static AbstractCache<Dimension> getTypeCache()
-    {
-        return Dimension.CACHE;
+        final Cache<UUID, Dimension> cache = InfinispanCache.get().<UUID, Dimension>getCache(Dimension.UUIDCACHE);
+        if (!cache.containsKey(_uuid)) {
+            Dimension.getDimensionFromDB(Dimension.SQL_UUID, String.valueOf(_uuid));
+        }
+        return cache.get(_uuid);
     }
 
     /**
@@ -244,7 +320,156 @@ public class Dimension
      */
     public static UoM getUoM(final Long _uoMId)
     {
-        return Dimension.ID2UOM.get(_uoMId);
+        final Cache<Long, UoM> cache = InfinispanCache.get().<Long, UoM>getCache(Dimension.IDCACHE4UOM);
+        if (!cache.containsKey(_uoMId)) {
+            try {
+                Dimension.getUoMFromDB(Dimension.SQL_SELECT_UOM4ID, _uoMId);
+            } catch (final CacheReloadException e) {
+                Dimension.LOG.error("read UoM from DB failed for id: '{}'", _uoMId);
+            }
+        }
+        return cache.get(_uoMId);
+    }
+
+    /**
+     * @param _sql sql statment to be executed
+     * @param _criteria filter criteria
+     * @throws CacheReloadException on error
+     */
+    private static void getUoMFromDB(final String _sql,
+                                     final Object _criteria)
+        throws CacheReloadException
+    {
+        ConnectionResource con = null;
+        try {
+            final List<Object[]> values = new ArrayList<Object[]>();
+
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
+            try {
+                stmt = con.getConnection().prepareStatement(_sql);
+                stmt.setObject(1, _criteria);
+                final ResultSet rs = stmt.executeQuery();
+                while (rs.next()) {
+                    values.add(new Object[] {
+                                    rs.getLong(1),
+                                    rs.getLong(2),
+                                    rs.getString(3).trim(),
+                                    rs.getInt(4),
+                                    rs.getInt(5)
+                    });
+                }
+                rs.close();
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+            final Cache<Long, UoM> cache = InfinispanCache.get().<Long, UoM>getCache(Dimension.IDCACHE4UOM);
+            for (final Object[] row : values) {
+                final long id = (Long) row[0];
+                final long dimId = (Long) row[1];
+                final String name = (String) row[2];
+                final int numerator = (Integer) row[3];
+                final int denominator = (Integer) row[4];
+                Dimension.LOG.debug("read UoM '" + name + "' (id = " + id + ")");
+                final Dimension dim = Dimension.get(dimId);
+                final UoM uom = new UoM(id, dimId, name, numerator, denominator);
+                dim.addUoM(uom);
+                cache.put(uom.getId(), uom);
+            }
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read Dimension", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read Dimension", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read Dimension", e);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param _role Dimension to be cached
+     */
+    private static void cacheDimension(final Dimension _role)
+    {
+        final Cache<UUID, Dimension> cache4UUID = InfinispanCache.get().<UUID, Dimension>getCache(Dimension.UUIDCACHE);
+        if (!cache4UUID.containsKey(_role.getUUID())) {
+            cache4UUID.put(_role.getUUID(), _role);
+        }
+
+        final Cache<String, Dimension> nameCache = InfinispanCache.get().<String, Dimension>getCache(
+                        Dimension.NAMECACHE);
+        if (!nameCache.containsKey(_role.getName())) {
+            nameCache.put(_role.getName(), _role);
+        }
+        final Cache<Long, Dimension> idCache = InfinispanCache.get().<Long, Dimension>getCache(Dimension.IDCACHE);
+        if (!idCache.containsKey(_role.getId())) {
+            idCache.put(_role.getId(), _role);
+        }
+    }
+
+    /**
+     * @param _sql sql statement to be executed
+     * @param _criteria filter criteria
+     * @throws CacheReloadException on error
+     * @return false
+     */
+    private static boolean getDimensionFromDB(final String _sql,
+                                              final Object _criteria)
+        throws CacheReloadException
+    {
+        boolean ret = false;
+        ConnectionResource con = null;
+        try {
+            Dimension dim = null;
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
+            try {
+                stmt = con.getConnection().prepareStatement(_sql);
+                stmt.setObject(1, _criteria);
+                final ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    final long id = rs.getLong(1);
+                    final String name = rs.getString(2).trim();
+                    final String uuid = rs.getString(3).trim();
+                    final String descr = rs.getString(4).trim();
+                    final long baseuom = rs.getLong(5);
+                    Dimension.LOG.debug("read Dimension '" + name + "' (id = " + id + ")");
+                    dim = new Dimension(id, uuid, name, descr, baseuom);
+                }
+                ret = true;
+                rs.close();
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+            if (dim != null) {
+                Dimension.cacheDimension(dim);
+                Dimension.getUoMFromDB(Dimension.SQL_SELECT_UOM4DIMID, dim.getId());
+            }
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read roles", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read roles", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read roles", e);
+                }
+            }
+        }
+        return ret;
     }
 
     /**
@@ -253,6 +478,7 @@ public class Dimension
     public static class UoM
         implements Serializable
     {
+
         /**
          * Needed for serialization.
          */
@@ -360,7 +586,14 @@ public class Dimension
          */
         public Dimension getDimension()
         {
-            return Dimension.get(this.dimId);
+            Dimension ret = null;
+            try {
+                ret = Dimension.get(this.dimId);
+            } catch (final CacheReloadException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return ret;
         }
 
         /**
@@ -372,105 +605,6 @@ public class Dimension
         public Double getBaseDouble(final Double _value)
         {
             return _value * this.numerator / this.denominator;
-        }
-    }
-
-    /**
-     * Cache for Dimension.
-     *
-     */
-    private static class DimensionCache
-        extends AbstractCache<Dimension>
-    {
-        /**
-         * @see org.efaps.util.cache.AbstractCache#readCache(java.util.Map, java.util.Map, java.util.Map)
-         * @param _cache4Id cache for id
-         * @param _cache4Name cache for name
-         * @param _cache4UUID cache for uuid
-         * @throws CacheReloadException on error
-         */
-        @Override
-        protected void readCache(final Map<Long, Dimension> _cache4Id,
-                                 final Map<String, Dimension> _cache4Name,
-                                 final Map<UUID, Dimension> _cache4UUID)
-            throws CacheReloadException
-        {
-            ConnectionResource con = null;
-            try {
-                con = Context.getThreadContext().getConnectionResource();
-
-                Statement stmt = null;
-                try {
-
-                    stmt = con.getConnection().createStatement();
-
-                    final ResultSet rs = stmt.executeQuery(Dimension.SQL_SELECT_DIM.getSQL());
-                    while (rs.next()) {
-                        final long id = rs.getLong(1);
-                        final String name = rs.getString(2).trim();
-                        final String uuid = rs.getString(3).trim();
-                        final String descr = rs.getString(4).trim();
-                        final long baseuom = rs.getLong(5);
-
-                        if (Dimension.LOG.isDebugEnabled()) {
-                            Dimension.LOG.debug("read dimension '" + name + "' (id = " + id + ")");
-                        }
-
-                        final Dimension dim = new Dimension(id, uuid, name, descr, baseuom);
-
-                        _cache4Id.put(dim.getId(), dim);
-                        _cache4Name.put(dim.getName(), dim);
-                        _cache4UUID.put(dim.getUUID(), dim);
-
-                    }
-                    rs.close();
-                } finally {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                }
-
-                Statement stmt2 = null;
-                try {
-
-                    stmt2 = con.getConnection().createStatement();
-
-                    final ResultSet rs = stmt2.executeQuery(Dimension.SQL_SELECT_UOM.getSQL());
-                    while (rs.next()) {
-                        final long id = rs.getLong(1);
-                        final long dimId = rs.getLong(2);
-                        final String name = rs.getString(3).trim();
-                        final int numerator = rs.getInt(4);
-                        final int denominator = rs.getInt(5);
-
-                        if (Dimension.LOG.isDebugEnabled()) {
-                            Dimension.LOG.debug("read dimension '" + name + "' (id = " + id + ")");
-                        }
-                        final Dimension dim = _cache4Id.get(dimId);
-                        final UoM uom = new UoM(id, dimId, name, numerator, denominator);
-                        dim.addUoM(uom);
-                        Dimension.ID2UOM.put(uom.getId(), uom);
-                    }
-                    rs.close();
-                } finally {
-                    if (stmt2 != null) {
-                        stmt2.close();
-                    }
-                }
-                con.commit();
-            } catch (final SQLException e) {
-                throw new CacheReloadException("could not read Dimension", e);
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("could not read Dimension", e);
-            } finally {
-                if ((con != null) && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read Dimension", e);
-                    }
-                }
-            }
         }
     }
 }

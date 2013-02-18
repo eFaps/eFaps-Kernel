@@ -55,8 +55,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This is the class for the attribute description. The type description holds
- * information about creation of a new instance of a attribute
- * with default values.
+ * information about creation of a new instance of a attribute with default
+ * values.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -68,7 +68,8 @@ public class Attribute
     /**
      * ENUM used to access the different attribute types.
      */
-    public enum AttributeTypeDef {
+    public enum AttributeTypeDef
+    {
         /** Attribute type Link. */
         ATTRTYPE_LINK("440f472f-7be2-41d3-baec-4a2f0e4e5b31"),
         /** Attribute type Link with Ranges. */
@@ -114,24 +115,24 @@ public class Attribute
     private static final Logger LOG = LoggerFactory.getLogger(Attribute.class);
 
     private static final String SQL_TYPE = new SQLSelect()
-    .column("ID")
-    .column("NAME")
-    .column("TYPEID")
-    .column("DMTABLE")
-    .column("DMATTRIBUTETYPE")
-    .column("DMTYPELINK")
-    .column("PARENTSET")
-    .column("SQLCOLUMN")
-    .column("DEFAULTVAL")
-    .column("DIMENSION")
-    .from("V_ADMINATTRIBUTE", 0)
-    .addPart(SQLPart.WHERE).addColumnPart(0, "DMTYPE").addPart(SQLPart.EQUAL).addValuePart("?").toString();
-
+                    .column("ID")
+                    .column("NAME")
+                    .column("TYPEID")
+                    .column("DMTABLE")
+                    .column("DMATTRIBUTETYPE")
+                    .column("DMTYPELINK")
+                    .column("PARENTSET")
+                    .column("SQLCOLUMN")
+                    .column("DEFAULTVAL")
+                    .column("DIMENSION")
+                    .from("V_ADMINATTRIBUTE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "DMTYPE").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
 
     private static final String SQL_Attr = new SQLSelect()
-        .column("DMTYPE")
-        .from("V_ADMINATTRIBUTE", 0)
-        .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+                    .column("DMTYPE")
+                    .from("V_ADMINATTRIBUTE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
     private static String NAMECACHE = "Attribute4Name";
     private static String IDCACHE = "Attribute4ID";
@@ -211,9 +212,8 @@ public class Attribute
     private final String dimensionUUID;
 
     /**
-     * Holds the Attributes this Attribute depend on.
-     * A TreeMap is used to have a fixed position of each attribute.
-     * (Needed e.g for printquery)
+     * Holds the Attributes this Attribute depend on. A TreeMap is used to have
+     * a fixed position of each attribute. (Needed e.g for printquery)
      */
     private Map<String, Attribute> dependencies;
 
@@ -222,14 +222,15 @@ public class Attribute
      * class {@link Attribute} must have a name (parameter <i>_name</i>) and an
      * identifier (parameter <i>_id</i>).
      *
-     * @param _id               id of the attribute
-     * @param _name             name of the instance
-     * @param _sqlColNames      name of the SQL columns
-     * @param _sqlTable         table of this attribute
-     * @param _attributeType    type of this attribute
-     * @param _defaultValue     default value for this attribute
-     * @param _dimensionUUID    UUID of the Dimension
-     * @throws EFapsException on error while retreiving column informationfrom database
+     * @param _id id of the attribute
+     * @param _name name of the instance
+     * @param _sqlColNames name of the SQL columns
+     * @param _sqlTable table of this attribute
+     * @param _attributeType type of this attribute
+     * @param _defaultValue default value for this attribute
+     * @param _dimensionUUID UUID of the Dimension
+     * @throws EFapsException on error while retreiving column informationfrom
+     *             database
      */
     protected Attribute(final long _id,
                         final String _name,
@@ -274,17 +275,17 @@ public class Attribute
      * instance).
      *
      * @see #copy
-     * @param _id               id of the attribute
-     * @param _name             name of the instance
-     * @param _sqlTable         table of this attribute
-     * @param _attributeType    typer of this attribute
-     * @param _defaultValue     default value for this attribute
-     * @param _dimensionUUID    uuid of the dimension belnging to this attribute
-     * @param _required         is it required
-     * @param _size             Size
-     * @param _scale            Scale
+     * @param _id id of the attribute
+     * @param _name name of the instance
+     * @param _sqlTable table of this attribute
+     * @param _attributeType typer of this attribute
+     * @param _defaultValue default value for this attribute
+     * @param _dimensionUUID uuid of the dimension belnging to this attribute
+     * @param _required is it required
+     * @param _size Size
+     * @param _scale Scale
      */
-    //CHECKSTYLE:OFF
+    // CHECKSTYLE:OFF
     private Attribute(final long _id,
                       final String _name,
                       final SQLTable _sqlTable,
@@ -295,7 +296,7 @@ public class Attribute
                       final int _size,
                       final int _scale)
     {
-        //CHECKSTYLE:ON
+        // CHECKSTYLE:ON
         super(_id, null, _name);
         this.sqlTable = _sqlTable;
         this.attributeType = _attributeType;
@@ -329,7 +330,7 @@ public class Attribute
     public Attribute copy()
     {
         final Attribute ret = new Attribute(getId(), getName(), this.sqlTable, this.attributeType, this.defaultValue,
-                                            this.dimensionUUID, this.required, this.size, this.scale);
+                        this.dimensionUUID, this.required, this.size, this.scale);
         ret.getSqlColNames().addAll(getSqlColNames());
         ret.setLink(getLink());
         ret.getProperties().putAll(getProperties());
@@ -396,12 +397,13 @@ public class Attribute
     {
         if (this.dependencies == null) {
             this.dependencies = new TreeMap<String, Attribute>();
-            // in case of a rate attribute the dependencies to the currencies must be given
+            // in case of a rate attribute the dependencies to the currencies
+            // must be given
             if (getProperties().containsKey("CurrencyAttribute4Rate")) {
                 this.dependencies.put("CurrencyAttribute4Rate",
                                 getParent().getAttribute(getProperties().get("CurrencyAttribute4Rate")));
                 this.dependencies.put("TargetCurrencyAttribute4Rate",
-                               getParent().getAttribute(getProperties().get("TargetCurrencyAttribute4Rate")));
+                                getParent().getAttribute(getProperties().get("TargetCurrencyAttribute4Rate")));
             }
         }
         return this.dependencies;
@@ -518,15 +520,25 @@ public class Attribute
 
     /**
      * Method to get the dimension related to this attribute.
+     *
      * @return Dimension
      */
     public Dimension getDimension()
+
     {
-        return Dimension.get(UUID.fromString(this.dimensionUUID));
+        Dimension ret = null;
+        try {
+            ret = Dimension.get(UUID.fromString(this.dimensionUUID));
+        } catch (final CacheReloadException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return ret;
     }
 
     /**
      * Has this attribute an UoM.
+     *
      * @return true id dimensionUUId!=null, else false
      */
     public boolean hasUoM()
@@ -538,8 +550,8 @@ public class Attribute
      * Prepares for given <code>_values</code> depending on this attribute the
      * <code>_insert</code> into the database.
      *
-     * @param _insert   SQL insert statement for related {@link #sqlTable}
-     * @param _values   values to insert
+     * @param _insert SQL insert statement for related {@link #sqlTable}
+     * @param _values values to insert
      * @throws SQLException if values could not be inserted
      */
     public void prepareDBInsert(final SQLInsert _insert,
@@ -553,8 +565,8 @@ public class Attribute
      * Prepares for given <code>_values</code> depending on this attribute the
      * <code>_update</code> into the database.
      *
-     * @param _update   SQL update statement for related {@link #sqlTable}
-     * @param _values   values to update
+     * @param _update SQL update statement for related {@link #sqlTable}
+     * @param _values values to update
      * @throws SQLException if values could not be inserted
      */
     public void prepareDBUpdate(final SQLUpdate _update,
@@ -566,8 +578,8 @@ public class Attribute
 
     /**
      *
-     * @param _rs       cached result set
-     * @param _indexes  indexes within the cached result for the value
+     * @param _rs cached result set
+     * @param _indexes indexes within the cached result for the value
      * @return found value
      * @throws Exception if values could not be read from the cached result
      * @deprecated to be remove with 2.0
@@ -582,10 +594,10 @@ public class Attribute
 
     /**
      *
-     * @param _objectList   object list from the database
+     * @param _objectList object list from the database
      * @return found value
      * @throws EFapsException if values could not be read from the
-     *                        <code>_objectList</code>
+     *             <code>_objectList</code>
      */
     public Object readDBValue(final List<Object> _objectList)
         throws EFapsException
@@ -609,9 +621,9 @@ public class Attribute
         return getParent().getName() + "/" + getName();
     }
 
-
     /**
      * Method to initialize this Cache.
+     *
      * @param _class clas that called this method
      * @throws CacheReloadException on error
      */
@@ -622,23 +634,27 @@ public class Attribute
             InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE).clear();
         } else {
             InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE);
-            InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE).addListener(new CacheLogListener(Attribute.LOG));
+            InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE)
+                            .addListener(new CacheLogListener(Attribute.LOG));
         }
 
         if (InfinispanCache.get().exists(Attribute.IDCACHE)) {
             InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE).clear();
         } else {
             InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE);
-            InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE).addListener(new CacheLogListener(Attribute.LOG));
+            InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE)
+                            .addListener(new CacheLogListener(Attribute.LOG));
         }
 
     }
 
     /**
      * Method to initialize the Cache of this CacheObjectInterface.
+     *
      * @throws CacheReloadException on error
      */
-    public static void initialize() throws CacheReloadException
+    public static void initialize()
+        throws CacheReloadException
     {
         Attribute.initialize(Attribute.class);
     }
@@ -678,8 +694,10 @@ public class Attribute
         return cache.get(_name);
     }
 
-    private static void cacheAttribute(final Attribute _attr) {
-        final Cache<String, Attribute> nameCache = InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE);
+    private static void cacheAttribute(final Attribute _attr)
+    {
+        final Cache<String, Attribute> nameCache = InfinispanCache.get().<String, Attribute>getCache(
+                        Attribute.NAMECACHE);
         if (!nameCache.containsKey(_attr.getKey())) {
             nameCache.put(_attr.getKey(), _attr);
         }
@@ -688,8 +706,6 @@ public class Attribute
             idCache.put(_attr.getId(), _attr);
         }
     }
-
-
 
     /**
      * The instance method returns the string representation of this attribute.
@@ -702,9 +718,9 @@ public class Attribute
     public String toString()
     {
         return new ToStringBuilder(this).appendSuper(super.toString())
-            .append("attribute name", getParent().getName() + "/" + getName())
-            .append("attributetype", getAttributeType().toString())
-            .append("required", this.required).toString();
+                        .append("attribute name", getParent().getName() + "/" + getName())
+                        .append("attributetype", getAttributeType().toString())
+                        .append("required", this.required).toString();
     }
 
     protected static long getTypeID(final long _attrId)
