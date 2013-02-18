@@ -317,7 +317,9 @@ public class Classification
         throws EFapsException
     {
         if (_linkType.isKindOf(CIAdminDataModel.TypeClassifies.getType())) {
-            this.classifiesType = Type.get(_toId);
+            final Type type = Type.get(_toId);
+            this.classifiesType = type;
+            type.getClassifiedByTypes().add(this);
         } else if (_linkType.isKindOf(CIAdminDataModel.TypeClassifyRelation.getType())) {
             this.classifyRelation = Type.get(_toId);
         } else if (_linkType.isKindOf(CIAdminDataModel.TypeClassifyCompany.getType())) {

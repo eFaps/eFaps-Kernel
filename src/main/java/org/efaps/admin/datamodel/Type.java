@@ -1153,7 +1153,7 @@ public class Type
                     } else {
                         ret.setParentType(parent);
                         parent.addChildType(ret);
-                        for (final Entry<String, Attribute> entry : parent.getAttributes().entrySet() ) {
+                        for (final Entry<String, Attribute> entry : parent.getAttributes().entrySet()) {
                             if (!ret.getAttributes().containsKey(entry.getKey())) {
                                 ret.addAttribute(entry.getValue().copy(), true);
                             }
