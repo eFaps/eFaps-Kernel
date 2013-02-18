@@ -216,7 +216,7 @@ public final class AccessType
     {
         final Cache<UUID, AccessType> cache = InfinispanCache.get().<UUID, AccessType>getCache(AccessType.UUIDCACHE);
         if (!cache.containsKey(_uuid)) {
-            AccessType.getAccessTypeFromDB(AccessType.SQL_UUID, _uuid);
+            AccessType.getAccessTypeFromDB(AccessType.SQL_UUID, String.valueOf(_uuid));
         }
         return cache.get(_uuid);
     }

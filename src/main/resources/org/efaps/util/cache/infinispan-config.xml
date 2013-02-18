@@ -133,6 +133,17 @@
         <eviction maxEntries="5000" strategy="LIRS"/>
     </namedCache>
 
+    <namedCache name="AccessSet4UUID">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="AccessSet4ID">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="AccessSet4Name">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+
+
 
     <!-- User -->
     <namedCache name="Company4UUID">
