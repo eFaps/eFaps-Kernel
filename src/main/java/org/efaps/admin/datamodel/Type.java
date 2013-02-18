@@ -136,9 +136,7 @@ public class Type
     private static final Logger LOG = LoggerFactory.getLogger(Type.class);
 
     /**
-     * This is the sql select statement to select all types from the database.
-     *
-     * @see #initialise
+     * SQL select statement to select a type from the database by its UUID.
      */
     private static final String SQL_UUID = new SQLSelect()
                     .column("ID")
@@ -150,6 +148,9 @@ public class Type
                     .addPart(SQLPart.WHERE).addColumnPart(0, "UUID").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
 
+    /**
+     * SQL select statement to select a type from the database by its ID.
+     */
     private static final String SQL_ID = new SQLSelect()
                     .column("ID")
                     .column("UUID")
@@ -159,6 +160,9 @@ public class Type
                     .from("V_ADMINTYPE", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
+    /**
+     * SQL select statement to select a type from the database by its Name.
+     */
     private static final String SQL_NAME = new SQLSelect()
                     .column("ID")
                     .column("UUID")
@@ -169,13 +173,28 @@ public class Type
                     .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
 
+    /**
+     * SQL select statement to select the ids of child types from the database.
+     */
     private static final String SQL_CHILD = new SQLSelect()
                     .column("ID")
                     .from("V_ADMINTYPE", 0)
-                    .addPart(SQLPart.WHERE).addColumnPart(0, "PARENTDMTYPE").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "PARENTDMTYPE").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
 
+    /**
+     * Name of the Cache by UUID.
+     */
     private static String UUIDCACHE = "Type4UUID";
+
+    /**
+     * Name of the Cache by ID.
+     */
     private static String IDCACHE = "Type4ID";
+
+    /**
+     * Name of the Cache by Name.
+     */
     private static String NAMECACHE = "Type4Name";
 
 
@@ -250,6 +269,12 @@ public class Type
      * Have the accessSet been evaluated.
      */
     private boolean checked4AccessSet = false;
+
+    /**
+     * Have the children been evaluated.
+     */
+    private boolean checked4Children = false;
+
 
     /**
      * Stores all type of events which are allowed to fire on this type.
@@ -443,8 +468,7 @@ public class Type
      * Adds link from an attribute to this type. The link is also registered
      * under the name of all child types of the attribute.
      *
-     * @param _attr attribute with the link to this type TODO: description of
-     *            algorithm
+     * @param _attr attribute with the link to this type
      */
     protected void addLink(final Attribute _attr)
     {
@@ -923,6 +947,100 @@ public class Type
     }
 
     /**
+     * @return the TypeMenu for this type
+     * @throws EFapsException on errot
+     */
+    public Menu getTypeMenu()
+        throws EFapsException
+    {
+        Menu ret = null;
+        if (this.typeMenu == null) {
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.LinkIsTypeTreeFor);
+            queryBldr.addWhereAttrEqValue(CIAdminUserInterface.LinkIsTypeTreeFor.To, getId());
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute(CIAdminUserInterface.LinkIsTypeTreeFor.From);
+            multi.executeWithoutAccessCheck();
+            if (multi.next()) {
+                final Long menuId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeTreeFor.From);
+                ret = Menu.get(menuId);
+                if (ret != null) {
+                    this.typeMenu = ret.getId();
+                } else {
+                    this.typeMenu = Long.valueOf(0);
+                }
+            }
+        } else if (this.typeMenu == 0) {
+            ret = getParentType().getTypeMenu();
+        } else {
+            ret = Menu.get(this.typeMenu);
+        }
+        return ret;
+    }
+
+    /**
+     * @return the TypeIcon for this type
+     * @throws EFapsException on errot
+     */
+
+    public Image getTypeIcon()
+        throws EFapsException
+    {
+        Image ret = null;
+        if (this.typeIcon == null) {
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.LinkIsTypeIconFor);
+            queryBldr.addWhereAttrEqValue(CIAdminUserInterface.LinkIsTypeIconFor.To, getId());
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute(CIAdminUserInterface.LinkIsTypeIconFor.From);
+            multi.executeWithoutAccessCheck();
+            if (multi.next()) {
+                final Long menuId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeTreeFor.From);
+                ret = Image.get(menuId);
+                if (ret != null) {
+                    this.typeIcon = ret.getId();
+                } else {
+                    this.typeIcon = Long.valueOf(0);
+                }
+            }
+        } else if (this.typeIcon == 0) {
+            ret = getParentType().getTypeIcon();
+        } else {
+            ret = Image.get(this.typeIcon);
+        }
+        return ret;
+    }
+
+    /**
+     * @return the TypeFrom for this type
+     * @throws EFapsException on errot
+     */
+    public Form getTypeForm()
+        throws EFapsException
+    {
+        Form ret = null;
+        if (this.typeForm == null) {
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.LinkIsTypeFormFor);
+            queryBldr.addWhereAttrEqValue(CIAdminUserInterface.LinkIsTypeFormFor.To, getId());
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute(CIAdminUserInterface.LinkIsTypeFormFor.From);
+            multi.executeWithoutAccessCheck();
+            if (multi.next()) {
+                final Long menuId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeFormFor.From);
+                ret = Form.get(menuId);
+                if (ret != null) {
+                    this.typeForm = ret.getId();
+                } else {
+                    this.typeForm = Long.valueOf(0);
+                }
+            }
+        } else if (this.typeForm == 0) {
+            ret = getParentType().getTypeForm();
+        } else {
+            ret = Form.get(this.typeForm);
+        }
+        return ret;
+    }
+
+    /**
      * The method overrides the original method 'toString' and returns
      * information about this type instance.
      *
@@ -946,6 +1064,12 @@ public class Type
             ret = super.equals(_obj);
         }
         return ret;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Long.valueOf(getId()).intValue();
     }
 
     /**
@@ -1019,22 +1143,6 @@ public class Type
         return cache.get(_name);
     }
 
-    protected static void cacheType(final Type _type) {
-        final Cache<UUID, Type> cache4UUID = InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
-        if (!cache4UUID.containsKey(_type.getUUID())) {
-            cache4UUID.put(_type.getUUID(), _type);
-        }
-
-        final Cache<String, Type> nameCache = InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE);
-        if (!nameCache.containsKey(_type.getName())) {
-            nameCache.put(_type.getName(), _type);
-        }
-        final Cache<Long, Type> idCache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
-        if (!idCache.containsKey(_type.getId())) {
-            idCache.put(_type.getId(), _type);
-        }
-    }
-
     /**
      * Returns for given parameter <i>_uuid</i> the instance of class
      * {@link Type}.
@@ -1052,7 +1160,31 @@ public class Type
         return cache.get(_uuid);
     }
 
-    protected static List<Long> getChildTypeIDs(final long _parentID)
+    /**
+     * @param _type type to be cached
+     */
+    protected static void cacheType(final Type _type)
+    {
+        final Cache<UUID, Type> cache4UUID = InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
+        if (!cache4UUID.containsKey(_type.getUUID())) {
+            cache4UUID.put(_type.getUUID(), _type);
+        }
+
+        final Cache<String, Type> nameCache = InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE);
+        if (!nameCache.containsKey(_type.getName())) {
+            nameCache.put(_type.getName(), _type);
+        }
+        final Cache<Long, Type> idCache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
+        if (!idCache.containsKey(_type.getId())) {
+            idCache.put(_type.getId(), _type);
+        }
+    }
+
+    /**
+     * @param _parentID id to be searched for
+     * @return a list of ids
+     */
+    private static List<Long> getChildTypeIDs(final long _parentID)
     {
         final List<Long> ret = new ArrayList<Long>();
         ConnectionResource con = null;
@@ -1090,11 +1222,13 @@ public class Type
         return ret;
     }
 
-
-
+    /**
+     * @param _sql      SQLStatement to be executed
+     * @param _criteria the filter criteria
+     * @return Type instance
+     */
     private static Type getTypeFromDB(final String _sql,
                                       final Object _criteria)
-
     {
         Type ret = null;
         ConnectionResource con = null;
@@ -1140,7 +1274,7 @@ public class Type
                 ret.readFromDB4Properties();
                 if (parentTypeId != 0) {
                     final Type parent = Type.get(parentTypeId);
-                    // // TODO: test if loop
+                    // TODO: test if loop
                     if (ret.getId() == parent.getId()) {
                         throw new CacheReloadException("child and parent type is equal!child is " + ret);
                     }
@@ -1162,8 +1296,8 @@ public class Type
                 }
                 Attribute.add4Type(ret);
                 ret.readFromDB4Links();
-
-                if (ret.isAbstract()) {
+                if (ret.isAbstract() || !ret.checked4Children) {
+                    ret.checked4Children = true;
                     for (final Long aid : Type.getChildTypeIDs(ret.getId())) {
                         Type.getTypeFromDB(Type.SQL_ID, aid);
                     }
@@ -1184,91 +1318,4 @@ public class Type
         }
         return ret;
     }
-
-    /**
-     *
-     * @return
-     */
-    public Menu getTypeMenu() throws EFapsException
-    {
-        Menu ret = null;
-        if (this.typeMenu == null) {
-            final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.LinkIsTypeTreeFor);
-            queryBldr.addWhereAttrEqValue(CIAdminUserInterface.LinkIsTypeTreeFor.To, getId());
-            final MultiPrintQuery multi = queryBldr.getPrint();
-            multi.addAttribute(CIAdminUserInterface.LinkIsTypeTreeFor.From);
-            multi.executeWithoutAccessCheck();
-            if (multi.next()) {
-                final Long menuId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeTreeFor.From);
-                ret = Menu.get(menuId);
-                if (ret != null) {
-                    this.typeMenu = ret.getId();
-                } else {
-                    this.typeMenu = Long.valueOf(0);
-                }
-            }
-        } else if (this.typeMenu == 0) {
-            ret = getParentType().getTypeMenu();
-        } else {
-            ret = Menu.get(this.typeMenu);
-        }
-        return ret;
-    }
-
-    /**
-    * TODO its the same code.... isnt it
-    * @return
-    */
-   public Image getTypeIcon() throws EFapsException
-   {
-       Image ret = null;
-       if (this.typeIcon == null) {
-           final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.LinkIsTypeIconFor);
-           queryBldr.addWhereAttrEqValue(CIAdminUserInterface.LinkIsTypeIconFor.To, getId());
-           final MultiPrintQuery multi = queryBldr.getPrint();
-           multi.addAttribute(CIAdminUserInterface.LinkIsTypeIconFor.From);
-           multi.executeWithoutAccessCheck();
-           if (multi.next()) {
-               final Long menuId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeTreeFor.From);
-               ret = Image.get(menuId);
-               if (ret != null) {
-                   this.typeIcon = ret.getId();
-               } else {
-                   this.typeIcon = Long.valueOf(0);
-               }
-           }
-       } else if (this.typeIcon == 0) {
-           ret = getParentType().getTypeIcon();
-       } else {
-           ret = Image.get(this.typeIcon);
-       }
-       return ret;
-   }
-
-
-   public Form getTypeForm() throws EFapsException
-   {
-       Form ret = null;
-       if (this.typeForm == null) {
-           final QueryBuilder queryBldr = new QueryBuilder(CIAdminUserInterface.LinkIsTypeFormFor);
-           queryBldr.addWhereAttrEqValue(CIAdminUserInterface.LinkIsTypeFormFor.To, getId());
-           final MultiPrintQuery multi = queryBldr.getPrint();
-           multi.addAttribute(CIAdminUserInterface.LinkIsTypeFormFor.From);
-           multi.executeWithoutAccessCheck();
-           if (multi.next()) {
-               final Long menuId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeFormFor.From);
-               ret = Form.get(menuId);
-               if (ret != null) {
-                   this.typeForm = ret.getId();
-               } else {
-                   this.typeForm = Long.valueOf(0);
-               }
-           }
-       } else if (this.typeForm == 0) {
-           ret = getParentType().getTypeForm();
-       } else {
-           ret = Form.get(this.typeForm);
-       }
-       return ret;
-   }
 }

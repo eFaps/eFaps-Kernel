@@ -101,7 +101,9 @@ public abstract class AbstractUserInterfaceObject
      */
     private final Set<AbstractUserObject> access = new HashSet<AbstractUserObject>();
 
-
+    /**
+     * Used as <code>null</code> replacement for the cache.
+     */
     public static AbstractUserInterfaceObject NULL = new AbstractUserInterfaceObject(Long.valueOf(0), null, null) {};
 
     /**
@@ -296,7 +298,7 @@ public abstract class AbstractUserInterfaceObject
                         AbstractUserInterfaceObject.getUUIDCacheName(_componentType));
         if (!cache.containsKey(_uuid)
                         && !AbstractUserInterfaceObject
-                                        .read3FromDB(_componentType, _type, CIAdmin.Abstract.UUID, _uuid)) {
+                                        .readObjectFromDB(_componentType, _type, CIAdmin.Abstract.UUID, _uuid)) {
             cache.put(_uuid, (V) AbstractUserInterfaceObject.NULL, 100, TimeUnit.SECONDS);
         }
         final V ret = cache.get(_uuid);
@@ -311,7 +313,7 @@ public abstract class AbstractUserInterfaceObject
         final Cache<Long, V> cache = InfinispanCache.get().<Long, V>getCache(
                         AbstractUserInterfaceObject.getIDCacheName(_componentType));
         if (!cache.containsKey(_id) && !
-                        AbstractUserInterfaceObject.read3FromDB(_componentType, _type, CIAdmin.Abstract.ID, _id)) {
+                        AbstractUserInterfaceObject.readObjectFromDB(_componentType, _type, CIAdmin.Abstract.ID, _id)) {
             cache.put(_id, (V) AbstractUserInterfaceObject.NULL, 100, TimeUnit.SECONDS);
         }
         final V ret = cache.get(_id);
@@ -326,7 +328,7 @@ public abstract class AbstractUserInterfaceObject
         final Cache<String, V> cache = InfinispanCache.get().<String, V>getCache(
                         AbstractUserInterfaceObject.getNameCacheName(_componentType));
         if (!cache.containsKey(_name) && !
-                        AbstractUserInterfaceObject.read3FromDB(_componentType, _type, CIAdmin.Abstract.Name, _name)) {
+                        AbstractUserInterfaceObject.readObjectFromDB(_componentType, _type, CIAdmin.Abstract.Name, _name)) {
             cache.put(_name, (V) AbstractUserInterfaceObject.NULL, 100, TimeUnit.SECONDS);
         }
         final V ret = cache.get(_name);
@@ -371,7 +373,7 @@ public abstract class AbstractUserInterfaceObject
         }
     }
 
-    private static boolean read3FromDB(final Class<?> _componentType,
+    private static boolean readObjectFromDB(final Class<?> _componentType,
                                        final Type _type,
                                        final CIAttribute _ciAttr,
                                        final Object _value)
