@@ -289,6 +289,12 @@ public abstract class AbstractUserInterfaceObject
         return this.access;
     }
 
+    /**
+     * @param _uuid             UUUI of the UIObject wanted
+     * @param _componentType    type of the UIObject
+     * @param _type             datamodel type of the object
+     * @return UIObject
+     */
     @SuppressWarnings("unchecked")
     protected static <V> V get(final UUID _uuid,
                                final Class<V> _componentType,
@@ -305,6 +311,12 @@ public abstract class AbstractUserInterfaceObject
         return ret.equals(AbstractUserInterfaceObject.NULL) ? null : ret;
     }
 
+    /**
+     * @param _id               ID of the UIObject wanted
+     * @param _componentType    type of the UIObject
+     * @param _type             datamodel type of the object
+     * @return UIObject
+     */
     @SuppressWarnings("unchecked")
     protected static <V> V get(final Long _id,
                                final Class<V> _componentType,
@@ -320,6 +332,12 @@ public abstract class AbstractUserInterfaceObject
         return ret.equals(AbstractUserInterfaceObject.NULL) ? null : ret;
     }
 
+    /**
+     * @param _name             Name of the UIObject wanted
+     * @param _componentType    type of the UIObject
+     * @param _type             datamodel type of the object
+     * @return UIObject
+     */
     @SuppressWarnings("unchecked")
     protected static <V> V get(final String _name,
                                final Class<V> _componentType,
@@ -327,29 +345,45 @@ public abstract class AbstractUserInterfaceObject
     {
         final Cache<String, V> cache = InfinispanCache.get().<String, V>getCache(
                         AbstractUserInterfaceObject.getNameCacheName(_componentType));
-        if (!cache.containsKey(_name) && !
-                        AbstractUserInterfaceObject.readObjectFromDB(_componentType, _type, CIAdmin.Abstract.Name, _name)) {
+        if (!cache.containsKey(_name)
+                        && !AbstractUserInterfaceObject.readObjectFromDB(_componentType, _type, CIAdmin.Abstract.Name,
+                                        _name)) {
             cache.put(_name, (V) AbstractUserInterfaceObject.NULL, 100, TimeUnit.SECONDS);
         }
         final V ret = cache.get(_name);
         return ret.equals(AbstractUserInterfaceObject.NULL) ? null : ret;
     }
 
+    /**
+     * @param _componentType class of the UIObject
+     * @return name for the UUID Cache
+     */
     protected static String getUUIDCacheName(final Class<?> _componentType)
     {
         return _componentType.getSimpleName() + "4UUID";
     }
+    /**
+     * @param _componentType class of the UIObject
+     * @return name for the ID Cache
+     */
 
     protected static String getIDCacheName(final Class<?> _componentType)
     {
         return _componentType.getSimpleName() + "4ID";
     }
 
+    /**
+     * @param _componentType class of the UIObject
+     * @return name for the Name Cache
+     */
     protected static String getNameCacheName(final Class<?> _componentType)
     {
         return _componentType.getSimpleName() + "4Name";
     }
 
+    /**
+     * @param _object UIObject to be cache
+     */
     protected static void cacheUIObject(final AbstractUserInterfaceObject _object)
     {
         final Cache<UUID, AbstractUserInterfaceObject> cache4UUID = InfinispanCache.get()
@@ -373,10 +407,17 @@ public abstract class AbstractUserInterfaceObject
         }
     }
 
+    /**
+     * @param _componentType  c lass of UIObject to be retrieved
+     * @param _type             DataModel TYpe of UIObject to be retrieved
+     * @param _ciAttr           Attribute used for filtered
+     * @param _value            value to filtered
+     * @return
+     */
     private static boolean readObjectFromDB(final Class<?> _componentType,
-                                       final Type _type,
-                                       final CIAttribute _ciAttr,
-                                       final Object _value)
+                                            final Type _type,
+                                            final CIAttribute _ciAttr,
+                                            final Object _value)
     {
         boolean ret = false;
         try {

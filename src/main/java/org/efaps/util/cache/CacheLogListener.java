@@ -18,9 +18,7 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.util.cache;
-
 
 import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntriesEvicted;
@@ -45,7 +43,8 @@ import org.slf4j.Logger;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: CacheLogListener.java 8807 2013-02-15 18:33:57Z jan@moxter.net
+ *          $
  */
 @Listener
 public class CacheLogListener
@@ -56,64 +55,85 @@ public class CacheLogListener
      */
     private final Logger log;
 
+    /**
+     * @param _log Logger to be logged to
+     */
+    public CacheLogListener(final Logger _log)
+    {
+        this.log = _log;
+    }
 
-   public CacheLogListener(final Logger _log) {
-       this.log = _log;
-   }
-
+    /**
+     * @param _event event to be loged
+     */
     @CacheStarted
     public void onCacheStarted(final CacheStartedEvent _event)
     {
         this.log.info("Cache '{}' started.", _event.getCacheName());
     }
 
+    /**
+     * @param _event event to be loged
+     */
     @CacheStopped
     public void onCacheStopped(final CacheStoppedEvent _event)
     {
         this.log.info("Cache {} stopped.", _event.getCacheName());
     }
 
-
+    /**
+     * @param _event event to be loged
+     */
     @CacheEntryCreated
-    public void onCacheEntryCreated(final CacheEntryCreatedEvent<?, ?> event)
+    public void onCacheEntryCreated(final CacheEntryCreatedEvent<?, ?> _event)
     {
-        if (!event.isPre()) {
-            this.log.trace("Added key: '{}' to Cache '{}'. ", event.getKey(), event.getCache().getName());
+        if (!_event.isPre()) {
+            this.log.trace("Added key: '{}' to Cache '{}'. ", _event.getKey(), _event.getCache().getName());
         }
     }
 
-
+    /**
+     * @param _event event to be loged
+     */
     @CacheEntryLoaded
-    public void onCacheEntryLoaded(final CacheEntryLoadedEvent<?, ?> event)
+    public void onCacheEntryLoaded(final CacheEntryLoadedEvent<?, ?> _event)
     {
-        this.log.trace("loaded key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
+        this.log.trace("loaded key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
     }
 
+    /**
+     * @param _event event to be loged
+     */
     @CacheEntryVisited
-    public void onCacheEntryVisited(final CacheEntryVisitedEvent<?, ?> event)
+    public void onCacheEntryVisited(final CacheEntryVisitedEvent<?, ?> _event)
     {
-        this.log.trace("visited key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
+        this.log.trace("visited key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
     }
 
+    /**
+     * @param _event event to be loged
+     */
     @CacheEntryActivated
-    public void onCacheEntryActivated(final CacheEntryActivatedEvent<?, ?> event)
+    public void onCacheEntryActivated(final CacheEntryActivatedEvent<?, ?> _event)
     {
-        this.log.trace("activated key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
+        this.log.trace("activated key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
     }
 
+    /**
+     * @param _event event to be loged
+     */
     @CacheEntriesEvicted
-    public void onCacheEntriesEvicted(final CacheEntriesEvictedEvent<?, ?> event)
+    public void onCacheEntriesEvicted(final CacheEntriesEvictedEvent<?, ?> _event)
     {
-        this.log.trace("evicted entries: '{}' from Cache '{}'. ", event.getEntries(), event.getCache().getName());
+        this.log.trace("evicted entries: '{}' from Cache '{}'. ", _event.getEntries(), _event.getCache().getName());
     }
 
-
+    /**
+     * @param _event event to be loged
+     */
     @CacheEntryRemoved
-    public void onCacheEntryRemoved(final CacheEntryRemovedEvent<?, ?> event)
+    public void onCacheEntryRemoved(final CacheEntryRemovedEvent<?, ?> _event)
     {
-        this.log.trace("removed key: '{}' from Cache '{}'. ", event.getKey(), event.getCache().getName());
+        this.log.trace("removed key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
     }
-
-
-
 }
