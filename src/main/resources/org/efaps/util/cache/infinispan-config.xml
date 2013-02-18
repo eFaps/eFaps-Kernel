@@ -206,7 +206,7 @@
 
 
 
-    <!-- Store -->
+    <!-- Other -->
     <namedCache name="Store4UUID">
         <eviction maxEntries="50" strategy="LRU"/>
     </namedCache>
@@ -216,6 +216,17 @@
     <namedCache name="Store4Name">
         <eviction maxEntries="50" strategy="LRU"/>
     </namedCache>
+
+    <namedCache name="StaticCompiledSource4Name">
+        <eviction maxEntries="50" strategy="LRU"/>
+    </namedCache>
+    <namedCache name="BundleMapper">
+        <eviction maxEntries="50" strategy="LRU"/>
+    </namedCache>
+    <namedCache name="Bundles">
+        <eviction maxEntries="50" strategy="LRU"/>
+    </namedCache>
+
 
 
 

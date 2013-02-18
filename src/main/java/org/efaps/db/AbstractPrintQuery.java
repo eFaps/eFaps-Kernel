@@ -703,26 +703,39 @@ public abstract class AbstractPrintQuery
             }
 
             final Statement stmt = con.getConnection().createStatement();
-
             final ResultSet rs = stmt.executeQuery(_complStmt.toString());
-            final List<Instance> tmpList = new ArrayList<Instance>();
-            final Map<Instance, Integer> sortMap = new HashMap<Instance, Integer>();
-            int i = 0;
+            final List<Object[]> values = new ArrayList<Object[]>();
+
             while (rs.next()) {
-                final Instance instance;
                 if (getMainType().getMainTable().getSqlColType() != null) {
-                    instance = Instance.get(Type.get(rs.getLong(this.typeColumnIndex)), rs.getLong(1));
+                    values.add(new Object[]{rs.getLong(this.typeColumnIndex), rs.getLong(1)});
                 } else {
-                    instance = Instance.get(getMainType(), rs.getLong(1));
+                    values.add(new Object[]{rs.getLong(1)});
                 }
-                sortMap.put(instance, i);
-                tmpList.add(instance);
                 for (final OneSelect onesel : _oneSelects) {
                     onesel.addObject(rs);
                 }
                 ret = true;
+            }
+            rs.close();
+            stmt.close();
+            con.commit();
+
+            final List<Instance> tmpList = new ArrayList<Instance>();
+            final Map<Instance, Integer> sortMap = new HashMap<Instance, Integer>();
+            int i = 0;
+            for (final Object[] row : values) {
+                final Instance instance;
+                if (row.length == 2) {
+                    instance = Instance.get(Type.get((Long) row[0]), (Long) row[1]);
+                } else {
+                    instance = Instance.get(getMainType(), (Long) row[0]);
+                }
+                sortMap.put(instance, i);
+                tmpList.add(instance);
                 i++;
             }
+
             if (this.enforceSorted) {
                 for (final OneSelect onesel : _oneSelects) {
                     onesel.sortByInstanceList(getInstanceList(), sortMap);
@@ -731,9 +744,7 @@ public abstract class AbstractPrintQuery
                 getInstanceList().clear();
                 getInstanceList().addAll(tmpList);
             }
-            rs.close();
-            stmt.close();
-            con.commit();
+
         } catch (final SQLException e) {
             throw new EFapsException(InstanceQuery.class, "executeOneCompleteStmt", e);
         } finally {

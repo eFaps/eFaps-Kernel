@@ -115,7 +115,7 @@ public final class AccessSet
      */
     private static final String SQL_SET2TYPE = new SQLSelect()
                     .column("ACCESSTYPE")
-                    .from("T_ACCESSSET2TYPE")
+                    .from("T_ACCESSSET2TYPE", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "ACCESSSET").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
     /**
@@ -126,7 +126,7 @@ public final class AccessSet
      */
     private static final String SQL_SET2DMTYPE = new SQLSelect()
                     .column("DMTYPE")
-                    .from("T_ACCESSSET2DMTYPE")
+                    .from("T_ACCESSSET2DMTYPE", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "ACCESSSET").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
 
@@ -138,7 +138,7 @@ public final class AccessSet
      */
     private static final String SQL_SET2STATUS = new SQLSelect()
                     .column("ACCESSSTATUS")
-                    .from("T_ACCESSSET2STATUS")
+                    .from("T_ACCESSSET2STATUS", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "ACCESSSET").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
 
@@ -210,6 +210,10 @@ public final class AccessSet
         return this.stati;
     }
 
+    /**
+     * Read the related {@link org.efaps.admin.access.AccessTypes}.
+     * @throws CacheReloadException on error
+     */
     private void readLinks2AccessTypes()
         throws CacheReloadException
     {
@@ -259,6 +263,10 @@ public final class AccessSet
         }
     }
 
+    /**
+     * Read the related {@link org.efaps.admin.datamodel.Type}.
+     * @throws CacheReloadException on error
+     */
     private void readLinks2DMTypes()
         throws CacheReloadException
     {
@@ -282,7 +290,6 @@ public final class AccessSet
             }
             con.commit();
             for (final Long dataModelTypeId : values) {
-
                 final Type dataModelType = Type.get(dataModelTypeId);
                 if (dataModelType == null) {
                     AccessSet.LOG.error("could not found data model type with id " + "'" + dataModelTypeId + "'");
@@ -292,6 +299,7 @@ public final class AccessSet
                                     getName(), getId(), getUUID(), dataModelType.getName(), dataModelType.getId(),
                                     dataModelType.getUUID());
                     getDataModelTypes().add(dataModelType);
+                    dataModelType.addAccessSet(this);
                 }
             }
         } catch (final SQLException e) {
@@ -309,6 +317,10 @@ public final class AccessSet
         }
     }
 
+    /**
+     * Read the related {@link org.efaps.admin.datamodel.Status}.
+     * @throws CacheReloadException on error
+     */
     private void readLinks2Status()
         throws CacheReloadException
     {
@@ -389,9 +401,9 @@ public final class AccessSet
      *
      * @param _id id the AccessSet is wanted for
      * @return instance of class AccessSet
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
-    public static AccessSet getAccessSet(final long _id)
+    public static AccessSet get(final long _id)
         throws CacheReloadException
     {
         final Cache<Long, AccessSet> cache = InfinispanCache.get().<Long, AccessSet>getCache(AccessSet.IDCACHE);
@@ -407,9 +419,9 @@ public final class AccessSet
      *
      * @param _name name the AccessSet is wanted for
      * @return instance of class AccessSet
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
-    public static AccessSet getAccessSet(final String _name)
+    public static AccessSet get(final String _name)
         throws CacheReloadException
     {
         final Cache<String, AccessSet> cache = InfinispanCache.get().<String, AccessSet>getCache(AccessSet.NAMECACHE);
@@ -425,9 +437,9 @@ public final class AccessSet
      *
      * @param _uuid UUID the AccessSet is wanted for
      * @return instance of class AccessSet
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
-    public static AccessSet getAccessSet(final UUID _uuid)
+    public static AccessSet get(final UUID _uuid)
         throws CacheReloadException
     {
         final Cache<UUID, AccessSet> cache = InfinispanCache.get().<UUID, AccessSet>getCache(AccessSet.UUIDCACHE);
@@ -459,8 +471,11 @@ public final class AccessSet
     }
 
     /**
-     * @param _sqlId
-     * @param _id
+     * Read the AccessSet from the DataBase.
+     * @param _sql  SQL Statement to be executed
+     * @param _criteria filter criteria
+     * @return true if founr
+     * @throws CacheReloadException on error
      */
     private static boolean getAccessSetFromDB(final String _sql,
                                               final Object _criteria)

@@ -184,7 +184,6 @@ public class AttributeQuery
         ConnectionResource con = null;
         try {
             con = Context.getThreadContext().getConnectionResource();
-
             if (AbstractObjectQuery.LOG.isDebugEnabled()) {
                 AbstractObjectQuery.LOG.debug(_complStmt.toString());
             }
@@ -194,8 +193,7 @@ public class AttributeQuery
             final ResultSet rs = stmt.executeQuery(_complStmt.toString());
             new ArrayList<Instance>();
             while (rs.next()) {
-                final Object object = rs.getObject(1);
-                getValues().add(object);
+                getValues().add(rs.getObject(1));
             }
             rs.close();
             stmt.close();

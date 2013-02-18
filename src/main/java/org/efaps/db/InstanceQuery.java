@@ -146,19 +146,23 @@ public class InstanceQuery
             final Statement stmt = con.getConnection().createStatement();
 
             final ResultSet rs = stmt.executeQuery(_complStmt.toString());
-
-            new ArrayList<Instance>();
+            final List<Object[]> values = new ArrayList<Object[]>();
             while (rs.next()) {
                 final long id = rs.getLong(1);
                 Long typeId = null;
                 if (getBaseType().getMainTable().getSqlColType() != null) {
                     typeId = rs.getLong(2);
                 }
-                getValues().add(Instance.get(typeId == null ? getBaseType() : Type.get(typeId), id));
+                values.add(new Object[]{id, typeId});
             }
             rs.close();
             stmt.close();
             con.commit();
+            for (final Object[] row: values) {
+                final Long id = (Long) row[0];
+                final Long typeId = (Long) row[1];
+                getValues().add(Instance.get(typeId == null ? getBaseType() : Type.get(typeId), id));
+            }
         } catch (final SQLException e) {
             throw new EFapsException(InstanceQuery.class, "executeOneCompleteStmt", e);
         } finally {

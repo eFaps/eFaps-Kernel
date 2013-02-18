@@ -50,6 +50,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
+import org.efaps.ci.CIAdminAccess;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.db.Context;
@@ -140,39 +141,38 @@ public class Type
      * @see #initialise
      */
     private static final String SQL_UUID = new SQLSelect()
-                                                    .column("ID")
-                                                    .column("UUID")
-                                                    .column("NAME")
-                                                    .column("PURPOSE")
-                                                    .column("PARENTDMTYPE")
-                                                    .from("V_ADMINTYPE", 0)
-                                                    .addPart(SQLPart.WHERE).addColumnPart(0, "UUID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
-
+                    .column("ID")
+                    .column("UUID")
+                    .column("NAME")
+                    .column("PURPOSE")
+                    .column("PARENTDMTYPE")
+                    .from("V_ADMINTYPE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "UUID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
 
     private static final String SQL_ID = new SQLSelect()
-    .column("ID")
-    .column("UUID")
-    .column("NAME")
-    .column("PURPOSE")
-    .column("PARENTDMTYPE")
-    .from("V_ADMINTYPE", 0)
-    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
-
+                    .column("ID")
+                    .column("UUID")
+                    .column("NAME")
+                    .column("PURPOSE")
+                    .column("PARENTDMTYPE")
+                    .from("V_ADMINTYPE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
     private static final String SQL_NAME = new SQLSelect()
-    .column("ID")
-    .column("UUID")
-    .column("NAME")
-    .column("PURPOSE")
-    .column("PARENTDMTYPE")
-    .from("V_ADMINTYPE", 0)
-    .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?").toString();
-
+                    .column("ID")
+                    .column("UUID")
+                    .column("NAME")
+                    .column("PURPOSE")
+                    .column("PARENTDMTYPE")
+                    .from("V_ADMINTYPE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
 
     private static final String SQL_CHILD = new SQLSelect()
-    .column("ID")
-    .from("V_ADMINTYPE", 0)
-    .addPart(SQLPart.WHERE).addColumnPart(0, "PARENTDMTYPE").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+                    .column("ID")
+                    .from("V_ADMINTYPE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "PARENTDMTYPE").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
     private static String UUIDCACHE = "Type4UUID";
     private static String IDCACHE = "Type4ID";
@@ -239,12 +239,17 @@ public class Type
 
     /**
      * All access sets which are assigned to this type are store in this
-     * instance variable.
+     * instance variable. If <code>null</code> the variable was not evaluated yet;
      *
      * @see #addAccessSet
      * @see #getAccessSets
      */
     private final Set<AccessSet> accessSets = new HashSet<AccessSet>();
+
+    /**
+     * Have the accessSet been evaluated.
+     */
+    private boolean checked4AccessSet = false;
 
     /**
      * Stores all type of events which are allowed to fire on this type.
@@ -660,10 +665,7 @@ public class Type
     }
 
     /**
-     * A new access set is assigned to this type instance.
-     *
-     * @param _accessSet new access to assign to this type instance
-     * @see #accessSets
+     * @param _accessSet AccessSet to add to this Type
      */
     public void addAccessSet(final AccessSet _accessSet)
     {
@@ -675,9 +677,23 @@ public class Type
      *
      * @return value of instance variable {@link #accessSets}
      * @see #accessSets
+     * @throws EFapsException on error
      */
     public Set<AccessSet> getAccessSets()
+        throws EFapsException
     {
+        if (!this.checked4AccessSet) {
+            this.checked4AccessSet = true;
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminAccess.AccessSet2DataModelType);
+            queryBldr.addWhereAttrEqValue(CIAdminAccess.AccessSet2DataModelType.DataModelTypeLink, getId());
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute(CIAdminAccess.AccessSet2DataModelType.AccessSetLink);
+            multi.executeWithoutAccessCheck();
+            while (multi.next()) {
+                final Long accessSet = multi.<Long>getAttribute(CIAdminAccess.AccessSet2DataModelType.AccessSetLink);
+                AccessSet.get(accessSet);
+            }
+        }
         return this.accessSets;
     }
 

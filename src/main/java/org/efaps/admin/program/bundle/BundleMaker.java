@@ -21,10 +21,8 @@
 package org.efaps.admin.program.bundle;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -32,9 +30,9 @@ import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractAutomaticCache;
 import org.efaps.util.cache.CacheObjectInterface;
-import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 
 /**
  * TODO description.
@@ -44,30 +42,22 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public final class BundleMaker
 {
+    /**
+     * Name of the Cache by Name.
+     */
+    private static final String NAMECACHE = "StaticCompiledSource4Name";
 
     /**
-     * Map is used to map a List of Names representing StaticSources from the
-     * eFaps-DataBase, to a Key for a Bundle.
-     *
-     * @see #BUNDLES
+     * Name of the Cache by Name.
      */
-    private static final Map<List<String>, String> BUNDLEMAPPER =
-                    new HashMap<List<String>, String>();
+    private static final String CACHE4BUNDLEMAP = "BundleMapper";
+
 
     /**
-     * Map is used to store the relation between a Key and a Bundle.
-     *
-     * @see #BUNDLEMAPPER
+     * Name of the Cache by Name.
      */
-    private static final Map<String, BundleInterface> BUNDLES =
-                    new HashMap<String, BundleInterface>();
+    private static final String CACHE4BUNDLE = "Bundles";
 
-    /**
-     * this Cache is used to store the Instances of StaticCompiledSource
-     * representing a Source from the eFaps-DataBase. It is used used to provide
-     * the most rapid access to a Name-OID relation.
-     */
-    private static final StaticCompiledSourceCache CACHE = new StaticCompiledSourceCache();
 
     /**
      * a private Constructor is used to make a singelton.
@@ -94,13 +84,14 @@ public final class BundleMaker
     {
         BundleMaker.mergeList(_names);
         String key;
-        synchronized (BundleMaker.BUNDLEMAPPER) {
-            if (BundleMaker.BUNDLEMAPPER.containsKey(_names)) {
-                key = BundleMaker.BUNDLEMAPPER.get(_names);
-            } else {
-                key = BundleMaker.createNewKey(_names, _bundleclass);
-                BundleMaker.BUNDLEMAPPER.put(_names, key);
-            }
+
+        final Cache<List<String>, String> cache = InfinispanCache.get()
+                        .<List<String>, String>getCache(BundleMaker.CACHE4BUNDLEMAP);
+        if (cache.containsKey(_names)) {
+            key = cache.get(_names);
+        } else {
+            key = BundleMaker.createNewKey(_names, _bundleclass);
+            cache.put(_names, key);
         }
         return key;
     }
@@ -145,8 +136,24 @@ public final class BundleMaker
                 if (builder.length() > 0) {
                     builder.append("-");
                 }
-                if (BundleMaker.CACHE.get(name) != null) {
-                    final String oid = BundleMaker.CACHE.get(name).getOid();
+                final Cache<String, StaticCompiledSource> cache = InfinispanCache.get()
+                                .<String, StaticCompiledSource>getCache(BundleMaker.NAMECACHE);
+                if (!cache.containsKey(name)) {
+                    final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.StaticCompiled);
+                    queryBldr.addWhereAttrEqValue(CIAdminProgram.StaticCompiled.Name, name);
+                    final MultiPrintQuery multi = queryBldr.getPrint();
+                    multi.addAttribute(CIAdminProgram.StaticCompiled.Name);
+                    multi.execute();
+                    while (multi.next()) {
+                        final String statName = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.Name);
+                        final StaticCompiledSource source = new StaticCompiledSource(multi.getCurrentInstance()
+                                        .getOid(),
+                                        statName);
+                        cache.put(source.getName(), source);
+                    }
+                }
+                if (cache.containsKey(name)) {
+                    final String oid = cache.get(name).getOid();
                     builder.append(oid);
                     oids.add(oid);
                 }
@@ -156,7 +163,10 @@ public final class BundleMaker
             final BundleInterface bundle =
                             (BundleInterface) _bundleclass.newInstance();
             bundle.setKey(ret, oids);
-            BundleMaker.BUNDLES.put(ret, bundle);
+
+            final Cache<String, BundleInterface> cache = InfinispanCache.get()
+                            .<String, BundleInterface>getCache(BundleMaker.CACHE4BUNDLE);
+            cache.put(ret, bundle);
         } catch (final InstantiationException e) {
             throw new EFapsException(BundleMaker.class,
                             "createNewKey.InstantiationException", e, _bundleclass);
@@ -175,7 +185,9 @@ public final class BundleMaker
      */
     public static boolean containsKey(final String _key)
     {
-        return BundleMaker.BUNDLES.containsKey(_key);
+        final Cache<String, BundleInterface> cache = InfinispanCache.get()
+                        .<String, BundleInterface>getCache(BundleMaker.CACHE4BUNDLE);
+        return cache.containsKey(_key);
     }
 
     /**
@@ -186,7 +198,10 @@ public final class BundleMaker
      */
     public static BundleInterface getBundle(final String _key)
     {
-        return BundleMaker.BUNDLES.get(_key);
+        final Cache<String, BundleInterface> cache = InfinispanCache.get()
+                        .<String, BundleInterface>getCache(BundleMaker.CACHE4BUNDLE);
+
+        return cache.get(_key);
     }
 
     /**
@@ -262,40 +277,6 @@ public final class BundleMaker
         public String getOid()
         {
             return this.oid;
-        }
-    }
-
-    /**
-     * Cache.
-     */
-    private static final class StaticCompiledSourceCache
-        extends AbstractAutomaticCache<BundleMaker.StaticCompiledSource>
-    {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void readCache(final Map<Long, BundleMaker.StaticCompiledSource> _cache4Id,
-                                 final Map<String, BundleMaker.StaticCompiledSource> _cache4Name,
-                                 final Map<UUID, BundleMaker.StaticCompiledSource> _cache4UUID)
-            throws CacheReloadException
-        {
-            try {
-                final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.StaticCompiled);
-                final MultiPrintQuery multi = queryBldr.getPrint();
-                multi.addAttribute(CIAdminProgram.StaticCompiled.Name);
-                multi.execute();
-                while (multi.next()) {
-                    final String name = multi.<String>getAttribute(CIAdminProgram.StaticCompiled.Name);
-                    final StaticCompiledSource source = new StaticCompiledSource(multi.getCurrentInstance().getOid(),
-                                    name);
-                    _cache4Name.put(source.getName(), source);
-                }
-            } catch (final EFapsException e) {
-                throw new CacheReloadException(
-                                "could not initialise the Cache for the BundleMaker");
-            }
         }
     }
 }

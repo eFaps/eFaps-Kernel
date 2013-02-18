@@ -52,6 +52,7 @@ public final class EventDefinition
     extends AbstractAdminObject
     implements EventExecution
 {
+
     /**
      * Logger for this class.
      */
@@ -86,11 +87,11 @@ public final class EventDefinition
     private Object progInstance = null;
 
     /**
-     * @param _instance     Instance of this EventDefinition
-     * @param _name         name of this EventDefinition
-     * @param _indexPos     index position of this EventDefinition
+     * @param _instance Instance of this EventDefinition
+     * @param _name name of this EventDefinition
+     * @param _indexPos index position of this EventDefinition
      * @param _resourceName name of the resource of this EventDefinition
-     * @param _method       method of this EventDefinition
+     * @param _method method of this EventDefinition
      * @throws EFapsException on error
      */
     private EventDefinition(final Instance _instance,
@@ -123,7 +124,7 @@ public final class EventDefinition
         multi.addAttribute("Name", "Value");
         multi.executeWithoutAccessCheck();
         while (multi.next()) {
-            super.setProperty(multi.<String> getAttribute("Name"), multi.<String> getAttribute("Value"));
+            super.setProperty(multi.<String>getAttribute("Name"), multi.<String>getAttribute("Value"));
         }
     }
 
@@ -164,14 +165,14 @@ public final class EventDefinition
         } catch (final ClassNotFoundException e) {
             EventDefinition.LOG.error("could not find Class: '{}'", this.resourceName, e);
         } catch (final InstantiationException e) {
-            EventDefinition.LOG.error("could not instantiat Class: '{}'" , this.resourceName, e);
+            EventDefinition.LOG.error("could not instantiat Class: '{}'", this.resourceName, e);
         } catch (final IllegalAccessException e) {
             EventDefinition.LOG.error("could not access Class: '{}'", this.resourceName, e);
         } catch (final SecurityException e) {
             EventDefinition.LOG.error("could not access Class: '{}'", this.resourceName, e);
         } catch (final NoSuchMethodException e) {
             EventDefinition.LOG.error("could not find method: '{}' in class '{}'",
-                                new Object[] { this.methodName, this.resourceName, e });
+                            new Object[] { this.methodName, this.resourceName, e });
         }
     }
 
@@ -191,7 +192,7 @@ public final class EventDefinition
             EventDefinition.LOG.debug("Invoking method '{}' for Resource '{}'", this.methodName, this.resourceName);
             ret = (Return) this.method.invoke(this.progInstance, _parameter);
             EventDefinition.LOG.debug("Terminated invokation of method '{}' for Resource '{}'",
-                                this.methodName, this.resourceName);
+                            this.methodName, this.resourceName);
         } catch (final SecurityException e) {
             EventDefinition.LOG.error("could not access class: '" + this.resourceName, e);
         } catch (final IllegalArgumentException e) {
@@ -207,6 +208,10 @@ public final class EventDefinition
 
     }
 
+    /**
+     * @param _adminObject Object the event is added to
+     * @throws EFapsException on error
+     */
     public static void addEvents(final AbstractAdminObject _adminObject)
         throws EFapsException
     {
@@ -240,15 +245,15 @@ public final class EventDefinition
                 program = multi.<String>getSelect(selClass);
                 method = multi.<String>getAttribute(CIAdminEvent.Definition.Method);
 
-                if (EventDefinition.LOG.isDebugEnabled()) {
-                    EventDefinition.LOG.debug("   Instance=" + inst);
-                    EventDefinition.LOG.debug("   eventType=" + eventType);
-                    EventDefinition.LOG.debug("   eventName=" + eventName);
-                    EventDefinition.LOG.debug("   eventPos=" + eventPos);
-                    EventDefinition.LOG.debug("   parentId=" + abstractID);
-                    EventDefinition.LOG.debug("   program=" + program);
-                    EventDefinition.LOG.debug("   Method=" + method);
-                }
+                EventDefinition.LOG.debug("Reading EventDefinition for: ");
+                EventDefinition.LOG.debug("   object = {}", _adminObject);
+                EventDefinition.LOG.debug("   Instance = {}", inst);
+                EventDefinition.LOG.debug("   eventType = {}", eventType);
+                EventDefinition.LOG.debug("   eventName = {}", eventName);
+                EventDefinition.LOG.debug("   eventPos = {}", eventPos);
+                EventDefinition.LOG.debug("   parentId = {}", abstractID);
+                EventDefinition.LOG.debug("   program = {}", program);
+                EventDefinition.LOG.debug("   Method = {}", method);
 
                 EventType triggerEvent = null;
                 for (final EventType trigger : EventType.values()) {
@@ -262,18 +267,14 @@ public final class EventDefinition
                     }
                 }
 
-                if (EventDefinition.LOG.isDebugEnabled()) {
-                    EventDefinition.LOG.debug("    type=" + _adminObject);
-                }
-
                 _adminObject.addEvent(triggerEvent,
                                 new EventDefinition(inst, eventName, eventPos, program, method));
 
                 // CHECKSTYLE:OFF
             } catch (final Exception e) {
                 // CHECKSTYLE:ON
-                EventDefinition.LOG.error("Instance: {}, eventType: {}, eventName: {}, eventPos: {}, parentId: {}, " +
-                                "programId: {}, MethodresName: {}, , arguments: {}",
+                EventDefinition.LOG.error("Instance: {}, eventType: {}, eventName: {}, eventPos: {}, parentId: {}, "
+                                + "programId: {}, MethodresName: {}, , arguments: {}",
                                 inst, eventType, eventName, eventPos, abstractID, program, method, program);
                 if (e instanceof EFapsException) {
                     throw (EFapsException) e;
@@ -295,147 +296,5 @@ public final class EventDefinition
         throws EFapsException
     {
 
-//        final QueryBuilder queryBldr = new QueryBuilder(CIAdminEvent.Definition);
-//        final MultiPrintQuery multi = queryBldr.getPrint();
-//        multi.addAttribute(CIAdminEvent.Definition.Type,
-//                           CIAdminEvent.Definition.Name,
-//                           CIAdminEvent.Definition.Abstract,
-//                           CIAdminEvent.Definition.IndexPosition,
-//                           CIAdminEvent.Definition.JavaProg,
-//                           CIAdminEvent.Definition.Method);
-//        multi.executeWithoutAccessCheck();
-//
-//        if (EventDefinition.LOG.isDebugEnabled()) {
-//            EventDefinition.LOG.debug("initialise Triggers ---------------------------------------");
-//        }
-//        while (multi.next()) {
-//            //define all variables here so that an error can be thrown containing the
-//            //values that where set correctly
-//            Instance inst = null;
-//            Type eventType = null;
-//            String eventName = null;
-//            int eventPos = 0;
-//            long abstractID = 0;
-//            long programId = 0;
-//            String method = null;
-//            String resName = null;
-//            try {
-//                inst = multi.getCurrentInstance();
-//                eventType = multi.<Type>getAttribute(CIAdminEvent.Definition.Type);
-//                eventName = multi.<String>getAttribute(CIAdminEvent.Definition.Name);
-//                eventPos = multi.<Integer>getAttribute(CIAdminEvent.Definition.IndexPosition);
-//                abstractID = multi.<Long>getAttribute(CIAdminEvent.Definition.Abstract);
-//                programId = multi.<Long>getAttribute(CIAdminEvent.Definition.JavaProg);
-//                method = multi.<String>getAttribute(CIAdminEvent.Definition.Method);
-//
-//                resName = EventDefinition.getClassName(programId);
-//
-//                if (EventDefinition.LOG.isDebugEnabled()) {
-//                    EventDefinition.LOG.debug("   Instance=" + inst);
-//                    EventDefinition.LOG.debug("   eventType=" + eventType);
-//                    EventDefinition.LOG.debug("   eventName=" + eventName);
-//                    EventDefinition.LOG.debug("   eventPos=" + eventPos);
-//                    EventDefinition.LOG.debug("   parentId=" + abstractID);
-//                    EventDefinition.LOG.debug("   programId=" + programId);
-//                    EventDefinition.LOG.debug("   Method=" + method);
-//                    EventDefinition.LOG.debug("   resName=" + resName);
-//                }
-//
-//                final UUID typeUUId = EventDefinition.getTypeUUID(abstractID, inst, eventName);
-//
-//                EventType triggerEvent = null;
-//                for (final EventType trigger : EventType.values()) {
-//                    final Type triggerClass = Type.get(trigger.getName());
-//                    if (eventType.isKindOf(triggerClass)) {
-//                        if (EventDefinition.LOG.isDebugEnabled()) {
-//                            EventDefinition.LOG.debug("     found trigger " + trigger + ":" + triggerClass);
-//                        }
-//                        triggerEvent = trigger;
-//                        break;
-//                    }
-//                }
-//
-//                if (CIAdminDataModel.Type.uuid.equals(typeUUId)) {
-//                    final Type type = Type.get(abstractID);
-//                    if (EventDefinition.LOG.isDebugEnabled()) {
-//                        EventDefinition.LOG.debug("    type=" + type);
-//                    }
-//
-//                    type.addEvent(triggerEvent,
-//                                    new EventDefinition(inst, eventName, eventPos, resName, method));
-//
-//                } else if (CIAdminUserInterface.Command.uuid.equals(typeUUId)) {
-//                    final Command command = Command.get(abstractID);
-//
-//                    if (EventDefinition.LOG.isDebugEnabled()) {
-//                        EventDefinition.LOG.debug("    Command=" + command.getName());
-//                    }
-//                    command.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
-//
-//                } else if (CIAdminUserInterface.Field.uuid.equals(typeUUId)
-//                                || CIAdminUserInterface.FieldCommand.uuid.equals(typeUUId)
-//                                || CIAdminUserInterface.FieldGroup.uuid.equals(typeUUId)
-//                                || CIAdminUserInterface.FieldHeading.uuid.equals(typeUUId)
-//                                || CIAdminUserInterface.FieldClassification.uuid.equals(typeUUId)
-//                                || CIAdminUserInterface.FieldSet.uuid.equals(typeUUId)
-//                                || CIAdminUserInterface.FieldPicker.uuid.equals(typeUUId)
-//                                || CIAdminUserInterface.FieldChart.uuid.equals(typeUUId)) {
-//                    final Field field = Field.get(abstractID);
-//
-//                    if (EventDefinition.LOG.isDebugEnabled()) {
-//                        EventDefinition.LOG.debug("       Field=" + field.getName());
-//                    }
-//                    if (field == null) {
-//                        EventDefinition.LOG.error("Could not read Field with id: {}", abstractID);
-//                    } else {
-//                        field.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
-//                    }
-//
-//                } else if (CIAdminDataModel.Attribute.uuid.equals(typeUUId)
-//                                || CIAdminDataModel.AttributeSetAttribute.uuid.equals(typeUUId)) {
-//                    final Attribute attribute = Attribute.get(abstractID);
-//                    if (EventDefinition.LOG.isDebugEnabled()) {
-//                        EventDefinition.LOG.debug("      Attribute=" + attribute.getName());
-//                    }
-//
-//                    attribute.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
-//
-//                } else if (CIAdminUserInterface.Menu.uuid.equals(typeUUId)) {
-//                    final Menu menu = Menu.get(abstractID);
-//                    if (EventDefinition.LOG.isDebugEnabled()) {
-//                        EventDefinition.LOG.debug("      Menu=" + menu.getName());
-//                    }
-//
-//                    menu.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
-//
-//                } else if (CIAdminUserInterface.FieldTable.uuid.equals(typeUUId)) {
-//
-//                    final FieldTable fieldtable = FieldTable.get(abstractID);
-//
-//                    if (EventDefinition.LOG.isDebugEnabled()) {
-//                        EventDefinition.LOG.debug("       Field=" + fieldtable.getName());
-//                    }
-//                    if (fieldtable == null) {
-//                        EventDefinition.LOG.error("Could not read FieldTable with id: {}", abstractID);
-//                    } else {
-//                        fieldtable.addEvent(triggerEvent, new EventDefinition(inst, eventName, eventPos, resName, method));
-//                    }
-//                } else if (EventDefinition.LOG.isDebugEnabled()) {
-//                    EventDefinition.LOG.debug("initialise() - unknown event trigger connection");
-//                }
-//                //CHECKSTYLE:OFF
-//            } catch (final Exception e) {
-//                //CHECKSTYLE:ON
-//                EventDefinition.LOG.error("Instance: {}, eventType: {}, eventName: {}, eventPos: {}, parentId: {}, " +
-//                        "programId: {}, MethodresName: {}, , arguments: {}",
-//                         inst, eventType, eventName, eventPos, abstractID, programId, method, resName);
-//                if (e instanceof EFapsException) {
-//                    throw (EFapsException) e;
-//                } else {
-//                    throw new EFapsException(EventDefinition.class, "initialize", e, inst, eventName, eventPos,
-//                                    resName, method);
-//                }
-//            }
-//        }
     }
 }

@@ -72,4 +72,26 @@ public class CIAdminAccess
         public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
         public final CIAttribute Modified = new CIAttribute(this, "Modified");
     }
+
+    public static final _AccessSet2DataModelType AccessSet2DataModelType = new _AccessSet2DataModelType("2f05dbd6-1798-46b9-a13a-f279bff26219");
+
+    public static class _AccessSet2DataModelType
+        extends CIType
+    {
+        /**
+         * @param _uuid
+         */
+        protected _AccessSet2DataModelType(final String _uuid)
+        {
+            super(_uuid);
+        }
+
+        public final CIAttribute AccessSetLink = new CIAttribute(this, "AccessSetLink");
+        public final CIAttribute DataModelTypeLink = new CIAttribute(this, "DataModelTypeLink");
+
+        public final CIAttribute Creator = new CIAttribute(this, "Creator");
+        public final CIAttribute Created = new CIAttribute(this, "Created");
+        public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
+        public final CIAttribute Modified = new CIAttribute(this, "Modified");
+    }
 }
