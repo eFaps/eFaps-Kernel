@@ -22,57 +22,112 @@ package org.efaps.admin.common;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Company;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The class handles the caching for system configurations with their attributes
  * and links.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: SystemConfiguration.java 7483 2012-05-11 16:57:38Z
+ *          jan@moxter.net $
  */
 public final class SystemConfiguration
     implements CacheObjectInterface
 {
 
     /**
-     * This static Variable contains the SQL statement used to retrieve the
-     * SystemAttributes from the eFaps database.
-     *
-     * @see SystemConfigurationCache#readCache(Map, Map, Map)
+     * This is the SQL select statement to select the configs from the database
+     * by ID.
      */
-    private static final SQLSelect SELECT = new SQLSelect()
-                                                .column("CONFIGID")
-                                                .column("CONFIGNAME")
-                                                .column("CONFIGUUID")
-                                                .column("KEY")
-                                                .column("VALUE")
-                                                .column("UUID")
-                                                .column("COMPANYID")
-                                                .from("V_CMSYSCONF");
+    private static final String SQL_CONFIG = new SQLSelect()
+                    .column(0, "TYPEID")
+                    .column(0, "KEY")
+                    .column(0, "VALUE")
+                    .column(0, "COMPANYID")
+                    .from("T_CMSYSCONF", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ABSTRACTID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
 
     /**
-     * Caches all instances of {@link SystemConfiguration}.
+     * This is the SQL select statement to select a role from the database by
+     * ID.
      */
-    private static SystemConfigurationCache CACHE = new SystemConfigurationCache();
+    private static final String SQL_ID = new SQLSelect()
+                    .column(0, "ID")
+                    .column(0, "NAME")
+                    .column(0, "UUID")
+                    .from("T_CMABSTRACT", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
+    /**
+     * This is the SQL select statement to select a role from the database by
+     * Name.
+     */
+    private static final String SQL_NAME = new SQLSelect()
+                    .column(0, "ID")
+                    .column(0, "NAME")
+                    .column(0, "UUID")
+                    .from("T_CMABSTRACT", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * This is the SQL select statement to select a role from the database by
+     * UUID.
+     */
+    private static final String SQL_UUID = new SQLSelect()
+                    .column(0, "ID")
+                    .column(0, "NAME")
+                    .column(0, "UUID")
+                    .from("T_CMABSTRACT", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "UUID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * Name of the Cache by UUID.
+     */
+    private static final String UUIDCACHE = "SystemConfiguration4UUID";
+
+    /**
+     * Name of the Cache by ID.
+     */
+    private static final String IDCACHE = "SystemConfiguration4ID";
+
+    /**
+     * Name of the Cache by Name.
+     */
+    private static final String NAMECACHE = "SystemConfiguration4Name";
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(SystemConfiguration.class);
     /**
      * The instance variable stores the id of this SystemAttribute.
      *
@@ -134,11 +189,17 @@ public final class SystemConfiguration
      *
      * @param _id id of the system configuration
      * @return instance of class {@link SystemConfiguration}
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public static SystemConfiguration get(final long _id)
+        throws CacheReloadException
     {
-        return SystemConfiguration.CACHE.get(_id);
+        final Cache<Long, SystemConfiguration> cache = InfinispanCache.get().<Long, SystemConfiguration>getCache(
+                        SystemConfiguration.IDCACHE);
+        if (!cache.containsKey(_id)) {
+            SystemConfiguration.getSystemConfigurationFromDB(SystemConfiguration.SQL_ID, _id);
+        }
+        return cache.get(_id);
     }
 
     /**
@@ -147,11 +208,17 @@ public final class SystemConfiguration
      *
      * @param _name name of the system configuration
      * @return instance of class {@link SystemConfiguration}
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public static SystemConfiguration get(final String _name)
+        throws CacheReloadException
     {
-        return SystemConfiguration.CACHE.get(_name);
+        final Cache<String, SystemConfiguration> cache = InfinispanCache.get().<String, SystemConfiguration>getCache(
+                        SystemConfiguration.NAMECACHE);
+        if (!cache.containsKey(_name)) {
+            SystemConfiguration.getSystemConfigurationFromDB(SystemConfiguration.SQL_NAME, _name);
+        }
+        return cache.get(_name);
     }
 
     /**
@@ -160,11 +227,17 @@ public final class SystemConfiguration
      *
      * @param _uuid uuid of the system configuration
      * @return instance of class {@link SystemConfiguration}
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public static SystemConfiguration get(final UUID _uuid)
+        throws CacheReloadException
     {
-        return SystemConfiguration.CACHE.get(_uuid);
+        final Cache<UUID, SystemConfiguration> cache = InfinispanCache.get().<UUID, SystemConfiguration>getCache(
+                        SystemConfiguration.UUIDCACHE);
+        if (!cache.containsKey(_uuid)) {
+            SystemConfiguration.getSystemConfigurationFromDB(SystemConfiguration.SQL_UUID, String.valueOf(_uuid));
+        }
+        return cache.get(_uuid);
     }
 
     /**
@@ -204,11 +277,13 @@ public final class SystemConfiguration
      * <li>If a Context exist check if a company is given</li>
      * <li>If a company is given, check for a company specific map</li>
      * <li>If a company specific map is given search for the key in this map</li>
-     * <li>If any of the earlier point fails the value from the default map is returned</li>
+     * <li>If any of the earlier point fails the value from the default map is
+     * returned</li>
      * </ol>
-     * @param _key  key the value is wanted for
-     * @param _map  map the key will be search in for
-     * @return  String value
+     *
+     * @param _key key the value is wanted for
+     * @param _map map the key will be search in for
+     * @return String value
      * @throws EFapsException on error
      */
     private String getValue(final String _key,
@@ -248,12 +323,12 @@ public final class SystemConfiguration
     }
 
     /**
-     * Returns for given <code>Instance</code> the related attribute value. If no
-     * attribute value is found <code>null</code> is returned.
+     * Returns for given <code>Instance</code> the related attribute value. If
+     * no attribute value is found <code>null</code> is returned.
      *
      * @param _instance Instance of searched objectattribute
      * @return found attribute value; if not found <code>null</code>
-     * @throws EFapsException  on error
+     * @throws EFapsException on error
      * @see #objectAttributes
      */
     public String getObjectAttributeValue(final Instance _instance)
@@ -293,8 +368,8 @@ public final class SystemConfiguration
     }
 
     /**
-     * Returns for given <code>OID</code> the related value as Properties.
-     * If no attribute is found an empty Properties is returned.
+     * Returns for given <code>OID</code> the related value as Properties. If no
+     * attribute is found an empty Properties is returned.
      *
      * @param _key key of searched attribute
      * @return Properties
@@ -364,8 +439,8 @@ public final class SystemConfiguration
     }
 
     /**
-     * Returns for given <code>_key</code> the related value as Properties.
-     * If no attribute is found an empty Properties is returned.
+     * Returns for given <code>_key</code> the related value as Properties. If
+     * no attribute is found an empty Properties is returned.
      *
      * @param _key key of searched attribute
      * @return Properties
@@ -388,102 +463,191 @@ public final class SystemConfiguration
     }
 
     /**
+     * Read the config.
+     * @throws CacheReloadException on error
+     */
+    private void readConfig()
+        throws CacheReloadException
+    {
+        ConnectionResource con = null;
+        try {
+            boolean closeContext = false;
+            if (!Context.isThreadActive()) {
+                Context.begin();
+                closeContext = true;
+            }
+            final List<Object[]> values = new ArrayList<Object[]>();
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
+            try {
+                stmt = con.getConnection().prepareStatement(SystemConfiguration.SQL_CONFIG);
+                stmt.setObject(1, getId());
+                final ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    values.add(new Object[] {
+                                    rs.getLong(1),
+                                    rs.getString(2).trim(),
+                                    rs.getString(3).trim(),
+                                    rs.getLong(4)
+                    });
+                }
+                rs.close();
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+            if (closeContext) {
+                Context.rollback();
+            }
+            for (final Object[] row : values) {
+                final Long typeId = (Long) row[0];
+                final String key = (String) row[1];
+                final String value = (String) row[2];
+                final Long companyId = (Long) row[3];
+                final Type type = Type.get(typeId);
+                final Map<Long, Map<String, String>> configMap;
+                if (type.equals(CIAdminCommon.SystemConfigurationLink.getType())) {
+                    configMap = this.links;
+                } else if (type.equals(CIAdminCommon.SystemConfigurationObjectAttribute.getType())) {
+                    configMap = this.objectAttributes;
+                } else {
+                    configMap = this.attributes;
+                }
+                final Map<String, String> map;
+                if (configMap.containsKey(companyId)) {
+                    map = configMap.get(companyId);
+                } else {
+                    map = new HashMap<String, String>();
+                    configMap.put(companyId, map);
+                }
+                map.put(key, value);
+            }
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read SystemConfiguration attributes", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read SystemConfiguration attributes", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read SystemConfiguration attributes", e);
+                }
+            }
+        }
+    }
+
+    /**
      * Method to initialize the {@link #CACHE cache} for the system
      * configurations.
      */
     public static void initialize()
     {
-        SystemConfiguration.CACHE.initialize(SystemConfiguration.class);
+        if (InfinispanCache.get().exists(SystemConfiguration.UUIDCACHE)) {
+            InfinispanCache.get().<UUID, SystemConfiguration>getCache(SystemConfiguration.UUIDCACHE).clear();
+        } else {
+            InfinispanCache.get().<UUID, SystemConfiguration>getCache(SystemConfiguration.UUIDCACHE)
+                            .addListener(new CacheLogListener(SystemConfiguration.LOG));
+        }
+        if (InfinispanCache.get().exists(SystemConfiguration.IDCACHE)) {
+            InfinispanCache.get().<Long, SystemConfiguration>getCache(SystemConfiguration.IDCACHE).clear();
+        } else {
+            InfinispanCache.get().<Long, SystemConfiguration>getCache(SystemConfiguration.IDCACHE)
+                            .addListener(new CacheLogListener(SystemConfiguration.LOG));
+        }
+        if (InfinispanCache.get().exists(SystemConfiguration.NAMECACHE)) {
+            InfinispanCache.get().<String, SystemConfiguration>getCache(SystemConfiguration.NAMECACHE).clear();
+        } else {
+            InfinispanCache.get().<String, SystemConfiguration>getCache(SystemConfiguration.NAMECACHE)
+                            .addListener(new CacheLogListener(SystemConfiguration.LOG));
+        }
     }
 
     /**
-     * Cache for all system configurations.
+     * @param _sysConfig SystemConfiguration to be cached
      */
-    private static class SystemConfigurationCache
-        extends AbstractCache<SystemConfiguration>
+    private static void cacheSytemConfig(final SystemConfiguration _sysConfig)
     {
+        final Cache<UUID, SystemConfiguration> cache4UUID = InfinispanCache.get().<UUID, SystemConfiguration>getCache(
+                        SystemConfiguration.UUIDCACHE);
+        if (!cache4UUID.containsKey(_sysConfig.getUUID())) {
+            cache4UUID.put(_sysConfig.getUUID(), _sysConfig);
+        }
 
-        /**
-         * Reads all system configurations with their attributes and links and
-         * stores them in the given mapping caches.
-         *
-         * @param _newCache4Id cache for the mapping between id and system
-         *            configuration
-         * @param _newCache4Name cache for the mapping between name and system
-         *            configuration
-         * @param _newCache4UUID cache for the mapping between UUID and system
-         *            configuration
-         * @throws CacheReloadException if cache could not be reloaded
-         */
-        @Override
-        protected void readCache(final Map<Long, SystemConfiguration> _newCache4Id,
-                                 final Map<String, SystemConfiguration> _newCache4Name,
-                                 final Map<UUID, SystemConfiguration> _newCache4UUID)
-            throws CacheReloadException
-        {
-            ConnectionResource con = null;
+        final Cache<String, SystemConfiguration> nameCache = InfinispanCache.get()
+                        .<String, SystemConfiguration>getCache(
+                                        SystemConfiguration.NAMECACHE);
+        if (!nameCache.containsKey(_sysConfig.getName())) {
+            nameCache.put(_sysConfig.getName(), _sysConfig);
+        }
+        final Cache<Long, SystemConfiguration> idCache = InfinispanCache.get().<Long, SystemConfiguration>getCache(
+                        SystemConfiguration.IDCACHE);
+        if (!idCache.containsKey(_sysConfig.getId())) {
+            idCache.put(_sysConfig.getId(), _sysConfig);
+        }
+    }
+
+    /**
+     * @param _sql sql statement to be executed
+     * @param _criteria filter criteria
+     * @throws CacheReloadException on error
+     * @return false
+     */
+    private static boolean getSystemConfigurationFromDB(final String _sql,
+                                                        final Object _criteria)
+        throws CacheReloadException
+    {
+        boolean ret = false;
+        ConnectionResource con = null;
+        try {
+            boolean closeContext = false;
+            if (!Context.isThreadActive()) {
+                Context.begin();
+                closeContext = true;
+            }
+            SystemConfiguration sysConfig = null;
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
             try {
-                con = Context.getThreadContext().getConnectionResource();
-
-                Statement stmt = null;
-                try {
-                    stmt = con.getConnection().createStatement();
-                    final ResultSet rs = stmt.executeQuery(SystemConfiguration.SELECT.getSQL());
-                    long id = 0;
-                    SystemConfiguration config = null;
-                    while (rs.next()) {
-                        final long configId = rs.getLong(1);
-                        final String configName = rs.getString(2).trim();
-                        final String configUUID = rs.getString(3).trim();
-                        final String key = rs.getString(4).trim();
-                        final String value = rs.getString(5).trim();
-                        final String uuid = rs.getString(6).trim();
-                        final Long companyId = rs.getLong(7);
-                        if (id != configId) {
-                            id = configId;
-                            config = new SystemConfiguration(configId, configName, configUUID);
-                            _newCache4Id.put(config.getId(), config);
-                            _newCache4Name.put(config.getName(), config);
-                            _newCache4UUID.put(config.getUUID(), config);
-                        }
-                        final UUID uuidTmp = UUID.fromString(uuid);
-                        final Map<Long, Map<String, String>> configMap;
-                        if (uuidTmp.equals(CIAdminCommon.SystemConfigurationLink.uuid)) {
-                            configMap = config.links;
-                        } else if (uuidTmp.equals(CIAdminCommon.SystemConfigurationObjectAttribute.uuid)) {
-                            configMap = config.objectAttributes;
-                        } else {
-                            configMap = config.attributes;
-                        }
-                        final Map<String, String> map;
-                        if (configMap.containsKey(companyId)) {
-                            map = configMap.get(companyId);
-                        } else {
-                            map = new HashMap<String, String>();
-                            configMap.put(companyId, map);
-                        }
-                        map.put(key, value);
-                    }
-                    rs.close();
-                } finally {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
+                stmt = con.getConnection().prepareStatement(_sql);
+                stmt.setObject(1, _criteria);
+                final ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    final long id = rs.getLong(1);
+                    final String name = rs.getString(2).trim();
+                    final String uuid = rs.getString(3).trim();
+                    SystemConfiguration.LOG.debug("read SystemConfiguration '{}' (id = {}), format = '{}'", name, id);
+                    sysConfig = new SystemConfiguration(id, name, uuid);
                 }
-                con.commit();
-            } catch (final SQLException e) {
-                throw new CacheReloadException("could not read attribute types", e);
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("could not read attribute types", e);
+                ret = true;
+                rs.close();
             } finally {
-                if ((con != null) && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read attribute types", e);
-                    }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+            if (closeContext) {
+                Context.rollback();
+            }
+            SystemConfiguration.cacheSytemConfig(sysConfig);
+            sysConfig.readConfig();
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read SystemConfiguration", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read SystemConfiguration", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read SystemConfiguration", e);
                 }
             }
         }
+        return ret;
     }
 }

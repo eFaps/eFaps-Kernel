@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,23 @@
 
 package org.efaps.admin.common;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Formatter;
 import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,23 +51,60 @@ public final class NumberGenerator
 {
 
     /**
-     * Select statement that will be executed against the database
-     * on reading the cache.
+     * This is the SQL select statement to select a role from the database by
+     * ID.
      */
-    private static SQLSelect SQL_SELECT = new SQLSelect()
-                                                .column(0, "ID")
-                                                .column(1, "NAME")
-                                                .column(1, "UUID")
-                                                .column(0, "FORMAT")
-                                                .from("T_CMNUMGEN", 0)
-                                                .leftJoin("T_CMABSTRACT", 1, "ID", 0, "ID");
+    private static final String SQL_ID = new SQLSelect()
+                    .column(0, "ID")
+                    .column(1, "NAME")
+                    .column(1, "UUID")
+                    .column(0, "FORMAT")
+                    .from("T_CMNUMGEN", 0)
+                    .leftJoin("T_CMABSTRACT", 1, "ID", 0, "ID")
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
     /**
-     * Stores all instances of type.
-     *
-     * @see #get
+     * This is the SQL select statement to select a role from the database by
+     * Name.
      */
-    private static NumberGeneratorCache CACHE = new NumberGeneratorCache();
+    private static final String SQL_NAME = new SQLSelect()
+                    .column(0, "ID")
+                    .column(1, "NAME")
+                    .column(1, "UUID")
+                    .column(0, "FORMAT")
+                    .from("T_CMNUMGEN", 0)
+                    .leftJoin("T_CMABSTRACT", 1, "ID", 0, "ID")
+                    .addPart(SQLPart.WHERE).addColumnPart(1, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * This is the SQL select statement to select a role from the database by
+     * UUID.
+     */
+    private static final String SQL_UUID = new SQLSelect()
+                    .column(0, "ID")
+                    .column(1, "NAME")
+                    .column(1, "UUID")
+                    .column(0, "FORMAT")
+                    .from("T_CMNUMGEN", 0)
+                    .leftJoin("T_CMABSTRACT", 1, "ID", 0, "ID")
+                    .addPart(SQLPart.WHERE).addColumnPart(1, "UUID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * Name of the Cache by UUID.
+     */
+    private static final String UUIDCACHE = "NumberGenerator4UUID";
+
+    /**
+     * Name of the Cache by ID.
+     */
+    private static final String IDCACHE = "NumberGenerator4ID";
+
+    /**
+     * Name of the Cache by Name.
+     */
+    private static final String NAMECACHE = "NumberGenerator4Name";
 
     /**
      * Logging instance used in this class.
@@ -98,15 +137,15 @@ public final class NumberGenerator
     private final UUID uuid;
 
     /**
-     * Format for  this NumberGenerator.
+     * Format for this NumberGenerator.
      */
     private final String format;
 
     /**
-     * @param _id       Id of this NumberGenerator.
-     * @param _name     Name of this NumberGenerator.
-     * @param _uuid     UUID of this NumberGenerator.
-     * @param _format   format of this NumberGenerator.
+     * @param _id Id of this NumberGenerator.
+     * @param _name Name of this NumberGenerator.
+     * @param _uuid UUID of this NumberGenerator.
+     * @param _format format of this NumberGenerator.
      */
     private NumberGenerator(final long _id,
                             final String _name,
@@ -119,9 +158,9 @@ public final class NumberGenerator
         this.format = _format;
     }
 
-
     /**
      * Get the name used for this sequence in the database.
+     *
      * @return name of this sequence in the database;
      */
     public String getDBName()
@@ -130,8 +169,9 @@ public final class NumberGenerator
     }
 
     /**
-     * Method to get the next value for this sequence.
-     * To get the long value use {@link #getNextValAsLong()}
+     * Method to get the next value for this sequence. To get the long value use
+     * {@link #getNextValAsLong()}
+     *
      * @return next value for this sequence
      * @throws EFapsException on error
      */
@@ -142,10 +182,10 @@ public final class NumberGenerator
     }
 
     /**
-     * Method to get the next value for this sequence.
-     * Including additional format information.
-     * To get the long value use {@link #getNextValAsLong()}
-     * @param _args  arguments for the formatter
+     * Method to get the next value for this sequence. Including additional
+     * format information. To get the long value use {@link #getNextValAsLong()}
+     *
+     * @param _args arguments for the formatter
      * @return next value for this sequence
      * @throws EFapsException on error
      */
@@ -169,8 +209,9 @@ public final class NumberGenerator
     }
 
     /**
-     * Method to get the next long value for this sequence.
-     * To get the formated value use {@link #getNextVal()}
+     * Method to get the next long value for this sequence. To get the formated
+     * value use {@link #getNextVal()}
+     *
      * @return next value for this sequence
      * @throws EFapsException on error
      */
@@ -188,8 +229,9 @@ public final class NumberGenerator
 
     /**
      * Set the value for the numberGenerator. The next call of
-     * {@link #getNextVal()} or {@link #getNextVal()} normally will
-     * return the value + 1.
+     * {@link #getNextVal()} or {@link #getNextVal()} normally will return the
+     * value + 1.
+     *
      * @param _value value for the sequence
      * @throws EFapsException on error
      */
@@ -198,7 +240,7 @@ public final class NumberGenerator
     {
         try {
             Context.getDbType().setSequence(Context.getThreadContext().getConnection(), getDBName(),
-                                            Long.valueOf(_value));
+                            Long.valueOf(_value));
         } catch (final SQLException e) {
             throw new EFapsException(NumberGenerator.class, "setVal()", e);
         }
@@ -251,20 +293,42 @@ public final class NumberGenerator
     public static void initialize(final Class<?> _class)
         throws CacheReloadException
     {
-        NumberGenerator.CACHE.initialize(_class);
+        if (InfinispanCache.get().exists(NumberGenerator.UUIDCACHE)) {
+            InfinispanCache.get().<UUID, NumberGenerator>getCache(NumberGenerator.UUIDCACHE).clear();
+        } else {
+            InfinispanCache.get().<UUID, NumberGenerator>getCache(NumberGenerator.UUIDCACHE)
+                            .addListener(new CacheLogListener(NumberGenerator.LOG));
+        }
+        if (InfinispanCache.get().exists(NumberGenerator.IDCACHE)) {
+            InfinispanCache.get().<Long, NumberGenerator>getCache(NumberGenerator.IDCACHE).clear();
+        } else {
+            InfinispanCache.get().<Long, NumberGenerator>getCache(NumberGenerator.IDCACHE)
+                            .addListener(new CacheLogListener(NumberGenerator.LOG));
+        }
+        if (InfinispanCache.get().exists(NumberGenerator.NAMECACHE)) {
+            InfinispanCache.get().<String, NumberGenerator>getCache(NumberGenerator.NAMECACHE).clear();
+        } else {
+            InfinispanCache.get().<String, NumberGenerator>getCache(NumberGenerator.NAMECACHE)
+                            .addListener(new CacheLogListener(NumberGenerator.LOG));
+        }
     }
 
     /**
-     * Returns for given parameter <i>_id</i> the instance of class Type.
-     * .
+     * Returns for given parameter <i>_id</i> the instance of class Type. .
      *
      * @param _id id of the type to get
      * @return instance of class {@link Type}
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public static NumberGenerator get(final long _id)
+        throws CacheReloadException
     {
-        return NumberGenerator.CACHE.get(_id);
+        final Cache<Long, NumberGenerator> cache = InfinispanCache.get().<Long, NumberGenerator>getCache(
+                        NumberGenerator.IDCACHE);
+        if (!cache.containsKey(_id)) {
+            NumberGenerator.getNumberGeneratorFromDB(NumberGenerator.SQL_ID, _id);
+        }
+        return cache.get(_id);
     }
 
     /**
@@ -273,11 +337,17 @@ public final class NumberGenerator
      *
      * @param _name name of the type to get
      * @return instance of class {@link Type}
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public static NumberGenerator get(final String _name)
+        throws CacheReloadException
     {
-        return NumberGenerator.CACHE.get(_name);
+        final Cache<Long, NumberGenerator> cache = InfinispanCache.get().<Long, NumberGenerator>getCache(
+                        NumberGenerator.NAMECACHE);
+        if (!cache.containsKey(_name)) {
+            NumberGenerator.getNumberGeneratorFromDB(NumberGenerator.SQL_NAME, _name);
+        }
+        return cache.get(_name);
     }
 
     /**
@@ -286,83 +356,92 @@ public final class NumberGenerator
      *
      * @param _uuid uuid of the type to get
      * @return instance of class {@link Type}
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public static NumberGenerator get(final UUID _uuid)
+        throws CacheReloadException
     {
-        return NumberGenerator.CACHE.get(_uuid);
+        final Cache<UUID, NumberGenerator> cache = InfinispanCache.get().<UUID, NumberGenerator>getCache(
+                        NumberGenerator.UUIDCACHE);
+        if (!cache.containsKey(_uuid)) {
+            NumberGenerator.getNumberGeneratorFromDB(NumberGenerator.SQL_UUID, _uuid);
+        }
+        return cache.get(_uuid);
     }
 
     /**
-     * Static getter method for the type hashtable {@link #CACHE}.
-     *
-     * @return value of static variable {@link #CACHE}
+     * @param _numberGenerator NumberGenerator to be cached
      */
-    public static AbstractCache<NumberGenerator> getTypeCache()
+    private static void cacheNumberGenerator(final NumberGenerator _numberGenerator)
     {
-        return NumberGenerator.CACHE;
+        final Cache<UUID, NumberGenerator> cache4UUID = InfinispanCache.get().<UUID, NumberGenerator>getCache(
+                        NumberGenerator.UUIDCACHE);
+        if (!cache4UUID.containsKey(_numberGenerator.getUUID())) {
+            cache4UUID.put(_numberGenerator.getUUID(), _numberGenerator);
+        }
+
+        final Cache<String, NumberGenerator> nameCache = InfinispanCache.get().<String, NumberGenerator>getCache(
+                        NumberGenerator.NAMECACHE);
+        if (!nameCache.containsKey(_numberGenerator.getName())) {
+            nameCache.put(_numberGenerator.getName(), _numberGenerator);
+        }
+        final Cache<Long, NumberGenerator> idCache = InfinispanCache.get().<Long, NumberGenerator>getCache(
+                        NumberGenerator.IDCACHE);
+        if (!idCache.containsKey(_numberGenerator.getId())) {
+            idCache.put(_numberGenerator.getId(), _numberGenerator);
+        }
     }
 
     /**
-     * Cache for Types.
+     * @param _sql sql statement to be executed
+     * @param _criteria filter criteria
+     * @throws CacheReloadException on error
+     * @return false
      */
-    private static class NumberGeneratorCache extends AbstractCache<NumberGenerator>
+    private static boolean getNumberGeneratorFromDB(final String _sql,
+                                                    final Object _criteria)
+        throws CacheReloadException
     {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void readCache(final Map<Long, NumberGenerator> _cache4Id,
-                                 final Map<String, NumberGenerator> _cache4Name,
-                                 final Map<UUID, NumberGenerator> _cache4UUID)
-            throws CacheReloadException
-        {
-            ConnectionResource con = null;
+        boolean ret = false;
+        ConnectionResource con = null;
+        try {
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
             try {
-                con = Context.getThreadContext().getConnectionResource();
-
-                Statement stmt = null;
-                try {
-
-                    stmt = con.getConnection().createStatement();
-
-                    final ResultSet rs = stmt.executeQuery(NumberGenerator.SQL_SELECT.getSQL());
-                    while (rs.next()) {
-                        final long id = rs.getLong(1);
-                        final String name = rs.getString(2).trim();
-                        final String uuid = rs.getString(3).trim();
-                        final String format = rs.getString(4).trim();
-
-                        if (NumberGenerator.LOG.isDebugEnabled()) {
-                            NumberGenerator.LOG.debug("read NumberGenerator '" + name + "' (id = " + id
-                                            + ") + format = " + format);
-                        }
-                        final NumberGenerator generator = new NumberGenerator(id, name, uuid, format);
-                        _cache4Id.put(generator.getId(), generator);
-                        _cache4Name.put(generator.getName(), generator);
-                        _cache4UUID.put(generator.getUUID(), generator);
-                    }
-                    rs.close();
-                } finally {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
+                stmt = con.getConnection().prepareStatement(_sql);
+                stmt.setObject(1, _criteria);
+                final ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    final long id = rs.getLong(1);
+                    final String name = rs.getString(2).trim();
+                    final String uuid = rs.getString(3).trim();
+                    final String format = rs.getString(4).trim();
+                    NumberGenerator.LOG.debug("read NumberGenerator '{}' (id = {}), format = '{}'", name, id, format);
+                    final NumberGenerator generator = new NumberGenerator(id, name, uuid, format);
+                    NumberGenerator.cacheNumberGenerator(generator);
                 }
-                con.commit();
-            } catch (final SQLException e) {
-                throw new CacheReloadException("could not read NumberGenerator", e);
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("could not read NumberGenerator", e);
+                ret = true;
+                rs.close();
             } finally {
-                if ((con != null) && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read NumberGenerator", e);
-                    }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read roles", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read roles", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read roles", e);
                 }
             }
         }
+        return ret;
     }
 }

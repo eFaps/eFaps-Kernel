@@ -561,7 +561,7 @@ public final class Person
                            CIAdminUser.Person.LoginTry,
                            CIAdminUser.Person.LoginTriesCounter,
                            CIAdminUser.Person.Status);
-        if (query.execute()) {
+        if (query.executeWithoutAccessCheck()) {
             final PasswordStore pwd = query.<PasswordStore>getAttribute(CIAdminUser.Person.Password);
             if (pwd.checkCurrent(_passwd)) {
                 ret = query.<Boolean>getAttribute(CIAdminUser.Person.Status);

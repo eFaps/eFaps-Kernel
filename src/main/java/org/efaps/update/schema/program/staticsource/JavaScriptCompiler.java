@@ -65,10 +65,10 @@ public class JavaScriptCompiler
     @Override
     protected String getCompiledString(final Instance _instance)
     {
-        final SystemConfiguration kernelConfig = EFapsSystemConfiguration.KERNEL.get();
         final StringBuilder ret = new StringBuilder();
         final Checkout checkout = new Checkout(_instance);
         try {
+            final SystemConfiguration kernelConfig = EFapsSystemConfiguration.KERNEL.get();
             final BufferedReader in = new BufferedReader(new InputStreamReader(checkout.execute(), "UTF-8"));
             if (JavaScriptCompiler.LOG.isDebugEnabled()) {
                 final BufferedReader in2 = new BufferedReader(new InputStreamReader(checkout.execute(), "UTF-8"));
@@ -144,8 +144,8 @@ public class JavaScriptCompiler
                     {
                         // Admin_Program_JavaScriptCompiled_Warn: do we want
                         // warnings?
-                        final SystemConfiguration kernelConfig = EFapsSystemConfiguration.KERNEL.get();
                         try {
+                            final SystemConfiguration kernelConfig = EFapsSystemConfiguration.KERNEL.get();
                             if (kernelConfig.getAttributeValueAsBoolean("JavaScriptCompiled_Warn")) {
                                 JavaScriptCompiler.LOG.warn(_warning);
                             }

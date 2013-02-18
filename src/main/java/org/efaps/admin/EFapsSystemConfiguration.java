@@ -23,13 +23,15 @@ package org.efaps.admin;
 import java.util.UUID;
 
 import org.efaps.admin.common.SystemConfiguration;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * Enumeration for {@link SystemConfiguration system configurations} used from
  * eFaps.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: EFapsSystemConfiguration.java 7483 2012-05-11 16:57:38Z
+ *          jan@moxter.net $
  */
 public enum EFapsSystemConfiguration
 {
@@ -46,7 +48,7 @@ public enum EFapsSystemConfiguration
     /**
      * Initializes the {@link #uuid} for the system configuration.
      *
-     * @param _uuid     string representation of the UUID
+     * @param _uuid string representation of the UUID
      */
     private EFapsSystemConfiguration(final String _uuid)
     {
@@ -58,8 +60,10 @@ public enum EFapsSystemConfiguration
      * instance.
      *
      * @return related system configuration instance
+     * @throws CacheReloadException on error
      */
     public SystemConfiguration get()
+        throws CacheReloadException
     {
         return SystemConfiguration.get(this.uuid);
     }

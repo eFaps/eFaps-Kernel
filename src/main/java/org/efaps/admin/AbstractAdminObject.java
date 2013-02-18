@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright 2003 - 2012 The eFaps Team
+ *  Copyright 2003 - 2013 The eFaps Team
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
  */
 package org.efaps.admin;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -51,15 +52,26 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: AbstractAdminObject.java 8805 2013-02-15 17:38:48Z
+ *          jan@moxter.net $
  */
 public abstract class AbstractAdminObject
     implements CacheObjectInterface
 {
+
     /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(AbstractAdminObject.class);
+
+    private static final String SELECT = new SQLSelect()
+                    .column("NAME")
+                    .column("VALUE")
+                    .from("T_CMPROPERTY")
+                    .addPart(SQLPart.WHERE)
+                    .addColumnPart(null, "ABSTRACT")
+                    .addPart(SQLPart.EQUAL)
+                    .addValuePart("?").toString();
 
     /**
      * The instance variable stores the id of the collections object.
@@ -186,6 +198,7 @@ public abstract class AbstractAdminObject
         if (evenList.size() > 1) {
             Collections.sort(evenList, new Comparator<EventDefinition>()
             {
+
                 @Override
                 public int compare(final EventDefinition _eventDef0,
                                    final EventDefinition _eventDef1)
@@ -271,8 +284,8 @@ public abstract class AbstractAdminObject
      * The method gets all events for the given event type and executes them in
      * the given order. If no events are defined, nothing is done.
      *
-     * @param _eventtype  type of event to execute
-     * @param _param      Parameter to be passed to the esjp
+     * @param _eventtype type of event to execute
+     * @param _param Parameter to be passed to the esjp
      * @return List with Returns
      * @throws EFapsException on error
      */
@@ -297,6 +310,7 @@ public abstract class AbstractAdminObject
     /**
      * The instance method reads the properties for this administration object.
      * Each found property is set with instance method {@link #setProperty}.
+     *
      * @throws CacheReloadException on error
      *
      * @see #setProperty
@@ -307,31 +321,21 @@ public abstract class AbstractAdminObject
         ConnectionResource con = null;
         try {
             con = Context.getThreadContext().getConnectionResource();
-            final Statement stmt = con.getConnection().createStatement();
-            final SQLSelect select = new SQLSelect()
-                                            .column("NAME")
-                                            .column("VALUE")
-                                            .from("T_CMPROPERTY")
-                                            .addPart(SQLPart.WHERE)
-                                            .addColumnPart(null, "ABSTRACT")
-                                            .addPart(SQLPart.EQUAL)
-                                            .addValuePart(getId());
-
-            final ResultSet rs = stmt.executeQuery(select.getSQL());
-            if (AbstractAdminObject.LOG.isDebugEnabled()) {
-                AbstractAdminObject.LOG.debug("Reading Properties for '{}'", getName());
-            }
+            final PreparedStatement stmt = con.getConnection().prepareStatement(AbstractAdminObject.SELECT);
+            stmt.setObject(1, getId());
+            final ResultSet rs = stmt.executeQuery();
+            AbstractAdminObject.LOG.debug("Reading Properties for '{}'", getName());
             while (rs.next()) {
                 final String nameStr = rs.getString(1).trim();
                 final String value = rs.getString(2).trim();
                 setProperty(nameStr, value);
-                if (AbstractAdminObject.LOG.isDebugEnabled()) {
-                    AbstractAdminObject.LOG.debug("    Name: '{}' - Value: '{}'", new Object[]{ nameStr, value });
-                }
+                AbstractAdminObject.LOG.debug("    Name: '{}' - Value: '{}'", new Object[] { nameStr, value });
             }
             rs.close();
             stmt.close();
-            con.commit();
+            if (con.isOpened()) {
+                con.commit();
+            }
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
         } catch (final EFapsException e) {
@@ -350,6 +354,7 @@ public abstract class AbstractAdminObject
     /**
      * Reads all links for this administration object. Each found link property
      * is set with instance method {@link setLinkProperty}.
+     *
      * @throws CacheReloadException on error
      * @see #setLinkProperty
      */
@@ -360,16 +365,16 @@ public abstract class AbstractAdminObject
         try {
             con = Context.getThreadContext().getConnectionResource();
             final SQLSelect select = new SQLSelect()
-                                            .column(0, "TYPEID")
-                                            .column(0, "TOID")
-                                            .column(1, "TYPEID")
-                                            .column(1, "NAME")
-                                            .from("T_CMABSTRACT2ABSTRACT", 0)
-                                            .leftJoin("T_CMABSTRACT", 1, "ID", 0, "TOID")
-                                            .addPart(SQLPart.WHERE)
-                                            .addColumnPart(0, "FROMID")
-                                            .addPart(SQLPart.EQUAL)
-                                            .addValuePart(getId());
+                            .column(0, "TYPEID")
+                            .column(0, "TOID")
+                            .column(1, "TYPEID")
+                            .column(1, "NAME")
+                            .from("T_CMABSTRACT2ABSTRACT", 0)
+                            .leftJoin("T_CMABSTRACT", 1, "ID", 0, "TOID")
+                            .addPart(SQLPart.WHERE)
+                            .addColumnPart(0, "FROMID")
+                            .addPart(SQLPart.EQUAL)
+                            .addValuePart(getId());
 
             final Statement stmt = con.getConnection().createStatement();
             final ResultSet rs = stmt.executeQuery(select.getSQL());
@@ -382,7 +387,7 @@ public abstract class AbstractAdminObject
                 final long toId = rs.getLong(2);
                 final long toTypeId = rs.getLong(3);
                 final String toName = rs.getString(4);
-                values.add(new Object[] {conTypeId, toId, toTypeId , toName.trim()});
+                values.add(new Object[] { conTypeId, toId, toTypeId, toName.trim() });
             }
             rs.close();
             stmt.close();
@@ -398,11 +403,11 @@ public abstract class AbstractAdminObject
 
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read db links for " + "'" + getName() + "'", e);
-            //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final RuntimeException e) {
-            //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             throw new CacheReloadException("could not read db links for " + "'" + getName() + "'", e);
-        }  catch (final EFapsException e) {
+        } catch (final EFapsException e) {
             throw new CacheReloadException("could not read properties for " + "'" + getName() + "'", e);
         } finally {
             if (con != null && con.isOpened()) {

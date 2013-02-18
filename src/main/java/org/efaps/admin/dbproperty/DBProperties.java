@@ -41,21 +41,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class reads the Properties for eFaps from the connected Database
- * and holds them in a cache to be accessed fast during normal runtime. <br>
- * The Keys will be read from the database in the order of the Sequence of a Bundle.
- * That gives the possibility to
- * override the key of a Bundle with the same key of another Bundle by using
- * a higher Sequence.<br>
- * The value returned for a key is searched first in the localized version,
- * if no Value can be found or no localized
- * version for this language is existing than the default value will be returned.
+ * This class reads the Properties for eFaps from the connected Database and
+ * holds them in a cache to be accessed fast during normal runtime. <br>
+ * The Keys will be read from the database in the order of the Sequence of a
+ * Bundle. That gives the possibility to override the key of a Bundle with the
+ * same key of another Bundle by using a higher Sequence.<br>
+ * The value returned for a key is searched first in the localized version, if
+ * no Value can be found or no localized version for this language is existing
+ * than the default value will be returned.
  *
  * @author The eFaps Team
  * @version $Id$
  */
 public final class DBProperties
 {
+
     /**
      * Logger for this class.
      */
@@ -74,34 +74,35 @@ public final class DBProperties
     /**
      * SQL Statement used to find a property including as criteria the language.
      */
-    private static  final String SQLSELECT = new SQLSelect()
-            .column(0, "DEFAULTV")
-            .column(2, "VALUE")
-            .from("T_ADPROP", 0)
-            .leftJoin("T_ADPROPBUN", 1, "ID", 0, "BUNDLEID")
-            .leftJoin("T_ADPROPLOC", 2, "PROPID", 0, "ID")
-            .leftJoin("T_ADLANG", 3, "ID", 2, "LANGID")
-            .addPart(SQLPart.WHERE).addColumnPart(0, "PROPKEY").addPart(SQLPart.EQUAL).addValuePart("?")
-            .addPart(SQLPart.AND)
-            .addPart(SQLPart.PARENTHESIS_OPEN)
-            .addColumnPart(3, "LANG").addPart(SQLPart.EQUAL).addValuePart("?")
-            .addPart(SQLPart.OR)
-            .addColumnPart(3, "LANG").addPart(SQLPart.IS).addPart(SQLPart.NULL)
-            .addPart(SQLPart.PARENTHESIS_CLOSE)
-            .addPart(SQLPart.ORDERBY)
-            .addColumnPart(1, "SEQUENCE").addPart(SQLPart.DESC).addPart(SQLPart.COMMA)
-            .addColumnPart(3, "LANG").toString();
+    private static final String SQLSELECT = new SQLSelect()
+                    .column(0, "DEFAULTV")
+                    .column(2, "VALUE")
+                    .from("T_ADPROP", 0)
+                    .leftJoin("T_ADPROPBUN", 1, "ID", 0, "BUNDLEID")
+                    .leftJoin("T_ADPROPLOC", 2, "PROPID", 0, "ID")
+                    .leftJoin("T_ADLANG", 3, "ID", 2, "LANGID")
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "PROPKEY").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .addPart(SQLPart.AND)
+                    .addPart(SQLPart.PARENTHESIS_OPEN)
+                    .addColumnPart(3, "LANG").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .addPart(SQLPart.OR)
+                    .addColumnPart(3, "LANG").addPart(SQLPart.IS).addPart(SQLPart.NULL)
+                    .addPart(SQLPart.PARENTHESIS_CLOSE)
+                    .addPart(SQLPart.ORDERBY)
+                    .addColumnPart(1, "SEQUENCE").addPart(SQLPart.DESC).addPart(SQLPart.COMMA)
+                    .addColumnPart(3, "LANG").toString();
 
     /**
-     * SQL Statement used to find a property used if with the prior Statement no result where found.
+     * SQL Statement used to find a property used if with the prior Statement no
+     * result where found.
      */
-    private static  final String SQLSELECTDEF = new SQLSelect()
-            .column(0, "DEFAULTV")
-            .from("T_ADPROP", 0)
-            .leftJoin("T_ADPROPBUN", 1, "ID", 0, "BUNDLEID")
-            .addPart(SQLPart.WHERE).addColumnPart(0, "PROPKEY").addPart(SQLPart.EQUAL).addValuePart("?")
-            .addPart(SQLPart.ORDERBY)
-            .addColumnPart(1, "SEQUENCE").addPart(SQLPart.DESC).toString();
+    private static final String SQLSELECTDEF = new SQLSelect()
+                    .column(0, "DEFAULTV")
+                    .from("T_ADPROP", 0)
+                    .leftJoin("T_ADPROPBUN", 1, "ID", 0, "BUNDLEID")
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "PROPKEY").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .addPart(SQLPart.ORDERBY)
+                    .addColumnPart(1, "SEQUENCE").addPart(SQLPart.DESC).toString();
 
     /**
      * Private Constructor for Utility class.
@@ -125,9 +126,8 @@ public final class DBProperties
     /**
      * Method that returns the value, depending on the language of the Context,
      * for the given key. <br>
-     * The Search for the key, first searches for a localized Version and if
-     * not found for a Default. If no value can be
-     * found, the key will be returned.
+     * The Search for the key, first searches for a localized Version and if not
+     * found for a Default. If no value can be found, the key will be returned.
      *
      * @param _key Key to Search for
      * @return if key exists, the value for the key, otherwise the key
@@ -146,9 +146,8 @@ public final class DBProperties
     /**
      * Method that returns the value, depending on the language of the Context,
      * for the given key. <br>
-     * The Search for the key, first searches for a localized Version and if
-     * not found for a Default. If no value can be
-     * found, the key will be returned.
+     * The Search for the key, first searches for a localized Version and if not
+     * found for a Default. If no value can be found, the key will be returned.
      *
      * @param _key Key to Search for
      * @param _returnKey return the key if no property found
@@ -167,11 +166,10 @@ public final class DBProperties
     }
 
     /**
-     * Method that returns the value, depending on the parameter _language,
-     * for the given key. <br>
-     * The Search for the key, first searches for a localized Version and
-     * if not found for a Default. If no value can be
-     * found, the key will be returned.
+     * Method that returns the value, depending on the parameter _language, for
+     * the given key. <br>
+     * The Search for the key, first searches for a localized Version and if not
+     * found for a Default. If no value can be found, the key will be returned.
      *
      * @param _key Key to Search for
      * @param _language language to use
@@ -184,11 +182,10 @@ public final class DBProperties
     }
 
     /**
-     * Method that returns the value, depending on the parameter _language,
-     * for the given key. <br>
-     * The Search for the key, first searches for a localized Version and
-     * if not found for a Default. If no value can be
-     * found, the key will be returned.
+     * Method that returns the value, depending on the parameter _language, for
+     * the given key. <br>
+     * The Search for the key, first searches for a localized Version and if not
+     * found for a Default. If no value can be found, the key will be returned.
      *
      * @param _key Key to Search for
      * @param _language language to use
@@ -203,10 +200,10 @@ public final class DBProperties
         try {
             // WebApp-Configuration
             final SystemConfiguration webConfig = SystemConfiguration.get(
-                                                    UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
+                            UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
             final boolean showKey = webConfig == null
-                                                ? false
-                                                : webConfig.getAttributeValueAsBoolean("ShowDBPropertiesKey");
+                            ? false
+                            : webConfig.getAttributeValueAsBoolean("ShowDBPropertiesKey");
 
             if (showKey) {
                 value = _key;
@@ -235,10 +232,10 @@ public final class DBProperties
     }
 
     /**
-     * Get a DBProperty and apply a <code>java.util.Formatter</code> with
-     * the given _args on it.
+     * Get a DBProperty and apply a <code>java.util.Formatter</code> with the
+     * given _args on it.
      *
-     * @param _key  key the DBProperty will be searched for
+     * @param _key key the DBProperty will be searched for
      * @param _args object to be used for the formated
      * @return formated value for the key
      */
@@ -255,10 +252,10 @@ public final class DBProperties
     }
 
     /**
-     * Get a DBProperty and apply a <code>java.util.Formatter</code> with
-     * the given _args on it.
+     * Get a DBProperty and apply a <code>java.util.Formatter</code> with the
+     * given _args on it.
      *
-     * @param _key  key the DBProperty will be searched for
+     * @param _key key the DBProperty will be searched for
      * @param _language language to be applied
      * @param _args object to be used for the formated
      * @return formated value for the key
@@ -286,7 +283,7 @@ public final class DBProperties
     /**
      * This method is initializing the cache.
      *
-     * @param _key      key to be read.
+     * @param _key key to be read.
      * @param _language language to search for
      * @return value from the database, null if not found
      */
@@ -323,8 +320,12 @@ public final class DBProperties
                         ret = defaultValue.trim();
                     }
                 }
+                resultset2.close();
+                stmt2.close();
             }
             resultset.close();
+            stmt.close();
+            con.commit();
             if (closeContext) {
                 Context.rollback();
             }
@@ -344,7 +345,8 @@ public final class DBProperties
         if (InfinispanCache.get().exists(DBProperties.CACHENAME)) {
             InfinispanCache.get().<String, String>getCache(DBProperties.CACHENAME).clear();
         } else {
-            InfinispanCache.get().<String, String>getCache(DBProperties.CACHENAME).addListener(new CacheLogListener(DBProperties.LOG));
+            InfinispanCache.get().<String, String>getCache(DBProperties.CACHENAME)
+                            .addListener(new CacheLogListener(DBProperties.LOG));
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.admin.datamodel.attributevalue;
 
 import java.io.IOException;
@@ -35,7 +34,6 @@ import org.jasypt.util.password.ConfigurablePasswordEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * TODO comment!
  *
@@ -44,6 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PasswordStore
 {
+
     /**
      * Logging instance used to give logging information of this class.
      */
@@ -101,9 +100,10 @@ public class PasswordStore
      */
     private void initConfig()
     {
-        final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
-        if (config != null) {
-            try {
+        SystemConfiguration config = null;
+        try {
+            config = EFapsSystemConfiguration.KERNEL.get();
+            if (config != null) {
                 final Properties confProps = config.getAttributeValueAsProperties("PasswordStore");
                 this.digesterConfig.setAlgorithm(confProps.getProperty(PasswordStore.ALGORITHM,
                                 this.digesterConfig.getAlgorithm()));
@@ -111,17 +111,18 @@ public class PasswordStore
                                 this.digesterConfig.getIterations().toString()));
                 this.digesterConfig.setSaltSizeBytes(confProps.getProperty(PasswordStore.SALTSIZE,
                                 this.digesterConfig.getSaltSizeBytes().toString()));
-
                 this.threshold = config.getAttributeValueAsInteger("PasswordRepeatedThreshold");
-            } catch (final EFapsException e) {
-                PasswordStore.LOG.error("Error on reading SystemConfiguration for PasswordStore", e);
             }
+        } catch (final EFapsException e) {
+            PasswordStore.LOG.error("Error on reading SystemConfiguration for PasswordStore", e);
         }
+
     }
 
     /**
      * Read a PasswordStore from a String.
-     * @param _readValue        String to be read
+     *
+     * @param _readValue String to be read
      * @throws EFapsException on error
      */
     public void read(final String _readValue)
@@ -139,8 +140,9 @@ public class PasswordStore
     /**
      * Check the given Plain Text Password for equal on the current Hash by
      * applying the algorithm salt etc.
-     * @param _plainPassword   plain text password
-     * @return  true if equal, else false
+     *
+     * @param _plainPassword plain text password
+     * @return true if equal, else false
      */
     public boolean checkCurrent(final String _plainPassword)
     {
@@ -148,11 +150,12 @@ public class PasswordStore
     }
 
     /**
-     * Check the given Plain Text Password for equal on the Hash by
-     * applying the algorithm salt etc.
-     * @param _plainPassword    plain text password
-     * @param _pos              position of the password to be checked
-     * @return  true if equal, else false
+     * Check the given Plain Text Password for equal on the Hash by applying the
+     * algorithm salt etc.
+     *
+     * @param _plainPassword plain text password
+     * @param _pos position of the password to be checked
+     * @return true if equal, else false
      */
     private boolean check(final String _plainPassword,
                           final int _pos)
@@ -170,9 +173,10 @@ public class PasswordStore
     }
 
     /**
-     * Is the given plain password repeated. It is checked against the
-     * existing previous passwords.
-     * @param _plainPassword    plain text password
+     * Is the given plain password repeated. It is checked against the existing
+     * previous passwords.
+     *
+     * @param _plainPassword plain text password
      * @return true if repeated, else false
      */
     public boolean isRepeated(final String _plainPassword)
@@ -190,8 +194,9 @@ public class PasswordStore
     /**
      * Set the given given Plain Password as the new current Password by
      * encrypting it.
+     *
      * @param _plainPassword plain password to be used
-     * @param _currentValue  current value of the Store
+     * @param _currentValue current value of the Store
      * @param _currentValue
      * @throws EFapsException on error
      */
@@ -224,6 +229,7 @@ public class PasswordStore
 
     /**
      * Shift a property.
+     *
      * @param _key key the property must be shifted for
      */
     private void shift(final String _key)

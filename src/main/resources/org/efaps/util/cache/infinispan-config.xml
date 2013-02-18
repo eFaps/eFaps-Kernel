@@ -102,6 +102,25 @@
         <eviction maxEntries="500" strategy="LIRS"/>
     </namedCache>
 
+    <namedCache name="NumberGenerator4UUID">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="NumberGenerator4ID">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="NumberGenerator4Name">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+
+    <namedCache name="SystemConfiguration4UUID">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="SystemConfiguration4ID">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="SystemConfiguration4Name">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
 
 
 
