@@ -20,59 +20,79 @@
 
 package org.efaps.admin.datamodel;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Map;
-import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
  * @version $Id$
- * TODO: description
+ *          TODO: description
  */
 public class AttributeType
     extends AbstractDataModelObject
 {
+
     /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(AttributeType.class);
 
     /**
-     * This is the SQL select statement to select all attribute types from the
-     * database.
+     * This is the SQL select statement to select a role from the database by
+     * ID.
      */
-    private static final SQLSelect SQL_SELECT  = new SQLSelect()
-                                                    .column("ID")
-                                                    .column("NAME")
-                                                    .column("UUID")
-                                                    .column("CLASSNAME")
-                                                    .column("CLASSNAMEUI")
-                                                    .column("ALWAYSUPDATE")
-                                                    .column("CREATEUPDATE")
-                                                    .from("V_DMATTRIBUTETYPE");
+    private static final String SQL_ID = new SQLSelect()
+                    .column("ID")
+                    .column("NAME")
+                    .column("UUID")
+                    .column("CLASSNAME")
+                    .column("CLASSNAMEUI")
+                    .column("ALWAYSUPDATE")
+                    .column("CREATEUPDATE")
+                    .from("V_DMATTRIBUTETYPE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
     /**
-     * Stores all instances of class {@link AttributeType}.
-     *
-     * @see #initialize()
-     * @see #get(long)
-     * @see #get(String)
+     * This is the SQL select statement to select a role from the database by
+     * Name.
      */
-    private static AttributeTypeCache CACHE = new AttributeTypeCache();
+    private static final String SQL_NAME = new SQLSelect()
+                    .column("ID")
+                    .column("NAME")
+                    .column("UUID")
+                    .column("CLASSNAME")
+                    .column("CLASSNAMEUI")
+                    .column("ALWAYSUPDATE")
+                    .column("CREATEUPDATE")
+                    .from("V_DMATTRIBUTETYPE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * Name of the Cache by ID.
+     */
+    private static final String IDCACHE = "AttributeType4ID";
+
+    /**
+     * Name of the Cache by Name.
+     */
+    private static final String NAMECACHE = "AttributeType4Name";
 
     /**
      * The instance variable store the class representation for the attribute
@@ -115,13 +135,13 @@ public class AttributeType
      * class {@link Attribute} must have a name (parameter <i>_name</i>) and an
      * identifier (parameter <i>_id</i>).
      *
-     * @param _id               id of the attribute
-     * @param _uuid             universal unique identifier
-     * @param _name             name of the instance
-     * @param _dbAttrTypeName   name of the database attribute type
-     * @param _uiAttrTypeName   name of the user interface attribute type
+     * @param _id id of the attribute
+     * @param _uuid universal unique identifier
+     * @param _name name of the instance
+     * @param _dbAttrTypeName name of the database attribute type
+     * @param _uiAttrTypeName name of the user interface attribute type
      * @throws EFapsException if attribute type for the data model or user
-     *                        interface could not be initialized
+     *             interface could not be initialized
      */
     protected AttributeType(final long _id,
                             final String _uuid,
@@ -232,21 +252,32 @@ public class AttributeType
     public String toString()
     {
         return new ToStringBuilder(this)
-            .appendSuper(super.toString())
-            .append("dbAttrType", this.dbAttrType)
-            .append("uiAttrType", this.uiAttrType)
-            .append("alwaysUpdate", this.alwaysUpdate)
-            .append("createUpdate", this.createUpdate)
-            .toString();
+                        .appendSuper(super.toString())
+                        .append("dbAttrType", this.dbAttrType)
+                        .append("uiAttrType", this.uiAttrType)
+                        .append("alwaysUpdate", this.alwaysUpdate)
+                        .append("createUpdate", this.createUpdate)
+                        .toString();
     }
 
     /**
      *
-     * @param _class    attribute type class
+     * @param _class attribute type class
      */
     public static void initialize(final Class<?> _class)
     {
-        AttributeType.CACHE.initialize(_class);
+        if (InfinispanCache.get().exists(AttributeType.IDCACHE)) {
+            InfinispanCache.get().<Long, AttributeType>getCache(AttributeType.IDCACHE).clear();
+        } else {
+            InfinispanCache.get().<Long, AttributeType>getCache(AttributeType.IDCACHE)
+                            .addListener(new CacheLogListener(AttributeType.LOG));
+        }
+        if (InfinispanCache.get().exists(AttributeType.NAMECACHE)) {
+            InfinispanCache.get().<String, AttributeType>getCache(AttributeType.NAMECACHE).clear();
+        } else {
+            InfinispanCache.get().<String, AttributeType>getCache(AttributeType.NAMECACHE)
+                            .addListener(new CacheLogListener(AttributeType.LOG));
+        }
     }
 
     /**
@@ -266,8 +297,14 @@ public class AttributeType
      * @see #CACHE
      */
     public static AttributeType get(final long _id)
+        throws CacheReloadException
     {
-        return AttributeType.CACHE.get(_id);
+        final Cache<Long, AttributeType> cache = InfinispanCache.get().<Long, AttributeType>getCache(
+                        AttributeType.IDCACHE);
+        if (!cache.containsKey(_id)) {
+            AttributeType.getAttributeTypeFromDB(AttributeType.SQL_ID, _id);
+        }
+        return cache.get(_id);
     }
 
     /**
@@ -279,87 +316,96 @@ public class AttributeType
      * @see #CACHE
      */
     public static AttributeType get(final String _name)
+        throws CacheReloadException
     {
-        return AttributeType.CACHE.get(_name);
+        final Cache<String, AttributeType> cache = InfinispanCache.get().<String, AttributeType>getCache(
+                        AttributeType.NAMECACHE);
+        if (!cache.containsKey(_name)) {
+            AttributeType.getAttributeTypeFromDB(AttributeType.SQL_NAME, _name);
+        }
+        return cache.get(_name);
     }
 
     /**
-     * Cache class for attribute types.
-     *
-     * @see AttributeType#CACHE
+     * @param _role AttributeType to be cached
      */
-    private static class AttributeTypeCache
-        extends AbstractCache<AttributeType>
+    private static void cacheAttributeType(final AttributeType _role)
     {
-        /**
-         * @param _cache4Id     map depending on the id and the attribute type
-         *                      instance which will be used as cache
-         * @param _cache4Name   map depending on the name and the attribute
-         *                      type instance which will be used as cache
-         * @param _cache4UUID   map depending on the UUID and the attribute
-         *                      type instance which will be used as cache
-         * @throws CacheReloadException if cache could not be reloaded
-         */
-        @Override
-        protected void readCache(final Map<Long, AttributeType> _cache4Id,
-                                 final Map<String, AttributeType> _cache4Name,
-                                 final Map<UUID, AttributeType> _cache4UUID)
-            throws CacheReloadException
-        {
-            ConnectionResource con = null;
+        final Cache<String, AttributeType> nameCache = InfinispanCache.get().<String, AttributeType>getCache(
+                        AttributeType.NAMECACHE);
+        if (!nameCache.containsKey(_role.getName())) {
+            nameCache.put(_role.getName(), _role);
+        }
+        final Cache<Long, AttributeType> idCache = InfinispanCache.get().<Long, AttributeType>getCache(
+                        AttributeType.IDCACHE);
+        if (!idCache.containsKey(_role.getId())) {
+            idCache.put(_role.getId(), _role);
+        }
+    }
+
+    /**
+     * @param _sqlId
+     * @param _id
+     */
+    private static boolean getAttributeTypeFromDB(final String _sql,
+                                                  final Object _criteria)
+        throws CacheReloadException
+    {
+        boolean ret = false;
+        ConnectionResource con = null;
+        try {
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
             try {
-                con = Context.getThreadContext().getConnectionResource();
+                stmt = con.getConnection().prepareStatement(_sql);
+                stmt.setObject(1, _criteria);
+                final ResultSet rs = stmt.executeQuery();
 
-                Statement stmt = null;
-                try {
-                    stmt = con.getConnection().createStatement();
-                    final ResultSet rs = stmt.executeQuery(AttributeType.SQL_SELECT.getSQL());
-                    while (rs.next()) {
-                        final long id = rs.getLong(1);
-                        final String name = rs.getString(2).trim();
-                        String uuid = rs.getString(3);
-                        uuid = (uuid == null) ? null : uuid.trim();
+                if (rs.next()) {
+                    final long id = rs.getLong(1);
+                    final String name = rs.getString(2).trim();
+                    String uuid = rs.getString(3);
+                    uuid = (uuid == null) ? null : uuid.trim();
 
-                        if (AttributeType.LOG.isDebugEnabled()) {
-                            AttributeType.LOG.debug("read attribute type '" + name + "' " + "(id = " + id + ", uuid = '"
-                                            + uuid + "')");
-                        }
-
-                        final AttributeType attrType = new AttributeType(id,
-                                                                         uuid,
-                                                                         name,
-                                                                         rs.getString(4).trim(),
-                                                                         rs.getString(5).trim());
-                        if (rs.getInt(6) != 0) {
-                            attrType.alwaysUpdate = true;
-                        }
-                        if (rs.getInt(7) != 0) {
-                            attrType.createUpdate = true;
-                        }
-                        _cache4Id.put(attrType.getId(), attrType);
-                        _cache4Name.put(attrType.getName(), attrType);
-                        _cache4UUID.put(attrType.getUUID(), attrType);
+                    if (AttributeType.LOG.isDebugEnabled()) {
+                        AttributeType.LOG.debug("read attribute type '" + name + "' " + "(id = " + id + ", uuid = '"
+                                        + uuid + "')");
                     }
-                    rs.close();
-                } finally {
-                    if (stmt != null) {
-                        stmt.close();
+
+                    final AttributeType attrType = new AttributeType(id,
+                                    uuid,
+                                    name,
+                                    rs.getString(4).trim(),
+                                    rs.getString(5).trim());
+                    if (rs.getInt(6) != 0) {
+                        attrType.alwaysUpdate = true;
                     }
+                    if (rs.getInt(7) != 0) {
+                        attrType.createUpdate = true;
+                    }
+                    AttributeType.cacheAttributeType(attrType);
                 }
-                con.commit();
-            } catch (final SQLException e) {
-                throw new CacheReloadException("could not read attribute types", e);
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("could not read attribute types", e);
+                ret = true;
+                rs.close();
             } finally {
-                if ((con != null) && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read attribute types", e);
-                    }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read roles", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read roles", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read roles", e);
                 }
             }
         }
+        return ret;
     }
 }

@@ -45,6 +45,13 @@
 
 
     <!-- DateModel -->
+     <namedCache name="AttributeType4ID">
+        <eviction maxEntries="50" strategy="LRU"/>
+    </namedCache>
+    <namedCache name="AttributeType4Name">
+        <eviction maxEntries="50" strategy="LRU"/>
+    </namedCache>
+
     <namedCache name="SQLTable4UUID">
         <eviction maxEntries="500" strategy="LIRS"/>
     </namedCache>
@@ -137,11 +144,25 @@
     </namedCache>
 
     <namedCache name="JAASSystem4ID">
-        <eviction maxEntries="5" strategy="FIFO"/>
+        <eviction maxEntries="5" strategy="LRU"/>
     </namedCache>
     <namedCache name="JAASSystem4Name">
-        <eviction maxEntries="5" strategy="FIFO"/>
+        <eviction maxEntries="5" strategy="LRU"/>
     </namedCache>
+
+
+
+    <!-- Store -->
+    <namedCache name="Store4UUID">
+        <eviction maxEntries="50" strategy="LRU"/>
+    </namedCache>
+    <namedCache name="Store4ID">
+        <eviction maxEntries="50" strategy="LRU"/>
+    </namedCache>
+    <namedCache name="Store4Name">
+        <eviction maxEntries="50" strategy="LRU"/>
+    </namedCache>
+
 
 
 </infinispan>

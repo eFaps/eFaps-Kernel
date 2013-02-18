@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,18 @@ import java.util.UUID;
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminCommon;
+import org.efaps.ci.CIAttribute;
 import org.efaps.ci.CIDB;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -44,6 +49,7 @@ import org.efaps.util.cache.CacheReloadException;
 public final class Store
     extends AbstractAdminObject
 {
+
     /**
      * Property to get the compress for this store.
      */
@@ -55,9 +61,24 @@ public final class Store
     public static final String PROPERTY_JNDINAME = "StoreJNDIName";
 
     /**
-     * Cache for Stores.
+     * Logging instance used in this class.
      */
-    private static final StoreCache CACHE = new StoreCache();
+    private static final Logger LOG = LoggerFactory.getLogger(Store.class);
+
+    /**
+     * Name of the Cache by UUID.
+     */
+    private static final String UUIDCACHE = "Store4UUID";
+
+    /**
+     * Name of the Cache by ID.
+     */
+    private static final String IDCACHE = "Store4ID";
+
+    /**
+     * Name of the Cache by Name.
+     */
+    private static final String NAMECACHE = "Store4Name";
 
     /**
      * Name of the Resource class of this store.
@@ -121,8 +142,8 @@ public final class Store
         multi.addAttribute(CIAdminCommon.Property.Name, CIAdminCommon.Property.Value);
         multi.executeWithoutAccessCheck();
         while (multi.next()) {
-            this.resourceProperties.put(multi.<String> getAttribute(CIAdminCommon.Property.Name),
-                            multi.<String> getAttribute(CIAdminCommon.Property.Value));
+            this.resourceProperties.put(multi.<String>getAttribute(CIAdminCommon.Property.Name),
+                            multi.<String>getAttribute(CIAdminCommon.Property.Value));
         }
     }
 
@@ -166,13 +187,20 @@ public final class Store
     public static void initialize()
         throws CacheReloadException
     {
-        // check is need to work on first installation
-        if (CIDB.Store.getType() != null) {
-            Store.CACHE.initialize(Store.class);
-            for (final Store store : Store.CACHE.getCache4Id().values()) {
-                store.readFromDB4Properties();
-                store.readFromDB4Links();
-            }
+        if (InfinispanCache.get().exists(Store.UUIDCACHE)) {
+            InfinispanCache.get().<UUID, Store>getCache(Store.UUIDCACHE).clear();
+        } else {
+            InfinispanCache.get().<UUID, Store>getCache(Store.UUIDCACHE).addListener(new CacheLogListener(Store.LOG));
+        }
+        if (InfinispanCache.get().exists(Store.IDCACHE)) {
+            InfinispanCache.get().<Long, Store>getCache(Store.IDCACHE).clear();
+        } else {
+            InfinispanCache.get().<Long, Store>getCache(Store.IDCACHE).addListener(new CacheLogListener(Store.LOG));
+        }
+        if (InfinispanCache.get().exists(Store.NAMECACHE)) {
+            InfinispanCache.get().<String, Store>getCache(Store.NAMECACHE).clear();
+        } else {
+            InfinispanCache.get().<String, Store>getCache(Store.NAMECACHE).addListener(new CacheLogListener(Store.LOG));
         }
     }
 
@@ -185,8 +213,13 @@ public final class Store
      * @throws CacheReloadException
      */
     public static Store get(final long _id)
+        throws CacheReloadException
     {
-        return Store.CACHE.get(_id);
+        final Cache<Long, Store> cache = InfinispanCache.get().<Long, Store>getCache(Store.IDCACHE);
+        if (!cache.containsKey(_id)) {
+            Store.getStoreFromDB(CIDB.Store.ID, _id);
+        }
+        return cache.get(_id);
     }
 
     /**
@@ -198,8 +231,13 @@ public final class Store
      * @throws CacheReloadException
      */
     public static Store get(final String _name)
+        throws CacheReloadException
     {
-        return Store.CACHE.get(_name);
+        final Cache<String, Store> cache = InfinispanCache.get().<String, Store>getCache(Store.NAMECACHE);
+        if (!cache.containsKey(_name)) {
+            Store.getStoreFromDB(CIDB.Store.Name, _name);
+        }
+        return cache.get(_name);
     }
 
     /**
@@ -211,48 +249,61 @@ public final class Store
      * @throws CacheReloadException
      */
     public static Store get(final UUID _uuid)
+        throws CacheReloadException
     {
-        return Store.CACHE.get(_uuid);
+        final Cache<UUID, Store> cache = InfinispanCache.get().<UUID, Store>getCache(Store.UUIDCACHE);
+        if (!cache.containsKey(_uuid)) {
+            Store.getStoreFromDB(CIDB.Store.UUID, String.valueOf(_uuid));
+        }
+        return cache.get(_uuid);
     }
 
     /**
-     * Cache for Stores.
+     * @param _role Role to be cached
      */
-    public static class StoreCache
-        extends AbstractCache<Store>
+    private static void cacheStore(final Store _store)
     {
-
-        /**
-         * Method to fill this cache with objects.
-         *
-         * @param _cache4Id Cache for id
-         * @param _cache4Name Cache for name
-         * @param _cache4UUID Cache for UUID
-         * @throws CacheReloadException on error during reading
-         */
-        @Override
-        protected void readCache(final Map<Long, Store> _cache4Id,
-                                 final Map<String, Store> _cache4Name,
-                                 final Map<UUID, Store> _cache4UUID)
-            throws CacheReloadException
-        {
-            try {
-                final QueryBuilder queryBldr = new QueryBuilder(CIDB.Store);
-                final MultiPrintQuery multi = queryBldr.getPrint();
-                multi.addAttribute(CIDB.Store.Name, CIDB.Store.ID, CIDB.Store.UUID);
-                multi.executeWithoutAccessCheck();
-                while (multi.next()) {
-                    final long id = multi.<Long> getAttribute(CIDB.Store.ID);
-                    final String name = multi.<String> getAttribute(CIDB.Store.Name);
-                    final String uuid = multi.<String> getAttribute(CIDB.Store.UUID);
-                    final Store store = new Store(id, uuid, name);
-                    _cache4Id.put(store.getId(), store);
-                    _cache4Name.put(store.getName(), store);
-                    _cache4UUID.put(store.getUUID(), store);
-                }
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("Could not read Store.", e);
-            }
+        final Cache<UUID, Store> cache4UUID = InfinispanCache.get().<UUID, Store>getCache(Store.UUIDCACHE);
+        if (!cache4UUID.containsKey(_store.getUUID())) {
+            cache4UUID.put(_store.getUUID(), _store);
         }
+        final Cache<String, Store> nameCache = InfinispanCache.get().<String, Store>getCache(Store.NAMECACHE);
+        if (!nameCache.containsKey(_store.getName())) {
+            nameCache.put(_store.getName(), _store);
+        }
+        final Cache<Long, Store> idCache = InfinispanCache.get().<Long, Store>getCache(Store.IDCACHE);
+        if (!idCache.containsKey(_store.getId())) {
+            idCache.put(_store.getId(), _store);
+        }
+    }
+
+    /**
+     * @param _sqlId
+     * @param _id
+     */
+    private static boolean getStoreFromDB(final CIAttribute _uUID,
+                                          final Object _criteria)
+        throws CacheReloadException
+    {
+        final boolean ret = false;
+        try {
+            final QueryBuilder queryBldr = new QueryBuilder(CIDB.Store);
+            queryBldr.addWhereAttrEqValue(CIDB.Store.ID, _criteria);
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute(CIDB.Store.Name, CIDB.Store.ID, CIDB.Store.UUID);
+            multi.executeWithoutAccessCheck();
+            if (multi.next()) {
+                final long id = multi.<Long>getAttribute(CIDB.Store.ID);
+                final String name = multi.<String>getAttribute(CIDB.Store.Name);
+                final String uuid = multi.<String>getAttribute(CIDB.Store.UUID);
+                final Store store = new Store(id, uuid, name);
+                Store.cacheStore(store);
+                store.readFromDB4Properties();
+                store.readFromDB4Links();
+            }
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("Could not read Store.", e);
+        }
+        return ret;
     }
 }
