@@ -123,6 +123,16 @@
     </namedCache>
 
 
+    <namedCache name="StatusGroup4UUID">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="StatusGroup4Name">
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Status4ID">
+        <eviction maxEntries="5000" strategy="LIRS"/>
+    </namedCache>
+
 
     <!-- User -->
     <namedCache name="Company4UUID">

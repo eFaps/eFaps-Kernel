@@ -20,21 +20,25 @@
 
 package org.efaps.admin.datamodel;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,39 +48,69 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public final class Status implements CacheObjectInterface
+public final class Status
+    implements CacheObjectInterface
 {
 
     /**
-     * Select statement that will be executed against the database
-     * on reading the cache.
-     *
-     * @see StatusGroupCache#readCache(Map, Map, Map)
+     * This is the SQL select statement to select a role from the database by
+     * ID.
      */
-    private static final SQLSelect SELECT = new SQLSelect()
-                                            .column("ID")
-                                            .column("TYPEID")
-                                            .column("KEY")
-                                            .column("DESCR")
-                                            .from("T_DMSTATUS");
+    private static final String SQL_ID4STATUS = new SQLSelect()
+                    .column("ID")
+                    .column("TYPEID")
+                    .column("KEY")
+                    .column("DESCR")
+                    .from("T_DMSTATUS", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+
+    /**
+     * This is the SQL select statement to select a role from the database by
+     * Name.
+     */
+    private static final String SQL_NAME4GRP = new SQLSelect()
+                    .column(0, "ID")
+                    .column(0, "TYPEID")
+                    .column("KEY")
+                    .column("DESCR")
+                    .from("T_DMSTATUS", 0)
+                    .innerJoin("T_CMABSTRACT", 1, "ID", 0, "TYPEID")
+                    .addPart(SQLPart.WHERE).addColumnPart(1, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * This is the SQL select statement to select a role from the database by
+     * UUID.
+     */
+    private static final String SQL_UUID4GRP = new SQLSelect()
+                    .column(0, "ID")
+                    .column(0, "TYPEID")
+                    .column("KEY")
+                    .column("DESCR")
+                    .from("T_DMSTATUS", 0)
+                    .innerJoin("T_CMABSTRACT", 1, "ID", 0, "TYPEID")
+                    .addPart(SQLPart.WHERE).addColumnPart(1, "UUID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * Name of the Cache by UUID.
+     */
+    private static final String UUIDCACHE4GRP = "StatusGroup4UUID";
+
+    /**
+     * Name of the Cache by ID.
+     */
+    private static final String IDCACHE4STATUS = "Status4ID";
+
+    /**
+     * Name of the Cache by Name.
+     */
+    private static final String NAMECACHE4GRP = "StatusGroup4Name";
 
     /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(Status.class);
-
-    /**
-     * Stores all instances of GroupCache.
-     *
-     */
-    private static StatusGroupCache GROUPCACHE = new StatusGroupCache();
-
-    /**
-     * Stores all instances of type.
-     *
-     *
-     */
-    private static StatusCache CACHE = new StatusCache();
 
     /**
      * Id of this Status.
@@ -99,12 +133,15 @@ public final class Status implements CacheObjectInterface
     private final StatusGroup statusGroup;
 
     /**
-     * @param _statusGroup  StatusGroup this Status belongs to
-     * @param _id           Id of this Status
-     * @param _key          Key of this status.
-     * @param _desc         Description for this status
+     * @param _statusGroup StatusGroup this Status belongs to
+     * @param _id Id of this Status
+     * @param _key Key of this status.
+     * @param _desc Description for this status
      */
-    private Status(final StatusGroup _statusGroup, final long _id, final String _key, final String _desc)
+    private Status(final StatusGroup _statusGroup,
+                   final long _id,
+                   final String _key,
+                   final String _desc)
     {
         this.statusGroup = _statusGroup;
         this.id = _id;
@@ -162,6 +199,7 @@ public final class Status implements CacheObjectInterface
 
     /**
      * Method to get the key to the label.
+     *
      * @return key to the label
      */
     public String getLabelKey()
@@ -172,6 +210,7 @@ public final class Status implements CacheObjectInterface
 
     /**
      * Method to get the translated label for this Status.
+     *
      * @return translated Label
      */
     public String getLabel()
@@ -195,10 +234,27 @@ public final class Status implements CacheObjectInterface
      * @param _class class that called the method
      * @throws CacheReloadException on error
      */
-    public static void initialize(final Class<?> _class) throws CacheReloadException
+    public static void initialize(final Class<?> _class)
+        throws CacheReloadException
     {
-        Status.GROUPCACHE.initialize(_class);
-        Status.CACHE.initialize(_class);
+        if (InfinispanCache.get().exists(Status.UUIDCACHE4GRP)) {
+            InfinispanCache.get().<UUID, Status>getCache(Status.UUIDCACHE4GRP).clear();
+        } else {
+            InfinispanCache.get().<UUID, Status>getCache(Status.UUIDCACHE4GRP)
+                            .addListener(new CacheLogListener(Status.LOG));
+        }
+        if (InfinispanCache.get().exists(Status.IDCACHE4STATUS)) {
+            InfinispanCache.get().<Long, Status>getCache(Status.IDCACHE4STATUS).clear();
+        } else {
+            InfinispanCache.get().<Long, Status>getCache(Status.IDCACHE4STATUS)
+                            .addListener(new CacheLogListener(Status.LOG));
+        }
+        if (InfinispanCache.get().exists(Status.NAMECACHE4GRP)) {
+            InfinispanCache.get().<String, StatusGroup>getCache(Status.NAMECACHE4GRP).clear();
+        } else {
+            InfinispanCache.get().<String, StatusGroup>getCache(Status.NAMECACHE4GRP)
+                            .addListener(new CacheLogListener(Status.LOG));
+        }
     }
 
     /**
@@ -206,7 +262,8 @@ public final class Status implements CacheObjectInterface
      *
      * @throws CacheReloadException on error
      */
-    public static void initialize() throws CacheReloadException
+    public static void initialize()
+        throws CacheReloadException
     {
         Status.initialize(Status.class);
     }
@@ -215,52 +272,87 @@ public final class Status implements CacheObjectInterface
      * Method to get a Status from the cache.
      *
      * @param _typeName name of the StatusGroup
-     * @param _key      key of the Status
+     * @param _key key of the Status
      * @return Status
      */
-    public static Status find(final String _typeName, final String _key)
+    public static Status find(final String _typeName,
+                              final String _key)
+        throws CacheReloadException
     {
-        return Status.GROUPCACHE.get(_typeName).get(_key);
+        return Status.get(_typeName).get(_key);
     }
 
     /**
      * Method to get a Status from the cache.
      *
-     * @param _uuid     uuid of the StatusGroup
-     * @param _key      key of the Status
+     * @param _uuid uuid of the StatusGroup
+     * @param _key key of the Status
      * @return Status
      */
-    public static Status find(final UUID _uuid, final String _key)
+    public static Status find(final UUID _uuid,
+                              final String _key)
+        throws CacheReloadException
     {
-        return Status.GROUPCACHE.get(Type.get(_uuid).getName()).get(_key);
+        return Status.get(_uuid).get(_key);
     }
 
     /**
      * Method to get a Status from the cache.
+     *
      * @param _id id of the status wanted.
      * @return Status
      */
     public static Status get(final long _id)
+        throws CacheReloadException
     {
-        return Status.CACHE.get(_id);
+        final Cache<Long, Status> cache = InfinispanCache.get().<Long, Status>getCache(Status.IDCACHE4STATUS);
+        if (!cache.containsKey(_id)) {
+            Status.getStatusFromDB(Status.SQL_ID4STATUS, _id);
+        }
+        return cache.get(_id);
     }
 
     /**
      * Method to get a StatusGroup from the cache.
-     * @param _typeName name  of the StatusGroup wanted.
+     *
+     * @param _typeName name of the StatusGroup wanted.
      * @return StatusGroup
      */
     public static StatusGroup get(final String _typeName)
+        throws CacheReloadException
     {
-        return Status.GROUPCACHE.get(_typeName);
+        final Cache<String, StatusGroup> cache = InfinispanCache.get().<String, StatusGroup>getCache(
+                        Status.NAMECACHE4GRP);
+        if (!cache.containsKey(_typeName)) {
+            Status.getStatusGroupFromDB(Status.SQL_NAME4GRP, _typeName);
+        }
+        return cache.get(_typeName);
     }
 
+    /**
+     * Method to get a StatusGroup from the cache.
+     *
+     * @param _typeName name of the StatusGroup wanted.
+     * @return StatusGroup
+     */
+    public static StatusGroup get(final UUID _uuid)
+        throws CacheReloadException
+    {
+        final Cache<UUID, StatusGroup> cache = InfinispanCache.get().<UUID, StatusGroup>getCache(Status.UUIDCACHE4GRP);
+        if (!cache.containsKey(_uuid)) {
+            Status.getStatusGroupFromDB(Status.SQL_UUID4GRP, String.valueOf(_uuid));
+        }
+        return cache.get(_uuid);
+    }
 
     /**
      * Class for a group of stati.
      */
-    public static class StatusGroup extends HashMap<String, Status> implements CacheObjectInterface
+    public static class StatusGroup
+        extends HashMap<String, Status>
+        implements CacheObjectInterface
     {
+
         /**
          * Needed for serialization.
          */
@@ -308,96 +400,163 @@ public final class Status implements CacheObjectInterface
     }
 
     /**
-     * Cache for Status.
+     * @param _role Status to be cached
      */
-    private static class StatusGroupCache extends AbstractCache<Status.StatusGroup>
+    private static void cacheStatusGroup(final StatusGroup _grp)
     {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void readCache(final Map<Long, Status.StatusGroup> _cache4Id,
-                                 final Map<String, Status.StatusGroup> _cache4Name,
-                                 final Map<UUID, Status.StatusGroup> _cache4UUID)
-            throws CacheReloadException
-        {
-            ConnectionResource con = null;
-            try {
-                con = Context.getThreadContext().getConnectionResource();
-
-                Statement stmt = null;
-                try {
-
-                    stmt = con.getConnection().createStatement();
-
-                    final ResultSet rs = stmt.executeQuery(Status.SELECT.getSQL());
-                    while (rs.next()) {
-                        final long id = rs.getLong(1);
-                        final long typeid = rs.getLong(2);
-                        final String key = rs.getString(3).trim();
-                        final String desc = rs.getString(4).trim();
-
-                        if (Status.LOG.isDebugEnabled()) {
-                            Status.LOG.debug("read status '" + typeid + "' (id = " + id + ") + key = " + key);
-                        }
-                        final Type type = Type.get(typeid);
-                        StatusGroup statusGroup = _cache4Name.get(type.getName());
-                        if (statusGroup == null) {
-                            statusGroup = new StatusGroup(type);
-                            _cache4Id.put(type.getId(), statusGroup);
-                            _cache4Name.put(type.getName(), statusGroup);
-                            _cache4UUID.put(type.getUUID(), statusGroup);
-                        }
-                        final Status status = new Status(statusGroup, id, key, desc);
-                        statusGroup.put(status.getKey(), status);
-                    }
-                    rs.close();
-                } finally {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                }
-                // initialize parents
-
-                con.commit();
-            } catch (final SQLException e) {
-                throw new CacheReloadException("could not read types", e);
-            } catch (final EFapsException e) {
-                throw new CacheReloadException("could not read types", e);
-            } finally {
-                if ((con != null) && con.isOpened()) {
-                    try {
-                        con.abort();
-                    } catch (final EFapsException e) {
-                        throw new CacheReloadException("could not read types", e);
-                    }
-                }
-            }
+        final Cache<String, StatusGroup> nameCache = InfinispanCache.get().<String, StatusGroup>getCache(
+                        Status.NAMECACHE4GRP);
+        if (!nameCache.containsKey(_grp.getName())) {
+            nameCache.put(_grp.getName(), _grp);
+        }
+        final Cache<UUID, StatusGroup> uuidCache = InfinispanCache.get().<UUID, StatusGroup>getCache(
+                        Status.UUIDCACHE4GRP);
+        if (!uuidCache.containsKey(_grp.getName())) {
+            uuidCache.put(_grp.getUUID(), _grp);
         }
     }
-
 
     /**
-     * Cache for Stati.
+     * @param _role Status to be cached
      */
-    private static class StatusCache extends AbstractCache<Status>
+    private static void cacheStatus(final Status _status)
     {
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void readCache(final Map<Long, Status> _newCache4Id,
-                                 final Map<String, Status> _newCache4Name,
-                                 final Map<UUID, Status> _newCache4UUID)
-            throws CacheReloadException
-        {
-            for (final StatusGroup statusGroup : Status.GROUPCACHE.getCache4Id().values()) {
+        final Cache<Long, Status> idCache = InfinispanCache.get().<Long, Status>getCache(Status.IDCACHE4STATUS);
+        if (!idCache.containsKey(_status.getId())) {
+            idCache.put(_status.getId(), _status);
+        }
 
-                for (final Status status : statusGroup.values()) {
-                    _newCache4Id.put(status.getId(), status);
+    }
+
+    private static boolean getStatusGroupFromDB(final String _sql,
+                                                final Object _criteria)
+        throws CacheReloadException
+    {
+        boolean ret = false;
+        ConnectionResource con = null;
+        try {
+            final List<Object[]> values = new ArrayList<Object[]>();
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
+            try {
+
+                stmt = con.getConnection().prepareStatement(_sql);
+                stmt.setObject(1, _criteria);
+                final ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    values.add(new Object[] {
+                                    rs.getLong(1),
+                                    rs.getLong(2),
+                                    rs.getString(3).trim(),
+                                    rs.getString(4).trim()
+                    });
+
+                }
+                rs.close();
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+            for (final Object[] row : values) {
+                final long id = (Long) row[0];
+                final long typeid = (Long) row[1];
+                final String key = (String) row[2];
+                final String desc = (String) row[3];
+
+                Status.LOG.debug("read status '{}' (id = {}) + key = {}", typeid, id, key);
+
+                final Type type = Type.get(typeid);
+                final Cache<UUID, StatusGroup> cache = InfinispanCache.get().<UUID, StatusGroup>getCache(
+                                Status.UUIDCACHE4GRP);
+                StatusGroup statusGroup;
+                if (cache.containsKey(type.getUUID())) {
+                    statusGroup = cache.get(type.getUUID());
+                } else {
+                    statusGroup = new StatusGroup(type);
+                    Status.cacheStatusGroup(statusGroup);
+                }
+                final Status status = new Status(statusGroup, id, key, desc);
+                statusGroup.put(status.getKey(), status);
+                Status.cacheStatus(status);
+                ret = true;
+            }
+
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read types", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read types", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read types", e);
                 }
             }
         }
+
+        return ret;
     }
+
+    private static boolean getStatusFromDB(final String _sql,
+                                           final Object _criteria)
+        throws CacheReloadException
+    {
+        final boolean ret = false;
+        ConnectionResource con = null;
+        try {
+            final List<Object[]> values = new ArrayList<Object[]>();
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
+            try {
+
+                stmt = con.getConnection().prepareStatement(_sql);
+                stmt.setObject(1, _criteria);
+                final ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    values.add(new Object[] {
+                                    rs.getLong(1),
+                                    rs.getLong(2),
+                                    rs.getString(3).trim(),
+                                    rs.getString(4).trim()
+                    });
+                }
+                rs.close();
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+            for (final Object[] row : values) {
+                final long id = (Long) row[0];
+                final long typeid = (Long) row[1];
+                final String key = (String) row[2];
+
+                Status.LOG.debug("read status '{}' (id = {}) + key = {}", typeid, id, key);
+
+                final Type type = Type.get(typeid);
+                Status.get(type.getUUID());
+            }
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read types", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read types", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read types", e);
+                }
+            }
+        }
+        return ret;
+    }
+
 }
