@@ -125,10 +125,16 @@ public class DBPropertiesUpdate
     private Resource curResource;
 
     /**
+     * The URL of the underlying file.
+     */
+    private final URL url;
+
+    /**
      * @param _url url for the file
      */
     public DBPropertiesUpdate(final URL _url)
     {
+        this.url = _url;
         final String urlStr = _url.toString();
         this.root = urlStr.substring(0, urlStr.lastIndexOf(File.separator) + 1);
     }
@@ -499,6 +505,15 @@ public class DBPropertiesUpdate
                 this.curResource.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public URL getURL()
+    {
+        return this.url;
     }
 
     /**

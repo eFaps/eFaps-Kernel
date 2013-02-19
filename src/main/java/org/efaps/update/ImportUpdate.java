@@ -21,6 +21,7 @@
 
 package org.efaps.update;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,5 +71,14 @@ public class ImportUpdate
                            final Set<Profile> _profile)
         throws InstallationException
     {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public URL getURL()
+    {
+        return null;
     }
 }

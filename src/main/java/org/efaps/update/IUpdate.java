@@ -20,6 +20,7 @@
 
 package org.efaps.update;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,5 +68,10 @@ public interface IUpdate
                  final Map<String, String> _attributes,
                  final String _text)
         throws SAXException;
+
+    /**
+     * @return the URL of the CI.
+     */
+    URL getURL();
 
 }

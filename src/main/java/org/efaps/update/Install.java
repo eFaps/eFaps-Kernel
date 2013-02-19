@@ -137,7 +137,17 @@ public class Install
                     Install.LOG.info("..Running Lifecycle step " + step);
                 }
                 for (final Map.Entry<Class<? extends IUpdate>, List<IUpdate>> entry : this.cache.entrySet()) {
-                    for (final IUpdate update : entry.getValue()) {
+                    final List<IUpdate> updates = entry.getValue();
+                    Collections.sort(updates, new Comparator<IUpdate>()
+                    {
+                        @Override
+                        public int compare(final IUpdate _update0,
+                                           final IUpdate _update1)
+                        {
+                            return String.valueOf(_update0.getURL()).compareTo(String.valueOf(_update1.getURL()));
+                        }
+                    });
+                    for (final IUpdate update : updates) {
                         update.updateInDB(jexlContext, step, _profiles);
                         if (!bigTrans) {
                             try {
@@ -186,7 +196,7 @@ public class Install
      * latest version is evaluated depending from all installed version and the
      * defined application in the XML update file. The installation version is
      * the same as the latest version of the application.
-     *
+     * @param _profiles set of profiles to be used
      * @throws InstallationException if update failed
      */
     @SuppressWarnings("unchecked")

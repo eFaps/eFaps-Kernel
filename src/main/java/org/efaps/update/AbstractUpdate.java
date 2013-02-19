@@ -245,7 +245,7 @@ public abstract class AbstractUpdate
      *
      * @return value of instance variable {@link #url}
      */
-    protected URL getURL()
+    public URL getURL()
     {
         return this.url;
     }
