@@ -212,6 +212,9 @@ public final class Instance
         return this.type != null && this.id > 0;
     }
 
+    /**
+     * @throws EFapsException on error
+     */
     private void check4Generalised()
         throws EFapsException
     {
@@ -219,6 +222,17 @@ public final class Instance
             GeneralInstance.generaliseInstance(this);
             this.generalised = true;
         }
+    }
+
+    /**
+     * Setter method for instance variable {@link #generalised}.
+     *
+     * @param _generalised value for instance variable {@link #generalised}
+     */
+
+    protected void setGeneralised(final boolean _generalised)
+    {
+        this.generalised = _generalised;
     }
 
     /**

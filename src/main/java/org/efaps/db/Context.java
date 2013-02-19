@@ -437,7 +437,6 @@ public final class Context
         throws EFapsException
     {
         ConnectionResource con = null;
-
         if (this.connectionStack.isEmpty()) {
             try {
                 con = new ConnectionResource(Context.DATASOURCE.getConnection());
@@ -460,11 +459,6 @@ public final class Context
      */
     public void returnConnectionResource(final ConnectionResource _con)
     {
-        // System.out.println("returnConnectionResource.con="+_con);
-        // TODO throw error
-        // if (_con == null) {
-        // throw new EFapsException();
-        // }
         this.connectionStack.push(_con);
     }
 

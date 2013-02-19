@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2012 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,16 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.store.AbstractStoreResource;
 import org.efaps.db.store.JCRStoreResource;
 import org.efaps.db.store.JDBCStoreResource;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLDelete.DeleteDefintion;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.util.EFapsException;
@@ -116,71 +120,9 @@ public final class GeneralInstance
     }
 
     /**
-     * @param _instance Instance the GeneralInstance will be deleted for.
-     * @param _con      Connection the insert will be executed in
-     * @throws EFapsException on  error
-     */
-    protected static void delete(final Instance _instance,
-                                 final Connection _con)
-        throws EFapsException
-    {
-        if (_instance.isValid() && _instance.getType().isGeneralInstance()) {
-            final long id = _instance.getGeneralId();
-            if (id > 0) {
-                if (_instance.getType().getStoreId() > 0) {
-                    GeneralInstance.del4Table(id, _con, JDBCStoreResource.TABLENAME_STORE);
-                    GeneralInstance.del4Table(id, _con, JCRStoreResource.TABLENAME_STORE);
-                    GeneralInstance.del4Table(id, _con, AbstractStoreResource.TABLENAME_STORE);
-                }
-                GeneralInstance.del4Table(id, _con, GeneralInstance.TABLENAME);
-            }
-        }
-    }
-
-    /**
-     * @param _id           id to be deleted
-     * @param _con          connection used for the execute
-     * @param _tableName    nem of the table the value must be deleted from
-     * @throws EFapsException on error
-     */
-    private static void del4Table(final long _id,
-                                  final Connection _con,
-                                  final String _tableName)
-        throws EFapsException
-    {
-        try {
-            final AbstractDatabase<?> db = Context.getDbType();
-            final StringBuilder cmd = new StringBuilder();
-            cmd.append(db.getSQLPart(SQLPart.DELETE)).append(" ")
-                .append(db.getSQLPart(SQLPart.FROM)).append(" ")
-                .append(db.getTableQuote())
-                .append(_tableName)
-                .append(db.getTableQuote()).append(" ")
-                .append(db.getSQLPart(SQLPart.WHERE)).append(" ")
-                .append(db.getColumnQuote())
-                .append("ID")
-                .append(db.getColumnQuote())
-                .append(db.getSQLPart(SQLPart.EQUAL))
-                .append(_id).append(" ");
-
-            final Statement stmt = _con.createStatement();
-            stmt.executeUpdate(cmd.toString());
-            stmt.close();
-
-            if (GeneralInstance.LOG.isDebugEnabled()) {
-                GeneralInstance.LOG.debug(cmd.toString());
-            }
-        } catch (final SQLException e) {
-            GeneralInstance.LOG.error("executeOneStatement", e);
-            throw new EFapsException(GeneralInstance.class, "create", e);
-        }
-    }
-
-    /**
      * @param _instance Instance the id of the GeneralInstance will be retrieved for.
      * @param _con      Connection the query will be executed in
      * @throws EFapsException on  error
-     * @return id of the current General Instance
      */
     protected static void generaliseInstance(final Instance _instance,
                                              final Connection _con)
@@ -224,7 +166,9 @@ public final class GeneralInstance
                     _instance.setGeneralId(rs.getLong(1));
                     _instance.setExchangeSystemId(rs.getLong(2));
                     _instance.setExchangeId(rs.getLong(3));
+                    _instance.setGeneralised(true);
                 }
+                rs.close();
                 queryStmt.close();
                 if (GeneralInstance.LOG.isDebugEnabled()) {
                     GeneralInstance.LOG.debug(cmd.toString());
@@ -239,7 +183,6 @@ public final class GeneralInstance
     /**
      * @param _instance Instance the id of the GeneralInstance will be retrieved for.
      * @throws EFapsException on  error
-     * @return id of the current General Instance
      */
     protected static void generaliseInstance(final Instance _instance)
         throws EFapsException
@@ -255,5 +198,31 @@ public final class GeneralInstance
                 con.abort();
             }
         }
+    }
+
+    /**
+     * @param _instance instance the DeleteDefintions are wanted for
+     * @param _con      Connection to be used
+     * @return List of DeleteDefintion
+     * @throws EFapsException on error
+     */
+    protected static Collection<? extends DeleteDefintion> getDeleteDefintion(final Instance _instance,
+                                                                              final Connection _con)
+        throws EFapsException
+    {
+        final List<DeleteDefintion> ret = new ArrayList<DeleteDefintion>();
+        if (_instance.isValid() && _instance.getType().isGeneralInstance()) {
+            GeneralInstance.generaliseInstance(_instance, _con);
+            final long id = _instance.getGeneralId();
+            if (id > 0) {
+                if (_instance.getType().getStoreId() > 0) {
+                    ret.add(new DeleteDefintion(JDBCStoreResource.TABLENAME_STORE, "ID", id));
+                    ret.add(new DeleteDefintion(JCRStoreResource.TABLENAME_STORE, "ID", id));
+                    ret.add(new DeleteDefintion(AbstractStoreResource.TABLENAME_STORE, "ID", id));
+                }
+                ret.add(new DeleteDefintion(GeneralInstance.TABLENAME, "ID", id));
+            }
+        }
+        return ret;
     }
 }

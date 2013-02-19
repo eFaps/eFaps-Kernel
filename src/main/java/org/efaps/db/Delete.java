@@ -169,8 +169,8 @@ public class Delete
                 }
             }
             try {
-                GeneralInstance.delete(getInstance(), con.getConnection());
                 final List<DeleteDefintion> defs = new ArrayList<DeleteDefintion>();
+                defs.addAll(GeneralInstance.getDeleteDefintion(getInstance(), con.getConnection()));
                 final SQLTable mainTable = getInstance().getType().getMainTable();
                 for (final SQLTable curTable : getInstance().getType().getTables()) {
                     if ((curTable != mainTable) && !curTable.isReadOnly()) {

@@ -80,14 +80,12 @@ public class ConnectionResource
     protected void freeResource()
     {
         try {
+            ConnectionResource.LOG.debug("free Resource: {}", this);
             Context.getThreadContext().returnConnectionResource(this);
         } catch (final EFapsException e) {
             ConnectionResource.LOG.error("EFapsException", e);
         }
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // all further methods are implementing javax.transaction.xa.XAResource
 
     /**
      * Ask the resource manager to prepare for a transaction commit of the
