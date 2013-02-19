@@ -633,8 +633,10 @@ public final class SystemConfiguration
             if (closeContext) {
                 Context.rollback();
             }
-            SystemConfiguration.cacheSytemConfig(sysConfig);
-            sysConfig.readConfig();
+            if (sysConfig != null) {
+                SystemConfiguration.cacheSytemConfig(sysConfig);
+                sysConfig.readConfig();
+            }
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read SystemConfiguration", e);
         } catch (final EFapsException e) {
