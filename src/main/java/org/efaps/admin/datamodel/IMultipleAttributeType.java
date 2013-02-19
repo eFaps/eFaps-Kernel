@@ -20,12 +20,6 @@
 
 package org.efaps.admin.datamodel;
 
-import java.util.List;
-import java.util.Map;
-
-import org.efaps.db.query.CachedResult;
-
-
 /**
  * @author The eFaps Team
  * @version $Id$
@@ -33,12 +27,5 @@ import org.efaps.db.query.CachedResult;
 public interface IMultipleAttributeType
     extends IAttributeType
 {
-    /**
-     *
-     * @param _rs               cached result
-     * @param _index2expression map depending of the index and the expression
-     * @return values
-     */
-    Map<String, List<Object>> readValues(final CachedResult _rs,
-                                         final Map<Integer, String> _index2expression);
+
 }

@@ -30,7 +30,6 @@ import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.Context;
-import org.efaps.db.query.CachedResult;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.EFapsException;
 
@@ -84,18 +83,6 @@ public class DecimalType extends AbstractType
         }
 
         return ret;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object readValue(final Attribute _attribute,
-                            final CachedResult _rs,
-                            final List<Integer> _indexes)
-    {
-
-        return _rs.getDecimal(_indexes.get(0).intValue());
     }
 
     /**

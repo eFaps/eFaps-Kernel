@@ -39,7 +39,6 @@ import org.efaps.ci.CIAdminDataModel;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.ColumnInformation;
-import org.efaps.db.query.CachedResult;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLPart;
@@ -574,22 +573,6 @@ public class Attribute
         throws SQLException
     {
         this.attributeType.getDbAttrType().prepareUpdate(_update, this, _values);
-    }
-
-    /**
-     *
-     * @param _rs cached result set
-     * @param _indexes indexes within the cached result for the value
-     * @return found value
-     * @throws Exception if values could not be read from the cached result
-     * @deprecated to be remove with 2.0
-     */
-    @Deprecated
-    public Object readDBValue(final CachedResult _rs,
-                              final List<Integer> _indexes)
-        throws Exception
-    {
-        return this.attributeType.getDbAttrType().readValue(this, _rs, _indexes);
     }
 
     /**

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.db.query.CachedResult;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.EFapsException;
 
@@ -73,17 +72,6 @@ public class LongType
         }
 
         return ret;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object readValue(final Attribute _attribute,
-                            final CachedResult _rs,
-                            final List<Integer> _indexes)
-    {
-        return _rs.getLong(_indexes.get(0).intValue());
     }
 
     /**

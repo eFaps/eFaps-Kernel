@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.db.query.CachedResult;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
@@ -45,17 +44,6 @@ import org.joda.time.format.ISODateTimeFormat;
 public class DateTimeType
     extends AbstractType
 {
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object readValue(final Attribute _attribute,
-                            final CachedResult _rs,
-                            final List<Integer> _indexes)
-    {
-        return _rs.getDateTime(_indexes.get(0).intValue());
-    }
-
     /**
      * {@inheritDoc}
      * @throws EFapsException

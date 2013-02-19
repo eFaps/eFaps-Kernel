@@ -26,7 +26,6 @@ import java.util.List;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
 import org.efaps.admin.datamodel.Dimension.UoM;
-import org.efaps.db.query.CachedResult;
 
 
 /**
@@ -38,35 +37,6 @@ import org.efaps.db.query.CachedResult;
 public abstract class AbstractWithUoMType
     extends AbstractType
 {
-    /**
-     * Read the value from the result set. Works with
-     * {@link #readValue(CachedResult, int)} to return an array with the
-     * values:
-     * <ul>
-     * <li>object, UoM</li>
-     * <li>or object, UoM, Base as Double</li>
-     * </ul>
-     *
-     * @param _attribute    related eFaps attribute
-     * @param _rs           cached result from the JDBC select statement
-     * @param _indexes      indexes in the result set
-     * @return Object Array
-     */
-    public Object readValue(final Attribute _attribute,
-                            final CachedResult _rs,
-                            final List<Integer> _indexes)
-    {
-        final Object object = readValue(_rs.getObject(_indexes.get(0)));
-        final UoM uom = Dimension.getUoM(_rs.getLong(_indexes.get(1)));
-        final Object[] ret;
-        if (_attribute.getSqlColNames().size() > 2) {
-            ret = new Object[]{object, uom, _rs.getDouble(_indexes.get(2))};
-        } else {
-            ret = new Object[]{object, uom};
-        }
-        return ret;
-    }
-
     /**
      * {@inheritDoc}
      */

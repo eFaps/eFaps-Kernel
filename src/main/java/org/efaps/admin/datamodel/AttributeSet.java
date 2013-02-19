@@ -22,10 +22,8 @@ package org.efaps.admin.datamodel;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.efaps.db.query.CachedResult;
 import org.efaps.util.EFapsException;
 
 /**
@@ -109,21 +107,6 @@ public class AttributeSet
     public AttributeType getAttributeType()
     {
         return this.attributeType;
-    }
-
-    /**
-     * Method to read value from the database.
-     *
-     * @param _rs               cached result
-     * @param _index2expression map index to expression
-     * @return read values from the database
-     * @throws EFapsException on error
-     */
-    public Map<String, List<Object>> readValues(final CachedResult _rs,
-                                                final Map<Integer, String> _index2expression)
-        throws EFapsException
-    {
-        return ((IMultipleAttributeType) this.attributeType.getDbAttrType()).readValues(_rs, _index2expression);
     }
 
     /**

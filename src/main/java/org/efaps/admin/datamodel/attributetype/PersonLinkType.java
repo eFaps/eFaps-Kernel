@@ -25,7 +25,6 @@ import java.util.List;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
-import org.efaps.db.query.CachedResult;
 import org.efaps.util.EFapsException;
 
 /**
@@ -36,36 +35,6 @@ import org.efaps.util.EFapsException;
 public class PersonLinkType
     extends AbstractLinkType
 {
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object readValue(final Attribute _attribute,
-                            final CachedResult _rs,
-                            final List<Integer> _indexes)
-    {
-        Object ret = null;
-
-        final Object userId = super.readValue(_attribute, _rs, _indexes);
-        if (userId != null) {
-            try {
-                long id = 0;
-                if (userId instanceof Number) {
-                    id = ((Number) userId).longValue();
-                } else if (userId != null) {
-                    id = Long.parseLong(userId.toString());
-                }
-                ret = Person.get(id);
-                if (ret == null) {
-                    ret = Role.get(id);
-                }
-            } catch (final EFapsException e) {
-                e.printStackTrace();
-            }
-        }
-        return ret;
-    }
-
     /**
      * {@inheritDoc}
      */

@@ -23,7 +23,6 @@ package org.efaps.admin.datamodel;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.efaps.db.query.CachedResult;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.util.EFapsException;
@@ -82,22 +81,6 @@ public interface IAttributeType
     Object readValue(final Attribute _attribute,
                      final List<Object> _objectList)
         throws EFapsException;
-
-    /**
-     * @param _attribute    related attribute which is read
-     * @param _rs cached    result from the JDBC select statement
-     * @param _indexes      index in the result set
-     * @throws Exception on error
-     * @return Object
-     * TODO: remove for 2.0
-     * @deprecated will be removed with 2.0 because it is used only in deprecated SearchQuery
-     */
-    @Deprecated
-    Object readValue(final Attribute _attribute,
-                     final CachedResult _rs,
-                     final List<Integer> _indexes)
-        throws Exception;
-
 
     /**
      * Method is called when the value of the related attribute is used

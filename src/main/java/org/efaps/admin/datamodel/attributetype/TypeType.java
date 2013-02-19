@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.query.CachedResult;
 import org.efaps.db.wrapper.SQLUpdate;
 
 /**
@@ -49,24 +48,6 @@ public class TypeType
         throws SQLException
     {
         throw new SQLException("Update value for Type not allowed!!!");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object readValue(final Attribute _attribute,
-                            final CachedResult _rs,
-                            final List<Integer> _indexes)
-        throws Exception
-    {
-        Type ret;
-        if (!_attribute.getSqlColNames().isEmpty()) {
-            ret = Type.get(_rs.getLong(_indexes.get(0).intValue()));
-        } else {
-            ret = _attribute.getParent();
-        }
-        return ret;
     }
 
     /**
