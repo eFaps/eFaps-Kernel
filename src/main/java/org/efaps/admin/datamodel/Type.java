@@ -458,9 +458,9 @@ public class Type
             }
         }
         for (final Type child : getChildTypes()) {
-            if (child.getParentType().getId() == getId()) {
+           // if (child.getParentType().getId() == getId()) {
                 child.addAttribute(_attribute.copy(), true);
-            }
+            //}
         }
     }
 

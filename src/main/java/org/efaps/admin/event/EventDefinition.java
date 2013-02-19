@@ -215,72 +215,76 @@ public final class EventDefinition
     public static void addEvents(final AbstractAdminObject _adminObject)
         throws EFapsException
     {
-        final QueryBuilder queryBldr = new QueryBuilder(CIAdminEvent.Definition);
-        queryBldr.addWhereAttrEqValue(CIAdminEvent.Definition.Abstract, _adminObject.getId());
-        final MultiPrintQuery multi = queryBldr.getPrint();
-        final SelectBuilder selClass = new SelectBuilder().linkto(CIAdminEvent.Definition.JavaProg).attribute(
-                        CIAdminProgram.Java.Name);
-        multi.addSelect(selClass);
-        multi.addAttribute(CIAdminEvent.Definition.Type,
-                        CIAdminEvent.Definition.Name,
-                        CIAdminEvent.Definition.IndexPosition,
-                        CIAdminEvent.Definition.Method);
-        multi.executeWithoutAccessCheck();
-        while (multi.next()) {
-            // define all variables here so that an error can be thrown
-            // containing the
-            // values that where set correctly
-            Instance inst = null;
-            Type eventType = null;
-            String eventName = null;
-            int eventPos = 0;
-            final long abstractID = 0;
-            String program = "";
-            String method = null;
-            try {
-                inst = multi.getCurrentInstance();
-                eventType = multi.<Type>getAttribute(CIAdminEvent.Definition.Type);
-                eventName = multi.<String>getAttribute(CIAdminEvent.Definition.Name);
-                eventPos = multi.<Integer>getAttribute(CIAdminEvent.Definition.IndexPosition);
-                program = multi.<String>getSelect(selClass);
-                method = multi.<String>getAttribute(CIAdminEvent.Definition.Method);
+        // check is necessary for the first time installation
+        if (CIAdminEvent.Definition.getType() != null && CIAdminEvent.Definition.getType().getMainTable() != null) {
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminEvent.Definition);
+            queryBldr.addWhereAttrEqValue(CIAdminEvent.Definition.Abstract, _adminObject.getId());
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            final SelectBuilder selClass = new SelectBuilder().linkto(CIAdminEvent.Definition.JavaProg).attribute(
+                            CIAdminProgram.Java.Name);
+            multi.addSelect(selClass);
+            multi.addAttribute(CIAdminEvent.Definition.Type,
+                            CIAdminEvent.Definition.Name,
+                            CIAdminEvent.Definition.IndexPosition,
+                            CIAdminEvent.Definition.Method);
+            multi.executeWithoutAccessCheck();
+            while (multi.next()) {
+                // define all variables here so that an error can be thrown
+                // containing the
+                // values that where set correctly
+                Instance inst = null;
+                Type eventType = null;
+                String eventName = null;
+                int eventPos = 0;
+                final long abstractID = 0;
+                String program = "";
+                String method = null;
+                try {
+                    inst = multi.getCurrentInstance();
+                    eventType = multi.<Type>getAttribute(CIAdminEvent.Definition.Type);
+                    eventName = multi.<String>getAttribute(CIAdminEvent.Definition.Name);
+                    eventPos = multi.<Integer>getAttribute(CIAdminEvent.Definition.IndexPosition);
+                    program = multi.<String>getSelect(selClass);
+                    method = multi.<String>getAttribute(CIAdminEvent.Definition.Method);
 
-                EventDefinition.LOG.debug("Reading EventDefinition for: ");
-                EventDefinition.LOG.debug("   object = {}", _adminObject);
-                EventDefinition.LOG.debug("   Instance = {}", inst);
-                EventDefinition.LOG.debug("   eventType = {}", eventType);
-                EventDefinition.LOG.debug("   eventName = {}", eventName);
-                EventDefinition.LOG.debug("   eventPos = {}", eventPos);
-                EventDefinition.LOG.debug("   parentId = {}", abstractID);
-                EventDefinition.LOG.debug("   program = {}", program);
-                EventDefinition.LOG.debug("   Method = {}", method);
+                    EventDefinition.LOG.debug("Reading EventDefinition for: ");
+                    EventDefinition.LOG.debug("   object = {}", _adminObject);
+                    EventDefinition.LOG.debug("   Instance = {}", inst);
+                    EventDefinition.LOG.debug("   eventType = {}", eventType);
+                    EventDefinition.LOG.debug("   eventName = {}", eventName);
+                    EventDefinition.LOG.debug("   eventPos = {}", eventPos);
+                    EventDefinition.LOG.debug("   parentId = {}", abstractID);
+                    EventDefinition.LOG.debug("   program = {}", program);
+                    EventDefinition.LOG.debug("   Method = {}", method);
 
-                EventType triggerEvent = null;
-                for (final EventType trigger : EventType.values()) {
-                    final Type triggerClass = Type.get(trigger.getName());
-                    if (eventType.isKindOf(triggerClass)) {
-                        if (EventDefinition.LOG.isDebugEnabled()) {
-                            EventDefinition.LOG.debug("     found trigger " + trigger + ":" + triggerClass);
+                    EventType triggerEvent = null;
+                    for (final EventType trigger : EventType.values()) {
+                        final Type triggerClass = Type.get(trigger.getName());
+                        if (eventType.isKindOf(triggerClass)) {
+                            if (EventDefinition.LOG.isDebugEnabled()) {
+                                EventDefinition.LOG.debug("     found trigger " + trigger + ":" + triggerClass);
+                            }
+                            triggerEvent = trigger;
+                            break;
                         }
-                        triggerEvent = trigger;
-                        break;
                     }
-                }
 
-                _adminObject.addEvent(triggerEvent,
-                                new EventDefinition(inst, eventName, eventPos, program, method));
+                    _adminObject.addEvent(triggerEvent,
+                                    new EventDefinition(inst, eventName, eventPos, program, method));
 
-                // CHECKSTYLE:OFF
-            } catch (final Exception e) {
-                // CHECKSTYLE:ON
-                EventDefinition.LOG.error("Instance: {}, eventType: {}, eventName: {}, eventPos: {}, parentId: {}, "
-                                + "programId: {}, MethodresName: {}, , arguments: {}",
-                                inst, eventType, eventName, eventPos, abstractID, program, method, program);
-                if (e instanceof EFapsException) {
-                    throw (EFapsException) e;
-                } else {
-                    throw new EFapsException(EventDefinition.class, "initialize", e, inst, eventName, eventPos,
-                                    program, method);
+                    // CHECKSTYLE:OFF
+                } catch (final Exception e) {
+                    // CHECKSTYLE:ON
+                    EventDefinition.LOG.error(
+                                    "Instance: {}, eventType: {}, eventName: {}, eventPos: {}, parentId: {}, "
+                                                    + "programId: {}, MethodresName: {}, , arguments: {}",
+                                    inst, eventType, eventName, eventPos, abstractID, program, method, program);
+                    if (e instanceof EFapsException) {
+                        throw (EFapsException) e;
+                    } else {
+                        throw new EFapsException(EventDefinition.class, "initialize", e, inst, eventName, eventPos,
+                                        program, method);
+                    }
                 }
             }
         }

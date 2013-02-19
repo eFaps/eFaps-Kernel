@@ -848,7 +848,6 @@ public class Attribute
                     } else {
                         _type.addAttribute(attr, false);
                     }
-
                 }
             }
             // make connection between set and attributes

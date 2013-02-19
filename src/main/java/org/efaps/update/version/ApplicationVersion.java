@@ -488,7 +488,7 @@ public class ApplicationVersion
                 try {
                     Context.begin(_userName);
                 } catch (final EFapsException e) {
-                    throw new InstallationException("Tranaction could not be started", e);
+                    throw new InstallationException("Context could not be started", e);
                 }
                 final ClassLoader parent = getClass().getClassLoader();
                 final EFapsClassLoader efapsClassLoader = new EFapsClassLoader(parent);
