@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -266,8 +267,9 @@ public class Install
         throws InstallationException
     {
         final Map<String, Integer> versions = new HashMap<String, Integer>();
-        if (CIAdminCommon.Version.getType() != null) {
-            try  {
+        try {
+            if (Context.getDbType().existsView(Context.getThreadContext().getConnection(), "V_ADMINTYPE")
+                            && CIAdminCommon.Version.getType() != null) {
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.Version);
                 final MultiPrintQuery multi = queryBldr.getPrint();
                 multi.addAttribute(CIAdminCommon.Version.Name, CIAdminCommon.Version.Revision);
@@ -279,9 +281,11 @@ public class Install
                         versions.put(name, revision);
                     }
                 }
-            } catch (final EFapsException e)  {
-                throw new InstallationException("Latest version could not be found", e);
             }
+        } catch (final EFapsException e) {
+            throw new InstallationException("Latest version could not be found", e);
+        } catch (final SQLException e) {
+            throw new InstallationException("Latest version could not be found", e);
         }
         return versions;
     }

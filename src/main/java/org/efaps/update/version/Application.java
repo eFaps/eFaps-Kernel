@@ -474,6 +474,7 @@ public final class Application
      *
      * @param _userName name of logged in user
      * @param _password password of logged in user
+     * @param _profiles set of profile to be applied
      * @throws InstallationException for all cases the installation failed
      * @see #install(String, String, boolean)
      */
@@ -493,6 +494,7 @@ public final class Application
      *
      * @param _userName name of the installation user
      * @param _password password of the installation user
+     * @param _profiles set of profile to be applied
      * @param _withDependency must the dependency also installed?
      * @throws InstallationException if installation failed
      */
@@ -625,12 +627,10 @@ public final class Application
                                 final Long _version)
         throws InstallationException
     {
-        final Type versionType = CIAdminCommon.Version.getType();
-
-        if (versionType != null) {
-            try {
-                Context.begin(_userName);
-
+        try {
+            Context.begin(_userName);
+            final Type versionType = CIAdminCommon.Version.getType();
+            if (versionType != null) {
                 // store cached versions
                 for (final Long version : this.notStoredVersions) {
                     final Insert insert = new Insert(versionType);
@@ -652,13 +652,13 @@ public final class Application
                     insert.add(CIAdminCommon.Version.Revision, _version);
                     insert.execute();
                 }
-                Context.commit();
-            } catch (final EFapsException e) {
-                throw new InstallationException("Update of the version information failed", e);
+            } else {
+                // if version could not be stored, cache the version information
+                this.notStoredVersions.add(_version);
             }
-        } else {
-            // if version could not be stored, cache the version information
-            this.notStoredVersions.add(_version);
+            Context.commit();
+        } catch (final EFapsException e) {
+            throw new InstallationException("Update of the version information failed", e);
         }
     }
 
