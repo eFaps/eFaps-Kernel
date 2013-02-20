@@ -203,7 +203,6 @@ public abstract class AbstractAdminObject
         if (evenList.size() > 1) {
             Collections.sort(evenList, new Comparator<EventDefinition>()
             {
-
                 @Override
                 public int compare(final EventDefinition _eventDef0,
                                    final EventDefinition _eventDef1)
@@ -227,8 +226,7 @@ public abstract class AbstractAdminObject
             try {
                 EventDefinition.addEvents(this);
             } catch (final EFapsException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                AbstractAdminObject.LOG.error("Could not read events for Name:; {}', UUID: {}",  this.name, this.uuid);
             }
         }
         return this.events.get(_eventType);
@@ -248,8 +246,7 @@ public abstract class AbstractAdminObject
             try {
                 EventDefinition.addEvents(this);
             } catch (final EFapsException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                AbstractAdminObject.LOG.error("Could not read events for Name:; {}', UUID: {}",  this.name, this.uuid);
             }
         }
         return this.events.get(_eventtype) != null;
@@ -383,9 +380,9 @@ public abstract class AbstractAdminObject
 
             final Statement stmt = con.getConnection().createStatement();
             final ResultSet rs = stmt.executeQuery(select.getSQL());
-            if (AbstractAdminObject.LOG.isDebugEnabled()) {
-                AbstractAdminObject.LOG.debug("Reading Links for '%s'", getName());
-            }
+
+            AbstractAdminObject.LOG.debug("Reading Links for '{}'", getName());
+
             final List<Object[]> values = new ArrayList<Object[]>();
             while (rs.next()) {
                 final long conTypeId = rs.getLong(1);
@@ -400,9 +397,12 @@ public abstract class AbstractAdminObject
 
             for (final Object[] row : values) {
                 final Type conType = Type.get((Long) row[0]);
+                AbstractAdminObject.LOG.debug("     Connection Type: {}", conType);
                 final Type toType = Type.get((Long) row[2]);
+                AbstractAdminObject.LOG.debug("     To Type: {}", toType);
                 if (conType != null && toType != null) {
                     setLinkProperty(conType, (Long) row[1], toType, String.valueOf(row[3]));
+                    AbstractAdminObject.LOG.debug("     ID: {}, name: {}", row[1], row[3]);
                 }
             }
 

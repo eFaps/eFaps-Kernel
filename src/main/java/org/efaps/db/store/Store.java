@@ -167,6 +167,7 @@ public final class Store
     {
         Resource ret = null;
         try {
+            Store.LOG.debug("Getting resource for: {} with properties: {}", this.resource, this.resourceProperties);
             ret = (Resource) (Class.forName(this.resource).newInstance());
             ret.initialize(_instance, this);
         } catch (final InstantiationException e) {
@@ -299,9 +300,9 @@ public final class Store
                 final String name = multi.<String>getAttribute(CIDB.Store.Name);
                 final String uuid = multi.<String>getAttribute(CIDB.Store.UUID);
                 final Store store = new Store(id, uuid, name);
-                Store.cacheStore(store);
                 store.readFromDB4Properties();
                 store.readFromDB4Links();
+                Store.cacheStore(store);
             }
         } catch (final EFapsException e) {
             throw new CacheReloadException("Could not read Store.", e);
