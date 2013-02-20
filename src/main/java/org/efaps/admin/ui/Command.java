@@ -23,6 +23,7 @@ package org.efaps.admin.ui;
 import java.util.UUID;
 
 import org.efaps.ci.CIAdminUserInterface;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,36 +62,39 @@ public class Command
      *
      * @param _uuid         UUID to search in the cache
      * @return instance of class {@link Command}
-     * @see #CACHE
+     * @throws CacheReloadException on error
      */
     public static Command get(final UUID _uuid)
+        throws CacheReloadException
     {
-        return  AbstractUserInterfaceObject.<Command>get(_uuid, Command.class, CIAdminUserInterface.Command.getType());
+        return AbstractUserInterfaceObject.<Command>get(_uuid, Command.class, CIAdminUserInterface.Command.getType());
     }
 
     /**
      * Returns for given parameter <i>_id</i> the instance of class
      * {@link Command}.
      *
-     * @param _id       id to search in the cache
+     * @param _id id to search in the cache
      * @return instance of class {@link Command}
-     * @see #CACHE
+     * @throws CacheReloadException on error
      */
     public static Command get(final long _id)
+        throws CacheReloadException
     {
-        return  AbstractUserInterfaceObject.<Command>get(_id, Command.class, CIAdminUserInterface.Command.getType());
+        return AbstractUserInterfaceObject.<Command>get(_id, Command.class, CIAdminUserInterface.Command.getType());
     }
 
     /**
      * Returns for given parameter <i>_name</i> the instance of class
      * {@link Command}.
      *
-     * @param _name     name to search in the cache
+     * @param _name name to search in the cache
      * @return instance of class {@link Command}
-     * @see #CACHE
+     * @throws CacheReloadException on error
      */
     public static Command get(final String _name)
+        throws CacheReloadException
     {
-        return  AbstractUserInterfaceObject.<Command>get(_name, Command.class, CIAdminUserInterface.Command.getType());
+        return AbstractUserInterfaceObject.<Command>get(_name, Command.class, CIAdminUserInterface.Command.getType());
     }
 }

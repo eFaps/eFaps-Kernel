@@ -23,6 +23,7 @@ package org.efaps.admin.ui;
 import java.util.UUID;
 
 import org.efaps.ci.CIAdminUserInterface;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,11 +78,12 @@ public class Table
      *
      * @param _id id to search in the cache
      * @return instance of class {@link Table}
-     * @see #CACHE
+     * @throws CacheReloadException on error
      */
     public static Table get(final long _id)
+        throws CacheReloadException
     {
-        return  AbstractUserInterfaceObject.<Table>get(_id, Table.class, CIAdminUserInterface.Table.getType());
+        return AbstractUserInterfaceObject.<Table>get(_id, Table.class, CIAdminUserInterface.Table.getType());
     }
 
     /**
@@ -90,11 +92,12 @@ public class Table
      *
      * @param _name name to search in the cache
      * @return instance of class {@link Table}
-     * @see #CACHE
+     * @throws CacheReloadException on error
      */
     public static Table get(final String _name)
+        throws CacheReloadException
     {
-        return  AbstractUserInterfaceObject.<Table>get(_name, Table.class, CIAdminUserInterface.Table.getType());
+        return AbstractUserInterfaceObject.<Table>get(_name, Table.class, CIAdminUserInterface.Table.getType());
     }
 
     /**
@@ -103,10 +106,11 @@ public class Table
      *
      * @param _uuid UUID to search in the cache
      * @return instance of class {@link Table}
-     * @see #CACHE
+     * @throws CacheReloadException on error
      */
     public static Table get(final UUID _uuid)
+        throws CacheReloadException
     {
-        return  AbstractUserInterfaceObject.<Table>get(_uuid, Table.class, CIAdminUserInterface.Table.getType());
+        return AbstractUserInterfaceObject.<Table>get(_uuid, Table.class, CIAdminUserInterface.Table.getType());
     }
 }

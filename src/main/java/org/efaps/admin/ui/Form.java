@@ -27,6 +27,7 @@ import java.util.UUID;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,9 +98,10 @@ public class Form
      *
      * @param _id id to search in the cache
      * @return instance of class {@link Form}
-     * @see #getCache
+     * @throws CacheReloadException on error
      */
     public static Form get(final long _id)
+        throws CacheReloadException
     {
         return AbstractUserInterfaceObject.<Form>get(_id, Form.class, CIAdminUserInterface.Form.getType());
     }
@@ -110,9 +112,10 @@ public class Form
      *
      * @param _name name to search in the cache
      * @return instance of class {@link Form}
-     * @see #getCache
+     * @throws CacheReloadException on error
      */
     public static Form get(final String _name)
+        throws CacheReloadException
     {
         return AbstractUserInterfaceObject.<Form>get(_name, Form.class, CIAdminUserInterface.Form.getType());
     }
@@ -123,9 +126,10 @@ public class Form
      *
      * @param _uuid UUID to search in the cache
      * @return instance of class {@link Form}
-     * @see #getCache
+     * @throws CacheReloadException on error
      */
     public static Form get(final UUID _uuid)
+        throws CacheReloadException
     {
         return AbstractUserInterfaceObject.<Form>get(_uuid, Form.class, CIAdminUserInterface.Form.getType());
     }
@@ -136,6 +140,7 @@ public class Form
      *
      * @param _type type for which the type form is searched
      * @return type form for given type if found; otherwise <code>null</code>.
+     * @throws EFapsException on error
      */
     public static Form getTypeForm(final Type _type)
         throws EFapsException

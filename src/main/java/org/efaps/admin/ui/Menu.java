@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,14 +58,12 @@ public class Menu
     }
 
     /**
-     * An sub command or menu with the given id is added to this menu.
-     *
-     * @param _sortId id used to sort
-     * @param _id command / menu id
+     * {@inheritDoc}
      */
     @Override
     protected void add(final long _sortId,
                        final long _id)
+        throws CacheReloadException
     {
         final Command command = Command.get(_id);
         if (command == null) {
@@ -81,9 +80,10 @@ public class Menu
      *
      * @param _id id to search in the cache
      * @return instance of class {@link Menu}
-     * @see #getCache
+     * @throws CacheReloadException on error
      */
     public static Menu get(final long _id)
+        throws CacheReloadException
     {
         return AbstractUserInterfaceObject.<Menu>get(_id, Menu.class, CIAdminUserInterface.Menu.getType());
     }
@@ -94,9 +94,10 @@ public class Menu
      *
      * @param _name name to search in the cache
      * @return instance of class {@link Menu}
-     * @see #getCache
+     * @throws CacheReloadException on error
      */
     public static Menu get(final String _name)
+        throws CacheReloadException
     {
         return AbstractUserInterfaceObject.<Menu>get(_name, Menu.class, CIAdminUserInterface.Menu.getType());
     }
@@ -107,9 +108,10 @@ public class Menu
      *
      * @param _uuid UUID to search in the cache
      * @return instance of class {@link Menu}
-     * @see #getCache
+     * @throws CacheReloadException on error
      */
     public static Menu get(final UUID _uuid)
+        throws CacheReloadException
     {
         return AbstractUserInterfaceObject.<Menu>get(_uuid, Menu.class, CIAdminUserInterface.Menu.getType());
     }
@@ -122,6 +124,7 @@ public class Menu
      * @param _type type for which the type tree menu is searched
      * @return type tree menu for given type if found; otherwise
      *         <code>null</code>.
+     * @throws EFapsException on error
      */
     public static Menu getTypeTreeMenu(final Type _type)
         throws EFapsException

@@ -21,6 +21,10 @@
 
 package org.efaps.ci;
 
+import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Each class that extends this abstract class represents a configuration
@@ -39,6 +43,11 @@ public abstract class CITable
 //CHECKSTYLE:ON
 
     /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(CIObject.class);
+
+    /**
      * Constructor setting the uuid.
      * @param _uuid UUID of this type
      */
@@ -49,10 +58,16 @@ public abstract class CITable
 
     /**
      * Get the type this Configuration item represents.
-     * @return Type
+     * @return Table
      */
     public org.efaps.admin.ui.Table getType()
     {
-        return org.efaps.admin.ui.Table.get(this.uuid);
+        org.efaps.admin.ui.Table ret = null;
+        try {
+            ret =  org.efaps.admin.ui.Table.get(this.uuid);
+        } catch (final CacheReloadException e) {
+            CITable.LOG.error("Error on retrieving Type for CIType with uuid: {}", this.uuid);
+        }
+        return ret;
     }
 }

@@ -21,6 +21,10 @@
 
 package org.efaps.ci;
 
+import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Each class that extends this abstract class represents a configuration
@@ -37,6 +41,10 @@ public abstract class CIForm
     extends CICollection
 {
 //CHECKSTYLE:ON
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(CIObject.class);
 
     /**
      * Constructor setting the uuid.
@@ -49,10 +57,16 @@ public abstract class CIForm
 
     /**
      * Get the type this Configuration item represents.
-     * @return Type
+     * @return Form
      */
     public org.efaps.admin.ui.Form getType()
     {
-        return org.efaps.admin.ui.Form.get(this.uuid);
+        org.efaps.admin.ui.Form ret = null;
+        try {
+            ret =  org.efaps.admin.ui.Form.get(this.uuid);
+        } catch (final CacheReloadException e) {
+            CIForm.LOG.error("Error on retrieving Type for CIType with uuid: {}", this.uuid);
+        }
+        return ret;
     }
 }

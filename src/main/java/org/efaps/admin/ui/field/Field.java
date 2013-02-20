@@ -68,6 +68,9 @@ public class Field
         NONE;
     }
 
+    /**
+     * Name of the Cache by ID.
+     */
     private static String IDCACHE = "Field";
 
     /**
@@ -580,8 +583,10 @@ public class Field
      * Getter method for the instance variable {@link #collectionOID}.
      *
      * @return value of instance variable {@link #collectionOID}
+     * @throws CacheReloadException on error
      */
     public AbstractCollection getCollection()
+        throws CacheReloadException
     {
         AbstractCollection ret = Form.get(this.collectionUUID);
         if (ret == null) {

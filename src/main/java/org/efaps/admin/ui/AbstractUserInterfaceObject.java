@@ -70,7 +70,6 @@ import org.infinispan.Cache;
 public abstract class AbstractUserInterfaceObject
     extends AbstractAdminObject
 {
-
     /**
      * This enum id used to define the different Modes a Target of a Command can
      * have, like create, edit etc.
@@ -94,17 +93,17 @@ public abstract class AbstractUserInterfaceObject
     }
 
     /**
+     * Used as <code>null</code> replacement for the cache.
+     */
+    private static AbstractUserInterfaceObject NULL = new AbstractUserInterfaceObject(Long.valueOf(0), null, null) { };
+
+    /**
      * The instance variable is an Access HashSet to store all users (person,
      * group or role) who have access to this user interface object.
      *
      * @see #getAccess
      */
     private final Set<AbstractUserObject> access = new HashSet<AbstractUserObject>();
-
-    /**
-     * Used as <code>null</code> replacement for the cache.
-     */
-    public static AbstractUserInterfaceObject NULL = new AbstractUserInterfaceObject(Long.valueOf(0), null, null) {};
 
     /**
      * Constructor to set the id, the uuid and the name of the user interface
@@ -293,12 +292,15 @@ public abstract class AbstractUserInterfaceObject
      * @param _uuid             UUUI of the UIObject wanted
      * @param _componentType    type of the UIObject
      * @param _type             datamodel type of the object
+     * @param <V> Object type
      * @return UIObject
+     * @throws CacheReloadException on error
      */
     @SuppressWarnings("unchecked")
     protected static <V> V get(final UUID _uuid,
                                final Class<V> _componentType,
                                final Type _type)
+        throws CacheReloadException
     {
         final Cache<UUID, V> cache = InfinispanCache.get().<UUID, V>getCache(
                         AbstractUserInterfaceObject.getUUIDCacheName(_componentType));
@@ -312,15 +314,18 @@ public abstract class AbstractUserInterfaceObject
     }
 
     /**
-     * @param _id               ID of the UIObject wanted
-     * @param _componentType    type of the UIObject
-     * @param _type             datamodel type of the object
+     * @param _id ID of the UIObject wanted
+     * @param _componentType type of the UIObject
+     * @param _type datamodel type of the object
+     * @param <V> Object type
      * @return UIObject
+     * @throws CacheReloadException on error
      */
     @SuppressWarnings("unchecked")
     protected static <V> V get(final Long _id,
                                final Class<V> _componentType,
                                final Type _type)
+        throws CacheReloadException
     {
         final Cache<Long, V> cache = InfinispanCache.get().<Long, V>getCache(
                         AbstractUserInterfaceObject.getIDCacheName(_componentType));
@@ -333,15 +338,18 @@ public abstract class AbstractUserInterfaceObject
     }
 
     /**
-     * @param _name             Name of the UIObject wanted
-     * @param _componentType    type of the UIObject
-     * @param _type             datamodel type of the object
+     * @param _name Name of the UIObject wanted
+     * @param _componentType type of the UIObject
+     * @param _type datamodel type of the object
+     * @param <V> Object type
      * @return UIObject
+     * @throws CacheReloadException on error
      */
     @SuppressWarnings("unchecked")
     protected static <V> V get(final String _name,
                                final Class<V> _componentType,
                                final Type _type)
+        throws CacheReloadException
     {
         final Cache<String, V> cache = InfinispanCache.get().<String, V>getCache(
                         AbstractUserInterfaceObject.getNameCacheName(_componentType));
@@ -412,12 +420,14 @@ public abstract class AbstractUserInterfaceObject
      * @param _type             DataModel TYpe of UIObject to be retrieved
      * @param _ciAttr           Attribute used for filtered
      * @param _value            value to filtered
-     * @return
+     * @return true if successful
+     * @throws CacheReloadException on error
      */
     private static boolean readObjectFromDB(final Class<?> _componentType,
                                             final Type _type,
                                             final CIAttribute _ciAttr,
                                             final Object _value)
+        throws CacheReloadException
     {
         boolean ret = false;
         try {
@@ -444,22 +454,17 @@ public abstract class AbstractUserInterfaceObject
                 ret = true;
             }
         } catch (final NoSuchMethodException e) {
-
+            throw new CacheReloadException("NoSuchMethodException", e);
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new CacheReloadException("EFapsException", e);
         } catch (final IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new CacheReloadException("IllegalArgumentException", e);
         } catch (final InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new CacheReloadException("InstantiationException", e);
         } catch (final IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new CacheReloadException("IllegalAccessException", e);
         } catch (final InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new CacheReloadException("InvocationTargetException", e);
         }
         return ret;
     }

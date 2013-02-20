@@ -44,7 +44,7 @@ public abstract class CIType
     /**
      * Logging instance used in this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(CIType.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CIObject.class);
 
     /**
      * ID attribute. Each type must have it.

@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,10 +69,12 @@ public class Search
      *
      * @param _sortId id used to sort
      * @param _id command / menu id
+     * @throws CacheReloadException on error
      */
     @Override
     protected void add(final long _sortId,
                        final long _id)
+        throws CacheReloadException
     {
         final Command command = Command.get(_id);
         if (command == null) {
@@ -124,9 +127,10 @@ public class Search
      *
      * @param _id id to search in the cache
      * @return instance of class {@link Form}
-     * @see #getCache
+     * @throws CacheReloadException on error
      */
     public static Search get(final long _id)
+        throws CacheReloadException
     {
         return AbstractUserInterfaceObject.<Search>get(_id, Search.class, CIAdminUserInterface.Search.getType());
     }
@@ -137,9 +141,10 @@ public class Search
      *
      * @param _name name to search in the cache
      * @return instance of class {@link Command}
-     * @see #getCache
+     * @throws CacheReloadException on error
      */
     public static Search get(final String _name)
+        throws CacheReloadException
     {
         return AbstractUserInterfaceObject.<Search>get(_name, Search.class, CIAdminUserInterface.Search.getType());
     }
@@ -150,9 +155,10 @@ public class Search
      *
      * @param _uuid uuid to search in the cache
      * @return instance of class {@link Command}
-     * @see #getCache
+     * @throws CacheReloadException on error
      */
     public static Search get(final UUID _uuid)
+        throws CacheReloadException
     {
         return AbstractUserInterfaceObject.<Search>get(_uuid, Search.class, CIAdminUserInterface.Search.getType());
     }

@@ -45,6 +45,9 @@ public class EFapsClassLoader
     extends ClassLoader
 {
 
+    /**
+     * Classloader to be used for singleton.
+     */
     private static EFapsClassLoader CLASSLOADER;
 
     /**

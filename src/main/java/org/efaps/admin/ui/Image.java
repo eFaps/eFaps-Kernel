@@ -121,6 +121,7 @@ public class Image
      * @param _type type for which the type tree menu is searched
      * @return Image for type tree menu for given type if found; otherwise
      *         <code>null</code>.
+     * @throws EFapsException on error
      */
     public static Image getTypeIcon(final Type _type)
         throws EFapsException

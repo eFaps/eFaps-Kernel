@@ -71,9 +71,11 @@ public abstract class AbstractMenu
      *
      * @param _sortId id used to sort
      * @param _id id of the sub command / menu to add
+     * @throws CacheReloadException on error
      */
     protected abstract void add(final long _sortId,
-                                final long _id);
+                                final long _id)
+        throws CacheReloadException;
 
     /**
      * Add a command to the menu structure.
