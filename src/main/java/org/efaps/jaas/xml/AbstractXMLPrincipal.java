@@ -22,7 +22,7 @@ package org.efaps.jaas.xml;
 
 import java.security.Principal;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * The abstract class is used to implement the person, role and group principal

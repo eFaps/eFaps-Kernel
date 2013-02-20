@@ -20,7 +20,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
 import org.efaps.admin.datamodel.Dimension.UoM;
@@ -61,7 +61,7 @@ public class StringWithUoMUI
             final UoM uom = (UoM) values[1];
             ret.append("<span><span name=\"").append(field.getName()).append("\" ")
                 .append(UIInterface.EFAPSTMPTAG).append(">")
-                .append(StringEscapeUtils.escapeHtml(tmp).replaceAll("\\n", "<br/>"))
+                .append(StringEscapeUtils.escapeHtml4(tmp).replaceAll("\\n", "<br/>"))
                 .append("</span>&nbsp;")
                 .append("<span name=\"").append(field.getName()).append("UoM\" ").append(">")
                 .append(uom.getName()).append("</span></span>");

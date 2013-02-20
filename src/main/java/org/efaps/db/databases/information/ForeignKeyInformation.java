@@ -20,7 +20,7 @@
 
 package org.efaps.db.databases.information;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * The class is used to store information about foreign keys within SQL tables.

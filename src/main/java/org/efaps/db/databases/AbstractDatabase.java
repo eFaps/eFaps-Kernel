@@ -35,7 +35,7 @@ import java.util.UUID;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.TableInformation;
 import org.efaps.db.wrapper.SQLDelete;
@@ -837,12 +837,12 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
     }
 
     /**
-     * @param _value STring value to be escaped
+     * @param _value String value to be escaped
      * @return escaped value in "'"
      */
     public String escapeForWhere(final String _value)
     {
-        return "'" + StringEscapeUtils.escapeSql(_value) + "'";
+        return "'" + StringUtils.replace(_value, "'", "''") + "'";
     }
 
     /**

@@ -23,7 +23,7 @@ package org.efaps.db.databases.information;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * The class is used to store information about unique keys within SQL tables.

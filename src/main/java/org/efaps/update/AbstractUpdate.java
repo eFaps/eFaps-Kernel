@@ -35,7 +35,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdmin;
 import org.efaps.ci.CIAdminCommon;

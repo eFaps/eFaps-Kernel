@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.event.EventType;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.ci.CIAdminEvent;

@@ -25,7 +25,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.DecimalType;
 import org.efaps.admin.event.EventType;
@@ -76,7 +76,7 @@ public class RateUI
         final StringBuilder ret = new StringBuilder();
         ret.append("<span name=\"").append(_fieldValue.getField().getName()).append("\" ")
             .append(UIInterface.EFAPSTMPTAG).append(">")
-            .append(StringEscapeUtils.escapeHtml(formatter.format(getRate(_fieldValue))))
+            .append(StringEscapeUtils.escapeHtml4(formatter.format(getRate(_fieldValue))))
             .append("</span>");
         return ret.toString();
     }
@@ -146,7 +146,7 @@ public class RateUI
         final StringBuilder ret = new StringBuilder();
         ret.append("<input type=\"text\" size=\"").append(_fieldValue.getField().getCols())
             .append("\" name=\"").append(_fieldValue.getField().getName())
-            .append("\" value=\"").append(StringEscapeUtils.escapeHtml(formatter.format(getRate(_fieldValue))))
+            .append("\" value=\"").append(StringEscapeUtils.escapeHtml4(formatter.format(getRate(_fieldValue))))
             .append("\"").append(UIInterface.EFAPSTMPTAG).append("/>")
             .append("<input type=\"hidden\" name=\"").append(_fieldValue.getField().getName())
             .append(RateUI.INVERTEDSUFFIX).append("\" value=\"").append(this.inverted).append("\">");
