@@ -52,8 +52,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
- * @version $Id: AbstractAdminObject.java 8805 2013-02-15 17:38:48Z
- *          jan@moxter.net $
+ * @version $Id$
  */
 public abstract class AbstractAdminObject
     implements CacheObjectInterface
@@ -64,6 +63,9 @@ public abstract class AbstractAdminObject
      */
     private static final Logger LOG = LoggerFactory.getLogger(AbstractAdminObject.class);
 
+    /**
+     * Select statement to get the properties.
+     */
     private static final String SELECT = new SQLSelect()
                     .column("NAME")
                     .column("VALUE")
@@ -108,6 +110,9 @@ public abstract class AbstractAdminObject
      */
     private final Map<EventType, List<EventDefinition>> events = new HashMap<EventType, List<EventDefinition>>();
 
+    /**
+     * checked for events?
+     */
     private boolean eventChecked = false;
 
     /**

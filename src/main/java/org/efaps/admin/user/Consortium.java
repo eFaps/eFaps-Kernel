@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
 public final class Consortium
     extends AbstractUserObject
 {
+
     /**
      * Needed for serialization.
      */
@@ -67,12 +68,13 @@ public final class Consortium
      * relations from the database.
      */
     private static final String SQL_SELECTREL = new SQLSelect()
-                                                        .column("USERABSTRACTTO")
-                                                        .from("V_CONSORTIUM2COMPANY")
-                                                        .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+                    .column("USERABSTRACTTO")
+                    .from("V_CONSORTIUM2COMPANY")
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
     /**
-     * This is the SQL select statement to select a Consortium from the database by ID.
+     * This is the SQL select statement to select a Consortium from the database
+     * by ID.
      */
     private static final String SQL_ID = new SQLSelect().column("ID")
                     .column("UUID")
@@ -82,7 +84,8 @@ public final class Consortium
                     .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
     /**
-     * This is the SQL select statement to select a role from the database by Name.
+     * This is the SQL select statement to select a role from the database by
+     * Name.
      */
     private static final String SQL_NAME = new SQLSelect().column("ID")
                     .column("UUID")
@@ -93,7 +96,8 @@ public final class Consortium
                     .toString();
 
     /**
-     * This is the SQL select statement to select a role from the database by UUID.
+     * This is the SQL select statement to select a role from the database by
+     * UUID.
      */
     private static final String SQL_UUID = new SQLSelect().column("ID")
                     .column("UUID")
@@ -123,17 +127,16 @@ public final class Consortium
      */
     private static final Consortium NULL = new Consortium(0, null, null, false);
 
-
     /**
      * The companies belonging to this Consortium.
      */
     private final Set<Company> companies = new HashSet<Company>();
 
     /**
-     * @param _id       id for this company
-     * @param _uuid     uuid for this company
-     * @param _name     name for this company
-     * @param _status    status for this company
+     * @param _id id for this company
+     * @param _uuid uuid for this company
+     * @param _name name for this company
+     * @param _status status for this company
      */
     private Consortium(final long _id,
                        final String _uuid,
@@ -153,6 +156,7 @@ public final class Consortium
 
     /**
      * Get the related Companies (unmodifiable).
+     *
      * @return the set of related Companies
      */
     public Set<Company> getCompanies()
@@ -181,8 +185,11 @@ public final class Consortium
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see org.efaps.admin.user.AbstractUserObject#hasChildPerson(org.efaps.admin.user.Person)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.efaps.admin.user.AbstractUserObject#hasChildPerson(org.efaps.admin
+     * .user.Person)
      */
     @Override
     public boolean hasChildPerson(final Person _person)
@@ -216,14 +223,15 @@ public final class Consortium
         }
     }
 
-   /**
-    * Returns for given parameter <i>_id</i> the instance of class {@link Consortium}.
-    *
-    * @param _id    id to search in the cache
-    * @return instance of class {@link Consortium}
-    * @throws CacheReloadException on error
-    * @see #getCache
-    */
+    /**
+     * Returns for given parameter <i>_id</i> the instance of class
+     * {@link Consortium}.
+     *
+     * @param _id id to search in the cache
+     * @return instance of class {@link Consortium}
+     * @throws CacheReloadException on error
+     * @see #getCache
+     */
     public static Consortium get(final long _id)
         throws CacheReloadException
     {
@@ -235,15 +243,15 @@ public final class Consortium
         return ret.equals(Consortium.NULL) ? null : ret;
     }
 
-/**
-    * Returns for given parameter <i>_name</i> the instance of class
-    * {@link Consortium}.
-    *
-    * @param _name   name to search in the cache
-    * @return instance of class {@link Consortium}
-    * @throws CacheReloadException on error
-    * @see #getCache
-    */
+    /**
+     * Returns for given parameter <i>_name</i> the instance of class
+     * {@link Consortium}.
+     *
+     * @param _name name to search in the cache
+     * @return instance of class {@link Consortium}
+     * @throws CacheReloadException on error
+     * @see #getCache
+     */
     public static Consortium get(final String _name)
         throws CacheReloadException
     {
@@ -258,6 +266,7 @@ public final class Consortium
     /**
      * Returns for given parameter <i>_uuid</i> the instance of class
      * {@link Consortium}.
+     *
      * @param _uuid UUI to search for
      * @return instance of class {@link Consortium}
      * @throws CacheReloadException on error
@@ -273,7 +282,7 @@ public final class Consortium
     }
 
     /**
-     * @param _role Consortium to be cached
+     * @param _consortium Consortium to be cached
      */
     private static void cacheConsortium(final Consortium _consortium)
     {
@@ -295,8 +304,10 @@ public final class Consortium
     }
 
     /**
-     * @param _sqlId
-     * @param _id
+     * @param _sql SQL Statment to be execuetd
+     * @param _criteria filter criteria
+     * @return true if successful
+     * @throws CacheReloadException on error
      */
     private static boolean getConsortiumFromDB(final String _sql,
                                                final Object _criteria)
@@ -350,15 +361,16 @@ public final class Consortium
     }
 
     /**
-     *
+     * @throws CacheReloadException on error
      */
-    private void getCompanyRelationFromDB() throws CacheReloadException
+    private void getCompanyRelationFromDB()
+        throws CacheReloadException
     {
         ConnectionResource con = null;
         try {
             final List<Long> companyIds = new ArrayList<Long>();
             con = Context.getThreadContext().getConnectionResource();
-                        PreparedStatement stmt = null;
+            PreparedStatement stmt = null;
             try {
                 stmt = con.getConnection().prepareStatement(Consortium.SQL_SELECTREL);
                 stmt.setObject(1, getId());
@@ -378,7 +390,7 @@ public final class Consortium
             for (final Long companyId : companyIds) {
                 final Company company = Company.get(companyId);
                 Consortium.LOG.debug("read consortium 2 company relation '{} - {}'",
-                            new Object[] {getName(), company.getName()});
+                                new Object[] { getName(), company.getName() });
                 addCompany(company);
                 company.addConsortium(this);
             }

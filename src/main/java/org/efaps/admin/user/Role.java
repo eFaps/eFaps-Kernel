@@ -225,7 +225,8 @@ public final class Role
     /**
      * @param _role Role to be cached
      */
-    private static void cacheRole(final Role _role) {
+    private static void cacheRole(final Role _role)
+    {
         final Cache<UUID, Role> cache4UUID = InfinispanCache.get().<UUID, Role>getCache(Role.UUIDCACHE);
         if (!cache4UUID.containsKey(_role.getUUID())) {
             cache4UUID.put(_role.getUUID(), _role);
@@ -242,8 +243,10 @@ public final class Role
     }
 
     /**
-     * @param _sqlId
-     * @param _id
+     * @param _sql      SQL Statment to be execuetd
+     * @param _criteria filter criteria
+     * @return true if successful
+     * @throws CacheReloadException on error
      */
     private static boolean getRoleFromDB(final String _sql,
                                       final Object _criteria) throws CacheReloadException

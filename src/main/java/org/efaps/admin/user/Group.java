@@ -160,7 +160,7 @@ public final class Group
      *
      * @param _id id to search in the cache
      * @return instance of class {@link Group}
-     * @see #CACHE
+     * @throws CacheReloadException on error
      */
     public static Group get(final long _id)
         throws CacheReloadException
@@ -179,7 +179,7 @@ public final class Group
      *
      * @param _name name to search in the cache
      * @return instance of class {@link Group}
-     * @see #CACHE
+     * @throws CacheReloadException on error
      */
     public static Group get(final String _name)
         throws CacheReloadException
@@ -190,69 +190,6 @@ public final class Group
         }
         final Group ret = cache.get(_name);
         return ret.equals(Group.NULL) ? null : ret;
-    }
-
-    /**
-     * @param _group Group to be cached
-     */
-    private static void cacheGroup(final Group _group) {
-        final Cache<String, Group> nameCache = InfinispanCache.get().<String, Group>getCache(Group.NAMECACHE);
-        if (!nameCache.containsKey(_group.getName())) {
-            nameCache.put(_group.getName(), _group);
-        }
-        final Cache<Long, Group> idCache = InfinispanCache.get().<Long, Group>getCache(Group.IDCACHE);
-        if (!idCache.containsKey(_group.getId())) {
-            idCache.put(_group.getId(), _group);
-        }
-    }
-
-    /**
-     * @param _sqlId
-     * @param _id
-     */
-    private static boolean getGroupFromDB(final String _sql,
-                                          final Object _criteria)
-        throws CacheReloadException
-    {
-        boolean ret = false;
-        ConnectionResource con = null;
-        try {
-            con = Context.getThreadContext().getConnectionResource();
-            PreparedStatement stmt = null;
-            try {
-                stmt = con.getConnection().prepareStatement(_sql);
-                stmt.setObject(1, _criteria);
-                final ResultSet rs = stmt.executeQuery();
-                if (rs.next()) {
-                    final long id = rs.getLong(1);
-                    final String name = rs.getString(2).trim();
-                    final boolean status = rs.getBoolean(3);
-                    Group.LOG.debug("read group '" + name + "' (id = " + id + ")");
-                    final Group group = new Group(id, name, status);
-                    Group.cacheGroup(group);
-                    ret = true;
-                }
-                rs.close();
-            } finally {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            }
-            con.commit();
-        } catch (final SQLException e) {
-            throw new CacheReloadException("could not read Groups", e);
-        } catch (final EFapsException e) {
-            throw new CacheReloadException("could not read Groups", e);
-        } finally {
-            if ((con != null) && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read Groups", e);
-                }
-            }
-        }
-        return ret;
     }
 
     /**
@@ -310,5 +247,71 @@ public final class Group
             }
         }
         return Group.get(groupId);
+    }
+
+    /**
+     * @param _group Group to be cached
+     */
+    private static void cacheGroup(final Group _group)
+    {
+        final Cache<String, Group> nameCache = InfinispanCache.get().<String, Group>getCache(Group.NAMECACHE);
+        if (!nameCache.containsKey(_group.getName())) {
+            nameCache.put(_group.getName(), _group);
+        }
+        final Cache<Long, Group> idCache = InfinispanCache.get().<Long, Group>getCache(Group.IDCACHE);
+        if (!idCache.containsKey(_group.getId())) {
+            idCache.put(_group.getId(), _group);
+        }
+    }
+
+    /**
+     * @param _sql      SQL Statment to be execuetd
+     * @param _criteria filter criteria
+     * @return true if successful
+     * @throws CacheReloadException on error
+     */
+    private static boolean getGroupFromDB(final String _sql,
+                                          final Object _criteria)
+        throws CacheReloadException
+    {
+        boolean ret = false;
+        ConnectionResource con = null;
+        try {
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
+            try {
+                stmt = con.getConnection().prepareStatement(_sql);
+                stmt.setObject(1, _criteria);
+                final ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    final long id = rs.getLong(1);
+                    final String name = rs.getString(2).trim();
+                    final boolean status = rs.getBoolean(3);
+                    Group.LOG.debug("read group '" + name + "' (id = " + id + ")");
+                    final Group group = new Group(id, name, status);
+                    Group.cacheGroup(group);
+                    ret = true;
+                }
+                rs.close();
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read Groups", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read Groups", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read Groups", e);
+                }
+            }
+        }
+        return ret;
     }
 }

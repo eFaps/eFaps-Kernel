@@ -287,6 +287,7 @@ public final class JAASSystem
 
     /**
      * Method to initialize the cache of JAAS systems.
+     * @throws CacheReloadException on error
      */
     public static void initialize()
         throws CacheReloadException
@@ -312,6 +313,7 @@ public final class JAASSystem
      *
      * @param _id       id to search in the cache
      * @return instance of class {@link JAASSystem}
+     * @throws CacheReloadException on error
      */
     public static JAASSystem getJAASSystem(final long _id)
         throws CacheReloadException
@@ -329,6 +331,7 @@ public final class JAASSystem
      *
      * @param _name name to search in the cache
      * @return instance of class {@link JAASSystem}
+     * @throws CacheReloadException on error
      */
     public static JAASSystem getJAASSystem(final String _name)
         throws CacheReloadException
@@ -419,8 +422,9 @@ public final class JAASSystem
     }
 
     /**
-     * @param _sqlId
-     * @param _id
+     * @param _sql      SQL Statment to be execuetd
+     * @param _criteria filter criteria
+     * @throws CacheReloadException on error
      */
     private static void getJAASSystemFromDB(final String _sql,
                                             final Object _criteria)

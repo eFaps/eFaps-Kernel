@@ -126,22 +126,35 @@ public final class Person
         }
     }
 
-
+    /**
+     * This is the SQL select statement to select a Person from the database by ID.
+     */
     private static final String SQL_ID = new SQLSelect()
-    .column("ID")
-    .column("NAME")
-    .column("STATUS")
-    .from("V_USERPERSON", 0)
-    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+                    .column("ID")
+                    .column("NAME")
+                    .column("STATUS")
+                    .from("V_USERPERSON", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
+    /**
+     * This is the SQL select statement to select a Person from the database by Name.
+     */
     private static final String SQL_NAME = new SQLSelect()
-    .column("ID")
-    .column("NAME")
-    .column("STATUS")
-    .from("V_USERPERSON", 0)
-    .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+                    .column("ID")
+                    .column("NAME")
+                    .column("STATUS")
+                    .from("V_USERPERSON", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
 
+    /**
+     * Name of the Cache by ID.
+     */
     private static String IDCACHE = "Person4ID";
+
+    /**
+     * Name of the Cache by Name.
+     */
     private static String NAMECACHE = "Person4Name";
 
     /**
@@ -1243,7 +1256,8 @@ public final class Person
         if (InfinispanCache.get().exists(Person.NAMECACHE)) {
             InfinispanCache.get().<String, Type>getCache(Person.NAMECACHE).clear();
         } else {
-            InfinispanCache.get().<String, Type>getCache(Person.NAMECACHE).addListener(new CacheLogListener(Person.LOG));
+            InfinispanCache.get().<String, Type>getCache(Person.NAMECACHE)
+                            .addListener(new CacheLogListener(Person.LOG));
         }
     }
 
@@ -1287,8 +1301,12 @@ public final class Person
         return cache.get(_name);
     }
 
-    private  static void cachePerson(final Person _person) {
-               final Cache<String, Person> nameCache = InfinispanCache.get().<String, Person>getCache(Person.NAMECACHE);
+    /**
+     * @param _person Person to be cached
+     */
+    private static void cachePerson(final Person _person)
+    {
+        final Cache<String, Person> nameCache = InfinispanCache.get().<String, Person>getCache(Person.NAMECACHE);
         if (!nameCache.containsKey(_person.getName())) {
             nameCache.put(_person.getName(), _person);
         }
@@ -1300,20 +1318,13 @@ public final class Person
 
 
     /**
-     * The static method reads with the help of given sql statement the id and
-     * name of the person, creates a new person instance, adds the instance to
-     * the cache and read all related information for the person instance with
-     * {@link #readFromDB}.
-     *
-     * @param _sql sql statement used to get the person from database
+     * @param _sql      SQL Statment to be execuetd
+     * @param _criteria filter criteria
+     * @return true if successful
      * @throws EFapsException on error
-     * @return person instance with the found values from database
-     * @see #get(long)
-     * @see #get(String)
-     * @see #readFromDB
      */
     private static Person getPersonFromDB(final String _sql,
-                                         final Object _criteria)
+                                          final Object _criteria)
         throws EFapsException
     {
         Person ret = null;
@@ -1342,7 +1353,6 @@ public final class Person
                     con.commit();
                 }
             }
-
         } finally {
             if ((con != null) && con.isOpened()) {
                 con.abort();

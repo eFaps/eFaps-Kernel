@@ -259,29 +259,32 @@ public final class Company
         return cache.get(_uuid);
     }
 
-   /**
-    * @param _role Company to be cached
-    */
-   private static void cacheCompany(final Company _role) {
-       final Cache<UUID, Company> cache4UUID = InfinispanCache.get().<UUID, Company>getCache(Company.UUIDCACHE);
-       if (!cache4UUID.containsKey(_role.getUUID())) {
-           cache4UUID.put(_role.getUUID(), _role);
-       }
+    /**
+     * @param _role Company to be cached
+     */
+    private static void cacheCompany(final Company _role)
+    {
+        final Cache<UUID, Company> cache4UUID = InfinispanCache.get().<UUID, Company>getCache(Company.UUIDCACHE);
+        if (!cache4UUID.containsKey(_role.getUUID())) {
+            cache4UUID.put(_role.getUUID(), _role);
+        }
 
-       final Cache<String, Company> nameCache = InfinispanCache.get().<String, Company>getCache(Company.NAMECACHE);
-       if (!nameCache.containsKey(_role.getName())) {
-           nameCache.put(_role.getName(), _role);
-       }
-       final Cache<Long, Company> idCache = InfinispanCache.get().<Long, Company>getCache(Company.IDCACHE);
-       if (!idCache.containsKey(_role.getId())) {
-           idCache.put(_role.getId(), _role);
-       }
-   }
+        final Cache<String, Company> nameCache = InfinispanCache.get().<String, Company>getCache(Company.NAMECACHE);
+        if (!nameCache.containsKey(_role.getName())) {
+            nameCache.put(_role.getName(), _role);
+        }
+        final Cache<Long, Company> idCache = InfinispanCache.get().<Long, Company>getCache(Company.IDCACHE);
+        if (!idCache.containsKey(_role.getId())) {
+            idCache.put(_role.getId(), _role);
+        }
+    }
 
-   /**
-    * @param _sqlId
-    * @param _id
-    */
+    /**
+     * @param _sql      SQL Statment to be execuetd
+     * @param _criteria filter criteria
+     * @return true if successful
+     * @throws CacheReloadException on error
+     */
     private static boolean getCompanyFromDB(final String _sql,
                                             final Object _criteria)
         throws CacheReloadException
