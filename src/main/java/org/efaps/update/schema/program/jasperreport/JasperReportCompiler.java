@@ -26,10 +26,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.design.JRCompiler;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.util.JRProperties;
 
 import org.efaps.admin.program.jasper.JasperUtil;
 import org.efaps.ci.CIAdminProgram;
@@ -117,8 +118,9 @@ public class JasperReportCompiler
         for (final String classPathElement : this.classPathElements) {
             classPath.append(classPathElement).append(sep);
         }
-        JRProperties.setProperty(JRProperties.COMPILER_CLASSPATH, classPath.toString());
-        JRProperties.setProperty("net.sf.jasperreports.compiler.groovy",
+        final DefaultJasperReportsContext reportContext = DefaultJasperReportsContext.getInstance();
+        reportContext.setProperty(JRCompiler.COMPILER_CLASSPATH, classPath.toString());
+        reportContext.setProperty("net.sf.jasperreports.compiler.groovy",
                                  "org.efaps.update.schema.program.jasperreport.JasperGroovyCompiler");
 
         try {
