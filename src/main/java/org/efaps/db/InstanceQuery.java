@@ -34,6 +34,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 
 /**
@@ -48,8 +49,10 @@ public class InstanceQuery
     /**
      * Constructor setting the type by his UUID.
      * @param _typeUUI UUID of the Type the query is based on
+     * @throws CacheReloadException on error
      */
     public InstanceQuery(final UUID _typeUUI)
+        throws CacheReloadException
     {
         this(Type.get(_typeUUI));
     }

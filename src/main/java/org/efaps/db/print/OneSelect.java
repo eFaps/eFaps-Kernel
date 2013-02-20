@@ -51,6 +51,9 @@ import org.efaps.db.print.value.UoMValueSelect;
 import org.efaps.db.print.value.ValueValueSelect;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -64,6 +67,11 @@ import org.efaps.util.EFapsException;
  */
 public class OneSelect
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(OneSelect.class);
+
     /**
      * The select this OneSelect belongs to.
      */
@@ -266,8 +274,10 @@ public class OneSelect
      * Add a classification name evaluated from an
      * <code>class[CLASSIFICATIONNAME]</code> part of an select statement.
      * @param _classificationName   name of the classification
+     * @throws CacheReloadException on error
      */
     public void addClassificationSelectPart(final String _classificationName)
+        throws CacheReloadException
     {
         this.selectParts.add(new ClassSelectPart(_classificationName));
     }
@@ -340,9 +350,15 @@ public class OneSelect
         } else {
             type = this.query.getMainType();
         }
-        final AttributeSet set = AttributeSet.find(type.getName(), _attributeSet);
-        final String linkFrom = set.getName() + "#" + set.getAttributeName();
-        this.fromSelect = new LinkFromSelect(linkFrom);
+
+        try {
+            final AttributeSet set = AttributeSet.find(type.getName(), _attributeSet);
+            final String linkFrom = set.getName() + "#" + set.getAttributeName();
+            this.fromSelect = new LinkFromSelect(linkFrom);
+        } catch (final CacheReloadException e) {
+            OneSelect.LOG.error("Could not find AttributeSet for Type: {}, attribute: {}", type.getName(),
+                            _attributeSet);
+        }
     }
 
     /**
@@ -350,8 +366,10 @@ public class OneSelect
      * evaluated from an <code>linkTo[TYPENAME#ATTRIBUTENAME]</code>
      * part of an select statement.
      * @param _linkFrom   name of the attribute the link comes from
+     * @throws CacheReloadException on erro
      */
     public void addLinkFromSelectPart(final String _linkFrom)
+        throws CacheReloadException
     {
         this.fromSelect = new LinkFromSelect(_linkFrom);
     }
@@ -440,7 +458,8 @@ public class OneSelect
      * select parts will be added to {@link #selectParts}.
      * @throws EFapsException on error
      */
-    public void analyzeSelectStmt() throws EFapsException
+    public void analyzeSelectStmt()
+        throws EFapsException
     {
         final Pattern mainPattern = Pattern.compile("[a-z]+\\[.+?\\]|[a-z]+");
         final Pattern attrPattern = Pattern.compile("(?<=\\[)[0-9a-zA-Z_]*(?=\\])");
@@ -514,12 +533,12 @@ public class OneSelect
         }
     }
 
-
     /**
      * @param _valueSelect AbstractValueSelect to add
      * @throws EFapsException on error
      */
-    private void addValueSelect(final AbstractValueSelect _valueSelect) throws EFapsException
+    private void addValueSelect(final AbstractValueSelect _valueSelect)
+        throws EFapsException
     {
         if (this.valueSelect != null) {
             this.valueSelect.addChildValueSelect(_valueSelect);
@@ -713,10 +732,12 @@ public class OneSelect
      * @param _relIndex     relation the table is used in
      * @return new index for the table
      */
-    public Integer getNewTableIndex(final String _tableName, final String _column, final Integer _relIndex)
+    public Integer getNewTableIndex(final String _tableName,
+                                    final String _column,
+                                    final Integer _relIndex)
     {
         int ret;
-        if (this.valueSelect == null  && this.fromSelect != null) {
+        if (this.valueSelect == null && this.fromSelect != null) {
             ret = this.fromSelect.getNewTableIndex(_tableName, _column, _relIndex);
         } else {
             ret = this.query.getNewTableIndex(_tableName, _column, _relIndex);
@@ -811,6 +832,5 @@ public class OneSelect
         this.idList.addAll(idListNew);
         this.objectList.clear();
         this.objectList.addAll(objectListNew);
-
     }
 }

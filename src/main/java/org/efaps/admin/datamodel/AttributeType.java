@@ -295,6 +295,7 @@ public class AttributeType
      * @param _id id to search in the cache
      * @return instance of class {@link AttributeType}
      * @see #CACHE
+     * @throws CacheReloadException on error
      */
     public static AttributeType get(final long _id)
         throws CacheReloadException
@@ -314,6 +315,7 @@ public class AttributeType
      * @param _name name to search in the cache
      * @return instance of class {@link AttributeType}
      * @see #CACHE
+     * @throws CacheReloadException on error
      */
     public static AttributeType get(final String _name)
         throws CacheReloadException
@@ -344,8 +346,10 @@ public class AttributeType
     }
 
     /**
-     * @param _sqlId
-     * @param _id
+     * @param _sql      SQL Statement to be executed
+     * @param _criteria filter criteria
+     * @return true if successful
+     * @throws CacheReloadException on error
      */
     private static boolean getAttributeTypeFromDB(final String _sql,
                                                   final Object _criteria)

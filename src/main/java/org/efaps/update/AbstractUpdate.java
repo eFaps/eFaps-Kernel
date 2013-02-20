@@ -50,6 +50,7 @@ import org.efaps.db.Update;
 import org.efaps.update.event.Event;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -438,8 +439,10 @@ public abstract class AbstractUpdate
          * Child Type extracted from the child type name.
          *
          * @return child type extracted from the child type name
+         * @throws CacheReloadException on error
          */
         public Type getChildType()
+            throws CacheReloadException
         {
             return Type.get(this.childTypeName);
         }
@@ -448,8 +451,10 @@ public abstract class AbstractUpdate
          * Link Type extracted from the link name.
          *
          * @return link type extracted from the link name
+         * @throws CacheReloadException on error
          */
         public Type getLinkType()
+            throws CacheReloadException
         {
             return Type.get(this.linkName);
         }

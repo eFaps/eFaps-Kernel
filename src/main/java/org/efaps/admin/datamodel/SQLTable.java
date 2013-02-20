@@ -403,7 +403,7 @@ public final class SQLTable
     }
 
     /**
-     * @param _role Company to be cached
+     * @param _sqlTable SQLTable to be cached
      */
     private static void cacheSQLTable(final SQLTable _sqlTable)
     {
@@ -423,8 +423,10 @@ public final class SQLTable
     }
 
     /**
-     * @param _sqlId
-     * @param _id
+     * @param _sql      SQL Statement to be executed
+     * @param _criteria filter criteria
+     * @return true if successful
+     * @throws CacheReloadException on error
      */
     private static boolean getSQLTableFromDB(final String _sql,
                                              final Object _criteria)

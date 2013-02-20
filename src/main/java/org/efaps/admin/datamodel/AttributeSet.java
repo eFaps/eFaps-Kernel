@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * Basic class for AttributeSets.
@@ -176,9 +177,11 @@ public class AttributeSet
      * @param _typeName name of the type
      * @param _name name of the attribute
      * @return AttributeSet
+     * @throws CacheReloadException on error
      */
     public static AttributeSet get(final String _typeName,
                                    final String _name)
+        throws CacheReloadException
     {
         return (AttributeSet) Type.get(AttributeSet.evaluateName(_typeName, _name));
     }
@@ -190,9 +193,11 @@ public class AttributeSet
      * @param _typeName name of the type
      * @param _name name of the attribute
      * @return AttributeSet
+     * @throws CacheReloadException on error
      */
     public static AttributeSet find(final String _typeName,
                                     final String _name)
+        throws CacheReloadException
     {
         AttributeSet ret = (AttributeSet) Type.get(AttributeSet.evaluateName(_typeName, _name));
         if (ret == null) {

@@ -28,9 +28,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Attribute;
@@ -42,6 +42,7 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -413,21 +414,26 @@ public class InsertObject
     public Map<String, Object> getAttributes()
     {
         for (final Entry<String, Object> element : this.attributes.entrySet()) {
-            final Attribute attribute = Type.get(this.type).getAttribute(element.getKey().toString());
-// TODO das ist nur ein
-// hack damit CreatedType als DateTimeType behandelt werden kann
-            if (attribute.getAttributeType().getClassRepr().getName().equals(
-                    "org.efaps.admin.datamodel.attributetype.DateTimeType")
-                || attribute.getAttributeType().getClassRepr().getName().equals(
-                    "org.efaps.admin.datamodel.attributetype.CreatedType")) {
-                final DateTimeFormatter fmt;
-                if (RootObject.getDateFormat() == null) {
-                    fmt = ISODateTimeFormat.dateTime();
-                } else {
-                    fmt = DateTimeFormat.forPattern(RootObject.getDateFormat());
+
+            try {
+                final Attribute attribute = Type.get(this.type).getAttribute(element.getKey().toString());
+                // TODO das ist nur ein
+                // hack damit CreatedType als DateTimeType behandelt werden kann
+                if (attribute.getAttributeType().getClassRepr().getName().equals(
+                                "org.efaps.admin.datamodel.attributetype.DateTimeType")
+                                || attribute.getAttributeType().getClassRepr().getName().equals(
+                                                "org.efaps.admin.datamodel.attributetype.CreatedType")) {
+                    final DateTimeFormatter fmt;
+                    if (RootObject.getDateFormat() == null) {
+                        fmt = ISODateTimeFormat.dateTime();
+                    } else {
+                        fmt = DateTimeFormat.forPattern(RootObject.getDateFormat());
+                    }
+                    final DateTime date = fmt.parseDateTime(element.getValue().toString());
+                    this.attributes.put(element.getKey(), date);
                 }
-                final DateTime date = fmt.parseDateTime(element.getValue().toString());
-                this.attributes.put(element.getKey(), date);
+            } catch (final CacheReloadException e) {
+                InsertObject.LOG.error("getAttributes() ", e);
             }
         }
         return this.attributes;
@@ -499,8 +505,8 @@ public class InsertObject
     @Override
     public void dbCheckObjectIn()
     {
-        final Checkin checkin = new Checkin(Instance.get(Type.get(this.type), this.id));
         try {
+            final Checkin checkin = new Checkin(Instance.get(Type.get(this.type), this.id));
             checkin.executeWithoutAccessCheck(this.checkInObject.getName(), this.checkInObject.getInputStream(), -1);
         } catch (final EFapsException e) {
             InsertObject.LOG.error("checkObjectin() " + toString(), e);

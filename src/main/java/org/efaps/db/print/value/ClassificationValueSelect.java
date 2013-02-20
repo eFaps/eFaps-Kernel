@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
@@ -41,6 +41,7 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -126,8 +127,10 @@ public class ClassificationValueSelect
      *
      * @param _classIds List of classids
      * @return set
+     * @throws CacheReloadException on error
      */
     private Set<Classification> getClassification(final List<Long> _classIds)
+        throws CacheReloadException
     {
         final Set<Classification> noadd = new HashSet<Classification>();
         final Set<Classification> add = new HashSet<Classification>();

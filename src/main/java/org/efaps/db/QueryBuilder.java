@@ -58,7 +58,10 @@ import org.efaps.db.search.value.QNumberValue;
 import org.efaps.db.search.value.QSQLValue;
 import org.efaps.db.search.value.QStringValue;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -69,6 +72,10 @@ import org.joda.time.DateTime;
  */
 public class QueryBuilder
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(QueryBuilder.class);
 
     /**
      * List of compares that will be included in this query.
@@ -656,7 +663,11 @@ public class QueryBuilder
     public InstanceQuery getQuery()
     {
         if (this.query == null) {
-            this.query = new InstanceQuery(this.typeUUID);
+            try {
+                this.query = new InstanceQuery(this.typeUUID);
+            } catch (final CacheReloadException e) {
+                QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
+            }
             if (!this.compares.isEmpty()) {
                 final QAnd and = this.or ? new QOr() : new QAnd();
                 for (final AbstractQAttrCompare compare : this.compares) {
@@ -704,7 +715,11 @@ public class QueryBuilder
     public AttributeQuery getAttributeQuery(final String _attributeName)
     {
         if (this.query == null) {
-            this.query = new AttributeQuery(this.typeUUID, _attributeName);
+            try {
+                this.query = new AttributeQuery(this.typeUUID, _attributeName);
+            } catch (final CacheReloadException e) {
+                QueryBuilder.LOG.error("Could not open AttributeQuery for uuid: {}", this.typeUUID);
+            }
             if (!this.compares.isEmpty()) {
                 final QAnd and = this.or ? new QOr() : new QAnd();
                 for (final AbstractQAttrCompare compare : this.compares) {

@@ -274,6 +274,7 @@ public final class Status
      * @param _typeName name of the StatusGroup
      * @param _key key of the Status
      * @return Status
+     * @throws CacheReloadException on error
      */
     public static Status find(final String _typeName,
                               final String _key)
@@ -288,6 +289,7 @@ public final class Status
      * @param _uuid uuid of the StatusGroup
      * @param _key key of the Status
      * @return Status
+     * @throws CacheReloadException on error
      */
     public static Status find(final UUID _uuid,
                               final String _key)
@@ -301,6 +303,7 @@ public final class Status
      *
      * @param _id id of the status wanted.
      * @return Status
+     * @throws CacheReloadException on error
      */
     public static Status get(final long _id)
         throws CacheReloadException
@@ -317,6 +320,7 @@ public final class Status
      *
      * @param _typeName name of the StatusGroup wanted.
      * @return StatusGroup
+     * @throws CacheReloadException on error
      */
     public static StatusGroup get(final String _typeName)
         throws CacheReloadException
@@ -332,8 +336,9 @@ public final class Status
     /**
      * Method to get a StatusGroup from the cache.
      *
-     * @param _typeName name of the StatusGroup wanted.
+     * @param _uuid UUID of the StatusGroup wanted.
      * @return StatusGroup
+     * @throws CacheReloadException on error
      */
     public static StatusGroup get(final UUID _uuid)
         throws CacheReloadException
@@ -400,7 +405,7 @@ public final class Status
     }
 
     /**
-     * @param _role Status to be cached
+     * @param _grp StatusGroup to be cached
      */
     private static void cacheStatusGroup(final StatusGroup _grp)
     {
@@ -417,7 +422,7 @@ public final class Status
     }
 
     /**
-     * @param _role Status to be cached
+     * @param _status Status to be cached
      */
     private static void cacheStatus(final Status _status)
     {
@@ -426,9 +431,14 @@ public final class Status
         if (!idCache.containsKey(_status.getId())) {
             idCache.put(_status.getId(), _status);
         }
-
     }
 
+    /**
+     * @param _sql      SQL Statement to be executed
+     * @param _criteria filter criteria
+     * @return true if successful
+     * @throws CacheReloadException on error
+     */
     private static boolean getStatusGroupFromDB(final String _sql,
                                                 final Object _criteria)
         throws CacheReloadException
@@ -440,11 +450,9 @@ public final class Status
             con = Context.getThreadContext().getConnectionResource();
             PreparedStatement stmt = null;
             try {
-
                 stmt = con.getConnection().prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
-
                 while (rs.next()) {
                     values.add(new Object[] {
                                     rs.getLong(1),
@@ -452,7 +460,6 @@ public final class Status
                                     rs.getString(3).trim(),
                                     rs.getString(4).trim()
                     });
-
                 }
                 rs.close();
             } finally {
@@ -498,10 +505,15 @@ public final class Status
                 }
             }
         }
-
         return ret;
     }
 
+    /**
+     * @param _sql      SQL Statement to be executed
+     * @param _criteria filter criteria
+     * @return true if successful
+     * @throws CacheReloadException on error
+     */
     private static boolean getStatusFromDB(final String _sql,
                                            final Object _criteria)
         throws CacheReloadException
@@ -513,11 +525,9 @@ public final class Status
             con = Context.getThreadContext().getConnectionResource();
             PreparedStatement stmt = null;
             try {
-
                 stmt = con.getConnection().prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
                 final ResultSet rs = stmt.executeQuery();
-
                 while (rs.next()) {
                     values.add(new Object[] {
                                     rs.getLong(1),
@@ -558,5 +568,4 @@ public final class Status
         }
         return ret;
     }
-
 }

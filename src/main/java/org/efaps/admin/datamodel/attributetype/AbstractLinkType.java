@@ -103,7 +103,7 @@ public abstract class AbstractLinkType
                 } else {
                     temp = object;
                 }
-                list.add( temp);
+                list.add(temp);
             }
         }
         return _objectList.size() > 0 ? (list.size() > 1 ? list : list.get(0)) : null;

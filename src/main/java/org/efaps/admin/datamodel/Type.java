@@ -1115,9 +1115,10 @@ public class Type
      *
      * @param _id id of the type to get
      * @return instance of class {@link Type}
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public static Type get(final long _id)
+        throws CacheReloadException
     {
         final Cache<Long, Type> cache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
         if (!cache.containsKey(_id)) {
@@ -1132,9 +1133,10 @@ public class Type
      *
      * @param _name name of the type to get
      * @return instance of class {@link Type}
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public static Type get(final String _name)
+        throws CacheReloadException
     {
         final Cache<String, Type> cache = InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE);
         if (!cache.containsKey(_name)) {
@@ -1149,9 +1151,10 @@ public class Type
      *
      * @param _uuid uuid of the type to get
      * @return instance of class {@link Type}
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public static Type get(final UUID _uuid)
+        throws CacheReloadException
     {
         final Cache<UUID, Type> cache = InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
         if (!cache.containsKey(_uuid)) {
@@ -1183,8 +1186,10 @@ public class Type
     /**
      * @param _parentID id to be searched for
      * @return a list of ids
+     * @throws CacheReloadException on error
      */
     private static List<Long> getChildTypeIDs(final long _parentID)
+        throws CacheReloadException
     {
         final List<Long> ret = new ArrayList<Long>();
         ConnectionResource con = null;
@@ -1207,15 +1212,15 @@ public class Type
             con.commit();
 
         } catch (final SQLException e) {
-
+            throw new CacheReloadException("could not read child tyep ids", e);
         } catch (final EFapsException e) {
-
+            throw new CacheReloadException("could not read child tyep ids", e);
         } finally {
             if ((con != null) && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
-
+                    throw new CacheReloadException("could not read child tyep ids", e);
                 }
             }
         }
@@ -1223,17 +1228,18 @@ public class Type
     }
 
     /**
-     * @param _sql      SQLStatement to be executed
+     * @param _sql SQLStatement to be executed
      * @param _criteria the filter criteria
      * @return Type instance
+     * @throws CacheReloadException on error
      */
     private static Type getTypeFromDB(final String _sql,
                                       final Object _criteria)
+        throws CacheReloadException
     {
         Type ret = null;
         ConnectionResource con = null;
         try {
-
             con = Context.getThreadContext().getConnectionResource();
             final PreparedStatement stmt = con.getConnection().prepareStatement(_sql);
             stmt.setObject(1, _criteria);
@@ -1312,7 +1318,7 @@ public class Type
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
-
+                    throw new CacheReloadException("could not read child tyep ids", e);
                 }
             }
         }

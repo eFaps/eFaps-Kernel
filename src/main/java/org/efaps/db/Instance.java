@@ -29,6 +29,9 @@ import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The class is used to store one object id of an instance (defined with type and id). The string representation is the
@@ -40,6 +43,10 @@ import org.efaps.util.EFapsException;
 public final class Instance
     implements Serializable
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(Instance.class);
 
     /**
      * Serial Version unique identifier.
@@ -147,10 +154,12 @@ public final class Instance
      *
      * @param _in object input stream
      * @throws IOException from inside called methods
-     * @throws ClassNotFoundException if a class not found TODO: update type instance if it is final....
+     * @throws CacheReloadException if a class not found
+     * @throws ClassNotFoundException on error
+     *
      */
     private void readObject(final ObjectInputStream _in)
-        throws IOException, ClassNotFoundException
+        throws IOException, ClassNotFoundException, CacheReloadException
     {
         _in.defaultReadObject();
         this.type = Type.get((UUID) _in.readObject());
@@ -450,7 +459,11 @@ public final class Instance
     {
         Type typeTmp = null;
         if ((_type != null) && (_type.length() > 0)) {
-            typeTmp = Type.get(_type);
+            try {
+                typeTmp = Type.get(_type);
+            } catch (final CacheReloadException e) {
+                Instance.LOG.error("Instance get error with Type: '{}', id: '{}' , key: '{}'",  _type, _id, _key);
+            }
         }
         return Instance.get(typeTmp, _id, _key);
     }
@@ -462,12 +475,18 @@ public final class Instance
      */
     public static Instance get(final String _oid)
     {
-        final Type typeTmp;
+        Type typeTmp = null;
         final long idTmp;
         if (_oid != null) {
             final int index = _oid.indexOf(".");
             if (index >= 0) {
-                typeTmp = Type.get(Long.parseLong(_oid.substring(0, index)));
+                try {
+                    typeTmp = Type.get(Long.parseLong(_oid.substring(0, index)));
+                } catch (final NumberFormatException e) {
+                    Instance.LOG.error("Instance get error with OID: '{}'", _oid);
+                } catch (final CacheReloadException e) {
+                    Instance.LOG.error("Instance get error with OID: '{}'", _oid);
+                }
                 idTmp = Long.parseLong(_oid.substring(index + 1));
             } else {
                 typeTmp = null;

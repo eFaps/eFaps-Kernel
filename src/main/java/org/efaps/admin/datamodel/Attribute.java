@@ -113,6 +113,9 @@ public class Attribute
      */
     private static final Logger LOG = LoggerFactory.getLogger(Attribute.class);
 
+    /**
+     * SQL Statement to get attributes for at type.
+     */
     private static final String SQL_TYPE = new SQLSelect()
                     .column("ID")
                     .column("NAME")
@@ -128,12 +131,22 @@ public class Attribute
                     .addPart(SQLPart.WHERE).addColumnPart(0, "DMTYPE").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
 
-    private static final String SQL_Attr = new SQLSelect()
+    /**
+     * SQL Statement to get an attribute.
+     */
+    private static final String SQL_ATTR = new SQLSelect()
                     .column("DMTYPE")
                     .from("V_ADMINATTRIBUTE", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
+    /**
+     * Name of the Cache by Name.
+     */
     private static String NAMECACHE = "Attribute4Name";
+
+    /**
+     * Name of the Cache by ID.
+     */
     private static String IDCACHE = "Attribute4ID";
 
     /**
@@ -677,6 +690,9 @@ public class Attribute
         return cache.get(_name);
     }
 
+    /**
+     * @param _attr Attribute to be cached
+     */
     private static void cacheAttribute(final Attribute _attr)
     {
         final Cache<String, Attribute> nameCache = InfinispanCache.get().<String, Attribute>getCache(
@@ -706,8 +722,13 @@ public class Attribute
                         .append("required", this.required).toString();
     }
 
+    /**
+     * @param _attrId   id of an attribute
+     * @return the id of a Type
+     * @throws CacheReloadException on error
+     */
     protected static long getTypeID(final long _attrId)
-
+        throws CacheReloadException
     {
         long ret = 0;
         ConnectionResource con = null;
@@ -715,7 +736,7 @@ public class Attribute
             con = Context.getThreadContext().getConnectionResource();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(Attribute.SQL_Attr);
+                stmt = con.getConnection().prepareStatement(Attribute.SQL_ATTR);
                 stmt.setObject(1, _attrId);
                 final ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
@@ -729,23 +750,27 @@ public class Attribute
             }
             con.commit();
         } catch (final SQLException e) {
-
+            throw new CacheReloadException("Cannot read a type for an attribute.", e);
         } catch (final EFapsException e) {
-
+            throw new CacheReloadException("Cannot read a type for an attribute.", e);
         } finally {
             if ((con != null) && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
-
+                    throw new CacheReloadException("Cannot read a type for an attribute.", e);
                 }
             }
         }
         return ret;
     }
 
+    /**
+     * @param _type Type the attributes are wanted for
+     * @throws EFapsException on error
+     */
     protected static void add4Type(final Type _type)
-
+        throws EFapsException
     {
         ConnectionResource con = null;
         try {
@@ -840,18 +865,11 @@ public class Attribute
                 parentset.addAttribute(childAttr, false);
                 childAttr.setParentSet(parentset);
             }
-
         } catch (final SQLException e) {
-
-        } catch (final EFapsException e) {
-
+            throw new CacheReloadException("Cannot read attributes.", e);
         } finally {
             if ((con != null) && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-
-                }
+                con.abort();
             }
         }
     }

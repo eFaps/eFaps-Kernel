@@ -68,7 +68,8 @@ public class Dimension
                     .column("NUMERATOR")
                     .column("DENOMINATOR")
                     .from("T_DMUOM", 0)
-                    .addPart(SQLPart.WHERE).addColumnPart(0, "DIMID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "DIMID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
 
     /**
      * This is the sql select statement to select all UoM from the database.

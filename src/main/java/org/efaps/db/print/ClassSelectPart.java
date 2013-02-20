@@ -23,6 +23,7 @@ package org.efaps.db.print;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * Select Part for <code>class[CLASSIFICATIONNAME]</code>.
@@ -41,8 +42,10 @@ public class ClassSelectPart
 
     /**
      * @param _classification   classification
+     * @throws CacheReloadException on error
      */
     public ClassSelectPart(final String _classification)
+        throws CacheReloadException
     {
         this.classification = (Classification) Type.get(_classification);
     }

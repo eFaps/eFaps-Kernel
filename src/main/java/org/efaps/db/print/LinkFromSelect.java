@@ -36,6 +36,7 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * Select Part for <code>linkfrom[TYPERNAME#ATTRIBUTENAME]</code>.
@@ -63,8 +64,10 @@ public class LinkFromSelect
 
     /**
      * @param _linkFrom linkfrom element of the query
+     * @throws CacheReloadException on error
      */
     public LinkFromSelect(final String _linkFrom)
+        throws CacheReloadException
     {
         final String[] linkfrom = _linkFrom.split("#");
         this.type = Type.get(linkfrom[0]);

@@ -27,6 +27,7 @@ import java.util.List;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.wrapper.SQLUpdate;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * Implements the mapping between values in the database and {@link Type}
@@ -56,6 +57,7 @@ public class TypeType
     @Override
     public Object readValue(final Attribute _attribute,
                             final List<Object> _objectList)
+        throws CacheReloadException
     {
         Object ret;
         if (!_attribute.getSqlColNames().isEmpty()) {

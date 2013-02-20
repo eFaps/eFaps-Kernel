@@ -615,8 +615,10 @@ public abstract class AbstractCommand
 
     /**
      * @param _value comma separated list of classifications
+     * @throws CacheReloadException on error
      */
     private void setTargetCreateClassifications(final String _value)
+        throws CacheReloadException
     {
         final String[] values = _value.split(",");
         for (final String value : values) {

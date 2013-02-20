@@ -35,6 +35,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 
 /**
@@ -55,14 +56,17 @@ public class AttributeQuery
     /**
      * Constructor setting the type by his UUID.
      * @param _typeUUI UUID of the Type the query is based on
+     * @throws CacheReloadException on error
      */
     public AttributeQuery(final UUID _typeUUI)
+        throws CacheReloadException
     {
         this(Type.get(_typeUUI));
     }
 
     /**
      * Constructor setting the type.
+     *
      * @param _type TYpe the query is based on
      */
     public AttributeQuery(final Type _type)
@@ -72,22 +76,28 @@ public class AttributeQuery
 
     /**
      * Constructor setting the type by his UUID.
+     *
      * @param _typeUUI UUID of the Type the query is based on
-     * @param _attribute    attribute the value is wanted for
+     * @param _attribute attribute the value is wanted for
+     * @throws CacheReloadException on error
      */
     public AttributeQuery(final UUID _typeUUI,
                           final Attribute _attribute)
+        throws CacheReloadException
     {
         this(Type.get(_typeUUI), _attribute);
     }
 
     /**
      * Constructor setting the type by his UUID.
-     * @param _typeUUI          UUID of the Type the query is based on
-     * @param _attributeName    name of the  attribute the value is wanted for
+     *
+     * @param _typeUUI UUID of the Type the query is based on
+     * @param _attributeName name of the attribute the value is wanted for
+     * @throws CacheReloadException on error
      */
     public AttributeQuery(final UUID _typeUUI,
                           final String _attributeName)
+        throws CacheReloadException
     {
         this(Type.get(_typeUUI), Type.get(_typeUUI).getAttribute(_attributeName));
     }
