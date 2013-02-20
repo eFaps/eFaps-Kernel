@@ -318,7 +318,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>wikiutil</artifactId>
-            <version>0.0.4</version>
+            <version>0.0.5</version>
         </dependency>
 
         <!-- JasperReport as a flexible reporting tool -->
