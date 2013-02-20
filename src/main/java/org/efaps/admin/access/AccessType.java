@@ -175,6 +175,7 @@ public final class AccessType
      *
      * @param _id id of the search access type
      * @return instance of class AccessType
+     * @throws CacheReloadException on error
      */
     public static AccessType getAccessType(final long _id)
         throws CacheReloadException
@@ -192,6 +193,7 @@ public final class AccessType
      *
      * @param _name name of the access type
      * @return instance of class AccessType
+     * @throws CacheReloadException on error
      */
     public static AccessType getAccessType(final String _name)
         throws CacheReloadException
@@ -210,6 +212,7 @@ public final class AccessType
      *
      * @param _uuid UUID of the access type
      * @return instance of class AccessType
+     * @throws CacheReloadException on error
      */
     public static AccessType getAccessType(final UUID _uuid)
         throws CacheReloadException
@@ -222,7 +225,7 @@ public final class AccessType
     }
 
     /**
-     * @param _role Company to be cached
+     * @param _accessType AccessType to be cached
      */
     private static void cacheAccessType(final AccessType _accessType)
     {
@@ -243,9 +246,12 @@ public final class AccessType
         }
     }
 
+
     /**
-     * @param _sqlId
-     * @param _id
+     * @param _sql      sql Statement to be executed
+     * @param _criteria filter criteria
+     * @return true if successful
+     * @throws CacheReloadException on error
      */
     private static boolean getAccessTypeFromDB(final String _sql,
                                                final Object _criteria)

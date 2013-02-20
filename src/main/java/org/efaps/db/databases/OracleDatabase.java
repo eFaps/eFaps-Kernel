@@ -518,8 +518,8 @@ public class OracleDatabase
         throws SQLException
     {
         final ResultSet rsc = (_sql == null)
-                              ? _con.getMetaData().getColumns(OracleDatabase.CATALOG,
-                                              OracleDatabase.SCHEMAPATTERN, "%", "%")
+                              ? _con.getMetaData().getColumns(AbstractDatabase.CATALOG,
+                                              AbstractDatabase.SCHEMAPATTERN, "%", "%")
                               : _con.createStatement().executeQuery(_sql);
         try  {
             while (rsc.next())  {
@@ -548,12 +548,12 @@ public class OracleDatabase
     {
         String ret = _name;
         if (_name.length() > 30) {
-            final byte buffer[] = _name.getBytes();
+            final byte[] buffer = _name.getBytes();
             final ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
             final CheckedInputStream cis = new CheckedInputStream(bais, new Adler32());
-            final byte readBuffer[] = new byte[5];
+            final byte[] readBuffer = new byte[5];
             long value = 0;
-            while (cis.read(readBuffer) >= 0){
+            while (cis.read(readBuffer) >= 0) {
                 value = cis.getChecksum().getValue();
             }
 

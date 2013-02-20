@@ -31,7 +31,7 @@ import org.efaps.util.cache.CacheReloadException;
  * universal unique identifiers of the access types. To get e.g. the access type
  * for read access call <code>AccessTypeEnums.READ.getAccessType()</code>.
  *
- * @author tmo
+ * @author The eFaps Team
  * @version $Id$
  */
 public enum AccessTypeEnums
@@ -82,6 +82,7 @@ public enum AccessTypeEnums
      * @return related access type to the universal unique identifier
      * @see #uuid
      * @see AccessType.getAccessType(UUID)
+     * @throws CacheReloadException on error
      */
     public AccessType getAccessType()
         throws CacheReloadException
@@ -94,6 +95,7 @@ public enum AccessTypeEnums
      *
      * @return related access type as list
      * @see #getAccessType
+     * @throws CacheReloadException on error
      */
     public List<AccessType> getAccessTypeAsList()
         throws CacheReloadException
