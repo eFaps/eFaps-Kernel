@@ -224,7 +224,7 @@ public final class JmsHandler
 
     /**
      * Stop the jms.
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     public static void stop()
         throws EFapsException

@@ -187,13 +187,13 @@ public class SQLTableUpdate
         private UniqueKey(final String _name,
                           final String _columns)
         {
-            String name = null;
+            String nameTmp = null;
             try {
-                name = Context.getDbType().getConstrainName(_name);
+                nameTmp = Context.getDbType().getConstrainName(_name);
             } catch (final IOException e) {
-                e.printStackTrace();
+                SQLTableUpdate.LOG.error("UniqueKey could not be retrieved. Name {}, columns: {} ", _name, _columns);
             }
-            this.name = name;
+            this.name = nameTmp;
             this.columns = _columns;
         }
 
@@ -250,14 +250,13 @@ public class SQLTableUpdate
                            final String _reference,
                            final boolean _cascade)
         {
-            String name = null;
+            String nameTmp = null;
             try {
-                name =  Context.getDbType().getConstrainName(_name);
+                nameTmp =  Context.getDbType().getConstrainName(_name);
             } catch (final IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                SQLTableUpdate.LOG.error("ForeignKey could not be retrieved. Name {}, key: {} ", _name, _key);
             }
-            this.name = name;
+            this.name = nameTmp;
             this.key = _key;
             this.reference = _reference;
             this.cascade = _cascade;

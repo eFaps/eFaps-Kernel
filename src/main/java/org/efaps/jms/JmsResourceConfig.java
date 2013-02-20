@@ -45,7 +45,7 @@ import com.sun.jersey.spi.scanning.AnnotationScannerListener;
  * @author The eFaps Team
  * @version $Id$
  */
-public class JmsResourceConfig
+public final class JmsResourceConfig
 {
     /**
      * Singleton instance.

@@ -360,7 +360,7 @@ public class SQLSelect
 
     /**
      * Add a timestamp value to the select.
-     * @param __timestampString String to be casted to a timestamp
+     * @param _isoDateTime String to be casted to a timestamp
      * @return this
      */
     public SQLSelect addTimestampValue(final String _isoDateTime)
@@ -371,7 +371,7 @@ public class SQLSelect
 
     /**
      * Add a timestamp value to the select.
-     * @param __timestampString String to be casted to a timestamp
+     * @param _value String to be casted to a Boolean
      * @return this
      */
     public SQLSelect addBooleanValue(final Boolean _value)

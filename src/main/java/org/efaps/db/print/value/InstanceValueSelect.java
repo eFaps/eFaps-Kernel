@@ -61,6 +61,6 @@ public class InstanceValueSelect
     public Object getValue(final Object _object)
         throws EFapsException
     {
-        return Instance.get((String) super.getValue( _object));
+        return Instance.get((String) super.getValue(_object));
     }
 }

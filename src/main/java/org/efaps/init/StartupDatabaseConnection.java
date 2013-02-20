@@ -243,8 +243,7 @@ public final class StartupDatabaseConnection
      * @param _classDSFactory class name of the SQL data source factory
      * @param _propConnection string with properties for the JDBC connection
      * @param _classTM class name of the transaction manager
-     * @param _timeout timeout for the transaction manager in seconds, if null the default from the transaction manager
-     *            will be used
+     * @param _eFapsProps Map or properties
      * @throws StartupException if the database connection or transaction manager could not be initialized
      * @see StartupDatabaseConnection#startup(String, String, Map, String, Integer)
      * @see StartupDatabaseConnection#convertToMap(String)
@@ -275,8 +274,7 @@ public final class StartupDatabaseConnection
      * @param _classDSFactory class name of the SQL data source factory
      * @param _propConnection map of properties for the JDBC connection
      * @param _classTM class name of the transaction manager
-     * @param _timeout timeout for the transaction manager in seconds, if null the default from the transaction manager
-     *            will be used
+     * @param _eFapsProps Map or properties
      * @throws StartupException if the database connection or transaction manager could not be initialized
      * @see #configureDBType(Context, String)
      * @see #configureDataSource(Context, String, Map)

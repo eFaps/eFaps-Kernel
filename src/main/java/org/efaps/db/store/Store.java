@@ -210,7 +210,7 @@ public final class Store
      *
      * @param _id id of the type to get
      * @return instance of class {@link Store}
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public static Store get(final long _id)
         throws CacheReloadException
@@ -228,7 +228,7 @@ public final class Store
      *
      * @param _name name of the type to get
      * @return instance of class {@link Store}
-     * @throws CacheReloadException
+     * @throws CacheReloadException  on error
      */
     public static Store get(final String _name)
         throws CacheReloadException
@@ -246,7 +246,7 @@ public final class Store
      *
      * @param _uuid uuid of the type to get
      * @return instance of class {@link Store}
-     * @throws CacheReloadException
+     * @throws CacheReloadException  on error
      */
     public static Store get(final UUID _uuid)
         throws CacheReloadException
@@ -259,7 +259,7 @@ public final class Store
     }
 
     /**
-     * @param _role Role to be cached
+     * @param _store Store to be cached
      */
     private static void cacheStore(final Store _store)
     {
@@ -278,8 +278,10 @@ public final class Store
     }
 
     /**
-     * @param _sqlId
-     * @param _id
+     * @param _uUID      CIAttribute
+     * @param _criteria filter criteria
+     * @return true if successful
+     * @throws CacheReloadException on error
      */
     private static boolean getStoreFromDB(final CIAttribute _uUID,
                                           final Object _criteria)
