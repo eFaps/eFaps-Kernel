@@ -205,7 +205,9 @@ public final class NumberGenerator
         final Locale local = Context.getThreadContext().getLocale();
         final Formatter formatter = new Formatter(local);
         formatter.format(this.format, args);
-        return formatter.toString();
+        final String ret = formatter.toString();
+        formatter.close();
+        return ret;
     }
 
     /**
