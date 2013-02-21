@@ -21,8 +21,15 @@
 
 package org.efaps.db;
 
+import java.util.UUID;
+
+import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAttribute;
 import org.efaps.ci.CIType;
+import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 
 /**
@@ -33,6 +40,11 @@ import org.efaps.ci.CIType;
  */
 public class SelectBuilder
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(SelectBuilder.class);
+
     /**
      * StringBuilder use as the base for building the String.
      */
@@ -84,6 +96,23 @@ public class SelectBuilder
                                   final CIAttribute _attribute)
     {
         return linkfrom(_type.getType().getName(), _attribute.name);
+    }
+
+    /**
+     * @param _type         type to link from
+     * @param _attribute    attribute to link from
+     * @return this
+     */
+    public SelectBuilder linkfrom(final UUID _typeUUID,
+                                  final CIAttribute _attribute)
+    {
+        String typeName = "";
+        try {
+            typeName = Type.get(_typeUUID).getName();
+        } catch (final CacheReloadException e) {
+            SelectBuilder.LOG.error("Could not read type from Cache for uuid: {}", _typeUUID);
+        }
+        return linkfrom(typeName, _attribute.name);
     }
 
     /**
@@ -281,6 +310,21 @@ public class SelectBuilder
     public SelectBuilder clazz(final CIType _class)
     {
         return clazz(_class.getType().getName());
+    }
+
+    /**
+     * @param _class attribute to be added
+     * @return this
+     */
+    public SelectBuilder clazz(final UUID _typeUUID)
+    {
+        String typeName = "";
+        try {
+            typeName = Type.get(_typeUUID).getName();
+        } catch (final CacheReloadException e) {
+            SelectBuilder.LOG.error("Could not read type from Cache for uuid: {}", _typeUUID);
+        }
+        return clazz(typeName);
     }
 
     /**
