@@ -64,9 +64,7 @@ public abstract class AbstractResource
      */
     public void open() throws EFapsException
     {
-        if (AbstractResource.LOG.isDebugEnabled())  {
-            AbstractResource.LOG.debug("open");
-        }
+        AbstractResource.LOG.debug("open resource:{}", this);
         if (this.opened)  {
             AbstractResource.LOG.error("resource already opened");
             throw new EFapsException(AbstractResource.class, "open.AlreadyOpened");
@@ -98,21 +96,18 @@ public abstract class AbstractResource
      */
     public void commit() throws EFapsException
     {
-        if (AbstractResource.LOG.isDebugEnabled())  {
-            AbstractResource.LOG.debug("commit");
-        }
+        AbstractResource.LOG.debug("commit resource:{}", this);
         if (!this.opened)  {
             AbstractResource.LOG.error("resource not opened, commit not possible");
             throw new EFapsException(AbstractResource.class, "commit.NotOpened");
         }
         try  {
             final Context context = Context.getThreadContext();
-            context.getTransaction().delistResource(this, TMSUCCESS);
+            context.getTransaction().delistResource(this, XAResource.TMSUCCESS);
         } catch (final SystemException e)  {
             AbstractResource.LOG.error("exception occurs while delisting in transaction, "
                                                 + "commit not possible", e);
-            throw new EFapsException(AbstractResource.class,
-                                     "commit.SystemException", e);
+            throw new EFapsException(AbstractResource.class, "commit.SystemException", e);
         }
         freeResource();
         this.opened = false;
@@ -130,15 +125,13 @@ public abstract class AbstractResource
     public void abort()
         throws EFapsException
     {
-        if (AbstractResource.LOG.isDebugEnabled())  {
-            AbstractResource.LOG.debug("abort");
-        }
+        AbstractResource.LOG.debug("abort resource:{}", this);
         if (!this.opened)  {
             throw new EFapsException(AbstractResource.class, "abort.NotOpened");
         }
         try  {
             final Context context = Context.getThreadContext();
-            context.getTransaction().delistResource(this, TMFAIL);
+            context.getTransaction().delistResource(this, XAResource.TMFAIL);
             context.abort();
         } catch (final SystemException e)  {
             throw new EFapsException(AbstractResource.class, "abort.SystemException", e);
@@ -165,9 +158,6 @@ public abstract class AbstractResource
         return this.opened;
     }
 
-    /////////////////////////////////////////////////////////////////////////////
-    // all further methods are implementing javax.transaction.xa.XAResource
-
     /**
      * The method starts work on behalf of a transaction branch specified in
      * parameter <code>_xid</code>. Normally nothing must be done, because the
@@ -180,9 +170,7 @@ public abstract class AbstractResource
     public void start(final Xid _xid,
                       final int _flags)
     {
-        if (AbstractResource.LOG.isDebugEnabled())  {
-            AbstractResource.LOG.debug("start resource " + _xid + ", flags = " + _flags);
-        }
+        AbstractResource.LOG.trace("start resource {}, flags {}" + _flags, _xid, _flags);
     }
 
     /**
@@ -196,9 +184,7 @@ public abstract class AbstractResource
     public void end(final Xid _xid,
                     final int _flags)
     {
-        if (AbstractResource.LOG.isDebugEnabled())  {
-            AbstractResource.LOG.debug("end resource " + _xid + ", flags = " + _flags);
-        }
+        AbstractResource.LOG.trace("end resource {}, flags {}" + _flags, _xid, _flags);
     }
 
     /**
@@ -216,9 +202,8 @@ public abstract class AbstractResource
      */
     public boolean isSameRM(final XAResource _xares)
     {
-        if (AbstractResource.LOG.isDebugEnabled())  {
-            AbstractResource.LOG.debug("is Same RM " + _xares.toString().equals(toString()));
-        }
-        return _xares.toString().equals(toString());
+        final boolean ret = _xares.toString().equals(toString());
+        AbstractResource.LOG.trace("is Same RM: {}", ret);
+        return ret;
     }
 }

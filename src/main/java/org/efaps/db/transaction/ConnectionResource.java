@@ -95,10 +95,8 @@ public class ConnectionResource
      */
     public int prepare(final Xid _xid)
     {
-        if (ConnectionResource.LOG.isDebugEnabled())  {
-            ConnectionResource.LOG.debug("prepare (xid = " + _xid + ")");
-        }
-        return 0;
+       ConnectionResource.LOG.trace("prepare (xid = {})", _xid);
+       return 0;
     }
 
     /**
@@ -111,9 +109,7 @@ public class ConnectionResource
                        final boolean _onePhase)
         throws XAException
     {
-        if (ConnectionResource.LOG.isDebugEnabled())  {
-            ConnectionResource.LOG.debug("commit (xid = " + _xid + ", one phase = " + _onePhase + ")");
-        }
+        ConnectionResource.LOG.trace("commit (xid = {}, one phase = {})", _xid, _onePhase);
         try  {
             if (this.connection != null)  {
                 this.connection.commit();
@@ -143,9 +139,7 @@ public class ConnectionResource
     public void rollback(final Xid _xid)
         throws XAException
     {
-        if (ConnectionResource.LOG.isDebugEnabled())  {
-            ConnectionResource.LOG.debug("rollback (xid = " + _xid + ")");
-        }
+        ConnectionResource.LOG.trace("rollback (xid = {})", _xid);
         try  {
             if (this.connection != null)  {
                 this.connection.rollback();
@@ -173,9 +167,7 @@ public class ConnectionResource
      */
     public void forget(final Xid _xid)
     {
-        if (ConnectionResource.LOG.isDebugEnabled())  {
-            ConnectionResource.LOG.debug("forget (xid = " + _xid + ")");
-        }
+        ConnectionResource.LOG.trace("forget (xid = {})", _xid);
     }
 
     /**
@@ -185,9 +177,7 @@ public class ConnectionResource
      */
     public int getTransactionTimeout()
     {
-        if (ConnectionResource.LOG.isDebugEnabled())  {
-            ConnectionResource.LOG.debug("getTransactionTimeout");
-        }
+        ConnectionResource.LOG.trace("getTransactionTimeout");
         return 0;
     }
 
@@ -198,9 +188,7 @@ public class ConnectionResource
      */
     public Xid[] recover(final int _flag)
     {
-        if (ConnectionResource.LOG.isDebugEnabled())  {
-            ConnectionResource.LOG.debug("recover (flag = " + _flag + ")");
-        }
+        ConnectionResource.LOG.trace("recover (flag = {})", _flag);
         return null;
     }
 
@@ -213,9 +201,7 @@ public class ConnectionResource
      */
     public boolean setTransactionTimeout(final int _seconds)
     {
-        if (ConnectionResource.LOG.isDebugEnabled())  {
-            ConnectionResource.LOG.debug("setTransactionTimout");
-        }
+        ConnectionResource.LOG.debug("setTransactionTimout");
         return true;
     }
 }

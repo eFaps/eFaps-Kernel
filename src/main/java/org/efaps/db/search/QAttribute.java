@@ -26,6 +26,9 @@ import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.search.compare.AbstractQAttrCompare;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -37,6 +40,11 @@ import org.efaps.db.wrapper.SQLSelect;
 public class QAttribute
     extends AbstractQPart
 {
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(QAttribute.class);
 
     /**
      * Attribute this QueryAttribute is based on.
@@ -81,12 +89,19 @@ public class QAttribute
     @Override
     public AbstractQPart prepare(final AbstractObjectQuery<?> _query,
                                  final AbstractQPart _part)
+        throws EFapsException
     {
         if (_part instanceof AbstractQAttrCompare) {
             this.ignoreCase = ((AbstractQAttrCompare) _part).isIgnoreCase();
         }
         if (this.attribute == null) {
-            this.attribute =  _query.getBaseType().getAttribute(this.attributeName);
+            if (_query.getBaseType().getAttributes().containsKey(this.attributeName)) {
+                this.attribute = _query.getBaseType().getAttribute(this.attributeName);
+            } else {
+                QAttribute.LOG.error("Could not get attribute with Name '{}' for type: '{}'", this.attributeName,
+                                _query.getBaseType());
+                throw new EFapsException(getClass(), "prepare", this.attributeName);
+            }
         }
         this.tableIndex = _query.getIndex4SqlTable(this.attribute.getTable());
         return this;

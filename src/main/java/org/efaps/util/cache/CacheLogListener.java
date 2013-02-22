@@ -107,7 +107,8 @@ public class CacheLogListener
     @CacheEntryVisited
     public void onCacheEntryVisited(final CacheEntryVisitedEvent<?, ?> _event)
     {
-        this.log.trace("visited key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
+        this.log.trace("visited key: '{}' from Cache '{}' for value: {}. ", _event.getKey(), _event.getCache()
+                        .getName(), _event.getValue());
     }
 
     /**
