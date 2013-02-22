@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -370,11 +369,6 @@ public class Type
         throws CacheReloadException
     {
         super(_id, _uuid, _name);
-//        try {
-//            addAttribute(new Attribute(0, "Type", "", (SQLTable) null, AttributeType.get("Type"), null, null), false);
-//        } catch (final EFapsException e) {
-//            throw new CacheReloadException("Error on reading Attribute for Type '" + _name + "'", e);
-//        }
     }
 
     /**
@@ -433,34 +427,35 @@ public class Type
     protected void addAttribute(final Attribute _attribute,
                                 final boolean _inherited)
     {
-        _attribute.setParent(this);
-        // evaluate for status, an inherited attribute will not overwrite the
-        // original attribute
-        if (_attribute.getAttributeType().getClassRepr().equals(StatusType.class) && !_inherited) {
-            this.statusAttributeName = _attribute.getName();
-        }
-        // evaluate for company
-        if (_attribute.getAttributeType().getClassRepr().equals(CompanyLinkType.class)
-                        || _attribute.getAttributeType().getClassRepr().equals(ConsortiumLinkType.class)) {
-            this.companyAttributeName = _attribute.getName();
-        }
-        // evaluate for type attribute
-        if (_attribute.getAttributeType().getClassRepr().equals(TypeType.class)) {
-            this.typeAttributeName = _attribute.getName();
-        }
+        if (!getAttributes().containsKey(_attribute.getName())) {
+            Type.LOG.trace("adding Attribute:'{}' to type: '{}'", _attribute.getName(), getName());
+            _attribute.setParent(this);
+            // evaluate for status, an inherited attribute will not overwrite the
+            // original attribute
+            if (_attribute.getAttributeType().getClassRepr().equals(StatusType.class) && !_inherited) {
+                this.statusAttributeName = _attribute.getName();
+            }
+            // evaluate for company
+            if (_attribute.getAttributeType().getClassRepr().equals(CompanyLinkType.class)
+                            || _attribute.getAttributeType().getClassRepr().equals(ConsortiumLinkType.class)) {
+                this.companyAttributeName = _attribute.getName();
+            }
+            // evaluate for type attribute
+            if (_attribute.getAttributeType().getClassRepr().equals(TypeType.class)) {
+                this.typeAttributeName = _attribute.getName();
+            }
 
-        getAttributes().put(_attribute.getName(), _attribute);
-        if (_attribute.getTable() != null) {
-            getTables().add(_attribute.getTable());
-            _attribute.getTable().add(this);
-            if (getMainTable() == null) {
-                setMainTable(_attribute.getTable());
+            getAttributes().put(_attribute.getName(), _attribute);
+            if (_attribute.getTable() != null) {
+                getTables().add(_attribute.getTable());
+                _attribute.getTable().add(this);
+                if (getMainTable() == null) {
+                    setMainTable(_attribute.getTable());
+                }
             }
         }
         for (final Type child : getChildTypes()) {
-           // if (child.getParentType().getId() == getId()) {
-                child.addAttribute(_attribute.copy(), true);
-            //}
+            child.addAttribute(_attribute.copy(), true);
         }
     }
 
@@ -760,6 +755,9 @@ public class Type
      */
     protected void addChildType(final Type _childType)
     {
+        for (final Attribute attribute : this.attributes.values()) {
+            _childType.addAttribute(attribute.copy(), true);
+        }
         Type parent = this;
         while (parent != null) {
             parent.getChildTypes().add(_childType);
@@ -1051,6 +1049,7 @@ public class Type
     {
         return new ToStringBuilder(this).appendSuper(super.toString())
                         .append("parentType", getParentType() != null ? getParentType().getName() : "")
+                        .append("has attributes:", !this.attributes.isEmpty())
                         .toString();
     }
 
@@ -1169,18 +1168,13 @@ public class Type
     protected static void cacheType(final Type _type)
     {
         final Cache<UUID, Type> cache4UUID = InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
-        if (!cache4UUID.containsKey(_type.getUUID())) {
-            cache4UUID.put(_type.getUUID(), _type);
-        }
+        cache4UUID.putIfAbsent(_type.getUUID(), _type);
 
         final Cache<String, Type> nameCache = InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE);
-        if (!nameCache.containsKey(_type.getName())) {
-            nameCache.put(_type.getName(), _type);
-        }
+        nameCache.putIfAbsent(_type.getName(), _type);
+
         final Cache<Long, Type> idCache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
-        if (!idCache.containsKey(_type.getId())) {
-            idCache.put(_type.getId(), _type);
-        }
+        idCache.putIfAbsent(_type.getId(), _type);
     }
 
     /**
@@ -1210,17 +1204,16 @@ public class Type
                 }
             }
             con.commit();
-
         } catch (final SQLException e) {
-            throw new CacheReloadException("could not read child tyep ids", e);
+            throw new CacheReloadException("could not read child type ids", e);
         } catch (final EFapsException e) {
-            throw new CacheReloadException("could not read child tyep ids", e);
+            throw new CacheReloadException("could not read child type ids", e);
         } finally {
             if ((con != null) && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
-                    throw new CacheReloadException("could not read child tyep ids", e);
+                    throw new CacheReloadException("could not read child type ids", e);
                 }
             }
         }
@@ -1277,8 +1270,8 @@ public class Type
             con.commit();
             if (ret != null) {
                 Type.cacheType(ret);
-                ret.readFromDB4Properties();
-                if (parentTypeId != 0) {
+                 if (parentTypeId != 0) {
+                    Type.LOG.trace("get parent for id = {}",  parentTypeId);
                     final Type parent = Type.get(parentTypeId);
                     // TODO: test if loop
                     if (ret.getId() == parent.getId()) {
@@ -1293,21 +1286,19 @@ public class Type
                     } else {
                         ret.setParentType(parent);
                         parent.addChildType(ret);
-                        for (final Entry<String, Attribute> entry : parent.getAttributes().entrySet()) {
-                            if (!ret.getAttributes().containsKey(entry.getKey())) {
-                                ret.addAttribute(entry.getValue().copy(), true);
-                            }
-                        }
+                    }
+                }
+                if (!ret.checked4Children) {
+                    ret.checked4Children = true;
+                    for (final Long childID : Type.getChildTypeIDs(ret.getId())) {
+                        Type.LOG.trace("reading Child Type with id: {} for type :{}", childID, ret.getName());
+                        Type.get(childID);
                     }
                 }
                 Attribute.add4Type(ret);
                 ret.readFromDB4Links();
-                if (ret.isAbstract() || !ret.checked4Children) {
-                    ret.checked4Children = true;
-                    for (final Long aid : Type.getChildTypeIDs(ret.getId())) {
-                        Type.getTypeFromDB(Type.SQL_ID, aid);
-                    }
-                }
+                ret.readFromDB4Properties();
+                Type.LOG.trace("ended reading type '{}'", ret.getName());
             }
         } catch (final EFapsException e) {
             Type.LOG.error("initialiseCache()", e);
