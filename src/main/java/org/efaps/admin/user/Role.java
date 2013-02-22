@@ -270,8 +270,8 @@ public final class Role
                     Role.LOG.debug("read role '" + name + "' (id = " + id + ")");
                     final Role role = new Role(id, uuid, name, status);
                     Role.cacheRole(role);
+                    ret = true;
                 }
-                ret = true;
                 rs.close();
             } finally {
                 if (stmt != null) {
