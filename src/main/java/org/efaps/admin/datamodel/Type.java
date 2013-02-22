@@ -966,8 +966,11 @@ public class Type
                 } else {
                     this.typeMenu = Long.valueOf(0);
                 }
+            } else {
+                this.typeMenu = Long.valueOf(0);
             }
-        } else if (this.typeMenu == 0) {
+        }
+        if (this.typeMenu == 0 && getParentType() != null) {
             ret = getParentType().getTypeMenu();
         } else {
             ret = Menu.get(this.typeMenu);
@@ -998,8 +1001,11 @@ public class Type
                 } else {
                     this.typeIcon = Long.valueOf(0);
                 }
+            } else {
+                this.typeIcon = Long.valueOf(0);
             }
-        } else if (this.typeIcon == 0) {
+        }
+        if (this.typeIcon == 0 && getParentType() != null) {
             ret = getParentType().getTypeIcon();
         } else {
             ret = Image.get(this.typeIcon);
@@ -1029,9 +1035,12 @@ public class Type
                 } else {
                     this.typeForm = Long.valueOf(0);
                 }
+            } else {
+                this.typeForm = Long.valueOf(0);
             }
-        } else if (this.typeForm == 0) {
-            ret = getParentType().getTypeForm();
+        }
+        if (this.typeForm == 0 && getParentType() != null) {
+             ret = getParentType().getTypeForm();
         } else {
             ret = Form.get(this.typeForm);
         }
