@@ -994,7 +994,7 @@ public class Type
             multi.addAttribute(CIAdminUserInterface.LinkIsTypeIconFor.From);
             multi.executeWithoutAccessCheck();
             if (multi.next()) {
-                final Long menuId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeTreeFor.From);
+                final Long menuId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeIconFor.From);
                 ret = Image.get(menuId);
                 if (ret != null) {
                     this.typeIcon = ret.getId();

@@ -126,7 +126,11 @@ public class Image
     public static Image getTypeIcon(final Type _type)
         throws EFapsException
     {
-        return _type.getTypeIcon();
+        Image ret = null;
+        if (_type != null) {
+            ret = _type.getTypeIcon();
+        }
+        return ret;
     }
 
 }
