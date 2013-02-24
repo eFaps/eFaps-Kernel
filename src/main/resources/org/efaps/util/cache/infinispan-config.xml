@@ -73,13 +73,13 @@
     </namedCache>
 
     <namedCache name="Type4UUID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="1500" strategy="LIRS"/>
     </namedCache>
     <namedCache name="Type4ID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="1500" strategy="LIRS"/>
     </namedCache>
     <namedCache name="Type4Name">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="1500" strategy="LIRS"/>
     </namedCache>
 
     <namedCache name="Attribute4Name">
