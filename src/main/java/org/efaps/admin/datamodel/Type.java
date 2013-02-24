@@ -354,6 +354,7 @@ public class Type
      */
     private Long typeForm;
 
+
     /**
      * This is the constructor for class Type. Every instance of class Type must
      * have a name (parameter <i>_name</i>).
@@ -1028,8 +1029,8 @@ public class Type
             multi.addAttribute(CIAdminUserInterface.LinkIsTypeFormFor.From);
             multi.executeWithoutAccessCheck();
             if (multi.next()) {
-                final Long menuId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeFormFor.From);
-                ret = Form.get(menuId);
+                final Long formId = multi.<Long>getAttribute(CIAdminUserInterface.LinkIsTypeFormFor.From);
+                ret = Form.get(formId);
                 if (ret != null) {
                     this.typeForm = ret.getId();
                 } else {

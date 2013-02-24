@@ -23,6 +23,7 @@ package org.efaps.admin.datamodel;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.efaps.admin.ui.Form;
 import org.efaps.admin.user.Company;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.util.EFapsException;
@@ -294,6 +295,19 @@ public class Classification
             ret = this.companies.isEmpty() ? true : this.companies.contains(_company);
         } else {
             ret = this.parent.isAssigendTo(_company);
+        }
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Form getTypeForm() throws EFapsException
+    {
+        Form ret = super.getTypeForm();
+        if (ret == null && getParentClassification() != null) {
+            ret = getParentClassification().getTypeForm();
         }
         return ret;
     }
