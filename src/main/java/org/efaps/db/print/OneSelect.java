@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Type;
@@ -832,5 +833,11 @@ public class OneSelect
         this.idList.addAll(idListNew);
         this.objectList.clear();
         this.objectList.addAll(objectListNew);
+    }
+
+    @Override
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

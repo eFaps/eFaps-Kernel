@@ -26,6 +26,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.AbstractPrintQuery;
@@ -37,6 +38,8 @@ import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Select Part for <code>linkfrom[TYPERNAME#ATTRIBUTENAME]</code>.
@@ -47,6 +50,11 @@ import org.efaps.util.cache.CacheReloadException;
 public class LinkFromSelect
     extends AbstractPrintQuery
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(OneSelect.class);
+
     /**
      * Name of the Attribute the link to is based on.
      */
@@ -72,6 +80,10 @@ public class LinkFromSelect
         final String[] linkfrom = _linkFrom.split("#");
         this.type = Type.get(linkfrom[0]);
         this.attrName = linkfrom[1];
+        if (this.type == null) {
+            LinkFromSelect.LOG.error("Could not get type for linkfrom: '{}'", _linkFrom);
+        }
+        LinkFromSelect.LOG.debug("adding linkfrom: '{}'", _linkFrom);
         final OneSelect onsel = new OneSelect(this, _linkFrom);
         addOneSelect(onsel);
         onsel.setFromSelect(this);
@@ -312,5 +324,11 @@ public class LinkFromSelect
     public Type getMainType()
     {
         return null;
+    }
+
+    @Override
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this);
     }
 }
