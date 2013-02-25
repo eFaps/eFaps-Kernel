@@ -366,7 +366,7 @@ public final class NumberGenerator
         final Cache<UUID, NumberGenerator> cache = InfinispanCache.get().<UUID, NumberGenerator>getCache(
                         NumberGenerator.UUIDCACHE);
         if (!cache.containsKey(_uuid)) {
-            NumberGenerator.getNumberGeneratorFromDB(NumberGenerator.SQL_UUID, _uuid);
+            NumberGenerator.getNumberGeneratorFromDB(NumberGenerator.SQL_UUID, String.valueOf(_uuid));
         }
         return cache.get(_uuid);
     }
