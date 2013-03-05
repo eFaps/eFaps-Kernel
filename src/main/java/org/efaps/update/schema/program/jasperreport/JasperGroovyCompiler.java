@@ -33,6 +33,7 @@ import java.util.Map;
 import net.sf.jasperreports.compilers.JRGroovyCompiler;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.design.JRCompilationUnit;
 
 import org.codehaus.groovy.ast.ClassNode;
@@ -58,7 +59,15 @@ public class JasperGroovyCompiler
      */
     public JasperGroovyCompiler()
     {
-        super(DefaultJasperReportsContext.getInstance());
+        this(DefaultJasperReportsContext.getInstance());
+    }
+
+    /**
+     * @param _jasperReportsContext context to be used
+     */
+    public JasperGroovyCompiler(final JasperReportsContext _jasperReportsContext)
+    {
+        super(_jasperReportsContext);
     }
 
     /**
