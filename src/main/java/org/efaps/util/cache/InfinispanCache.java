@@ -18,7 +18,6 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.util.cache;
 
 import java.io.IOException;
@@ -28,7 +27,6 @@ import org.infinispan.manager.DefaultCacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * TODO comment!
  *
@@ -37,6 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class InfinispanCache
 {
+
     /**
      * Logger for this class.
      */
@@ -69,8 +68,17 @@ public final class InfinispanCache
                             "/org/efaps/util/cache/infinispan-config.xml"));
             this.manager.addListener(new CacheLogListener(InfinispanCache.LOG));
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            InfinispanCache.LOG.error("Could not start CacheManaeger", e);
+        }
+    }
+
+    /**
+     * Terminate the manager.
+     */
+    private void terminate()
+    {
+        if (this.manager != null) {
+            this.manager.stop();
         }
     }
 
@@ -106,4 +114,13 @@ public final class InfinispanCache
         return InfinispanCache.CACHEINSTANCE;
     }
 
+    /**
+     * Stop the manager.
+     */
+    public static void stop()
+    {
+        if (InfinispanCache.CACHEINSTANCE != null) {
+            InfinispanCache.CACHEINSTANCE.terminate();
+        }
+    }
 }

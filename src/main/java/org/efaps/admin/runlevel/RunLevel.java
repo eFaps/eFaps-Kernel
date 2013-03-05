@@ -36,6 +36,7 @@ import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.AbstractCache;
+import org.efaps.util.cache.InfinispanCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,6 +156,15 @@ public final class RunLevel
         RunLevel.ALL_RUNLEVELS.clear();
         RunLevel.RUNLEVEL = new RunLevel(_runLevel);
     }
+
+    /**
+     * Stops all RunLevel.
+     */
+    public static void stop()
+    {
+        InfinispanCache.stop();
+    }
+
 
     /**
      * @return Return the name of the currenct active RunLevel.
