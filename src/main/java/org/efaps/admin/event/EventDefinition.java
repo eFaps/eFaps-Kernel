@@ -205,8 +205,26 @@ public final class EventDefinition
             throw (EFapsException) e.getCause();
         }
         return ret;
-
     }
+
+    @Override
+    public boolean equals(final Object _obj)
+    {
+        boolean ret;
+        if (_obj instanceof EventDefinition) {
+            ret = ((EventDefinition) _obj).getId() == getId();
+        } else {
+            ret = super.equals(_obj);
+        }
+        return ret;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Long.valueOf(getId()).intValue();
+    }
+
 
     /**
      * @param _adminObject Object the event is added to

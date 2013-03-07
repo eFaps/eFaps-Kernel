@@ -339,7 +339,7 @@ public class Attribute
      *
      * @return clone of current attribute instance
      */
-    public Attribute copy()
+    protected Attribute copy()
     {
         final Attribute ret = new Attribute(getId(), getName(), this.sqlTable, this.attributeType, this.defaultValue,
                         this.dimensionUUID, this.required, this.size, this.scale);
@@ -689,7 +689,7 @@ public class Attribute
         final Cache<String, Attribute> cache = InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE);
         if (!cache.containsKey(_name)) {
             final String[] nameParts = _name.split("/");
-            if (nameParts != null && nameParts.length ==2) {
+            if (nameParts != null && nameParts.length == 2) {
                 Type.get(nameParts[0]);
             }
         }
