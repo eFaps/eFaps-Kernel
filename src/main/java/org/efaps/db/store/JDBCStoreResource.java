@@ -28,12 +28,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 
 import javax.transaction.xa.Xid;
 
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.databases.AbstractDatabase;
+import org.efaps.db.store.Resource.Compress;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
@@ -127,6 +129,7 @@ public class JDBCStoreResource
      * @return size of the file
      * @throws EFapsException on error
      */
+    @Override
     public long write(final InputStream _in,
                       final long _size,
                       final String _fileName)
@@ -173,6 +176,7 @@ public class JDBCStoreResource
     /**
      * Deletes the file defined in {@link #fileId}.
      */
+    @Override
     public void delete()
     {
     }
@@ -183,6 +187,7 @@ public class JDBCStoreResource
      * @return input stream of the file with the content
      * @throws EFapsException on error
      */
+    @Override
     public InputStream read()
         throws EFapsException
     {
@@ -208,6 +213,8 @@ public class JDBCStoreResource
                                                           resultSet.getBlob(1));
                 }
             }
+            resultSet.close();
+            stmt.close();
         } catch (final IOException e) {
             JDBCStoreResource.LOG.error("read of content failed", e);
             throw new EFapsException(JDBCStoreResource.class, "read.SQLException", e);
@@ -229,6 +236,7 @@ public class JDBCStoreResource
      *              with the file id gets a new VFS store resource instance)
      * @return always 0
      */
+    @Override
     public int prepare(final Xid _xid)
     {
         if (JDBCStoreResource.LOG.isDebugEnabled()) {
@@ -247,6 +255,7 @@ public class JDBCStoreResource
      * @param _onePhase <i>true</i> if it is a one phase commitment transaction
      *                  (not used)
      */
+    @Override
     public void commit(final Xid _xid,
                        final boolean _onePhase)
     {
@@ -263,6 +272,7 @@ public class JDBCStoreResource
      * @param _xid  global transaction identifier (not used, because each file
      *              with the file id gets a new VFS store resource instance)
      */
+    @Override
     public void rollback(final Xid _xid)
     {
         if (JDBCStoreResource.LOG.isDebugEnabled()) {
@@ -277,6 +287,7 @@ public class JDBCStoreResource
      * @param _xid  global transaction identifier (not used, because each file
      *              with the file id gets a new VFS store resource instance)
      */
+    @Override
     public void forget(final Xid _xid)
     {
         if (JDBCStoreResource.LOG.isDebugEnabled()) {
@@ -290,6 +301,7 @@ public class JDBCStoreResource
      *
      * @return always 0
      */
+    @Override
     public int getTransactionTimeout()
     {
         if (JDBCStoreResource.LOG.isDebugEnabled()) {
@@ -304,6 +316,7 @@ public class JDBCStoreResource
      * @param _flag flag
      * @return always <code>null</code>
      */
+    @Override
     public Xid[] recover(final int _flag)
     {
         if (JDBCStoreResource.LOG.isDebugEnabled()) {
@@ -318,6 +331,7 @@ public class JDBCStoreResource
      * @param _seconds number of seconds
      * @return always <i>true</i>
      */
+    @Override
     public boolean setTransactionTimeout(final int _seconds)
     {
         if (JDBCStoreResource.LOG.isDebugEnabled()) {
@@ -359,9 +373,9 @@ public class JDBCStoreResource
         protected BlobInputStream(final Blob _blob)
             throws SQLException
         {
-            this.blob = _blob;
-            this.in = _blob.getBinaryStream();
-            this.available = (int) this.blob.length();
+            blob = _blob;
+            in = _blob.getBinaryStream();
+            available = (int) blob.length();
         }
 
         /**
@@ -373,8 +387,8 @@ public class JDBCStoreResource
         public int read()
             throws IOException
         {
-            this.available--;
-            return this.in.read();
+            available--;
+            return in.read();
         }
 
         /**
@@ -388,12 +402,12 @@ public class JDBCStoreResource
             throws IOException
         {
             int length = _bytes.length;
-            if (this.available > 0)  {
-                if (this.available < length)  {
-                    length = this.available;
+            if (available > 0)  {
+                if (available < length)  {
+                    length = available;
                 }
-                this.available = this.available - length;
-                this.in.read(_bytes);
+                available = available - length;
+                in.read(_bytes);
             } else  {
                 length = -1;
             }
@@ -409,7 +423,7 @@ public class JDBCStoreResource
         public int available()
             throws IOException
         {
-            return this.available;
+            return available;
         }
     }
 
@@ -442,7 +456,7 @@ public class JDBCStoreResource
                   Context.getDbType().supportsBlobInputStreamAvailable()
                           ? _blob.getBinaryStream()
                           : new BlobInputStream(_blob));
-            this.res = _res;
+            res = _res;
         }
 
         /**
@@ -457,7 +471,7 @@ public class JDBCStoreResource
             throws IOException
         {
             super(_storeRes, _in);
-            this.res = _res;
+            res = _res;
         }
 
         /**
@@ -469,8 +483,8 @@ public class JDBCStoreResource
         {
             super.beforeClose();
             try {
-                if (this.res.isOpened()) {
-                    this.res.commit();
+                if (res.isOpened()) {
+                    res.commit();
                 }
             } catch (final EFapsException e) {
                 throw new IOException("commit of connection resource not possible", e);

@@ -242,7 +242,11 @@ public class PostgreSQLDatabase
         throws SQLException
     {
         final Statement stmtExec = _con.createStatement();
-        stmtExec.execute("drop view " + _name);
+        try {
+            stmtExec.execute("drop view " + _name);
+        } finally {
+            stmtExec.close();
+        }
         return this;
     }
 
@@ -346,7 +350,6 @@ public class PostgreSQLDatabase
                 ret = rs.getLong(1);
             }
             rs.close();
-
         } finally {
             stmt.close();
         }
@@ -393,16 +396,17 @@ public class PostgreSQLDatabase
             .append(" START ").append(value)
             .append(" CACHE 1;");
 
-        PreparedStatement stmt = null;
-        stmt = _con.prepareStatement(cmd.toString());
-        stmt.execute();
-        stmt.close();
+        final PreparedStatement stmt = _con.prepareStatement(cmd.toString());
+        try {
+            stmt.execute();
+        } finally {
+            stmt.close();
+        }
         if (!_con.getAutoCommit()) {
             _con.commit();
         }
 
         nextSequence(_con, _name);
-
         return this;
     }
 

@@ -376,7 +376,11 @@ public class OracleDatabase
             .append("  increment by 1 ")
             .append("  start with ").append(_startValue)
             .append("  nocache");
-        stmt.executeUpdate(cmd.toString());
+        try {
+            stmt.executeUpdate(cmd.toString());
+        } finally {
+            stmt.close();
+        }
 
         nextSequence(_con, _name);
         return this;
@@ -517,29 +521,36 @@ public class OracleDatabase
                                         final Map<String, TableInformation> _cache4Name)
         throws SQLException
     {
-        final ResultSet rsc = (_sql == null)
-                              ? _con.getMetaData().getColumns(AbstractDatabase.CATALOG,
-                                              AbstractDatabase.SCHEMAPATTERN, "%", "%")
-                              : _con.createStatement().executeQuery(_sql);
-        try  {
-            while (rsc.next())  {
-                final String tableName = rsc.getString("TABLE_NAME").toUpperCase();
+        Statement stmt = null;
+        final ResultSet rs;
+        if (_sql == null) {
+           rs = _con.getMetaData().getColumns(AbstractDatabase.CATALOG, AbstractDatabase.SCHEMAPATTERN, "%", "%");
+        } else        {
+            stmt = _con.createStatement();
+            rs = stmt.executeQuery(_sql);
+        }
+        try {
+            while (rs.next()) {
+                final String tableName = rs.getString("TABLE_NAME").toUpperCase();
                 if (_cache4Name.containsKey(tableName))  {
-                    final String colName = rsc.getString("COLUMN_NAME").toUpperCase();
-                    final String typeName = rsc.getString("TYPE_NAME").toLowerCase();
+                    final String colName = rs.getString("COLUMN_NAME").toUpperCase();
+                    final String typeName = rs.getString("TYPE_NAME").toLowerCase();
                     final Set<AbstractDatabase.ColumnType> colTypes
                         = OracleDatabase.this.getReadColumnTypes(typeName);
                     if (colTypes == null)  {
                         throw new SQLException("read unknown column type '" + typeName + "'");
                     }
-                    final int size = rsc.getInt("COLUMN_SIZE");
-                    final int scale = rsc.getInt("DECIMAL_DIGITS");
-                    final boolean isNullable = !"NO".equalsIgnoreCase(rsc.getString("IS_NULLABLE"));
+                    final int size = rs.getInt("COLUMN_SIZE");
+                    final int scale = rs.getInt("DECIMAL_DIGITS");
+                    final boolean isNullable = !"NO".equalsIgnoreCase(rs.getString("IS_NULLABLE"));
                     _cache4Name.get(tableName).addColInfo(colName, colTypes, size, scale, isNullable);
                 }
             }
-        } finally  {
-            rsc.close();
+        } finally {
+            rs.close();
+            if (stmt != null) {
+                stmt.close();
+            }
         }
     }
 

@@ -126,7 +126,7 @@ public final class RunLevel
     private RunLevel(final String _name)
         throws EFapsException
     {
-        this.name = _name;
+        name = _name;
         initialize(RunLevel.SELECT_RUNLEVEL.getCopy().addPart(SQLPart.WHERE).addColumnPart(0, "RUNLEVEL")
                         .addPart(SQLPart.EQUAL).addEscapedValuePart(_name).getSQL());
     }
@@ -222,11 +222,11 @@ public final class RunLevel
     private List<String> getAllInitializers()
     {
         final List<String> ret = new ArrayList<String>();
-        for (final CacheMethod cacheMethod : this.cacheMethods) {
+        for (final CacheMethod cacheMethod : cacheMethods) {
             ret.add(cacheMethod.className);
         }
-        if (this.parent != null) {
-            ret.addAll(this.parent.getAllInitializers());
+        if (parent != null) {
+            ret.addAll(parent.getAllInitializers());
         }
         return ret;
     }
@@ -240,10 +240,10 @@ public final class RunLevel
     protected void executeMethods()
         throws EFapsException
     {
-        if (this.parent != null) {
-            this.parent.executeMethods();
+        if (parent != null) {
+            parent.executeMethods();
         }
-        for (final CacheMethod cacheMethod : this.cacheMethods) {
+        for (final CacheMethod cacheMethod : cacheMethods) {
             cacheMethod.callMethod();
         }
     }
@@ -273,7 +273,7 @@ public final class RunLevel
                 // read run level itself
                 ResultSet rs = stmt.executeQuery(_sql);
                 if (rs.next()) {
-                    this.id = rs.getLong(1);
+                    id = rs.getLong(1);
                     parentId = rs.getLong(2);
                 } else {
                     RunLevel.LOG.error("RunLevel not found");
@@ -285,7 +285,7 @@ public final class RunLevel
                                 .addPart(SQLPart.WHERE)
                                 .addColumnPart(0, "RUNLEVELID")
                                 .addPart(SQLPart.EQUAL)
-                                .addValuePart(this.id)
+                                .addValuePart(id)
                                 .addPart(SQLPart.ORDERBY)
                                 .addColumnPart(0, "PRIORITY").getSQL());
 
@@ -296,26 +296,26 @@ public final class RunLevel
 
                 while (rs.next()) {
                     if (rs.getString(3) != null) {
-                        this.cacheMethods.add(new CacheMethod(rs.getString(1).trim(),
+                        cacheMethods.add(new CacheMethod(rs.getString(1).trim(),
                                                               rs.getString(2).trim(),
                                                               rs.getString(3).trim()));
                     } else {
-                        this.cacheMethods.add(new CacheMethod(rs.getString(1).trim(),
+                        cacheMethods.add(new CacheMethod(rs.getString(1).trim(),
                                                               rs.getString(2).trim()));
                     }
                 }
+                rs.close();
             } finally {
                 if (stmt != null) {
                     stmt.close();
                 }
             }
-
             con.commit();
-            RunLevel.ALL_RUNLEVELS.put(this.id, this);
+            RunLevel.ALL_RUNLEVELS.put(id, this);
             if (parentId != 0) {
-                this.parent = RunLevel.ALL_RUNLEVELS.get(parentId);
-                if (this.parent == null) {
-                    this.parent = new RunLevel(parentId);
+                parent = RunLevel.ALL_RUNLEVELS.get(parentId);
+                if (parent == null) {
+                    parent = new RunLevel(parentId);
                 }
             }
         } catch (final EFapsException e) {
@@ -384,9 +384,9 @@ public final class RunLevel
                             final String _methodName,
                             final String _parameter)
         {
-            this.className = _className;
-            this.methodName = _methodName;
-            this.parameter = _parameter;
+            className = _className;
+            methodName = _methodName;
+            parameter = _parameter;
         }
 
         /**
@@ -398,41 +398,41 @@ public final class RunLevel
             throws EFapsException
         {
             try {
-                final Class<?> cls = Class.forName(this.className);
-                if (this.parameter != null) {
-                    final Method m = cls.getMethod(this.methodName, String.class);
-                    m.invoke(cls, this.parameter);
+                final Class<?> cls = Class.forName(className);
+                if (parameter != null) {
+                    final Method m = cls.getMethod(methodName, String.class);
+                    m.invoke(cls, parameter);
                 } else {
-                    final Method m = cls.getMethod(this.methodName, new Class[] {});
+                    final Method m = cls.getMethod(methodName, new Class[] {});
                     m.invoke(cls);
                 }
             } catch (final ClassNotFoundException e) {
-                RunLevel.LOG.error("class '" + this.className + "' not found", e);
+                RunLevel.LOG.error("class '" + className + "' not found", e);
                 throw new EFapsException(getClass(),
                                          "callMethod.ClassNotFoundException",
                                          null,
                                          e,
-                                         this.className);
+                                         className);
             } catch (final NoSuchMethodException e) {
-                RunLevel.LOG.error("class '" + this.className + "' does not own method '" + this.methodName + "'", e);
+                RunLevel.LOG.error("class '" + className + "' does not own method '" + methodName + "'", e);
                 throw new EFapsException(getClass(),
                                          "callMethod.NoSuchMethodException",
                                          null,
                                          e,
-                                         this.className,
-                                         this.methodName);
+                                         className,
+                                         methodName);
             } catch (final IllegalAccessException e) {
-                RunLevel.LOG.error("could not access class '" + this.className + "' method '"
-                        + this.methodName + "'", e);
+                RunLevel.LOG.error("could not access class '" + className + "' method '"
+                        + methodName + "'", e);
                 throw new EFapsException(getClass(),
                                          "callMethod.IllegalAccessException",
                                          null,
                                          e,
-                                         this.className,
-                                         this.methodName);
+                                         className,
+                                         methodName);
             } catch (final InvocationTargetException e) {
-                RunLevel.LOG.error("could not execute class '" + this.className + "' method '"
-                        + this.methodName + "' because an exception was thrown.", e);
+                RunLevel.LOG.error("could not execute class '" + className + "' method '"
+                        + methodName + "' because an exception was thrown.", e);
                 if (e.getCause() != null) {
                     if (e.getCause() instanceof EFapsException) {
                         throw (EFapsException) e.getCause();
@@ -440,16 +440,16 @@ public final class RunLevel
                         throw new EFapsException(getClass(), "callMethod.InvocationTargetException",
                                              null,
                                              e.getCause(),
-                                             this.className,
-                                             this.methodName);
+                                             className,
+                                             methodName);
                     }
                 } else {
                     throw new EFapsException(getClass(),
                                              "callMethod.InvocationTargetException",
                                              null,
                                              e,
-                                             this.className,
-                                             this.methodName);
+                                             className,
+                                             methodName);
                 }
             }
         }

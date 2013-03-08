@@ -987,9 +987,14 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                                  final Map<String, TableInformation> _cache4Name)
         throws SQLException
     {
-        final ResultSet rs = (_sql == null)
-                        ? _con.getMetaData().getTables(null, null, "%", new String[] { "TABLE", "VIEW" })
-                        : _con.createStatement().executeQuery(_sql);
+        Statement stmt = null;
+        final ResultSet rs;
+        if (_sql == null) {
+           rs = _con.getMetaData().getTables(null, null, "%", new String[] { "TABLE", "VIEW" });
+        } else        {
+            stmt = _con.createStatement();
+            rs = stmt.executeQuery(_sql);
+        }
         try {
             while (rs.next()) {
                 final String tableName = rs.getString("TABLE_NAME").toUpperCase();
@@ -997,6 +1002,9 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
             }
         } finally {
             rs.close();
+            if (stmt != null) {
+                stmt.close();
+            }
         }
     }
 
@@ -1030,28 +1038,36 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                                         final Map<String, TableInformation> _cache4Name)
         throws SQLException
     {
-        final ResultSet rsc = (_sql == null)
-                        ? _con.getMetaData().getColumns(null, null, "%", "%")
-                        : _con.createStatement().executeQuery(_sql);
+        Statement stmt = null;
+        final ResultSet rs;
+        if (_sql == null) {
+           rs = _con.getMetaData().getColumns(null, null, "%", "%");
+        } else        {
+            stmt = _con.createStatement();
+            rs = stmt.executeQuery(_sql);
+        }
         try {
-            while (rsc.next()) {
-                final String tableName = rsc.getString("TABLE_NAME").toUpperCase();
+            while (rs.next()) {
+                final String tableName = rs.getString("TABLE_NAME").toUpperCase();
                 if (_cache4Name.containsKey(tableName)) {
-                    final String colName = rsc.getString("COLUMN_NAME").toUpperCase();
-                    final String typeName = rsc.getString("TYPE_NAME").toLowerCase();
+                    final String colName = rs.getString("COLUMN_NAME").toUpperCase();
+                    final String typeName = rs.getString("TYPE_NAME").toLowerCase();
                     final Set<AbstractDatabase.ColumnType> colTypes = AbstractDatabase.this
                                     .getReadColumnTypes(typeName);
                     if (colTypes == null) {
                         throw new SQLException("read unknown column type '" + typeName + "'");
                     }
-                    final int size = rsc.getInt("COLUMN_SIZE");
-                    final int scale = rsc.getInt("DECIMAL_DIGITS");
-                    final boolean isNullable = !"NO".equalsIgnoreCase(rsc.getString("IS_NULLABLE"));
+                    final int size = rs.getInt("COLUMN_SIZE");
+                    final int scale = rs.getInt("DECIMAL_DIGITS");
+                    final boolean isNullable = !"NO".equalsIgnoreCase(rs.getString("IS_NULLABLE"));
                     _cache4Name.get(tableName).addColInfo(colName, colTypes, size, scale, isNullable);
                 }
             }
         } finally {
-            rsc.close();
+            rs.close();
+            if (stmt != null) {
+                stmt.close();
+            }
         }
     }
 
@@ -1086,21 +1102,29 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                                            final Map<String, TableInformation> _cache4Name)
         throws SQLException
     {
-        final ResultSet rsu = (_sql == null)
-                        ? _con.getMetaData().getIndexInfo(null, null, "%", true, false)
-                        : _con.createStatement().executeQuery(_sql);
+        Statement stmt = null;
+        final ResultSet rs;
+        if (_sql == null) {
+           rs = _con.getMetaData().getIndexInfo(null, null, "%", true, false);
+        } else        {
+            stmt = _con.createStatement();
+            rs = stmt.executeQuery(_sql);
+        }
         try {
-            while (rsu.next()) {
-                final String tableName = rsu.getString("TABLE_NAME").toUpperCase();
+            while (rs.next()) {
+                final String tableName = rs.getString("TABLE_NAME").toUpperCase();
                 if (_cache4Name.containsKey(tableName)) {
-                    final String ukName = rsu.getString("INDEX_NAME").toUpperCase();
-                    final String colName = rsu.getString("COLUMN_NAME").toUpperCase();
-                    final int colIdx = rsu.getInt("ORDINAL_POSITION");
+                    final String ukName = rs.getString("INDEX_NAME").toUpperCase();
+                    final String colName = rs.getString("COLUMN_NAME").toUpperCase();
+                    final int colIdx = rs.getInt("ORDINAL_POSITION");
                     _cache4Name.get(tableName).addUniqueKeyColumn(ukName, colIdx, colName);
                 }
             }
         } finally {
-            rsu.close();
+            rs.close();
+            if (stmt != null) {
+                stmt.close();
+            }
         }
     }
 
@@ -1139,23 +1163,31 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                                             final Map<String, TableInformation> _cache4Name)
         throws SQLException
     {
-        final ResultSet rsf = (_sql == null)
-                        ? _con.getMetaData().getImportedKeys(null, null, "%")
-                        : _con.createStatement().executeQuery(_sql);
+        Statement stmt = null;
+        final ResultSet rs;
+        if (_sql == null) {
+           rs = _con.getMetaData().getImportedKeys(null, null, "%");
+        } else        {
+            stmt = _con.createStatement();
+            rs = stmt.executeQuery(_sql);
+        }
         try {
-            while (rsf.next()) {
-                final String tableName = rsf.getString("TABLE_NAME").toUpperCase();
+            while (rs.next()) {
+                final String tableName = rs.getString("TABLE_NAME").toUpperCase();
                 if (_cache4Name.containsKey(tableName)) {
-                    final String fkName = rsf.getString("FK_NAME").toUpperCase();
-                    final String colName = rsf.getString("FKCOLUMN_NAME").toUpperCase();
-                    final String refTableName = rsf.getString("PKTABLE_NAME").toUpperCase();
-                    final String refColName = rsf.getString("PKCOLUMN_NAME").toUpperCase();
-                    final boolean cascade = rsf.getInt("DELETE_RULE") == DatabaseMetaData.importedKeyCascade;
+                    final String fkName = rs.getString("FK_NAME").toUpperCase();
+                    final String colName = rs.getString("FKCOLUMN_NAME").toUpperCase();
+                    final String refTableName = rs.getString("PKTABLE_NAME").toUpperCase();
+                    final String refColName = rs.getString("PKCOLUMN_NAME").toUpperCase();
+                    final boolean cascade = rs.getInt("DELETE_RULE") == DatabaseMetaData.importedKeyCascade;
                     _cache4Name.get(tableName).addForeignKey(fkName, colName, refTableName, refColName, cascade);
                 }
             }
         } finally {
-            rsf.close();
+            rs.close();
+            if (stmt != null) {
+                stmt.close();
+            }
         }
     }
 
