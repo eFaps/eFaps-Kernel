@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.efaps.admin.common.Quartz;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
@@ -163,6 +164,7 @@ public final class RunLevel
     public static void stop()
     {
         InfinispanCache.stop();
+        Quartz.shutDown();
     }
 
 

@@ -21,8 +21,11 @@
 package org.efaps.admin.common;
 
 import java.util.Properties;
-import java.util.UUID;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.init.INamingBinds;
 import org.efaps.message.MessageStatusHolder;
 import org.efaps.util.EFapsException;
@@ -36,6 +39,8 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Quartz for eFaps.
@@ -50,6 +55,12 @@ public final class Quartz
      * Quartz Group Name.
      */
     public static final String QUARTZGROUP = "eFapsQuartzGroup";
+
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(Quartz.class);
 
     /**
      * Key for the SystemConfiguration attribute that contains the
@@ -75,6 +86,11 @@ public final class Quartz
     private static Quartz QUARTZ;
 
     /**
+     * Scheduler used.
+     */
+    private Scheduler scheduler;
+
+    /**
      * Private Constructor.
      */
     private Quartz()
@@ -91,13 +107,24 @@ public final class Quartz
         Quartz.QUARTZ = new Quartz();
         try {
             //Kernel-Configuration
-            final SystemConfiguration config = SystemConfiguration.get(
-                            UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+            final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
             final Properties props = config.getAttributeValueAsProperties(Quartz.QUARTZPROPS);
 
             final StdSchedulerFactory schedFact = new StdSchedulerFactory();
-            props.put(StdSchedulerFactory.PROP_SCHED_USER_TX_URL, "java:comp/env/"
-                                + INamingBinds.RESOURCE_USERTRANSACTION);
+            javax.naming.Context envCtx = null;
+            String lookup = "java:global/";
+            try {
+                final InitialContext initCtx = new InitialContext();
+                envCtx = (javax.naming.Context) initCtx.lookup(lookup);
+            } catch (final NamingException e) {
+                Quartz.LOG.info("Catched NamingException on evaluation for Quartz");
+            }
+            // for a build the context might be different, try this before surrender
+            if (envCtx == null) {
+                lookup = "java:comp/env";
+            }
+
+            props.put(StdSchedulerFactory.PROP_SCHED_USER_TX_URL, lookup + "/" + INamingBinds.RESOURCE_USERTRANSACTION);
             props.put(StdSchedulerFactory.PROP_SCHED_WRAP_JOB_IN_USER_TX, "true");
             props.put(StdSchedulerFactory.PROP_THREAD_POOL_CLASS, "org.quartz.simpl.SimpleThreadPool");
             props.put("org.quartz.plugin.jobInitializer.class", "org.efaps.admin.common.QuartzSchedulerPlugin");
@@ -120,14 +147,14 @@ public final class Quartz
                 props.put("org.quartz.plugin.triggHistory.triggerCompleteMessage",
                             "Trigger {1}.{0} completed firing job {6}.{5} at {4, date, HH:mm:ss MM/dd/yyyy}.");
             }
+            Quartz.LOG.info("Sheduling Quartz with properties {}", props);
 
             schedFact.initialize(props);
-            Scheduler sched;
-            sched = schedFact.getScheduler("eFapsScheduler");
-            if (sched != null) {
-                sched.shutdown();
+            Quartz.QUARTZ.scheduler = schedFact.getScheduler("eFapsScheduler");
+            if (Quartz.QUARTZ.scheduler != null) {
+                Quartz.QUARTZ.scheduler.shutdown();
             }
-            sched =  schedFact.getScheduler();
+            Quartz.QUARTZ.scheduler =  schedFact.getScheduler();
 
             if (config.getAttributeValueAsBoolean(Quartz.MSGTRIGGERACTIVE)) {
                 final int interval = config.getAttributeValueAsInteger(Quartz.MSGTRIGGERINTERVAL);
@@ -136,16 +163,18 @@ public final class Quartz
                                 .withSchedule(SimpleScheduleBuilder.repeatMinutelyForever(interval > 0 ? interval : 1))
                                 .build();
 
-                JobDetail jobDetail = sched.getJobDetail(new JobKey("SystemMessage", Quartz.QUARTZGROUP));
+                JobDetail jobDetail = Quartz.QUARTZ.scheduler.getJobDetail(new JobKey("SystemMessage",
+                                Quartz.QUARTZGROUP));
                 if (jobDetail == null) {
                     jobDetail = JobBuilder.newJob(MessageStatusHolder.class)
                                     .withIdentity("SystemMessage", Quartz.QUARTZGROUP).build();
-                    sched.scheduleJob(jobDetail, trigger);
+                    Quartz.QUARTZ.scheduler.scheduleJob(jobDetail, trigger);
                 } else {
-                    sched.rescheduleJob(new TriggerKey("SystemMessageTrigger", Quartz.QUARTZGROUP), trigger);
+                    Quartz.QUARTZ.scheduler.rescheduleJob(new TriggerKey("SystemMessageTrigger", Quartz.QUARTZGROUP),
+                                    trigger);
                 }
             }
-            sched.start();
+            Quartz.QUARTZ.scheduler.start();
         } catch (final SchedulerException e) {
             throw new EFapsException(Quartz.class, "Quartz.SchedulerException", e);
         }
@@ -165,4 +194,20 @@ public final class Quartz
         }
         return Quartz.QUARTZ;
     }
+
+
+    /**
+     * ShutDown Quartz.
+     */
+    public static void shutDown()
+    {
+        if (Quartz.QUARTZ != null && Quartz.QUARTZ.scheduler != null) {
+            try {
+                Quartz.QUARTZ.scheduler.shutdown();
+            } catch (final SchedulerException e) {
+                Quartz.LOG.error("Problems on shutdown of QuartsSheduler", e);
+            }
+        }
+    }
+
 }

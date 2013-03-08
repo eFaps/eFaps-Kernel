@@ -95,8 +95,8 @@ public class ConnectionResource
      */
     public int prepare(final Xid _xid)
     {
-       ConnectionResource.LOG.trace("prepare (xid = {})", _xid);
-       return 0;
+        ConnectionResource.LOG.trace("prepare (xid = {})", _xid);
+        return 0;
     }
 
     /**

@@ -84,19 +84,22 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
             final InitialContext initCtx = new InitialContext();
             javax.naming.Context envCtx = null;
             try {
-                envCtx = (javax.naming.Context) initCtx.lookup("java:/comp/env");
-            } catch (final NamingException e) {
-                AbstractDatabase.LOG.error("NamingException", e);
-            }
-            // for a build in jetty the context is different, try this before
-            // surrender
-            if (envCtx == null) {
                 envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
+            } catch (final NamingException e) {
+                AbstractDatabase.LOG.info("Catched NamingException on evaluation for DataBase.");
             }
+            // for a build the context might be different, try this before surrender
+            if (envCtx == null) {
+                envCtx = (javax.naming.Context) initCtx.lookup("java:/comp/env");
+            }
+            try {
             final Map<?, ?> props = (Map<?, ?>) envCtx.lookup(INamingBinds.RESOURCE_CONFIGPROPERTIES);
-            if (props != null) {
-                AbstractDatabase.SCHEMAPATTERN = (String) props.get(IeFapsProperties.DBSCHEMAPATTERN);
-                AbstractDatabase.CATALOG = (String) props.get(IeFapsProperties.DBCATALOG);
+                if (props != null) {
+                    AbstractDatabase.SCHEMAPATTERN = (String) props.get(IeFapsProperties.DBSCHEMAPATTERN);
+                    AbstractDatabase.CATALOG = (String) props.get(IeFapsProperties.DBCATALOG);
+                }
+            } catch (final NamingException e) {
+                AbstractDatabase.LOG.info("Catched NamingException on evaluation for Properties.");
             }
         } catch (final NamingException e) {
             AbstractDatabase.LOG.error("NamingException", e);
