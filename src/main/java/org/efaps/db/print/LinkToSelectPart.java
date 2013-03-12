@@ -28,6 +28,8 @@ import java.util.List;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.wrapper.SQLSelect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Select Part for <code>linkto[ATTRIBUTENAME]</code>.
@@ -38,6 +40,11 @@ import org.efaps.db.wrapper.SQLSelect;
 public class LinkToSelectPart
     extends AbstractSelectPart
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(OneSelect.class);
+
     /**
      * Name of the Attribute the link to is based on.
      */
@@ -108,7 +115,16 @@ public class LinkToSelectPart
     @Override
     public Type getType()
     {
-        return this.type.getAttribute(this.attrName).getLink();
+        final Attribute attr = this.type.getAttribute(this.attrName);
+        if (attr == null) {
+            LinkToSelectPart.LOG.error("Could not find an Attribute with name '{}' for type:{}", this.attrName,
+                            this.type);
+        }
+        final Type ret = attr.getLink();
+        if (ret == null) {
+            LinkToSelectPart.LOG.error("No link for Attribute '{}'", attr);
+        }
+        return ret;
     }
 
     /**
