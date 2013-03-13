@@ -52,8 +52,10 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.ci.CIAdminAccess;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.ci.CIAdminUserInterface;
+import org.efaps.db.AttributeQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.transaction.ConnectionResource;
@@ -274,6 +276,11 @@ public class Type
      */
     private boolean checked4Children = false;
 
+    /**
+     * Internal boolean to store if for this type was already checked if it is
+     * classified by an classification.
+     */
+    private boolean checked4classifiedBy = false;
 
     /**
      * Stores all type of events which are allowed to fire on this type.
@@ -353,7 +360,6 @@ public class Type
      * </ul>
      */
     private Long typeForm;
-
 
     /**
      * This is the constructor for class Type. Every instance of class Type must
@@ -805,18 +811,34 @@ public class Type
      *
      * @param _classification classifixation that classifies this type
      */
-    private void addClassifiedByType(final Classification _classification)
+    protected void addClassifiedByType(final Classification _classification)
     {
+        this.checked4classifiedBy = true;
         this.classifiedByTypes.add(_classification);
     }
 
     /**
      * Getter method for instance variable {@link #classifiedByTypes}.
-     *
+     * The method retrieves lazy the Classification Types.
      * @return value of instance variable {@link #classifiedByTypes}
+     * @throws EFapsException on error
      */
     public Set<Classification> getClassifiedByTypes()
+        throws EFapsException
     {
+        if (!this.checked4classifiedBy) {
+            final QueryBuilder attrQueryBldr = new QueryBuilder(CIAdminDataModel.TypeClassifies);
+            attrQueryBldr.addWhereAttrEqValue(CIAdminDataModel.TypeClassifies.To, getId());
+            final AttributeQuery attrQuery = attrQueryBldr.getAttributeQuery(CIAdminDataModel.TypeClassifies.From);
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.Type);
+            queryBldr.addWhereAttrInQuery(CIAdminDataModel.Type.ID, attrQuery);
+            final InstanceQuery query = queryBldr.getQuery();
+            query.executeWithoutAccessCheck();
+            while (query.next()) {
+                Type.get(query.getCurrentValue().getId());
+            }
+            this.checked4classifiedBy = true;
+        }
         return this.classifiedByTypes;
     }
 
@@ -1280,7 +1302,7 @@ public class Type
             con.commit();
             if (ret != null) {
                 Type.cacheType(ret);
-                 if (parentTypeId != 0) {
+                if (parentTypeId != 0) {
                     Type.LOG.trace("get parent for id = {}",  parentTypeId);
                     final Type parent = Type.get(parentTypeId);
                     // TODO: test if loop
