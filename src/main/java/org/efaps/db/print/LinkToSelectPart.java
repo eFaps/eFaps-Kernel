@@ -87,6 +87,10 @@ public class LinkToSelectPart
     {
         // it must be evaluated if the attribute that is used as the base for the linkto is inside a child table
         final Attribute attr = this.type.getAttribute(this.attrName);
+        if (attr == null) {
+            LinkToSelectPart.LOG.error("Could not find an Attribute with name '{}' for type:{}", this.attrName,
+                            this.type);
+        }
         Integer relIndex = _relIndex;
         if (attr != null && !attr.getTable().equals(this.type.getMainTable())) {
             final String childTableName = attr.getTable().getSqlTable();
