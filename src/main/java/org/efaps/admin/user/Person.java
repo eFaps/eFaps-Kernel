@@ -67,7 +67,6 @@ import org.slf4j.LoggerFactory;
  */
 public final class Person
     extends AbstractUserObject
-
 {
     /**
      * Needed for serialization.
@@ -121,8 +120,8 @@ public final class Person
         private AttrName(final String _sqlColumn,
                          final boolean _integer)
         {
-            sqlColumn = _sqlColumn;
-            integer = _integer;
+            this.sqlColumn = _sqlColumn;
+            this.integer = _integer;
         }
     }
 
@@ -243,7 +242,7 @@ public final class Person
      */
     private void add(final Role _role)
     {
-        roles.add(_role.getId());
+        this.roles.add(_role.getId());
     }
 
     /**
@@ -255,7 +254,7 @@ public final class Person
      */
     public boolean isAssigned(final Role _role)
     {
-        return roles.contains(_role.getId());
+        return this.roles.contains(_role.getId());
     }
 
     /**
@@ -266,7 +265,7 @@ public final class Person
      */
     private void add(final Group _group)
     {
-        groups.add(_group.getId());
+        this.groups.add(_group.getId());
     }
 
     /**
@@ -278,7 +277,7 @@ public final class Person
      */
     public boolean isAssigned(final Group _group)
     {
-        return groups.contains(_group.getId());
+        return this.groups.contains(_group.getId());
     }
 
     /**
@@ -289,7 +288,7 @@ public final class Person
      */
     private void add(final Company _group)
     {
-        companies.add(_group.getId());
+        this.companies.add(_group.getId());
     }
 
     /**
@@ -301,7 +300,7 @@ public final class Person
      */
     public boolean isAssigned(final Company _company)
     {
-        return companies.contains(_company.getId());
+        return this.companies.contains(_company.getId());
     }
 
     /**
@@ -311,9 +310,9 @@ public final class Person
      */
     public void cleanUp()
     {
-        roles.clear();
-        groups.clear();
-        companies.clear();
+        this.roles.clear();
+        this.groups.clear();
+        this.companies.clear();
     }
 
     /**
@@ -327,8 +326,8 @@ public final class Person
     private void setAttrValue(final AttrName _attrName,
                               final String _value)
     {
-        synchronized (attrValues) {
-            attrValues.put(_attrName, _value);
+        synchronized (this.attrValues) {
+            this.attrValues.put(_attrName, _value);
         }
     }
 
@@ -340,7 +339,7 @@ public final class Person
      */
     public String getAttrValue(final AttrName _attrName)
     {
-        return attrValues.get(_attrName);
+        return this.attrValues.get(_attrName);
     }
 
     /**
@@ -348,7 +347,7 @@ public final class Person
      */
     public String getFirstName()
     {
-        return attrValues.get(Person.AttrName.FIRSTNAME);
+        return this.attrValues.get(Person.AttrName.FIRSTNAME);
     }
 
     /**
@@ -356,7 +355,7 @@ public final class Person
      */
     public String getLastName()
     {
-        return attrValues.get(Person.AttrName.LASTNAME);
+        return this.attrValues.get(Person.AttrName.LASTNAME);
     }
 
     /**
@@ -367,8 +366,8 @@ public final class Person
     public Locale getLocale()
     {
         final Locale ret;
-        if (attrValues.get(Person.AttrName.LOCALE) != null) {
-            final String localeStr = attrValues.get(Person.AttrName.LOCALE);
+        if (this.attrValues.get(Person.AttrName.LOCALE) != null) {
+            final String localeStr = this.attrValues.get(Person.AttrName.LOCALE);
             final String[] countries = localeStr.split("_");
             if (countries.length == 2) {
                 ret = new Locale(countries[0], countries[1]);
@@ -391,8 +390,8 @@ public final class Person
      */
     public String getLanguage()
     {
-        return attrValues.get(Person.AttrName.LANGUAGE) != null
-                        ? attrValues.get(Person.AttrName.LANGUAGE)
+        return this.attrValues.get(Person.AttrName.LANGUAGE) != null
+                        ? this.attrValues.get(Person.AttrName.LANGUAGE)
                         : Locale.ENGLISH.getISO3Language();
     }
 
@@ -403,8 +402,8 @@ public final class Person
      */
     public DateTimeZone getTimeZone()
     {
-        return attrValues.get(Person.AttrName.TIMZONE) != null
-                        ? DateTimeZone.forID(attrValues.get(Person.AttrName.TIMZONE))
+        return this.attrValues.get(Person.AttrName.TIMZONE) != null
+                        ? DateTimeZone.forID(this.attrValues.get(Person.AttrName.TIMZONE))
                         : DateTimeZone.UTC;
     }
 
@@ -427,7 +426,7 @@ public final class Person
      */
     public ChronologyType getChronologyType()
     {
-        final String chronoKey = attrValues.get(Person.AttrName.CHRONOLOGY);
+        final String chronoKey = this.attrValues.get(Person.AttrName.CHRONOLOGY);
         final ChronologyType chronoType;
         if (chronoKey != null) {
             chronoType = ChronologyType.getByKey(chronoKey);
@@ -466,11 +465,11 @@ public final class Person
                                 final String _value,
                                 final String _updateValue)
     {
-        synchronized (attrUpdated) {
-            synchronized (attrValues) {
-                attrValues.put(_attrName, _value);
+        synchronized (this.attrUpdated) {
+            synchronized (this.attrValues) {
+                this.attrValues.put(_attrName, _value);
             }
-            attrUpdated.put(_attrName, _updateValue);
+            this.attrUpdated.put(_attrName, _updateValue);
         }
     }
 
@@ -488,8 +487,8 @@ public final class Person
     public void commitAttrValuesInDB()
         throws EFapsException
     {
-        synchronized (attrUpdated) {
-            if (attrUpdated.size() > 0) {
+        synchronized (this.attrUpdated) {
+            if (this.attrUpdated.size() > 0) {
                 ConnectionResource rsrc = null;
                 try {
                     final Context context = Context.getThreadContext();
@@ -500,7 +499,7 @@ public final class Person
                     try {
                         cmd.append("update T_USERPERSON set ");
                         boolean first = true;
-                        for (final AttrName attrName : attrUpdated.keySet()) {
+                        for (final AttrName attrName : this.attrUpdated.keySet()) {
                             if (first) {
                                 first = false;
                             } else {
@@ -512,8 +511,8 @@ public final class Person
                         stmt = rsrc.getConnection().prepareStatement(cmd.toString());
 
                         int col = 1;
-                        for (final AttrName attrName : attrUpdated.keySet()) {
-                            final String tmp = attrUpdated.get(attrName);
+                        for (final AttrName attrName : this.attrUpdated.keySet()) {
+                            final String tmp = this.attrUpdated.get(attrName);
                             if (attrName.integer) {
                                 stmt.setInt(col, tmp == null ? 0 : Integer.parseInt(tmp.trim()));
                             } else {
@@ -551,7 +550,7 @@ public final class Person
                         rsrc.abort();
                     }
                 }
-                attrUpdated.clear();
+                this.attrUpdated.clear();
             }
         }
     }
@@ -707,15 +706,15 @@ public final class Person
         throws EFapsException
     {
         readFromDBAttributes();
-        roles.clear();
+        this.roles.clear();
         for (final Role role : getRolesFromDB()) {
             add(role);
         }
-        groups.clear();
+        this.groups.clear();
         for (final Group group : getGroupsFromDB(null)) {
             add(group);
         }
-        companies.clear();
+        this.companies.clear();
         for (final Company company : getCompaniesFromDB(null)) {
             add(company);
         }
@@ -1202,7 +1201,7 @@ public final class Person
      */
     public Set<Long> getRoles()
     {
-        return roles;
+        return this.roles;
     }
 
     /**
@@ -1213,7 +1212,7 @@ public final class Person
      */
     public Set<Long> getGroups()
     {
-        return groups;
+        return this.groups;
     }
 
     /**
@@ -1223,7 +1222,7 @@ public final class Person
      */
     public Set<Long> getCompanies()
     {
-        return companies;
+        return this.companies;
     }
 
     /**
@@ -1236,10 +1235,10 @@ public final class Person
     {
         return new ToStringBuilder(this)
                         .appendSuper(super.toString())
-                        .append("attrValues", attrValues)
-                        .append("roles", roles)
-                        .append("groups", groups)
-                        .append("companies", companies)
+                        .append("attrValues", this.attrValues)
+                        .append("roles", this.roles)
+                        .append("groups", this.groups)
+                        .append("companies", this.companies)
                         .toString();
     }
 

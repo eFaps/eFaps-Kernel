@@ -514,6 +514,7 @@ public final class JAASSystem
                                         && ((system.groupJAASPrincipleClass == null)
                                         || ((system.groupJAASPrincipleClass != null)
                                         && (system.groupMethodKey != null)))) {
+                            JAASSystem.LOG.warn("unexpected behavior");
                         }
                         JAASSystem.cacheJAASSystem(system);
                     } catch (final ClassNotFoundException e) {

@@ -99,7 +99,7 @@ public class SelectBuilder
     }
 
     /**
-     * @param _type         type to link from
+     * @param _typeUUID     UUID of the type to link from
      * @param _attribute    attribute to link from
      * @return this
      */
@@ -313,7 +313,7 @@ public class SelectBuilder
     }
 
     /**
-     * @param _class attribute to be added
+     * @param _typeUUID UUID of the classification type
      * @return this
      */
     public SelectBuilder clazz(final UUID _typeUUID)

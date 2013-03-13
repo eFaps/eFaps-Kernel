@@ -294,12 +294,12 @@ public final class Context
                     final boolean _inherit)
         throws EFapsException
     {
-        inherit = _inherit;
-        transaction = _transaction;
+        this.inherit = _inherit;
+        this.transaction = _transaction;
 
-        parameters = (_parameters == null) ? new HashMap<String, String[]>() : _parameters;
-        fileParameters = (_fileParameters == null) ? new HashMap<String, FileParameter>() : _fileParameters;
-        sessionAttributes = (_sessionAttributes == null) ? new HashMap<String, Object>() : _sessionAttributes;
+        this.parameters = (_parameters == null) ? new HashMap<String, String[]>() : _parameters;
+        this.fileParameters = (_fileParameters == null) ? new HashMap<String, FileParameter>() : _fileParameters;
+        this.sessionAttributes = (_sessionAttributes == null) ? new HashMap<String, Object>() : _sessionAttributes;
         try {
             setConnection(Context.DATASOURCE.getConnection());
         } catch (final SQLException e) {
@@ -313,7 +313,7 @@ public final class Context
     private ThreadLocal<Context> getThreadLocal()
     {
         ThreadLocal<Context> ret;
-        if (inherit) {
+        if (this.inherit) {
             ret = Context.INHERITTHREADCONTEXT;
         } else {
             ret = Context.THREADCONTEXT;
@@ -328,12 +328,12 @@ public final class Context
     public void finalize()
     {
         if (Context.LOG.isDebugEnabled()) {
-            Context.LOG.debug("finalize context for " + person);
+            Context.LOG.debug("finalize context for " + this.person);
             Context.LOG.debug("connection is " + getConnection());
         }
-        if (connection != null) {
+        if (this.connection != null) {
             try {
-                connection.close();
+                this.connection.close();
             } catch (final SQLException e) {
                 Context.LOG.error("could not close a sql connection", e);
             }
@@ -354,14 +354,14 @@ public final class Context
     {
         boolean closed = true;
 
-        for (final ConnectionResource con : connectionStore) {
+        for (final ConnectionResource con : this.connectionStore) {
             if (con.isOpened()) {
                 closed = false;
                 break;
             }
         }
         if (closed) {
-            for (final Resource store : storeStore) {
+            for (final Resource store : this.storeStore) {
                 if (store.isOpened()) {
                     closed = false;
                     break;
@@ -381,12 +381,12 @@ public final class Context
     public void close()
     {
         if (Context.LOG.isDebugEnabled()) {
-            Context.LOG.debug("close context for " + person);
+            Context.LOG.debug("close context for " + this.person);
             Context.LOG.debug("connection is " + getConnection());
         }
-        if (connection != null) {
+        if (this.connection != null) {
             try {
-                connection.close();
+                this.connection.close();
             } catch (final SQLException e) {
                 Context.LOG.error("could not close a sql connection", e);
             }
@@ -397,7 +397,7 @@ public final class Context
             getThreadLocal().set(null);
         }
         // check if all JDBC connection are close...
-        for (final ConnectionResource con : connectionStore) {
+        for (final ConnectionResource con : this.connectionStore) {
             try {
                 if ((con.getConnection() != null) && !con.getConnection().isClosed()) {
                     con.getConnection().close();
@@ -419,7 +419,7 @@ public final class Context
         throws EFapsException
     {
         try {
-            transaction.setRollbackOnly();
+            this.transaction.setRollbackOnly();
         } catch (final SystemException e) {
             throw new EFapsException(getClass(), "abort.SystemException", e);
         }
@@ -437,15 +437,15 @@ public final class Context
         throws EFapsException
     {
         ConnectionResource con = null;
-        if (connectionStack.isEmpty()) {
+        if (this.connectionStack.isEmpty()) {
             try {
                 con = new ConnectionResource(Context.DATASOURCE.getConnection());
             } catch (final SQLException e) {
                 throw new EFapsException(getClass(), "getConnectionResource.SQLException", e);
             }
-            connectionStore.add(con);
+            this.connectionStore.add(con);
         } else {
-            con = connectionStack.pop();
+            con = this.connectionStack.pop();
         }
         if (!con.isOpened()) {
             con.open();
@@ -458,7 +458,7 @@ public final class Context
      */
     public void returnConnectionResource(final ConnectionResource _con)
     {
-        connectionStack.push(_con);
+        this.connectionStack.push(_con);
     }
 
     /**
@@ -478,7 +478,7 @@ public final class Context
         final Store store = Store.get(_instance.getType().getStoreId());
         storeRsrc = store.getResource(_instance);
         storeRsrc.open(_event);
-        storeStore.add(storeRsrc);
+        this.storeStore.add(storeRsrc);
         return storeRsrc;
     }
 
@@ -495,8 +495,8 @@ public final class Context
     {
         long ret = 1;
 
-        if (person != null) {
-            ret = person.getId();
+        if (this.person != null) {
+            ret = this.person.getId();
         }
         return ret;
     }
@@ -510,8 +510,8 @@ public final class Context
     public String getParameter(final String _key)
     {
         String value = null;
-        if (parameters != null) {
-            final String[] values = parameters.get(_key);
+        if (this.parameters != null) {
+            final String[] values = this.parameters.get(_key);
             if ((values != null) && (values.length > 0)) {
                 value = values[0];
             }
@@ -526,7 +526,7 @@ public final class Context
      */
     public String getPath()
     {
-        return path;
+        return this.path;
     }
 
     /**
@@ -536,7 +536,7 @@ public final class Context
      */
     public void setPath(final String _path)
     {
-        path = _path;
+        this.path = _path;
     }
 
     /**
@@ -554,7 +554,7 @@ public final class Context
      */
     public boolean containsRequestAttribute(final String _key)
     {
-        return requestAttributes.containsKey(_key);
+        return this.requestAttributes.containsKey(_key);
     }
 
     /**
@@ -580,7 +580,7 @@ public final class Context
      */
     public Object getRequestAttribute(final String _key)
     {
-        return requestAttributes.get(_key);
+        return this.requestAttributes.get(_key);
     }
 
     /**
@@ -598,7 +598,7 @@ public final class Context
     public Object setRequestAttribute(final String _key,
                                       final Object _value)
     {
-        return requestAttributes.put(_key, _value);
+        return this.requestAttributes.put(_key, _value);
     }
 
     /**
@@ -616,7 +616,7 @@ public final class Context
      */
     public boolean containsSessionAttribute(final String _key)
     {
-        return sessionAttributes.containsKey(_key);
+        return this.sessionAttributes.containsKey(_key);
     }
 
     /**
@@ -642,7 +642,7 @@ public final class Context
      */
     public Object getSessionAttribute(final String _key)
     {
-        return sessionAttributes.get(_key);
+        return this.sessionAttributes.get(_key);
     }
 
     /**
@@ -660,7 +660,7 @@ public final class Context
     public Object setSessionAttribute(final String _key,
                                       final Object _value)
     {
-        return sessionAttributes.put(_key, _value);
+        return this.sessionAttributes.put(_key, _value);
     }
 
     /**
@@ -669,7 +669,7 @@ public final class Context
      */
     public void removeSessionAttribute(final String _key)
     {
-        sessionAttributes.remove(_key);
+        this.sessionAttributes.remove(_key);
     }
 
     /**
@@ -781,7 +781,7 @@ public final class Context
      */
     public Connection getConnection()
     {
-        return connection;
+        return this.connection;
     }
 
     /**
@@ -793,7 +793,7 @@ public final class Context
      */
     private void setConnection(final Connection _connection)
     {
-        connection = _connection;
+        this.connection = _connection;
     }
 
     /**
@@ -804,7 +804,7 @@ public final class Context
      */
     public Transaction getTransaction()
     {
-        return transaction;
+        return this.transaction;
     }
 
     /**
@@ -815,7 +815,7 @@ public final class Context
      */
     public Person getPerson()
     {
-        return person;
+        return this.person;
     }
 
     /**
@@ -825,7 +825,7 @@ public final class Context
      */
     public Company getCompany()
     {
-        return company;
+        return this.company;
     }
 
     /**
@@ -836,7 +836,7 @@ public final class Context
      */
     public Locale getLocale()
     {
-        return locale;
+        return this.locale;
     }
 
     /**
@@ -847,7 +847,7 @@ public final class Context
      */
     public DateTimeZone getTimezone()
     {
-        return timezone;
+        return this.timezone;
     }
 
     /**
@@ -858,7 +858,7 @@ public final class Context
      */
     public Chronology getChronology()
     {
-        return chronology;
+        return this.chronology;
     }
 
     /**
@@ -868,7 +868,7 @@ public final class Context
      */
     public String getLanguage()
     {
-        return language;
+        return this.language;
     }
 
     /**
@@ -879,7 +879,7 @@ public final class Context
      */
     public Map<String, String[]> getParameters()
     {
-        return parameters;
+        return this.parameters;
     }
 
     /**
@@ -890,7 +890,7 @@ public final class Context
      */
     public Map<String, FileParameter> getFileParameters()
     {
-        return fileParameters;
+        return this.fileParameters;
     }
 
     /**

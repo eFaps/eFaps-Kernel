@@ -93,7 +93,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                 envCtx = (javax.naming.Context) initCtx.lookup("java:/comp/env");
             }
             try {
-            final Map<?, ?> props = (Map<?, ?>) envCtx.lookup(INamingBinds.RESOURCE_CONFIGPROPERTIES);
+                final Map<?, ?> props = (Map<?, ?>) envCtx.lookup(INamingBinds.RESOURCE_CONFIGPROPERTIES);
                 if (props != null) {
                     AbstractDatabase.SCHEMAPATTERN = (String) props.get(IeFapsProperties.DBSCHEMAPATTERN);
                     AbstractDatabase.CATALOG = (String) props.get(IeFapsProperties.DBCATALOG);

@@ -28,14 +28,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
 
 import javax.transaction.xa.Xid;
 
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.databases.AbstractDatabase;
-import org.efaps.db.store.Resource.Compress;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
@@ -373,9 +371,9 @@ public class JDBCStoreResource
         protected BlobInputStream(final Blob _blob)
             throws SQLException
         {
-            blob = _blob;
-            in = _blob.getBinaryStream();
-            available = (int) blob.length();
+            this.blob = _blob;
+            this.in = _blob.getBinaryStream();
+            this.available = (int) this.blob.length();
         }
 
         /**
@@ -387,8 +385,8 @@ public class JDBCStoreResource
         public int read()
             throws IOException
         {
-            available--;
-            return in.read();
+            this.available--;
+            return this.in.read();
         }
 
         /**
@@ -402,12 +400,12 @@ public class JDBCStoreResource
             throws IOException
         {
             int length = _bytes.length;
-            if (available > 0)  {
-                if (available < length)  {
-                    length = available;
+            if (this.available > 0)  {
+                if (this.available < length)  {
+                    length = this.available;
                 }
-                available = available - length;
-                in.read(_bytes);
+                this.available = this.available - length;
+                this.in.read(_bytes);
             } else  {
                 length = -1;
             }
@@ -423,7 +421,7 @@ public class JDBCStoreResource
         public int available()
             throws IOException
         {
-            return available;
+            return this.available;
         }
     }
 
@@ -456,7 +454,7 @@ public class JDBCStoreResource
                   Context.getDbType().supportsBlobInputStreamAvailable()
                           ? _blob.getBinaryStream()
                           : new BlobInputStream(_blob));
-            res = _res;
+            this.res = _res;
         }
 
         /**
@@ -471,7 +469,7 @@ public class JDBCStoreResource
             throws IOException
         {
             super(_storeRes, _in);
-            res = _res;
+            this.res = _res;
         }
 
         /**
@@ -483,8 +481,8 @@ public class JDBCStoreResource
         {
             super.beforeClose();
             try {
-                if (res.isOpened()) {
-                    res.commit();
+                if (this.res.isOpened()) {
+                    this.res.commit();
                 }
             } catch (final EFapsException e) {
                 throw new IOException("commit of connection resource not possible", e);
