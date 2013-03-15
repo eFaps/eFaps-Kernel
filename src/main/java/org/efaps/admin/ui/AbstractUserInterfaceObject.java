@@ -39,6 +39,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.user.AbstractUserObject;
 import org.efaps.admin.user.Company;
@@ -558,5 +559,6 @@ public abstract class AbstractUserInterfaceObject
             InfinispanCache.get().<UUID, Type>getCache(AbstractUserInterfaceObject.getNameCacheName(Table.class))
                             .addListener(new CacheLogListener(Table.LOG));
         }
+        BundleMaker.initialize();
     }
 }

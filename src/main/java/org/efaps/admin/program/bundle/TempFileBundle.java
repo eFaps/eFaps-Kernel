@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.db.Checkout;
 import org.efaps.util.EFapsException;
@@ -55,22 +56,18 @@ public class TempFileBundle
      */
     private static File TMPFOLDER = new File("");
     static {
-        try {
-            final File tmp = File.createTempFile("eFapsTemp", null);
-            TempFileBundle.TMPFOLDER = new File(tmp.getParentFile().getAbsolutePath() + "/eFapsTemp");
-            if (!TempFileBundle.TMPFOLDER.exists()) {
-                final boolean mkdir = TempFileBundle.TMPFOLDER.mkdir();
-                if (!mkdir) {
-                    TempFileBundle.LOG.error("Temp folder was not created");
-                }
+        final File tmp = FileUtils.getTempDirectory();
+        TempFileBundle.TMPFOLDER = new File(tmp, "eFapsTempFileBundles");
+        if (!TempFileBundle.TMPFOLDER.exists()) {
+            final boolean mkdir = TempFileBundle.TMPFOLDER.mkdir();
+            if (!mkdir) {
+                TempFileBundle.LOG.error("Temp folder was not created");
             }
-            tmp.delete();
-        } catch (final IOException e) {
-            TempFileBundle.LOG.error("Temp archive could not be created");
         }
     }
+
     /**
-     * Filed.
+     * File.
      */
     private File file = null;
 
@@ -182,8 +179,7 @@ public class TempFileBundle
         throws EFapsException
     {
         final String filename = _gziped ? this.key + "GZIP" : this.key;
-        final File ret = new File(TempFileBundle.getTempFolder(), filename);
-
+        final File ret = FileUtils.getFile(TempFileBundle.getTempFolder(), filename);
         try {
             final FileOutputStream out = new FileOutputStream(ret);
             final byte[] buffer = new byte[1024];

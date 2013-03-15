@@ -218,13 +218,13 @@
     </namedCache>
 
     <namedCache name="StaticCompiledSource4Name">
-        <eviction maxEntries="50" strategy="LRU"/>
+        <eviction maxEntries="150" strategy="LRU"/>
     </namedCache>
     <namedCache name="BundleMapper">
-        <eviction maxEntries="50" strategy="LRU"/>
+        <eviction maxEntries="150" strategy="LRU"/>
     </namedCache>
     <namedCache name="Bundles">
-        <eviction maxEntries="50" strategy="LRU"/>
+        <eviction maxEntries="150" strategy="LRU"/>
     </namedCache>
 
 
