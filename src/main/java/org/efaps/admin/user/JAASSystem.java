@@ -456,12 +456,12 @@ public final class JAASSystem
                     final String groupClassName = rs.getString(11);
                     final String groupMethodKey = rs.getString(12);
 
-                    JAASSystem.LOG.debug("read JAAS System '" + name + "' (id = " + id + ")");
+                    JAASSystem.LOG.debug("read JAAS System '{}' (id = {})", name, id);
 
                     try {
                         final JAASSystem system = new JAASSystem(id, name);
-                        @SuppressWarnings("unchecked") final Class<Principal> forName = (Class<Principal>) Class
-                                        .forName(personClassName.trim());
+                        @SuppressWarnings("unchecked")
+                        final Class<Principal> forName = (Class<Principal>) Class.forName(personClassName.trim());
                         system.personJAASPrincipleClass = forName;
                         system.personMethodKey = JAASSystem.getMethod(system.personJAASPrincipleClass,
                                         personMethodKey,
@@ -491,35 +491,24 @@ public final class JAASSystem
                             // TODO: person email method
                         }
                         if ((roleClassName != null) && (roleClassName.trim().length() > 0)) {
-                            @SuppressWarnings("unchecked") final Class<Principal> fn = (Class<Principal>) Class
-                                            .forName(roleClassName.trim());
+                            @SuppressWarnings("unchecked")
+                            final Class<Principal> fn = (Class<Principal>) Class.forName(roleClassName.trim());
                             system.roleJAASPrincipleClass = fn;
                             system.roleMethodKey = JAASSystem.getMethod(system.roleJAASPrincipleClass,
                                             roleMethodKey,
                                             "role key", name, id);
                         }
                         if ((groupClassName != null) && (groupClassName.trim().length() > 0)) {
-                            @SuppressWarnings("unchecked") final Class<Principal> fn = (Class<Principal>) Class
-                                            .forName(groupClassName.trim());
+                            @SuppressWarnings("unchecked")
+                            final Class<Principal> fn = (Class<Principal>) Class.forName(groupClassName.trim());
                             system.groupJAASPrincipleClass = fn;
                             system.groupMethodKey = JAASSystem.getMethod(system.groupJAASPrincipleClass,
                                             groupMethodKey,
                                             "group key", name, id);
                         }
-                        if ((system.personMethodKey != null)
-                                        && (system.personMethodName != null)
-                                        && ((system.roleJAASPrincipleClass == null)
-                                        || ((system.roleJAASPrincipleClass != null)
-                                        && (system.roleMethodKey != null)))
-                                        && ((system.groupJAASPrincipleClass == null)
-                                        || ((system.groupJAASPrincipleClass != null)
-                                        && (system.groupMethodKey != null)))) {
-                            JAASSystem.LOG.warn("unexpected behavior");
-                        }
                         JAASSystem.cacheJAASSystem(system);
                     } catch (final ClassNotFoundException e) {
-                        JAASSystem.LOG.error("could not get a class for JAAS System '"
-                                        + name + "' (id = " + id + ")", e);
+                        JAASSystem.LOG.error("read JAAS System '{}' (id = {})", name, id, e);
                     }
                 }
                 rs.close();
