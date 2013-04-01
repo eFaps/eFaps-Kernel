@@ -29,6 +29,8 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.print.OneSelect;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -40,6 +42,11 @@ import org.efaps.util.EFapsException;
 public class AttributeValueSelect
     extends AbstractValueSelect
 {
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(OneSelect.class);
 
     /**
      * Attribute belonging to this AttributeValueSelect.
@@ -190,6 +197,10 @@ public class AttributeValueSelect
     {
         if (this.attribute == null) {
             this.attribute = _type.getAttribute(this.attrName);
+        }
+        if (this.attribute == null) {
+            AttributeValueSelect.LOG.error("Could not get an attribute with name '{} 'for type: '{}'", this.attrName,
+                            _type);
         }
         int ret = 0;
         for (final String colName : this.attribute.getSqlColNames()) {
