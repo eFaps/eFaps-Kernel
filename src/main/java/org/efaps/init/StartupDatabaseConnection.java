@@ -41,7 +41,6 @@ import javax.transaction.TransactionManager;
 
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.transaction.DelegatingUserTransaction;
-import org.efaps.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +57,7 @@ public final class StartupDatabaseConnection
     /**
      * Logging instance used to give logging information of this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(DateTimeUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StartupDatabaseConnection.class);
 
     /**
      * Name of the environment variable to define the bootstrap path.
