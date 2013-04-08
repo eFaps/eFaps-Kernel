@@ -42,10 +42,13 @@ import org.drools.persistence.jta.JtaTransactionManager;
 import org.drools.runtime.Environment;
 import org.drools.runtime.EnvironmentName;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.ProcessEventLstnr;
 import org.efaps.bpm.listener.SystemEventLstnr;
 import org.efaps.init.INamingBinds;
+import org.efaps.util.EFapsException;
 import org.hibernate.FlushMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AvailableSettings;
@@ -104,75 +107,80 @@ public final class Bpm
     {
     }
 
-    public static void initialize()
+    public static void initialize() throws EFapsException
     {
-        if (Bpm.bpm != null) {
-            Bpm.bpm.ksession.dispose();
+        final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
+        final boolean active = config != null ? config.getAttributeValueAsBoolean("ActiveBpm") : false;
+        if (active) {
+            if (Bpm.bpm != null) {
+                Bpm.bpm.ksession.dispose();
+            }
+
+            Bpm.bpm = new Bpm();
+
+            System.setProperty(UserGroupCallbackManager.USER_GROUP_CALLBACK_KEY, UserGroupCallbackImpl.class.getName());
+
+            final KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+
+            kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/MyProcess.bpmn"), ResourceType.BPMN2);
+            kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/HumanTask.bpmn"), ResourceType.BPMN2);
+
+            Bpm.bpm.kbase = kbuilder.newKnowledgeBase();
+
+            final Map<String, String> properties = new HashMap<String, String>();
+            properties.put(AvailableSettings.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
+            properties.put(AvailableSettings.SHOW_SQL, String.valueOf(Bpm.LOG.isInfoEnabled()));
+            properties.put(AvailableSettings.FORMAT_SQL, "true");
+            properties.put(AvailableSettings.AUTOCOMMIT, "false");
+            //properties.put(org.hibernate.cfg.Environment.AUTO_CLOSE_SESSION, "true");
+            properties.put(AvailableSettings.FLUSH_BEFORE_COMPLETION, "true");
+            properties.put(AvailableSettings.SESSION_FACTORY_NAME, "java:comp/env/test");
+
+
+            properties.put(org.hibernate.ejb.AvailableSettings.NAMING_STRATEGY, NamingStrategy.class.getName());
+
+            final EntityManagerFactory emf = Persistence
+                            .createEntityManagerFactory("org.jbpm.persistence.jpa", properties);
+
+            Bpm.bpm.env = KnowledgeBaseFactory.newEnvironment();
+            Bpm.bpm.env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
+            Bpm.bpm.env.set(EnvironmentName.TRANSACTION_MANAGER, Bpm.findTransactionManager());
+
+            UserTransaction userTrans = null;
+            InitialContext context = null;
+            try {
+                context = new InitialContext();
+                userTrans = Bpm.findUserTransaction();
+                Bpm.bpm.env.set(EnvironmentName.TRANSACTION, userTrans);
+                context.bind(JtaTransactionManager.DEFAULT_USER_TRANSACTION_NAME, userTrans);
+                context.bind(JtaTransactionManager.FALLBACK_TRANSACTION_MANAGER_NAMES[0], Bpm.findTransactionManager());
+            } catch (final NamingException ex) {
+                Bpm.LOG.error("Could not initialise JNDI InitialContext", ex);
+            }
+
+            Bpm.bpm.ksession = JPAKnowledgeService.newStatefulKnowledgeSession(Bpm.bpm.kbase, null,  Bpm.bpm.env);
+            Bpm.bpm.ksession.addEventListener(new ProcessEventLstnr());
+            final JPAWorkingMemoryDbLogger logger = new JPAWorkingMemoryDbLogger(Bpm.bpm.ksession);
+            Bpm.bpm.ksession.addEventListener(logger);
+
+            Bpm.bpm.taskService = new TaskService();
+
+            Bpm.bpm.taskService.setTaskSessionFactory(new TaskSessionFactory(Bpm.bpm.taskService, emf));
+            Bpm.bpm.taskService.setSystemEventListener(new SystemEventLstnr());
+            Bpm.bpm.taskService.setEscalatedDeadlineHandler( new DefaultEscalatedDeadlineHandler());
+            Bpm.bpm.taskService.initialize();
+
+           //  Bpm.bpm.service = LocalHumanTaskService.getTaskService(Bpm.bpm.ksession);
+
+            final LocalHTWorkItemHandler humanTaskHandler = new LocalHTWorkItemHandler(
+                            new LocalTaskService(Bpm.bpm.taskService), Bpm.bpm.ksession);
+            Bpm.bpm.ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
+
+            Bpm.bpm.service = new LocalTaskService( Bpm.bpm.taskService);
+
+            Bpm.bpm.taskAdmin =  Bpm.bpm.taskService.createTaskAdmin();
+            humanTaskHandler.connect();
         }
-
-        Bpm.bpm = new Bpm();
-
-        System.setProperty(UserGroupCallbackManager.USER_GROUP_CALLBACK_KEY, UserGroupCallbackImpl.class.getName());
-
-        final KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-
-        kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/MyProcess.bpmn"), ResourceType.BPMN2);
-        kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/HumanTask.bpmn"), ResourceType.BPMN2);
-
-        Bpm.bpm.kbase = kbuilder.newKnowledgeBase();
-
-        final Map<String, String> properties = new HashMap<String, String>();
-        properties.put(AvailableSettings.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
-        properties.put(AvailableSettings.SHOW_SQL, String.valueOf(Bpm.LOG.isInfoEnabled()));
-        properties.put(AvailableSettings.FORMAT_SQL, "true");
-        properties.put(AvailableSettings.AUTOCOMMIT, "false");
-        //properties.put(org.hibernate.cfg.Environment.AUTO_CLOSE_SESSION, "true");
-        properties.put(AvailableSettings.FLUSH_BEFORE_COMPLETION, "true");
-        properties.put(AvailableSettings.SESSION_FACTORY_NAME, "java:comp/env/test");
-
-
-        properties.put(org.hibernate.ejb.AvailableSettings.NAMING_STRATEGY, NamingStrategy.class.getName());
-
-        final EntityManagerFactory emf = Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa", properties);
-
-        Bpm.bpm.env = KnowledgeBaseFactory.newEnvironment();
-        Bpm.bpm.env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
-        Bpm.bpm.env.set(EnvironmentName.TRANSACTION_MANAGER, Bpm.findTransactionManager());
-
-        UserTransaction userTrans = null;
-        InitialContext context = null;
-        try {
-            context = new InitialContext();
-            userTrans = Bpm.findUserTransaction();
-            Bpm.bpm.env.set(EnvironmentName.TRANSACTION, userTrans);
-            context.bind(JtaTransactionManager.DEFAULT_USER_TRANSACTION_NAME, userTrans);
-            context.bind(JtaTransactionManager.FALLBACK_TRANSACTION_MANAGER_NAMES[0], Bpm.findTransactionManager());
-        } catch (final NamingException ex) {
-            Bpm.LOG.error("Could not initialise JNDI InitialContext", ex);
-        }
-
-        Bpm.bpm.ksession = JPAKnowledgeService.newStatefulKnowledgeSession(Bpm.bpm.kbase, null,  Bpm.bpm.env);
-        Bpm.bpm.ksession.addEventListener(new ProcessEventLstnr());
-        final JPAWorkingMemoryDbLogger logger = new JPAWorkingMemoryDbLogger(Bpm.bpm.ksession);
-        Bpm.bpm.ksession.addEventListener(logger);
-
-        Bpm.bpm.taskService = new TaskService();
-
-        Bpm.bpm.taskService.setTaskSessionFactory(new TaskSessionFactory(Bpm.bpm.taskService, emf));
-        Bpm.bpm.taskService.setSystemEventListener(new SystemEventLstnr());
-        Bpm.bpm.taskService.setEscalatedDeadlineHandler( new DefaultEscalatedDeadlineHandler());
-        Bpm.bpm.taskService.initialize();
-
-       //  Bpm.bpm.service = LocalHumanTaskService.getTaskService(Bpm.bpm.ksession);
-
-        final LocalHTWorkItemHandler humanTaskHandler = new LocalHTWorkItemHandler(
-                        new LocalTaskService(Bpm.bpm.taskService), Bpm.bpm.ksession);
-        Bpm.bpm.ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
-
-        Bpm.bpm.service = new LocalTaskService( Bpm.bpm.taskService);
-
-        Bpm.bpm.taskAdmin =  Bpm.bpm.taskService.createTaskAdmin();
-        humanTaskHandler.connect();
     }
 
 
