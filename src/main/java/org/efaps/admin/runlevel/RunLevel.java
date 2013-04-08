@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.efaps.admin.common.Quartz;
+import org.efaps.bpm.Bpm;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
@@ -212,6 +213,7 @@ public final class RunLevel
                 cache.clear();
             }
         }
+        Bpm.initialize();
     }
 
     /**

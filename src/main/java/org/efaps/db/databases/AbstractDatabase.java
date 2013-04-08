@@ -36,6 +36,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.efaps.bpm.NamingStrategy;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.TableInformation;
 import org.efaps.db.wrapper.SQLDelete;
@@ -52,7 +53,6 @@ import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 /**
  * Abstract definition of database specific information and methods like alter
  * of table columns.
@@ -990,7 +990,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         Statement stmt = null;
         final ResultSet rs;
         if (_sql == null) {
-           rs = _con.getMetaData().getTables(null, null, "%", new String[] { "TABLE", "VIEW" });
+            rs = _con.getMetaData().getTables(null, null, "%", new String[] { "TABLE", "VIEW" });
         } else        {
             stmt = _con.createStatement();
             rs = stmt.executeQuery(_sql);
@@ -998,7 +998,10 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         try {
             while (rs.next()) {
                 final String tableName = rs.getString("TABLE_NAME").toUpperCase();
-                _cache4Name.put(tableName, new TableInformation(tableName));
+                // ignore the tables managed by hibernate
+                if (!tableName.startsWith(NamingStrategy.HIBERNATEPREFIX.toUpperCase())) {
+                    _cache4Name.put(tableName, new TableInformation(tableName));
+                }
             }
         } finally {
             rs.close();
@@ -1041,7 +1044,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         Statement stmt = null;
         final ResultSet rs;
         if (_sql == null) {
-           rs = _con.getMetaData().getColumns(null, null, "%", "%");
+            rs = _con.getMetaData().getColumns(null, null, "%", "%");
         } else        {
             stmt = _con.createStatement();
             rs = stmt.executeQuery(_sql);
@@ -1105,7 +1108,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         Statement stmt = null;
         final ResultSet rs;
         if (_sql == null) {
-           rs = _con.getMetaData().getIndexInfo(null, null, "%", true, false);
+            rs = _con.getMetaData().getIndexInfo(null, null, "%", true, false);
         } else        {
             stmt = _con.createStatement();
             rs = stmt.executeQuery(_sql);
@@ -1166,7 +1169,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         Statement stmt = null;
         final ResultSet rs;
         if (_sql == null) {
-           rs = _con.getMetaData().getImportedKeys(null, null, "%");
+            rs = _con.getMetaData().getImportedKeys(null, null, "%");
         } else        {
             stmt = _con.createStatement();
             rs = stmt.executeQuery(_sql);
@@ -1212,12 +1215,10 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         {
             try {
                 final Connection con = Context.getThreadContext().getConnectionResource().getConnection();
-
                 AbstractDatabase.this.initTableInfo(con, null, _cache4Name);
                 AbstractDatabase.this.initTableInfoColumns(con, null, _cache4Name);
                 AbstractDatabase.this.initTableInfoUniqueKeys(con, null, _cache4Name);
                 AbstractDatabase.this.initTableInfoForeignKeys(con, null, _cache4Name);
-
             } catch (final SQLException e) {
                 throw new CacheReloadException("cache for table information could not be read", e);
             } catch (final EFapsException e) {
