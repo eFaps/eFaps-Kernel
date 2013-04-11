@@ -50,6 +50,18 @@ public class Parameter
          */
         ACCESSMODE,
         /**
+         * BPM TaskInformation.
+         */
+        BPM_TASK,
+        /**
+         * BPM Values Map.
+         */
+        BPM_VALUES,
+        /**
+         * BPM Decision boolean.
+         */
+        BPM_DECISION,
+        /**
          * Call instance, means
          * <ul>
          * <li>for a web table, the instance for which the table values are

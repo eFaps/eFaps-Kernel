@@ -1,133 +1,99 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:g="http://www.jboss.org/drools/flow/gpd" xmlns:tns="http://www.jboss.org/drools" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.1.28" expressionLanguage="http://www.mvel.org/2.0" id="Definition" name="" targetNamespace="http://www.jboss.org/drools" typeLanguage="http://www.java.com/javaTypes" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
-  <itemDefinition id="_userIdItem" isCollection="false" itemKind="Information"/>
-  <itemDefinition id="_descriptionItem" isCollection="false" itemKind="Information"/>
-  <itemDefinition id="_dateItem" isCollection="false" itemKind="Information"/>
-  <itemDefinition id="_resultItem" isCollection="false" itemKind="Information"/>
-  <itemDefinition id="_commentItem" isCollection="false" itemKind="Information"/>
-  <itemDefinition id="_resultUserItem" isCollection="false" itemKind="Information"/>
-  <itemDefinition id="_resultManagerItem" isCollection="false" itemKind="Information"/>
-  <process id="com.sample.humantask" isClosed="false" isExecutable="true" name="HumanTask" processType="Private" tns:packageName="defaultPackage">
-    <property id="userId" itemSubjectRef="_userIdItem"/>
-    <property id="description" itemSubjectRef="_descriptionItem"/>
-    <property id="date" itemSubjectRef="_dateItem"/>
-    <property id="result" itemSubjectRef="_resultItem"/>
-    <property id="comment" itemSubjectRef="_commentItem"/>
-    <property id="resultUser" itemSubjectRef="_resultUserItem"/>
-    <property id="resultManager" itemSubjectRef="_resultManagerItem"/>
-    <laneSet>
-      <lane name="sales-rep">
-        <flowNodeRef>_2</flowNodeRef>
-        <flowNodeRef>_5</flowNodeRef>
-        <flowNodeRef>_11</flowNodeRef>
-      </lane>
-    </laneSet>
-    <startEvent id="__1" isInterrupting="true" name="Start" parallelMultiple="false">
-      <outgoing>_13</outgoing>
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:_1="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:g="http://www.jboss.org/drools/flow/gpd" xmlns:tns="http://www.jboss.org/drools" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="Definition" expressionLanguage="http://www.mvel.org/2.0" targetNamespace="http://www.jboss.org/drools" typeLanguage="http://www.java.com/javaTypes">
+  <process id="com.sample.humantask" tns:version="1" tns:packageName="defaultPackage" tns:adHoc="false" name="Hello World" isExecutable="true" processType="Private">
+    <startEvent id="_1" name="Start">
+      <outgoing>_1-_4</outgoing>
     </startEvent>
-    <userTask completionQuantity="1" id="_2" implementation="##unspecified" isForCompensation="false" name="Review" startQuantity="1">
-      <incoming>_13</incoming>
-      <outgoing>_11</outgoing>
-      <ioSpecification>
-        <dataInput id="_2_descriptionInput" isCollection="false" name="description"/>
-        <dataInput id="_2_userIdInput" isCollection="false" name="userId"/>
-        <dataInput id="_2_dateInput" isCollection="false" name="date"/>
-        <dataInput id="_2_TaskNameInput" isCollection="false" name="TaskName"/>
-        <dataInput id="_2_GroupIdInput" isCollection="false" name="GroupId"/>
-        <dataOutput id="_2_commentOutput" isCollection="false" name="comment"/>
-        <dataOutput id="_2_outcomeOutput" isCollection="false" name="outcome"/>
-        <inputSet>
-          <dataInputRefs>_2_descriptionInput</dataInputRefs>
-          <dataInputRefs>_2_userIdInput</dataInputRefs>
-          <dataInputRefs>_2_dateInput</dataInputRefs>
-          <dataInputRefs>_2_TaskNameInput</dataInputRefs>
-          <dataInputRefs>_2_GroupIdInput</dataInputRefs>
-        </inputSet>
-        <outputSet>
-          <dataOutputRefs>_2_commentOutput</dataOutputRefs>
-          <dataOutputRefs>_2_outcomeOutput</dataOutputRefs>
-        </outputSet>
-      </ioSpecification>
-      <dataInputAssociation id="DIA_2_1">
-        <sourceRef>description</sourceRef>
-        <targetRef>_2_descriptionInput</targetRef>
-      </dataInputAssociation>
-      <dataInputAssociation id="DIA_2_2">
-        <sourceRef>userId</sourceRef>
-        <targetRef>_2_userIdInput</targetRef>
-      </dataInputAssociation>
-      <dataInputAssociation id="DIA_2_3">
-        <sourceRef>date</sourceRef>
-        <targetRef>_2_dateInput</targetRef>
-      </dataInputAssociation>
-      <dataInputAssociation id="DIA_2_4">
-        <targetRef>_2_TaskNameInput</targetRef>
-        <assignment id="DIA_2_4_A_1">
-          <from xsi:type="tFormalExpression"><![CDATA[Request Review]]></from>
-          <to xsi:type="tFormalExpression"><![CDATA[_2_TaskNameInput]]></to>
-        </assignment>
-      </dataInputAssociation>
-      <dataInputAssociation id="DIA_2_5">
-        <targetRef>_2_GroupIdInput</targetRef>
-        <assignment id="DIA_2_5_A_1">
-          <from xsi:type="tFormalExpression"><![CDATA[sales]]></from>
-          <to xsi:type="tFormalExpression"><![CDATA[_2_GroupIdInput]]></to>
-        </assignment>
-      </dataInputAssociation>
-      <dataOutputAssociation id="DOA_2_1">
-        <sourceRef>_2_commentOutput</sourceRef>
-        <targetRef>comment</targetRef>
-      </dataOutputAssociation>
-      <dataOutputAssociation id="DOA_2_2">
-        <sourceRef>_2_outcomeOutput</sourceRef>
-        <targetRef>result</targetRef>
-      </dataOutputAssociation>
-      <potentialOwner id="_2_RES_1">
-        <resourceAssignmentExpression>
-          <formalExpression/>
-        </resourceAssignmentExpression>
-      </potentialOwner>
-    </userTask>
-    <endEvent id="_12" name="End">
-      <incoming>_11</incoming>
-      <terminateEventDefinition id="_12_ED_1"/>
+    <endEvent id="_3" name="End">
+      <incoming>_4-_3</incoming>
+      <terminateEventDefinition id="TerminateEventDefinition_1"/>
     </endEvent>
-    <sequenceFlow id="_11" sourceRef="_2" targetRef="_12"/>
-    <sequenceFlow id="_13" sourceRef="__1" targetRef="_2"/>
+    <userTask id="_4" name="Task 1">
+      <extensionElements>
+        <tns:onEntry-script scriptFormat="http://www.java.com/java">
+          <tns:script></tns:script>
+        </tns:onEntry-script>
+        <tns:onExit-script scriptFormat="http://www.java.com/java">
+          <tns:script></tns:script>
+        </tns:onExit-script>
+      </extensionElements>
+      <incoming>_1-_4</incoming>
+      <outgoing>_4-_3</outgoing>
+      <ioSpecification id="InputOutputSpecification_1">
+        <dataInput id="_4_CommentInput" name="Comment"/>
+        <dataInput id="_4_SkippableInput" name="Skippable"/>
+        <dataInput id="_4_ContentInput" name="Content"/>
+        <dataInput id="_4_TaskNameInput" name="TaskName"/>
+        <dataInput id="_4_GroupIdInput" name="GroupId"/>
+        <dataInput id="_4_PriorityInput" name="Priority"/>
+        <inputSet id="InputSet_1">
+          <dataInputRefs>_4_CommentInput</dataInputRefs>
+          <dataInputRefs>_4_SkippableInput</dataInputRefs>
+          <dataInputRefs>_4_ContentInput</dataInputRefs>
+          <dataInputRefs>_4_TaskNameInput</dataInputRefs>
+          <dataInputRefs>_4_GroupIdInput</dataInputRefs>
+          <dataInputRefs>_4_PriorityInput</dataInputRefs>
+        </inputSet>
+        <outputSet id="OutputSet_1"/>
+      </ioSpecification>
+      <dataInputAssociation id="DataInputAssociation_1">
+        <targetRef>_4_CommentInput</targetRef>
+        <assignment id="Assignment_1">
+          <from xsi:type="tFormalExpression" id="FormalExpression_1">TestComment</from>
+          <to xsi:type="tFormalExpression" id="FormalExpression_2">_4_CommentInput</to>
+        </assignment>
+      </dataInputAssociation>
+      <dataInputAssociation id="DataInputAssociation_2">
+        <targetRef>_4_SkippableInput</targetRef>
+        <assignment id="Assignment_2">
+          <from xsi:type="tFormalExpression" id="FormalExpression_3">false</from>
+          <to xsi:type="tFormalExpression" id="FormalExpression_4">_4_SkippableInput</to>
+        </assignment>
+      </dataInputAssociation>
+
+      <dataInputAssociation id="DataInputAssociation_4">
+        <targetRef>_4_TaskNameInput</targetRef>
+        <assignment id="Assignment_4">
+          <from xsi:type="tFormalExpression" id="FormalExpression_7">Task1</from>
+          <to xsi:type="tFormalExpression" id="FormalExpression_8">_4_TaskNameInput</to>
+        </assignment>
+      </dataInputAssociation>
+      <dataInputAssociation id="DataInputAssociation_5">
+        <targetRef>_4_GroupIdInput</targetRef>
+        <assignment id="Assignment_5">
+          <from xsi:type="tFormalExpression" id="FormalExpression_9">sales</from>
+          <to xsi:type="tFormalExpression" id="FormalExpression_10">_4_GroupIdInput</to>
+        </assignment>
+      </dataInputAssociation>
+      <dataInputAssociation id="DataInputAssociation_6">
+        <targetRef>_4_PriorityInput</targetRef>
+        <assignment id="Assignment_6">
+          <from xsi:type="tFormalExpression" id="FormalExpression_11">1</from>
+          <to xsi:type="tFormalExpression" id="FormalExpression_12">_4_PriorityInput</to>
+        </assignment>
+      </dataInputAssociation>
+    </userTask>
+    <sequenceFlow id="_4-_3" tns:priority="1" sourceRef="_4" targetRef="_3"/>
+    <sequenceFlow id="_1-_4" tns:priority="1" sourceRef="_1" targetRef="_4"/>
   </process>
-  <bpmndi:BPMNDiagram documentation="background=#FFFFFF;count=1;horizontalcount=1;orientation=0;width=597.6;height=842.4;imageableWidth=587.6;imageableHeight=832.4;imageableX=5.0;imageableY=5.0" id="Yaoqiang_Diagram-_1" name="New Diagram">
-    <bpmndi:BPMNPlane bpmnElement="com.sample.humantask">
-      <bpmndi:BPMNShape bpmnElement="__1" id="Yaoqiang-__1">
-        <dc:Bounds height="32.0" width="32.0" x="7.0" y="87.0"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="32.0" width="32.0" x="-1.0" y="-1.0"/>
-        </bpmndi:BPMNLabel>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_Process_1" bpmnElement="com.sample.humantask">
+      <bpmndi:BPMNShape id="BPMNShape_StartEvent_1" bpmnElement="_1">
+        <dc:Bounds height="48.0" width="48.0" x="60.0" y="140.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
-        <dc:Bounds height="55.0" width="85.0" x="170.0" y="86.0"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="55.0" width="85.0" x="-1.0" y="-1.0"/>
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="BPMNShape_EndEvent_1" bpmnElement="_3">
+        <dc:Bounds height="48.0" width="48.0" x="490.0" y="88.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_12" id="Yaoqiang-_12">
-        <dc:Bounds height="32.0" width="32.0" x="365.0" y="93.0"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="32.0" width="32.0" x="-1.0" y="-1.0"/>
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="BPMNShape_UserTask_1" bpmnElement="_4">
+        <dc:Bounds height="48.0" width="100.0" x="220.0" y="140.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge bpmnElement="_13" id="Yaoqiang-_13" sourceElement="__1" targetElement="_2">
-        <di:waypoint x="39.492185591719476" y="103.0"/>
-        <di:waypoint x="170.5" y="113.5"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="_4-_3">
+        <di:waypoint xsi:type="dc:Point" x="320.0" y="164.0"/>
+        <di:waypoint xsi:type="dc:Point" x="490.0" y="112.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_11" id="Yaoqiang-_11" sourceElement="_2" targetElement="_12">
-        <di:waypoint x="255.5" y="113.5"/>
-        <di:waypoint x="365.5078144082805" y="109.0"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="_1-_4">
+        <di:waypoint xsi:type="dc:Point" x="108.0" y="164.0"/>
+        <di:waypoint xsi:type="dc:Point" x="220.0" y="164.0"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
