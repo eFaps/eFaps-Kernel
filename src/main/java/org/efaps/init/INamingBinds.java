@@ -53,4 +53,11 @@ public interface INamingBinds
      * Resource name of the transaction manager Timeout value.
      */
     String RESOURCE_CONFIGPROPERTIES = "eFaps/configProperties";
+
+    /**
+     * Resource name of the TransactionSynchronizationRegistry.
+     */
+    String RESOURCE_TRANSSYNREG = "eFaps/TransactionSynchronizationRegistry";
+
+
 }

@@ -41,12 +41,16 @@ import org.drools.builder.KnowledgeBuilderConfiguration;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.io.ResourceFactory;
+import org.drools.logger.KnowledgeRuntimeLoggerFactory;
+import org.drools.persistence.info.SessionInfo;
+import org.drools.persistence.info.WorkItemInfo;
 import org.drools.persistence.jpa.JPAKnowledgeService;
 import org.drools.persistence.jta.JtaTransactionManager;
 import org.drools.rule.builder.dialect.java.JavaDialectConfiguration;
 import org.drools.runtime.Environment;
 import org.drools.runtime.EnvironmentName;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.process.WorkItemHandler;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.event.Parameter;
@@ -56,11 +60,17 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.ProcessEventLstnr;
 import org.efaps.bpm.listener.SystemEventLstnr;
+import org.efaps.db.Context;
 import org.efaps.init.INamingBinds;
 import org.efaps.util.EFapsException;
 import org.hibernate.FlushMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AvailableSettings;
+import org.jbpm.persistence.JpaProcessPersistenceContextManager;
+import org.jbpm.persistence.ProcessStorage;
+import org.jbpm.persistence.ProcessStorageEnvironmentBuilder;
+import org.jbpm.persistence.jta.ContainerManagedTransactionManager;
+import org.jbpm.persistence.processinstance.ProcessInstanceInfo;
 import org.jbpm.process.audit.JPAWorkingMemoryDbLogger;
 import org.jbpm.process.workitem.wsht.LocalHTWorkItemHandler;
 import org.jbpm.task.Status;
@@ -73,7 +83,6 @@ import org.jbpm.task.service.local.LocalTaskService;
 import org.jbpm.task.service.persistence.TaskSessionFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 /**
  * TODO comment!
  *
@@ -84,9 +93,11 @@ public final class Bpm
 {
 
     private static Bpm bpm;
+    private Integer ksessionId;
 
-    private StatefulKnowledgeSession ksession;
     private TaskService taskService;
+
+    private final Map<String, WorkItemHandler> workItemsHandlers = new HashMap<String, WorkItemHandler>();
 
     private org.jbpm.task.TaskService service;
 
@@ -95,6 +106,7 @@ public final class Bpm
     private KnowledgeBase kbase;
 
     private Environment env;
+
     /**
      * Logging instance used in this class.
      */
@@ -120,9 +132,6 @@ public final class Bpm
         final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
         final boolean active = config != null ? config.getAttributeValueAsBoolean("ActivateBPM") : false;
         if (active) {
-            if (Bpm.bpm != null) {
-                Bpm.bpm.ksession.dispose();
-            }
 
             Bpm.bpm = new Bpm();
 
@@ -131,7 +140,7 @@ public final class Bpm
             final Properties props = new Properties();
             props.setProperty(JavaDialectConfiguration.JAVA_COMPILER_PROPERTY, "JANINO");
 
-            final KnowledgeBuilderConfiguration bldrConfig = KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration(props, null);
+            final KnowledgeBuilderConfiguration bldrConfig = KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration(props, Bpm.class.getClassLoader());
 
             final KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder(bldrConfig);
 
@@ -141,23 +150,39 @@ public final class Bpm
             Bpm.bpm.kbase = kbuilder.newKnowledgeBase();
 
             final Map<String, String> properties = new HashMap<String, String>();
-            properties.put(AvailableSettings.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
+            properties.put(AvailableSettings.DIALECT, "org.hibernate.dialect.PostgreSQL82Dialect");
             properties.put(AvailableSettings.SHOW_SQL, String.valueOf(Bpm.LOG.isInfoEnabled()));
             properties.put(AvailableSettings.FORMAT_SQL, "true");
-            properties.put(AvailableSettings.AUTOCOMMIT, "false");
-            // properties.put(org.hibernate.cfg.Environment.AUTO_CLOSE_SESSION,
-            // "true");
-            properties.put(AvailableSettings.FLUSH_BEFORE_COMPLETION, "true");
+
+           // properties.put(AvailableSettings.AUTOCOMMIT, "true");
+            properties.put("drools.processInstanceManagerFactory", "org.jbpm.persistence.processinstance.JPAProcessInstanceManagerFactory");
+            properties.put("drools.processSignalManagerFactory", "org.jbpm.persistence.processinstance.JPASignalManagerFactory");
+
+
+
+//            properties.put(AvailableSettings.FLUSH_BEFORE_COMPLETION, "true");
+
             properties.put(AvailableSettings.SESSION_FACTORY_NAME, "java:comp/env/test");
+            properties.put(AvailableSettings.RELEASE_CONNECTIONS, "after_transaction");
+            properties.put(AvailableSettings.CONNECTION_PROVIDER, ConnectionProvider.class.getName());
+
 
             properties.put(org.hibernate.ejb.AvailableSettings.NAMING_STRATEGY, NamingStrategy.class.getName());
 
             final EntityManagerFactory emf = Persistence
                             .createEntityManagerFactory("org.jbpm.persistence.jpa", properties);
 
+            final EntityManagerFactory emf2 = Persistence
+                            .createEntityManagerFactory("org.jbpm.persistence.jpa2", properties);
+
             Bpm.bpm.env = KnowledgeBaseFactory.newEnvironment();
             Bpm.bpm.env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
-            Bpm.bpm.env.set(EnvironmentName.TRANSACTION_MANAGER, Bpm.findTransactionManager());
+           new ProcessStorageEnvironmentBuilder(new EFapsProcessStorage());
+
+            Bpm.bpm.env.set(EnvironmentName.TRANSACTION_MANAGER, new ContainerManagedTransactionManager());
+            Bpm.bpm.env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER,
+                            new JpaProcessPersistenceContextManager(Bpm.bpm.env));
+
 
             UserTransaction userTrans = null;
             InitialContext context = null;
@@ -171,14 +196,14 @@ public final class Bpm
                 Bpm.LOG.error("Could not initialise JNDI InitialContext", ex);
             }
 
-            Bpm.bpm.ksession = JPAKnowledgeService.newStatefulKnowledgeSession(Bpm.bpm.kbase, null, Bpm.bpm.env);
-            Bpm.bpm.ksession.addEventListener(new ProcessEventLstnr());
-            final JPAWorkingMemoryDbLogger logger = new JPAWorkingMemoryDbLogger(Bpm.bpm.ksession);
-            Bpm.bpm.ksession.addEventListener(logger);
+            final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
+            ksession.addEventListener(new ProcessEventLstnr());
+            final JPAWorkingMemoryDbLogger logger = new JPAWorkingMemoryDbLogger(ksession);
+            ksession.addEventListener(logger);
 
             Bpm.bpm.taskService = new TaskService();
 
-            Bpm.bpm.taskService.setTaskSessionFactory(new TaskSessionFactory(Bpm.bpm.taskService, emf));
+            Bpm.bpm.taskService.setTaskSessionFactory(new TaskSessionFactory(Bpm.bpm.taskService, emf2));
             Bpm.bpm.taskService.setSystemEventListener(new SystemEventLstnr());
             Bpm.bpm.taskService.setEscalatedDeadlineHandler(new DefaultEscalatedDeadlineHandler());
             Bpm.bpm.taskService.initialize();
@@ -187,15 +212,156 @@ public final class Bpm
             // LocalHumanTaskService.getTaskService(Bpm.bpm.ksession);
 
             final LocalHTWorkItemHandler humanTaskHandler = new LocalHTWorkItemHandler(
-                            new LocalTaskService(Bpm.bpm.taskService), Bpm.bpm.ksession);
-            Bpm.bpm.ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
+                            new LocalTaskService(Bpm.bpm.taskService), ksession);
+            ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
+
+            Bpm.bpm.workItemsHandlers.put("Human Task", humanTaskHandler);
 
             Bpm.bpm.service = new LocalTaskService(Bpm.bpm.taskService);
 
             Bpm.bpm.taskAdmin = Bpm.bpm.taskService.createTaskAdmin();
             humanTaskHandler.connect();
+
+            SessionFactory sessionFactory;
+            try {
+                sessionFactory = (SessionFactory) context.lookup("java:comp/env/test");
+                sessionFactory.getCurrentSession().setFlushMode(FlushMode.COMMIT);
+
+               // sessionFactory.getCurrentSession().flush();
+            } catch (final NamingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
         }
     }
+
+    public static class EFapsProcessStorage
+    implements ProcessStorage
+    {
+
+        /* (non-Javadoc)
+         * @see org.drools.persistence.map.KnowledgeSessionStorage#findSessionInfo(java.lang.Integer)
+         */
+        @Override
+        public SessionInfo findSessionInfo(final Integer _sessionId)
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.drools.persistence.map.KnowledgeSessionStorage#saveOrUpdate(org.drools.persistence.info.SessionInfo)
+         */
+        @Override
+        public void saveOrUpdate(final SessionInfo _storedObject)
+        {
+            // TODO Auto-generated method stub
+
+        }
+
+        /* (non-Javadoc)
+         * @see org.drools.persistence.map.KnowledgeSessionStorage#saveOrUpdate(org.drools.persistence.info.WorkItemInfo)
+         */
+        @Override
+        public void saveOrUpdate(final WorkItemInfo _workItemInfo)
+        {
+            // TODO Auto-generated method stub
+
+        }
+
+        /* (non-Javadoc)
+         * @see org.drools.persistence.map.KnowledgeSessionStorage#getNextWorkItemId()
+         */
+        @Override
+        public Long getNextWorkItemId()
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.drools.persistence.map.KnowledgeSessionStorage#findWorkItemInfo(java.lang.Long)
+         */
+        @Override
+        public WorkItemInfo findWorkItemInfo(final Long _id)
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.drools.persistence.map.KnowledgeSessionStorage#remove(org.drools.persistence.info.WorkItemInfo)
+         */
+        @Override
+        public void remove(final WorkItemInfo _workItemInfo)
+        {
+            // TODO Auto-generated method stub
+
+        }
+
+        /* (non-Javadoc)
+         * @see org.drools.persistence.map.KnowledgeSessionStorage#getNextStatefulKnowledgeSessionId()
+         */
+        @Override
+        public Integer getNextStatefulKnowledgeSessionId()
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.jbpm.persistence.ProcessStorage#findProcessInstanceInfo(java.lang.Long)
+         */
+        @Override
+        public ProcessInstanceInfo findProcessInstanceInfo(final Long _processInstanceId)
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.jbpm.persistence.ProcessStorage#saveOrUpdate(org.jbpm.persistence.processinstance.ProcessInstanceInfo)
+         */
+        @Override
+        public void saveOrUpdate(final ProcessInstanceInfo _processInstanceInfo)
+        {
+            // TODO Auto-generated method stub
+
+        }
+
+        /* (non-Javadoc)
+         * @see org.jbpm.persistence.ProcessStorage#getNextProcessInstanceId()
+         */
+        @Override
+        public long getNextProcessInstanceId()
+        {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        /* (non-Javadoc)
+         * @see org.jbpm.persistence.ProcessStorage#removeProcessInstanceInfo(java.lang.Long)
+         */
+        @Override
+        public void removeProcessInstanceInfo(final Long _id)
+        {
+            // TODO Auto-generated method stub
+
+        }
+
+        /* (non-Javadoc)
+         * @see org.jbpm.persistence.ProcessStorage#getProcessInstancesWaitingForEvent(java.lang.String)
+         */
+        @Override
+        public List<Long> getProcessInstancesWaitingForEvent(final String _type)
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+    }
+
 
     public static class TaskSessionFactory
         extends TaskSessionFactoryImpl
@@ -220,44 +386,46 @@ public final class Bpm
             context = new InitialContext();
             final SessionFactory sessionFactory = (SessionFactory) context.lookup("java:comp/env/test");
             System.out.println(sessionFactory);
+
             sessionFactory.getCurrentSession().setFlushMode(FlushMode.COMMIT);
 
+            final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
+            // Bpm.bpm.ksession =
+            // JPAKnowledgeService.loadStatefulKnowledgeSession(Bpm.bpm.ksession.getId(),Bpm.bpm.kbase,
+            // null, Bpm.bpm.env);
+            ksession.startProcess("com.sample.hello");
+
+            final Map<String, Object> params = new HashMap<String, Object>();
+            params.put("userId", "krisv");
+            params.put("description", "Need a new laptop computer");
+
+           ksession.startProcess("com.sample.humantask", params);
+
+//            final List<TaskSummary> summar = Bpm.bpm.taskAdmin.getActiveTasks();
+//            System.out.println(summar);
+//
+//            // "sales-rep" reviews request
+//            final List<TaskSummary> summaries = Bpm.bpm.service.getTasksAssignedAsPotentialOwner("sales-rep", "en-UK");
+//            System.out.println(summaries);
+//            if (!summaries.isEmpty()) {
+//                final TaskSummary taskSumary = summaries.get(0);
+//                if (Status.Ready.equals(taskSumary.getStatus())) {
+//                    Bpm.bpm.service.claim(taskSumary.getId(), "sales-rep");
+//                    Bpm.LOG.debug("Sales-rep claimed task '{}' ({} : )", taskSumary.getName(), taskSumary.getId(),
+//                                    taskSumary.getDescription());
+//                }
+//            }
+//            final List<TaskSummary> summaries2 = Bpm.bpm.service.getTasksOwned("sales-rep", "en-UK");
+//            if (!summaries2.isEmpty()) {
+//                final TaskSummary taskSumary = summaries2.get(0);
+//                Bpm.bpm.service.start(taskSumary.getId(), "sales-rep");
+//                Bpm.bpm.service.completeWithResults(taskSumary.getId(), "sales-rep", "No hay result");
+//            }
+
+            sessionFactory.getCurrentSession().flush();
         } catch (final NamingException ex) {
             Bpm.LOG.error("Could not initialise JNDI InitialContext", ex);
         }
-        Bpm.bpm.ksession.getId();
-        // Bpm.bpm.ksession =
-        // JPAKnowledgeService.loadStatefulKnowledgeSession(Bpm.bpm.ksession.getId(),Bpm.bpm.kbase,
-        // null, Bpm.bpm.env);
-        Bpm.bpm.ksession.startProcess("com.sample.hello");
-
-        final Map<String, Object> params = new HashMap<String, Object>();
-        params.put("userId", "krisv");
-        params.put("description", "Need a new laptop computer");
-
-        Bpm.bpm.ksession.startProcess("com.sample.humantask", params);
-
-        final List<TaskSummary> summar = Bpm.bpm.taskAdmin.getActiveTasks();
-        System.out.println(summar);
-
-        // "sales-rep" reviews request
-        final List<TaskSummary> summaries = Bpm.bpm.service.getTasksAssignedAsPotentialOwner("sales-rep", "en-UK");
-        System.out.println(summaries);
-        if (!summaries.isEmpty()) {
-            final TaskSummary taskSumary = summaries.get(0);
-            if (Status.Ready.equals(taskSumary.getStatus())) {
-                Bpm.bpm.service.claim(taskSumary.getId(), "sales-rep");
-                Bpm.LOG.debug("Sales-rep claimed task '{}' ({} : )", taskSumary.getName(), taskSumary.getId(),
-                                taskSumary.getDescription());
-            }
-        }
-        final List<TaskSummary> summaries2 = Bpm.bpm.service.getTasksOwned("sales-rep", "en-UK");
-        if (!summaries2.isEmpty()) {
-            final TaskSummary taskSumary = summaries2.get(0);
-            Bpm.bpm.service.start(taskSumary.getId(), "sales-rep");
-            Bpm.bpm.service.completeWithResults(taskSumary.getId(), "sales-rep", "No hay result");
-        }
-
     }
 
     /**
@@ -269,6 +437,8 @@ public final class Bpm
                                    final Boolean _decision,
                                    final Map<String, Object> _values)
     {
+        Bpm.bpm.getKnowledgeSession();
+
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
             Bpm.bpm.service.claim(_taskSummary.getId(), "sales-rep");
@@ -312,6 +482,7 @@ public final class Bpm
         }
 
         Bpm.bpm.service.completeWithResults(_taskSummary.getId(), "sales-rep", result);
+
     }
 
 
@@ -369,4 +540,38 @@ public final class Bpm
     {
         return Bpm.bpm.service.getTasksAssignedAsPotentialOwner("sales-rep", "en-UK");
     }
+
+
+    private StatefulKnowledgeSession getKnowledgeSession() {
+        StatefulKnowledgeSession ksession;
+        if (this.ksessionId == null) {
+            ksession = JPAKnowledgeService.newStatefulKnowledgeSession(
+                    this.kbase,
+                    null,
+                    this.env);
+
+            this.ksessionId = ksession.getId();
+        } else {
+            ksession = JPAKnowledgeService.loadStatefulKnowledgeSession(
+                    this.ksessionId,
+                    this.kbase,
+                    null,
+                    this.env);
+        }
+
+        for (final Map.Entry<String, WorkItemHandler> entry : this.workItemsHandlers.entrySet()) {
+            ksession.getWorkItemManager().registerWorkItemHandler(entry.getKey(), entry.getValue());
+        }
+
+        //Configures a logger for the session
+        KnowledgeRuntimeLoggerFactory.newConsoleLogger(ksession);
+        try {
+            Context.getThreadContext().setKsession(ksession);
+        } catch (final EFapsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return ksession;
+    }
+
 }

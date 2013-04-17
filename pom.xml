@@ -434,8 +434,27 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
     <version>2.5.16</version>
 </dependency>
 
-
 <!--
+<dependency>
+    <groupId>org.apache.openjpa</groupId>
+    <artifactId>openjpa-persistence</artifactId>
+    <version>2.2.1</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.openjpa</groupId>
+    <artifactId>openjpa-persistence-jdbc</artifactId>
+    <version>2.2.1</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.openjpa</groupId>
+    <artifactId>openjpa-lib</artifactId>
+    <version>2.2.1</version>
+</dependency>
+
+
+
+
+
 3.4.0.GA
 6.0.0.Alpha9
 
@@ -485,29 +504,13 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             </exclusions>
         </dependency>
         <!-- java transaction manager -->
+           <!-- java transaction manager
         <dependency>
-            <groupId>jotm</groupId>
-            <artifactId>jotm</artifactId>
-            <version>2.0.10</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.resource</groupId>
-                    <artifactId>connector-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- replacement for the javax.resource.connector-api-1.5 needed by jotm-->
-        <dependency>
-            <groupId>org.ow2.spec.ee</groupId>
-            <artifactId>ow2-connector-1.5-spec</artifactId>
-            <version>1.0.12</version>
-            <scope>test</scope>
-        </dependency>
+    <groupId>org.ow2.jotm</groupId>
+    <artifactId>jotm-core</artifactId>
+    <version>2.2.3</version>
+    <scope>test</scope>
+</dependency> -->
         <!-- Needed indirectly for the transaction manager -->
         <dependency>
             <groupId>javax.resource</groupId>

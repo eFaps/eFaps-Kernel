@@ -999,7 +999,9 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
             while (rs.next()) {
                 final String tableName = rs.getString("TABLE_NAME").toUpperCase();
                 // ignore the tables managed by hibernate
-                if (!tableName.startsWith(NamingStrategy.HIBERNATEPREFIX.toUpperCase())) {
+                if (!tableName.startsWith(NamingStrategy.HIBERNATEPREFIX.toUpperCase())
+                                && (tableName.startsWith("T_")||(tableName.startsWith("V_")))) {
+
                     _cache4Name.put(tableName, new TableInformation(tableName));
                 }
             }
