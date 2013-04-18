@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions id="Definition"
+             targetNamespace="http://www.jboss.org/drools"
+             typeLanguage="http://www.java.com/javaTypes"
+             expressionLanguage="http://www.mvel.org/2.0"
+             xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd"
+             xmlns:g="http://www.jboss.org/drools/flow/gpd"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+             xmlns:tns="http://www.jboss.org/drools">
+
+    <process processType="Private" isExecutable="true"
+        id="com.sample.esjp" name="Esjp Test Process">
+
+        <!-- nodes -->
+        <startEvent id="_1" name="Start" />
+        <task id="_2" name="esjp" tns:taskName="ESJPNode">
+            <ioSpecification>
+                <dataInput id="_1_esjpInput" name="esjp"/>
+                <dataInput id="_2_methodInput" name="method"/>
+                <inputSet id="InputSet_1">
+                    <dataInputRefs>_1_esjpInput</dataInputRefs>
+                    <dataInputRefs>_2_methodInput</dataInputRefs>
+                </inputSet>
+                <outputSet>
+                </outputSet>
+            </ioSpecification>
+            <dataInputAssociation id="DataInputAssociation_1">
+                <targetRef>_1_esjpInput</targetRef>
+                <assignment id="Assignment_1">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_1">org.test.mal.sehn</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_2">_1_esjpInput</to>
+                </assignment>
+            </dataInputAssociation>
+            <dataInputAssociation id="DataInputAssociation_2">
+                <targetRef>_2_methodInput</targetRef>
+                <assignment id="Assignment_2">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_3">execute</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_4">_2_methodInput</to>
+                </assignment>
+            </dataInputAssociation>
+        </task>
+
+        <endEvent id="_3" name="End">
+            <terminateEventDefinition />
+        </endEvent>
+        <!-- connections -->
+        <sequenceFlow id="_1-_2" sourceRef="_1" targetRef="_2" />
+        <sequenceFlow id="_2-_3" sourceRef="_2" targetRef="_3" />
+    </process>
+    <bpmndi:BPMNDiagram>
+        <bpmndi:BPMNPlane bpmnElement="com.sample.hello">
+            <bpmndi:BPMNShape bpmnElement="_1">
+                <dc:Bounds x="16" y="16" width="48" height="48" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_2">
+                <dc:Bounds x="96" y="16" width="80" height="48" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_3">
+                <dc:Bounds x="208" y="16" width="48" height="48" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge bpmnElement="_1-_2">
+                <di:waypoint x="40" y="40" />
+                <di:waypoint x="136" y="40" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_2-_3">
+                <di:waypoint x="136" y="40" />
+                <di:waypoint x="232" y="40" />
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</definitions>

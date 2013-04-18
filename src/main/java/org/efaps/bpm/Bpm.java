@@ -42,8 +42,6 @@ import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.io.ResourceFactory;
 import org.drools.logger.KnowledgeRuntimeLoggerFactory;
-import org.drools.persistence.info.SessionInfo;
-import org.drools.persistence.info.WorkItemInfo;
 import org.drools.persistence.jpa.JPAKnowledgeService;
 import org.drools.persistence.jta.JtaTransactionManager;
 import org.drools.rule.builder.dialect.java.JavaDialectConfiguration;
@@ -60,6 +58,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.ProcessEventLstnr;
 import org.efaps.bpm.listener.SystemEventLstnr;
+import org.efaps.bpm.workitem.EsjpWorkItemHandler;
 import org.efaps.db.Context;
 import org.efaps.init.INamingBinds;
 import org.efaps.util.EFapsException;
@@ -67,10 +66,7 @@ import org.hibernate.FlushMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AvailableSettings;
 import org.jbpm.persistence.JpaProcessPersistenceContextManager;
-import org.jbpm.persistence.ProcessStorage;
-import org.jbpm.persistence.ProcessStorageEnvironmentBuilder;
 import org.jbpm.persistence.jta.ContainerManagedTransactionManager;
-import org.jbpm.persistence.processinstance.ProcessInstanceInfo;
 import org.jbpm.process.audit.JPAWorkingMemoryDbLogger;
 import org.jbpm.process.workitem.wsht.LocalHTWorkItemHandler;
 import org.jbpm.task.Status;
@@ -146,6 +142,7 @@ public final class Bpm
 
             kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/MyProcess.bpmn"), ResourceType.BPMN2);
             kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/HumanTask.bpmn"), ResourceType.BPMN2);
+            kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/EsjpProcess.bpmn"), ResourceType.BPMN2);
 
             Bpm.bpm.kbase = kbuilder.newKnowledgeBase();
 
@@ -177,7 +174,7 @@ public final class Bpm
 
             Bpm.bpm.env = KnowledgeBaseFactory.newEnvironment();
             Bpm.bpm.env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
-           new ProcessStorageEnvironmentBuilder(new EFapsProcessStorage());
+
 
             Bpm.bpm.env.set(EnvironmentName.TRANSACTION_MANAGER, new ContainerManagedTransactionManager());
             Bpm.bpm.env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER,
@@ -215,7 +212,11 @@ public final class Bpm
                             new LocalTaskService(Bpm.bpm.taskService), ksession);
             ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
 
+            final EsjpWorkItemHandler esjphandler = new EsjpWorkItemHandler();
+            ksession.getWorkItemManager().registerWorkItemHandler("ESJPNode", esjphandler);
+
             Bpm.bpm.workItemsHandlers.put("Human Task", humanTaskHandler);
+            Bpm.bpm.workItemsHandlers.put("ESJPNode", esjphandler);
 
             Bpm.bpm.service = new LocalTaskService(Bpm.bpm.taskService);
 
@@ -236,131 +237,7 @@ public final class Bpm
         }
     }
 
-    public static class EFapsProcessStorage
-    implements ProcessStorage
-    {
 
-        /* (non-Javadoc)
-         * @see org.drools.persistence.map.KnowledgeSessionStorage#findSessionInfo(java.lang.Integer)
-         */
-        @Override
-        public SessionInfo findSessionInfo(final Integer _sessionId)
-        {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see org.drools.persistence.map.KnowledgeSessionStorage#saveOrUpdate(org.drools.persistence.info.SessionInfo)
-         */
-        @Override
-        public void saveOrUpdate(final SessionInfo _storedObject)
-        {
-            // TODO Auto-generated method stub
-
-        }
-
-        /* (non-Javadoc)
-         * @see org.drools.persistence.map.KnowledgeSessionStorage#saveOrUpdate(org.drools.persistence.info.WorkItemInfo)
-         */
-        @Override
-        public void saveOrUpdate(final WorkItemInfo _workItemInfo)
-        {
-            // TODO Auto-generated method stub
-
-        }
-
-        /* (non-Javadoc)
-         * @see org.drools.persistence.map.KnowledgeSessionStorage#getNextWorkItemId()
-         */
-        @Override
-        public Long getNextWorkItemId()
-        {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see org.drools.persistence.map.KnowledgeSessionStorage#findWorkItemInfo(java.lang.Long)
-         */
-        @Override
-        public WorkItemInfo findWorkItemInfo(final Long _id)
-        {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see org.drools.persistence.map.KnowledgeSessionStorage#remove(org.drools.persistence.info.WorkItemInfo)
-         */
-        @Override
-        public void remove(final WorkItemInfo _workItemInfo)
-        {
-            // TODO Auto-generated method stub
-
-        }
-
-        /* (non-Javadoc)
-         * @see org.drools.persistence.map.KnowledgeSessionStorage#getNextStatefulKnowledgeSessionId()
-         */
-        @Override
-        public Integer getNextStatefulKnowledgeSessionId()
-        {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see org.jbpm.persistence.ProcessStorage#findProcessInstanceInfo(java.lang.Long)
-         */
-        @Override
-        public ProcessInstanceInfo findProcessInstanceInfo(final Long _processInstanceId)
-        {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see org.jbpm.persistence.ProcessStorage#saveOrUpdate(org.jbpm.persistence.processinstance.ProcessInstanceInfo)
-         */
-        @Override
-        public void saveOrUpdate(final ProcessInstanceInfo _processInstanceInfo)
-        {
-            // TODO Auto-generated method stub
-
-        }
-
-        /* (non-Javadoc)
-         * @see org.jbpm.persistence.ProcessStorage#getNextProcessInstanceId()
-         */
-        @Override
-        public long getNextProcessInstanceId()
-        {
-            // TODO Auto-generated method stub
-            return 0;
-        }
-
-        /* (non-Javadoc)
-         * @see org.jbpm.persistence.ProcessStorage#removeProcessInstanceInfo(java.lang.Long)
-         */
-        @Override
-        public void removeProcessInstanceInfo(final Long _id)
-        {
-            // TODO Auto-generated method stub
-
-        }
-
-        /* (non-Javadoc)
-         * @see org.jbpm.persistence.ProcessStorage#getProcessInstancesWaitingForEvent(java.lang.String)
-         */
-        @Override
-        public List<Long> getProcessInstancesWaitingForEvent(final String _type)
-        {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-    }
 
 
     public static class TaskSessionFactory
@@ -400,6 +277,9 @@ public final class Bpm
             params.put("description", "Need a new laptop computer");
 
            ksession.startProcess("com.sample.humantask", params);
+
+
+           ksession.startProcess("com.sample.esjp", params);
 
 //            final List<TaskSummary> summar = Bpm.bpm.taskAdmin.getActiveTasks();
 //            System.out.println(summar);
@@ -443,8 +323,11 @@ public final class Bpm
         if (Status.Ready.equals(_taskSummary.getStatus())) {
             Bpm.bpm.service.claim(_taskSummary.getId(), "sales-rep");
         }
-        Bpm.bpm.service.start(_taskSummary.getId(), "sales-rep");
-
+        if (Status.InProgress.equals(_taskSummary.getStatus())) {
+            Bpm.bpm.service.resume(_taskSummary.getId(), "sales-rep");
+        } else {
+            Bpm.bpm.service.start(_taskSummary.getId(), "sales-rep");
+        }
         final Parameter parameter = new Parameter();
         parameter.put(ParameterValues.BPM_TASK, _taskSummary);
         parameter.put(ParameterValues.BPM_VALUES, _values);

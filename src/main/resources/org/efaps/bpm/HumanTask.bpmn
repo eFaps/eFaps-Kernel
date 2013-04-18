@@ -100,10 +100,10 @@
     </exclusiveGateway>
     <sequenceFlow id="SequenceFlow_4" tns:priority="1" name="" sourceRef="_4" targetRef="ExclusiveGateway_2"/>
     <sequenceFlow id="SequenceFlow_5" tns:priority="1" name="deny" sourceRef="ExclusiveGateway_2" targetRef="ScriptTask_2">
-      <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_5" language="http://www.java.com/java">return !((org.efaps.esjp.bpm.result.Review) result).isApproved();</conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_5" language="http://www.java.com/java">return true;</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="SequenceFlow_6" tns:priority="1" name="aprove" sourceRef="ExclusiveGateway_2" targetRef="ScriptTask_1">
-      <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_6" language="http://www.java.com/java">return ((org.efaps.esjp.bpm.result.Review) result).isApproved();</conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_6" language="http://www.java.com/java">return false;</conditionExpression>
     </sequenceFlow>
     <scriptTask id="ScriptTask_2" name="Script Task 2" scriptFormat="http://www.java.com/java">
       <incoming>SequenceFlow_5</incoming>
