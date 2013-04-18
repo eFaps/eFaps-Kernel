@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:_1="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:g="http://www.jboss.org/drools/flow/gpd" xmlns:tns="http://www.jboss.org/drools" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="Definition" expressionLanguage="http://www.mvel.org/2.0" targetNamespace="http://www.jboss.org/drools" typeLanguage="http://www.java.com/javaTypes">
+
+  <itemDefinition id="ItemDefinition_1343" structureRef="org.efaps.esjp.bpm.result.Review"/>
+
   <process id="com.sample.humantask" tns:version="1" tns:packageName="defaultPackage" tns:adHoc="false" name="Hello World" isExecutable="true" processType="Private">
     <extensionElements>
       <tns:import name="org.efaps.esjp.bpm.result.Review"/>
     </extensionElements>
-    <property id="result" itemSubjectRef="ItemDefinition_1343"/>
+
+    <property id="efapsResult" itemSubjectRef="ItemDefinition_1343"/>
+
     <startEvent id="_1" name="Start">
       <outgoing>_1-_4</outgoing>
     </startEvent>
@@ -30,7 +35,8 @@
         <dataInput id="_4_TaskNameInput" name="TaskName"/>
         <dataInput id="_4_GroupIdInput" name="GroupId"/>
         <dataInput id="_4_PriorityInput" name="Priority"/>
-        <dataOutput id="DataOutput_1" itemSubjectRef="ItemDefinition_1343" name="result"/>
+        <dataOutput id="DataOutput_1" name="resultTest"/>
+
         <inputSet id="InputSet_1">
           <dataInputRefs>_4_CommentInput</dataInputRefs>
           <dataInputRefs>_4_SkippableInput</dataInputRefs>
@@ -80,8 +86,9 @@
       </dataInputAssociation>
       <dataOutputAssociation id="_DataOutputAssociation_2">
         <sourceRef>DataOutput_1</sourceRef>
-        <targetRef>result</targetRef>
+        <targetRef>efapsResult</targetRef>
       </dataOutputAssociation>
+
     </userTask>
     <sequenceFlow id="_1-_4" tns:priority="1" sourceRef="_1" targetRef="_4"/>
     <scriptTask id="ScriptTask_1" name="Script Task 1" scriptFormat="http://www.java.com/java">
@@ -89,31 +96,31 @@
       <outgoing>SequenceFlow_3</outgoing>
       <script>System.out.println(&quot;Hello World XXXXXXXXXXXXXXXXXXXXXX&quot;);</script>
     </scriptTask>
+    <scriptTask id="ScriptTask_2" name="Script Task 2" scriptFormat="http://www.java.com/java">
+      <incoming>SequenceFlow_5</incoming>
+      <outgoing>SequenceFlow_1</outgoing>
+      <script>System.out.println(efapsResult);</script>
+    </scriptTask>
     <endEvent id="EndEvent_1" name="">
       <incoming>SequenceFlow_3</incoming>
     </endEvent>
-    <sequenceFlow id="SequenceFlow_3" tns:priority="1" sourceRef="ScriptTask_1" targetRef="EndEvent_1"/>
+
     <exclusiveGateway id="ExclusiveGateway_2" name="check" gatewayDirection="Diverging">
       <incoming>SequenceFlow_4</incoming>
       <outgoing>SequenceFlow_5</outgoing>
       <outgoing>SequenceFlow_6</outgoing>
     </exclusiveGateway>
+
+    <sequenceFlow id="SequenceFlow_3" tns:priority="1" sourceRef="ScriptTask_1" targetRef="EndEvent_1"/>
     <sequenceFlow id="SequenceFlow_4" tns:priority="1" name="" sourceRef="_4" targetRef="ExclusiveGateway_2"/>
     <sequenceFlow id="SequenceFlow_5" tns:priority="1" name="deny" sourceRef="ExclusiveGateway_2" targetRef="ScriptTask_2">
-      <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_5" language="http://www.java.com/java">return true;</conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_5" language="http://www.java.com/java">return new Boolean(!((org.efaps.esjp.bpm.result.Review) efapsResult).isApproved());</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="SequenceFlow_6" tns:priority="1" name="aprove" sourceRef="ExclusiveGateway_2" targetRef="ScriptTask_1">
-      <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_6" language="http://www.java.com/java">return false;</conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_6" language="http://www.java.com/java">return new Boolean(((org.efaps.esjp.bpm.result.Review) efapsResult).isApproved());</conditionExpression>
     </sequenceFlow>
-    <scriptTask id="ScriptTask_2" name="Script Task 2" scriptFormat="http://www.java.com/java">
-      <incoming>SequenceFlow_5</incoming>
-      <outgoing>SequenceFlow_1</outgoing>
-       <script>System.out.println(&quot;asdasdadasdadsadasd Hello World XXXXXXXXXXXXXXXXXXXXXX&quot;);</script>
-    </scriptTask>
     <sequenceFlow id="SequenceFlow_1" tns:priority="1" name="" sourceRef="ScriptTask_2" targetRef="_3"/>
   </process>
-  <itemDefinition id="ItemDefinition_840" structureRef="Boolean"/>
-  <itemDefinition id="ItemDefinition_1343" structureRef="org.efaps.esjp.bpm.result.Review"/>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_Process_1" bpmnElement="com.sample.humantask">
       <bpmndi:BPMNShape id="BPMNShape_StartEvent_1" bpmnElement="_1">

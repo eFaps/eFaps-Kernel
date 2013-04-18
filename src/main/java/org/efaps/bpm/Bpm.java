@@ -57,7 +57,6 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.ProcessEventLstnr;
-import org.efaps.bpm.listener.SystemEventLstnr;
 import org.efaps.bpm.workitem.EsjpWorkItemHandler;
 import org.efaps.db.Context;
 import org.efaps.init.INamingBinds;
@@ -68,14 +67,11 @@ import org.hibernate.cfg.AvailableSettings;
 import org.jbpm.persistence.JpaProcessPersistenceContextManager;
 import org.jbpm.persistence.jta.ContainerManagedTransactionManager;
 import org.jbpm.process.audit.JPAWorkingMemoryDbLogger;
-import org.jbpm.process.workitem.wsht.LocalHTWorkItemHandler;
 import org.jbpm.task.Status;
 import org.jbpm.task.admin.TasksAdmin;
 import org.jbpm.task.identity.UserGroupCallbackManager;
 import org.jbpm.task.query.TaskSummary;
-import org.jbpm.task.service.DefaultEscalatedDeadlineHandler;
 import org.jbpm.task.service.TaskService;
-import org.jbpm.task.service.local.LocalTaskService;
 import org.jbpm.task.service.persistence.TaskSessionFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,11 +87,23 @@ public final class Bpm
     private static Bpm bpm;
     private Integer ksessionId;
 
-    private TaskService taskService;
+   // private TaskService taskService;
 
     private final Map<String, WorkItemHandler> workItemsHandlers = new HashMap<String, WorkItemHandler>();
 
-    private org.jbpm.task.TaskService service;
+    //private org.jbpm.task.TaskService service;
+
+
+    /**
+     * Getter method for the instance variable {@link #workItemsHandlers}.
+     *
+     * @return value of instance variable {@link #workItemsHandlers}
+     */
+    protected Map<String, WorkItemHandler> getWorkItemsHandlers()
+    {
+        return this.workItemsHandlers;
+    }
+
 
     private TasksAdmin taskAdmin;
 
@@ -169,8 +177,7 @@ public final class Bpm
             final EntityManagerFactory emf = Persistence
                             .createEntityManagerFactory("org.jbpm.persistence.jpa", properties);
 
-            final EntityManagerFactory emf2 = Persistence
-                            .createEntityManagerFactory("org.jbpm.persistence.jpa2", properties);
+            Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa2", properties);
 
             Bpm.bpm.env = KnowledgeBaseFactory.newEnvironment();
             Bpm.bpm.env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
@@ -194,34 +201,33 @@ public final class Bpm
             }
 
             final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
-            ksession.addEventListener(new ProcessEventLstnr());
-            final JPAWorkingMemoryDbLogger logger = new JPAWorkingMemoryDbLogger(ksession);
-            ksession.addEventListener(logger);
 
-            Bpm.bpm.taskService = new TaskService();
 
-            Bpm.bpm.taskService.setTaskSessionFactory(new TaskSessionFactory(Bpm.bpm.taskService, emf2));
-            Bpm.bpm.taskService.setSystemEventListener(new SystemEventLstnr());
-            Bpm.bpm.taskService.setEscalatedDeadlineHandler(new DefaultEscalatedDeadlineHandler());
-            Bpm.bpm.taskService.initialize();
+//            Bpm.bpm.taskService = new TaskService();
+//
+//            Bpm.bpm.taskService.setTaskSessionFactory(new TaskSessionFactory(Bpm.bpm.taskService, emf2));
+//            Bpm.bpm.taskService.setSystemEventListener(new SystemEventLstnr());
+//            Bpm.bpm.taskService.setEscalatedDeadlineHandler(new DefaultEscalatedDeadlineHandler());
+//            Bpm.bpm.taskService.initialize();
 
             // Bpm.bpm.service =
-            // LocalHumanTaskService.getTaskService(Bpm.bpm.ksession);
+            UserTaskService.getTaskService(ksession);
+            //Bpm.bpm.service = new LocalTaskService(Bpm.bpm.taskService);
 
-            final LocalHTWorkItemHandler humanTaskHandler = new LocalHTWorkItemHandler(
-                            new LocalTaskService(Bpm.bpm.taskService), ksession);
-            ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
+//            final LocalHTWorkItemHandler humanTaskHandler = new LocalHTWorkItemHandler(
+//                            new LocalTaskService(Bpm.bpm.taskService), ksession);
+//            ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
 
             final EsjpWorkItemHandler esjphandler = new EsjpWorkItemHandler();
             ksession.getWorkItemManager().registerWorkItemHandler("ESJPNode", esjphandler);
 
-            Bpm.bpm.workItemsHandlers.put("Human Task", humanTaskHandler);
+            //Bpm.bpm.workItemsHandlers.put("Human Task", humanTaskHandler);
             Bpm.bpm.workItemsHandlers.put("ESJPNode", esjphandler);
 
-            Bpm.bpm.service = new LocalTaskService(Bpm.bpm.taskService);
 
-            Bpm.bpm.taskAdmin = Bpm.bpm.taskService.createTaskAdmin();
-            humanTaskHandler.connect();
+
+            //Bpm.bpm.taskAdmin = Bpm.bpm.taskService.createTaskAdmin();
+            //humanTaskHandler.connect();
 
             SessionFactory sessionFactory;
             try {
@@ -267,9 +273,8 @@ public final class Bpm
             sessionFactory.getCurrentSession().setFlushMode(FlushMode.COMMIT);
 
             final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
-            // Bpm.bpm.ksession =
-            // JPAKnowledgeService.loadStatefulKnowledgeSession(Bpm.bpm.ksession.getId(),Bpm.bpm.kbase,
-            // null, Bpm.bpm.env);
+            UserTaskService.getTaskService(ksession);
+
             ksession.startProcess("com.sample.hello");
 
             final Map<String, Object> params = new HashMap<String, Object>();
@@ -317,29 +322,30 @@ public final class Bpm
                                    final Boolean _decision,
                                    final Map<String, Object> _values)
     {
-        Bpm.bpm.getKnowledgeSession();
-
+        final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
+        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
-            Bpm.bpm.service.claim(_taskSummary.getId(), "sales-rep");
+           service.claim(_taskSummary.getId(), "sales-rep");
         }
         if (Status.InProgress.equals(_taskSummary.getStatus())) {
-            Bpm.bpm.service.resume(_taskSummary.getId(), "sales-rep");
+            service.resume(_taskSummary.getId(), "sales-rep");
         } else {
-            Bpm.bpm.service.start(_taskSummary.getId(), "sales-rep");
+            service.start(_taskSummary.getId(), "sales-rep");
         }
         final Parameter parameter = new Parameter();
         parameter.put(ParameterValues.BPM_TASK, _taskSummary);
         parameter.put(ParameterValues.BPM_VALUES, _values);
         parameter.put(ParameterValues.BPM_DECISION, _decision);
-        Object result = null;
+        final Map<String, Object> results = new HashMap<String, Object>();
+        results.put("comment", "Agreed, existing laptop needs replacing");
         // exec esjp
         try {
             final Class<?> transformer = Class.forName("org.efaps.esjp.bpm.TaskTransformer");
             final Method method = transformer.getMethod("execute",  new Class[] { Parameter.class });
             final Return ret  = (Return) method.invoke(transformer.newInstance(), parameter);
             if (ret != null) {
-                result = ret.get(ReturnValues.VALUES);
+                results.put("resultTest", ret.get(ReturnValues.VALUES));
             }
         } catch (final ClassNotFoundException e) {
             // TODO Auto-generated catch block
@@ -364,7 +370,7 @@ public final class Bpm
             e.printStackTrace();
         }
 
-        Bpm.bpm.service.completeWithResults(_taskSummary.getId(), "sales-rep", result);
+        service.completeWithResults(_taskSummary.getId(), "sales-rep", results);
 
     }
 
@@ -421,7 +427,10 @@ public final class Bpm
 
     public static List<TaskSummary> getTasksAssignedAsPotentialOwner()
     {
-        return Bpm.bpm.service.getTasksAssignedAsPotentialOwner("sales-rep", "en-UK");
+        final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
+        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+
+        return service.getTasksAssignedAsPotentialOwner("sales-rep", "en-UK");
     }
 
 
@@ -446,6 +455,10 @@ public final class Bpm
             ksession.getWorkItemManager().registerWorkItemHandler(entry.getKey(), entry.getValue());
         }
 
+        ksession.addEventListener(new ProcessEventLstnr());
+        final JPAWorkingMemoryDbLogger logger = new JPAWorkingMemoryDbLogger(ksession);
+        ksession.addEventListener(logger);
+
         //Configures a logger for the session
         KnowledgeRuntimeLoggerFactory.newConsoleLogger(ksession);
         try {
@@ -457,4 +470,8 @@ public final class Bpm
         return ksession;
     }
 
+    protected static void registerWorkItemHandler(final String _key, final WorkItemHandler _object)
+    {
+        Bpm.bpm.workItemsHandlers.put(_key, _object);
+    }
 }
