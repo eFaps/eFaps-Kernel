@@ -78,8 +78,6 @@ import org.jbpm.task.Status;
 import org.jbpm.task.admin.TasksAdmin;
 import org.jbpm.task.identity.UserGroupCallbackManager;
 import org.jbpm.task.query.TaskSummary;
-import org.jbpm.task.service.TaskService;
-import org.jbpm.task.service.persistence.TaskSessionFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
@@ -105,26 +103,21 @@ public final class Bpm
                     .addPart(SQLPart.ORDERBY).addValuePart("last_modification_date")
                     .toString();
 
-
+    /**
+     * The used Bpm instance.
+     */
     private static Bpm bpm;
-    private Integer ksessionId;
-
-   // private TaskService taskService;
-
-    private final Map<String, WorkItemHandler> workItemsHandlers = new HashMap<String, WorkItemHandler>();
-
-    //private org.jbpm.task.TaskService service;
-
 
     /**
-     * Getter method for the instance variable {@link #workItemsHandlers}.
-     *
-     * @return value of instance variable {@link #workItemsHandlers}
+     * Mapping of the WorkItemhandlers used in this session.
      */
-    protected Map<String, WorkItemHandler> getWorkItemsHandlers()
-    {
-        return this.workItemsHandlers;
-    }
+    private final Map<String, WorkItemHandler> workItemsHandlers = new HashMap<String, WorkItemHandler>();
+
+    private Integer ksessionId;
+
+
+
+
 
 
     private TasksAdmin taskAdmin;
@@ -147,42 +140,6 @@ public final class Bpm
     private Bpm()
     {
     }
-
-    /**
-     * @return the id of the session from the database.
-     * @throws EFapsException on error
-     */
-    private Integer getKSessionIDFromDB()
-        throws EFapsException
-    {
-        Integer ret = null;
-        ConnectionResource con = null;
-        try {
-            con = Context.getThreadContext().getConnectionResource();
-            final PreparedStatement stmt = con.getConnection().prepareStatement(Bpm.SQL_SESSIONID);
-            final ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                ret = rs.getInt(1);
-            }
-            rs.close();
-            stmt.close();
-            con.commit();
-        } catch (final EFapsException e) {
-            Bpm.LOG.error("initialiseCache()", e);
-        } catch (final SQLException e) {
-            Bpm.LOG.error("initialiseCache()", e);
-        } finally {
-            if ((con != null) && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new EFapsException("could not read session id", e);
-                }
-            }
-        }
-        return ret;
-    }
-
 
     public static void initialize() throws EFapsException
     {
@@ -212,7 +169,7 @@ public final class Bpm
 
             final Map<String, String> properties = new HashMap<String, String>();
             properties.put(AvailableSettings.DIALECT, "org.hibernate.dialect.PostgreSQL82Dialect");
-            properties.put(AvailableSettings.SHOW_SQL, String.valueOf(Bpm.LOG.isInfoEnabled()));
+            properties.put(AvailableSettings.SHOW_SQL, String.valueOf(Bpm.LOG.isDebugEnabled()));
             properties.put(AvailableSettings.FORMAT_SQL, "true");
 
            // properties.put(AvailableSettings.AUTOCOMMIT, "true");
@@ -278,24 +235,6 @@ public final class Bpm
     }
 
 
-
-
-    public static class TaskSessionFactory
-        extends TaskSessionFactoryImpl
-    {
-
-        /**
-         * @param _taskService
-         * @param _emf
-         */
-        public TaskSessionFactory(final TaskService _taskService,
-                                  final EntityManagerFactory _emf)
-        {
-            super(_taskService, _emf);
-        }
-
-    }
-
     public static void startProcess()
     {
         InitialContext context = null;
@@ -353,7 +292,7 @@ public final class Bpm
         parameter.put(ParameterValues.BPM_VALUES, _values);
         parameter.put(ParameterValues.BPM_DECISION, _decision);
         final Map<String, Object> results = new HashMap<String, Object>();
-        results.put("comment", "Agreed, existing laptop needs replacing");
+
         // exec esjp
         try {
             final Class<?> transformer = Class.forName("org.efaps.esjp.bpm.TaskTransformer");
@@ -389,6 +328,14 @@ public final class Bpm
 
     }
 
+
+    public static List<TaskSummary> getTasksAssignedAsPotentialOwner()
+    {
+        final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
+        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+
+        return service.getTasksAssignedAsPotentialOwner("sales-rep", "en-UK");
+    }
 
     protected static UserTransaction findUserTransaction()
     {
@@ -440,30 +387,67 @@ public final class Bpm
         return ret;
     }
 
-    public static List<TaskSummary> getTasksAssignedAsPotentialOwner()
+    protected static void registerWorkItemHandler(final String _key, final WorkItemHandler _object)
     {
-        final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
-        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
-
-        return service.getTasksAssignedAsPotentialOwner("sales-rep", "en-UK");
+        Bpm.bpm.workItemsHandlers.put(_key, _object);
     }
 
+    /**
+     * @return the id of the session from the database.
+     * @throws EFapsException on error
+     */
+    private Integer getKSessionIDFromDB()
+        throws EFapsException
+    {
+        Integer ret = null;
+        ConnectionResource con = null;
+        try {
+            con = Context.getThreadContext().getConnectionResource();
+            if (Context.getDbType().existsTable(con.getConnection(), "ht_session_info")) {
+                final PreparedStatement stmt = con.getConnection().prepareStatement(Bpm.SQL_SESSIONID);
+                final ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    ret = rs.getInt(1);
+                }
+                rs.close();
+                stmt.close();
+            }
+            con.commit();
+        } catch (final EFapsException e) {
+            Bpm.LOG.error("initialiseCache()", e);
+        } catch (final SQLException e) {
+            Bpm.LOG.error("initialiseCache()", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new EFapsException("could not read session id", e);
+                }
+            }
+        }
+        return ret;
+    }
 
-    private StatefulKnowledgeSession getKnowledgeSession() {
+    /**
+     * @return the KnowledgeSession
+     */
+    private StatefulKnowledgeSession getKnowledgeSession()
+    {
         StatefulKnowledgeSession ksession;
         if (this.ksessionId == null) {
             ksession = JPAKnowledgeService.newStatefulKnowledgeSession(
-                    this.kbase,
-                    null,
-                    this.env);
+                            this.kbase,
+                            null,
+                            this.env);
 
             this.ksessionId = ksession.getId();
         } else {
             ksession = JPAKnowledgeService.loadStatefulKnowledgeSession(
-                    this.ksessionId,
-                    this.kbase,
-                    null,
-                    this.env);
+                            this.ksessionId,
+                            this.kbase,
+                            null,
+                            this.env);
         }
 
         for (final Map.Entry<String, WorkItemHandler> entry : this.workItemsHandlers.entrySet()) {
@@ -474,19 +458,8 @@ public final class Bpm
         final JPAWorkingMemoryDbLogger logger = new JPAWorkingMemoryDbLogger(ksession);
         ksession.addEventListener(logger);
 
-        //Configures a logger for the session
+        // Configures a logger for the session
         KnowledgeRuntimeLoggerFactory.newConsoleLogger(ksession);
-        try {
-            Context.getThreadContext().setKsession(ksession);
-        } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         return ksession;
-    }
-
-    protected static void registerWorkItemHandler(final String _key, final WorkItemHandler _object)
-    {
-        Bpm.bpm.workItemsHandlers.put(_key, _object);
     }
 }

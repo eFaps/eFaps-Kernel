@@ -43,7 +43,6 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.efaps.admin.user.Company;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
@@ -275,8 +274,6 @@ public final class Context
      */
     private final boolean inherit;
 
-    private StatefulKnowledgeSession ksession;
-
     /**
      * Private Constructor.
      *
@@ -387,10 +384,6 @@ public final class Context
         if (Context.LOG.isDebugEnabled()) {
             Context.LOG.debug("close context for " + this.person);
             Context.LOG.debug("connection is " + getConnection());
-        }
-        if (this.ksession != null) {
-            //this.ksession.dispose();
-            this.ksession = null;
         }
         if (this.connection != null) {
             try {
@@ -1209,27 +1202,6 @@ public final class Context
         } catch (final NamingException e) {
             throw new StartupException("eFaps context could not be initialized", e);
         }
-    }
-
-    /**
-     * Getter method for the instance variable {@link #ksession}.
-     *
-     * @return value of instance variable {@link #ksession}
-     */
-    public StatefulKnowledgeSession getKsession()
-    {
-        return this.ksession;
-    }
-
-    /**
-     * Setter method for instance variable {@link #ksession}.
-     *
-     * @param ksession value for instance variable {@link #ksession}
-     */
-
-    public void setKsession(final StatefulKnowledgeSession ksession)
-    {
-        this.ksession = ksession;
     }
 
     /**
