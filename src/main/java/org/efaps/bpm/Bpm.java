@@ -22,6 +22,9 @@ package org.efaps.bpm;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +63,9 @@ import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.ProcessEventLstnr;
 import org.efaps.bpm.workitem.EsjpWorkItemHandler;
 import org.efaps.db.Context;
+import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.wrapper.SQLPart;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.init.INamingBinds;
 import org.efaps.util.EFapsException;
 import org.hibernate.FlushMode;
@@ -84,6 +90,21 @@ import org.slf4j.LoggerFactory;
  */
 public final class Bpm
 {
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(Bpm.class);
+
+    /**
+     * SQL select statement to select a type from the database by its UUID.
+     */
+    private static final String SQL_SESSIONID = new SQLSelect()
+                    .column("ID")
+                    .from("ht_session_info", 0)
+                    .addPart(SQLPart.ORDERBY).addValuePart("last_modification_date")
+                    .toString();
+
 
     private static Bpm bpm;
     private Integer ksessionId;
@@ -112,11 +133,6 @@ public final class Bpm
 
     private Environment env;
 
-    /**
-     * Logging instance used in this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(Bpm.class);
-
     private static final String[] KNOWN_UT_JNDI_KEYS = new String[] {
                     "java:global/" + INamingBinds.RESOURCE_USERTRANSACTION,
                     "java:comp/env/" + INamingBinds.RESOURCE_USERTRANSACTION };
@@ -132,6 +148,42 @@ public final class Bpm
     {
     }
 
+    /**
+     * @return the id of the session from the database.
+     * @throws EFapsException on error
+     */
+    private Integer getKSessionIDFromDB()
+        throws EFapsException
+    {
+        Integer ret = null;
+        ConnectionResource con = null;
+        try {
+            con = Context.getThreadContext().getConnectionResource();
+            final PreparedStatement stmt = con.getConnection().prepareStatement(Bpm.SQL_SESSIONID);
+            final ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                ret = rs.getInt(1);
+            }
+            rs.close();
+            stmt.close();
+            con.commit();
+        } catch (final EFapsException e) {
+            Bpm.LOG.error("initialiseCache()", e);
+        } catch (final SQLException e) {
+            Bpm.LOG.error("initialiseCache()", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new EFapsException("could not read session id", e);
+                }
+            }
+        }
+        return ret;
+    }
+
+
     public static void initialize() throws EFapsException
     {
         final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
@@ -140,7 +192,7 @@ public final class Bpm
         if (active) {
 
             Bpm.bpm = new Bpm();
-            Bpm.bpm.ksessionId = 50;
+            Bpm.bpm.ksessionId = Bpm.bpm.getKSessionIDFromDB();
 
             System.setProperty(UserGroupCallbackManager.USER_GROUP_CALLBACK_KEY, UserGroupCallbackImpl.class.getName());
 
