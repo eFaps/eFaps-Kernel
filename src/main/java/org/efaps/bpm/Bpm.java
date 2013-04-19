@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -331,10 +332,17 @@ public final class Bpm
 
     public static List<TaskSummary> getTasksAssignedAsPotentialOwner()
     {
+        final List<TaskSummary> ret = new ArrayList<TaskSummary>();
         final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
         final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
-
-        return service.getTasksAssignedAsPotentialOwner("sales-rep", "en-UK");
+        try {
+            final String persname = Context.getThreadContext().getPerson().getName();
+            final String language = Context.getThreadContext().getLanguage();
+            ret.addAll(service.getTasksAssignedAsPotentialOwner(persname, language));
+        } catch (final EFapsException e) {
+            Bpm.LOG.error("Error on retrieving List of TaskSummaries.");
+        }
+        return ret;
     }
 
     protected static UserTransaction findUserTransaction()

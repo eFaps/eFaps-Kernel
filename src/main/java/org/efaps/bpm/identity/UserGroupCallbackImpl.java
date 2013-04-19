@@ -24,6 +24,9 @@ package org.efaps.bpm.identity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.efaps.admin.user.Person;
+import org.efaps.admin.user.Role;
+import org.efaps.util.EFapsException;
 import org.jbpm.task.identity.UserGroupCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +62,16 @@ public class UserGroupCallbackImpl
     public boolean existsUser(final String _userId)
     {
         UserGroupCallbackImpl.LOG.info("checking for existence of User: '{}'", _userId);
-        boolean ret = true;
+        boolean ret = false;
         if ("Administrator".equals(_userId)) {
             ret = true;
+        } else {
+            try {
+                final Person pers = org.efaps.admin.user.Person.get(_userId);
+                ret = pers != null;
+            } catch (final EFapsException e) {
+                UserGroupCallbackImpl.LOG.error("error while checkin for existence of User: '{}'", _userId);
+            }
         }
         UserGroupCallbackImpl.LOG.info("result for existence check for User: '{}' is: {}", _userId, ret);
         return ret;
@@ -77,7 +87,15 @@ public class UserGroupCallbackImpl
     public boolean existsGroup(final String _groupId)
     {
         UserGroupCallbackImpl.LOG.info("checking for existence of Group: {}", _groupId);
-        return true;
+        boolean ret = false;
+        try {
+            final Role role = org.efaps.admin.user.Role.get(_groupId);
+            ret = role != null;
+        } catch (final EFapsException e) {
+            UserGroupCallbackImpl.LOG.error("error while checkin for existence of Group: '{}'", _groupId);
+        }
+        UserGroupCallbackImpl.LOG.info("result for existence check for Group: '{}' is: {}", _groupId, ret);
+        return ret;
     }
 
     /**
@@ -97,7 +115,17 @@ public class UserGroupCallbackImpl
                         "getting Groups for User: '{}'. Assigned Groups: {}. Currently known Groups: {}.", _userId,
                         _groupIds, _allExistingGroupIds);
         final List<String> ret = new ArrayList<String>();
-        ret.add("sales");
+        try {
+            final Person pers = org.efaps.admin.user.Person.get(_userId);
+            if (pers != null) {
+                for (final Long roleId : pers.getRoles()) {
+                    final Role role = org.efaps.admin.user.Role.get(roleId);
+                    ret.add(role.getName());
+                }
+            }
+        } catch (final EFapsException e) {
+            UserGroupCallbackImpl.LOG.error("error while checkin for existence of User: '{}'", _userId);
+        }
         UserGroupCallbackImpl.LOG.info("found Groups for User: '{}': {}", _userId, ret);
         return ret;
     }
