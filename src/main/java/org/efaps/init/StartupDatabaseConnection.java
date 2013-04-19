@@ -246,6 +246,35 @@ public final class StartupDatabaseConnection
      * @param _propConnection string with properties for the JDBC connection
      * @param _classTM class name of the transaction manager
      * @param _classTSR class name of TransactionSynchronizationRegistry
+     * @param _eFapsProps tring with properties
+     * @throws StartupException if the database connection or transaction manager could not be initialized
+     * @see StartupDatabaseConnection#startup(String, String, Map, String, Integer)
+     * @see StartupDatabaseConnection#convertToMap(String)
+     */
+    public static void startup(final String _classDBType,
+                               final String _classDSFactory,
+                               final String _propConnection,
+                               final String _classTM,
+                               final String _classTSR,
+                               final String _eFapsProps)
+        throws StartupException
+    {
+        StartupDatabaseConnection.startup(_classDBType,
+                        _classDSFactory,
+                        StartupDatabaseConnection.convertToMap(_propConnection),
+                        _classTM,
+                        _classTSR,
+                        StartupDatabaseConnection.convertToMap(_eFapsProps));
+    }
+
+    /**
+     * Initialize the database information set for given parameter values.
+     *
+     * @param _classDBType class name of the database type
+     * @param _classDSFactory class name of the SQL data source factory
+     * @param _propConnection string with properties for the JDBC connection
+     * @param _classTM class name of the transaction manager
+     * @param _classTSR class name of TransactionSynchronizationRegistry
      * @param _eFapsProps Map or properties
      * @throws StartupException if the database connection or transaction manager could not be initialized
      * @see StartupDatabaseConnection#startup(String, String, Map, String, Integer)
@@ -303,18 +332,14 @@ public final class StartupDatabaseConnection
             final InitialContext context = new InitialContext();
             compCtx = (javax.naming.Context) context.lookup("java:/comp");
 
-
-        StartupDatabaseConnection.configureEFapsProperties(compCtx, _eFapsProps);
-        StartupDatabaseConnection.configureDBType(compCtx, _classDBType);
-        StartupDatabaseConnection.configureDataSource(compCtx, _classDSFactory, _propConnection);
-        StartupDatabaseConnection.configureTransactionManager(compCtx, _classTM);
-        StartupDatabaseConnection.configureTransactionSynchronizationRegistry(compCtx,_classTSR);
-
-
+            StartupDatabaseConnection.configureEFapsProperties(compCtx, _eFapsProps);
+            StartupDatabaseConnection.configureDBType(compCtx, _classDBType);
+            StartupDatabaseConnection.configureDataSource(compCtx, _classDSFactory, _propConnection);
+            StartupDatabaseConnection.configureTransactionManager(compCtx, _classTM);
+            StartupDatabaseConnection.configureTransactionSynchronizationRegistry(compCtx, _classTSR);
         } catch (final NamingException e) {
             throw new StartupException("Could not initialize JNDI", e);
         }
-
         // and reset eFaps context (to be sure..)
         org.efaps.db.Context.reset();
     }
@@ -350,7 +375,7 @@ public final class StartupDatabaseConnection
      * @param _propConnection map of properties for the JDBC connection
      * @throws StartupException on error
      */
-    protected static Reference configureDataSource(final Context _compCtx,
+    protected static void configureDataSource(final Context _compCtx,
                                               final String _classDSFactory,
                                               final Map<String, String> _propConnection)
         throws StartupException
@@ -369,7 +394,6 @@ public final class StartupDatabaseConnection
             // CHECKSTYLE:ON
             throw new StartupException("coud not get object instance of factory '" + _classDSFactory + "'", e);
         }
-        return ref;
     }
 
     /**
@@ -419,28 +443,18 @@ public final class StartupDatabaseConnection
         try {
             final Object tm = (Class.forName(_classTM)).newInstance();
             if (tm == null) {
-                throw new StartupException("could not initaliase TransactionManager ");
+                throw new StartupException("could not initialise TransactionManager ");
             } else {
                 if (tm instanceof TransactionManager) {
                     Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_TRANSMANAG, tm);
                     Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_USERTRANSACTION,
                                     new DelegatingUserTransaction((TransactionManager) tm));
-                } else if (tm instanceof ObjectFactory) {
-                    final Reference ref = new Reference(
-                                    "com.atomikos.icatch.jta.J2eeTransactionManager",
-                                    TransactionManager.class.getName(),
-                                    null);
-                    Util.bind(_compCtx, "env/" + INamingBinds.RESOURCE_TRANSMANAG, ref);
-                    Util.bind(_compCtx,
-                                    "env/" + INamingBinds.RESOURCE_USERTRANSACTION,
-                                    new DelegatingUserTransaction((TransactionManager) _compCtx.lookup("env/"
-                                                    + INamingBinds.RESOURCE_TRANSMANAG)));
                 } else {
-                    throw new StartupException("could not initaliase TransactionManager with object:" + tm);
+                    throw new StartupException("could not initialise TransactionManager with object:" + tm);
                 }
             }
         } catch (final ClassNotFoundException e) {
-            throw new StartupException("could not found transaction manager class '" + _classTM + "'", e);
+            throw new StartupException("could not find transaction manager class '" + _classTM + "'", e);
         } catch (final InstantiationException e) {
             throw new StartupException("could not initialise transaction manager class '" + _classTM + "'", e);
         } catch (final IllegalAccessException e) {
@@ -456,7 +470,7 @@ public final class StartupDatabaseConnection
      * class must implement interface {@link TransactionSynchronizationRegistry}.
      *
      * @param _compCtx Java root naming context
-     * @param _classTM class name of the transaction manager
+     * @param _classTSR class name of the transaction SynchronizationRegistry
      * @throws StartupException if the transaction manager class could not be found, initialized, accessed or bind to
      *             the context
      */
@@ -482,16 +496,16 @@ public final class StartupDatabaseConnection
             }
 
         } catch (final ClassNotFoundException e) {
-            throw new StartupException("could not found transaction manager class '" + _classTSR + "'", e);
+            throw new StartupException("could not found TransactionSynchronizationRegistry '" + _classTSR + "'", e);
         } catch (final InstantiationException e) {
-            throw new StartupException("could not initialise transaction manager class '" + _classTSR + "'", e);
+            throw new StartupException("could not initialise TransactionSynchronizationRegistry class '" + _classTSR
+                            + "'", e);
         } catch (final IllegalAccessException e) {
-            throw new StartupException("could not access transaction manager class '" + _classTSR + "'", e);
+            throw new StartupException("could not access TransactionSynchronizationRegistry class '" + _classTSR + "'",
+                            e);
         } catch (final NamingException e) {
-            throw new StartupException("could not bind transaction manager class '" + _classTSR + "'", e);
-        } catch (final Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new StartupException("could not bind Transaction Synchronization Registry class '"
+                            + _classTSR + "'", e);
         }
     }
 
@@ -508,7 +522,7 @@ public final class StartupDatabaseConnection
      * @param _text text string to convert to a key / value map
      * @return Map of strings with all found key / value pairs
      */
-    protected static Map<String, String> convertToMap(final String _text)
+    public static Map<String, String> convertToMap(final String _text)
     {
         final Map<String, String> properties = new HashMap<String, String>();
 
