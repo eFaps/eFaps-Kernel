@@ -30,8 +30,7 @@ import org.efaps.util.cache.CacheReloadException;
  * eFaps.
  *
  * @author The eFaps Team
- * @version $Id: EFapsSystemConfiguration.java 7483 2012-05-11 16:57:38Z
- *          jan@moxter.net $
+ * @version $Id$
  */
 public enum EFapsSystemConfiguration
 {
