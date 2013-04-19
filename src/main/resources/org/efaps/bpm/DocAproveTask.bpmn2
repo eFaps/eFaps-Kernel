@@ -145,11 +145,8 @@
                 </assignment>
             </dataInputAssociation>
             <dataInputAssociation id="DataInputAssociation_10">
+                <sourceRef>docOID</sourceRef>
                 <targetRef>_1_OIDInput</targetRef>
-                <assignment id="Assignment_8">
-                    <from xsi:type="tFormalExpression" id="FormalExpression_21">123.456</from>
-                    <to xsi:type="tFormalExpression" id="FormalExpression_22">_1_OIDInput</to>
-                </assignment>
             </dataInputAssociation>
             <dataInputAssociation id="DataInputAssociation_11">
                 <targetRef>_1_StatusInput</targetRef>
@@ -191,11 +188,8 @@
                 </assignment>
             </dataInputAssociation>
             <dataInputAssociation id="DataInputAssociation_12">
+                <sourceRef>docOID</sourceRef>
                 <targetRef>_2_OIDInput</targetRef>
-                <assignment id="Assignment_14">
-                    <from xsi:type="tFormalExpression" id="FormalExpression_25">123.456</from>
-                    <to xsi:type="tFormalExpression" id="FormalExpression_26">_2_OIDInput</to>
-                </assignment>
             </dataInputAssociation>
             <dataInputAssociation id="DataInputAssociation_13">
                 <targetRef>_2_StatusInput</targetRef>
@@ -226,7 +220,7 @@
                 <dc:Bounds height="50.0" width="50.0" x="439.0" y="131.0" />
             </bpmndi:BPMNShape>
             <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_6" bpmnElement="SequenceFlow_4">
-                <di:waypoint xsi:type="dc:Point" x="330.0"y="156.0" />
+                <di:waypoint xsi:type="dc:Point" x="330.0" y="156.0" />
                 <di:waypoint xsi:type="dc:Point" x="439.0" y="156.0" />
             </bpmndi:BPMNEdge>
             <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_7" bpmnElement="SequenceFlow_5" sourceElement="BPMNShape_ExclusiveGateway_2" targetElement="BPMNShape_Task_1">

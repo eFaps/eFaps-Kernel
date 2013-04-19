@@ -22,6 +22,7 @@ package org.efaps.bpm.workitem;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.drools.process.instance.WorkItemHandler;
@@ -42,23 +43,27 @@ public class EsjpWorkItemHandler
     implements WorkItemHandler
 {
 
-    public final static String PARAMETERNAME_ESJP = "esjp";
-
-    public final static String PARAMETERNAME_METHOD = "method";
-
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.drools.runtime.process.WorkItemHandler#executeWorkItem(org.drools
-     * .runtime.process.WorkItem, org.drools.runtime.process.WorkItemManager)
+    /**
+     * Name for the parameter containing the classname.
      */
+    public static final String PARAMETERNAME_ESJP = "esjp";
 
+    /**
+     *Name for the parameter containing the methodname.
+     */
+    public static final String PARAMETERNAME_METHOD = "method";
+
+    /**
+     * The given work item should be executed.
+     * @param _workItem the work item that should be executed
+     * @param _manager the manager that requested the work item to be executed
+     */
     @SuppressWarnings("unchecked")
     @Override
     public void executeWorkItem(final WorkItem _workItem,
                                 final WorkItemManager _manager)
     {
-
+        final Map<String, Object> results = new HashMap<String, Object>();
         final String esjpName = (String) _workItem.getParameter(EsjpWorkItemHandler.PARAMETERNAME_ESJP);
         if (esjpName != null) {
             final String methodName = (String) _workItem.getParameter(EsjpWorkItemHandler.PARAMETERNAME_METHOD);
@@ -71,7 +76,7 @@ public class EsjpWorkItemHandler
                 if (ret != null) {
                     final Object values = ret.get(ReturnValues.VALUES);
                     if (values instanceof Map) {
-                        _workItem.getResults().putAll((Map<? extends String, ? extends Object>) values);
+                        results.putAll((Map<? extends String, ? extends Object>) values);
                     }
                 }
             } catch (final ClassNotFoundException e) {
@@ -96,16 +101,14 @@ public class EsjpWorkItemHandler
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-
         }
-
+        _manager.completeWorkItem(_workItem.getId(), results);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.drools.runtime.process.WorkItemHandler#abortWorkItem(org.drools.runtime
-     * .process.WorkItem, org.drools.runtime.process.WorkItemManager)
+    /**
+     * The given work item should be aborted.
+     * @param _workItem the work item that should be aborted
+     * @param _manager the manager that requested the work item to be aborted
      */
     @Override
     public void abortWorkItem(final WorkItem _workItem,
@@ -113,5 +116,7 @@ public class EsjpWorkItemHandler
     {
         System.out.println("asdad");
     }
+
+
 
 }

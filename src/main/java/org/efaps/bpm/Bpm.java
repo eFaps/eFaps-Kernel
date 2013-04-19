@@ -204,39 +204,17 @@ public final class Bpm
 
             final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
 
-
-//            Bpm.bpm.taskService = new TaskService();
-//
-//            Bpm.bpm.taskService.setTaskSessionFactory(new TaskSessionFactory(Bpm.bpm.taskService, emf2));
-//            Bpm.bpm.taskService.setSystemEventListener(new SystemEventLstnr());
-//            Bpm.bpm.taskService.setEscalatedDeadlineHandler(new DefaultEscalatedDeadlineHandler());
-//            Bpm.bpm.taskService.initialize();
-
-            // Bpm.bpm.service =
             UserTaskService.getTaskService(ksession);
-            //Bpm.bpm.service = new LocalTaskService(Bpm.bpm.taskService);
-
-//            final LocalHTWorkItemHandler humanTaskHandler = new LocalHTWorkItemHandler(
-//                            new LocalTaskService(Bpm.bpm.taskService), ksession);
-//            ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
 
             final EsjpWorkItemHandler esjphandler = new EsjpWorkItemHandler();
             ksession.getWorkItemManager().registerWorkItemHandler("ESJPNode", esjphandler);
-
-            //Bpm.bpm.workItemsHandlers.put("Human Task", humanTaskHandler);
             Bpm.bpm.workItemsHandlers.put("ESJPNode", esjphandler);
-
-
-
-            //Bpm.bpm.taskAdmin = Bpm.bpm.taskService.createTaskAdmin();
-            //humanTaskHandler.connect();
 
             SessionFactory sessionFactory;
             try {
                 sessionFactory = (SessionFactory) context.lookup("java:comp/env/test");
                 sessionFactory.getCurrentSession().setFlushMode(FlushMode.COMMIT);
 
-               // sessionFactory.getCurrentSession().flush();
             } catch (final NamingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
