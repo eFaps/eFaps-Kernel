@@ -49,8 +49,8 @@ import org.drools.runtime.Environment;
 import org.drools.runtime.EnvironmentName;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.process.WorkItemHandler;
-import org.efaps.admin.ConfigurationSettings;
 import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -136,7 +136,7 @@ public final class Bpm
     {
         final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
         final boolean active = config != null
-                        ? config.getAttributeValueAsBoolean(ConfigurationSettings.ActivateBPM) : false;
+                        ? config.getAttributeValueAsBoolean(KernelSettings.ActivateBPM) : false;
         if (active) {
 
             Bpm.bpm = new Bpm();
