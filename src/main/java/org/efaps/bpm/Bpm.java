@@ -138,6 +138,7 @@ public final class Bpm
         if (active) {
 
             Bpm.bpm = new Bpm();
+            Bpm.bpm.ksessionId = 50;
 
             System.setProperty(UserGroupCallbackManager.USER_GROUP_CALLBACK_KEY, UserGroupCallbackImpl.class.getName());
 
@@ -151,6 +152,7 @@ public final class Bpm
             kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/MyProcess.bpmn"), ResourceType.BPMN2);
             kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/HumanTask.bpmn"), ResourceType.BPMN2);
             kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/EsjpProcess.bpmn"), ResourceType.BPMN2);
+            kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/DocAproveTask.bpmn2"), ResourceType.BPMN2);
 
             Bpm.bpm.kbase = kbuilder.newKnowledgeBase();
 
@@ -278,34 +280,15 @@ public final class Bpm
             ksession.startProcess("com.sample.hello");
 
             final Map<String, Object> params = new HashMap<String, Object>();
-            params.put("userId", "krisv");
-            params.put("description", "Need a new laptop computer");
+            params.put("docOID", "1234.1234");
 
-           ksession.startProcess("com.sample.humantask", params);
+           //ksession.startProcess("com.sample.humantask", params);
 
 
-           ksession.startProcess("com.sample.esjp", params);
+           //ksession.startProcess("com.sample.esjp", params);
 
-//            final List<TaskSummary> summar = Bpm.bpm.taskAdmin.getActiveTasks();
-//            System.out.println(summar);
-//
-//            // "sales-rep" reviews request
-//            final List<TaskSummary> summaries = Bpm.bpm.service.getTasksAssignedAsPotentialOwner("sales-rep", "en-UK");
-//            System.out.println(summaries);
-//            if (!summaries.isEmpty()) {
-//                final TaskSummary taskSumary = summaries.get(0);
-//                if (Status.Ready.equals(taskSumary.getStatus())) {
-//                    Bpm.bpm.service.claim(taskSumary.getId(), "sales-rep");
-//                    Bpm.LOG.debug("Sales-rep claimed task '{}' ({} : )", taskSumary.getName(), taskSumary.getId(),
-//                                    taskSumary.getDescription());
-//                }
-//            }
-//            final List<TaskSummary> summaries2 = Bpm.bpm.service.getTasksOwned("sales-rep", "en-UK");
-//            if (!summaries2.isEmpty()) {
-//                final TaskSummary taskSumary = summaries2.get(0);
-//                Bpm.bpm.service.start(taskSumary.getId(), "sales-rep");
-//                Bpm.bpm.service.completeWithResults(taskSumary.getId(), "sales-rep", "No hay result");
-//            }
+
+            ksession.startProcess("org.efaps.DocAproveTask", params);
 
             sessionFactory.getCurrentSession().flush();
         } catch (final NamingException ex) {

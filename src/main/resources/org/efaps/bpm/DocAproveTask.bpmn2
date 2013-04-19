@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+        xmlns:_1="http://www.omg.org/spec/BPMN/20100524/MODEL"
+        xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+        xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+        xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+        xmlns:g="http://www.jboss.org/drools/flow/gpd"
+        xmlns:tns="http://www.jboss.org/drools"
+        xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd"
+        id="Definition"
+        expressionLanguage="http://www.mvel.org/2.0"
+        targetNamespace="http://www.jboss.org/drools"
+        typeLanguage="http://www.java.com/javaTypes">
+
+    <itemDefinition id="ItemDefinition_1" structureRef="org.efaps.esjp.bpm.result.Review"/>
+    <itemDefinition id="ItemDefinition_2" structureRef="String"/>
+    <process id="org.efaps.DocAproveTask" tns:version="1" tns:packageName="defaultPackage" tns:adHoc="false" name="Document aprovel Process" isExecutable="true" processType="Private">
+        <extensionElements>
+            <tns:import name="org.efaps.esjp.bpm.result.Review" />
+        </extensionElements>
+        <property id="efapsResult" itemSubjectRef="ItemDefinition_1" />
+        <property id="docOID" itemSubjectRef="ItemDefinition_2" />
+        <startEvent id="_1" name="Start">
+            <outgoing>_1-_4</outgoing>
+        </startEvent>
+        <userTask id="_4" name="Aprove Document Task">
+            <extensionElements>
+                <tns:onEntry-script scriptFormat="http://www.java.com/java">
+                    <tns:script></tns:script>
+                </tns:onEntry-script>
+                <tns:onExit-script scriptFormat="http://www.java.com/java">
+                    <tns:script></tns:script>
+                </tns:onExit-script>
+            </extensionElements>
+            <incoming>_1-_4</incoming>
+            <outgoing>SequenceFlow_4</outgoing>
+            <ioSpecification id="InputOutputSpecification_1">
+                <dataInput id="_4_CommentInput" name="Comment" />
+                <dataInput id="_4_SkippableInput" name="Skippable" />
+                <dataInput id="_4_ContentInput" name="Content" />
+                <dataInput id="_4_TaskNameInput" name="TaskName" />
+                <dataInput id="_4_GroupIdInput" name="GroupId" />
+                <dataInput id="_4_PriorityInput" name="Priority" />
+                <dataOutput id="DataOutput_1" name="resultTest" />
+                <inputSet id="InputSet_1">
+                    <dataInputRefs>_4_CommentInput</dataInputRefs>
+                    <dataInputRefs>_4_SkippableInput</dataInputRefs>
+                    <dataInputRefs>_4_ContentInput</dataInputRefs>
+                    <dataInputRefs>_4_TaskNameInput</dataInputRefs>
+                    <dataInputRefs>_4_GroupIdInput</dataInputRefs>
+                    <dataInputRefs>_4_PriorityInput</dataInputRefs>
+                </inputSet>
+                <outputSet id="OutputSet_1">
+                    <dataOutputRefs>DataOutput_1</dataOutputRefs>
+                </outputSet>
+            </ioSpecification>
+            <dataInputAssociation id="DataInputAssociation_1">
+                <targetRef>_4_CommentInput</targetRef>
+                <assignment id="Assignment_1">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_1">Aqui hay un Comentario</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_2">_4_CommentInput</to>
+                </assignment>
+            </dataInputAssociation>
+            <dataInputAssociation id="DataInputAssociation_2">
+                <targetRef>_4_SkippableInput</targetRef>
+                <assignment id="Assignment_2">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_3">false</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_4">_4_SkippableInput</to>
+                </assignment>
+            </dataInputAssociation>
+            <dataInputAssociation id="DataInputAssociation_3">
+                <targetRef>_4_TaskNameInput</targetRef>
+                <assignment id="Assignment_3">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_5">Task1</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_6">_4_TaskNameInput</to>
+                </assignment>
+            </dataInputAssociation>
+            <dataInputAssociation id="DataInputAssociation_4">
+                <targetRef>_4_GroupIdInput</targetRef>
+                <assignment id="Assignment_4">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_7">sales</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_8">_4_GroupIdInput</to>
+                </assignment>
+            </dataInputAssociation>
+            <dataInputAssociation id="DataInputAssociation_5">
+                <targetRef>_4_PriorityInput</targetRef>
+                <assignment id="Assignment_5">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_9">1</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_10">_4_PriorityInput</to>
+                </assignment>
+            </dataInputAssociation>
+            <dataOutputAssociation id="_DataOutputAssociation_2">
+                <sourceRef>DataOutput_1</sourceRef>
+                <targetRef>efapsResult</targetRef>
+            </dataOutputAssociation>
+        </userTask>
+        <sequenceFlow id="_1-_4" tns:priority="1" sourceRef="_1" targetRef="_4" />
+        <endEvent id="EndEvent_1" name="End">
+            <incoming>SequenceFlow_8</incoming>
+        </endEvent>
+        <exclusiveGateway id="ExclusiveGateway_2" name="validate" gatewayDirection="Diverging">
+            <incoming>SequenceFlow_4</incoming>
+            <outgoing>SequenceFlow_5</outgoing>
+            <outgoing>SequenceFlow_6</outgoing>
+        </exclusiveGateway>
+        <sequenceFlow id="SequenceFlow_4" tns:priority="1" name="" sourceRef="_4" targetRef="ExclusiveGateway_2" />
+        <sequenceFlow id="SequenceFlow_5" tns:priority="1" name="deny" sourceRef="ExclusiveGateway_2" targetRef="Task_1">
+            <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_11" language="http://www.java.com/java">return new Boolean(!((org.efaps.esjp.bpm.result.Review) efapsResult).isApproved());</conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="SequenceFlow_6" tns:priority="1" name="aprove" sourceRef="ExclusiveGateway_2" targetRef="Task_2">
+            <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_12" language="http://www.java.com/java">return new Boolean(((org.efaps.esjp.bpm.result.Review) efapsResult).isApproved());</conditionExpression>
+        </sequenceFlow>
+        <endEvent id="EndEvent_2" name="End">
+            <incoming>SequenceFlow_7</incoming>
+        </endEvent>
+        <task id="Task_1" name="Set Status Denied" tns:taskName="ESJPNode">
+            <incoming>SequenceFlow_5</incoming>
+            <outgoing>SequenceFlow_7</outgoing>
+            <ioSpecification>
+                <dataInput id="_1_esjpInput" name="esjp" />
+                <dataInput id="_1_methodInput" name="method" />
+                <dataInput id="_1_OIDInput" name="OID" />
+                <dataInput id="_1_StatusInput" name="Status" />
+                <inputSet id="InputSet_2">
+                    <dataInputRefs>_1_esjpInput</dataInputRefs>
+                    <dataInputRefs>_1_methodInput</dataInputRefs>
+                    <dataInputRefs>_1_OIDInput</dataInputRefs>
+                    <dataInputRefs>_1_StatusInput</dataInputRefs>
+                </inputSet>
+                <outputSet></outputSet>
+            </ioSpecification>
+            <dataInputAssociation id="DataInputAssociation_6">
+                <targetRef>_1_esjpInput</targetRef>
+                <assignment id="Assignment_6">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_13">org.efaps.esjp.bpm.task.StatusTask</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_14">_1_esjpInput</to>
+                </assignment>
+            </dataInputAssociation>
+            <dataInputAssociation id="DataInputAssociation_7">
+                <targetRef>_1_methodInput</targetRef>
+                <assignment id="Assignment_7">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_15">setStatus</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_16">_1_methodInput</to>
+                </assignment>
+            </dataInputAssociation>
+            <dataInputAssociation id="DataInputAssociation_10">
+                <targetRef>_1_OIDInput</targetRef>
+                <assignment id="Assignment_8">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_21">123.456</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_22">_1_OIDInput</to>
+                </assignment>
+            </dataInputAssociation>
+            <dataInputAssociation id="DataInputAssociation_11">
+                <targetRef>_1_StatusInput</targetRef>
+                <assignment id="Assignment_9">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_23">Canceled</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_24">_1_StatusInput</to>
+                </assignment>
+            </dataInputAssociation>
+        </task>
+        <sequenceFlow id="SequenceFlow_7" tns:priority="1" name="" sourceRef="Task_1" targetRef="EndEvent_2" />
+        <task id="Task_2" name="Set Status Aproved" tns:taskName="ESJPNode">
+            <incoming>SequenceFlow_6</incoming>
+            <outgoing>SequenceFlow_8</outgoing>
+            <ioSpecification>
+                <dataInput id="_2_esjpInput" name="esjp" />
+                <dataInput id="_2_methodInput" name="method" />
+                <dataInput id="_2_OIDInput" name="OID" />
+                <dataInput id="_2_StatusInput" name="Status" />
+                <inputSet id="InputSet_3">
+                    <dataInputRefs>_2_esjpInput</dataInputRefs>
+                    <dataInputRefs>_2_methodInput</dataInputRefs>
+                    <dataInputRefs>_2_OIDInput</dataInputRefs>
+                    <dataInputRefs>_2_StatusInput</dataInputRefs>
+                </inputSet>
+                <outputSet></outputSet>
+            </ioSpecification>
+            <dataInputAssociation id="DataInputAssociation_8">
+                <targetRef>_2_esjpInput</targetRef>
+                <assignment id="Assignment_12">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_17">org.efaps.esjp.bpm.task.StatusTask</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_18">_2_esjpInput</to>
+                </assignment>
+            </dataInputAssociation>
+            <dataInputAssociation id="DataInputAssociation_9">
+                <targetRef>_2_methodInput</targetRef>
+                <assignment id="Assignment_13">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_19">setStatus</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_20">_2_methodInput</to>
+                </assignment>
+            </dataInputAssociation>
+            <dataInputAssociation id="DataInputAssociation_12">
+                <targetRef>_2_OIDInput</targetRef>
+                <assignment id="Assignment_14">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_25">123.456</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_26">_2_OIDInput</to>
+                </assignment>
+            </dataInputAssociation>
+            <dataInputAssociation id="DataInputAssociation_13">
+                <targetRef>_2_StatusInput</targetRef>
+                <assignment id="Assignment_15">
+                    <from xsi:type="tFormalExpression" id="FormalExpression_27">Closed</from>
+                    <to xsi:type="tFormalExpression" id="FormalExpression_28">_2_StatusInput</to>
+                </assignment>
+            </dataInputAssociation>
+        </task>
+        <sequenceFlow id="SequenceFlow_8" tns:priority="1" name="" sourceRef="Task_2" targetRef="EndEvent_1" />
+    </process>
+    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+        <bpmndi:BPMNPlane id="BPMNPlane_Process_1" bpmnElement="org.efaps.DocAproveTask">
+            <bpmndi:BPMNShape id="BPMNShape_StartEvent_1" bpmnElement="_1">
+                <dc:Bounds height="48.0" width="48.0" x="70.0" y="133.0" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="BPMNShape_UserTask_1" bpmnElement="_4">
+                <dc:Bounds height="48.0" width="100.0" x="230.0" y="132.0" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="_1-_4">
+                <di:waypoint xsi:type="dc:Point" x="118.0" y="157.0" />
+                <di:waypoint xsi:type="dc:Point" x="230.0" y="156.0" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="BPMNShape_EndEvent_2" bpmnElement="EndEvent_1">
+                <dc:Bounds height="36.0" width="36.0" x="730.0" y="209.0" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_2" bpmnElement="ExclusiveGateway_2">
+                <dc:Bounds height="50.0" width="50.0" x="439.0" y="131.0" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_6" bpmnElement="SequenceFlow_4">
+                <di:waypoint xsi:type="dc:Point" x="330.0"y="156.0" />
+                <di:waypoint xsi:type="dc:Point" x="439.0" y="156.0" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_7" bpmnElement="SequenceFlow_5" sourceElement="BPMNShape_ExclusiveGateway_2" targetElement="BPMNShape_Task_1">
+                <di:waypoint xsi:type="dc:Point" x="464.0" y="131.0" />
+                <di:waypoint xsi:type="dc:Point" x="464.0" y="105.0" />
+                <di:waypoint xsi:type="dc:Point" x="490.0" y="82.0" />
+                <di:waypoint xsi:type="dc:Point" x="543.0" y="82.0" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_8" bpmnElement="SequenceFlow_6" targetElement="BPMNShape_Task_2">
+                <di:waypoint xsi:type="dc:Point" x="464.0" y="182.0" />
+                <di:waypoint xsi:type="dc:Point" x="464.0" y="207.0" />
+                <di:waypoint xsi:type="dc:Point" x="490.0" y="226.0" />
+                <di:waypoint xsi:type="dc:Point" x="543.0" y="227.0" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="BPMNShape_EndEvent_3" bpmnElement="EndEvent_2">
+                <dc:Bounds height="36.0" width="36.0" x="730.0" y="64.0" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="BPMNShape_Task_1" bpmnElement="Task_1">
+                <dc:Bounds height="50.0" width="110.0" x="543.0" y="57.0" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_7">
+                <di:waypoint xsi:type="dc:Point" x="653.0" y="82.0" />
+                <di:waypoint xsi:type="dc:Point" x="730.0" y="82.0" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="BPMNShape_Task_2" bpmnElement="Task_2">
+                <dc:Bounds height="50.0" width="110.0" x="543.0" y="202.0" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_9" bpmnElement="SequenceFlow_8">
+                <di:waypoint xsi:type="dc:Point" x="653.0" y="227.0" />
+                <di:waypoint xsi:type="dc:Point" x="730.0" y="227.0" />
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</definitions>

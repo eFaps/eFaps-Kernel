@@ -20,9 +20,17 @@
 
 package org.efaps.bpm.workitem;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Map;
+
 import org.drools.process.instance.WorkItemHandler;
 import org.drools.runtime.process.WorkItem;
 import org.drools.runtime.process.WorkItemManager;
+import org.efaps.admin.event.Parameter;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Return.ReturnValues;
 
 /**
  * TODO comment!
@@ -44,6 +52,8 @@ public class EsjpWorkItemHandler
      * org.drools.runtime.process.WorkItemHandler#executeWorkItem(org.drools
      * .runtime.process.WorkItem, org.drools.runtime.process.WorkItemManager)
      */
+
+    @SuppressWarnings("unchecked")
     @Override
     public void executeWorkItem(final WorkItem _workItem,
                                 final WorkItemManager _manager)
@@ -52,7 +62,40 @@ public class EsjpWorkItemHandler
         final String esjpName = (String) _workItem.getParameter(EsjpWorkItemHandler.PARAMETERNAME_ESJP);
         if (esjpName != null) {
             final String methodName = (String) _workItem.getParameter(EsjpWorkItemHandler.PARAMETERNAME_METHOD);
-            System.out.println(methodName);
+            final Parameter parameter = new Parameter();
+            parameter.put(ParameterValues.BPM_VALUES, _workItem.getParameters());
+            try {
+                final Class<?> esjp = Class.forName(esjpName);
+                final Method method = esjp.getMethod(methodName, new Class[] { Parameter.class });
+                final Return ret = (Return) method.invoke(esjp.newInstance(), parameter);
+                if (ret != null) {
+                    final Object values = ret.get(ReturnValues.VALUES);
+                    if (values instanceof Map) {
+                        _workItem.getResults().putAll((Map<? extends String, ? extends Object>) values);
+                    }
+                }
+            } catch (final ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (final InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (final IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (final IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (final InvocationTargetException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (final SecurityException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (final NoSuchMethodException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
         }
 
