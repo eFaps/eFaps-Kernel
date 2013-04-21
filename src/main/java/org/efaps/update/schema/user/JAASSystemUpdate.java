@@ -48,7 +48,7 @@ public class JAASSystemUpdate
     /** Link from JAAS systems to roles. */
     private static final Link LINK2ROLES = new Link("Admin_User_JAASKey",
                                                     "JAASSystemLink",
-                                                    "Admin_User_Role", "UserLink");
+                                                    "Admin_User_RoleAbstract", "UserLink");
 
     /** Link from JAAS systems to groups. */
     private static final Link LINK2GROUPS = new Link("Admin_User_JAASKey",

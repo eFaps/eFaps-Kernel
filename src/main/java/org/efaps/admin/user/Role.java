@@ -27,6 +27,7 @@ import java.sql.Statement;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
@@ -65,6 +66,7 @@ public final class Role
                     .column("UUID")
                     .column("NAME")
                     .column("STATUS")
+                    .column("TYPEID")
                     .from("V_USERROLE", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
@@ -75,6 +77,7 @@ public final class Role
                     .column("UUID")
                     .column("NAME")
                     .column("STATUS")
+                    .column("TYPEID")
                     .from("V_USERROLE", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
@@ -86,6 +89,7 @@ public final class Role
                     .column("UUID")
                     .column("NAME")
                     .column("STATUS")
+                    .column("TYPEID")
                     .from("V_USERROLE", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "UUID").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
@@ -108,7 +112,12 @@ public final class Role
     /**
      * Use to mark not found and return <code>null</code>.
      */
-    private static final Role NULL = new Role(0, null, null, false);
+    private static final Role NULL = new Role(0, null, null, false, 0);
+
+    /**
+     * Id of the DataModel type for this Role.
+     */
+    private final long typeId;
 
     /**
      * Create a new role instance. The method is used from the static method
@@ -118,13 +127,38 @@ public final class Role
      * @param _uuid     uuid of the role
      * @param _name     name of the role
      * @param _status   status of the role
+     * @param _typeId   id of the type
      */
     private Role(final long _id,
                  final String _uuid,
                  final String _name,
-                 final boolean _status)
+                 final boolean _status,
+                 final long _typeId)
     {
         super(_id, _uuid, _name, _status);
+        this.typeId = _typeId;
+    }
+
+    /**
+     * Is this a Global Role.
+     *
+     * @return <code>true</code> if global role type, else <code>false</code>
+     */
+    public boolean isGlobal()
+    {
+        return CIAdminUser.RoleGlobal.getType() == null ? false
+                        : CIAdminUser.RoleGlobal.getType().getId() == this.typeId;
+    }
+
+    /**
+     * Is this a Global Role.
+     *
+     * @return <code>true</code> if global role type, else <code>false</code>
+     */
+    public boolean isLocal()
+    {
+        return CIAdminUser.RoleLocal.getType() == null ? false
+                        : CIAdminUser.RoleLocal.getType().getId() == this.typeId;
     }
 
     /**
@@ -249,7 +283,8 @@ public final class Role
      * @throws CacheReloadException on error
      */
     private static boolean getRoleFromDB(final String _sql,
-                                      final Object _criteria) throws CacheReloadException
+                                         final Object _criteria)
+        throws CacheReloadException
     {
         boolean ret = false;
         ConnectionResource con = null;
@@ -266,9 +301,10 @@ public final class Role
                     final String uuid = rs.getString(2);
                     final String name = rs.getString(3).trim();
                     final boolean status = rs.getBoolean(4);
+                    final long typeId = rs.getLong(5);
 
-                    Role.LOG.debug("read role '" + name + "' (id = " + id + ")");
-                    final Role role = new Role(id, uuid, name, status);
+                    Role.LOG.debug("read role '{}' (id = {}, type = {})", name, id, typeId);
+                    final Role role = new Role(id, uuid, name, status, typeId);
                     Role.cacheRole(role);
                     ret = true;
                 }

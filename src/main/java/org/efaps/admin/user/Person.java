@@ -186,6 +186,14 @@ public final class Person
     private final Set<Long> companies = new HashSet<Long>();
 
     /**
+     * HashSet instance variable to hold all id of associations for this person.
+     *
+     * @see #getAssociations
+     * @see #add(Associations)
+     */
+    private final Set<Long> associations = new HashSet<Long>();
+
+    /**
      * The map is used to store all attribute values depending on attribute
      * names defined in {@link #AttrName}.
      *
@@ -289,6 +297,29 @@ public final class Person
     private void add(final Company _group)
     {
         this.companies.add(_group.getId());
+    }
+
+    /**
+     * Tests, if the given Association is assigned to this person.
+     *
+     * @param _association Association to test
+     * @return <code>true</code> if Association is assigned to this person,
+     *          otherwise <code>false</code>
+     */
+    public boolean isAssigned(final Association _association)
+    {
+        return this.associations.contains(_association.getId());
+    }
+
+    /**
+     * Add a Association to this person.
+     *
+     * @param _associations Association to add to this person
+     * @see #groups
+     */
+    private void add(final Association _associations)
+    {
+        this.associations.add(_associations.getId());
     }
 
     /**
@@ -718,6 +749,10 @@ public final class Person
         for (final Company company : getCompaniesFromDB(null)) {
             add(company);
         }
+        this.associations.clear();
+        for (final Association association : getAssociationsFromDB(null)) {
+            add(association);
+        }
     }
 
     /**
@@ -768,6 +803,57 @@ public final class Person
                 rsrc.abort();
             }
         }
+    }
+
+    public Set<Association> getAssociationsFromDB(final JAASSystem _jaasSystem)
+        throws EFapsException
+    {
+        final Set<Association> ret = new HashSet<Association>();
+        ConnectionResource rsrc = null;
+        try {
+            final List<Long> associationIds = new ArrayList<Long>();
+            rsrc = Context.getThreadContext().getConnectionResource();
+
+            Statement stmt = null;
+
+            try {
+                final StringBuilder cmd = new StringBuilder();
+                cmd.append("select ").append("USERABSTRACTTO ").append("from V_USERPERSON2COMPANY ")
+                                .append("where USERABSTRACTFROM=").append(getId());
+
+                if (_jaasSystem != null) {
+                    cmd.append(" and JAASSYSID=").append(_jaasSystem.getId());
+                }
+
+                stmt = rsrc.getConnection().createStatement();
+                final ResultSet resultset = stmt.executeQuery(cmd.toString());
+                while (resultset.next()) {
+                    associationIds.add(resultset.getLong(1));
+                }
+                resultset.close();
+
+            } catch (final SQLException e) {
+                throw new EFapsException(getClass(), "getAssociationsFromDB.SQLException", e, getName());
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                } catch (final SQLException e) {
+                    throw new EFapsException(getClass(), "getAssociationsFromDB.SQLException", e, getName());
+                }
+            }
+            rsrc.commit();
+            for (final Long associationId : associationIds) {
+                final Association association = Association.get(associationId);
+                ret.add(association);
+            }
+        } finally {
+            if ((rsrc != null) && rsrc.isOpened()) {
+                rsrc.abort();
+            }
+        }
+        return ret;
     }
 
     /**
@@ -850,8 +936,8 @@ public final class Person
         if (_companies == null) {
             throw new EFapsException(getClass(), "setRoles.noRoles", getName());
         }
-        for (final Company role : _companies) {
-            add(role);
+        for (final Company company : _companies) {
+            add(company);
         }
     }
 
@@ -1223,6 +1309,16 @@ public final class Person
     public Set<Long> getCompanies()
     {
         return this.companies;
+    }
+
+    /**
+     * Getter method for instance variable {@link #associations}.
+     *
+     * @return value of instance variable {@link #associations}
+     */
+    public Set<Long> getAssociations()
+    {
+        return this.associations;
     }
 
     /**

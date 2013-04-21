@@ -45,7 +45,7 @@ public class CommandUpdate extends AbstractUpdate
     protected static final Set<Link> ALLLINKS = new HashSet<Link>();
 
     /** Link from UI object to role. */
-    private static final Link LINK2ACCESSROLE = new Link("Admin_UI_Access", "UILink", "Admin_User_Role", "UserLink");
+    private static final Link LINK2ACCESSROLE = new Link("Admin_UI_Access", "UILink", "Admin_User_RoleAbstract", "UserLink");
 
     /** Link from UI object to person. */
     private static final Link LINK2ACCESSPERSON = new Link("Admin_UI_Access", "UILink", "Admin_User_Person",

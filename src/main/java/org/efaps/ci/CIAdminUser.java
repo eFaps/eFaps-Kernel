@@ -116,17 +116,38 @@ public class CIAdminUser
         public final CIAttribute LoginTriesCounter = new CIAttribute(this, "LoginTriesCounter");
     }
 
-    public static final _Role Role = new _Role("fe9d94fd-2ed8-4c44-b1f0-00e150555888");
+    public static final _RoleAbstract RoleAbstract = new _RoleGlobal("2f970c5c-41be-444f-b129-e6779e24c3fa");
 
-    public static class _Role
+    public static class _RoleAbstract
         extends _Abstract
     {
-        protected _Role(final String _uuid)
+        protected _RoleAbstract(final String _uuid)
         {
             super(_uuid);
         }
     }
 
+    public static final _RoleGlobal RoleGlobal = new _RoleGlobal("fe9d94fd-2ed8-4c44-b1f0-00e150555888");
+
+    public static class _RoleGlobal
+        extends _RoleAbstract
+    {
+        protected _RoleGlobal(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
+    public static final _RoleLocal RoleLocal = new _RoleLocal("ae62fa23-6f5d-40e7-b1aa-d977fa4f188d");
+
+    public static class _RoleLocal
+        extends _RoleAbstract
+    {
+        protected _RoleLocal(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
 
     public static final _Person2Role Person2Role = new _Person2Role("37deb6ae-3e1c-4642-8823-715120386fc3");
 

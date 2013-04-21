@@ -689,11 +689,11 @@ public abstract class AbstractUpdate
                 if (this.instance == null) {
                     final Insert insert;
                     try {
-                        insert = new Insert(AbstractUpdate.this.dataModelTypeName);
+                        insert = new Insert(getDataModelTypeName());
                         insert.add("UUID", AbstractUpdate.this.uuid);
                     } catch (final EFapsException e) {
                         throw new InstallationException("Initialize for the insert of '"
-                                        + AbstractUpdate.this.dataModelTypeName + "' with UUID '"
+                                        + getDataModelTypeName() + "' with UUID '"
                                         + AbstractUpdate.this.uuid + "' failed", e);
                     }
                     createInDB(insert);
@@ -751,7 +751,7 @@ public abstract class AbstractUpdate
         {
             if (this.instance == null) {
                 try {
-                    final QueryBuilder queryBldr = new QueryBuilder(Type.get(AbstractUpdate.this.dataModelTypeName));
+                    final QueryBuilder queryBldr = new QueryBuilder(Type.get(getDataModelTypeName()));
                     if (this.searchAttrName == null) {
                         queryBldr.addWhereAttrEqValue("UUID", AbstractUpdate.this.uuid);
                     } else {
@@ -763,7 +763,7 @@ public abstract class AbstractUpdate
                         this.instance = query.getCurrentValue();
                     }
                 } catch (final EFapsException e) {
-                    throw new InstallationException("Search for '" + AbstractUpdate.this.dataModelTypeName + "' for '"
+                    throw new InstallationException("Search for '" + getDataModelTypeName() + "' for '"
                                     + ((this.searchAttrName == null)
                                                     ? AbstractUpdate.this.uuid
                                                     : this.values.get(this.searchAttrName))

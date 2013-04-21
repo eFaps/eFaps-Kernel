@@ -58,7 +58,7 @@ public class AccessSetUpdate
 
     /** Link to roles. */
     private static final Link LINK2ROLE = new Link("Admin_Access_AccessSet2UserAbstract", "AccessSetLink",
-                                                   "Admin_User_Role", "UserAbstractLink");
+                                                   "Admin_User_RoleAbstract", "UserAbstractLink");
 
     /** Link to groups. */
     private static final Link LINK2GROUP = new Link("Admin_Access_AccessSet2UserAbstract", "AccessSetLink",

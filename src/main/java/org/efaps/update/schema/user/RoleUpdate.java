@@ -34,13 +34,25 @@ import org.efaps.update.AbstractUpdate;
 public class RoleUpdate
     extends AbstractUpdate
 {
+
+    /**
+     * Global type or local.
+     */
+    private boolean global = true;
+
     /**
      *
      * @param _url        URL of the file
      */
     public RoleUpdate(final URL _url)
     {
-        super(_url, "Admin_User_Role");
+        super(_url, "temp");
+    }
+
+    @Override
+    public String getDataModelTypeName()
+    {
+        return this.global ? "Admin_User_RoleGlobal" : "Admin_User_RoleLocal";
     }
 
     /**
@@ -69,6 +81,8 @@ public class RoleUpdate
             final String value = _tags.get(0);
             if ("status".equals(value))  {
                 addValue("Status", _text);
+            } else if ("global".equals(value))  {
+                RoleUpdate.this.global = Boolean.valueOf(_text);
             } else  {
                 super.readXML(_tags, _attributes, _text);
             }

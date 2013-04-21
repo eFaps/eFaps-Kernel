@@ -204,6 +204,12 @@
         <eviction maxEntries="5" strategy="LRU"/>
     </namedCache>
 
+    <namedCache name="Association4ID">
+        <eviction maxEntries="50" strategy="LRU"/>
+    </namedCache>
+
+
+
 
 
     <!-- Other -->
