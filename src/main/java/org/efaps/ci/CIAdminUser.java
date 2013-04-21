@@ -71,6 +71,24 @@ public class CIAdminUser
         public final CIAttribute Modified = new CIAttribute(this, "Modified");
     }
 
+    public static final _Association Association = new _Association("f941d6f2-2554-421a-8c6e-c109067b1c22");
+
+    public static class _Association
+        extends CIType
+    {
+
+        protected _Association(final String _uuid)
+        {
+            super(_uuid);
+        }
+
+        public final CIAttribute RoleLink = new CIAttribute(this, "RoleLink");
+        public final CIAttribute GroupLink = new CIAttribute(this, "GroupLink");
+        public final CIAttribute Creator = new CIAttribute(this, "Creator");
+        public final CIAttribute Created = new CIAttribute(this, "Created");
+        public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
+        public final CIAttribute Modified = new CIAttribute(this, "Modified");
+    }
 
     public static final _JAASKey JAASKey = new _JAASKey("0e7650c6-8ec3-4c63-b377-f3eb5fb85f16");
 
