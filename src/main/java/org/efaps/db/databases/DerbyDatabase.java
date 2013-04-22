@@ -407,6 +407,15 @@ public class DerbyDatabase
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getHibernateDialect()
+    {
+        return "org.hibernate.dialect.DerbyTenSevenDialect";
+    }
+
+    /**
      * Evaluates for given table name all information about the table and returns
      * them as instance of {@link TableInformation}.<br/>
      * This method overwrites the original method because the standard JDBC

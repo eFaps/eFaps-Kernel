@@ -536,6 +536,15 @@ public class MySQLDatabase
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getHibernateDialect()
+    {
+        return "org.hibernate.dialect.MySQL5Dialect";
+    }
+
+    /**
      * Overwrites the original method to specify SQL statement
      * {@link #SQL_UNIQUE_KEYS} as replacement because the JDBC driver for
      * MySQL does not handle matching table names.

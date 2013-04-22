@@ -588,4 +588,12 @@ public class OracleDatabase
         return "\"";
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getHibernateDialect()
+    {
+        return "org.hibernate.dialect.Oracle10gDialect";
+    }
 }

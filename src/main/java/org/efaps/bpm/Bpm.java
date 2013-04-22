@@ -169,7 +169,7 @@ public final class Bpm
             Bpm.BPM.kbase = kbuilder.newKnowledgeBase();
 
             final Map<String, String> properties = new HashMap<String, String>();
-            properties.put(AvailableSettings.DIALECT, "org.hibernate.dialect.PostgreSQL82Dialect");
+            properties.put(AvailableSettings.DIALECT, Context.getDbType().getHibernateDialect());
             properties.put(AvailableSettings.SHOW_SQL, String.valueOf(Bpm.LOG.isDebugEnabled()));
             properties.put(AvailableSettings.FORMAT_SQL, "true");
             properties.put("drools.processInstanceManagerFactory",

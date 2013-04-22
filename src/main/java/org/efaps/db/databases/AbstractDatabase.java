@@ -949,6 +949,23 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
     }
 
     /**
+     * @param _name name
+     * @return name
+     * @throws IOException on error
+     */
+    public String getConstrainName(final String _name)
+        throws IOException
+    {
+        return _name;
+    }
+
+    /**
+     * Get the Dialect to access the DataBase using Hibernate.
+     * @return the Dialect for Hibernate
+     */
+    public abstract String getHibernateDialect();
+
+    /**
      * Instantiate the given DB class name and returns them.
      *
      * @param _dbClassName name of the class to instantiate
@@ -1227,16 +1244,5 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                 throw new CacheReloadException("cache for table information could not be read", e);
             }
         }
-    }
-
-    /**
-     * @param _name name
-     * @return name
-     * @throws IOException on error
-     */
-    public String getConstrainName(final String _name)
-        throws IOException
-    {
-        return _name;
     }
 }

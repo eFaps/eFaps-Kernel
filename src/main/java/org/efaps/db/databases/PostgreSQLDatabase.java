@@ -518,6 +518,15 @@ public class PostgreSQLDatabase
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getHibernateDialect()
+    {
+        return "org.hibernate.dialect.PostgreSQL82Dialect";
+    }
+
+    /**
      * Overwrites the original method to specify SQL statement
      * {@link #SQL_UNIQUE_KEYS} as replacement because the JDBC driver for
      * PostgreSQL does not handle matching table names.
