@@ -82,6 +82,7 @@ public final class Application
      */
     private static final Map<String, String> DEFAULT_TYPE_MAPPING = new HashMap<String, String>();
     static {
+        Application.DEFAULT_TYPE_MAPPING.put("bpmn2", FileType.BPM.getType());
         Application.DEFAULT_TYPE_MAPPING.put("css", FileType.CSS.getType());
         Application.DEFAULT_TYPE_MAPPING.put("java", FileType.JAVA.getType());
         Application.DEFAULT_TYPE_MAPPING.put("js", FileType.JS.getType());
@@ -98,6 +99,7 @@ public final class Application
      */
     private static final Set<String> DEFAULT_INCLUDES = new HashSet<String>();
     static {
+        Application.DEFAULT_INCLUDES.add("**/*.bpmn2");
         Application.DEFAULT_INCLUDES.add("**/*.css");
         Application.DEFAULT_INCLUDES.add("**/*.java");
         Application.DEFAULT_INCLUDES.add("**/*.js");

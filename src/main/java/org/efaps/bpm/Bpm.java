@@ -161,10 +161,7 @@ public final class Bpm
 
             final KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder(bldrConfig);
 
-            kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/MyProcess.bpmn"), ResourceType.BPMN2);
-            kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/HumanTask.bpmn"), ResourceType.BPMN2);
-            kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/EsjpProcess.bpmn"), ResourceType.BPMN2);
-            kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/DocAproveTask.bpmn2"), ResourceType.BPMN2);
+            kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/QuotationAprovelProcess.bpmn2"), ResourceType.BPMN2);
 
             Bpm.bpm.kbase = kbuilder.newKnowledgeBase();
 
@@ -268,6 +265,15 @@ public final class Bpm
         }
     }
 
+    public static void startProcess(final String _processId,
+                                    final Map<String, Object> _params)
+    {
+        final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
+        UserTaskService.getTaskService(ksession);
+        ksession.startProcess(_processId, _params);
+    }
+
+
     /**
      * @param _taskSummary  TaskSummary
      * @param _decision     one of true, false, null
@@ -276,17 +282,18 @@ public final class Bpm
     public static void executeTask(final TaskSummary _taskSummary,
                                    final Boolean _decision,
                                    final Map<String, Object> _values)
+                                                   throws EFapsException
     {
         final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
         final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
-           service.claim(_taskSummary.getId(), "sales-rep");
+            service.claim(_taskSummary.getId(), Context.getThreadContext().getPerson().getName());
         }
         if (Status.InProgress.equals(_taskSummary.getStatus())) {
-            service.resume(_taskSummary.getId(), "sales-rep");
+            service.resume(_taskSummary.getId(), Context.getThreadContext().getPerson().getName());
         } else {
-            service.start(_taskSummary.getId(), "sales-rep");
+            service.start(_taskSummary.getId(), Context.getThreadContext().getPerson().getName());
         }
         final Parameter parameter = new Parameter();
         parameter.put(ParameterValues.BPM_TASK, _taskSummary);
@@ -325,7 +332,7 @@ public final class Bpm
             e.printStackTrace();
         }
 
-        service.completeWithResults(_taskSummary.getId(), "sales-rep", results);
+        service.completeWithResults(_taskSummary.getId(), Context.getThreadContext().getPerson().getName(), results);
 
     }
 
@@ -337,8 +344,8 @@ public final class Bpm
         final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
         try {
             final String persname = Context.getThreadContext().getPerson().getName();
-            final String language = Context.getThreadContext().getLanguage();
-            ret.addAll(service.getTasksAssignedAsPotentialOwner(persname, language));
+            //final String language = Context.getThreadContext().getLanguage();
+            ret.addAll(service.getTasksAssignedAsPotentialOwner(persname, "en-UK"));
         } catch (final EFapsException e) {
             Bpm.LOG.error("Error on retrieving List of TaskSummaries.");
         }

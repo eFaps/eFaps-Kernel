@@ -53,7 +53,7 @@ public abstract class AbstractSourceImporter
      * @see #readCode()
      * @see #newCodeInputStream()
      */
-    private static final String ENCODING = "UTF8";
+    protected static final String ENCODING = "UTF8";
 
     /**
      * URL of the source file in file system (or in jar, ...).
@@ -142,22 +142,28 @@ public abstract class AbstractSourceImporter
      * This Method extracts the Name from the program.
      *
      * @return Name of the program
+     * @throws InstallationException on error
      */
-    protected abstract String evalProgramName();
+    protected abstract String evalProgramName()
+        throws InstallationException;
 
     /**
      * This Method extracts the UUID from the program.
      *
      * @return UUID of the program
+     * @throws InstallationException on error
      */
-    protected abstract UUID evalUUID();
+    protected abstract UUID evalUUID()
+        throws InstallationException;;
 
     /**
      * This Method extracts the Revision from the program.
      *
      * @return Revision of the program
+     * @throws InstallationException on error
      */
-    protected abstract String evalRevision();
+    protected abstract String evalRevision()
+         throws InstallationException;;
 
     /**
      * Import related source code into the eFaps DataBase. If the source code

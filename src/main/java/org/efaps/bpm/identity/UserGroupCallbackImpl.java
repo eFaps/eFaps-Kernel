@@ -23,6 +23,7 @@ package org.efaps.bpm.identity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
@@ -89,7 +90,7 @@ public class UserGroupCallbackImpl
         UserGroupCallbackImpl.LOG.info("checking for existence of Group: {}", _groupId);
         boolean ret = false;
         try {
-            final Role role = org.efaps.admin.user.Role.get(_groupId);
+            final Role role = org.efaps.admin.user.Role.get(UUID.fromString(_groupId));
             ret = role != null;
         } catch (final EFapsException e) {
             UserGroupCallbackImpl.LOG.error("error while checkin for existence of Group: '{}'", _groupId);
@@ -120,7 +121,7 @@ public class UserGroupCallbackImpl
             if (pers != null) {
                 for (final Long roleId : pers.getRoles()) {
                     final Role role = org.efaps.admin.user.Role.get(roleId);
-                    ret.add(role.getName());
+                    ret.add(role.getUUID().toString());
                 }
             }
         } catch (final EFapsException e) {

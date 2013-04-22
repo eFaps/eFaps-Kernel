@@ -282,6 +282,20 @@ public class CIAdminProgram
             super(_uuid);
         }
     }
+
+
+    public static final _BPM BPM = new _BPM("f73e69c5-58ec-4345-a0a3-2098eec47eff");
+
+    public static class _BPM
+        extends _Abstract
+    {
+
+        protected _BPM(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
     public static final _WikiImage WikiImage = new _WikiImage("2afc7562-2d1d-4751-8ca6-7811cb60e783");
 
     public static class _WikiImage

@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.efaps.update.schema.program.BPMUpdate;
 import org.efaps.update.schema.program.CSSUpdate;
 import org.efaps.update.schema.program.JasperReportUpdate;
 import org.efaps.update.schema.program.JavaScriptUpdate;
@@ -40,6 +41,8 @@ import org.efaps.update.schema.program.XSLUpdate;
  */
 public enum FileType {
 
+    /** Java Source file. */
+    BPM("bpmn", "bpmn2"),
     /** Java Source file. */
     JAVA("source-java", "java"),
     /** Java Script file. */
@@ -122,7 +125,10 @@ public enum FileType {
             this.clazzes.add(JasperReportUpdate.class);
         } else if ("source-wiki".equals(_type)) {
             this.clazzes.add(WikiUpdate.class);
+        } else if ("bpmn".equals(_type)) {
+            this.clazzes.add(BPMUpdate.class);
         }
+
     }
 
     /**
