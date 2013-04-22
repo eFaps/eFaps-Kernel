@@ -805,6 +805,16 @@ public final class Person
         }
     }
 
+    /**
+     * The method reads directly from the database all stored Association for this
+     * person. The found Association are returned as instance of {@link Set}.
+     *
+     * @param _jaasSystem JAAS system for which the roles must get from eFaps
+     *            (if value is <code>null</code>, all companies independent from
+     *            the related JAAS system are returned)
+     * @return set of all found Association for given JAAS system
+     * @throws EFapsException on error
+     */
     public Set<Association> getAssociationsFromDB(final JAASSystem _jaasSystem)
         throws EFapsException
     {
@@ -818,12 +828,17 @@ public final class Person
 
             try {
                 final StringBuilder cmd = new StringBuilder();
-                cmd.append("select ").append("USERABSTRACTTO ").append("from V_USERPERSON2COMPANY ")
-                                .append("where USERABSTRACTFROM=").append(getId());
-
-                if (_jaasSystem != null) {
-                    cmd.append(" and JAASSYSID=").append(_jaasSystem.getId());
-                }
+                cmd.append("select ").append("ID ")
+                    .append("from T_USERASSOC ")
+                    .append("where GROUPID in (")
+                        .append("select ").append("USERABSTRACTTO ")
+                        .append("from V_USERPERSON2GROUP ")
+                        .append("where USERABSTRACTFROM =").append(getId())
+                    .append(") and ROLEID in (")
+                        .append("select ").append("USERABSTRACTTO ")
+                        .append("from V_USERPERSON2ROLE ")
+                        .append("where USERABSTRACTFROM =").append(getId())
+                    .append(")");
 
                 stmt = rsrc.getConnection().createStatement();
                 final ResultSet resultset = stmt.executeQuery(cmd.toString());
@@ -1335,6 +1350,7 @@ public final class Person
                         .append("roles", this.roles)
                         .append("groups", this.groups)
                         .append("companies", this.companies)
+                        .append("associations", this.associations)
                         .toString();
     }
 

@@ -76,28 +76,30 @@ public class Association
     /**
      * Id of this Association.
      */
-    private long id;
+    private final long id;
 
     /**
      * The id of the Role.
      */
-    private long roleId;
+    private final long roleId;
 
     /**
      * The id of the group.
      */
-    private long groupId;
+    private final long groupId;
 
     /**
-     * @param _id
-     * @param _roleId
-     * @param _groupId
+     * @param _id       id of this Association
+     * @param _roleId   related role
+     * @param _groupId  related group
      */
     public Association(final long _id,
                        final long _roleId,
                        final long _groupId)
     {
-        // TODO Auto-generated constructor stub
+        this.id = _id;
+        this.roleId = _roleId;
+        this.groupId = _groupId;
     }
 
     /**
@@ -113,7 +115,7 @@ public class Association
     /**
      * Get the Role.
      * @return Role for this Association.
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public Role getRole()
         throws CacheReloadException
@@ -124,7 +126,7 @@ public class Association
     /**
      * Get the Group.
      * @return Group for this Association.
-     * @throws CacheReloadException
+     * @throws CacheReloadException on error
      */
     public Group getGroup()
         throws CacheReloadException
@@ -188,7 +190,7 @@ public class Association
         ConnectionResource con = null;
         try {
             con = Context.getThreadContext().getConnectionResource();
-                        PreparedStatement stmt = null;
+            PreparedStatement stmt = null;
             try {
                 stmt = con.getConnection().prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
