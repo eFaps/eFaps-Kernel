@@ -20,6 +20,7 @@
 
 package org.efaps.bpm;
 
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
@@ -63,7 +64,11 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.ProcessEventLstnr;
 import org.efaps.bpm.workitem.EsjpWorkItemHandler;
+import org.efaps.ci.CIAdminProgram;
+import org.efaps.db.Checkout;
 import org.efaps.db.Context;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
@@ -107,7 +112,7 @@ public final class Bpm
     /**
      * The used Bpm instance.
      */
-    private static Bpm bpm;
+    private static Bpm BPM;
 
     /**
      * Mapping of the WorkItemhandlers used in this session.
@@ -149,8 +154,8 @@ public final class Bpm
                         ? config.getAttributeValueAsBoolean(KernelSettings.ActivateBPM) : false;
         if (active) {
 
-            Bpm.bpm = new Bpm();
-            Bpm.bpm.ksessionId = Bpm.bpm.getKSessionIDFromDB();
+            Bpm.BPM = new Bpm();
+            Bpm.BPM.ksessionId = Bpm.BPM.getKSessionIDFromDB();
 
             System.setProperty(UserGroupCallbackManager.USER_GROUP_CALLBACK_KEY, UserGroupCallbackImpl.class.getName());
 
@@ -161,9 +166,9 @@ public final class Bpm
 
             final KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder(bldrConfig);
 
-            kbuilder.add(ResourceFactory.newClassPathResource("org/efaps/bpm/QuotationAprovelProcess.bpmn2"), ResourceType.BPMN2);
+            Bpm.add2KnowledgeBuilder(kbuilder);
 
-            Bpm.bpm.kbase = kbuilder.newKnowledgeBase();
+            Bpm.BPM.kbase = kbuilder.newKnowledgeBase();
 
             final Map<String, String> properties = new HashMap<String, String>();
             properties.put(AvailableSettings.DIALECT, "org.hibernate.dialect.PostgreSQL82Dialect");
@@ -190,13 +195,13 @@ public final class Bpm
 
             Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa2", properties);
 
-            Bpm.bpm.env = KnowledgeBaseFactory.newEnvironment();
-            Bpm.bpm.env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
+            Bpm.BPM.env = KnowledgeBaseFactory.newEnvironment();
+            Bpm.BPM.env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
 
 
-            Bpm.bpm.env.set(EnvironmentName.TRANSACTION_MANAGER, new ContainerManagedTransactionManager());
-            Bpm.bpm.env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER,
-                            new JpaProcessPersistenceContextManager(Bpm.bpm.env));
+            Bpm.BPM.env.set(EnvironmentName.TRANSACTION_MANAGER, new ContainerManagedTransactionManager());
+            Bpm.BPM.env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER,
+                            new JpaProcessPersistenceContextManager(Bpm.BPM.env));
 
 
             UserTransaction userTrans = null;
@@ -204,20 +209,20 @@ public final class Bpm
             try {
                 context = new InitialContext();
                 userTrans = Bpm.findUserTransaction();
-                Bpm.bpm.env.set(EnvironmentName.TRANSACTION, userTrans);
+                Bpm.BPM.env.set(EnvironmentName.TRANSACTION, userTrans);
                 context.bind(JtaTransactionManager.DEFAULT_USER_TRANSACTION_NAME, userTrans);
                 context.bind(JtaTransactionManager.FALLBACK_TRANSACTION_MANAGER_NAMES[0], Bpm.findTransactionManager());
             } catch (final NamingException ex) {
                 Bpm.LOG.error("Could not initialise JNDI InitialContext", ex);
             }
 
-            final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
+            final StatefulKnowledgeSession ksession = Bpm.BPM.getKnowledgeSession();
 
             UserTaskService.getTaskService(ksession);
 
             final EsjpWorkItemHandler esjphandler = new EsjpWorkItemHandler();
             ksession.getWorkItemManager().registerWorkItemHandler("ESJPNode", esjphandler);
-            Bpm.bpm.workItemsHandlers.put("ESJPNode", esjphandler);
+            Bpm.BPM.workItemsHandlers.put("ESJPNode", esjphandler);
 
             SessionFactory sessionFactory;
             try {
@@ -233,6 +238,21 @@ public final class Bpm
     }
 
 
+    /**
+     * @param _kbuilder KnowledgeBuilder
+     */
+    private static void add2KnowledgeBuilder(final KnowledgeBuilder _kbuilder) throws EFapsException
+    {
+        final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.BPM);
+        final InstanceQuery query = queryBldr.getQuery();
+        query.executeWithoutAccessCheck();
+        while (query.next()) {
+            final Checkout checkout = new Checkout(query.getCurrentValue());
+            final InputStream in = checkout.execute();
+            _kbuilder.add(ResourceFactory.newInputStreamResource(in), ResourceType.BPMN2);
+        }
+    }
+
     public static void startProcess()
     {
         InitialContext context = null;
@@ -243,7 +263,7 @@ public final class Bpm
 
             sessionFactory.getCurrentSession().setFlushMode(FlushMode.COMMIT);
 
-            final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
+            final StatefulKnowledgeSession ksession = Bpm.BPM.getKnowledgeSession();
             UserTaskService.getTaskService(ksession);
 
             ksession.startProcess("com.sample.hello");
@@ -268,7 +288,7 @@ public final class Bpm
     public static void startProcess(final String _processId,
                                     final Map<String, Object> _params)
     {
-        final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
+        final StatefulKnowledgeSession ksession = Bpm.BPM.getKnowledgeSession();
         UserTaskService.getTaskService(ksession);
         ksession.startProcess(_processId, _params);
     }
@@ -284,7 +304,7 @@ public final class Bpm
                                    final Map<String, Object> _values)
                                                    throws EFapsException
     {
-        final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
+        final StatefulKnowledgeSession ksession = Bpm.BPM.getKnowledgeSession();
         final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
@@ -340,7 +360,7 @@ public final class Bpm
     public static List<TaskSummary> getTasksAssignedAsPotentialOwner()
     {
         final List<TaskSummary> ret = new ArrayList<TaskSummary>();
-        final StatefulKnowledgeSession ksession = Bpm.bpm.getKnowledgeSession();
+        final StatefulKnowledgeSession ksession = Bpm.BPM.getKnowledgeSession();
         final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
         try {
             final String persname = Context.getThreadContext().getPerson().getName();
@@ -404,7 +424,7 @@ public final class Bpm
 
     protected static void registerWorkItemHandler(final String _key, final WorkItemHandler _object)
     {
-        Bpm.bpm.workItemsHandlers.put(_key, _object);
+        Bpm.BPM.workItemsHandlers.put(_key, _object);
     }
 
     /**
