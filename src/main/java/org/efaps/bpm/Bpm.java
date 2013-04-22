@@ -74,16 +74,17 @@ import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.init.INamingBinds;
 import org.efaps.util.EFapsException;
-import org.hibernate.FlushMode;
-import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AvailableSettings;
 import org.jbpm.persistence.JpaProcessPersistenceContextManager;
 import org.jbpm.persistence.jta.ContainerManagedTransactionManager;
 import org.jbpm.process.audit.JPAWorkingMemoryDbLogger;
+import org.jbpm.task.Content;
 import org.jbpm.task.Status;
+import org.jbpm.task.Task;
 import org.jbpm.task.admin.TasksAdmin;
 import org.jbpm.task.identity.UserGroupCallbackManager;
 import org.jbpm.task.query.TaskSummary;
+import org.jbpm.task.utils.ContentMarshallerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,8 +187,6 @@ public final class Bpm
             final EntityManagerFactory emf = Persistence
                             .createEntityManagerFactory("org.jbpm.persistence.jpa", properties);
 
-            Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa2", properties);
-
             Bpm.BPM.env = KnowledgeBaseFactory.newEnvironment();
             Bpm.BPM.env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
 
@@ -201,8 +200,17 @@ public final class Bpm
                 context = new InitialContext();
                 userTrans = Bpm.findUserTransaction();
                 Bpm.BPM.env.set(EnvironmentName.TRANSACTION, userTrans);
-                context.bind(JtaTransactionManager.DEFAULT_USER_TRANSACTION_NAME, userTrans);
-                context.bind(JtaTransactionManager.FALLBACK_TRANSACTION_MANAGER_NAMES[0], Bpm.findTransactionManager());
+                Object object = null;
+                try {
+                    object = context.lookup(JtaTransactionManager.DEFAULT_USER_TRANSACTION_NAME);
+                } catch (final NamingException ex) {
+
+                }
+                if (object == null) {
+                    context.bind(JtaTransactionManager.DEFAULT_USER_TRANSACTION_NAME, userTrans);
+                    context.bind(JtaTransactionManager.FALLBACK_TRANSACTION_MANAGER_NAMES[0],
+                                    Bpm.findTransactionManager());
+                }
             } catch (final NamingException ex) {
                 Bpm.LOG.error("Could not initialise JNDI InitialContext", ex);
             }
@@ -214,17 +222,6 @@ public final class Bpm
             final EsjpWorkItemHandler esjphandler = new EsjpWorkItemHandler();
             ksession.getWorkItemManager().registerWorkItemHandler("ESJPNode", esjphandler);
             Bpm.BPM.workItemsHandlers.put("ESJPNode", esjphandler);
-
-            SessionFactory sessionFactory;
-            try {
-                sessionFactory = (SessionFactory) context.lookup("java:comp/env/test");
-                sessionFactory.getCurrentSession().setFlushMode(FlushMode.COMMIT);
-
-            } catch (final NamingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
         }
     }
 
@@ -264,6 +261,7 @@ public final class Bpm
     {
         final StatefulKnowledgeSession ksession = Bpm.BPM.getKnowledgeSession();
         final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
             service.claim(_taskSummary.getId(), Context.getThreadContext().getPerson().getName());
@@ -273,6 +271,7 @@ public final class Bpm
         } else {
             service.start(_taskSummary.getId(), Context.getThreadContext().getPerson().getName());
         }
+
         final Parameter parameter = new Parameter();
         parameter.put(ParameterValues.BPM_TASK, _taskSummary);
         parameter.put(ParameterValues.BPM_VALUES, _values);
@@ -313,6 +312,22 @@ public final class Bpm
         service.completeWithResults(_taskSummary.getId(), Context.getThreadContext().getPerson().getName(), results);
 
     }
+
+    public static Object getTaskData(final TaskSummary _taskSummary)
+    {
+        Object ret = null;
+        final StatefulKnowledgeSession ksession = Bpm.BPM.getKnowledgeSession();
+        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+        final Task task = service.getTask(_taskSummary.getId());
+        final long contentId = task.getTaskData().getDocumentContentId();
+        if (contentId != -1) {
+            final Content content = service.getContent(contentId);
+            ret = ContentMarshallerHelper.unmarshall(content.getContent(), ksession.getEnvironment(),
+                            Bpm.class.getClassLoader());
+        }
+        return ret;
+    }
+
 
     public static List<TaskSummary> getTasksAssignedAsPotentialOwner()
     {
