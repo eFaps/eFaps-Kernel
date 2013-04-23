@@ -26,8 +26,9 @@ import java.sql.SQLException;
 import java.util.Formatter;
 import java.util.Locale;
 import java.util.MissingFormatArgumentException;
-import java.util.UUID;
 
+import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -198,12 +199,10 @@ public final class DBProperties
     {
         String value = null;
         try {
-            // WebApp-Configuration
-            final SystemConfiguration webConfig = SystemConfiguration.get(
-                            UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"));
-            final boolean showKey = webConfig == null
+            final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
+            final boolean showKey = config == null
                             ? false
-                            : webConfig.getAttributeValueAsBoolean("ShowDBPropertiesKey");
+                            : config.getAttributeValueAsBoolean(KernelSettings.SHOW_DBPROPERTIES_KEY);
 
             if (showKey) {
                 value = _key;

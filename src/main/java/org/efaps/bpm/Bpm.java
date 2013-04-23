@@ -149,7 +149,7 @@ public final class Bpm
     {
         final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
         final boolean active = config != null
-                        ? config.getAttributeValueAsBoolean(KernelSettings.ActivateBPM) : false;
+                        ? config.getAttributeValueAsBoolean(KernelSettings.ACTIVATE_BPM) : false;
         if (active) {
 
             Bpm.BPM = new Bpm();

@@ -33,5 +33,10 @@ public interface KernelSettings
     /**
      * Boolean (true/false): activate the BPM process mechanism.
      */
-    final String ActivateBPM = "org.efaps.kernel.ActivateBPM";
+    String ACTIVATE_BPM = "org.efaps.kernel.ActivateBPM";
+
+    /**
+     * Boolean (true/false): activate the BPM process mechanism.
+     */
+    String SHOW_DBPROPERTIES_KEY = "org.efaps.kernel.ShowDBPropertiesKey";
 }
