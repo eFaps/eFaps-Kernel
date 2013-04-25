@@ -61,6 +61,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.ProcessEventLstnr;
 import org.efaps.bpm.workitem.EsjpWorkItemHandler;
@@ -161,7 +162,7 @@ public final class Bpm
             props.setProperty(JavaDialectConfiguration.JAVA_COMPILER_PROPERTY, "JANINO");
 
             final KnowledgeBuilderConfiguration bldrConfig = KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration(
-                            props, Bpm.class.getClassLoader());
+                            props, EFapsClassLoader.getInstance());
 
             final KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder(bldrConfig);
 
