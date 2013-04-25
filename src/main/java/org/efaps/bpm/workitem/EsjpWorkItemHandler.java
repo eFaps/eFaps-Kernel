@@ -32,12 +32,14 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: EsjpWorkItemHandler.java 9199 2013-04-19 03:00:37Z
+ *          jan@moxter.net $
  */
 public class EsjpWorkItemHandler
     implements WorkItemHandler
@@ -49,12 +51,13 @@ public class EsjpWorkItemHandler
     public static final String PARAMETERNAME_ESJP = "esjp";
 
     /**
-     *Name for the parameter containing the methodname.
+     * Name for the parameter containing the methodname.
      */
     public static final String PARAMETERNAME_METHOD = "method";
 
     /**
      * The given work item should be executed.
+     *
      * @param _workItem the work item that should be executed
      * @param _manager the manager that requested the work item to be executed
      */
@@ -70,7 +73,8 @@ public class EsjpWorkItemHandler
             final Parameter parameter = new Parameter();
             parameter.put(ParameterValues.BPM_VALUES, _workItem.getParameters());
             try {
-                final Class<?> esjp = Class.forName(esjpName);
+                final Class<?> esjp = Class.forName(esjpName, true,
+                                EFapsClassLoader.getInstance());
                 final Method method = esjp.getMethod(methodName, new Class[] { Parameter.class });
                 final Return ret = (Return) method.invoke(esjp.newInstance(), parameter);
                 if (ret != null) {
@@ -107,6 +111,7 @@ public class EsjpWorkItemHandler
 
     /**
      * The given work item should be aborted.
+     *
      * @param _workItem the work item that should be aborted
      * @param _manager the manager that requested the work item to be aborted
      */
@@ -116,7 +121,5 @@ public class EsjpWorkItemHandler
     {
         System.out.println("asdad");
     }
-
-
 
 }

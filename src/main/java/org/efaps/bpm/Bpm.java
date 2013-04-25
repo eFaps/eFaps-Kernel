@@ -281,7 +281,8 @@ public final class Bpm
 
         // exec esjp
         try {
-            final Class<?> transformer = Class.forName("org.efaps.esjp.bpm.TaskTransformer");
+            final Class<?> transformer = Class.forName("org.efaps.esjp.bpm.TaskTransformer", true,
+                            EFapsClassLoader.getInstance());
             final Method method = transformer.getMethod("execute", new Class[] { Parameter.class });
             final Return ret = (Return) method.invoke(transformer.newInstance(), parameter);
             if (ret != null) {

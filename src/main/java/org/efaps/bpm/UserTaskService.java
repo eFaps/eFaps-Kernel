@@ -27,9 +27,11 @@ import org.drools.SystemEventListenerFactory;
 import org.drools.runtime.Environment;
 import org.drools.runtime.EnvironmentName;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.jbpm.process.workitem.wsht.LocalHTWorkItemHandler;
 import org.jbpm.task.service.TaskService;
 import org.jbpm.task.service.local.LocalTaskService;
+import org.jbpm.task.utils.OnErrorAction;
 
 /**
  * TODO comment!
@@ -62,7 +64,8 @@ public class UserTaskService
         if (UserTaskService.LOCAL == null) {
             final TaskService taskService = UserTaskService.getService(ksession.getEnvironment());
             UserTaskService.LOCAL = new LocalTaskService(taskService);
-            final LocalHTWorkItemHandler humanTaskHandler = new LocalHTWorkItemHandler(UserTaskService.LOCAL, ksession);
+            final LocalHTWorkItemHandler humanTaskHandler = new LocalHTWorkItemHandler(UserTaskService.LOCAL, ksession,
+                            OnErrorAction.LOG, EFapsClassLoader.getInstance());
             ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
             Bpm.registerWorkItemHandler("Human Task", humanTaskHandler);
         }
