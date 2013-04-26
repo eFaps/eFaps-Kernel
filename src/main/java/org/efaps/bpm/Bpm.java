@@ -40,7 +40,9 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import org.drools.KnowledgeBase;
+import org.drools.KnowledgeBaseConfiguration;
 import org.drools.KnowledgeBaseFactory;
+import org.drools.SessionConfiguration;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderConfiguration;
 import org.drools.builder.KnowledgeBuilderFactory;
@@ -158,18 +160,24 @@ public final class Bpm
 
             System.setProperty(UserGroupCallbackManager.USER_GROUP_CALLBACK_KEY, UserGroupCallbackImpl.class.getName());
 
-            final Properties props = new Properties();
-            props.setProperty(JavaDialectConfiguration.JAVA_COMPILER_PROPERTY, "JANINO");
+            final Properties knowledgeBldrProps = new Properties();
+            knowledgeBldrProps.setProperty(JavaDialectConfiguration.JAVA_COMPILER_PROPERTY, "JANINO");
 
-            final KnowledgeBuilderConfiguration bldrConfig = KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration(
-                            props, EFapsClassLoader.getInstance());
+            final KnowledgeBuilderConfiguration knowledgeBldrConfig = KnowledgeBuilderFactory
+                            .newKnowledgeBuilderConfiguration(
+                                            knowledgeBldrProps, EFapsClassLoader.getInstance());
 
-            final KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder(bldrConfig);
+            final KnowledgeBuilder knowledgeBldr = KnowledgeBuilderFactory.newKnowledgeBuilder(knowledgeBldrConfig);
 
-            Bpm.add2KnowledgeBuilder(kbuilder);
+            Bpm.add2KnowledgeBuilder(knowledgeBldr);
 
-            Bpm.BPM.kbase = kbuilder.newKnowledgeBase();
+            final Properties kowledgeBaseProps = new Properties();
 
+            final KnowledgeBaseConfiguration kowledgeBaseConfig = KnowledgeBaseFactory.newKnowledgeBaseConfiguration(
+                            kowledgeBaseProps, EFapsClassLoader.getInstance());
+
+            Bpm.BPM.kbase = KnowledgeBaseFactory.newKnowledgeBase(kowledgeBaseConfig);
+            Bpm.BPM.kbase.addKnowledgePackages(knowledgeBldr.getKnowledgePackages());
             final Map<String, String> properties = new HashMap<String, String>();
             properties.put(AvailableSettings.DIALECT, Context.getDbType().getHibernateDialect());
             properties.put(AvailableSettings.SHOW_SQL, String.valueOf(Bpm.LOG.isDebugEnabled()));
@@ -179,7 +187,8 @@ public final class Bpm
             properties.put("drools.processSignalManagerFactory",
                             "org.jbpm.persistence.processinstance.JPASignalManagerFactory");
             // we might need that later
-            //properties.put(AvailableSettings.SESSION_FACTORY_NAME, "java:comp/env/test");
+            // properties.put(AvailableSettings.SESSION_FACTORY_NAME,
+            // "java:comp/env/test");
             properties.put(AvailableSettings.RELEASE_CONNECTIONS, "after_transaction");
             properties.put(AvailableSettings.CONNECTION_PROVIDER, ConnectionProvider.class.getName());
 
@@ -330,7 +339,6 @@ public final class Bpm
         return ret;
     }
 
-
     public static List<TaskSummary> getTasksAssignedAsPotentialOwner()
     {
         final List<TaskSummary> ret = new ArrayList<TaskSummary>();
@@ -448,7 +456,7 @@ public final class Bpm
         if (this.ksessionId == null) {
             ksession = JPAKnowledgeService.newStatefulKnowledgeSession(
                             this.kbase,
-                            null,
+                            new SessionConfiguration(EFapsClassLoader.getInstance()),
                             this.env);
 
             this.ksessionId = ksession.getId();
@@ -456,7 +464,7 @@ public final class Bpm
             ksession = JPAKnowledgeService.loadStatefulKnowledgeSession(
                             this.ksessionId,
                             this.kbase,
-                            null,
+                            new SessionConfiguration(EFapsClassLoader.getInstance()),
                             this.env);
         }
 
