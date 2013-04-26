@@ -50,6 +50,7 @@ import org.efaps.update.schema.ui.MenuUpdate;
 import org.efaps.update.schema.ui.SearchUpdate;
 import org.efaps.update.schema.ui.TableUpdate;
 import org.efaps.update.schema.user.CompanyUpdate;
+import org.efaps.update.schema.user.GroupUpdate;
 import org.efaps.update.schema.user.JAASSystemUpdate;
 import org.efaps.update.schema.user.RoleUpdate;
 import org.xml.sax.Attributes;
@@ -245,6 +246,8 @@ public class SaxHandler extends DefaultHandler
             this.update = new JAASSystemUpdate(this.url);
         } else if ("user-role".equals(_qName)) {
             this.update = new RoleUpdate(this.url);
+        } else if ("user-group".equals(_qName)) {
+                this.update = new GroupUpdate(this.url);
         } else if ("import".equals(_qName)) {
             this.update = new ImportUpdate();
         } else if ("dbproperties".equals(_qName)) {
