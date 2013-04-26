@@ -629,7 +629,6 @@ public class Attribute
         if (InfinispanCache.get().exists(Attribute.NAMECACHE)) {
             InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE).clear();
         } else {
-            InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE);
             InfinispanCache.get().<String, Attribute>getCache(Attribute.NAMECACHE)
                             .addListener(new CacheLogListener(Attribute.LOG));
         }
@@ -637,11 +636,9 @@ public class Attribute
         if (InfinispanCache.get().exists(Attribute.IDCACHE)) {
             InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE).clear();
         } else {
-            InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE);
             InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE)
                             .addListener(new CacheLogListener(Attribute.LOG));
         }
-
     }
 
     /**

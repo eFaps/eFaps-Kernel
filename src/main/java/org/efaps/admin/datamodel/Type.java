@@ -1081,7 +1081,13 @@ public class Type
     {
         return new ToStringBuilder(this).appendSuper(super.toString())
                         .append("parentType", getParentType() != null ? getParentType().getName() : "")
-                        .append("has attributes:", !this.attributes.isEmpty())
+                        .append("has attributes", !this.attributes.isEmpty())
+                        .append("has children", !this.childTypes.isEmpty())
+                        .append("abstract", this.abstractBool)
+                        .append("company dependend", this.abstractBool)
+                        .append("checked4AccessSet", this.checked4AccessSet)
+                        .append("checked4Children", this.checked4Children)
+                        .append("checked4classifiedBy", this.checked4classifiedBy)
                         .toString();
     }
 

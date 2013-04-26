@@ -28,7 +28,7 @@ import org.hibernate.service.jta.platform.internal.AbstractJtaPlatform;
 
 
 /**
- * TODO comment!
+ * Hibernate implementation for using JTA.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -41,21 +41,25 @@ public class EFapsJTAPlatform
      */
     private static final long serialVersionUID = 1L;
 
-    /* (non-Javadoc)
+    /**
+     * Get the TransactionManager.
      * @see org.hibernate.service.jta.platform.internal.AbstractJtaPlatform#locateTransactionManager()
+     * @return a UserTransaction from eFaps
      */
     @Override
     protected TransactionManager locateTransactionManager()
     {
-        return Bpm.findTransactionManager();
+        return BPM.findTransactionManager();
     }
 
-    /* (non-Javadoc)
+    /**
+     * Get the UserTransaction.
      * @see org.hibernate.service.jta.platform.internal.AbstractJtaPlatform#locateUserTransaction()
+     * @return a UserTransaction from eFaps
      */
     @Override
     protected UserTransaction locateUserTransaction()
     {
-        return Bpm.findUserTransaction();
+        return BPM.findUserTransaction();
     }
 }

@@ -54,8 +54,6 @@ public class ConnectionProvider
      * @return The obtained JDBC connection
      *
      * @throws SQLException Indicates a problem opening a connection
-     * @throws HibernateException Indicates a problem otherwise obtaining a
-     *             connection.
      */
     @Override
     public Connection getConnection()
@@ -72,14 +70,12 @@ public class ConnectionProvider
     /**
      * Release a connection from Hibernate use.
      *
-     * @param conn The JDBC connection to release
+     * @param _conn The JDBC connection to release
      *
      * @throws SQLException Indicates a problem closing the connection
-     * @throws HibernateException Indicates a problem otherwise releasing a
-     *             connection.
      */
     @Override
-    public void closeConnection(final Connection conn)
+    public void closeConnection(final Connection _conn)
         throws SQLException
     {
         if (this.connectionResource != null) {

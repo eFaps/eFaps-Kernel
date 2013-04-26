@@ -19,7 +19,7 @@
  */
 
 /**
- * Implementation of the jBPM.
+ * Implementation of the jBPM for eFaps.
  *
  * @author The eFaps Team
  * @version $Id$

@@ -33,18 +33,18 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: EsjpWorkItemHandler.java 9199 2013-04-19 03:00:37Z
- *          jan@moxter.net $
+ * @version $Id$
  */
 public class EsjpWorkItemHandler
     implements WorkItemHandler
 {
-
     /**
      * Name for the parameter containing the classname.
      */
@@ -54,6 +54,11 @@ public class EsjpWorkItemHandler
      * Name for the parameter containing the methodname.
      */
     public static final String PARAMETERNAME_METHOD = "method";
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(EsjpWorkItemHandler.class);
 
     /**
      * The given work item should be executed.
@@ -84,26 +89,19 @@ public class EsjpWorkItemHandler
                     }
                 }
             } catch (final ClassNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                EsjpWorkItemHandler.LOG.error("Class could not be found.", e);
             } catch (final InstantiationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                EsjpWorkItemHandler.LOG.error("Class could not be instantiation.", e);
             } catch (final IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                EsjpWorkItemHandler.LOG.error("Class could not be accessed.", e);
             } catch (final IllegalArgumentException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                EsjpWorkItemHandler.LOG.error("Illegal Argument.", e);
             } catch (final InvocationTargetException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                EsjpWorkItemHandler.LOG.error("Invocation Target.", e);
             } catch (final SecurityException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                EsjpWorkItemHandler.LOG.error("Security.", e);
             } catch (final NoSuchMethodException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                EsjpWorkItemHandler.LOG.error("Method could not be found.", e);
             }
         }
         _manager.completeWorkItem(_workItem.getId(), results);

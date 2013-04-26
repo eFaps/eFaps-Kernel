@@ -34,24 +34,42 @@ import org.jbpm.task.service.local.LocalTaskService;
 import org.jbpm.task.utils.OnErrorAction;
 
 /**
- * TODO comment!
+ * Responsible for executing the TaskServie implementation for eFaps.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class UserTaskService
+public final class UserTaskService
 {
 
+    /**
+     * TaskServie instance.
+     */
     private static TaskService INSTANCE;
 
+    /**
+     * LocalTaskService instance.
+     */
     private static LocalTaskService LOCAL;
 
-    public static TaskService getService(final Environment environment)
+    /**
+     * Helper Class private constructor.
+     */
+    private UserTaskService()
+    {
+    }
+
+
+    /**
+     * @param _environment environment the service is wanted for
+     * @return TaskService
+     */
+    public static TaskService getService(final Environment _environment)
     {
         if (UserTaskService.INSTANCE == null) {
-            EntityManagerFactory emf = (EntityManagerFactory) environment.get(EnvironmentName.ENTITY_MANAGER_FACTORY);
+            EntityManagerFactory emf = (EntityManagerFactory) _environment.get(EnvironmentName.ENTITY_MANAGER_FACTORY);
             if (emf == null) {
-                emf = Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa2");
+                emf = Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa");
             }
             final TaskService taskService = new TaskService(emf, SystemEventListenerFactory.getSystemEventListener());
             UserTaskService.INSTANCE = taskService;
@@ -59,17 +77,20 @@ public class UserTaskService
         return UserTaskService.INSTANCE;
     }
 
-    public static org.jbpm.task.TaskService getTaskService(final StatefulKnowledgeSession ksession)
+    /**
+     * @param _ksession session the service is wanted for
+     * @return taskservice
+     */
+    public static org.jbpm.task.TaskService getTaskService(final StatefulKnowledgeSession _ksession)
     {
         if (UserTaskService.LOCAL == null) {
-            final TaskService taskService = UserTaskService.getService(ksession.getEnvironment());
+            final TaskService taskService = UserTaskService.getService(_ksession.getEnvironment());
             UserTaskService.LOCAL = new LocalTaskService(taskService);
-            final LocalHTWorkItemHandler humanTaskHandler = new LocalHTWorkItemHandler(UserTaskService.LOCAL, ksession,
+            final LocalHTWorkItemHandler humanTaskHandler = new LocalHTWorkItemHandler(UserTaskService.LOCAL, _ksession,
                             OnErrorAction.LOG, EFapsClassLoader.getInstance());
-            ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
-            Bpm.registerWorkItemHandler("Human Task", humanTaskHandler);
+            _ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
+            BPM.registerWorkItemHandler("Human Task", humanTaskHandler);
         }
         return UserTaskService.LOCAL;
     }
-
 }
