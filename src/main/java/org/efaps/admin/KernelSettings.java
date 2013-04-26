@@ -31,9 +31,14 @@ package org.efaps.admin;
 public interface KernelSettings
 {
     /**
-     * Boolean (true/false): activate the BPM process mechanism.
+     * Boolean (true/false): activate the BPM process mechanism. Default: false;
      */
     String ACTIVATE_BPM = "org.efaps.kernel.ActivateBPM";
+
+    /**
+     * Boolean (true/false): activate the Groups Access Mechanism. Default: false
+     */
+    String ACTIVATE_GROUPS = "org.efaps.kernel.ActivateGroups";
 
     /**
      * Boolean (true/false): activate the BPM process mechanism.
