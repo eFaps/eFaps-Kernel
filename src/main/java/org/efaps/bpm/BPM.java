@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev: 9284 $
+ * Last Changed:    $Date: 2013-04-26 10:40:07 -0500 (Fri, 26 Apr 2013) $
+ * Last Changed By: $Author: jan@moxter.net $
  */
 
 package org.efaps.bpm;
@@ -84,7 +84,6 @@ import org.jbpm.process.audit.JPAWorkingMemoryDbLogger;
 import org.jbpm.task.Content;
 import org.jbpm.task.Status;
 import org.jbpm.task.Task;
-import org.jbpm.task.admin.TasksAdmin;
 import org.jbpm.task.identity.UserGroupCallbackManager;
 import org.jbpm.task.query.TaskSummary;
 import org.jbpm.task.utils.ContentMarshallerHelper;
@@ -95,7 +94,7 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: BPM.java 9284 2013-04-26 15:40:07Z jan@moxter.net $
  */
 public final class BPM
 {
@@ -115,30 +114,44 @@ public final class BPM
                     .toString();
 
     /**
+     * Sequence used to search for the UserTransaction inside JNDI.
+     */
+    private static final String[] KNOWN_UT_JNDI_KEYS = new String[] {
+        "java:global/" + INamingBinds.RESOURCE_USERTRANSACTION,
+        "java:comp/env/" + INamingBinds.RESOURCE_USERTRANSACTION };
+
+    /**
+     * Sequence used to search for the Transactionmanager inside JNDI.
+     */
+
+    private static final String[] KNOWN_TM_JNDI_KEYS = new String[] {
+        "java:global/" + INamingBinds.RESOURCE_TRANSMANAG,
+        "java:comp/env/" + INamingBinds.RESOURCE_TRANSMANAG };
+
+    /**
      * The used Bpm instance.
      */
-    private static BPM BPM;
+    private static BPM BPMINSTANCE;
 
     /**
      * Mapping of the WorkItemhandlers used in this session.
      */
     private final Map<String, WorkItemHandler> workItemsHandlers = new HashMap<String, WorkItemHandler>();
 
+    /**
+     * Id of the KnowledgeSession.
+     */
     private Integer ksessionId;
 
-    private TasksAdmin taskAdmin;
-
+    /**
+     * Instance of the used KnowledgeBase.
+     */
     private KnowledgeBase kbase;
 
+    /**
+     * Environment used for hibernate persistence.
+     */
     private Environment env;
-
-    private static final String[] KNOWN_UT_JNDI_KEYS = new String[] {
-                    "java:global/" + INamingBinds.RESOURCE_USERTRANSACTION,
-                    "java:comp/env/" + INamingBinds.RESOURCE_USERTRANSACTION };
-
-    private static final String[] KNOWN_TM_JNDI_KEYS = new String[] {
-                    "java:global/" + INamingBinds.RESOURCE_TRANSMANAG,
-                    "java:comp/env/" + INamingBinds.RESOURCE_TRANSMANAG };
 
     /**
      * Create Singelton.
@@ -147,6 +160,11 @@ public final class BPM
     {
     }
 
+    /**
+     * Initialize BPM.
+     *
+     * @throws EFapsException on error
+     */
     public static void initialize()
         throws EFapsException
     {
@@ -155,8 +173,8 @@ public final class BPM
                         ? config.getAttributeValueAsBoolean(KernelSettings.ACTIVATE_BPM) : false;
         if (active) {
 
-            BPM.BPM = new BPM();
-            BPM.BPM.ksessionId = BPM.BPM.getKSessionIDFromDB();
+            BPM.BPMINSTANCE = new BPM();
+            BPM.BPMINSTANCE.ksessionId = BPM.BPMINSTANCE.getKSessionIDFromDB();
 
             System.setProperty(UserGroupCallbackManager.USER_GROUP_CALLBACK_KEY, UserGroupCallbackImpl.class.getName());
 
@@ -176,8 +194,8 @@ public final class BPM
             final KnowledgeBaseConfiguration kowledgeBaseConfig = KnowledgeBaseFactory.newKnowledgeBaseConfiguration(
                             kowledgeBaseProps, EFapsClassLoader.getInstance());
 
-            BPM.BPM.kbase = KnowledgeBaseFactory.newKnowledgeBase(kowledgeBaseConfig);
-            BPM.BPM.kbase.addKnowledgePackages(knowledgeBldr.getKnowledgePackages());
+            BPM.BPMINSTANCE.kbase = KnowledgeBaseFactory.newKnowledgeBase(kowledgeBaseConfig);
+            BPM.BPMINSTANCE.kbase.addKnowledgePackages(knowledgeBldr.getKnowledgePackages());
             final Map<String, String> properties = new HashMap<String, String>();
             properties.put(AvailableSettings.DIALECT, Context.getDbType().getHibernateDialect());
             properties.put(AvailableSettings.SHOW_SQL, String.valueOf(BPM.LOG.isDebugEnabled()));
@@ -197,24 +215,24 @@ public final class BPM
             final EntityManagerFactory emf = Persistence
                             .createEntityManagerFactory("org.jbpm.persistence.jpa", properties);
 
-            BPM.BPM.env = KnowledgeBaseFactory.newEnvironment();
-            BPM.BPM.env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
+            BPM.BPMINSTANCE.env = KnowledgeBaseFactory.newEnvironment();
+            BPM.BPMINSTANCE.env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
 
-            BPM.BPM.env.set(EnvironmentName.TRANSACTION_MANAGER, new ContainerManagedTransactionManager());
-            BPM.BPM.env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER,
-                            new JpaProcessPersistenceContextManager(BPM.BPM.env));
+            BPM.BPMINSTANCE.env.set(EnvironmentName.TRANSACTION_MANAGER, new ContainerManagedTransactionManager());
+            BPM.BPMINSTANCE.env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER,
+                            new JpaProcessPersistenceContextManager(BPM.BPMINSTANCE.env));
 
             UserTransaction userTrans = null;
             InitialContext context = null;
             try {
                 context = new InitialContext();
                 userTrans = BPM.findUserTransaction();
-                BPM.BPM.env.set(EnvironmentName.TRANSACTION, userTrans);
+                BPM.BPMINSTANCE.env.set(EnvironmentName.TRANSACTION, userTrans);
                 Object object = null;
                 try {
                     object = context.lookup(JtaTransactionManager.DEFAULT_USER_TRANSACTION_NAME);
                 } catch (final NamingException ex) {
-
+                    BPM.LOG.info("Checked for JtaTransactionManager");
                 }
                 if (object == null) {
                     context.bind(JtaTransactionManager.DEFAULT_USER_TRANSACTION_NAME, userTrans);
@@ -225,18 +243,19 @@ public final class BPM
                 BPM.LOG.error("Could not initialise JNDI InitialContext", ex);
             }
 
-            final StatefulKnowledgeSession ksession = BPM.BPM.getKnowledgeSession();
+            final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
 
             UserTaskService.getTaskService(ksession);
 
             final EsjpWorkItemHandler esjphandler = new EsjpWorkItemHandler();
             ksession.getWorkItemManager().registerWorkItemHandler("ESJPNode", esjphandler);
-            BPM.BPM.workItemsHandlers.put("ESJPNode", esjphandler);
+            BPM.BPMINSTANCE.workItemsHandlers.put("ESJPNode", esjphandler);
         }
     }
 
     /**
      * @param _kbuilder KnowledgeBuilder
+     * @throws EFapsException on eror
      */
     private static void add2KnowledgeBuilder(final KnowledgeBuilder _kbuilder)
         throws EFapsException
@@ -251,10 +270,14 @@ public final class BPM
         }
     }
 
+    /**
+     * @param _processId    id of the process to start
+     * @param _params       parameter map for the task
+     */
     public static void startProcess(final String _processId,
                                     final Map<String, Object> _params)
     {
-        final StatefulKnowledgeSession ksession = BPM.BPM.getKnowledgeSession();
+        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
         UserTaskService.getTaskService(ksession);
         ksession.startProcess(_processId, _params);
     }
@@ -263,13 +286,14 @@ public final class BPM
      * @param _taskSummary TaskSummary
      * @param _decision one of true, false, null
      * @param _values mapping of additional values
+     * @throws EFapsException on error
      */
     public static void executeTask(final TaskSummary _taskSummary,
                                    final Boolean _decision,
                                    final Map<String, Object> _values)
         throws EFapsException
     {
-        final StatefulKnowledgeSession ksession = BPM.BPM.getKnowledgeSession();
+        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
         final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
 
         // check if must be claimed still
@@ -298,36 +322,31 @@ public final class BPM
                 results.put("resultTest", ret.get(ReturnValues.VALUES));
             }
         } catch (final ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            BPM.LOG.error("Class could not be found.", e);
         } catch (final InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            BPM.LOG.error("Class could not be instantiation.", e);
         } catch (final IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            BPM.LOG.error("Class could not be accessed.", e);
         } catch (final IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            BPM.LOG.error("Illegal Argument.", e);
         } catch (final InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            BPM.LOG.error("Invocation Target.", e);
         } catch (final SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            BPM.LOG.error("Class could not be found.", e);
         } catch (final NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            BPM.LOG.error("Class could not be found.", e);
         }
-
         service.completeWithResults(_taskSummary.getId(), Context.getThreadContext().getPerson().getName(), results);
-
     }
 
+    /**
+     * @param _taskSummary tasksummary the data is wanted for
+     * @return the object data
+     */
     public static Object getTaskData(final TaskSummary _taskSummary)
     {
         Object ret = null;
-        final StatefulKnowledgeSession ksession = BPM.BPM.getKnowledgeSession();
+        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
         final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
         final Task task = service.getTask(_taskSummary.getId());
         final long contentId = task.getTaskData().getDocumentContentId();
@@ -339,10 +358,13 @@ public final class BPM
         return ret;
     }
 
+    /**
+     * @return list of assigned tasks
+     */
     public static List<TaskSummary> getTasksAssignedAsPotentialOwner()
     {
         final List<TaskSummary> ret = new ArrayList<TaskSummary>();
-        final StatefulKnowledgeSession ksession = BPM.BPM.getKnowledgeSession();
+        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
         final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
         try {
             final String persname = Context.getThreadContext().getPerson().getName();
@@ -354,6 +376,9 @@ public final class BPM
         return ret;
     }
 
+    /**
+     * @return the usertransaction
+     */
     protected static UserTransaction findUserTransaction()
     {
         UserTransaction ret = null;
@@ -379,6 +404,9 @@ public final class BPM
         return ret;
     }
 
+    /**
+     * @return the transactionmanager
+     */
     protected static TransactionManager findTransactionManager()
     {
         TransactionManager ret = null;
@@ -404,10 +432,14 @@ public final class BPM
         return ret;
     }
 
+    /**
+     * @param _key              the key for the WorkItemHandler
+     * @param _workItemHandler   WorkItemHandler to add
+     */
     protected static void registerWorkItemHandler(final String _key,
-                                                  final WorkItemHandler _object)
+                                                  final WorkItemHandler _workItemHandler)
     {
-        BPM.BPM.workItemsHandlers.put(_key, _object);
+        BPM.BPMINSTANCE.workItemsHandlers.put(_key, _workItemHandler);
     }
 
     /**
