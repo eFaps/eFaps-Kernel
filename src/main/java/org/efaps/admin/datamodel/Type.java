@@ -37,6 +37,7 @@ import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
 import org.efaps.admin.datamodel.attributetype.CompanyLinkType;
 import org.efaps.admin.datamodel.attributetype.ConsortiumLinkType;
+import org.efaps.admin.datamodel.attributetype.GroupLinkType;
 import org.efaps.admin.datamodel.attributetype.StatusType;
 import org.efaps.admin.datamodel.attributetype.TypeType;
 import org.efaps.admin.dbproperty.DBProperties;
@@ -198,7 +199,6 @@ public class Type
      */
     private static String NAMECACHE = "Type4Name";
 
-
     /**
      * Instance variable for the parent type from which this type is derived.
      *
@@ -322,6 +322,12 @@ public class Type
     private String companyAttributeName;
 
     /**
+     * Stores the name of attribute that contains the company of this type. (if
+     * exist)
+     */
+    private String groupAttributeName;
+
+    /**
      * Stores the name of attribute that contains the type of this type. (if
      * exist)
      */
@@ -437,19 +443,20 @@ public class Type
         if (!getAttributes().containsKey(_attribute.getName())) {
             Type.LOG.trace("adding Attribute:'{}' to type: '{}'", _attribute.getName(), getName());
             _attribute.setParent(this);
-            // evaluate for status, an inherited attribute will not overwrite the
-            // original attribute
-            if (_attribute.getAttributeType().getClassRepr().equals(StatusType.class) && !_inherited) {
-                this.statusAttributeName = _attribute.getName();
-            }
-            // evaluate for company
-            if (_attribute.getAttributeType().getClassRepr().equals(CompanyLinkType.class)
-                            || _attribute.getAttributeType().getClassRepr().equals(ConsortiumLinkType.class)) {
-                this.companyAttributeName = _attribute.getName();
-            }
             // evaluate for type attribute
             if (_attribute.getAttributeType().getClassRepr().equals(TypeType.class)) {
                 this.typeAttributeName = _attribute.getName();
+            } else if (_attribute.getAttributeType().getClassRepr().equals(StatusType.class) && !_inherited) {
+                // evaluate for status, an inherited attribute will not
+                // overwrite the original attribute
+                this.statusAttributeName = _attribute.getName();
+            } else if (_attribute.getAttributeType().getClassRepr().equals(CompanyLinkType.class)
+                            || _attribute.getAttributeType().getClassRepr().equals(ConsortiumLinkType.class)) {
+                // evaluate for company
+                this.companyAttributeName = _attribute.getName();
+            } else if (_attribute.getAttributeType().getClassRepr().equals(GroupLinkType.class)) {
+                // evaluate for company
+                this.groupAttributeName = _attribute.getName();
             }
 
             getAttributes().put(_attribute.getName(), _attribute);
@@ -516,6 +523,16 @@ public class Type
     }
 
     /**
+     * Method to evaluate if this type depends on companies.
+     *
+     * @return true if {@link #groupAttributeName} !=null , else false
+     */
+    public boolean isGroupDepended()
+    {
+        return this.groupAttributeName != null;
+    }
+
+    /**
      * Get the attribute containing the company information.
      *
      * @return attribute containing the company information
@@ -523,6 +540,16 @@ public class Type
     public Attribute getCompanyAttribute()
     {
         return this.attributes.get(this.companyAttributeName);
+    }
+
+    /**
+     * Get the attribute containing the group information.
+     *
+     * @return attribute containing the group information
+     */
+    public Attribute getGroupAttribute()
+    {
+        return this.attributes.get(this.groupAttributeName);
     }
 
     /**
@@ -625,7 +652,6 @@ public class Type
     {
         return hasAccess(_instance, _accessType, null);
     }
-
 
     /**
      * Checks, if the current context user has all access defined in the list of
@@ -1084,7 +1110,9 @@ public class Type
                         .append("has attributes", !this.attributes.isEmpty())
                         .append("has children", !this.childTypes.isEmpty())
                         .append("abstract", this.abstractBool)
-                        .append("company dependend", this.abstractBool)
+                        .append("companyDependend", isCompanyDepended())
+                        .append("groupDependend", isGroupDepended())
+                        .append("statusDependend", isCheckStatus())
                         .append("checked4AccessSet", this.checked4AccessSet)
                         .append("checked4Children", this.checked4Children)
                         .append("checked4classifiedBy", this.checked4classifiedBy)

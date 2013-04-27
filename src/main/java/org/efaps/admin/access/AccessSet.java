@@ -143,6 +143,16 @@ public final class AccessSet
                     .toString();
 
     /**
+     * This is the sql select statement to select the links from all access sets
+     * to all userAbstract in the database.
+     */
+    private static final String SQL_SET2PERSON = new SQLSelect()
+                    .column("USERABSTRACT")
+                    .from("T_ACCESSSET2USER", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "ACCESSSET").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
      * All related access types of this access set are referenced in this
      * instance variable.
      *
@@ -162,7 +172,13 @@ public final class AccessSet
      * All related Status of this access set are referenced in this instance
      * variable.
      */
-    private final Set<Status> stati = new HashSet<Status>();
+    private final Set<Status> statuses = new HashSet<Status>();
+
+    /**
+     * All related Abstract User (Roles, Person) of this access set are
+     * referenced in this instance variable.
+     */
+    private final Set<Long> userIds = new HashSet<Long>();
 
     /**
      * This is the constructor.
@@ -205,9 +221,19 @@ public final class AccessSet
      *
      * @return value of instance variable {@link #stati}
      */
-    public Set<Status> getStati()
+    public Set<Status> getStatuses()
     {
-        return this.stati;
+        return this.statuses;
+    }
+
+    /**
+     * Getter method for instance variable {@link #userIds}.
+     *
+     * @return value of instance variable {@link #userIds}
+     */
+    public Set<Long> getUserIds()
+    {
+        return this.userIds;
     }
 
     /**
@@ -351,7 +377,7 @@ public final class AccessSet
                     AccessSet.LOG.debug(
                                 "read link from AccessSet '{}' (id = {}, uuid = {}) to status '{}' (id = {})",
                                     getName(), getId(), getUUID(), status.getKey(), status.getId());
-                    getStati().add(status);
+                    getStatuses().add(status);
                 }
             }
         } catch (final SQLException e) {
@@ -364,6 +390,53 @@ public final class AccessSet
                     con.abort();
                 } catch (final EFapsException e) {
                     throw new CacheReloadException("could not read roles", e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Read the related Abstract Person (Role, Person).
+     * @throws CacheReloadException on error
+     */
+   private void readLinks2Person()
+        throws CacheReloadException
+    {
+        ConnectionResource con = null;
+        try {
+            final List<Long> values = new ArrayList<Long>();
+            con = Context.getThreadContext().getConnectionResource();
+            PreparedStatement stmt = null;
+            try {
+                stmt = con.getConnection().prepareStatement(AccessSet.SQL_SET2PERSON);
+                stmt.setObject(1, getId());
+                final ResultSet rs = stmt.executeQuery();
+                while (rs.next()) {
+                    values.add(rs.getLong(1));
+                }
+                rs.close();
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+            con.commit();
+            for (final Long personId : values) {
+                AccessSet.LOG.debug(
+                                "read link from AccessSet '{}' (id = {}, uuid = {}) to abstract person (id = {})",
+                                getName(), getId(), getUUID(), personId);
+                getUserIds().add(personId);
+            }
+        } catch (final SQLException e) {
+            throw new CacheReloadException("could not read persons for accessset", e);
+        } catch (final EFapsException e) {
+            throw new CacheReloadException("could not read persons for accessset", e);
+        } finally {
+            if ((con != null) && con.isOpened()) {
+                try {
+                    con.abort();
+                } catch (final EFapsException e) {
+                    throw new CacheReloadException("could not read persons for accessset", e);
                 }
             }
         }
@@ -511,6 +584,7 @@ public final class AccessSet
                 accessSet.readLinks2AccessTypes();
                 accessSet.readLinks2DMTypes();
                 accessSet.readLinks2Status();
+                accessSet.readLinks2Person();
             }
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read roles", e);
