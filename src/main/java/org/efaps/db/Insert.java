@@ -164,8 +164,9 @@ public class Insert
     {
         final boolean hasAccess = getType().hasAccess(Instance.get(getType(), 0),
                         AccessTypeEnums.CREATE.getAccessType());
-
         if (!hasAccess) {
+            Insert.LOG.error("Insert not permitted for Person: {} on Type: {}", Context.getThreadContext().getPerson(),
+                            getType());
             throw new EFapsException(getClass(), "execute.NoAccess", getType());
         }
         executeWithoutAccessCheck();
