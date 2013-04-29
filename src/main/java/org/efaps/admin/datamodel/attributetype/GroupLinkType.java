@@ -21,15 +21,17 @@
 package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.user.Group;
 import org.efaps.db.Context;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.EFapsException;
 
 /**
- * The class is the attribute type representation for the group of a
- * business object.
+ * The class is the attribute type representation for the group of a business
+ * object.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -37,12 +39,13 @@ import org.efaps.util.EFapsException;
 public class GroupLinkType
     extends PersonLinkType
 {
+
     /**
-     * @param _insertUpdate     insert / update SQL statement
-     * @param _attribute        Attribute to be prepared
-     * @param _values           values for the insert or update
+     * @param _insertUpdate insert / update SQL statement
+     * @param _attribute Attribute to be prepared
+     * @param _values values for the insert or update
      * @throws SQLException if not exact one SQL column for the attribute is
-     *                      defined of the company id could not be fetched
+     *             defined of the company id could not be fetched
      */
     @Override
     protected void prepare(final AbstractSQLInsertUpdate<?> _insertUpdate,
@@ -63,7 +66,7 @@ public class GroupLinkType
             try {
                 if (Context.getThreadContext().getPerson() != null) {
                     _insertUpdate.column(_attribute.getSqlColNames().get(0),
-                    Context.getThreadContext().getPerson().getGroups().iterator().next());
+                                    Context.getThreadContext().getPerson().getGroups().iterator().next());
 
                 }
             } catch (final EFapsException e) {
@@ -71,4 +74,27 @@ public class GroupLinkType
             }
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object readValue(final Attribute _attribute,
+                            final List<Object> _objectList)
+        throws EFapsException
+    {
+        Object ret = null;
+        final Object obj = _objectList.get(0);
+        if (obj != null) {
+            long id = 0;
+            if (obj instanceof Number) {
+                id = ((Number) obj).longValue();
+            } else if (obj != null) {
+                id = Long.parseLong(obj.toString());
+            }
+            ret = Group.get(id);
+        }
+        return ret;
+    }
+
 }

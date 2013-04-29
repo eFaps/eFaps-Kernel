@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
 import org.efaps.util.EFapsException;
@@ -53,6 +54,9 @@ public class UserUI
         } else if (value instanceof Role) {
             final Role role = (Role) value;
             ret = role.getName();
+        } else if (value instanceof Group) {
+            final Group group = (Group) value;
+            ret = group.getName();
         } else {
             throw new EFapsException(this.getClass(), "getViewHtml.noPersonOrRole", (Object[]) null);
         }
