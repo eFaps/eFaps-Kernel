@@ -264,7 +264,6 @@ public abstract class AbstractUserInterfaceObject
         if ((ret || AppAccessHandler.excludeMode()) && super.hasEvents(EventType.UI_ACCESSCHECK)) {
             ret = false;
             final List<EventDefinition> events = super.getEvents(EventType.UI_ACCESSCHECK);
-
             final Parameter parameter = new Parameter();
             parameter.put(ParameterValues.UIOBJECT, this);
             parameter.put(ParameterValues.ACCESSMODE, _targetMode);
@@ -272,7 +271,12 @@ public abstract class AbstractUserInterfaceObject
             parameter.put(ParameterValues.CALL_CMD, _callCmd);
             for (final EventDefinition event : events) {
                 final Return retIn = event.execute(parameter);
-                ret = retIn.get(ReturnValues.TRUE) != null;
+                if (retIn.get(ReturnValues.TRUE) == null) {
+                    ret = false;
+                    break;
+                } else {
+                    ret = true;
+                }
             }
         }
         return ret;
