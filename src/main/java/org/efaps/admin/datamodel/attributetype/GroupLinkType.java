@@ -51,8 +51,8 @@ public class GroupLinkType
         throws SQLException
     {
         checkSQLColumnSize(_attribute, 1);
-        // if a value was explicitly set the value is used, else the company
-        // id from the context
+        // if a value was explicitly set the value is used, else the first
+        // group for the logged in Person will be used
         if ((_values != null) && (_values.length > 0) && _values[0] != null) {
             if (_values[0] instanceof Long) {
                 _insertUpdate.column(_attribute.getSqlColNames().get(0), (Long) _values[0]);
@@ -61,8 +61,11 @@ public class GroupLinkType
             }
         } else {
             try {
-                _insertUpdate.column(_attribute.getSqlColNames().get(0),
-                                     Context.getThreadContext().getCompany().getId());
+                if (Context.getThreadContext().getPerson() != null) {
+                    _insertUpdate.column(_attribute.getSqlColNames().get(0),
+                    Context.getThreadContext().getPerson().getGroups().iterator().next());
+
+                }
             } catch (final EFapsException e) {
                 throw new SQLException("could not fetch company id", e);
             }
