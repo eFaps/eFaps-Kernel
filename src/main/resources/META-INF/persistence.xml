@@ -58,6 +58,7 @@
             <property name="hibernate.max_fetch_depth" value="3" />
             <property name="hibernate.hbm2ddl.auto" value="update" />
             <property name="hibernate.transaction.jta.platform" value="org.efaps.bpm.EFapsJTAPlatform" />
+            <property name="jboss.as.jpa.managed" value="false" />
         </properties>
     </persistence-unit>
 </persistence>
