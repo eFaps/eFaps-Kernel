@@ -33,6 +33,7 @@ import javax.ws.rs.ext.Provider;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Checkout;
+import org.efaps.db.Context;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
@@ -89,7 +90,7 @@ public class EFapsResourceConfig
     {
         final AnnotationScannerListener asl = new PathProviderScannerListener(EFapsClassLoader.getInstance());
 
-        this.scanner.scan(asl);
+        scanner.scan(asl);
 
         getClasses().addAll(asl.getAnnotatedClasses());
         getClasses().add(Compile.class);
@@ -109,8 +110,8 @@ public class EFapsResourceConfig
                 logClasses("Provider classes found:", providerClasses);
             }
         }
-        this.cachedClasses.clear();
-        this.cachedClasses.addAll(getClasses());
+        cachedClasses.clear();
+        cachedClasses.addAll(getClasses());
     }
 
     /**
@@ -123,12 +124,12 @@ public class EFapsResourceConfig
         final Set<Class<?>> classesToAdd = new HashSet<Class<?>>();
 
         for (final Class<?> c : getClasses()) {
-            if (!this.cachedClasses.contains(c)) {
+            if (!cachedClasses.contains(c)) {
                 classesToAdd.add(c);
             }
         }
 
-        for (final Class<?> c : this.cachedClasses) {
+        for (final Class<?> c : cachedClasses) {
             if (!getClasses().contains(c)) {
                 classesToRemove.add(c);
             }
@@ -187,6 +188,13 @@ public class EFapsResourceConfig
         public void scan(final ScannerListener _sl)
         {
             try {
+                // in case of jboss the transaction filter is not executed before the
+                // init method is called therefore a Context must be opened
+                boolean contextStarted = false;
+                if (!Context.isThreadActive()) {
+                    Context.begin(null, false);
+                    contextStarted = true;
+                }
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.JavaClass);
                 final InstanceQuery query = queryBldr.getQuery();
                 query.executeWithoutAccessCheck();
@@ -196,6 +204,7 @@ public class EFapsResourceConfig
                     final String fileName = checkout.getFileName();
                     new Closing(new BufferedInputStream(in)).f(new Closing.Closure()
                     {
+                        @Override
                         public void f(final InputStream _in)
                             throws IOException
                         {
@@ -203,6 +212,9 @@ public class EFapsResourceConfig
                             _sl.onProcess(fileName, _in);
                         }
                     });
+                }
+                if (contextStarted) {
+                    Context.rollback();
                 }
             } catch (final IOException e) {
                 throw new ScannerException("IO error when scanning file ", e);
