@@ -387,7 +387,7 @@ public final class Context
         }
         if (this.connection != null) {
             try {
-                this.connection.commit();
+                //this.connection.commit();
                 this.connection.close();
             } catch (final SQLException e) {
                 Context.LOG.error("could not close a sql connection", e);
