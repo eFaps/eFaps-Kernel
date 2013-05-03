@@ -179,7 +179,8 @@ public final class BPM
             System.setProperty(UserGroupCallbackManager.USER_GROUP_CALLBACK_KEY, UserGroupCallbackImpl.class.getName());
 
             final Properties knowledgeBldrProps = new Properties();
-            knowledgeBldrProps.setProperty(JavaDialectConfiguration.JAVA_COMPILER_PROPERTY, "JANINO");
+            knowledgeBldrProps.setProperty(JavaDialectConfiguration.JAVA_COMPILER_PROPERTY, "ECLIPSE");
+            knowledgeBldrProps.setProperty("drools.dialect.java.compiler.lnglevel", "1.6");
 
             final KnowledgeBuilderConfiguration knowledgeBldrConfig = KnowledgeBuilderFactory
                             .newKnowledgeBuilderConfiguration(
@@ -195,6 +196,11 @@ public final class BPM
                             kowledgeBaseProps, EFapsClassLoader.getInstance());
 
             BPM.BPMINSTANCE.kbase = KnowledgeBaseFactory.newKnowledgeBase(kowledgeBaseConfig);
+
+            if (knowledgeBldr.hasErrors()) {
+                BPM.LOG.error("Could not build Knowledge Packages: {}", knowledgeBldr.getErrors());
+            }
+
             BPM.BPMINSTANCE.kbase.addKnowledgePackages(knowledgeBldr.getKnowledgePackages());
             final Map<String, String> properties = new HashMap<String, String>();
             properties.put(AvailableSettings.DIALECT, Context.getDbType().getHibernateDialect());
