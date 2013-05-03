@@ -62,7 +62,7 @@ public class UserGroupCallbackImpl
     @Override
     public boolean existsUser(final String _userId)
     {
-        UserGroupCallbackImpl.LOG.info("checking for existence of User: '{}'", _userId);
+        UserGroupCallbackImpl.LOG.debug("checking for existence of User: '{}'", _userId);
         boolean ret = false;
         if ("Administrator".equals(_userId)) {
             ret = true;
@@ -74,7 +74,7 @@ public class UserGroupCallbackImpl
                 UserGroupCallbackImpl.LOG.error("error while checkin for existence of User: '{}'", _userId);
             }
         }
-        UserGroupCallbackImpl.LOG.info("result for existence check for User: '{}' is: {}", _userId, ret);
+        UserGroupCallbackImpl.LOG.debug("result for existence check for User: '{}' is: {}", _userId, ret);
         return ret;
     }
 
@@ -87,7 +87,7 @@ public class UserGroupCallbackImpl
     @Override
     public boolean existsGroup(final String _groupId)
     {
-        UserGroupCallbackImpl.LOG.info("checking for existence of Group: {}", _groupId);
+        UserGroupCallbackImpl.LOG.debug("checking for existence of Group: {}", _groupId);
         boolean ret = false;
         try {
             final Role role = org.efaps.admin.user.Role.get(UUID.fromString(_groupId));
@@ -95,7 +95,7 @@ public class UserGroupCallbackImpl
         } catch (final EFapsException e) {
             UserGroupCallbackImpl.LOG.error("error while checkin for existence of Group: '{}'", _groupId);
         }
-        UserGroupCallbackImpl.LOG.info("result for existence check for Group: '{}' is: {}", _groupId, ret);
+        UserGroupCallbackImpl.LOG.debug("result for existence check for Group: '{}' is: {}", _groupId, ret);
         return ret;
     }
 
@@ -112,7 +112,7 @@ public class UserGroupCallbackImpl
                                          final List<String> _groupIds,
                                          final List<String> _allExistingGroupIds)
     {
-        UserGroupCallbackImpl.LOG.info(
+        UserGroupCallbackImpl.LOG.debug(
                         "getting Groups for User: '{}'. Assigned Groups: {}. Currently known Groups: {}.", _userId,
                         _groupIds, _allExistingGroupIds);
         final List<String> ret = new ArrayList<String>();
@@ -127,7 +127,7 @@ public class UserGroupCallbackImpl
         } catch (final EFapsException e) {
             UserGroupCallbackImpl.LOG.error("error while checkin for existence of User: '{}'", _userId);
         }
-        UserGroupCallbackImpl.LOG.info("found Groups for User: '{}': {}", _userId, ret);
+        UserGroupCallbackImpl.LOG.debug("found Groups for User: '{}': {}", _userId, ret);
         return ret;
     }
 
