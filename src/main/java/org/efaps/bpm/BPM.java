@@ -36,7 +36,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import org.drools.KnowledgeBase;
@@ -66,6 +65,9 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.ProcessEventLstnr;
+import org.efaps.bpm.transaction.ConnectionProvider;
+import org.efaps.bpm.transaction.ManagedTransactionManager;
+import org.efaps.bpm.transaction.TransactionHelper;
 import org.efaps.bpm.workitem.EsjpWorkItemHandler;
 import org.efaps.bpm.workitem.SignallingHandlerWrapper;
 import org.efaps.ci.CIAdminProgram;
@@ -76,11 +78,9 @@ import org.efaps.db.QueryBuilder;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
-import org.efaps.init.INamingBinds;
 import org.efaps.util.EFapsException;
 import org.hibernate.cfg.AvailableSettings;
 import org.jbpm.persistence.JpaProcessPersistenceContextManager;
-import org.jbpm.persistence.jta.ContainerManagedTransactionManager;
 import org.jbpm.process.audit.JPAWorkingMemoryDbLogger;
 import org.jbpm.task.Content;
 import org.jbpm.task.Status;
@@ -113,21 +113,6 @@ public final class BPM
                     .from("ht_session_info", 0)
                     .addPart(SQLPart.ORDERBY).addValuePart("last_modification_date")
                     .toString();
-
-    /**
-     * Sequence used to search for the UserTransaction inside JNDI.
-     */
-    private static final String[] KNOWN_UT_JNDI_KEYS = new String[] {
-        "java:global/" + INamingBinds.RESOURCE_USERTRANSACTION,
-        "java:comp/env/" + INamingBinds.RESOURCE_USERTRANSACTION };
-
-    /**
-     * Sequence used to search for the Transactionmanager inside JNDI.
-     */
-
-    private static final String[] KNOWN_TM_JNDI_KEYS = new String[] {
-        "java:global/" + INamingBinds.RESOURCE_TRANSMANAG,
-        "java:comp/env/" + INamingBinds.RESOURCE_TRANSMANAG };
 
     /**
      * The used Bpm instance.
@@ -225,7 +210,7 @@ public final class BPM
             BPM.BPMINSTANCE.env = KnowledgeBaseFactory.newEnvironment();
             BPM.BPMINSTANCE.env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
 
-            BPM.BPMINSTANCE.env.set(EnvironmentName.TRANSACTION_MANAGER, new ContainerManagedTransactionManager());
+            BPM.BPMINSTANCE.env.set(EnvironmentName.TRANSACTION_MANAGER, new ManagedTransactionManager());
             BPM.BPMINSTANCE.env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER,
                             new JpaProcessPersistenceContextManager(BPM.BPMINSTANCE.env));
 
@@ -233,7 +218,7 @@ public final class BPM
             InitialContext context = null;
             try {
                 context = new InitialContext();
-                userTrans = BPM.findUserTransaction();
+                userTrans = TransactionHelper.findUserTransaction();
                 BPM.BPMINSTANCE.env.set(EnvironmentName.TRANSACTION, userTrans);
                 Object object = null;
                 try {
@@ -244,7 +229,7 @@ public final class BPM
                 if (object == null) {
                     context.bind(JtaTransactionManager.DEFAULT_USER_TRANSACTION_NAME, userTrans);
                     context.bind(JtaTransactionManager.FALLBACK_TRANSACTION_MANAGER_NAMES[0],
-                                    BPM.findTransactionManager());
+                                    TransactionHelper.findTransactionManager());
                 }
             } catch (final NamingException ex) {
                 BPM.LOG.error("Could not initialise JNDI InitialContext", ex);
@@ -379,62 +364,6 @@ public final class BPM
             ret.addAll(service.getTasksAssignedAsPotentialOwner(persname, "en-UK"));
         } catch (final EFapsException e) {
             BPM.LOG.error("Error on retrieving List of TaskSummaries.");
-        }
-        return ret;
-    }
-
-    /**
-     * @return the usertransaction
-     */
-    protected static UserTransaction findUserTransaction()
-    {
-        UserTransaction ret = null;
-        InitialContext context = null;
-        try {
-            context = new InitialContext();
-        } catch (final NamingException ex) {
-            BPM.LOG.error("Could not initialise JNDI InitialContext", ex);
-        }
-        for (final String utLookup : BPM.KNOWN_UT_JNDI_KEYS) {
-            if (utLookup != null) {
-                try {
-                    ret = (UserTransaction) context.lookup(utLookup);
-                    BPM.LOG.info("User Transaction found in JNDI under '{}'", utLookup);
-                } catch (final NamingException e) {
-                    BPM.LOG.debug("User Transaction not found in JNDI under '{}'", utLookup);
-                }
-            }
-        }
-        if (ret == null) {
-            BPM.LOG.warn("No user transaction found under known names");
-        }
-        return ret;
-    }
-
-    /**
-     * @return the transactionmanager
-     */
-    protected static TransactionManager findTransactionManager()
-    {
-        TransactionManager ret = null;
-        InitialContext context = null;
-        try {
-            context = new InitialContext();
-        } catch (final NamingException ex) {
-            BPM.LOG.error("Could not initialise JNDI InitialContext", ex);
-        }
-        for (final String utLookup : BPM.KNOWN_TM_JNDI_KEYS) {
-            if (utLookup != null) {
-                try {
-                    ret = (TransactionManager) context.lookup(utLookup);
-                    BPM.LOG.info("TransactionManager found in JNDI under '{}'", utLookup);
-                } catch (final NamingException e) {
-                    BPM.LOG.debug("TransactionManager not found in JNDI under '{}'", utLookup);
-                }
-            }
-        }
-        if (ret == null) {
-            BPM.LOG.warn("No TransactionManager found under known names");
         }
         return ret;
     }

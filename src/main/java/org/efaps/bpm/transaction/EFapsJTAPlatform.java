@@ -19,7 +19,7 @@
  */
 
 
-package org.efaps.bpm;
+package org.efaps.bpm.transaction;
 
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
@@ -49,7 +49,7 @@ public class EFapsJTAPlatform
     @Override
     protected TransactionManager locateTransactionManager()
     {
-        return BPM.findTransactionManager();
+        return TransactionHelper.findTransactionManager();
     }
 
     /**
@@ -60,6 +60,6 @@ public class EFapsJTAPlatform
     @Override
     protected UserTransaction locateUserTransaction()
     {
-        return BPM.findUserTransaction();
+        return TransactionHelper.findUserTransaction();
     }
 }

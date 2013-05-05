@@ -1054,11 +1054,17 @@ public final class Context
         return context;
     }
 
+    public static void commit()
+        throws EFapsException
+    {
+        Context.commit(true);
+    }
+
     /**
      * @throws EFapsException if commit of the transaction manager failed TODO:
      *             description
      */
-    public static void commit()
+    public static void commit(final boolean _close)
         throws EFapsException
     {
         try {
@@ -1076,7 +1082,9 @@ public final class Context
         } catch (final SystemException e) {
             throw new EFapsException(Context.class, "commit.SystemException", e);
         } finally {
-            Context.getThreadContext().close();
+            if (_close) {
+                Context.getThreadContext().close();
+            }
         }
     }
 

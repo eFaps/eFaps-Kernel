@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.bpm;
+package org.efaps.bpm.transaction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
