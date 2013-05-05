@@ -67,6 +67,7 @@ import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.ProcessEventLstnr;
 import org.efaps.bpm.workitem.EsjpWorkItemHandler;
+import org.efaps.bpm.workitem.SignallingHandlerWrapper;
 import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Checkout;
 import org.efaps.db.Context;
@@ -301,7 +302,7 @@ public final class BPM
     {
         final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
         final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
-
+        ksession.signalEvent("", null);
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
             service.claim(_taskSummary.getId(), Context.getThreadContext().getPerson().getName());
@@ -507,7 +508,9 @@ public final class BPM
         }
 
         for (final Map.Entry<String, WorkItemHandler> entry : this.workItemsHandlers.entrySet()) {
-            ksession.getWorkItemManager().registerWorkItemHandler(entry.getKey(), entry.getValue());
+            final SignallingHandlerWrapper sigWrapper = new SignallingHandlerWrapper(entry.getValue(), null,
+                            ksession);
+            ksession.getWorkItemManager().registerWorkItemHandler(entry.getKey(), sigWrapper);
         }
 
         ksession.addEventListener(new ProcessEventLstnr());

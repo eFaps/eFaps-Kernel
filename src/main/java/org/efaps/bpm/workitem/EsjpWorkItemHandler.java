@@ -56,6 +56,11 @@ public class EsjpWorkItemHandler
     public static final String PARAMETERNAME_METHOD = "method";
 
     /**
+     * Name for the parameter containing the error signal.
+     */
+    public static final String PARAMETERNAME_ERRORSIGNAL = "errorSignal";
+
+    /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(EsjpWorkItemHandler.class);
@@ -70,6 +75,7 @@ public class EsjpWorkItemHandler
     @Override
     public void executeWorkItem(final WorkItem _workItem,
                                 final WorkItemManager _manager)
+
     {
         final Map<String, Object> results = new HashMap<String, Object>();
         final String esjpName = (String) _workItem.getParameter(EsjpWorkItemHandler.PARAMETERNAME_ESJP);
@@ -98,6 +104,9 @@ public class EsjpWorkItemHandler
                 EsjpWorkItemHandler.LOG.error("Illegal Argument.", e);
             } catch (final InvocationTargetException e) {
                 EsjpWorkItemHandler.LOG.error("Invocation Target.", e);
+                if (e.getCause() instanceof WorkItemException) {
+                    throw (WorkItemException) e.getCause();
+                }
             } catch (final SecurityException e) {
                 EsjpWorkItemHandler.LOG.error("Security.", e);
             } catch (final NoSuchMethodException e) {
@@ -117,7 +126,7 @@ public class EsjpWorkItemHandler
     public void abortWorkItem(final WorkItem _workItem,
                               final WorkItemManager _manager)
     {
-        System.out.println("asdad");
+        _manager.abortWorkItem(_workItem.getId());
     }
 
 }
