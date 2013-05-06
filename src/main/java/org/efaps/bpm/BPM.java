@@ -55,6 +55,7 @@ import org.drools.runtime.Environment;
 import org.drools.runtime.EnvironmentName;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.process.WorkItemHandler;
+import org.drools.time.impl.TimerJobFactoryManager;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
@@ -65,8 +66,8 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.ProcessEventLstnr;
+import org.efaps.bpm.timer.ContextTimerJobFactoryManager;
 import org.efaps.bpm.transaction.ConnectionProvider;
-import org.efaps.bpm.transaction.ManagedTransactionManager;
 import org.efaps.bpm.transaction.TransactionHelper;
 import org.efaps.bpm.workitem.EsjpWorkItemHandler;
 import org.efaps.bpm.workitem.SignallingHandlerWrapper;
@@ -81,6 +82,7 @@ import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.hibernate.cfg.AvailableSettings;
 import org.jbpm.persistence.JpaProcessPersistenceContextManager;
+import org.jbpm.persistence.jta.ContainerManagedTransactionManager;
 import org.jbpm.process.audit.JPAWorkingMemoryDbLogger;
 import org.jbpm.task.Content;
 import org.jbpm.task.Status;
@@ -209,8 +211,7 @@ public final class BPM
 
             BPM.BPMINSTANCE.env = KnowledgeBaseFactory.newEnvironment();
             BPM.BPMINSTANCE.env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
-
-            BPM.BPMINSTANCE.env.set(EnvironmentName.TRANSACTION_MANAGER, new ManagedTransactionManager());
+            BPM.BPMINSTANCE.env.set(EnvironmentName.TRANSACTION_MANAGER, new ContainerManagedTransactionManager());
             BPM.BPMINSTANCE.env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER,
                             new JpaProcessPersistenceContextManager(BPM.BPMINSTANCE.env));
 
@@ -420,11 +421,22 @@ public final class BPM
      */
     private StatefulKnowledgeSession getKnowledgeSession()
     {
+        final SessionConfiguration sessionConfig = new SessionConfiguration(EFapsClassLoader.getInstance()) {
+            TimerJobFactoryManager contextTimerJobFactoryManager = new ContextTimerJobFactoryManager();
+
+            @Override
+            public TimerJobFactoryManager getTimerJobFactoryManager() {
+                return this.contextTimerJobFactoryManager;
+            }
+
+        };
+
+
         StatefulKnowledgeSession ksession;
         if (this.ksessionId == null) {
             ksession = JPAKnowledgeService.newStatefulKnowledgeSession(
                             this.kbase,
-                            new SessionConfiguration(EFapsClassLoader.getInstance()),
+                            sessionConfig,
                             this.env);
 
             this.ksessionId = ksession.getId();
@@ -432,7 +444,7 @@ public final class BPM
             ksession = JPAKnowledgeService.loadStatefulKnowledgeSession(
                             this.ksessionId,
                             this.kbase,
-                            new SessionConfiguration(EFapsClassLoader.getInstance()),
+                            sessionConfig,
                             this.env);
         }
 

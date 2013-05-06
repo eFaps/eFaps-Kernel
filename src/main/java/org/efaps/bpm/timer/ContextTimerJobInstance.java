@@ -1,0 +1,67 @@
+/*
+ * Copyright 2003 - 2013 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
+ */
+
+package org.efaps.bpm.timer;
+
+import org.drools.persistence.jpa.JpaTimerJobInstance;
+import org.drools.time.InternalSchedulerService;
+import org.drools.time.Job;
+import org.drools.time.JobContext;
+import org.drools.time.JobHandle;
+import org.drools.time.Trigger;
+import org.efaps.db.Context;
+
+/**
+ * TODO comment!
+ *
+ * @author The eFaps Team
+ * @version $Id$
+ */
+public class ContextTimerJobInstance
+    extends JpaTimerJobInstance
+{
+
+    /**
+     * @param _job
+     * @param _ctx
+     * @param _trigger
+     * @param _handle
+     * @param _scheduler
+     */
+    public ContextTimerJobInstance(final Job _job,
+                                   final JobContext _ctx,
+                                   final Trigger _trigger,
+                                   final JobHandle _handle,
+                                   final InternalSchedulerService _scheduler)
+    {
+        super(_job, _ctx, _trigger, _handle, _scheduler);
+    }
+
+    @Override
+    public Void call()
+        throws Exception
+    {
+        Context.begin("Administrator", false);
+        super.call();
+        Context.commit();
+        return null;
+    }
+
+}
