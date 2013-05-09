@@ -1,6 +1,7 @@
 <infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="urn:infinispan:config:5.1 http://www.infinispan.org/schemas/infinispan-config-5.1.xsd"
     xmlns="urn:infinispan:config:5.1">
+    <global/>
 
     <namedCache name="DBProperties">
         <eviction maxEntries="5000" strategy="LIRS"/>
@@ -164,13 +165,13 @@
     </namedCache>
 
     <namedCache name="Role4UUID">
-        <eviction maxEntries="50" strategy="LIRS"/>
+        <eviction maxEntries="100" strategy="LIRS"/>
     </namedCache>
     <namedCache name="Role4ID">
-        <eviction maxEntries="50" strategy="LIRS"/>
+        <eviction maxEntries="100" strategy="LIRS"/>
     </namedCache>
     <namedCache name="Role4Name">
-        <eviction maxEntries="50" strategy="LIRS"/>
+        <eviction maxEntries="100" strategy="LIRS"/>
     </namedCache>
 
     <namedCache name="Company4UUID">

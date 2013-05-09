@@ -25,12 +25,14 @@ import org.infinispan.notifications.cachelistener.annotation.CacheEntriesEvicted
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryActivated;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryLoaded;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntryModified;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryRemoved;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryVisited;
 import org.infinispan.notifications.cachelistener.event.CacheEntriesEvictedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryActivatedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryCreatedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryLoadedEvent;
+import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryVisitedEvent;
 import org.infinispan.notifications.cachemanagerlistener.annotation.CacheStarted;
@@ -100,6 +102,16 @@ public class CacheLogListener
     {
         this.log.trace("loaded key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
     }
+
+    /**
+     * @param _event event to be loged
+     */
+    @CacheEntryModified
+    public void onCacheEntryModified(final CacheEntryModifiedEvent<?, ?> _event)
+    {
+        this.log.trace("modified key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
+    }
+
 
     /**
      * @param _event event to be loged

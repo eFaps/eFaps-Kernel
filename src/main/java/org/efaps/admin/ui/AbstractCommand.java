@@ -400,7 +400,7 @@ public abstract class AbstractCommand
      */
     protected void add(final Role _role)
     {
-        getAccess().add(_role);
+        getAccess().add(_role.getId());
     }
 
     /**

@@ -99,12 +99,12 @@ public abstract class AbstractUserInterfaceObject
     private static AbstractUserInterfaceObject NULL = new AbstractUserInterfaceObject(Long.valueOf(0), null, null) { };
 
     /**
-     * The instance variable is an Access HashSet to store all users (person,
+     * The instance variable is an Access HashSet to store all userIds (person,
      * group or role) who have access to this user interface object.
      *
      * @see #getAccess
      */
-    private final Set<AbstractUserObject> access = new HashSet<AbstractUserObject>();
+    private final Set<Long> access = new HashSet<Long>();
 
     /**
      * Constructor to set the id, the uuid and the name of the user interface
@@ -159,7 +159,7 @@ public abstract class AbstractUserInterfaceObject
                 if (userObject == null) {
                     throw new CacheReloadException("user " + userId + " does not exists!");
                 } else {
-                    getAccess().add(userObject);
+                    getAccess().add(userId);
                 }
             }
             resultset.close();
@@ -238,10 +238,11 @@ public abstract class AbstractUserInterfaceObject
             // first must be checked for the company
             boolean company = false;
             boolean checked = false;
-            for (final AbstractUserObject userObject : getAccess()) {
-                if (userObject instanceof Company) {
+            for (final Long userId : getAccess()) {
+                final Company companyObj = Company.get(userId);
+                if (companyObj != null) {
                     checked = true;
-                    if (userObject.isAssigned()) {
+                    if (companyObj.isAssigned()) {
                         company = true;
                         break;
                     }
@@ -251,7 +252,8 @@ public abstract class AbstractUserInterfaceObject
             // be checked or
             // if the check on companies was positiv
             if ((!company && !checked) || (company && checked)) {
-                for (final AbstractUserObject userObject : getAccess()) {
+                for (final Long userId : getAccess()) {
+                    final AbstractUserObject userObject = AbstractUserObject.getUserObject(userId);
                     if (!(userObject instanceof Company)) {
                         if (userObject.isAssigned()) {
                             ret = true;
@@ -288,7 +290,7 @@ public abstract class AbstractUserInterfaceObject
      * @return value of the HashSet instance variable {@link #access}
      * @see #access
      */
-    protected Set<AbstractUserObject> getAccess()
+    protected Set<Long> getAccess()
     {
         return this.access;
     }

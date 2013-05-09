@@ -290,7 +290,7 @@ public final class Role
         ConnectionResource con = null;
         try {
             con = Context.getThreadContext().getConnectionResource();
-                        PreparedStatement stmt = null;
+            PreparedStatement stmt = null;
             try {
                 stmt = con.getConnection().prepareStatement(_sql);
                 stmt.setObject(1, _criteria);
@@ -389,9 +389,6 @@ public final class Role
         return Role.get(roleId);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(final Object _obj)
     {
@@ -404,9 +401,6 @@ public final class Role
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode()
     {
