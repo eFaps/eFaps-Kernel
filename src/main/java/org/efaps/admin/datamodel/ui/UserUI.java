@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
@@ -58,7 +59,7 @@ public class UserUI
             final Group group = (Group) value;
             ret = group.getName();
         } else {
-            throw new EFapsException(this.getClass(), "getViewHtml.noPersonOrRole", (Object[]) null);
+            ret = DBProperties.getProperty("org.efaps.admin.datamodel.ui.UserUI.None");
         }
         return ret;
     }
