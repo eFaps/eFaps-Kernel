@@ -74,6 +74,8 @@ public class Attribute
         /** Attribute type Link with Ranges. */
         ATTRTYPE_LINK_WITH_RANGES("9d6b2e3e-68ce-4509-a5f0-eae42323a696"),
         /** Attribute type PersonLink. */
+        ATTRTYPE_GROUP_LINK("a48538dd-5d9b-468f-a84f-bf42791eed66"),
+        /** Attribute type PersonLink. */
         ATTRTYPE_PERSON_LINK("7b8f98de-1967-44e0-b174-027349868a61"),
         /** Attribute type Creator Link. */
         ATTRTYPE_CREATOR_LINK("76122fe9-8fde-4dd4-a229-e48af0fb4083"),
@@ -841,8 +843,7 @@ public class Attribute
                         final Type linkType = Type.get(typeLinkId);
                         attr.setLink(linkType);
                         linkType.addLink(attr);
-                        // in case of a PersonLink, CreatorLink or ModifierLink
-                        // a link to Admin_User_Person
+                        // in case of a PersonLink, CreatorLink or ModifierLink a link to Admin_User_Person
                         // must be set
                     } else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_CREATOR_LINK.getUuid())
                                     || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_MODIFIER_LINK.getUuid())
@@ -850,8 +851,12 @@ public class Attribute
                         final Type linkType = CIAdminUser.Person.getType();
                         attr.setLink(linkType);
                         linkType.addLink(attr);
+                        // in case of a GroupLink, a link to Admin_User_Group must be set
+                    }   else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_GROUP_LINK.getUuid())) {
+                        final Type linkType = CIAdminUser.Group.getType();
+                        attr.setLink(linkType);
+                        linkType.addLink(attr);
                     }
-
                     attr.readFromDB4Properties();
 
                     if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSetAttribute.uuid)) {
