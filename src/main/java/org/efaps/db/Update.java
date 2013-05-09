@@ -621,5 +621,11 @@ public class Update
         {
             return this.values;
         }
+
+        @Override
+        public String toString()
+        {
+            return ToStringBuilder.reflectionToString(this);
+        }
     }
 }

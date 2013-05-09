@@ -23,6 +23,8 @@ package org.efaps.admin.datamodel.attributetype;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.user.Group;
 import org.efaps.db.Context;
@@ -64,13 +66,17 @@ public class GroupLinkType
             }
         } else {
             try {
-                if (Context.getThreadContext().getPerson() != null) {
+                if (Context.getThreadContext().getPerson() != null
+                                && !Context.getThreadContext().getPerson().getGroups().isEmpty()) {
                     _insertUpdate.column(_attribute.getSqlColNames().get(0),
                                     Context.getThreadContext().getPerson().getGroups().iterator().next());
 
+                } else if (EFapsSystemConfiguration.KERNEL.get().getAttributeValueAsBoolean(
+                                KernelSettings.ACTIVATE_GROUPS)) {
+                    throw new SQLException("Groups are activated in Systemconfiguration but no Group set.");
                 }
             } catch (final EFapsException e) {
-                throw new SQLException("could not fetch company id", e);
+                throw new SQLException("could not fetch group id", e);
             }
         }
     }
