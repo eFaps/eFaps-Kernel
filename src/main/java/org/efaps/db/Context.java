@@ -56,6 +56,7 @@ import org.efaps.init.INamingBinds;
 import org.efaps.init.IeFapsProperties;
 import org.efaps.init.StartupException;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.joda.time.Chronology;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
@@ -201,7 +202,7 @@ public final class Context
     /**
      * The current active company.
      */
-    private Company company = null;
+    private Long companyId = null;
 
     /**
      * The parameters used to open a new thread context are stored in this
@@ -821,13 +822,14 @@ public final class Context
     }
 
     /**
-     * Getter method for instance variable {@link #company}.
+     * Get the Company currently valid for this context.
      *
      * @return value of instance variable {@link #company}
      */
     public Company getCompany()
+        throws CacheReloadException
     {
-        return this.company;
+        return Company.get(this.companyId);
     }
 
     /**
@@ -1037,15 +1039,15 @@ public final class Context
                 if (context.containsUserAttribute(Context.CURRENTCOMPANY)) {
                     final Company comp = Company.get(Long.parseLong(context.getUserAttribute(Context.CURRENTCOMPANY)));
                     if (comp != null && !context.person.getCompanies().isEmpty() && context.person.isAssigned(comp)) {
-                        context.company = comp;
+                        context.companyId = comp.getId();
                     } else {
                         context.setUserAttribute(Context.CURRENTCOMPANY, "0");
                     }
                 }
-                if (context.company == null && context.person.getCompanies().size() > 0) {
+                if (context.companyId == null && context.person.getCompanies().size() > 0) {
                     for (final Long compID : context.person.getCompanies()) {
                         context.setUserAttribute(Context.CURRENTCOMPANY, compID.toString());
-                        context.company = Company.get(compID);
+                        context.companyId = compID;
                         break;
                     }
                 }
