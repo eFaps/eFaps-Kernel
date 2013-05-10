@@ -829,7 +829,7 @@ public final class Context
     public Company getCompany()
         throws CacheReloadException
     {
-        return Company.get(this.companyId);
+        return this.companyId == null ?  null : Company.get(this.companyId);
     }
 
     /**
