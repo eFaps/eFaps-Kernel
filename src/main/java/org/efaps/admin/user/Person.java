@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.EFapsSystemConfiguration;
@@ -130,6 +131,7 @@ public final class Person
      */
     private static final String SQL_ID = new SQLSelect()
                     .column("ID")
+                    .column("UUID")
                     .column("NAME")
                     .column("STATUS")
                     .from("V_USERPERSON", 0)
@@ -140,10 +142,23 @@ public final class Person
      */
     private static final String SQL_NAME = new SQLSelect()
                     .column("ID")
+                    .column("UUID")
                     .column("NAME")
                     .column("STATUS")
                     .from("V_USERPERSON", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * This is the SQL select statement to select a Person from the database by UUID.
+     */
+    private static final String SQL_UUID = new SQLSelect()
+                    .column("ID")
+                    .column("UUID")
+                    .column("NAME")
+                    .column("STATUS")
+                    .from("V_USERPERSON", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "UUID").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
 
     /**
@@ -155,6 +170,11 @@ public final class Person
      * Name of the Cache by Name.
      */
     private static String NAMECACHE = "Person4Name";
+
+    /**
+     * Name of the Cache by UUID.
+     */
+    private static String UUIDCACHE = "Person4UUID";
 
     /**
      * Logging instance used to give logging information of this class.
@@ -218,14 +238,16 @@ public final class Person
      * the {@link #key} and {@link #id}.
      *
      * @param _id id of the person to set
+     * @param _uuid UUID of the person to set
      * @param _name name of the person to set
      * @param _status status of the person to set
      */
     private Person(final long _id,
+                   final String _uuid,
                    final String _name,
                    final boolean _status)
     {
-        super(_id, null, _name, _status);
+        super(_id, _uuid, _name, _status);
     }
 
     /**
@@ -1378,14 +1400,20 @@ public final class Person
     public static void initialize()
     {
         if (InfinispanCache.get().exists(Person.IDCACHE)) {
-            InfinispanCache.get().<Long, Type>getCache(Person.IDCACHE).clear();
+            InfinispanCache.get().<Long, Person>getCache(Person.IDCACHE).clear();
         } else {
-            InfinispanCache.get().<Long, Type>getCache(Person.IDCACHE).addListener(new CacheLogListener(Person.LOG));
+            InfinispanCache.get().<Long, Person>getCache(Person.IDCACHE).addListener(new CacheLogListener(Person.LOG));
         }
         if (InfinispanCache.get().exists(Person.NAMECACHE)) {
-            InfinispanCache.get().<String, Type>getCache(Person.NAMECACHE).clear();
+            InfinispanCache.get().<String, Person>getCache(Person.NAMECACHE).clear();
         } else {
-            InfinispanCache.get().<String, Type>getCache(Person.NAMECACHE)
+            InfinispanCache.get().<String, Person>getCache(Person.NAMECACHE)
+                            .addListener(new CacheLogListener(Person.LOG));
+        }
+        if (InfinispanCache.get().exists(Person.UUIDCACHE)) {
+            InfinispanCache.get().<UUID, Person>getCache(Person.UUIDCACHE).clear();
+        } else {
+            InfinispanCache.get().<UUID, Person>getCache(Person.UUIDCACHE)
                             .addListener(new CacheLogListener(Person.LOG));
         }
     }
@@ -1408,6 +1436,25 @@ public final class Person
             Person.getPersonFromDB(Person.SQL_ID, _id);
         }
         return cache.get(_id);
+    }
+
+    /**
+     * Returns for given parameter <i>_uuid</i> the instance of class
+     * {@link Person}.
+     *
+     * @param _uuid UUID to search in the cache
+     * @throws EFapsException on error
+     * @return instance of class {@link Person}
+     * @see #getFromDB
+     */
+    public static Person get(final UUID _uuid)
+        throws EFapsException
+    {
+        final Cache<UUID, Person> cache = InfinispanCache.get().<UUID, Person>getCache(Person.UUIDCACHE);
+        if (!cache.containsKey(_uuid)) {
+            Person.getPersonFromDB(Person.SQL_UUID, _uuid);
+        }
+        return cache.get(_uuid);
     }
 
     /**
@@ -1468,10 +1515,12 @@ public final class Person
 
                 if (rs.next()) {
                     final long id = rs.getLong(1);
-                    final String name = rs.getString(2);
-                    final boolean status = rs.getBoolean(3);
-                    ret = new Person(id, name.trim(), status);
+                    final String uuid = rs.getString(2);
+                    final String name = rs.getString(3);
+                    final boolean status = rs.getBoolean(4);
+                    ret = new Person(id, uuid, name.trim(), status);
                     Person.cachePerson(ret);
+                    Person.LOG.debug("read from DB Person:{} ", ret);
                 }
                 rs.close();
             } catch (final SQLException e) {
