@@ -139,7 +139,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @see #getWriteSQLTypeName(ColumnType)
      */
     private final Map<AbstractDatabase.ColumnType, String> writeColTypeMap
-                                                                   = new HashMap<AbstractDatabase.ColumnType, String>();
+        = new HashMap<AbstractDatabase.ColumnType, String>();
 
     /**
      * The map stores the mapping between column types used in the database and
@@ -149,7 +149,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @see #getReadColumnTypes(String)
      */
     private final Map<String, Set<AbstractDatabase.ColumnType>> readColTypeMap
-                                                              = new HashMap<String, Set<AbstractDatabase.ColumnType>>();
+        = new HashMap<String, Set<AbstractDatabase.ColumnType>>();
 
     /**
      * The map stores the mapping between column types used in eFaps and the
@@ -158,7 +158,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      * @see #addMapping(ColumnType, String, String, String...)
      */
     private final Map<AbstractDatabase.ColumnType, String> nullValueColTypeMap
-                                                                   = new HashMap<AbstractDatabase.ColumnType, String>();
+        = new HashMap<AbstractDatabase.ColumnType, String>();
 
     /**
      * Caching for table information read from the SQL database.
@@ -665,11 +665,45 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         if (_isNotNull) {
             cmd.append(" not null");
         }
+        AbstractDatabase.LOG.debug("    ..SQL> " + cmd.toString());
 
-        // log statement
-        if (AbstractDatabase.LOG.isDebugEnabled()) {
-            AbstractDatabase.LOG.info("    ..SQL> " + cmd.toString());
+        final Statement stmt = _con.createStatement();
+        try {
+            stmt.execute(cmd.toString());
+        } finally {
+            stmt.close();
         }
+
+        @SuppressWarnings("unchecked")
+        final T ret = (T) this;
+        return ret;
+    }
+
+    /**
+     * @param _con          SQL connection
+     * @param _tableName    name of table to update
+     * @param _columnName   column to update
+     * @param _isNotNull    actual isnull status
+     * @return this instance
+     * @throws SQLException if the column could not be added to the tables
+     */
+    public T updateColumnIsNotNull(final Connection _con,
+                                   final String _tableName,
+                                   final String _columnName,
+                                   final boolean _isNotNull)
+        throws SQLException
+    {
+        final StringBuilder cmd = new StringBuilder();
+        cmd.append("alter table ").append(getTableQuote()).append(_tableName).append(getTableQuote())
+                        .append(" alter column ").append(getColumnQuote()).append(_columnName).append(getColumnQuote());
+
+        if (_isNotNull) {
+            cmd.append(" set ");
+        } else {
+            cmd.append(" drop ");
+        }
+        cmd.append(" not null");
+        AbstractDatabase.LOG.debug("    ..SQL> {}", cmd);
 
         // excecute statement
         final Statement stmt = _con.createStatement();
@@ -678,10 +712,61 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         } finally {
             stmt.close();
         }
-
-        @SuppressWarnings("unchecked") final T ret = (T) this;
+        @SuppressWarnings("unchecked")
+        final T ret = (T) this;
         return ret;
     }
+
+    /**
+     * Adds a column to a SQL table.
+     *
+     * @param _con SQL connection
+     * @param _tableName name of table to update
+     * @param _columnName column to update
+     * @param _columnType type of column to update
+     * @param _length length of column to update (or 0 if not specified)
+     * @param _scale scale of the column (or 0 if not specified)
+     * @return this instance
+     * @throws SQLException if the column could not be added to the tables
+     */
+    public T updateColumn(final Connection _con,
+                          final String _tableName,
+                          final String _columnName,
+                          final ColumnType _columnType,
+                          final int _length,
+                          final int _scale)
+        throws SQLException
+    {
+        final StringBuilder cmd = new StringBuilder();
+        cmd.append("alter table ").append(getTableQuote()).append(_tableName).append(getTableQuote())
+            .append(getAlterColumn(_columnName, _columnType));
+        if (_length > 0) {
+            cmd.append("(").append(_length);
+            if (_scale > 0) {
+                cmd.append(",").append(_scale);
+            }
+            cmd.append(")");
+        }
+        AbstractDatabase.LOG.debug("    ..SQL> " + cmd.toString());
+
+        final Statement stmt = _con.createStatement();
+        try {
+            stmt.execute(cmd.toString());
+        } finally {
+            stmt.close();
+        }
+        @SuppressWarnings("unchecked")
+        final T ret = (T) this;
+        return ret;
+    }
+
+    /**
+     * @param _columnName column to update
+     * @param _columnType type of column to update
+     * @return sql snipplet
+     */
+    protected abstract StringBuilder getAlterColumn(final String _columnName,
+                                                    final ColumnType _columnType);
 
     /**
      * Adds a new unique key to given table name.
@@ -705,12 +790,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                         .append("add constraint ").append(_uniqueKeyName).append(" ")
                         .append("unique(").append(_columns).append(")");
 
-        // log statement
-        if (AbstractDatabase.LOG.isDebugEnabled()) {
-            AbstractDatabase.LOG.info("    ..SQL> " + cmd.toString());
-        }
+        AbstractDatabase.LOG.debug("    ..SQL> " + cmd.toString());
 
-        // execute statement
         final Statement stmt = _con.createStatement();
         try {
             stmt.execute(cmd.toString());
@@ -752,13 +833,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         if (_cascade) {
             cmd.append(" on delete cascade");
         }
+        AbstractDatabase.LOG.debug("    ..SQL> " + cmd.toString());
 
-        // log statement
-        if (AbstractDatabase.LOG.isDebugEnabled()) {
-            AbstractDatabase.LOG.info("    ..SQL> " + cmd.toString());
-        }
-
-        // execute statement
         try {
             final Statement stmt = _con.createStatement();
             try {
@@ -770,8 +846,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
             throw new InstallationException("Foreign key could not be created. SQL statement was:\n"
                             + cmd.toString(), e);
         }
-
-        @SuppressWarnings("unchecked") final T ret = (T) this;
+        @SuppressWarnings("unchecked")
+        final T ret = (T) this;
         return ret;
     }
 
@@ -796,11 +872,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                         .append("add constraint ").append(_checkKeyName).append(" ")
                         .append("check(").append(_condition).append(")");
 
-        // log statement
-        if (AbstractDatabase.LOG.isDebugEnabled()) {
-            AbstractDatabase.LOG.info("    ..SQL> " + cmd.toString());
-        }
-
+        AbstractDatabase.LOG.debug("    ..SQL> " + cmd.toString());
         // excecute statement
         final Statement stmt = _con.createStatement();
         try {

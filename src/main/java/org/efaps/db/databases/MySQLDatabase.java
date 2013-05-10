@@ -585,4 +585,18 @@ public class MySQLDatabase
     {
         super.initTableInfoForeignKeys(_con, MySQLDatabase.SQL_FOREIGN_KEYS, _cache4Name);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected StringBuilder getAlterColumn(final String _columnName,
+                                           final org.efaps.db.databases.AbstractDatabase.ColumnType _columnType)
+    {
+        final StringBuilder ret =new StringBuilder()
+            .append(" alter ").append(getColumnQuote()).append(_columnName).append(getColumnQuote())
+            .append(" ")
+            .append(getWriteSQLTypeName(_columnType));
+        return ret;
+    }
 }

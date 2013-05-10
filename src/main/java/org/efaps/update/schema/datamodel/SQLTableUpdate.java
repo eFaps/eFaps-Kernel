@@ -677,23 +677,26 @@ public class SQLTableUpdate
         {
             ConnectionResource con = null;
             final String tableName = getValue("SQLTable");
-            if (SQLTableUpdate.LOG.isInfoEnabled()) {
-                SQLTableUpdate.LOG.info("    Update DB SQL Table '" + tableName + "'");
-            }
+            SQLTableUpdate.LOG.info("    Update DB SQL Table '{}'", tableName);
             try {
                 con = Context.getThreadContext().getConnectionResource();
-
                 final TableInformation tableInfo = Context.getDbType().getRealTableInformation(con.getConnection(),
                                                                                                tableName);
 
                 for (final Column column : this.columns)  {
                     final ColumnInformation colInfo = tableInfo.getColInfo(column.name);
                     if (colInfo != null)  {
-                        if (SQLTableUpdate.LOG.isDebugEnabled())  {
-                            SQLTableUpdate.LOG.debug("column '" + column.name + "' already defined in "
-                                + "table '" + tableName + "'");
+                        SQLTableUpdate.LOG.debug("column '{}' already defined in table '{}'", column.name, tableName);
+                        // null must be handeled sperately
+                        if (colInfo.isNullable() == column.isNotNull) {
+                            Context.getDbType().updateColumnIsNotNull(con.getConnection(), tableName, column.name,
+                                            column.isNotNull);
                         }
-// TODO: check for column types, column length and isNotNull
+                        if (column.length > 0
+                                        && (colInfo.getSize() != column.length || colInfo.getScale() != column.scale)) {
+                            Context.getDbType().updateColumn(con.getConnection(), tableName, column.name,
+                                            column.type, column.length, column.scale);
+                        }
                     } else  {
                         Context.getDbType().addTableColumn(con.getConnection(), tableName,
                                 column.name, column.type, null, column.length, column.scale,
@@ -709,7 +712,6 @@ public class SQLTableUpdate
                             SQLTableUpdate.LOG.debug("unique key '" + uniqueKey.name + "' already defined in "
                                 + "table '" + tableName + "'");
                         }
-// TODO: check for column names
                     } else  {
                         // check if a unique key exists for same column names
                         final UniqueKeyInformation ukInfo2 = tableInfo.getUKInfoByColNames(uniqueKey.columns);
@@ -730,20 +732,17 @@ public class SQLTableUpdate
                             SQLTableUpdate.LOG.debug("foreign key '" + foreignKey.name + "' already defined in "
                                 + "table '" + tableName + "'");
                         }
-// TODO: further updates
                     } else  {
                         Context.getDbType().addForeignKey(con.getConnection(), tableName,
                                 foreignKey.name, foreignKey.key, foreignKey.reference,
                                 foreignKey.cascade);
                     }
                 }
-
                 // update check keys
                 for (final CheckKey checkKey : this.checkKeys) {
                     Context.getDbType().addCheckKey(con.getConnection(), tableName,
                             checkKey.name, checkKey.condition);
                 }
-
                 con.commit();
                 con = null;
             } catch (final EFapsException e) {
