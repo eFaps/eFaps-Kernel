@@ -1470,7 +1470,7 @@ public final class Person
     public static Person get(final String _name)
         throws EFapsException
     {
-        final Cache<Long, Person> cache = InfinispanCache.get().<Long, Person>getCache(Person.NAMECACHE);
+        final Cache<String, Person> cache = InfinispanCache.get().<String, Person>getCache(Person.NAMECACHE);
         if (!cache.containsKey(_name)) {
             Person.getPersonFromDB(Person.SQL_NAME, _name);
         }
