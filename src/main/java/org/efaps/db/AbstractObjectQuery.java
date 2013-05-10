@@ -30,7 +30,6 @@ import java.util.Map;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.ConsortiumLinkType;
-import org.efaps.admin.user.Consortium;
 import org.efaps.db.search.QAnd;
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.compare.QEqual;
@@ -362,8 +361,8 @@ public abstract class AbstractObjectQuery<T>
 
             if (this.baseType.getCompanyAttribute().getAttributeType().getClassRepr().equals(
                             ConsortiumLinkType.class)) {
-                for (final Consortium consortium : Context.getThreadContext().getCompany().getConsortiums()) {
-                    eqPart.addValue(new QNumberValue(consortium.getId()));
+                for (final Long consortium : Context.getThreadContext().getCompany().getConsortiums()) {
+                    eqPart.addValue(new QNumberValue(consortium));
                 }
             } else {
                 eqPart.addValue(new QNumberValue(Context.getThreadContext().getCompany().getId()));

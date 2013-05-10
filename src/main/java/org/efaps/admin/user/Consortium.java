@@ -130,7 +130,7 @@ public final class Consortium
     /**
      * The companies belonging to this Consortium.
      */
-    private final Set<Company> companies = new HashSet<Company>();
+    private final Set<Long> companieIds = new HashSet<Long>();
 
     /**
      * @param _id id for this company
@@ -149,9 +149,9 @@ public final class Consortium
     /**
      * @param _company Company to add to this Consortium
      */
-    protected void addCompany(final Company _company)
+    protected void addCompany(final Long _companyId)
     {
-        this.companies.add(_company);
+        this.companieIds.add(_companyId);
     }
 
     /**
@@ -159,9 +159,9 @@ public final class Consortium
      *
      * @return the set of related Companies
      */
-    public Set<Company> getCompanies()
+    public Set<Long> getCompanies()
     {
-        return Collections.unmodifiableSet(this.companies);
+        return Collections.unmodifiableSet(this.companieIds);
     }
 
     /**
@@ -391,8 +391,10 @@ public final class Consortium
                 final Company company = Company.get(companyId);
                 Consortium.LOG.debug("read consortium 2 company relation '{} - {}'",
                                 new Object[] { getName(), company.getName() });
-                addCompany(company);
-                company.addConsortium(this);
+                if (company != null) {
+                    addCompany(company.getId());
+                    company.addConsortium(getId());
+                }
             }
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read consortiums", e);

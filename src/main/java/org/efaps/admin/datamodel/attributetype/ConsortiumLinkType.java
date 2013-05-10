@@ -25,7 +25,6 @@ import java.util.Set;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.user.Company;
-import org.efaps.admin.user.Consortium;
 import org.efaps.db.Context;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.EFapsException;
@@ -66,11 +65,10 @@ public class ConsortiumLinkType
             // as a defaultvalue the first found Consortium will be inserted
             try {
                 final Company company = Context.getThreadContext().getCompany();
-                final Set<Consortium> consortiums = company.getConsortiums();
+                final Set<Long> consortiums = company.getConsortiums();
                 if (!consortiums.isEmpty()) {
-                    _insertUpdate.column(_attribute.getSqlColNames().get(0), consortiums.iterator().next().getId());
+                    _insertUpdate.column(_attribute.getSqlColNames().get(0), consortiums.iterator().next());
                 }
-
             } catch (final EFapsException e) {
                 throw new SQLException("could not fetch consortiums id", e);
             }

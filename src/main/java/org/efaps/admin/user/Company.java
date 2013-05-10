@@ -115,7 +115,7 @@ public final class Company
     /**
      * The company belonging to this Consortiums.
      */
-    private final Set<Consortium> consortiums = new HashSet<Consortium>();
+    private final Set<Long> consortiumIds = new HashSet<Long>();
 
     /**
      * @param _id       id for this company
@@ -132,20 +132,20 @@ public final class Company
     }
 
     /**
-     * @param _consortium Consortium to add to this Company
+     * @param _consortiumId Consortium to add to this Company
      */
-    protected void addConsortium(final Consortium  _consortium)
+    protected void addConsortium(final Long _consortiumId)
     {
-        this.consortiums.add(_consortium);
+        this.consortiumIds.add(_consortiumId);
     }
 
     /**
      * Get the related Consortium (unmodifiable).
      * @return the set of related Consortiums
      */
-    public Set<Consortium> getConsortiums()
+    public Set<Long> getConsortiums()
     {
-        return Collections.unmodifiableSet(this.consortiums);
+        return Collections.unmodifiableSet(this.consortiumIds);
     }
 
     /**
