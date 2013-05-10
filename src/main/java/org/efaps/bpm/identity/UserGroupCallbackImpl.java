@@ -135,7 +135,12 @@ public class UserGroupCallbackImpl
                         _groupIds, _allExistingGroupIds);
         final List<String> ret = new ArrayList<String>();
         try {
-            final Person pers = org.efaps.admin.user.Person.get(_userId);
+            final Person pers;
+            if ("Administrator".equals(_userId)) {
+                pers = org.efaps.admin.user.Person.get(_userId);
+            } else {
+                pers = org.efaps.admin.user.Person.get(UUID.fromString(_userId));
+            }
             if (pers != null) {
                 for (final Long roleId : pers.getRoles()) {
                     final Role role = org.efaps.admin.user.Role.get(roleId);

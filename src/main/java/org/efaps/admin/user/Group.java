@@ -306,6 +306,10 @@ public final class Group
         if (!idCache.containsKey(_group.getId())) {
             idCache.put(_group.getId(), _group);
         }
+        final Cache<UUID, Group> uuidCache = InfinispanCache.get().<UUID, Group>getCache(Group.UUIDCACHE);
+        if (!uuidCache.containsKey(_group.getId())) {
+            uuidCache.put(_group.getUUID(), _group);
+        }
     }
 
     /**

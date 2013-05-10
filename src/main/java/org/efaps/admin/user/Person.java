@@ -1452,7 +1452,7 @@ public final class Person
     {
         final Cache<UUID, Person> cache = InfinispanCache.get().<UUID, Person>getCache(Person.UUIDCACHE);
         if (!cache.containsKey(_uuid)) {
-            Person.getPersonFromDB(Person.SQL_UUID, _uuid);
+            Person.getPersonFromDB(Person.SQL_UUID, _uuid.toString());
         }
         return cache.get(_uuid);
     }
@@ -1489,6 +1489,10 @@ public final class Person
         final Cache<Long, Person> idCache = InfinispanCache.get().<Long, Person>getCache(Person.IDCACHE);
         if (!idCache.containsKey(_person.getId())) {
             idCache.put(_person.getId(), _person);
+        }
+        final Cache<UUID, Person> uuidCache = InfinispanCache.get().<UUID, Person>getCache(Person.UUIDCACHE);
+        if (_person.getUUID() != null && !nameCache.containsKey(_person.getUUID())) {
+            uuidCache.put(_person.getUUID(), _person);
         }
     }
 

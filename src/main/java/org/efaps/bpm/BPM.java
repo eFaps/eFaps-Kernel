@@ -360,9 +360,13 @@ public final class BPM
         final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
         final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
         try {
-            final String persname = Context.getThreadContext().getPerson().getName();
-            // final String language = Context.getThreadContext().getLanguage();
-            ret.addAll(service.getTasksAssignedAsPotentialOwner(persname, "en-UK"));
+            if (Context.getThreadContext().getPerson().getUUID() == null) {
+                BPM.LOG.error("User '{}' has no UUID assigned.", Context.getThreadContext().getPerson().getName());
+            } else {
+                final String persId = Context.getThreadContext().getPerson().getUUID().toString();
+                // final String language = Context.getThreadContext().getLanguage();
+                ret.addAll(service.getTasksAssignedAsPotentialOwner(persId, "en-UK"));
+            }
         } catch (final EFapsException e) {
             BPM.LOG.error("Error on retrieving List of TaskSummaries.");
         }
