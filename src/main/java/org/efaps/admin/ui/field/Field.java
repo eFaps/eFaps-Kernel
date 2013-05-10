@@ -928,4 +928,22 @@ public class Field
             super.setProperty(_name, _value);
         }
     }
+
+    @Override
+    public boolean equals(final Object _obj)
+    {
+        boolean ret;
+        if (_obj instanceof Field) {
+            ret = ((Field) _obj).getId() == getId();
+        } else {
+            ret = super.equals(_obj);
+        }
+        return ret;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return  Long.valueOf(getId()).intValue();
+    }
 }

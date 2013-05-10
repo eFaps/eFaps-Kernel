@@ -204,4 +204,22 @@ public abstract class AbstractMenu
             throw new CacheReloadException("could not read childs for menu '" + getName() + "'", e);
         }
     }
+
+    @Override
+    public boolean equals(final Object _obj)
+    {
+        boolean ret;
+        if (_obj instanceof AbstractMenu) {
+            ret = ((AbstractMenu) _obj).getId() == getId();
+        } else {
+            ret = super.equals(_obj);
+        }
+        return ret;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return  Long.valueOf(getId()).intValue();
+    }
 }

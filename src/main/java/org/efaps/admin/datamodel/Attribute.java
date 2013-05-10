@@ -727,6 +727,24 @@ public class Attribute
                         .append("required", this.required).toString();
     }
 
+    @Override
+    public boolean equals(final Object _obj)
+    {
+        boolean ret;
+        if (_obj instanceof Attribute) {
+            ret = ((Attribute) _obj).getId() == getId();
+        } else {
+            ret = super.equals(_obj);
+        }
+        return ret;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return  Long.valueOf(getId()).intValue();
+    }
+
     /**
      * @param _attrId   id of an attribute
      * @return the id of a Type

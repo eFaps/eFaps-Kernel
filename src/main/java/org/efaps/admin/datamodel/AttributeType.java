@@ -260,6 +260,24 @@ public class AttributeType
                         .toString();
     }
 
+    @Override
+    public boolean equals(final Object _obj)
+    {
+        boolean ret;
+        if (_obj instanceof AttributeType) {
+            ret = ((AttributeType) _obj).getId() == getId();
+        } else {
+            ret = super.equals(_obj);
+        }
+        return ret;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return  Long.valueOf(getId()).intValue();
+    }
+
     /**
      *
      * @param _class attribute type class

@@ -608,4 +608,22 @@ public class Dimension
             return _value * this.numerator / this.denominator;
         }
     }
+
+    @Override
+    public boolean equals(final Object _obj)
+    {
+        boolean ret;
+        if (_obj instanceof Dimension) {
+            ret = ((Dimension) _obj).getId() == getId();
+        } else {
+            ret = super.equals(_obj);
+        }
+        return ret;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return  Long.valueOf(getId()).intValue();
+    }
 }

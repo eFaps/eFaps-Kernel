@@ -245,6 +245,7 @@ public final class SystemConfiguration
      *
      * @return value of instance variable {@link #id}
      */
+    @Override
     public long getId()
     {
         return this.id;
@@ -255,6 +256,7 @@ public final class SystemConfiguration
      *
      * @return value of instance variable {@link #uuid}
      */
+    @Override
     public UUID getUUID()
     {
         return this.uuid;
@@ -265,6 +267,7 @@ public final class SystemConfiguration
      *
      * @return value of instance variable {@link #name}
      */
+    @Override
     public String getName()
     {
         return this.name;
@@ -651,5 +654,23 @@ public final class SystemConfiguration
             }
         }
         return ret;
+    }
+
+    @Override
+    public boolean equals(final Object _obj)
+    {
+        boolean ret;
+        if (_obj instanceof SystemConfiguration) {
+            ret = ((SystemConfiguration) _obj).getId() == getId();
+        } else {
+            ret = super.equals(_obj);
+        }
+        return ret;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return  Long.valueOf(getId()).intValue();
     }
 }

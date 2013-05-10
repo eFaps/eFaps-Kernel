@@ -1354,6 +1354,24 @@ public final class Person
                         .toString();
     }
 
+    @Override
+    public boolean equals(final Object _obj)
+    {
+        boolean ret;
+        if (_obj instanceof Person) {
+            ret = ((Person) _obj).getId() == getId();
+        } else {
+            ret = super.equals(_obj);
+        }
+        return ret;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return  Long.valueOf(getId()).intValue();
+    }
+
     /**
      * Method to initialize the Cache of this CacheObjectInterface.
      */
