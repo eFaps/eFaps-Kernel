@@ -44,4 +44,9 @@ public interface KernelSettings
      * Boolean (true/false): activate the BPM process mechanism.
      */
     String SHOW_DBPROPERTIES_KEY = "org.efaps.kernel.ShowDBPropertiesKey";
+
+    /**
+     * Boolean (true/false): activate the BPM process mechanism.
+     */
+    String REQUIRE_PERSON_UUID = "org.efaps.kernel.RequirePersonUUID";
 }
