@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
 import org.efaps.util.EFapsException;
@@ -48,6 +50,22 @@ public class UserGroupCallbackImpl
      */
     private static final Logger LOG = LoggerFactory.getLogger(UserGroupCallbackImpl.class);
 
+
+    /**
+     * Default Constructor.
+     */
+    public UserGroupCallbackImpl()
+    {
+        try {
+            if (!EFapsSystemConfiguration.KERNEL.get().getAttributeValueAsBoolean(KernelSettings.REQUIRE_PERSON_UUID)) {
+                UserGroupCallbackImpl.LOG.warn("BPM is activated but the UUID for Persons is not required. "
+                                + "That might leed to serious problems in the future!!!!!!");
+            }
+        } catch (final EFapsException e) {
+            UserGroupCallbackImpl.LOG.error("Could not read SystemConfiguration.", e);
+        }
+    }
+
     /**
      * Resolves existence of user id.
      *
@@ -68,7 +86,7 @@ public class UserGroupCallbackImpl
             ret = true;
         } else {
             try {
-                final Person pers = org.efaps.admin.user.Person.get(_userId);
+                final Person pers = org.efaps.admin.user.Person.get(UUID.fromString(_userId));
                 ret = pers != null;
             } catch (final EFapsException e) {
                 UserGroupCallbackImpl.LOG.error("error while checkin for existence of User: '{}'", _userId);
