@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.efaps.db.Context;
@@ -62,6 +63,7 @@ public final class Group
      * This is the SQL select statement to select a Group from the database by ID.
      */
     private static final String SQL_ID = new SQLSelect().column("ID")
+                    .column("UUID")
                     .column("NAME")
                     .column("STATUS")
                     .from("V_USERGROUP", 0)
@@ -71,10 +73,22 @@ public final class Group
      * This is the SQL select statement to select a Group from the database by Name.
      */
     private static final String SQL_NAME = new SQLSelect().column("ID")
+                    .column("UUID")
                     .column("NAME")
                     .column("STATUS")
                     .from("V_USERGROUP", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * This is the SQL select statement to select a Group from the database by UUID.
+     */
+    private static final String SQL_UUID = new SQLSelect().column("ID")
+                    .column("UUID")
+                    .column("NAME")
+                    .column("STATUS")
+                    .from("V_USERGROUP", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "UUID").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
 
     /**
@@ -88,9 +102,15 @@ public final class Group
     private static final String NAMECACHE = "Group4Name";
 
     /**
+     * Name of the Cache by Name.
+     */
+    private static final String UUIDCACHE = "Group4UUID";
+
+
+    /**
      * Use to mark not found and return <code>null</code>.
      */
-    private static final Group NULL = new Group(0, null, false);
+    private static final Group NULL = new Group(0, null, null, false);
 
     /**
      * Create a new group instance. The method is used from the static method
@@ -101,10 +121,11 @@ public final class Group
      * @param _status   status of the group
      */
     private Group(final long _id,
+                  final String _uuid,
                   final String _name,
                   final boolean _status)
     {
-        super(_id, null, _name, _status);
+        super(_id, _uuid, _name, _status);
     }
 
     /**
@@ -131,7 +152,6 @@ public final class Group
     @Override
     public boolean hasChildPerson(final Person _person)
     {
-// TODO: child groups
         return _person.isAssigned(this);
     }
 
@@ -151,6 +171,11 @@ public final class Group
             InfinispanCache.get().<String, Group>getCache(Group.NAMECACHE).clear();
         } else {
             InfinispanCache.get().<String, Group>getCache(Group.NAMECACHE).addListener(new CacheLogListener(Group.LOG));
+        }
+        if (InfinispanCache.get().exists(Group.UUIDCACHE)) {
+            InfinispanCache.get().<UUID, Group>getCache(Group.UUIDCACHE).clear();
+        } else {
+            InfinispanCache.get().<UUID, Group>getCache(Group.UUIDCACHE).addListener(new CacheLogListener(Group.LOG));
         }
     }
 
@@ -189,6 +214,25 @@ public final class Group
             cache.put(_name, Group.NULL, 100, TimeUnit.SECONDS);
         }
         final Group ret = cache.get(_name);
+        return ret.equals(Group.NULL) ? null : ret;
+    }
+
+    /**
+     * Returns for given parameter <i>_uuid</i> the instance of class
+     * {@link Group}.
+     *
+     * @param _uuid _uuid to search in the cache
+     * @return instance of class {@link Group}
+     * @throws CacheReloadException on error
+     */
+    public static Group get(final UUID _uuid)
+        throws CacheReloadException
+    {
+        final Cache<UUID, Group> cache = InfinispanCache.get().<UUID, Group>getCache(Group.IDCACHE);
+        if (!cache.containsKey(_uuid) && !Group.getGroupFromDB(Group.SQL_UUID, _uuid.toString())) {
+            cache.put(_uuid, Group.NULL, 100, TimeUnit.SECONDS);
+        }
+        final Group ret = cache.get(_uuid);
         return ret.equals(Group.NULL) ? null : ret;
     }
 
@@ -285,10 +329,11 @@ public final class Group
                 final ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     final long id = rs.getLong(1);
-                    final String name = rs.getString(2).trim();
-                    final boolean status = rs.getBoolean(3);
-                    Group.LOG.debug("read group '" + name + "' (id = " + id + ")");
-                    final Group group = new Group(id, name, status);
+                    final String uuid = rs.getString(2);
+                    final String name = rs.getString(3).trim();
+                    final boolean status = rs.getBoolean(4);
+                    Group.LOG.debug("read group '{}' (id = {}, uuid = {})", name, id, uuid);
+                    final Group group = new Group(id, uuid, name, status);
                     Group.cacheGroup(group);
                     ret = true;
                 }
