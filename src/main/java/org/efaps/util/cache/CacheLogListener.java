@@ -24,15 +24,19 @@ import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntriesEvicted;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryActivated;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntryInvalidated;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryLoaded;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryModified;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntryPassivated;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryRemoved;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryVisited;
 import org.infinispan.notifications.cachelistener.event.CacheEntriesEvictedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryActivatedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryCreatedEvent;
+import org.infinispan.notifications.cachelistener.event.CacheEntryInvalidatedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryLoadedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
+import org.infinispan.notifications.cachelistener.event.CacheEntryPassivatedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryVisitedEvent;
 import org.infinispan.notifications.cachemanagerlistener.annotation.CacheStarted;
@@ -148,5 +152,23 @@ public class CacheLogListener
     public void onCacheEntryRemoved(final CacheEntryRemovedEvent<?, ?> _event)
     {
         this.log.trace("removed key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
+    }
+
+    /**
+     * @param _event event to be loged
+     */
+    @CacheEntryInvalidated
+    public void onCacheEntryInvalidated(final CacheEntryInvalidatedEvent<?,?> _event )
+    {
+        this.log.trace("invalidated key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
+    }
+
+    /**
+     * @param _event event to be loged
+     */
+    @CacheEntryPassivated
+    public void onCacheEntryPassivated(final CacheEntryPassivatedEvent<?,?> _event )
+    {
+        this.log.trace("invalidated key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
     }
 }

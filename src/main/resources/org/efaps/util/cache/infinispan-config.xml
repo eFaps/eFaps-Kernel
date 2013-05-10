@@ -146,57 +146,55 @@
 
 
 
-    <!-- User -->
-    <namedCache name="Company4UUID">
-        <eviction maxEntries="5" strategy="LIRS"/>
-    </namedCache>
-    <namedCache name="Company4ID">
-        <eviction maxEntries="5" strategy="LIRS"/>
-    </namedCache>
-    <namedCache name="Company4Name">
-        <eviction maxEntries="5" strategy="LIRS"/>
-    </namedCache>
-
-    <namedCache name="Person4ID">
-        <eviction maxEntries="20" strategy="LIRS"/>
-    </namedCache>
-    <namedCache name="Person4Name">
-        <eviction maxEntries="20" strategy="LIRS"/>
-    </namedCache>
-
-    <namedCache name="Role4UUID">
-        <eviction maxEntries="100" strategy="LIRS"/>
+    <!--
+        User Caches
+        This Caches are accessed in the given sequence during the search for a UserObject.
+        That means that for e.g. RoleCache null-Values for ids will be cached that are not a Role
+     -->
+     <namedCache name="Role4UUID">
+        <eviction maxEntries="500" strategy="LIRS"/>
     </namedCache>
     <namedCache name="Role4ID">
-        <eviction maxEntries="100" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS"/>
     </namedCache>
     <namedCache name="Role4Name">
-        <eviction maxEntries="100" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS"/>
+    </namedCache>
+
+     <namedCache name="Group4ID">
+        <eviction maxEntries="400" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Group4Name">
+        <eviction maxEntries="400" strategy="LIRS"/>
+    </namedCache>
+    <namedCache name="Group4UUID">
+        <eviction maxEntries="400" strategy="LIRS"/>
     </namedCache>
 
     <namedCache name="Company4UUID">
-        <eviction maxEntries="5" strategy="LIRS"/>
+        <eviction maxEntries="300" strategy="LIRS"/>
     </namedCache>
     <namedCache name="Company4ID">
-        <eviction maxEntries="5" strategy="LIRS"/>
+        <eviction maxEntries="300" strategy="LIRS"/>
     </namedCache>
     <namedCache name="Company4Name">
-        <eviction maxEntries="5" strategy="LIRS"/>
+        <eviction maxEntries="300" strategy="LIRS"/>
     </namedCache>
 
     <namedCache name="Consortium4ID">
-        <eviction maxEntries="5" strategy="LIRS"/>
+        <eviction maxEntries="200" strategy="LIRS"/>
     </namedCache>
     <namedCache name="Consortium4Name">
-        <eviction maxEntries="5" strategy="LIRS"/>
+        <eviction maxEntries="200" strategy="LIRS"/>
     </namedCache>
 
-    <namedCache name="Group4ID">
-        <eviction maxEntries="20" strategy="LIRS"/>
+    <namedCache name="Person4ID">
+        <eviction maxEntries="100" strategy="LIRS"/>
     </namedCache>
-    <namedCache name="Group4Name">
-        <eviction maxEntries="20" strategy="LIRS"/>
+    <namedCache name="Person4Name">
+        <eviction maxEntries="100" strategy="LIRS"/>
     </namedCache>
+
 
     <namedCache name="JAASSystem4ID">
         <eviction maxEntries="5" strategy="LRU"/>
