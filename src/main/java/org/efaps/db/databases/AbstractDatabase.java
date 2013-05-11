@@ -693,29 +693,54 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                                    final boolean _isNotNull)
         throws SQLException
     {
-        final StringBuilder cmd = new StringBuilder();
-        cmd.append("alter table ").append(getTableQuote()).append(_tableName).append(getTableQuote())
-                        .append(" alter column ").append(getColumnQuote()).append(_columnName).append(getColumnQuote());
-
+        // to set not null it must be checked that there are no null values!
+        boolean executable = true;
         if (_isNotNull) {
-            cmd.append(" set ");
-        } else {
-            cmd.append(" drop ");
+            executable = !check4NullValues(_con, _tableName, _columnName);
         }
-        cmd.append(" not null");
-        AbstractDatabase.LOG.debug("    ..SQL> {}", cmd);
 
-        // excecute statement
-        final Statement stmt = _con.createStatement();
-        try {
-            stmt.execute(cmd.toString());
-        } finally {
-            stmt.close();
+        if (executable) {
+            final StringBuilder cmd = new StringBuilder();
+            cmd.append("alter table ").append(getTableQuote()).append(_tableName).append(getTableQuote())
+                .append(" alter column ").append(getColumnQuote()).append(_columnName).append(getColumnQuote());
+
+            if (_isNotNull) {
+                cmd.append(" set ");
+            } else {
+                cmd.append(" drop ");
+            }
+            cmd.append(" not null");
+            AbstractDatabase.LOG.debug("    ..SQL> {}", cmd);
+
+            // excecute statement
+            final Statement stmt = _con.createStatement();
+            try {
+                stmt.execute(cmd.toString());
+            } finally {
+                stmt.close();
+            }
+        } else {
+            AbstractDatabase.LOG.warn("Could not alter \"Not NUll\" on table '{}' column '{}'. " +
+                    "Perhaps the column contains null values?",
+                            _tableName, _columnName);
         }
         @SuppressWarnings("unchecked")
         final T ret = (T) this;
         return ret;
     }
+
+    /**
+     * Check if a specific column contains null values.
+     * @param _con          SQL connection
+     * @param _tableName    name of table to check
+     * @param _columnName   column to check
+     * @return true if the column contains nulls, else false
+     * @throws SQLException on error
+     */
+    protected abstract boolean check4NullValues(final Connection _con,
+                                                final String _tableName,
+                                                final String _columnName)
+        throws SQLException;
 
     /**
      * Adds a column to a SQL table.
@@ -1089,8 +1114,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                 final String tableName = rs.getString("TABLE_NAME").toUpperCase();
                 // ignore the tables managed by hibernate
                 if (!tableName.startsWith(NamingStrategy.HIBERNATEPREFIX.toUpperCase())
-                                && (tableName.startsWith("T_")||(tableName.startsWith("V_")))) {
-
+                                && (tableName.startsWith("T_") || (tableName.startsWith("V_")))) {
                     _cache4Name.put(tableName, new TableInformation(tableName));
                 }
             }

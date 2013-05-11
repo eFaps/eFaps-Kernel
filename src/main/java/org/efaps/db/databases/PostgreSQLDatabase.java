@@ -575,10 +575,42 @@ public class PostgreSQLDatabase
     protected StringBuilder getAlterColumn(final String _columnName,
                                            final org.efaps.db.databases.AbstractDatabase.ColumnType _columnType)
     {
-        final StringBuilder ret =new StringBuilder()
+        final StringBuilder ret = new StringBuilder()
             .append(" alter ").append(getColumnQuote()).append(_columnName).append(getColumnQuote())
             .append(" type ")
             .append(getWriteSQLTypeName(_columnType));
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean check4NullValues(final Connection _con,
+                                       final String _tableName,
+                                       final String _columnName)
+        throws SQLException
+    {
+        boolean ret = true;
+        final StringBuilder cmd = new StringBuilder();
+        cmd.append("select count(*) from ").append(getTableQuote()).append(_tableName).append(getTableQuote())
+                .append(" where ").append(getColumnQuote()).append(_columnName).append(getColumnQuote())
+                .append(" is null");
+
+        PostgreSQLDatabase.LOG.debug("    ..SQL> {}", cmd);
+
+        final Statement stmt = _con.createStatement();
+        ResultSet rs = null;
+        try {
+            rs = stmt.executeQuery(cmd.toString());
+            rs.next();
+            ret = rs.getInt(1) > 0;
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            stmt.close();
+        }
         return ret;
     }
 }
