@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
+import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAttribute;
 import org.efaps.ci.CIType;
@@ -618,6 +619,15 @@ public class QueryBuilder
             ret = new QDateTimeValue((DateTime) _value);
         } else if (_value instanceof Boolean) {
             ret = new QBooleanValue((Boolean) _value);
+        } else if (_value instanceof Status) {
+            ret = new QNumberValue(((Status) _value).getId());
+        } else if (_value instanceof Instance) {
+            if (!((Instance) _value).isValid()) {
+                QueryBuilder.LOG.error("the given Instance was not valid and cannot be used as filter criteria",
+                                _value);
+                throw new EFapsException(QueryBuilder.class, "invalid Instance given");
+            }
+            ret = new QNumberValue(((Instance) _value).getId());
         } else {
             throw new EFapsException(QueryBuilder.class, "notsuported");
         }
