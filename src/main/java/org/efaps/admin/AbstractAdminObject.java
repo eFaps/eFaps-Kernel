@@ -131,7 +131,7 @@ public abstract class AbstractAdminObject
                                   final String _name)
     {
         this.id = _id;
-        this.uuid = (_uuid == null) ? null : UUID.fromString(_uuid.trim());
+        this.uuid = (_uuid == null || _uuid.trim().isEmpty()) ? null : UUID.fromString(_uuid.trim());
         this.name = (_name == null) ? null : _name.trim();
     }
 
