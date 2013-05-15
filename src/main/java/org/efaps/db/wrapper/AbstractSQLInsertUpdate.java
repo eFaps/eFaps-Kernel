@@ -28,6 +28,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.db.Context;
 
 /**
@@ -358,6 +359,12 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
         {
             return this.columnName;
         }
+
+        @Override
+        public String toString()
+        {
+            return ToStringBuilder.reflectionToString(this);
+        }
     }
 
     /**
@@ -443,5 +450,11 @@ public abstract class AbstractSQLInsertUpdate<STMT extends AbstractSQLInsertUpda
         public abstract void set(final int _index,
                                  final PreparedStatement _stmt)
             throws SQLException;
+
+        @Override
+        public String toString()
+        {
+            return ToStringBuilder.reflectionToString(this);
+        }
     }
 }

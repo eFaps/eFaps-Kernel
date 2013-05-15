@@ -35,6 +35,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
+import org.efaps.admin.datamodel.Dimension.UoM;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
@@ -280,9 +281,7 @@ public class Update
                 }
             }
         }
-
-        final Value value = new Value(_attr, _value);
-
+        final Value value = getValue(_attr, _value);
         Map<Attribute, Value> expressions = this.expr4Tables.get(_attr.getTable());
         if (expressions == null) {
             expressions = new HashMap<Attribute, Value>();
@@ -296,6 +295,33 @@ public class Update
             this.trigRelevantAttr2values.put(_attr, value);
         }
         return ret;
+    }
+
+    /**
+     * @param _attr     Attribute
+     * @param _value    values to be evaluated
+     * @return value
+     */
+    protected Value getValue(final Attribute _attr,
+                             final Object[] _value)
+    {
+        final List<Object> values = new ArrayList<Object>();
+        if (_value != null) {
+            for (final Object obj : _value) {
+                final Object object;
+                if (obj instanceof Instance) {
+                    object = ((Instance) obj).getId();
+                } else if (obj instanceof org.efaps.admin.datamodel.Status) {
+                    object = ((org.efaps.admin.datamodel.Status) obj).getId();
+                } else if (obj instanceof UoM) {
+                    object = ((UoM) obj).getId();
+                } else {
+                    object = obj;
+                }
+                values.add(object);
+            }
+        }
+        return new Value(_attr, _value == null ? null : values.toArray());
     }
 
     /**
