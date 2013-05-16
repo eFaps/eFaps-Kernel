@@ -99,9 +99,8 @@ public class ColumnInformation
     public String getNullValueSelect()
     {
         String ret = null;
-        for (final ColumnType colType : this.types)  {
-            ret = Context.getDbType().getNullValueSelect(colType);
-            break;
+        if (!this.types.isEmpty())  {
+            ret = Context.getDbType().getNullValueSelect(this.types.iterator().next());
         }
         return ret;
     }
