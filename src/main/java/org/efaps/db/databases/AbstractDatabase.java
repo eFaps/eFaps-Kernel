@@ -67,12 +67,12 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
     /**
      * Pattern for the schema.
      */
-    protected static String SCHEMAPATTERN = null;
+    private static String SCHEMAPATTERN = null;
 
     /**
      * Name of the catalog.
      */
-    protected static String CATALOG = null;
+    private static String CATALOG = null;
 
     /**
      * Logging instance used in this class.
@@ -199,6 +199,22 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
     public void initialize(final Class<?> _class)
     {
         this.cache.initialize(_class);
+    }
+
+    /**
+     * @return {@link #SCHEMAPATTERN}
+     */
+    protected String getSchemaPattern()
+    {
+        return AbstractDatabase.SCHEMAPATTERN;
+    }
+
+    /**
+     * @return {@link #CATALOG}
+     */
+    protected String getCatalog()
+    {
+        return AbstractDatabase.CATALOG;
     }
 
     /**
@@ -720,9 +736,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                 stmt.close();
             }
         } else {
-            AbstractDatabase.LOG.warn("Could not alter \"Not NUll\" on table '{}' column '{}'. " +
-                    "Perhaps the column contains null values?",
-                            _tableName, _columnName);
+            AbstractDatabase.LOG.warn("Could not alter \"Not NUll\" on table '{}' column '{}'. "
+                            + "Perhaps the column contains null values?", _tableName, _columnName);
         }
         @SuppressWarnings("unchecked")
         final T ret = (T) this;

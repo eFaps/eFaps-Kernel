@@ -524,7 +524,7 @@ public class OracleDatabase
         Statement stmt = null;
         final ResultSet rs;
         if (_sql == null) {
-           rs = _con.getMetaData().getColumns(AbstractDatabase.CATALOG, AbstractDatabase.SCHEMAPATTERN, "%", "%");
+            rs = _con.getMetaData().getColumns(getCatalog(), getSchemaPattern(), "%", "%");
         } else        {
             stmt = _con.createStatement();
             rs = stmt.executeQuery(_sql);
