@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
+import org.efaps.admin.user.Company;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -93,6 +95,11 @@ public class SystemConfigurationUpdate
         private String description;
 
         /**
+         * UUID of a Company. Optional!
+         */
+        private String companyUUID;
+
+        /**
          *
          * @param _tags         current path as list of single tags
          * @param _attributes   attributes for current path
@@ -110,6 +117,8 @@ public class SystemConfigurationUpdate
                 this.value = _text;
             } else if ("description".equals(tmpValue)) {
                 this.description = _text;
+            } else if ("company".equals(tmpValue)) {
+                this.companyUUID = _text;
             } else {
                 super.readXML(_tags, _attributes, _text);
             }
@@ -122,9 +131,18 @@ public class SystemConfigurationUpdate
         public void updateInDB(final Instance _instance)
             throws EFapsException
         {
+            Company company = null;
+            if (this.companyUUID != null) {
+                company = Company.get(UUID.fromString(this.companyUUID));
+            }
             final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.SystemConfigurationAttribute);
             queryBldr.addWhereAttrEqValue(CIAdminCommon.SystemConfigurationAttribute.Key, this.key);
-            queryBldr.addWhereAttrEqValue(CIAdminCommon.SystemConfigurationAttribute.AbstractLink, _instance.getId());
+            queryBldr.addWhereAttrEqValue(CIAdminCommon.SystemConfigurationAttribute.AbstractLink, _instance);
+            if (company == null) {
+                queryBldr.addWhereAttrIsNull(CIAdminCommon.SystemConfigurationAttribute.CompanyLink);
+            } else {
+                queryBldr.addWhereAttrEqValue(CIAdminCommon.SystemConfigurationAttribute.CompanyLink, company.getId());
+            }
             final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             Update update = null;
@@ -134,6 +152,9 @@ public class SystemConfigurationUpdate
                 update = new Insert(CIAdminCommon.SystemConfigurationAttribute);
                 update.add(CIAdminCommon.SystemConfigurationAttribute.AbstractLink, _instance.getId());
                 update.add(CIAdminCommon.SystemConfigurationAttribute.Key, this.key);
+            }
+            if (company != null) {
+                update.add(CIAdminCommon.SystemConfigurationAttribute.CompanyLink, company.getId());
             }
             update.add(CIAdminCommon.SystemConfigurationAttribute.Value, this.value);
             update.add(CIAdminCommon.SystemConfigurationAttribute.Description, this.description);

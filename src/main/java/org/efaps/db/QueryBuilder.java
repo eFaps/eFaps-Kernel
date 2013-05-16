@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
+import org.efaps.admin.datamodel.Dimension.UoM;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAttribute;
@@ -628,6 +629,8 @@ public class QueryBuilder
                 throw new EFapsException(QueryBuilder.class, "invalid Instance given");
             }
             ret = new QNumberValue(((Instance) _value).getId());
+        } else if (_value instanceof UoM) {
+            ret = new QNumberValue(((UoM) _value).getId());
         } else {
             throw new EFapsException(QueryBuilder.class, "notsuported");
         }

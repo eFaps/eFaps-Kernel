@@ -93,6 +93,7 @@ public class CIAdminCommon
         public final CIAttribute Key = new CIAttribute(this, "Key");
         public final CIAttribute Value = new CIAttribute(this, "Value");
         public final CIAttribute Description = new CIAttribute(this, "Description");
+        public final CIAttribute CompanyLink = new CIAttribute(this, "CompanyLink");
         public final CIAttribute Creator = new CIAttribute(this, "Creator");
         public final CIAttribute Created = new CIAttribute(this, "Created");
         public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
