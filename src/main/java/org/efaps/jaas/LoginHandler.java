@@ -351,15 +351,13 @@ public class LoginHandler
      *                        groups for the given person could not be set.
      */
     protected void updateCompanies(final LoginContext _login,
-                                final Person _person)
+                                   final Person _person)
         throws EFapsException
     {
-        for (final JAASSystem system : JAASSystem.getAllJAASSystems()) {
-            _person.setCompanies(system, _person.getCompaniesFromDB(null));
-            break;
+        if (!JAASSystem.getAllJAASSystems().isEmpty()) {
+            _person.setCompanies(JAASSystem.getAllJAASSystems().iterator().next(), _person.getCompaniesFromDB(null));
         }
     }
-
 
     /**
      * This is the getter method for instance variable {@link #applicationName}.

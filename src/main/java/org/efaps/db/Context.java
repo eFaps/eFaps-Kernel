@@ -1044,12 +1044,11 @@ public final class Context
                         context.setUserAttribute(Context.CURRENTCOMPANY, "0");
                     }
                 }
+                // if no current company is set in the UserAttributes, the first one found is set
                 if (context.companyId == null && context.person.getCompanies().size() > 0) {
-                    for (final Long compID : context.person.getCompanies()) {
-                        context.setUserAttribute(Context.CURRENTCOMPANY, compID.toString());
-                        context.companyId = compID;
-                        break;
-                    }
+                    final Long compID = context.person.getCompanies().iterator().next();
+                    context.setUserAttribute(Context.CURRENTCOMPANY, compID.toString());
+                    context.companyId = compID;
                 }
             }
         }
