@@ -453,6 +453,25 @@ public final class SystemConfiguration
     public Properties getAttributeValueAsProperties(final String _key)
         throws EFapsException
     {
+        return getAttributeValueAsProperties(_key, false);
+    }
+
+
+    /**
+     * Returns for given <code>_key</code> the related value as Properties. If
+     * no attribute is found an empty Properties is returned.
+     * Can concatenates Properties for Keys.<br/>
+     * e.b. Key, Key01, Key02, Key03
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _concatenate  concatenate or not
+     * @return map with properties
+     * @throws EFapsException on error
+     */
+    public Properties getAttributeValueAsProperties(final String _key,
+                                                    final boolean _concatenate)
+        throws EFapsException
+    {
         final Properties ret = new Properties();
         final String value = getAttributeValue(_key);
         if (value != null) {
@@ -462,8 +481,30 @@ public final class SystemConfiguration
                 throw new EFapsException(SystemConfiguration.class, "getAttributeValueAsProperties", e);
             }
         }
+        if (_concatenate) {
+            for (int i = 1; i < 100; i++) {
+                final String keyTmp = _key + String.format("%02d", i);
+                final String valueTmp = getAttributeValue(keyTmp);
+                final Properties propsTmp = new Properties();
+                if (valueTmp != null) {
+                    try {
+                        propsTmp.load(new StringReader(value));
+                    } catch (final IOException e) {
+                        throw new EFapsException(SystemConfiguration.class, "getAttributeValueAsPropertiesConcat", e);
+                    }
+                } else {
+                    break;
+                }
+                if (propsTmp.isEmpty()) {
+                    break;
+                } else {
+                    ret.putAll(propsTmp);
+                }
+            }
+        }
         return ret;
     }
+
 
     /**
      * Read the config.
