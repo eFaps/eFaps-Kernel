@@ -115,6 +115,7 @@ public abstract class AbstractUserObject
      *                      system
      * @throws EFapsException if the assignment could not be made
      */
+    @SuppressWarnings("SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING")
     public void assignToJAASSystem(final JAASSystem _jaasSystem,
                                    final String _jaasKey)
         throws EFapsException
@@ -144,6 +145,7 @@ public abstract class AbstractUserObject
                                 Context.getDbType().getCurrentTimeStamp()).append(",").append(context.getPersonId())
                                 .append(",").append(Context.getDbType().getCurrentTimeStamp()).append(",").append(
                                                 getId()).append(",").append(_jaasSystem.getId()).append(")");
+
                 stmt = rsrc.getConnection().prepareStatement(cmd.toString());
                 final int rows = stmt.executeUpdate();
                 if (rows == 0) {
