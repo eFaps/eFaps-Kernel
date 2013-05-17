@@ -463,7 +463,6 @@ public final class SystemConfiguration
      * Can concatenates Properties for Keys.<br/>
      * e.b. Key, Key01, Key02, Key03
      *
-     * @param _parameter Parameter as passed by the eFaps API
      * @param _concatenate  concatenate or not
      * @return map with properties
      * @throws EFapsException on error
