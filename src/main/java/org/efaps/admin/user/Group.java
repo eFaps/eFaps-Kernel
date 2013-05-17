@@ -23,7 +23,6 @@ package org.efaps.admin.user;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -89,6 +88,15 @@ public final class Group
                     .column("STATUS")
                     .from("V_USERGROUP", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "UUID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * This is the SQL select statement to select a Group from the database using the JAAS key..
+     */
+    private static final String SQL_JAASKEY = new SQLSelect().column("ID")
+                    .from("V_USERGROUPJASSKEY", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "JAASKEY").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .addPart(SQLPart.AND).addColumnPart(0, "JAASSYSID").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
 
     /**
@@ -259,19 +267,16 @@ public final class Group
         try {
             rsrc = Context.getThreadContext().getConnectionResource();
 
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             try {
-                final  StringBuilder cmd = new StringBuilder()
-                    .append("select ").append("ID ").append("from V_USERGROUPJASSKEY ")
-                    .append("where JAASKEY='").append(_jaasKey).append("' ")
-                    .append("and JAASSYSID=").append(_jaasSystem.getId());
-
-                stmt = rsrc.getConnection().createStatement();
-                final ResultSet resultset = stmt.executeQuery(cmd.toString());
-                if (resultset.next()) {
-                    groupId = resultset.getLong(1);
+                stmt = rsrc.getConnection().prepareStatement(Group.SQL_JAASKEY);
+                stmt.setObject(1, _jaasKey);
+                stmt.setObject(2, _jaasSystem.getId());
+                final ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    groupId = rs.getLong(1);
                 }
-                resultset.close();
+                rs.close();
             } catch (final SQLException e) {
                 Group.LOG.error("search for group for JAAS system '" + _jaasSystem.getName() + "' "
                         + "with key '" + _jaasKey + "' is not possible", e);

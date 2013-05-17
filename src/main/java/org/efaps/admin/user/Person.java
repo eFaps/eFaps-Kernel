@@ -162,6 +162,15 @@ public final class Person
                     .toString();
 
     /**
+     * This is the SQL select statement to select a Role from the database using the JAAS key..
+     */
+    private static final String SQL_JAASKEY = new SQLSelect().column("ID")
+                    .from("V_USERPERSONJASSKEY", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "JAASKEY").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .addPart(SQLPart.AND).addColumnPart(0, "JAASSYSID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
      * Name of the Cache by ID.
      */
     private static String IDCACHE = "Person4ID";
@@ -1574,21 +1583,16 @@ public final class Person
         ConnectionResource rsrc = null;
         try {
             rsrc = Context.getThreadContext().getConnectionResource();
-
-            Statement stmt = null;
-
+            PreparedStatement stmt = null;
             try {
-                final StringBuilder cmd = new StringBuilder();
-                cmd.append("select ").append("ID ").append("from V_USERPERSONJASSKEY ").append("where JAASKEY='")
-                                .append(_jaasKey).append("' ").append("and JAASSYSID=").append(_jaasSystem.getId());
-
-                stmt = rsrc.getConnection().createStatement();
-                final ResultSet resultset = stmt.executeQuery(cmd.toString());
-                if (resultset.next()) {
-                    personId = resultset.getLong(1);
+                stmt = rsrc.getConnection().prepareStatement(Person.SQL_JAASKEY);
+                stmt.setObject(1, _jaasKey);
+                stmt.setObject(2, _jaasSystem.getId());
+                final ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    personId = rs.getLong(1);
                 }
-                resultset.close();
-
+                rs.close();
             } catch (final SQLException e) {
                 Person.LOG.error("search for person for JAAS system '" + _jaasSystem.getName() + "' with key '"
                                 + _jaasKey + "' is not possible", e);
