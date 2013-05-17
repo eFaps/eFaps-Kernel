@@ -449,11 +449,13 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         </dependency>
         -->
 
-        <!-- findbug on provided scope to be able to deactivate findbug alerts using annotations -->
+        <!--
+            findbug to be able to deactivate findbug alerts using annotations,
+            must be inlcluded to be able to compile
+         -->
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>annotations</artifactId>
-            <scope>provided</scope>
        </dependency>
 
         <!-- test -->
