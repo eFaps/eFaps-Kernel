@@ -1234,13 +1234,13 @@ public class Type
     protected static void cacheType(final Type _type)
     {
         final Cache<UUID, Type> cache4UUID = InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
-        cache4UUID.putIfAbsent(_type.getUUID(), _type);
+        cache4UUID.put(_type.getUUID(), _type);
 
         final Cache<String, Type> nameCache = InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE);
-        nameCache.putIfAbsent(_type.getName(), _type);
+        nameCache.put(_type.getName(), _type);
 
         final Cache<Long, Type> idCache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
-        idCache.putIfAbsent(_type.getId(), _type);
+        idCache.put(_type.getId(), _type);
     }
 
     /**

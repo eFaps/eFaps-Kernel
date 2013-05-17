@@ -70,10 +70,9 @@ public class BooleanType
      * @param _value    value to evaluate
      * @return related evaluated boolean value
      */
-    protected boolean eval(final Object... _value)
+    protected Boolean eval(final Object... _value)
     {
         final Boolean ret;
-
         if (_value == null) {
             ret = null;
         } else if (_value[0] instanceof String) {
@@ -83,7 +82,6 @@ public class BooleanType
         } else  {
             ret = false;
         }
-
         return ret;
     }
 

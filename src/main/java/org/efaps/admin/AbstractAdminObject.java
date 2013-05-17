@@ -20,6 +20,7 @@
  */
 package org.efaps.admin;
 
+import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -55,8 +56,12 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  */
 public abstract class AbstractAdminObject
-    implements CacheObjectInterface
+    implements CacheObjectInterface, Serializable
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Logging instance used in this class.

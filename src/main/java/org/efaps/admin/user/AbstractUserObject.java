@@ -117,7 +117,6 @@ public abstract class AbstractUserObject
                                    final String _jaasKey)
         throws EFapsException
     {
-
         ConnectionResource rsrc = null;
         try {
             final Context context = Context.getThreadContext();
