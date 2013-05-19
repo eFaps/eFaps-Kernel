@@ -36,6 +36,8 @@ import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 /**
  * The database driver is used for Oracle databases starting with version 9i.
  * It does not support auto generated keys. To generate a new id number,
@@ -197,6 +199,7 @@ public class OracleDatabase
      * @throws SQLException if delete of the views, tables or sequences failed
      */
     @Override
+    @SuppressWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     public void deleteAll(final Connection _con)
         throws SQLException
     {
@@ -409,9 +412,9 @@ public class OracleDatabase
 
     /**
      * {@inheritDoc}
-     * @throws SQLException
      */
     @Override
+    @SuppressWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     public boolean existsSequence(final Connection _con,
                                   final String _name)
         throws SQLException
@@ -559,7 +562,7 @@ public class OracleDatabase
     {
         String ret = _name;
         if (_name.length() > 30) {
-            final byte[] buffer = _name.getBytes();
+            final byte[] buffer = _name.getBytes("UTF8");
             final ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
             final CheckedInputStream cis = new CheckedInputStream(bais, new Adler32());
             final byte[] readBuffer = new byte[5];

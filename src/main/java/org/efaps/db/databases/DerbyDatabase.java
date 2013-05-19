@@ -30,6 +30,8 @@ import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 /**
  * The class implements Apache Derby specific methods for data base access.
  *
@@ -147,6 +149,7 @@ public class DerbyDatabase
      * @throws SQLException if remove of keys, views or tables failed
      */
     @Override
+    @SuppressWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     public void deleteAll(final Connection _con)
         throws SQLException
     {
