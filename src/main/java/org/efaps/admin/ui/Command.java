@@ -35,12 +35,15 @@ import org.slf4j.LoggerFactory;
 public class Command
     extends AbstractCommand
 {
-
     /**
      * Logger for this class.
      */
     protected static final Logger LOG = LoggerFactory.getLogger(Command.class);
 
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructor to set the id and name of the command object.

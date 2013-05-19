@@ -32,6 +32,11 @@ public class FieldChart
     extends Field
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      *
      * @param _id id of the field group
      * @param _uuid UUID of the field group

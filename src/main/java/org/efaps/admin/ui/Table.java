@@ -43,6 +43,11 @@ public class Table
     protected static final Logger LOG = LoggerFactory.getLogger(Table.class);
 
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * This is the constructor to set the id and the name.
      *
      * @param _id id of the new table

@@ -53,7 +53,6 @@ import org.slf4j.LoggerFactory;
 public class Field
     extends AbstractUserInterfaceObject
 {
-
     /**
      * Used to define the different display modes for the Userinterface.
      */
@@ -67,6 +66,11 @@ public class Field
         /** the field will not be displayed. */
         NONE;
     }
+
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Name of the Cache by ID.

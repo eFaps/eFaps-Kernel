@@ -53,6 +53,11 @@ public final class JAASSystem
     extends AbstractAdminObject
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(JAASSystem.class);

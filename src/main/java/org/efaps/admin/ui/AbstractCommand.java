@@ -130,6 +130,11 @@ public abstract class AbstractCommand
     }
 
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * The instance variable stores if the execution of the command needs a
      * confirmation of the user. The default value is <i>false</i>.
      *

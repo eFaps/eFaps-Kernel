@@ -30,6 +30,11 @@ public class FieldGroup
     extends Field
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Group Count if in a row / columnd must be shown more than one value. The
      * default value is <code>-1</code> meaning no group count is set.
      *

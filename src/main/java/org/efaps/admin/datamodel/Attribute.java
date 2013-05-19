@@ -63,7 +63,6 @@ import org.slf4j.LoggerFactory;
 public class Attribute
     extends AbstractDataModelObject
 {
-
     /**
      * ENUM used to access the different attribute types.
      */
@@ -109,6 +108,11 @@ public class Attribute
             return this.uuid;
         }
     }
+
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Logging instance used in this class.

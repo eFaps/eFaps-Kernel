@@ -50,6 +50,10 @@ import org.slf4j.LoggerFactory;
 public class Dimension
     extends AbstractAdminObject
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Logging instance used in this class.

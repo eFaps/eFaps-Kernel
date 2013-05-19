@@ -51,6 +51,10 @@ import org.slf4j.LoggerFactory;
 public final class SQLTable
     extends AbstractDataModelObject
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Logging instance used in this class.

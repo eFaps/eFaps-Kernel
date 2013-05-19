@@ -44,6 +44,11 @@ public class Search
     protected static final Logger LOG = LoggerFactory.getLogger(Search.class);
 
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Stores the default search command used when the search is called.
      */
     private AbstractCommand defaultCommand = null;

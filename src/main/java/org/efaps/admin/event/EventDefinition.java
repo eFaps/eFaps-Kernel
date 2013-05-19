@@ -52,6 +52,10 @@ public final class EventDefinition
     extends AbstractAdminObject
     implements EventExecution
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Logger for this class.

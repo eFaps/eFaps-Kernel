@@ -44,6 +44,10 @@ import org.efaps.util.EFapsException;
 public class FieldClassification
     extends Field
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * This is the constructor of the field class.

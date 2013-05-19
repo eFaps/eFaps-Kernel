@@ -54,8 +54,7 @@ import org.slf4j.LoggerFactory;
  * and links.
  *
  * @author The eFaps Team
- * @version $Id: SystemConfiguration.java 7483 2012-05-11 16:57:38Z
- *          jan@moxter.net $
+ * @version $Id$
  */
 public final class SystemConfiguration
     implements CacheObjectInterface
@@ -463,6 +462,7 @@ public final class SystemConfiguration
      * Can concatenates Properties for Keys.<br/>
      * e.b. Key, Key01, Key02, Key03
      *
+     * @param _key key of searched attribute
      * @param _concatenate  concatenate or not
      * @return map with properties
      * @throws EFapsException on error

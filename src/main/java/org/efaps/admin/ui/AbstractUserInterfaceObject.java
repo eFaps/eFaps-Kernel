@@ -94,9 +94,16 @@ public abstract class AbstractUserInterfaceObject
     }
 
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Used as <code>null</code> replacement for the cache.
      */
-    private static AbstractUserInterfaceObject NULL = new AbstractUserInterfaceObject(Long.valueOf(0), null, null) { };
+    private static AbstractUserInterfaceObject NULL = new AbstractUserInterfaceObject(Long.valueOf(0), null, null) {
+        private static final long serialVersionUID = 1L;
+    };
 
     /**
      * The instance variable is an Access HashSet to store all userIds (person,

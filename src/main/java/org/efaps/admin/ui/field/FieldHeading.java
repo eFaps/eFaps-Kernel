@@ -30,6 +30,11 @@ public class FieldHeading
     extends Field
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Stores the level of the heading.
      */
     private int level = 1;

@@ -36,6 +36,10 @@ import org.efaps.util.cache.CacheReloadException;
 public class AttributeSet
     extends Type
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Type of the attribute.

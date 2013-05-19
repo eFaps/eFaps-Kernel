@@ -44,6 +44,11 @@ public class Menu
     protected static final Logger LOG = LoggerFactory.getLogger(Menu.class);
 
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Constructor to set the id and name of the menu object.
      *
      * @param _id id of the command to set

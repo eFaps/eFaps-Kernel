@@ -38,6 +38,10 @@ import org.efaps.util.cache.CacheReloadException;
 public class Classification
     extends Type
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Enum contains the keys for the attributes.

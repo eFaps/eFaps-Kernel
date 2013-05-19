@@ -53,6 +53,11 @@ public abstract class AbstractCollection
     extends AbstractUserInterfaceObject
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Instance variable for all field expressions.
      *
      * @see #addFieldExpr

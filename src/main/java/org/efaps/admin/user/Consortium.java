@@ -147,7 +147,7 @@ public final class Consortium
     }
 
     /**
-     * @param _company Company to add to this Consortium
+     * @param _companyId ID of the Company to add to this Consortium
      */
     protected void addCompany(final Long _companyId)
     {

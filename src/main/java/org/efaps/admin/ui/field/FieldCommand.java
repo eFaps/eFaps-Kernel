@@ -31,6 +31,11 @@ public class FieldCommand
     extends Field
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Must the button rendered? Default: true
      */
     private boolean renderButton = true;

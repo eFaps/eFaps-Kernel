@@ -25,6 +25,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.Command;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 
 /**
@@ -37,10 +38,14 @@ public class FieldPicker
     extends Field
 {
     /**
-     * Command to be executed on the picker field.
+     * Needed for serialization.
      */
-    private Command command;
+    private static final long serialVersionUID = 1L;
 
+    /**
+     * ID of the Command to be executed on the picker field.
+     */
+    private long commandID;
 
     /**
      * @param _id       id of the field
@@ -58,10 +63,12 @@ public class FieldPicker
      * Getter method for the instance variable {@link #command}.
      *
      * @return value of instance variable {@link #command}
+     * @throws CacheReloadException on error
      */
     public Command getCommand()
+        throws CacheReloadException
     {
-        return this.command;
+        return Command.get(this.commandID);
     }
 
     /**
@@ -82,7 +89,7 @@ public class FieldPicker
         throws EFapsException
     {
         if (_linkType.isKindOf(CIAdminUserInterface.LinkField2Command.getType())) {
-            this.command = Command.get(_toId);
+            this.commandID = _toId;
         } else {
             super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }

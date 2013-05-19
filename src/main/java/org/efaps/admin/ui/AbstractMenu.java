@@ -41,6 +41,10 @@ import org.efaps.util.cache.CacheReloadException;
 public abstract class AbstractMenu
     extends AbstractCommand
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * All sub commands or menus are store in the tree map. The tree map is used

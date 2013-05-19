@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 public final class Group
     extends AbstractUserObject
 {
-
     /**
      * Needed for serialization.
      */
@@ -125,6 +124,7 @@ public final class Group
      * {@link #initialize()} to read all groups from the database.
      *
      * @param _id       id of the group
+     * @param _uuid     UUID of the group
      * @param _name     name of the group
      * @param _status   status of the group
      */

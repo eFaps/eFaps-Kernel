@@ -39,11 +39,15 @@ import org.slf4j.LoggerFactory;
 public class Form
     extends AbstractCollection
 {
-
     /**
      * Logging instance used in this class.
      */
     protected static final Logger LOG = LoggerFactory.getLogger(Form.class);
+
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Stores the mapping from type to tree menu.

@@ -38,11 +38,15 @@ import org.slf4j.LoggerFactory;
 public class Image
     extends AbstractUserInterfaceObject
 {
-
     /**
      * Logging instance used in this class.
      */
     protected static final Logger LOG = LoggerFactory.getLogger(Image.class);
+
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructor to set the id and name of the command object.
@@ -78,7 +82,7 @@ public class Image
      * @see #getCache
      */
     public static Image get(final long _id)
-            throws CacheReloadException
+        throws CacheReloadException
     {
         return AbstractUserInterfaceObject.<Image>get(_id, Image.class, CIAdminUserInterface.Image.getType());
     }
@@ -150,5 +154,4 @@ public class Image
     {
         return  Long.valueOf(getId()).intValue();
     }
-
 }

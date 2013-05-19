@@ -35,6 +35,11 @@ public class FieldSet
     extends Field
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Order of this FieldSet.
      */
     private final List<String> order = new ArrayList<String>();

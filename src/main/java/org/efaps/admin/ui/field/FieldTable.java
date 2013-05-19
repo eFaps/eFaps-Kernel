@@ -34,13 +34,15 @@ public class FieldTable
     extends Field
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * The instance variable stores the target user interface table object which
      * is shown by the this field.
-     *
-     * @see #getTargetTable
-     * @see #setTargetTable
      */
-    private Table targetTable = null;
+    private long targetTableID = 0;
 
     /**
      * Name of the field the StructurBrowser is bedded into the target.
@@ -92,7 +94,7 @@ public class FieldTable
         throws EFapsException
     {
         if (_linkType.isKindOf(CIAdminUserInterface.LinkTargetTable.getType())) {
-            this.targetTable = Table.get(_toId);
+            this.targetTableID = _toId;
         } else {
             super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
@@ -133,10 +135,12 @@ public class FieldTable
      * This is the getter method for the instance variable {@link #targetTable}.
      *
      * @return value of instance variable {@link #targetTable}
+     * @throws CacheReloadException on error
      */
     public Table getTargetTable()
+        throws CacheReloadException
     {
-        return this.targetTable;
+        return Table.get(this.targetTableID);
     }
 
     /**
