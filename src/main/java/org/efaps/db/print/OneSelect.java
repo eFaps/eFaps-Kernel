@@ -423,9 +423,11 @@ public class OneSelect
      * @param _select       SQL select statement
      * @param _colIndex     actual column index
      * @return number of columns added in this part of the SQL statement
+     * @throws EFapsException on error
      */
     public int append2SQLSelect(final SQLSelect _select,
                                 final int _colIndex)
+        throws EFapsException
     {
         Type type;
         if (this.selectParts.size() > 0) {

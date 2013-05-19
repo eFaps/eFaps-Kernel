@@ -627,8 +627,10 @@ public abstract class AbstractPrintQuery
      * Method to create on Statement out of the different parts.
      *
      * @return StringBuilder containing the SQL statement
+     * @throws EFapsException on error
      */
     private String createSQLStatement()
+        throws EFapsException
     {
 
         final SQLSelect select = new SQLSelect()
