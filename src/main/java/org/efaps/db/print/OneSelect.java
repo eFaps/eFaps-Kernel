@@ -379,8 +379,10 @@ public class OneSelect
      * Method used to append to the from part of an SQL statement.
      *
      * @param _select   SQL select wrapper
+     * @throws EFapsException on error
      */
     public void append2SQLFrom(final SQLSelect _select)
+        throws EFapsException
     {
         // for attributes it must be evaluated if the attribute is inside a child table
         if ((this.valueSelect != null) && "attribute".equals(this.valueSelect.getValueType())) {

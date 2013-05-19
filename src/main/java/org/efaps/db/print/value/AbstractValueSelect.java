@@ -156,11 +156,13 @@ public abstract class AbstractValueSelect
      * @param _tableIndex index of the table
      * @param _colIndex last index of the column
      * @return number of columns added to the select statement
+     * @throws EFapsException on error
      */
     public int append2SQLSelect(final Type _type,
                                 final SQLSelect _select,
                                 final int _tableIndex,
                                 final int _colIndex)
+        throws EFapsException
     {
         return 0;
     }

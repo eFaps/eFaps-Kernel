@@ -25,6 +25,7 @@ import java.sql.SQLException;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.util.EFapsException;
 
 /**
  * Interface used for the different Select parts.
@@ -41,10 +42,12 @@ public interface ISelectPart
      * @param _select       SQL select statement wrapper
      * @param _relIndex     relation index
      * @return table index of the joint table
+     * @throws EFapsException on error
      */
     int join(final OneSelect _oneselect,
              final SQLSelect _select,
-             final int _relIndex);
+             final int _relIndex)
+        throws EFapsException;
 
     /**
      * Method to get the Type the part belongs to.

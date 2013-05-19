@@ -25,6 +25,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,12 +66,14 @@ public class ClassSelectPart
     public int join(final OneSelect _oneSelect,
                     final SQLSelect _select,
                     final int _relIndex)
+        throws EFapsException
     {
         Integer ret;
         final String tableName = this.classification.getMainTable().getSqlTable();
         final Attribute attr = this.classification.getAttribute(this.classification.getLinkAttributeName());
         if (attr == null) {
             ClassSelectPart.LOG.error("Could not find attribute: '{}'", this.classification.getLinkAttributeName());
+            throw new EFapsException(ClassSelectPart.class, "joinNoAttribute");
         }
         final String column = attr.getSqlColNames().get(0);
         ret = _oneSelect.getTableIndex(tableName, column, _relIndex);

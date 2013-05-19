@@ -194,6 +194,7 @@ public class AttributeValueSelect
                                 final SQLSelect _select,
                                 final int _tableIndex,
                                 final int _colIndex)
+        throws EFapsException
     {
         if (this.attribute == null) {
             this.attribute = _type.getAttribute(this.attrName);
@@ -201,6 +202,7 @@ public class AttributeValueSelect
         if (this.attribute == null) {
             AttributeValueSelect.LOG.error("Could not get an attribute with name '{} 'for type: '{}'", this.attrName,
                             _type);
+            throw new EFapsException(AttributeValueSelect.class, "appendNoAttribute");
         }
         int ret = 0;
         for (final String colName : this.attribute.getSqlColNames()) {

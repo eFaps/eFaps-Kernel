@@ -28,6 +28,7 @@ import java.util.List;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,12 +85,14 @@ public class LinkToSelectPart
     public int join(final OneSelect _oneSelect,
                     final SQLSelect _select,
                     final int _relIndex)
+        throws EFapsException
     {
         // it must be evaluated if the attribute that is used as the base for the linkto is inside a child table
         final Attribute attr = this.type.getAttribute(this.attrName);
         if (attr == null) {
             LinkToSelectPart.LOG.error("Could not find an Attribute with name '{}' for type:{}", this.attrName,
                             this.type);
+            throw new EFapsException(LinkToSelectPart.class, "joinNoAttribute");
         }
         Integer relIndex = _relIndex;
         if (attr != null && !attr.getTable().equals(this.type.getMainTable())) {
