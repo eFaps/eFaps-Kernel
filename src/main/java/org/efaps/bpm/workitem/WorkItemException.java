@@ -40,7 +40,7 @@ public class WorkItemException
      */
     public WorkItemException(final String _errorCode)
     {
-        super (_errorCode);
+        super(_errorCode);
     }
 
     /**
@@ -50,6 +50,6 @@ public class WorkItemException
     public WorkItemException(final String _errorCode,
                              final Throwable _cause)
     {
-        super (_errorCode, _cause);
+        super(_errorCode, _cause);
     }
 }

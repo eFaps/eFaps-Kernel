@@ -36,67 +36,100 @@ import org.drools.time.impl.TimerJobFactoryManager;
 import org.drools.time.impl.TimerJobInstance;
 
 /**
- * TODO comment!
+ * A Timer factory that opens a Context.
  *
  * @author The eFaps Team
  * @version $Id$
  */
 public class ContextTimerJobFactoryManager
-    implements
-    TimerJobFactoryManager
+    implements TimerJobFactoryManager
 {
-
+    /**
+     * The CommandSerice that will be executed on time event.
+     */
     private CommandService commandService;
 
+    /**
+     * Timer instances.
+     */
     private final Map<Long, TimerJobInstance> timerInstances;
 
-    public void setCommandService(final CommandService commandService)
-    {
-        this.commandService = commandService;
-    }
-
+    /**
+     * Default Constructor.
+     */
     public ContextTimerJobFactoryManager()
     {
         this.timerInstances = new ConcurrentHashMap<Long, TimerJobInstance>();
     }
 
-    public TimerJobInstance createTimerJobInstance(final Job job,
-                                                   final JobContext ctx,
-                                                   final Trigger trigger,
-                                                   final JobHandle handle,
-                                                   final InternalSchedulerService scheduler)
-    {
-        ctx.setJobHandle(handle);
-        final ContextTimerJobInstance jobInstance = new ContextTimerJobInstance(new SelfRemovalJob(job),
-                        new SelfRemovalJobContext(ctx, this.timerInstances),
-                        trigger,
-                        handle,
-                        scheduler);
-
-        return jobInstance;
-    }
-
-    public void addTimerJobInstance(final TimerJobInstance instance)
-    {
-
-        this.timerInstances.put(instance.getJobHandle().getId(),
-                        instance);
-    }
-
-    public void removeTimerJobInstance(final TimerJobInstance instance)
-    {
-
-        this.timerInstances.remove(instance.getJobHandle().getId());
-    }
-
-    public Collection<TimerJobInstance> getTimerJobInstances()
-    {
-        return this.timerInstances.values();
-    }
-
+    /**
+     * Get the Command Service.
+     * @return value of instance variable {@link #commandService}
+     * @see org.drools.time.impl.TimerJobFactoryManager#getCommandService()
+     */
     public CommandService getCommandService()
     {
         return this.commandService;
+    }
 
+    /**
+     * Set the Command Service.
+     * @param _commandService   Command Service to set
+     * @see org.drools.time.impl.TimerJobFactoryManager#setCommandService(org.drools.command.CommandService)
+     */
+    public void setCommandService(final CommandService _commandService)
+    {
+        this.commandService = _commandService;
+    }
+
+    /**
+     * @param _job          job to be used for timer
+     * @param _ctx          jobContext
+     * @param _trigger      trigger to use
+     * @param _handle       handle to the job
+     * @param _scheduler    service
+     * @return new ContextTimerJobInstance
+     */
+    public TimerJobInstance createTimerJobInstance(final Job _job,
+                                                   final JobContext _ctx,
+                                                   final Trigger _trigger,
+                                                   final JobHandle _handle,
+                                                   final InternalSchedulerService _scheduler)
+    {
+        _ctx.setJobHandle(_handle);
+        final ContextTimerJobInstance jobInstance = new ContextTimerJobInstance(new SelfRemovalJob(_job),
+                        new SelfRemovalJobContext(_ctx, this.timerInstances),
+                        _trigger,
+                        _handle,
+                        _scheduler);
+        return jobInstance;
+    }
+
+    /**
+     * @param _instance  instance of a timer job to add
+     * @see org.drools.time.impl.TimerJobFactoryManager#addTimerJobInstance(org.drools.time.impl.TimerJobInstance)
+     */
+    public void addTimerJobInstance(final TimerJobInstance _instance)
+    {
+        this.timerInstances.put(_instance.getJobHandle().getId(),
+                        _instance);
+    }
+
+    /**
+     * @param _instance  instance of a timer job to remove
+     * @see org.drools.time.impl.TimerJobFactoryManager#removeTimerJobInstance(org.drools.time.impl.TimerJobInstance)
+     */
+    public void removeTimerJobInstance(final TimerJobInstance _instance)
+    {
+        this.timerInstances.remove(_instance.getJobHandle().getId());
+    }
+
+    /**
+     * @return a collection of TimerJobInstance
+     * @see org.drools.time.impl.TimerJobFactoryManager#getTimerJobInstances()
+     */
+    public Collection<TimerJobInstance> getTimerJobInstances()
+    {
+        return this.timerInstances.values();
     }
 }

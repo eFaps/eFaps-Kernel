@@ -39,11 +39,12 @@ public class ContextTimerJobInstance
 {
 
     /**
-     * @param _job
-     * @param _ctx
-     * @param _trigger
-     * @param _handle
-     * @param _scheduler
+     * Constructor.
+     * @param _job          job to be used for timer
+     * @param _ctx          jobContext
+     * @param _trigger      trigger to use
+     * @param _handle       handle to the job
+     * @param _scheduler    service
      */
     public ContextTimerJobInstance(final Job _job,
                                    final JobContext _ctx,
@@ -63,5 +64,4 @@ public class ContextTimerJobInstance
         Context.commit();
         return null;
     }
-
 }

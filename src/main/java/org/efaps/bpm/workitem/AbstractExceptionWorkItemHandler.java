@@ -59,7 +59,9 @@ public abstract class AbstractExceptionWorkItemHandler
     {
         try {
             this.originalTaskHandler.executeWorkItem(_workItem, _manager);
+        // CHECKSTYLE:OFF
         } catch (final Throwable e) {
+        // CHECKSTYLE:ON
             handleExecuteException(e, _workItem, _manager);
         }
     }
@@ -76,11 +78,16 @@ public abstract class AbstractExceptionWorkItemHandler
     {
         try {
             this.originalTaskHandler.abortWorkItem(_workItem, _manager);
+        // CHECKSTYLE:OFF
         } catch (final Throwable e) {
+        // CHECKSTYLE:ON
             handleAbortException(e, _workItem, _manager);
         }
     }
 
+    /**
+     * @return the original WorkItem
+     */
     public WorkItemHandler getOriginalTaskHandler()
     {
         return this.originalTaskHandler;

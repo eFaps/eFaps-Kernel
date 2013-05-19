@@ -44,8 +44,6 @@ public final class TransactionHelper
      */
     private static final Logger LOG = LoggerFactory.getLogger(TransactionHelper.class);
 
-
-
     /**
      * Sequence used to search for the UserTransaction inside JNDI.
      */
@@ -61,8 +59,12 @@ public final class TransactionHelper
         "java:global/" + INamingBinds.RESOURCE_TRANSMANAG,
         "java:comp/env/" + INamingBinds.RESOURCE_TRANSMANAG };
 
-
-
+    /**
+     * Hidden Constructor for Utitlty class.
+     */
+    private TransactionHelper()
+    {
+    }
 
     /**
      * @return the transactionmanager
