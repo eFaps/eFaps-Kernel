@@ -350,7 +350,8 @@ public final class BPM
         } catch (final NoSuchMethodException e) {
             BPM.LOG.error("Class could not be found.", e);
         }
-        service.completeWithResults(_taskSummary.getId(), Context.getThreadContext().getPerson().getName(), results);
+        service.completeWithResults(_taskSummary.getId(),
+                        Context.getThreadContext().getPerson().getUUID().toString(), results);
     }
 
     /**
