@@ -70,6 +70,7 @@ import org.efaps.bpm.timer.ContextTimerJobFactoryManager;
 import org.efaps.bpm.transaction.ConnectionProvider;
 import org.efaps.bpm.transaction.TransactionHelper;
 import org.efaps.bpm.workitem.EsjpWorkItemHandler;
+import org.efaps.bpm.workitem.ManualTaskItemHandler;
 import org.efaps.bpm.workitem.SignallingHandlerWrapper;
 import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Checkout;
@@ -243,6 +244,10 @@ public final class BPM
             final EsjpWorkItemHandler esjphandler = new EsjpWorkItemHandler();
             ksession.getWorkItemManager().registerWorkItemHandler("ESJPNode", esjphandler);
             BPM.BPMINSTANCE.workItemsHandlers.put("ESJPNode", esjphandler);
+
+            final ManualTaskItemHandler mthandler = new ManualTaskItemHandler();
+            ksession.getWorkItemManager().registerWorkItemHandler("Manual Task", mthandler);
+            BPM.BPMINSTANCE.workItemsHandlers.put("Manual Task", mthandler);
         }
     }
 
@@ -426,15 +431,14 @@ public final class BPM
     private StatefulKnowledgeSession getKnowledgeSession()
     {
         final SessionConfiguration sessionConfig = new SessionConfiguration(EFapsClassLoader.getInstance()) {
-            TimerJobFactoryManager contextTimerJobFactoryManager = new ContextTimerJobFactoryManager();
+            private final TimerJobFactoryManager contextTimerJobFactoryManager = new ContextTimerJobFactoryManager();
 
             @Override
-            public TimerJobFactoryManager getTimerJobFactoryManager() {
+            public TimerJobFactoryManager getTimerJobFactoryManager()
+            {
                 return this.contextTimerJobFactoryManager;
             }
-
         };
-
 
         StatefulKnowledgeSession ksession;
         if (this.ksessionId == null) {
