@@ -281,6 +281,22 @@ public final class BPM
     }
 
     /**
+     * @param _taskSummary task to be claimed
+     * @throws EFapsException on error
+     */
+    public static void claimTask(final TaskSummary _taskSummary)
+        throws EFapsException
+    {
+        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
+        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+        // check if must be claimed still
+        if (Status.Ready.equals(_taskSummary.getStatus())) {
+            service.claim(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
+        }
+    }
+
+
+    /**
      * @param _taskSummary TaskSummary
      * @param _decision one of true, false, null
      * @param _values mapping of additional values
@@ -296,12 +312,12 @@ public final class BPM
         ksession.signalEvent("", null);
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
-            service.claim(_taskSummary.getId(), Context.getThreadContext().getPerson().getName());
+            service.claim(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
         }
         if (Status.InProgress.equals(_taskSummary.getStatus())) {
-            service.resume(_taskSummary.getId(), Context.getThreadContext().getPerson().getName());
+            service.resume(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
         } else {
-            service.start(_taskSummary.getId(), Context.getThreadContext().getPerson().getName());
+            service.start(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
         }
 
         final Parameter parameter = new Parameter();
