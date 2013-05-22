@@ -21,14 +21,13 @@
 package org.efaps.db;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.store.AbstractStoreResource;
 import org.efaps.db.store.JCRStoreResource;
 import org.efaps.db.store.JDBCStoreResource;
@@ -36,6 +35,7 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLDelete.DeleteDefintion;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLPart;
+import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +79,22 @@ public final class GeneralInstance
     public static final String EXSYSIDCOLUMN = "EXSYSID";
 
     /**
+     * SQL select statement to select a type from the database by its Name.
+     */
+    private static final String SQL = new SQLSelect()
+                    .column(GeneralInstance.IDCOLUMN)
+                    .column(GeneralInstance.EXSYSIDCOLUMN)
+                    .column(GeneralInstance.EXIDCOLUMN)
+                    .from(GeneralInstance.TABLENAME, 0)
+                    .addPart(SQLPart.WHERE)
+                    .addColumnPart(0, GeneralInstance.ISIDCOLUMN).addPart(SQLPart.EQUAL).addValuePart("?")
+                    .addPart(SQLPart.AND)
+                    .addColumnPart(0, GeneralInstance.ISTYPECOLUMN).addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+
+
+    /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(GeneralInstance.class);
@@ -111,6 +127,8 @@ public final class GeneralInstance
                 insert.column(GeneralInstance.EXIDCOLUMN, _instance.getExchangeId(false));
                 insert.column(GeneralInstance.EXSYSIDCOLUMN, _instance.getExchangeSystemId(false));
                 ret = insert.execute(_con);
+                _instance.setGeneralId(ret);
+                _instance.setGeneralised(true);
             } catch (final SQLException e) {
                 GeneralInstance.LOG.error("executeOneStatement", e);
                 throw new EFapsException(GeneralInstance.class, "create", e);
@@ -129,53 +147,35 @@ public final class GeneralInstance
         throws EFapsException
     {
         if (_instance.isValid() && _instance.getType().isGeneralInstance()) {
+            PreparedStatement stmt = null;
             try {
-                final Statement queryStmt = _con.createStatement();
-                final AbstractDatabase<?> db = Context.getDbType();
+                try {
+                    stmt = _con.prepareStatement(GeneralInstance.SQL);
+                    stmt.setLong(1, _instance.getId());
+                    stmt.setLong(2, _instance.getType().getId());
 
-                final StringBuilder cmd = new StringBuilder();
-                cmd.append(db.getSQLPart(SQLPart.SELECT)).append(" ")
-                    .append(db.getColumnQuote())
-                    .append(GeneralInstance.IDCOLUMN)
-                    .append(db.getColumnQuote()).append(", ")
-                    .append(db.getColumnQuote())
-                    .append(GeneralInstance.EXSYSIDCOLUMN)
-                    .append(db.getColumnQuote()).append(", ")
-                    .append(db.getColumnQuote())
-                    .append(GeneralInstance.EXIDCOLUMN)
-                    .append(db.getColumnQuote()).append(" ")
-                    .append(db.getSQLPart(SQLPart.FROM)).append(" ")
-                    .append(db.getTableQuote())
-                    .append(GeneralInstance.TABLENAME)
-                    .append(db.getTableQuote()).append(" ")
-                    .append(db.getSQLPart(SQLPart.WHERE)).append(" ")
-                    .append(db.getColumnQuote())
-                    .append(GeneralInstance.ISIDCOLUMN)
-                    .append(db.getColumnQuote())
-                    .append(db.getSQLPart(SQLPart.EQUAL))
-                    .append(_instance.getId()).append(" ")
-                    .append(db.getSQLPart(SQLPart.AND)).append(" ")
-                    .append(db.getColumnQuote())
-                    .append(GeneralInstance.ISTYPECOLUMN)
-                    .append(db.getColumnQuote())
-                    .append(db.getSQLPart(SQLPart.EQUAL))
-                    .append(_instance.getType().getId()).append(" ");
+                    final ResultSet rs = stmt.executeQuery();
+                    while (rs.next()) {
+                        _instance.setGeneralId(rs.getLong(1));
+                        _instance.setExchangeSystemId(rs.getLong(2));
+                        _instance.setExchangeId(rs.getLong(3));
+                        _instance.setGeneralised(true);
+                    }
+                    rs.close();
 
-                final ResultSet rs = queryStmt.executeQuery(cmd.toString());
-                while (rs.next()) {
-                    _instance.setGeneralId(rs.getLong(1));
-                    _instance.setExchangeSystemId(rs.getLong(2));
-                    _instance.setExchangeId(rs.getLong(3));
-                    _instance.setGeneralised(true);
-                }
-                rs.close();
-                queryStmt.close();
-                if (GeneralInstance.LOG.isDebugEnabled()) {
-                    GeneralInstance.LOG.debug(cmd.toString());
+                    if (GeneralInstance.LOG.isDebugEnabled()) {
+                        GeneralInstance.LOG.debug(_instance.toString());
+                    }
+                } catch (final SQLException e) {
+                    GeneralInstance.LOG.error("executeOneStatement", e);
+                    throw new EFapsException(GeneralInstance.class, "create", e);
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
                 }
             } catch (final SQLException e) {
-                GeneralInstance.LOG.error("executeOneStatement", e);
-                throw new EFapsException(GeneralInstance.class, "create", e);
+                throw new EFapsException("generaliseInstance", e);
             }
         }
     }
