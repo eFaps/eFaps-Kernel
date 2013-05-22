@@ -54,6 +54,7 @@ import org.drools.rule.builder.dialect.java.JavaDialectConfiguration;
 import org.drools.runtime.Environment;
 import org.drools.runtime.EnvironmentName;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.process.ProcessInstance;
 import org.drools.runtime.process.WorkItemHandler;
 import org.drools.time.impl.TimerJobFactoryManager;
 import org.efaps.admin.EFapsSystemConfiguration;
@@ -271,13 +272,14 @@ public final class BPM
     /**
      * @param _processId    id of the process to start
      * @param _params       parameter map for the task
+     * @return the <code>ProcessInstance</code> that represents the instance of the process that was started
      */
-    public static void startProcess(final String _processId,
-                                    final Map<String, Object> _params)
+    public static ProcessInstance startProcess(final String _processId,
+                                               final Map<String, Object> _params)
     {
         final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
         UserTaskService.getTaskService(ksession);
-        ksession.startProcess(_processId, _params);
+        return ksession.startProcess(_processId, _params);
     }
 
     /**
@@ -392,6 +394,43 @@ public final class BPM
         } catch (final EFapsException e) {
             BPM.LOG.error("Error on retrieving List of TaskSummaries.");
         }
+        return ret;
+    }
+
+
+    /**
+     * @param _processInstanceId ProcessInstance the task are wanted for
+     * @param _status status
+     * @return list of tasks
+     */
+    public static List<TaskSummary> getTasksByStatusByProcessId(final long _processInstanceId,
+                                                                final List<Status> _status)
+    {
+        final List<TaskSummary> ret = new ArrayList<TaskSummary>();
+        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
+        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+
+        // final String language = Context.getThreadContext().getLanguage();
+        ret.addAll(service.getTasksByStatusByProcessId(_processInstanceId, _status, "en-UK"));
+        return ret;
+    }
+
+    /**
+     * @param _processInstanceId ProcessInstance the task are wanted for
+     * @param _status status
+     * @param _taskName name of the task
+     * @return list of tasks
+     */
+    public static List<TaskSummary> getTasksByStatusByProcessIdByTaskName(final long _processInstanceId,
+                                                                          final List<Status> _status,
+                                                                          final String _taskName)
+    {
+        final List<TaskSummary> ret = new ArrayList<TaskSummary>();
+        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
+        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+
+        // final String language = Context.getThreadContext().getLanguage();
+        ret.addAll(service.getTasksByStatusByProcessIdByTaskName(_processInstanceId, _status, _taskName, "en-UK"));
         return ret;
     }
 
