@@ -103,6 +103,10 @@ import org.slf4j.LoggerFactory;
  */
 public final class BPM
 {
+    /**
+     * Parameter key to be used to pass to the process.
+     */
+    public static final String OUTPARAMETER4TASKDECISION = "eFapsDecision";
 
     /**
      * Logging instance used in this class.
@@ -162,7 +166,9 @@ public final class BPM
         final boolean active = config != null
                         ? config.getAttributeValueAsBoolean(KernelSettings.ACTIVATE_BPM) : false;
         if (active) {
-
+            if (BPM.BPMINSTANCE != null) {
+                UserTaskService.dispose();
+            }
             BPM.BPMINSTANCE = new BPM();
             BPM.BPMINSTANCE.ksessionId = BPM.BPMINSTANCE.getKSessionIDFromDB();
 
@@ -327,7 +333,9 @@ public final class BPM
         parameter.put(ParameterValues.BPM_VALUES, _values);
         parameter.put(ParameterValues.BPM_DECISION, _decision);
         final Map<String, Object> results = new HashMap<String, Object>();
-
+        if (_values != null) {
+            results.putAll(_values);
+        }
         // exec esjp
         try {
             final Class<?> transformer = Class.forName("org.efaps.esjp.bpm.TaskTransformer", true,
@@ -335,7 +343,7 @@ public final class BPM
             final Method method = transformer.getMethod("execute", new Class[] { Parameter.class });
             final Return ret = (Return) method.invoke(transformer.newInstance(), parameter);
             if (ret != null) {
-                results.put("resultTest", ret.get(ReturnValues.VALUES));
+                results.put(BPM.OUTPARAMETER4TASKDECISION, ret.get(ReturnValues.VALUES));
             }
         } catch (final ClassNotFoundException e) {
             BPM.LOG.error("Class could not be found.", e);

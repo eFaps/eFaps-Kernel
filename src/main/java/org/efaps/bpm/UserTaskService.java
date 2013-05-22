@@ -93,4 +93,16 @@ public final class UserTaskService
         }
         return UserTaskService.LOCAL;
     }
+
+    /**
+     * Dispose the Service.
+     */
+    protected static void dispose()
+    {
+        UserTaskService.INSTANCE = null;
+        if (UserTaskService.LOCAL != null) {
+            UserTaskService.LOCAL.dispose();
+            UserTaskService.LOCAL = null;
+        }
+    }
 }
