@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.efaps.admin.event.EventType;
 import org.efaps.update.LinkInstance;
+import org.efaps.update.event.Event;
 
 /**
  * @author The eFaps Team
@@ -78,13 +80,25 @@ public class FormUpdate
          * {@inheritDoc}
          */
         @Override
-        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
         {
             final String value = _tags.get(0);
             if ("type".equals(value)) {
                 // assigns a type the form for which this form instance is the
                 // classification form menu
                 addLink(FormUpdate.LINK2TYPE, new LinkInstance(_text));
+            } else if ("trigger".equals(value)) {
+                if (_tags.size() == 1) {
+                    getEvents().add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
+                                    _attributes.get("program"), _attributes.get("method"), _attributes.get("index")));
+                } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
+                    getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);
+                } else {
+                    super.readXML(_tags, _attributes, _text);
+                }
+
             } else {
                 super.readXML(_tags, _attributes, _text);
             }
