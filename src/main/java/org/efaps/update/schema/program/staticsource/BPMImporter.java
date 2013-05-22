@@ -48,6 +48,11 @@ public class BPMImporter
     extends AbstractSourceImporter
 {
     /**
+     * Possible tagnames for the process tag.
+     */
+    private static String[] PROCESSTAGNAMES = new String[] {"process", "bpmn2:process"};
+
+    /**
      * Default constructor.
      *
      * @param _url      URL to the XSLT file
@@ -74,11 +79,17 @@ public class BPMImporter
             final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             final Document doc = dBuilder.parse(getUrl().openStream(), AbstractSourceImporter.ENCODING);
             doc.getDocumentElement().normalize();
-            final NodeList processNodeList = doc.getElementsByTagName("process");
-            final Node processNode = processNodeList.item(0);
-            if (processNode.getNodeType() == Node.ELEMENT_NODE) {
-                final Element eElement = (Element) processNode;
-                ret = eElement.getAttribute("id");
+
+            for (final String tagName  : BPMImporter.PROCESSTAGNAMES) {
+                final NodeList processNodeList = doc.getElementsByTagName(tagName);
+                if (processNodeList != null && processNodeList.getLength() > 0) {
+                    final Node processNode = processNodeList.item(0);
+                    if (processNode.getNodeType() == Node.ELEMENT_NODE) {
+                        final Element eElement = (Element) processNode;
+                        ret = eElement.getAttribute("id");
+                    }
+                    break;
+                }
             }
         } catch (final ParserConfigurationException e) {
             throw new InstallationException("could not Parse the given URL", e);
@@ -112,11 +123,17 @@ public class BPMImporter
             final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             final Document doc = dBuilder.parse(getUrl().openStream(), AbstractSourceImporter.ENCODING);
             doc.getDocumentElement().normalize();
-            final NodeList processNodeList = doc.getElementsByTagName("process");
-            final Node processNode = processNodeList.item(0);
-            if (processNode.getNodeType() == Node.ELEMENT_NODE) {
-                final Element eElement = (Element) processNode;
-                ret = eElement.getAttribute("tns:version");
+
+            for (final String tagName  : BPMImporter.PROCESSTAGNAMES) {
+                final NodeList processNodeList = doc.getElementsByTagName(tagName);
+                if (processNodeList != null && processNodeList.getLength() > 0) {
+                    final Node processNode = processNodeList.item(0);
+                    if (processNode.getNodeType() == Node.ELEMENT_NODE) {
+                        final Element eElement = (Element) processNode;
+                        ret = eElement.getAttribute("tns:version");
+                    }
+                    break;
+                }
             }
         } catch (final ParserConfigurationException e) {
             throw new InstallationException("could not Parse the given URL", e);
