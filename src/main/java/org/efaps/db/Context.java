@@ -182,7 +182,7 @@ public final class Context
     /**
      * Transaction for the context.
      */
-    private final Transaction transaction;
+    private Transaction transaction;
 
     /**
      * This is the instance variable for the SQL Connection to the database.
@@ -378,7 +378,6 @@ public final class Context
      * context.<br/>
      * If not all connection are closed, all connection are closed.
      *
-     * TODO: better description
      */
     public void close()
     {
@@ -800,6 +799,14 @@ public final class Context
     }
 
     /**
+     * @param _transaction Transaction to set
+     */
+    private void setTransaction(final Transaction _transaction)
+    {
+        this.transaction = _transaction;
+    }
+
+    /**
      * This is the getter method for instance variable {@link #transaction}.
      *
      * @return value of instance variable {@link #transaction}
@@ -825,6 +832,7 @@ public final class Context
      * Get the Company currently valid for this context.
      *
      * @return value of instance variable {@link #company}
+     * @throws CacheReloadException on error
      */
     public Company getCompany()
         throws CacheReloadException
@@ -1055,6 +1063,42 @@ public final class Context
         return context;
     }
 
+
+    /**
+     * Save the Context by committing and beginning a new Transaction.
+     * @throws EFapsException on error
+     */
+    public static void save()
+        throws EFapsException
+    {
+        try {
+            Context.TRANSMANAG.commit();
+            Context.TRANSMANAG.begin();
+            final Context context = Context.getThreadContext();
+            context.setTransaction(Context.TRANSMANAG.getTransaction());
+            context.connectionStack.clear();
+            context.connectionStore.clear();
+        } catch (final SecurityException e) {
+            throw new EFapsException(Context.class, "save.SecurityException", e);
+        } catch (final IllegalStateException e) {
+            throw new EFapsException(Context.class, "save.IllegalStateException", e);
+        } catch (final RollbackException e) {
+            throw new EFapsException(Context.class, "save.RollbackException", e);
+        } catch (final HeuristicMixedException e) {
+            throw new EFapsException(Context.class, "save.HeuristicMixedException", e);
+        } catch (final HeuristicRollbackException e) {
+            throw new EFapsException(Context.class, "save.HeuristicRollbackException", e);
+        } catch (final SystemException e) {
+            throw new EFapsException(Context.class, "save.SystemException", e);
+        } catch (final NotSupportedException e) {
+            throw new EFapsException(Context.class, "save.NotSupportedException", e);
+        }
+    }
+
+    /**
+     * Commit the context.
+     * @throws EFapsException if commit of the transaction manager failed
+     */
     public static void commit()
         throws EFapsException
     {
@@ -1062,8 +1106,8 @@ public final class Context
     }
 
     /**
-     * @throws EFapsException if commit of the transaction manager failed TODO:
-     *             description
+     * @param _close close the threat context or not
+     * @throws EFapsException if commit of the transaction manager failed
      */
     public static void commit(final boolean _close)
         throws EFapsException
