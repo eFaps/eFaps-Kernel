@@ -47,7 +47,6 @@ import org.drools.builder.KnowledgeBuilderConfiguration;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.io.ResourceFactory;
-import org.drools.logger.KnowledgeRuntimeLoggerFactory;
 import org.drools.persistence.jpa.JPAKnowledgeService;
 import org.drools.persistence.jta.JtaTransactionManager;
 import org.drools.rule.builder.dialect.java.JavaDialectConfiguration;
@@ -66,7 +65,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
-import org.efaps.bpm.listener.ProcessEventLstnr;
+import org.efaps.bpm.listener.WorkingMemoryLogListener;
 import org.efaps.bpm.timer.ContextTimerJobFactoryManager;
 import org.efaps.bpm.transaction.ConnectionProvider;
 import org.efaps.bpm.transaction.TransactionHelper;
@@ -526,12 +525,10 @@ public final class BPM
             ksession.getWorkItemManager().registerWorkItemHandler(entry.getKey(), sigWrapper);
         }
 
-        ksession.addEventListener(new ProcessEventLstnr());
         final JPAWorkingMemoryDbLogger logger = new JPAWorkingMemoryDbLogger(ksession);
         ksession.addEventListener(logger);
 
-        // Configures a logger for the session
-        KnowledgeRuntimeLoggerFactory.newConsoleLogger(ksession);
+        WorkingMemoryLogListener.attach(ksession);
         return ksession;
     }
 }
