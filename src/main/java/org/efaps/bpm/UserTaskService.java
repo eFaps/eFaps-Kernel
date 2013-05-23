@@ -90,6 +90,7 @@ public final class UserTaskService
                             OnErrorAction.LOG, EFapsClassLoader.getInstance());
             _ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
             BPM.registerWorkItemHandler("Human Task", humanTaskHandler);
+            humanTaskHandler.connect();
         }
         return UserTaskService.LOCAL;
     }

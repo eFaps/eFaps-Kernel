@@ -316,7 +316,7 @@ public final class BPM
     {
         final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
         final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
-        ksession.signalEvent("", null);
+
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
             service.claim(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
