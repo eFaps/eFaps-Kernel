@@ -404,6 +404,32 @@ public final class BPM
         return ret;
     }
 
+    /**
+     * @return list of assigned tasks
+     */
+    public static List<TaskSummary> getTasksOwned()
+    {
+        final List<TaskSummary> ret = new ArrayList<TaskSummary>();
+        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
+        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+        try {
+            if (Context.getThreadContext().getPerson().getUUID() == null) {
+                BPM.LOG.error("User '{}' has no UUID assigned.", Context.getThreadContext().getPerson().getName());
+            } else {
+                final String persId = Context.getThreadContext().getPerson().getUUID().toString();
+                // final String language = Context.getThreadContext().getLanguage();
+                final List<Status> status = new ArrayList<Status>();
+                status.add(Status.InProgress);
+                status.add(Status.Reserved);
+                status.add(Status.Suspended);
+                ret.addAll(service.getTasksOwned(persId, status, "en-UK"));
+            }
+        } catch (final EFapsException e) {
+            BPM.LOG.error("Error on retrieving List of TaskSummaries.");
+        }
+        return ret;
+    }
+
 
     /**
      * @param _processInstanceId ProcessInstance the task are wanted for
