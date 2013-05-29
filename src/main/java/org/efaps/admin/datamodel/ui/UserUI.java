@@ -70,22 +70,33 @@ public class UserUI
     @Override
     public int compare(final FieldValue _fieldValue,
                        final FieldValue _fieldValue2)
+        throws EFapsException
     {
-        String value = null;
+        final String value;
         if (_fieldValue.getValue() instanceof Person) {
             final Person person = (Person) _fieldValue.getValue();
             value = person.getName();
         } else if (_fieldValue.getValue() instanceof Role) {
             final Role role = (Role) _fieldValue.getValue();
             value = role.getName();
+        } else if (_fieldValue.getValue() instanceof Group) {
+            final Group group = (Group) _fieldValue.getValue();
+            value = group.getName();
+        } else {
+            value = _fieldValue.getValue() == null ? "" : _fieldValue.getValue().toString();
         }
-        final String value2 = null;
+        final String value2;
         if (_fieldValue2.getValue() instanceof Person) {
             final Person person = (Person) _fieldValue2.getValue();
-            value = person.getName();
+            value2 = person.getName();
         } else if (_fieldValue2.getValue() instanceof Role) {
             final Role role = (Role) _fieldValue2.getValue();
-            value = role.getName();
+            value2 = role.getName();
+        } else if (_fieldValue2.getValue() instanceof Group) {
+            final Group group = (Group) _fieldValue2.getValue();
+            value2 = group.getName();
+        } else {
+            value2 = _fieldValue2.getValue() == null ? "" : _fieldValue2.getValue().toString();
         }
         return value.compareTo(value2);
     }
