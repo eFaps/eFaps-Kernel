@@ -320,14 +320,13 @@ public final class Person
     }
 
     /**
-     * Add a role to this person.
+     * Add a Company to this person.
      *
-     * @param _group group to add to this person
-     * @see #groups
+     * @param _company Company to add to this person
      */
-    private void add(final Company _group)
+    private void add(final Company _company)
     {
-        this.companies.add(_group.getId());
+        this.companies.add(_company.getId());
     }
 
     /**
