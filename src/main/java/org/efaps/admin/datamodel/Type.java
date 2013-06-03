@@ -680,6 +680,7 @@ public class Type
             parameter.put(ParameterValues.INSTANCE, _instance);
             parameter.put(ParameterValues.ACCESSTYPE, _accessType);
             parameter.put(ParameterValues.NEW_VALUES, _newValues);
+            parameter.put(ParameterValues.CLASS, this);
 
             for (final EventDefinition event : events) {
                 final Return ret = event.execute(parameter);
@@ -708,6 +709,7 @@ public class Type
             final Parameter parameter = new Parameter();
             parameter.put(ParameterValues.OTHERS, _instances);
             parameter.put(ParameterValues.ACCESSTYPE, _accessType);
+            parameter.put(ParameterValues.CLASS, this);
 
             for (final EventDefinition event : events) {
                 final Return retrn = event.execute(parameter);
