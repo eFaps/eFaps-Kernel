@@ -23,7 +23,6 @@ package org.efaps.admin.datamodel.ui;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
@@ -74,15 +73,15 @@ public class NumberUI
 
     /**
      * {@inheritDoc}
-     * Validate the value by parsing it. If an error is thrown the value is not valid.
      */
     @Override
-    public String validateValue(final String _value,
-                                final Attribute _attribute)
+    public String validateValue(final UIValue _value)
     {
         String ret = null;
         try {
-            Long.valueOf(_value);
+            if (_value.getDbValue() != null) {
+                Long.valueOf(String.valueOf(_value.getDbValue()));
+            }
         } catch (final NumberFormatException e) {
             ret = DBProperties.getProperty(NumberUI.class.getName() + ".InvalidValue");
         }

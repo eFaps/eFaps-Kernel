@@ -24,7 +24,6 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
 import org.efaps.admin.datamodel.Dimension.UoM;
 import org.efaps.admin.datamodel.attributetype.DecimalType;
@@ -155,12 +154,13 @@ public class DecimalWithUoMUI
      * {@inheritDoc}
      */
     @Override
-    public String validateValue(final String _value,
-                                final Attribute _attribute)
+    public String validateValue(final UIValue _value)
     {
         String ret = null;
         try {
-            DecimalType.parseLocalized(_value);
+            if (_value.getDbValue() != null) {
+                DecimalType.parseLocalized(String.valueOf(_value.getDbValue()));
+            }
         } catch (final EFapsException e) {
             ret = DBProperties.getProperty(DecimalUI.class.getName() + ".InvalidValue");
         }

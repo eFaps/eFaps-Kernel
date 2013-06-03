@@ -22,7 +22,6 @@ package org.efaps.admin.datamodel.ui;
 
 import java.io.Serializable;
 
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.util.EFapsException;
 
 /**
@@ -106,8 +105,7 @@ public abstract class AbstractUI
      * {@inheritDoc}
      */
     @Override
-    public String validateValue(final String _value,
-                                final Attribute _attribute)
+    public String validateValue(final UIValue _value)
         throws EFapsException
     {
         return null;

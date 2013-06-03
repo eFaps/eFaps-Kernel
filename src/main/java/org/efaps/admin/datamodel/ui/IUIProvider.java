@@ -40,4 +40,16 @@ public interface IUIProvider
     Object getValue(final UIValue _uiValue)
         throws EFapsException;
 
+    /**
+     * Method is used to validate a value given from an UserInterface.
+     *
+     * @param _uiValue UIValue to validate
+     * @return if the given value is valid for this type null must be returned,
+     *         else the message that will be shown to the user as a snipplet
+     *         must be returned
+     * @throws EFapsException on error
+     */
+    String validateValue(final UIValue _uiValue)
+        throws EFapsException;
+
 }

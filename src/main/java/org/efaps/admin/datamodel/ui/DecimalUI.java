@@ -26,7 +26,6 @@ import java.text.NumberFormat;
 import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.DecimalType;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
@@ -211,12 +210,13 @@ public class DecimalUI
      * {@inheritDoc}
      */
     @Override
-    public String validateValue(final String _value,
-                                final Attribute _attribute)
+    public String validateValue(final UIValue _value)
     {
         String ret = null;
         try {
-            DecimalType.parseLocalized(_value);
+            if (_value.getDbValue() != null) {
+                DecimalType.parseLocalized(String.valueOf(_value.getDbValue()));
+            }
         } catch (final EFapsException e) {
             ret = DBProperties.getProperty(DecimalUI.class.getName() + ".InvalidValue");
         }

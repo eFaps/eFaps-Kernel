@@ -21,13 +21,13 @@
 package org.efaps.admin.datamodel.ui;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
 import org.efaps.admin.datamodel.Dimension.UoM;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * Class to represent a String for the user interface.
@@ -137,14 +137,14 @@ public class StringWithUoMUI
      * {@inheritDoc}
      */
     @Override
-    public String validateValue(final String _value,
-                                final Attribute _attribute)
+    public String validateValue(final UIValue _value)
+        throws CacheReloadException
     {
         String ret = null;
-        if (_attribute != null) {
-            if (_value.length() > _attribute.getSize()) {
-                ret = DBProperties.getProperty(StringWithUoMUI.class.getName() + ".InvalidValue")
-                    + " " + _attribute.getSize();
+        if (_value.getAttribute() != null && _value.getDbValue() != null) {
+            if (String.valueOf(_value.getDbValue()).length() > _value.getAttribute().getSize()) {
+                ret = DBProperties.getProperty(StringWithUoMUI.class.getName() + ".InvalidValue") + " "
+                                + _value.getAttribute().getSize();
             }
         }
         return ret;
