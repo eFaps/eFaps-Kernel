@@ -22,6 +22,7 @@ package org.efaps.admin.datamodel;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.user.Company;
@@ -372,4 +373,47 @@ public class Classification
             super.setProperty(_name, _value);
         }
     }
+
+    /**
+     * Returns for given parameter <i>_id</i> the instance of class {@link Classification}
+     * .
+     *
+     * @param _id id of the type to get
+     * @return instance of class {@link Classification}
+     * @throws CacheReloadException on error
+     */
+    public static Classification get(final long _id)
+        throws CacheReloadException
+    {
+        return (Classification) Type.get(_id);
+    }
+
+    /**
+     * Returns for given parameter <i>_name</i> the instance of class {@link Classification}
+     * .
+     *
+     * @param _name name of the type to get
+     * @return instance of class {@link Classification}
+     * @throws CacheReloadException on error
+     */
+    public static Classification get(final String _name)
+        throws CacheReloadException
+    {
+        return (Classification) Type.get(_name);
+    }
+
+    /**
+     * Returns for given parameter <i>_uuid</i> the instance of class {@link Classification}
+     * .
+     *
+     * @param _uuid UUID of the type to get
+     * @return instance of class {@link Classification}
+     * @throws CacheReloadException on error
+     */
+    public static Classification get(final UUID _uuid)
+        throws CacheReloadException
+    {
+        return (Classification) Type.get(_uuid);
+    }
+
 }
