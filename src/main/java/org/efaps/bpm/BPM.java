@@ -287,6 +287,14 @@ public final class BPM
         return ksession.startProcess(_processId, _params);
     }
 
+//    public static StringBuilder getSVG4Process()
+//    {
+//        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
+//        final ProcessInstance processInstance = ksession.getProcessInstance(1);
+//        final Collection<NodeInstance> nodeInstances = ((WorkflowProcessInstance) processInstance).getNodeInstances();
+//    }
+
+
     /**
      * @param _taskSummary task to be claimed
      * @throws EFapsException on error

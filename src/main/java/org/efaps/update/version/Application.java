@@ -104,6 +104,7 @@ public final class Application
         Application.DEFAULT_INCLUDES.add("**/*.java");
         Application.DEFAULT_INCLUDES.add("**/*.js");
         Application.DEFAULT_INCLUDES.add("**/*.jrxml");
+        Application.DEFAULT_INCLUDES.add("**/*.svg");
         Application.DEFAULT_INCLUDES.add("**/*.wiki");
         Application.DEFAULT_INCLUDES.add("**/*.xml");
         Application.DEFAULT_INCLUDES.add("**/*.xsl");

@@ -296,6 +296,30 @@ public class CIAdminProgram
         }
     }
 
+    public static final _BPMImage BPMImage = new _BPMImage("b794e064-01c9-4feb-82fd-425c85640a2b");
+
+    public static class _BPMImage
+        extends CIAdminUserInterface._File
+    {
+
+        protected _BPMImage(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+    public static final _BPM2Image BPM2Image = new _BPM2Image("472ee448-c8dc-40e5-99c8-35a421414b37");
+
+    public static class _BPM2Image
+        extends CIAdminCommon._Abstract2Abstract
+    {
+        protected _BPM2Image(final String _uuid)
+        {
+            super(_uuid);
+        }
+        public final CIAttribute FromLink = new CIAttribute(this, "FromLink");
+        public final CIAttribute ToLink = new CIAttribute(this, "ToLink");
+    }
+
     public static final _WikiImage WikiImage = new _WikiImage("2afc7562-2d1d-4751-8ca6-7811cb60e783");
 
     public static class _WikiImage

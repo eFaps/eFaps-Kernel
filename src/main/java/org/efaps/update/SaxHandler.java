@@ -40,6 +40,7 @@ import org.efaps.update.schema.db.StoreUpdate;
 import org.efaps.update.schema.dbproperty.DBPropertiesUpdate;
 import org.efaps.update.schema.help.HelpMenuUpdate;
 import org.efaps.update.schema.integration.WebDAVUpdate;
+import org.efaps.update.schema.program.BPMImageUpdate;
 import org.efaps.update.schema.program.JasperImageUpdate;
 import org.efaps.update.schema.program.JasperReportUpdate;
 import org.efaps.update.schema.program.WikiImageUpdate;
@@ -208,6 +209,8 @@ public class SaxHandler extends DefaultHandler
             this.update = new AccessSetUpdate(this.url);
         } else if ("access-type".equals(_qName)) {
             this.update = new AccessTypeUpdate(this.url);
+        } else if ("bpm-image".equals(_qName)) {
+            this.update = new BPMImageUpdate(this.url);
         } else if ("common-systemconfiguration".equals(_qName)) {
             this.update = new SystemConfigurationUpdate(this.url);
         } else if ("datamodel-sqltable".equals(_qName)) {
@@ -247,7 +250,7 @@ public class SaxHandler extends DefaultHandler
         } else if ("user-role".equals(_qName)) {
             this.update = new RoleUpdate(this.url);
         } else if ("user-group".equals(_qName)) {
-                this.update = new GroupUpdate(this.url);
+            this.update = new GroupUpdate(this.url);
         } else if ("import".equals(_qName)) {
             this.update = new ImportUpdate();
         } else if ("dbproperties".equals(_qName)) {

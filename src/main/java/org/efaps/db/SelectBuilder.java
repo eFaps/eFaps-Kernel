@@ -372,6 +372,14 @@ public class SelectBuilder
     }
 
     /**
+     * @return new SelectBuilder
+     */
+    public static SelectBuilder get()
+    {
+        return new SelectBuilder();
+    }
+
+    /**
      * Return the string of the StringBuilder.
      * @return StringBuilder.toString()
      */
