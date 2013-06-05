@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ci.CIType;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
@@ -296,6 +297,21 @@ public final class Status
         throws CacheReloadException
     {
         return Status.get(_uuid).get(_key);
+    }
+
+    /**
+     * Method to get a Status from the cache.
+     *
+     * @param _ciType CIType of the StatusGroup
+     * @param _key key of the Status
+     * @return Status
+     * @throws CacheReloadException on error
+     */
+    public static Status find(final CIType _ciType,
+                              final String _key)
+        throws CacheReloadException
+    {
+        return Status.get(_ciType.uuid).get(_key);
     }
 
     /**
