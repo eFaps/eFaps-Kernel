@@ -27,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ import org.drools.rule.builder.dialect.java.JavaDialectConfiguration;
 import org.drools.runtime.Environment;
 import org.drools.runtime.EnvironmentName;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.process.NodeInstance;
 import org.drools.runtime.process.ProcessInstance;
 import org.drools.runtime.process.WorkItemHandler;
 import org.drools.time.impl.TimerJobFactoryManager;
@@ -91,6 +93,7 @@ import org.jbpm.task.Task;
 import org.jbpm.task.identity.UserGroupCallbackManager;
 import org.jbpm.task.query.TaskSummary;
 import org.jbpm.task.utils.ContentMarshallerHelper;
+import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -287,13 +290,17 @@ public final class BPM
         return ksession.startProcess(_processId, _params);
     }
 
-//    public static StringBuilder getSVG4Process()
-//    {
-//        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
-//        final ProcessInstance processInstance = ksession.getProcessInstance(1);
-//        final Collection<NodeInstance> nodeInstances = ((WorkflowProcessInstance) processInstance).getNodeInstances();
-//    }
-
+    /**
+     * Returns all node instances that are currently active within this container.
+     * @param _processInstanceId if of a process Instance
+     * @return the list of node instances currently active
+     */
+    public static final Collection<NodeInstance> getActiveNodes4ProcessId(final long _processInstanceId)
+    {
+        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
+        final ProcessInstance processInstance = ksession.getProcessInstance(_processInstanceId);
+        return ((WorkflowProcessInstance) processInstance).getNodeInstances();
+    }
 
     /**
      * @param _taskSummary task to be claimed
