@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -293,13 +294,14 @@ public final class BPM
     /**
      * Returns all node instances that are currently active within this container.
      * @param _processInstanceId if of a process Instance
-     * @return the list of node instances currently active
+     * @return the list of node instances currently active, empty list if none found
      */
     public static final Collection<NodeInstance> getActiveNodes4ProcessId(final long _processInstanceId)
     {
         final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
         final ProcessInstance processInstance = ksession.getProcessInstance(_processInstanceId);
-        return ((WorkflowProcessInstance) processInstance).getNodeInstances();
+        return processInstance == null ? Collections.<NodeInstance>emptyList()
+                        : ((WorkflowProcessInstance) processInstance).getNodeInstances();
     }
 
     /**
