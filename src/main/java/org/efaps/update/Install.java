@@ -461,5 +461,11 @@ public class Install
         {
             return this.type;
         }
+
+        @Override
+        public String toString()
+        {
+            return ToStringBuilder.reflectionToString(this);
+        }
     }
 }
