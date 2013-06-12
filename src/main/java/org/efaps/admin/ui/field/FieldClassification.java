@@ -77,15 +77,20 @@ public class FieldClassification
         throws EFapsException
     {
         boolean ret = false;
-        if (Classification.get(getClassificationName()) != null
-                        && (Classification.get(getClassificationName()))
-                                        .isAssigendTo(Context.getThreadContext().getCompany())
-                        && !AppAccessHandler.excludeMode()) {
-            final Classification clazz = Classification.get(getClassificationName());
-            // check if any of the type ahs access
-            ret = checkAccessOnChild(clazz, _instance, _targetMode == TargetMode.CREATE
-                            || _targetMode == TargetMode.EDIT ? AccessTypeEnums.CREATE.getAccessType()
-                            : AccessTypeEnums.SHOW.getAccessType());
+        final String[] names = getClassificationName().split(";");
+        for (final String className : names) {
+            if (Classification.get(className) != null && (Classification.get(className))
+                                            .isAssigendTo(Context.getThreadContext().getCompany())
+                            && !AppAccessHandler.excludeMode()) {
+                final Classification clazz = Classification.get(className);
+                // check if any of the type ahs access
+                ret = checkAccessOnChild(clazz, _instance, _targetMode == TargetMode.CREATE
+                                || _targetMode == TargetMode.EDIT ? AccessTypeEnums.CREATE.getAccessType()
+                                : AccessTypeEnums.SHOW.getAccessType());
+                if (ret) {
+                    break;
+                }
+            }
         }
         if ((ret || AppAccessHandler.excludeMode()) && super.hasEvents(EventType.UI_ACCESSCHECK)) {
             ret = false;
