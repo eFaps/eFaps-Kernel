@@ -212,6 +212,7 @@ public class FieldValue
      * @param _classObject      Object that will be passed to the esjp
      * @param _cmd              Cmd that called the UIObject this field belongs to
      */
+    //CHECKSTYLE:OFF
     public FieldValue(final Field _field,
                       final Attribute _attr,
                       final Object _value,
@@ -221,6 +222,7 @@ public class FieldValue
                       final Object _classObject,
                       final AbstractCommand _cmd)
     {
+    //CHECKSTYLE:ON
         this.field = _field;
         this.attribute = _attr;
         this.value = _value;

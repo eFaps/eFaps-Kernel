@@ -53,7 +53,8 @@ import com.sun.jersey.spi.scanning.PathProviderScannerListener;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: EFapsResourceConfig.java 9319 2013-04-30 18:30:17Z
+ *          jan@moxter.net $
  */
 public class EFapsResourceConfig
     extends DefaultResourceConfig
@@ -76,7 +77,7 @@ public class EFapsResourceConfig
     private final Set<Class<?>> cachedClasses = new HashSet<Class<?>>();
 
     /**
-     * Constructo.
+     * Constructor.
      */
     public EFapsResourceConfig()
     {
@@ -84,14 +85,13 @@ public class EFapsResourceConfig
     }
 
     /**
-     * Initialize and scan for root resource and provider classes using a scanner.
+     * Initialize and scan for root resource and provider classes using a
+     * scanner.
      */
     public void init()
     {
         final AnnotationScannerListener asl = new PathProviderScannerListener(EFapsClassLoader.getInstance());
-
-        scanner.scan(asl);
-
+        this.scanner.scan(asl);
         getClasses().addAll(asl.getAnnotatedClasses());
         getClasses().add(Compile.class);
         getClasses().add(Update.class);
@@ -110,8 +110,8 @@ public class EFapsResourceConfig
                 logClasses("Provider classes found:", providerClasses);
             }
         }
-        cachedClasses.clear();
-        cachedClasses.addAll(getClasses());
+        this.cachedClasses.clear();
+        this.cachedClasses.addAll(getClasses());
     }
 
     /**
@@ -124,12 +124,12 @@ public class EFapsResourceConfig
         final Set<Class<?>> classesToAdd = new HashSet<Class<?>>();
 
         for (final Class<?> c : getClasses()) {
-            if (!cachedClasses.contains(c)) {
+            if (!this.cachedClasses.contains(c)) {
                 classesToAdd.add(c);
             }
         }
 
-        for (final Class<?> c : cachedClasses) {
+        for (final Class<?> c : this.cachedClasses) {
             if (!getClasses().contains(c)) {
                 classesToRemove.add(c);
             }
@@ -144,8 +144,8 @@ public class EFapsResourceConfig
     }
 
     /**
-     * @param _annoclass    Annotation class
-     * @return  set of classes implementing Annotation class
+     * @param _annoclass Annotation class
+     * @return set of classes implementing Annotation class
      */
     private Set<Class<?>> get(final Class<? extends Annotation> _annoclass)
     {
@@ -159,8 +159,8 @@ public class EFapsResourceConfig
     }
 
     /**
-     * @param _text     text to log
-     * @param _classes  classes to log
+     * @param _text text to log
+     * @param _classes classes to log
      */
     private void logClasses(final String _text,
                             final Set<Class<?>> _classes)
@@ -182,13 +182,15 @@ public class EFapsResourceConfig
 
         /**
          * Scan the esjps for annotations.
-         * @param _sl   scan listener
+         *
+         * @param _sl scan listener
          */
         @Override
         public void scan(final ScannerListener _sl)
         {
             try {
-                // in case of jboss the transaction filter is not executed before the
+                // in case of jboss the transaction filter is not executed
+                // before the
                 // init method is called therefore a Context must be opened
                 boolean contextStarted = false;
                 if (!Context.isThreadActive()) {
@@ -204,6 +206,7 @@ public class EFapsResourceConfig
                     final String fileName = checkout.getFileName();
                     new Closing(new BufferedInputStream(in)).f(new Closing.Closure()
                     {
+
                         @Override
                         public void f(final InputStream _in)
                             throws IOException

@@ -39,47 +39,75 @@ public class SystemEventLstnr
      */
     private static final Logger LOG = LoggerFactory.getLogger(SystemEventLstnr.class);
 
-    public void debug(final String arg0)
+    /**
+     * @param _message message to log
+     */
+    public void debug(final String _message)
     {
-        SystemEventLstnr.LOG.debug(arg0);
+        SystemEventLstnr.LOG.debug(_message);
     }
 
-    public void debug(final String arg0,
-                      final Object arg1)
+    /**
+     * @param _message message to log
+     * @param _obj     Object to log
+     */
+    public void debug(final String _message,
+                      final Object _obj)
     {
-        SystemEventLstnr.LOG.debug(arg0, arg1);
+        SystemEventLstnr.LOG.debug(_message, _obj);
     }
 
-    public void exception(final Throwable arg0)
+    /**
+     * @param _exp throwable
+     */
+    public void exception(final Throwable _exp)
     {
-        SystemEventLstnr.LOG.error("Error:", arg0);
+        SystemEventLstnr.LOG.error("Error:", _exp);
     }
 
-    public void exception(final String arg0,
-                          final Throwable arg1)
+    /**
+     * @param _message message to log
+     * @param _exp throwable
+     */
+    public void exception(final String _message,
+                          final Throwable _exp)
     {
-        SystemEventLstnr.LOG.error(arg0, arg1);
+        SystemEventLstnr.LOG.error(_message, _exp);
     }
 
-    public void info(final String arg0)
+    /**
+     * @param _message message to log
+     */
+    public void info(final String _message)
     {
-        SystemEventLstnr.LOG.info(arg0);
+        SystemEventLstnr.LOG.info(_message);
     }
 
-    public void info(final String arg0,
-                     final Object arg1)
+    /**
+     * @param _message message to log
+     * @param _obj     Object to log
+     */
+    public void info(final String _message,
+                     final Object _obj)
     {
-        SystemEventLstnr.LOG.info(arg0, arg1);
+        SystemEventLstnr.LOG.info(_message, _obj);
     }
 
-    public void warning(final String arg0)
+    /**
+     * @param _message message to log
+     */
+    public void warning(final String _message)
     {
-        SystemEventLstnr.LOG.warn(arg0);
+        SystemEventLstnr.LOG.warn(_message);
     }
 
-    public void warning(final String arg0,
-                        final Object arg1)
+    /**
+     * @param _message message to log
+     * @param _obj     Object to log
+     */
+    public void warning(final String _message,
+                        final Object _obj)
     {
-        SystemEventLstnr.LOG.warn(arg0, arg1);
+        SystemEventLstnr.LOG.warn(_message, _obj);
     }
 }

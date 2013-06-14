@@ -296,7 +296,7 @@ public final class BPM
      * @param _processInstanceId if of a process Instance
      * @return the list of node instances currently active, empty list if none found
      */
-    public static final Collection<NodeInstance> getActiveNodes4ProcessId(final long _processInstanceId)
+    public static Collection<NodeInstance> getActiveNodes4ProcessId(final long _processInstanceId)
     {
         final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
         final ProcessInstance processInstance = ksession.getProcessInstance(_processInstanceId);

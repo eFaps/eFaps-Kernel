@@ -49,8 +49,7 @@ import org.slf4j.Logger;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: CacheLogListener.java 8807 2013-02-15 18:33:57Z jan@moxter.net
- *          $
+ * @version $Id$
  */
 @Listener
 public class CacheLogListener
@@ -158,7 +157,7 @@ public class CacheLogListener
      * @param _event event to be loged
      */
     @CacheEntryInvalidated
-    public void onCacheEntryInvalidated(final CacheEntryInvalidatedEvent<?,?> _event )
+    public void onCacheEntryInvalidated(final CacheEntryInvalidatedEvent<?, ?> _event)
     {
         this.log.trace("invalidated key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
     }
@@ -167,7 +166,7 @@ public class CacheLogListener
      * @param _event event to be loged
      */
     @CacheEntryPassivated
-    public void onCacheEntryPassivated(final CacheEntryPassivatedEvent<?,?> _event )
+    public void onCacheEntryPassivated(final CacheEntryPassivatedEvent<?, ?> _event)
     {
         this.log.trace("invalidated key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
     }
