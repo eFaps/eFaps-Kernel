@@ -49,6 +49,8 @@ import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Handles the import / update of SQL tables for eFaps read from a XML
  * configuration item file.
@@ -541,6 +543,9 @@ public class SQLTableUpdate
          * @see #sqls
          * @see #updateInDB
          */
+        @SuppressFBWarnings(
+                        value = { "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" },
+                        justification = "The script cannot made static")
         protected void executeSQLs()
             throws InstallationException
         {
@@ -566,6 +571,7 @@ public class SQLTableUpdate
                         }
                         stmt.execute(sql);
                     }
+                    stmt.close();
                     con.commit();
                 } catch (final EFapsException e) {
                     if (con != null) {

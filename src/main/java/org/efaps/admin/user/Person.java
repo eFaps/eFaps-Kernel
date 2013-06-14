@@ -24,7 +24,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +35,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributevalue.PasswordStore;
@@ -658,17 +658,15 @@ public final class Person
         throws EFapsException
     {
         if (_count > 0) {
-            final Timestamp now = DateTimeUtil.getCurrentTimeFromDB();
+            final DateTime now = new DateTime(DateTimeUtil.getCurrentTimeFromDB().getTime());
             final SystemConfiguration kernelConfig = EFapsSystemConfiguration.KERNEL.get();
 
-            // Admin_User_LoginTimeBeforeRetry
-            final int dif = kernelConfig.getAttributeValueAsInteger("LoginTimeBeforeRetry");
+            final int minutes = kernelConfig.getAttributeValueAsInteger(KernelSettings.LOGIN_TIME_RETRY);
 
-            // Admin_User_LoginTries
-            final int maxtries = kernelConfig.getAttributeValueAsInteger("LoginTries");
+            final int maxtries = kernelConfig.getAttributeValueAsInteger(KernelSettings.LOGIN_MAX_TRIES);
 
             final int count = _count + 1;
-            if (dif > 0 && (now.getTime() - _logintry.getMillis()) > dif * 60 * 1000) {
+            if (minutes > 0 && _logintry.minusMinutes(minutes).isBefore(now)) {
                 updateFalseLoginDB(1);
             } else {
                 updateFalseLoginDB(count);

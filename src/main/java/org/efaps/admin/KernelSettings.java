@@ -49,4 +49,25 @@ public interface KernelSettings
      * Boolean (true/false): activate the BPM process mechanism.
      */
     String REQUIRE_PERSON_UUID = "org.efaps.kernel.RequirePersonUUID";
+
+    /**
+     * Integer:
+     * Maximum number of tries to login with the wrong Password into eFaps,
+     * before the User is going to be deactivated. To deactivate this mechanism
+     * set the value to 0.
+     */
+    String LOGIN_MAX_TRIES = "org.efaps.kernel.LoginMaximumTries";
+
+    /**
+     * Integer:
+     * This attribute defines the time in minutes which must elapse after trying
+     * n-times to login with the wrong password, before the user has again the
+     * possibility to try to login. To deactivate this mechanism set the
+     * value to 0.
+     */
+    String LOGIN_TIME_RETRY = "org.efaps.kernel.LoginTimeElapseBeforeRetry";
+
+
+
+
 }
