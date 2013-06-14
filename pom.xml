@@ -307,7 +307,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.1</version>
+            <version>2.2</version>
         </dependency>
 
         <!-- the yuicompressor is used to compress javascript and css files -->
