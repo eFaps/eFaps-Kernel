@@ -107,7 +107,7 @@ public final class InfinispanCache
             if (count == null) {
                 count = 1;
             } else {
-                count = count++;
+                count = count + 1;
             }
             cache.put(InfinispanCache.COUNTERCACHE, count);
         }
@@ -125,7 +125,7 @@ public final class InfinispanCache
             if (count == null || count < 2) {
                 this.container.stop();
             } else {
-                count = count++;
+                count = count - 1;
                 cache.put(InfinispanCache.COUNTERCACHE, count);
             }
         }
