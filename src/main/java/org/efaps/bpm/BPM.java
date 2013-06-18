@@ -48,6 +48,7 @@ import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderConfiguration;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
+import org.drools.builder.conf.ClassLoaderCacheOption;
 import org.drools.io.ResourceFactory;
 import org.drools.persistence.jpa.JPAKnowledgeService;
 import org.drools.persistence.jta.JtaTransactionManager;
@@ -177,13 +178,16 @@ public final class BPM
 
             System.setProperty(UserGroupCallbackManager.USER_GROUP_CALLBACK_KEY, UserGroupCallbackImpl.class.getName());
 
+            final String level = EFapsSystemConfiguration.KERNEL.get().getAttributeValue(
+                            KernelSettings.BPM_COMPILERLEVEL);
+
             final Properties knowledgeBldrProps = new Properties();
             knowledgeBldrProps.setProperty(JavaDialectConfiguration.JAVA_COMPILER_PROPERTY, "ECLIPSE");
-            knowledgeBldrProps.setProperty("drools.dialect.java.compiler.lnglevel", "1.6");
+            knowledgeBldrProps.setProperty("drools.dialect.java.compiler.lnglevel", level == null ? "1.7" : level);
+            knowledgeBldrProps.setProperty(ClassLoaderCacheOption.PROPERTY_NAME, "false");
 
             final KnowledgeBuilderConfiguration knowledgeBldrConfig = KnowledgeBuilderFactory
-                            .newKnowledgeBuilderConfiguration(
-                                            knowledgeBldrProps, EFapsClassLoader.getInstance());
+                            .newKnowledgeBuilderConfiguration(knowledgeBldrProps, EFapsClassLoader.getInstance());
 
             final KnowledgeBuilder knowledgeBldr = KnowledgeBuilderFactory.newKnowledgeBuilder(knowledgeBldrConfig);
 

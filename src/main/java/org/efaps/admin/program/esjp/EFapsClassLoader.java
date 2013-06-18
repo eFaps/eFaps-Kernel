@@ -20,6 +20,7 @@
 
 package org.efaps.admin.program.esjp;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -99,6 +100,21 @@ public class EFapsClassLoader
             throw new ClassNotFoundException(_name);
         }
         return defineClass(_name, b, 0, b.length);
+    }
+
+
+    /**
+     * In case of jbpm this is necessary for compiling,
+     * because they search the classes with URL.
+     * @see java.lang.ClassLoader#getResourceAsStream(java.lang.String)
+     * @param _name filename as url
+     */
+    @Override
+    public InputStream getResourceAsStream(final String _name)
+    {
+        final String name = _name.replaceAll(System.getProperty("file.separator"), ".").replaceAll(".class", "");
+        final byte[] data = loadClassData(name);
+        return data == null ? null : new ByteArrayInputStream(data);
     }
 
     /**

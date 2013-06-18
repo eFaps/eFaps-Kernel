@@ -36,6 +36,14 @@ public interface KernelSettings
     String ACTIVATE_BPM = "org.efaps.kernel.ActivateBPM";
 
     /**
+     * String: 1.5, 1.6 or 1.7 (Default: 1.7)
+     * The Java version to be used to compile the bpmn process files.
+     * The valeu will be send to the ECLISPE Compiler by using the setting for
+     * "drools.dialect.java.compiler.lnglevel".
+     */
+    String BPM_COMPILERLEVEL = "org.efaps.kernel.BPMCompilerLevel";
+
+    /**
      * Boolean (true/false): activate the Groups Access Mechanism. Default: false
      */
     String ACTIVATE_GROUPS = "org.efaps.kernel.ActivateGroups";
