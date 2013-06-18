@@ -59,5 +59,9 @@ public interface INamingBinds
      */
     String RESOURCE_TRANSSYNREG = "eFaps/TransactionSynchronizationRegistry";
 
+    /**
+     * Resource name of the TransactionSynchronizationRegistry.
+     */
+    String INFINISPANMANGER = "CacheManager";
 
 }

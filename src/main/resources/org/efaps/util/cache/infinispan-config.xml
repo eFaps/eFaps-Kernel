@@ -1,239 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="urn:infinispan:config:5.1 http://www.infinispan.org/schemas/infinispan-config-5.1.xsd"
-    xmlns="urn:infinispan:config:5.1">
-    <global/>
+    xsi:schemaLocation="urn:infinispan:config:5.2 http://www.infinispan.org/schemas/infinispan-config-5.2.xsd"
+    xmlns="urn:infinispan:config:5.2">
+    <global />
 
     <namedCache name="DBProperties">
-        <eviction maxEntries="5000" strategy="LIRS"/>
+        <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
-
-
 
     <!-- UserInterface -->
     <namedCache name="Field">
-        <eviction maxEntries="5000" strategy="LIRS"/>
+        <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
 
     <namedCache name="Command4UUID">
-        <eviction maxEntries="5000" strategy="LIRS"/>
+        <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
     <namedCache name="Command4ID">
-        <eviction maxEntries="5000" strategy="LIRS"/>
+        <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
     <namedCache name="Command4Name">
-        <eviction maxEntries="5000" strategy="LIRS"/>
+        <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
 
-     <namedCache name="Menu4UUID">
-        <eviction maxEntries="5000" strategy="LIRS"/>
+    <namedCache name="Menu4UUID">
+        <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
     <namedCache name="Menu4ID">
-        <eviction maxEntries="5000" strategy="LIRS"/>
+        <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
     <namedCache name="Menu4Name">
-        <eviction maxEntries="5000" strategy="LIRS"/>
+        <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
 
     <namedCache name="Image4UUID">
-        <eviction maxEntries="5000" strategy="LIRS"/>
+        <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
     <namedCache name="Image4ID">
-        <eviction maxEntries="5000" strategy="LIRS"/>
+        <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
     <namedCache name="Image4Name">
-        <eviction maxEntries="5000" strategy="LIRS"/>
+        <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
 
 
     <!-- DateModel -->
-     <namedCache name="AttributeType4ID">
-        <eviction maxEntries="50" strategy="LRU"/>
+    <namedCache name="AttributeType4ID">
+        <eviction maxEntries="50" strategy="LRU" />
     </namedCache>
     <namedCache name="AttributeType4Name">
-        <eviction maxEntries="50" strategy="LRU"/>
+        <eviction maxEntries="50" strategy="LRU" />
     </namedCache>
 
     <namedCache name="SQLTable4UUID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="SQLTable4ID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="SQLTable4Name">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
 
     <namedCache name="AccessType4UUID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="AccessType4ID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="AccessType4Name">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
 
     <namedCache name="Type4UUID">
-        <eviction maxEntries="1500" strategy="LIRS"/>
+        <eviction maxEntries="1500" strategy="LIRS" />
     </namedCache>
     <namedCache name="Type4ID">
-        <eviction maxEntries="1500" strategy="LIRS"/>
+        <eviction maxEntries="1500" strategy="LIRS" />
     </namedCache>
     <namedCache name="Type4Name">
-        <eviction maxEntries="1500" strategy="LIRS"/>
+        <eviction maxEntries="1500" strategy="LIRS" />
     </namedCache>
 
     <namedCache name="Attribute4Name">
-        <eviction maxEntries="5000" strategy="LIRS"/>
+        <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
     <namedCache name="Attribute4ID">
-        <eviction maxEntries="5000" strategy="LIRS"/>
+        <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
 
     <namedCache name="Dimension4UUID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="Dimension4ID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="Dimension4Name">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="UoM4ID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
 
     <namedCache name="NumberGenerator4UUID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="NumberGenerator4ID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="NumberGenerator4Name">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
 
     <namedCache name="SystemConfiguration4UUID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="SystemConfiguration4ID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="SystemConfiguration4Name">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
 
 
     <namedCache name="StatusGroup4UUID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="StatusGroup4Name">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="Status4ID">
-        <eviction maxEntries="5000" strategy="LIRS"/>
+        <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
 
     <namedCache name="AccessSet4UUID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="AccessSet4ID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="AccessSet4Name">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
 
-
-
-    <!--
-        User Caches
-        This Caches are accessed in the given sequence during the search for a UserObject.
-        That means that for e.g. RoleCache null-Values for ids will be cached that are not a Role
-     -->
-     <namedCache name="Role4UUID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+    <!-- User Caches This Caches are accessed in the given sequence during
+        the search for a UserObject. That means that for e.g. RoleCache null-Values
+        for ids will be cached that are not a Role -->
+    <namedCache name="Role4UUID">
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="Role4ID">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
     <namedCache name="Role4Name">
-        <eviction maxEntries="500" strategy="LIRS"/>
+        <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
 
-     <namedCache name="Group4ID">
-        <eviction maxEntries="400" strategy="LIRS"/>
+    <namedCache name="Group4ID">
+        <eviction maxEntries="400" strategy="LIRS" />
     </namedCache>
     <namedCache name="Group4Name">
-        <eviction maxEntries="400" strategy="LIRS"/>
+        <eviction maxEntries="400" strategy="LIRS" />
     </namedCache>
     <namedCache name="Group4UUID">
-        <eviction maxEntries="400" strategy="LIRS"/>
+        <eviction maxEntries="400" strategy="LIRS" />
     </namedCache>
 
     <namedCache name="Company4UUID">
-        <eviction maxEntries="300" strategy="LIRS"/>
+        <eviction maxEntries="300" strategy="LIRS" />
     </namedCache>
     <namedCache name="Company4ID">
-        <eviction maxEntries="300" strategy="LIRS"/>
+        <eviction maxEntries="300" strategy="LIRS" />
     </namedCache>
     <namedCache name="Company4Name">
-        <eviction maxEntries="300" strategy="LIRS"/>
+        <eviction maxEntries="300" strategy="LIRS" />
     </namedCache>
 
     <namedCache name="Consortium4ID">
-        <eviction maxEntries="200" strategy="LIRS"/>
+        <eviction maxEntries="200" strategy="LIRS" />
     </namedCache>
     <namedCache name="Consortium4Name">
-        <eviction maxEntries="200" strategy="LIRS"/>
+        <eviction maxEntries="200" strategy="LIRS" />
     </namedCache>
 
     <namedCache name="Person4ID">
-        <eviction maxEntries="100" strategy="LIRS"/>
+        <eviction maxEntries="100" strategy="LIRS" />
     </namedCache>
     <namedCache name="Person4Name">
-        <eviction maxEntries="100" strategy="LIRS"/>
+        <eviction maxEntries="100" strategy="LIRS" />
     </namedCache>
 
 
     <namedCache name="JAASSystem4ID">
-        <eviction maxEntries="5" strategy="LRU"/>
+        <eviction maxEntries="5" strategy="LRU" />
     </namedCache>
     <namedCache name="JAASSystem4Name">
-        <eviction maxEntries="5" strategy="LRU"/>
+        <eviction maxEntries="5" strategy="LRU" />
     </namedCache>
 
     <namedCache name="Association4ID">
-        <eviction maxEntries="50" strategy="LRU"/>
+        <eviction maxEntries="50" strategy="LRU" />
     </namedCache>
-
-
-
-
 
     <!-- Other -->
     <namedCache name="Store4UUID">
-        <eviction maxEntries="50" strategy="LRU"/>
+        <eviction maxEntries="50" strategy="LRU" />
     </namedCache>
     <namedCache name="Store4ID">
-        <eviction maxEntries="50" strategy="LRU"/>
+        <eviction maxEntries="50" strategy="LRU" />
     </namedCache>
     <namedCache name="Store4Name">
-        <eviction maxEntries="50" strategy="LRU"/>
+        <eviction maxEntries="50" strategy="LRU" />
     </namedCache>
 
     <namedCache name="StaticCompiledSource4Name">
-        <eviction maxEntries="150" strategy="LRU"/>
+        <eviction maxEntries="150" strategy="LRU" />
     </namedCache>
     <namedCache name="BundleMapper">
-        <eviction maxEntries="150" strategy="LRU"/>
+        <eviction maxEntries="150" strategy="LRU" />
     </namedCache>
     <namedCache name="Bundles">
-        <eviction maxEntries="150" strategy="LRU"/>
+        <eviction maxEntries="150" strategy="LRU" />
     </namedCache>
-
-
-
 
 </infinispan>
 

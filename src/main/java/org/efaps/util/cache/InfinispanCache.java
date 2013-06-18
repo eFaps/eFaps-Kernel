@@ -22,8 +22,16 @@ package org.efaps.util.cache;
 
 import java.io.IOException;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.xml.stream.FactoryConfigurationError;
+
+import org.efaps.init.INamingBinds;
 import org.infinispan.Cache;
+import org.infinispan.lifecycle.ComponentStatus;
+import org.infinispan.manager.CacheContainer;
 import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.manager.EmbeddedCacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +43,23 @@ import org.slf4j.LoggerFactory;
  */
 public final class InfinispanCache
 {
-
     /**
      * Logger for this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(InfinispanCache.class);
+
+    /**
+     * Sequence used to search for the CacheManager inside JNDI.
+     */
+    private static final String[] KNOWN_JNDI_KEYS = new String[] {
+        "java:/" + INamingBinds.INFINISPANMANGER,
+        "java:jboss/" + INamingBinds.INFINISPANMANGER,
+        "java:comp/env/" + INamingBinds.INFINISPANMANGER };
+
+    /**
+     * Key to the Counter Cache.
+     */
+    private static String COUNTERCACHE = InfinispanCache.class.getName() + ".InternalCounter";
 
     /**
      * The instance used for singelton.
@@ -49,7 +69,7 @@ public final class InfinispanCache
     /**
      * The manager for Infinspan.
      */
-    private DefaultCacheManager manager;
+    private CacheContainer container;
 
     /**
      * Singelton is wanted.
@@ -63,12 +83,33 @@ public final class InfinispanCache
      */
     private void init()
     {
-        try {
-            this.manager = new DefaultCacheManager(this.getClass().getResourceAsStream(
-                            "/org/efaps/util/cache/infinispan-config.xml"));
-            this.manager.addListener(new CacheLogListener(InfinispanCache.LOG));
-        } catch (final IOException e) {
-            InfinispanCache.LOG.error("Could not start CacheManaeger", e);
+        this.container = InfinispanCache.findCacheContainer();
+        if (this.container == null) {
+            try {
+                this.container = new DefaultCacheManager(this.getClass().getResourceAsStream(
+                                "/org/efaps/util/cache/infinispan-config.xml"));
+                if (this.container instanceof EmbeddedCacheManager) {
+                    ((EmbeddedCacheManager) this.container).addListener(new CacheLogListener(InfinispanCache.LOG));
+                }
+                InfinispanCache.bindCacheContainer(this.container);
+                final Cache<String, Integer> cache = this.container
+                                .<String, Integer>getCache(InfinispanCache.COUNTERCACHE);
+                cache.put(InfinispanCache.COUNTERCACHE, 1);
+            } catch (final FactoryConfigurationError e) {
+                InfinispanCache.LOG.error("FactoryConfigurationError", e);
+            } catch (final IOException e) {
+                InfinispanCache.LOG.error("IOException", e);
+            }
+        } else {
+            final Cache<String, Integer> cache = this.container
+                            .<String, Integer>getCache(InfinispanCache.COUNTERCACHE);
+            Integer count = cache.get(InfinispanCache.COUNTERCACHE);
+            if (count == null) {
+                count = 1;
+            } else {
+                count = count++;
+            }
+            cache.put(InfinispanCache.COUNTERCACHE, count);
         }
     }
 
@@ -77,8 +118,16 @@ public final class InfinispanCache
      */
     private void terminate()
     {
-        if (this.manager != null) {
-            this.manager.stop();
+        if (this.container != null) {
+            final Cache<String, Integer> cache = this.container
+                            .<String, Integer>getCache(InfinispanCache.COUNTERCACHE);
+            Integer count = cache.get(InfinispanCache.COUNTERCACHE);
+            if (count == null || count < 2) {
+                this.container.stop();
+            } else {
+                count = count++;
+                cache.put(InfinispanCache.COUNTERCACHE, count);
+            }
         }
     }
 
@@ -90,7 +139,7 @@ public final class InfinispanCache
      */
     public <K, V> Cache<K, V> getCache(final String _cacheName)
     {
-        return this.manager.getCache(_cacheName);
+        return this.container.getCache(_cacheName);
     }
 
     /**
@@ -99,7 +148,13 @@ public final class InfinispanCache
      */
     public boolean exists(final String _cacheName)
     {
-        return this.manager.cacheExists(_cacheName);
+        final boolean ret;
+        if (this.container instanceof EmbeddedCacheManager) {
+            ret = ((EmbeddedCacheManager) this.container).cacheExists(_cacheName);
+        } else {
+            ret = this.container.getCache(_cacheName) != null;
+        }
+        return ret;
     }
 
     /**
@@ -110,6 +165,13 @@ public final class InfinispanCache
         if (InfinispanCache.CACHEINSTANCE == null) {
             InfinispanCache.CACHEINSTANCE = new InfinispanCache();
             InfinispanCache.CACHEINSTANCE.init();
+        }
+        if (InfinispanCache.CACHEINSTANCE.container instanceof DefaultCacheManager) {
+            final ComponentStatus status = ((DefaultCacheManager) InfinispanCache.CACHEINSTANCE.container).getStatus();
+            if (status.isStopping() || status.isTerminated()) {
+                InfinispanCache.CACHEINSTANCE = new InfinispanCache();
+                InfinispanCache.CACHEINSTANCE.init();
+            }
         }
         return InfinispanCache.CACHEINSTANCE;
     }
@@ -122,5 +184,47 @@ public final class InfinispanCache
         if (InfinispanCache.CACHEINSTANCE != null) {
             InfinispanCache.CACHEINSTANCE.terminate();
         }
+    }
+
+    /**
+     * @param _container container to be binded in jndi
+     */
+    private static void bindCacheContainer(final CacheContainer _container)
+    {
+        InitialContext context = null;
+        try {
+            context = new InitialContext();
+            context.bind(InfinispanCache.KNOWN_JNDI_KEYS[0], _container);
+        } catch (final NamingException ex) {
+            InfinispanCache.LOG.error("Could not initialise JNDI InitialContext", ex);
+        }
+    }
+
+    /**
+     * @return the CacheContainer
+     */
+    private static CacheContainer findCacheContainer()
+    {
+        CacheContainer ret = null;
+        InitialContext context = null;
+        try {
+            context = new InitialContext();
+        } catch (final NamingException ex) {
+            InfinispanCache.LOG.error("Could not initialise JNDI InitialContext", ex);
+        }
+        for (final String lookup : InfinispanCache.KNOWN_JNDI_KEYS) {
+            if (lookup != null) {
+                try {
+                    ret = (CacheContainer) context.lookup(lookup);
+                    InfinispanCache.LOG.info("CacheContainer found in JNDI under '{}'", lookup);
+                } catch (final NamingException e) {
+                    InfinispanCache.LOG.debug("CacheContainer not found in JNDI under '{}'", lookup);
+                }
+            }
+        }
+        if (ret == null) {
+            InfinispanCache.LOG.debug("No CacheContainer found under known names");
+        }
+        return ret;
     }
 }
