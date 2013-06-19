@@ -22,6 +22,7 @@ package org.efaps.jaas;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.UUID;
 
 import org.efaps.util.EFapsException;
 
@@ -58,7 +59,7 @@ public final class AppAccessHandler
      * Immutable Set of login roles that is allowed for the application instance
      * related to this filter.
      */
-    private final Set<String> loginRoles;
+    private final Set<UUID> loginRoles;
 
     /**
      * Key of the Aplication this AccessHandler belongs to.
@@ -71,7 +72,7 @@ public final class AppAccessHandler
      * @param _loginRoles allowed login roles
      */
     private AppAccessHandler(final String _appKey,
-                             final Set<String> _loginRoles)
+                             final Set<UUID> _loginRoles)
     {
         this.appKey = _appKey == null ? AppAccessHandler.KEYDEFAULT : _appKey;
         this.loginRoles = Collections.unmodifiableSet(_loginRoles);
@@ -96,7 +97,7 @@ public final class AppAccessHandler
      * @param _loginRoles allowd Login roles
      */
     public static void init(final String _appKey,
-                            final Set<String> _loginRoles)
+                            final Set<UUID> _loginRoles)
     {
         if (AppAccessHandler.HANDLER == null) {
             AppAccessHandler.HANDLER = new AppAccessHandler(_appKey, _loginRoles);
@@ -118,7 +119,7 @@ public final class AppAccessHandler
      * @return allowed login roles
      * @throws EFapsException if not initialized
      */
-    public static Set<String> getLoginRoles()
+    public static Set<UUID> getLoginRoles()
         throws EFapsException
     {
         if (!AppAccessHandler.initialized()) {

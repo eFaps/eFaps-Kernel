@@ -1049,11 +1049,11 @@ public final class Person
             }
             rsrc.commit();
 
-            final Set<String> roleNames = AppAccessHandler.getLoginRoles();
+            final Set<UUID> roleUUIDs = AppAccessHandler.getLoginRoles();
             for (final Long roleId : roleIds) {
                 final Role role = Role.get(roleId);
                 if (!AppAccessHandler.excludeMode()
-                                || (AppAccessHandler.excludeMode() && roleNames.contains(role.getName()))) {
+                                || (AppAccessHandler.excludeMode() && roleUUIDs.contains(role.getUUID()))) {
                     ret.add(role);
                 }
             }
