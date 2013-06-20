@@ -21,7 +21,9 @@
 package org.efaps.admin.access;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.efaps.util.cache.CacheReloadException;
@@ -55,6 +57,11 @@ public enum AccessTypeEnums
     STATUS_BOOST("6f78f2a3-cdf7-4aae-825e-c62cfc235144"),
     /** Access type for status modify access. */
     STATUS_MODIFY("74577473-5429-4a9e-9d03-bf9de2008871");
+
+    /**
+     * Used to cache the enum for uuid.
+     */
+    private static final Map<UUID, AccessTypeEnums> MAP = new HashMap<UUID, AccessTypeEnums>();
 
     /**
      * The universal unique identifier of one access type enum is stored in this
@@ -103,5 +110,19 @@ public enum AccessTypeEnums
         final List<AccessType> ret = new ArrayList<AccessType>(1);
         ret.add(getAccessType());
         return ret;
+    }
+
+    /**
+     * @param _uuid UUID the AccessTypeEnums is wanted for
+     * @return AccessTypeEnums
+     */
+    public static AccessTypeEnums get(final UUID _uuid)
+    {
+        if (AccessTypeEnums.MAP.isEmpty()) {
+            for (final AccessTypeEnums acessTypeEnum : AccessTypeEnums.values()) {
+                AccessTypeEnums.MAP.put(acessTypeEnum.uuid, acessTypeEnum);
+            }
+        }
+        return AccessTypeEnums.MAP.get(_uuid);
     }
 }

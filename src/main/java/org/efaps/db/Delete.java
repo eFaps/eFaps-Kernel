@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.efaps.admin.access.AccessCache;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
@@ -100,6 +101,7 @@ public class Delete
     public void execute()
         throws EFapsException
     {
+        AccessCache.registerUpdate(getInstance());
         final  boolean hasAccess = this.instance.getType().hasAccess(this.instance,
                                                                      AccessTypeEnums.DELETE.getAccessType());
         if (!hasAccess) {

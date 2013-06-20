@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.efaps.admin.access.AccessCache;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
@@ -338,6 +339,7 @@ public class Update
                 attributes.add(attr);
             }
         }
+        AccessCache.registerUpdate(getInstance());
         final boolean hasAccess = getType().hasAccess(getInstance(), AccessTypeEnums.MODIFY.getAccessType(),
                         attributes);
 
@@ -389,7 +391,6 @@ public class Update
         throws EFapsException
     {
         if (Update.STATUSOK.getStati().isEmpty()) {
-
             final Context context = Context.getThreadContext();
             ConnectionResource con = null;
             try {

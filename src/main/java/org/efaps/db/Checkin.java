@@ -22,6 +22,7 @@
 package org.efaps.db;
 import java.io.InputStream;
 
+import org.efaps.admin.access.AccessCache;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.store.Resource;
@@ -76,6 +77,7 @@ public class Checkin
                         final int _size)
         throws EFapsException
     {
+        AccessCache.registerUpdate(getInstance());
         final boolean hasAccess = super.getInstance().getType().hasAccess(super.getInstance(),
                                                                           AccessTypeEnums.CHECKIN.getAccessType());
         if (!hasAccess) {

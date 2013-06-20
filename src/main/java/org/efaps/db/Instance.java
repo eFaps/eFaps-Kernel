@@ -130,7 +130,7 @@ public final class Instance
         boolean ret = false;
         if (_obj instanceof Instance) {
             final Instance other = (Instance) _obj;
-            if (other.isValid() && isValid()) {
+            if (other.getType() != null && getType() != null) {
                 ret = (other.getId() == getId()) && (other.getType().getId() == getType().getId());
             } else {
                 ret = super.equals(_obj);
