@@ -23,6 +23,7 @@ package org.efaps.admin.access;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Company;
 import org.efaps.admin.user.Person;
@@ -197,7 +198,7 @@ public final class AccessKey
     @Override
     public String toString()
     {
-        return ToStringBuilder.reflectionToString(this);
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
     /**

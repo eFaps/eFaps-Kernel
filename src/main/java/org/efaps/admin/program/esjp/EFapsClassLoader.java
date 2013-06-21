@@ -102,12 +102,12 @@ public class EFapsClassLoader
         return defineClass(_name, b, 0, b.length);
     }
 
-
     /**
      * In case of jbpm this is necessary for compiling,
      * because they search the classes with URL.
      * @see java.lang.ClassLoader#getResourceAsStream(java.lang.String)
      * @param _name filename as url
+     * @return inputstream with resource if found
      */
     @Override
     public InputStream getResourceAsStream(final String _name)
@@ -156,7 +156,7 @@ public class EFapsClassLoader
         try {
             final QueryBuilder queryBuilder = new QueryBuilder(this.classType);
             queryBuilder.addWhereAttrEqValue("Name", _resourceName);
-            final InstanceQuery query = queryBuilder.getQuery();
+            final InstanceQuery query = queryBuilder.getCachedQuery("esjp");
             query.execute();
             if (query.next()) {
                 final Checkout checkout = new Checkout(query.getCurrentValue());

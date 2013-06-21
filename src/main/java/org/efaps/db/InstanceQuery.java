@@ -99,7 +99,7 @@ public class InstanceQuery
      * @return StringBuilder containing the statement
      * @throws EFapsException on error
      */
-    private String createSQLStatement()
+    protected String createSQLStatement()
         throws EFapsException
     {
         final SQLSelect select = new SQLSelect()

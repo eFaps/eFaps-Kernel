@@ -59,6 +59,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.db.QueryCache;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
@@ -1153,6 +1154,7 @@ public class Type
     public static void initialize(final Class<?> _class)
         throws CacheReloadException
     {
+        QueryCache.initialize();
         if (InfinispanCache.get().exists(Type.UUIDCACHE)) {
             InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE).clear();
         } else {

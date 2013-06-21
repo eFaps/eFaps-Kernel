@@ -698,6 +698,36 @@ public class QueryBuilder
     }
 
     /**
+     * Get the constructed query.
+     * @param _key key to the Query Cache
+     * @return the query
+     */
+    public CachedInstanceQuery getCachedQuery(final String _key)
+    {
+        if (this.query == null) {
+            try {
+                this.query = new CachedInstanceQuery(_key, this.typeUUID);
+            } catch (final CacheReloadException e) {
+                QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
+            }
+            if (!this.compares.isEmpty()) {
+                final QAnd and = this.or ? new QOr() : new QAnd();
+                for (final AbstractQAttrCompare compare : this.compares) {
+                    and.addPart(compare);
+                }
+                this.query.setWhere(new QWhereSection(and));
+            }
+            if (!this.orders.isEmpty()) {
+                final QOrderBySection orderBy = new QOrderBySection(
+                                this.orders.toArray(new AbstractQPart[this.orders.size()]));
+                this.query.setOrderBy(orderBy);
+            }
+        }
+        return (CachedInstanceQuery) this.query;
+    }
+
+
+    /**
      * Method to get a MultiPrintQuery.
      * @return MultiPrintQuery based on the InstanceQuery
      * @throws EFapsException on error
