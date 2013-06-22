@@ -729,9 +729,7 @@ public abstract class AbstractPrintQuery
                 con.commit();
 
                 if (isCacheEnabled()) {
-                    final QueryKey querykey = QueryKey.get(getKey(), _complStmt);
-                    final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
-                    cache.put(querykey, rows);
+                    QueryCache.put((ICacheDefinition) this, QueryKey.get(getKey(), _complStmt), rows);
                 }
             }
 

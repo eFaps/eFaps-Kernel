@@ -20,6 +20,8 @@
 
 package org.efaps.db;
 
+import java.util.concurrent.TimeUnit;
+
 import org.efaps.util.EFapsException;
 
 /**
@@ -30,12 +32,35 @@ import org.efaps.util.EFapsException;
  */
 public class CachedPrintQuery
     extends PrintQuery
+    implements ICacheDefinition
 {
 
     /**
      * Key used for the Cache.
      */
     private String key;
+
+    /**
+     * lifespan of the entry. Negative values are interpreted as unlimited
+     * lifespan. 0 means do not apply
+     */
+    private long lifespan = 0;
+
+    /**
+     * time unit for lifespan.
+     */
+    private TimeUnit lifespanUnit;
+
+    /**
+     * the maximum amount of time this key is allowed to be idle for before it
+     * is considered as expired. 0 means do not apply
+     */
+    private long maxIdleTime = 0;
+
+    /**
+     * time unit for max idle time.
+     */
+    private TimeUnit maxIdleTimeUnit;
 
     /**
      * @param _instance instance to be updated.
@@ -76,5 +101,90 @@ public class CachedPrintQuery
     public String getKey()
     {
         return this.key;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getLifespan()
+    {
+        return this.lifespan;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TimeUnit getLifespanUnit()
+    {
+        return this.lifespanUnit;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getMaxIdleTime()
+    {
+        return this.maxIdleTime;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TimeUnit getMaxIdleTimeUnit()
+    {
+        return this.maxIdleTimeUnit;
+    }
+
+    /**
+     * Setter method for instance variable {@link #lifespan}.
+     *
+     * @param _lifespan value for instance variable {@link #lifespan}
+     * @return this instance to allow chaining
+     */
+    public CachedPrintQuery setLifespan(final long _lifespan)
+    {
+        this.lifespan = _lifespan;
+        return this;
+    }
+
+    /**
+     * Setter method for instance variable {@link #lifespanUnit}.
+     *
+     * @param _lifespanUnit value for instance variable {@link #lifespanUnit}
+     * @return this instance to allow chaining
+     */
+    public CachedPrintQuery setLifespanUnit(final TimeUnit _lifespanUnit)
+    {
+        this.lifespanUnit = _lifespanUnit;
+        return this;
+    }
+
+    /**
+     * Setter method for instance variable {@link #maxIdleTime}.
+     *
+     * @param _maxIdleTime value for instance variable {@link #maxIdleTime}
+     * @return this instance to allow chaining
+     */
+    public CachedPrintQuery setMaxIdleTime(final long _maxIdleTime)
+    {
+        this.maxIdleTime = _maxIdleTime;
+        return this;
+    }
+
+    /**
+     * Setter method for instance variable {@link #maxIdleTimeUnit}.
+     *
+     * @param _maxIdleTimeUnit value for instance variable
+     *            {@link #maxIdleTimeUnit}
+     * @return this instance to allow chaining
+     */
+    public CachedPrintQuery setMaxIdleTimeUnit(final TimeUnit _maxIdleTimeUnit)
+    {
+        this.maxIdleTimeUnit = _maxIdleTimeUnit;
+        return this;
     }
 }

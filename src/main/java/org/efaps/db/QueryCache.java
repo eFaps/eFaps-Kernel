@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class QueryCache
 {
+
     /**
      * DefaultKey.
      */
@@ -104,6 +105,26 @@ public final class QueryCache
     }
 
     /**
+     * @param _cacheDef cacheDefinition
+     * @param _querykey QueryKey
+     * @param _object   object to store
+     */
+    public static void put(final ICacheDefinition _cacheDef,
+                           final QueryKey _querykey,
+                           final Object _object)
+    {
+        final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
+        if (_cacheDef.getMaxIdleTime() != 0) {
+            cache.put(_querykey, _object, _cacheDef.getLifespan(), _cacheDef.getLifespanUnit(),
+                            _cacheDef.getMaxIdleTime(), _cacheDef.getMaxIdleTimeUnit());
+        } else if (_cacheDef.getLifespan() != 0) {
+            cache.put(_querykey, _object, _cacheDef.getLifespan(), _cacheDef.getLifespanUnit());
+        } else {
+            cache.put(_querykey, _object);
+        }
+    }
+
+    /**
      * @return the QueryCache
      */
     public static Cache<QueryKey, Object> getSqlCache()
@@ -113,9 +134,9 @@ public final class QueryCache
     }
 
     /**
-     * Listener responsible to maintain the two Caches in sync. The
-     * SQLCache will receive the new QueryKey in the moment that a new
-     * QueryKey is inserted.
+     * Listener responsible to maintain the two Caches in sync. The SQLCache
+     * will receive the new QueryKey in the moment that a new QueryKey is
+     * inserted.
      */
     @Listener
     public static class SqlCacheListener
@@ -152,15 +173,15 @@ public final class QueryCache
 
     /**
      * Listener responsible to maintain the two Caches in sync. On removal of an
-     * Key from the KeyCache the related QueryKey from the SQLCache
-     * will be removed also.
+     * Key from the KeyCache the related QueryKey from the SQLCache will be
+     * removed also.
      */
     @Listener
     public static class KeyCacheListener
     {
+
         /**
-         * If an Key is removed the related QueryKey will be removed
-         * also.
+         * If an Key is removed the related QueryKey will be removed also.
          *
          * @param _event event
          */
