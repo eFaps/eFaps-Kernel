@@ -26,6 +26,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -33,16 +34,31 @@ import org.efaps.db.AbstractPrintQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
+import org.efaps.db.QueryCache;
+import org.efaps.db.QueryKey;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Select Part for <code>linkfrom[TYPERNAME#ATTRIBUTENAME]</code>.
+ *
+ * @author The eFaps Team
+ * @version $Id$
+ */
+/**
+ * TODO comment!
+ *
+ * @author The eFaps Team
+ * @version $Id$
+ */
+/**
+ * TODO comment!
  *
  * @author The eFaps Team
  * @version $Id$
@@ -71,12 +87,20 @@ public class LinkFromSelect
     private boolean hasResult;
 
     /**
+     * Used for Caching.
+     */
+    private final String key;
+
+    /**
      * @param _linkFrom linkfrom element of the query
+     * @param _key used to cache the result
      * @throws CacheReloadException on error
      */
-    public LinkFromSelect(final String _linkFrom)
+    public LinkFromSelect(final String _linkFrom,
+                          final String _key)
         throws CacheReloadException
     {
+        this.key = _key;
         final String[] linkfrom = _linkFrom.split("#");
         this.type = Type.get(linkfrom[0]);
         this.attrName = linkfrom[1];
@@ -103,7 +127,7 @@ public class LinkFromSelect
             }
 
             @Override
-            public void addObject(final ResultSet _rs)
+            public void addObject(final Object[] _rs)
                 throws SQLException
             {
                 // no objects must be added
@@ -239,6 +263,7 @@ public class LinkFromSelect
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     protected boolean executeOneCompleteStmt(final String _complStmt,
                                              final List<OneSelect> _oneSelects)
@@ -247,26 +272,46 @@ public class LinkFromSelect
         boolean ret = false;
         ConnectionResource con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
-
             if (AbstractPrintQuery.LOG.isDebugEnabled()) {
                 AbstractPrintQuery.LOG.debug(_complStmt.toString());
             }
 
-            final Statement stmt = con.getConnection().createStatement();
+            List<Object[]> rows = null;
+            boolean cached = false;
+            if (isCacheEnabled()) {
+                final QueryKey querykey = QueryKey.get(getKey(), _complStmt);
+                final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
+                if (cache.containsKey(querykey)) {
+                    final Object object = cache.get(querykey);
+                    if (object instanceof List) {
+                        rows = (List<Object[]>) object;
+                    }
+                    cached = true;
+                }
+            }
+            if (!cached) {
+                con = Context.getThreadContext().getConnectionResource();
+                final Statement stmt = con.getConnection().createStatement();
 
-            final ResultSet rs = stmt.executeQuery(_complStmt.toString());
-
-            while (rs.next()) {
+                final ResultSet rs = stmt.executeQuery(_complStmt.toString());
+                final ArrayListHandler handler = new ArrayListHandler();
+                rows = handler.handle(rs);
+                rs.close();
+                stmt.close();
+                con.commit();
+                if (isCacheEnabled()) {
+                    final QueryKey querykey = QueryKey.get(getKey(), _complStmt);
+                    final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
+                    cache.put(querykey, rows);
+                }
+            }
+            for (final Object[] row : rows) {
                 for (final OneSelect onesel : _oneSelects) {
-                    onesel.addObject(rs);
+                    onesel.addObject(row);
                 }
                 ret = true;
             }
 
-            rs.close();
-            stmt.close();
-            con.commit();
         } catch (final SQLException e) {
             throw new EFapsException(InstanceQuery.class, "executeOneCompleteStmt", e);
         } finally {
@@ -330,5 +375,14 @@ public class LinkFromSelect
     public String toString()
     {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isCacheEnabled()
+    {
+        return this.key != null;
     }
 }

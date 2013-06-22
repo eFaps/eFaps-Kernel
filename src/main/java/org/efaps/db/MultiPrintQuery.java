@@ -40,7 +40,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class MultiPrintQuery extends AbstractPrintQuery
+public class MultiPrintQuery
+    extends AbstractPrintQuery
 {
 
     /**
@@ -150,7 +151,8 @@ public class MultiPrintQuery extends AbstractPrintQuery
      * {@inheritDoc}
      */
     @Override
-    public boolean execute() throws EFapsException
+    public boolean execute()
+        throws EFapsException
     {
         if (isMarked4execute()) {
             final Map<Type, List<Instance>> types = new HashMap<Type, List<Instance>>();
@@ -164,7 +166,7 @@ public class MultiPrintQuery extends AbstractPrintQuery
                 }
                 list.add(instance);
             }
-            //check the access for the given instances
+            // check the access for the given instances
             final Map<Instance, Boolean> accessmap = new HashMap<Instance, Boolean>();
             for (final Entry<Type, List<Instance>> entry : types.entrySet()) {
                 accessmap.putAll(entry.getKey().checkAccess(entry.getValue(), AccessTypeEnums.SHOW.getAccessType()));
@@ -185,6 +187,7 @@ public class MultiPrintQuery extends AbstractPrintQuery
 
     /**
      * Method to move the iterator to the next value.
+     *
      * @return true if the iterator was moved successfully to the next value
      */
     public boolean next()
@@ -193,7 +196,6 @@ public class MultiPrintQuery extends AbstractPrintQuery
         if (this.iterator == null) {
             this.iterator = this.instances.iterator();
         }
-
         if (this.iterator.hasNext()) {
             this.current = this.iterator.next();
             ret = true;
@@ -207,5 +209,14 @@ public class MultiPrintQuery extends AbstractPrintQuery
             }
         }
         return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isCacheEnabled()
+    {
+        return false;
     }
 }

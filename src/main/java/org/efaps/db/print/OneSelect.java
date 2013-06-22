@@ -20,8 +20,6 @@
 
 package org.efaps.db.print;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -219,54 +217,41 @@ public class OneSelect
     /**
      * Add an Object for this OneSelect.
      *
-     * @param _rs ResultSet from the eFaps database
+     * @param _row Objects from the eFaps database
      * @throws SQLException on error
      */
-    public void addObject(final ResultSet _rs)
+    public void addObject(final Object[] _row)
         throws SQLException
     {
-        final ResultSetMetaData metaData = _rs.getMetaData();
         // store the ids also
-        this.idList.add(_rs.getLong(1));
+        this.idList.add((Long) _row[0]);
 
         if (getFromSelect() != null) {
             final int column = "id".equals(this.valueSelect.getValueType())
-                                    ? this.valueSelect.getColIndexs().get(0) : 2;
-            this.relIdList.add(_rs.getLong(column));
+                            ? this.valueSelect.getColIndexs().get(0) : 2;
+            this.relIdList.add((Long) _row[column - 1]);
         }
         Object object = null;
         AbstractValueSelect tmpValueSelect;
-        if (this.valueSelect ==  null) {
+        if (this.valueSelect == null) {
             tmpValueSelect = this.fromSelect.getMainOneSelect().getValueSelect();
         } else {
             tmpValueSelect = this.valueSelect;
         }
         if (tmpValueSelect.getParentSelectPart() != null) {
-            tmpValueSelect.getParentSelectPart().addObject(_rs);
+            tmpValueSelect.getParentSelectPart().addObject(_row);
         }
 
         if (tmpValueSelect.getColIndexs().size() > 1) {
             final Object[] objArray = new Object[tmpValueSelect.getColIndexs().size()];
             int i = 0;
             for (final Integer colIndex : tmpValueSelect.getColIndexs()) {
-                switch (metaData.getColumnType(colIndex)) {
-                    case java.sql.Types.TIMESTAMP:
-                        objArray[i] =  _rs.getTimestamp(colIndex);
-                        break;
-                    default:
-                        objArray[i] =  _rs.getObject(colIndex);
-                }
+                objArray[i] = _row[colIndex - 1];
                 i++;
             }
             object = objArray;
         } else if (tmpValueSelect.getColIndexs().size() > 0) {
-            switch (metaData.getColumnType(tmpValueSelect.getColIndexs().get(0))) {
-                case java.sql.Types.TIMESTAMP:
-                    object = _rs.getTimestamp(tmpValueSelect.getColIndexs().get(0));
-                    break;
-                default:
-                    object = _rs.getObject(tmpValueSelect.getColIndexs().get(0));
-            }
+            object = _row[tmpValueSelect.getColIndexs().get(0) - 1];
         }
         this.objectList.add(object);
     }
@@ -355,7 +340,7 @@ public class OneSelect
         try {
             final AttributeSet set = AttributeSet.find(type.getName(), _attributeSet);
             final String linkFrom = set.getName() + "#" + set.getAttributeName();
-            this.fromSelect = new LinkFromSelect(linkFrom);
+            this.fromSelect = new LinkFromSelect(linkFrom, getQuery().isCacheEnabled() ? getQuery().getKey() : null);
         } catch (final CacheReloadException e) {
             OneSelect.LOG.error("Could not find AttributeSet for Type: {}, attribute: {}", type.getName(),
                             _attributeSet);
@@ -372,7 +357,7 @@ public class OneSelect
     public void addLinkFromSelectPart(final String _linkFrom)
         throws CacheReloadException
     {
-        this.fromSelect = new LinkFromSelect(_linkFrom);
+        this.fromSelect = new LinkFromSelect(_linkFrom, getQuery().isCacheEnabled() ? getQuery().getKey() : null);
     }
 
     /**

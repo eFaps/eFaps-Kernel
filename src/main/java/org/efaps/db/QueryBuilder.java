@@ -726,7 +726,6 @@ public class QueryBuilder
         return (CachedInstanceQuery) this.query;
     }
 
-
     /**
      * Method to get a MultiPrintQuery.
      * @return MultiPrintQuery based on the InstanceQuery
@@ -736,6 +735,18 @@ public class QueryBuilder
         throws EFapsException
     {
         return new MultiPrintQuery(getQuery().execute());
+    }
+
+    /**
+     * Method to get a CachedMultiPrintQuery.
+     * @param _key key used for Caching
+     * @return MultiPrintQuery based on the InstanceQuery
+     * @throws EFapsException on error
+     */
+    public CachedMultiPrintQuery getCachedPrint(final String _key)
+        throws EFapsException
+    {
+        return new CachedMultiPrintQuery(getCachedQuery(_key).execute(), _key);
     }
 
     /**

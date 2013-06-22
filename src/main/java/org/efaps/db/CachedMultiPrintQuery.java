@@ -18,48 +18,53 @@
  * Last Changed By: $Author$
  */
 
+package org.efaps.db;
 
-package org.efaps.db.print;
+import java.util.List;
 
-import java.sql.SQLException;
-
-import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.util.EFapsException;
 
 /**
- * Abstract Select Part.
+ * TODO comment!
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public abstract class AbstractSelectPart
-    implements ISelectPart
+public class CachedMultiPrintQuery
+    extends MultiPrintQuery
 {
+
     /**
-     * {@inheritDoc}
+     * Key used for Caching.
      */
-    @Override
-    public void addObject(final Object[] _row)
-        throws SQLException
+    private final String key;
+
+    /**
+     * @param _instances instance to be updated.
+     * @param _key key used for caching
+     * @throws EFapsException on error
+     */
+    public CachedMultiPrintQuery(final List<Instance> _instances,
+                                 final String _key)
+        throws EFapsException
     {
-        //no objects must be added
+        super(_instances);
+        this.key = _key;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Object getObject()
+    public boolean isCacheEnabled()
     {
-        return null;
+        return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public  void add2Where(final OneSelect _oneselect,
-                           final SQLSelect _select)
+    public String getKey()
     {
-        //nothing must be added
+        return this.key;
     }
+
 }

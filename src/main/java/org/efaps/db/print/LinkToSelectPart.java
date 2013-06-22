@@ -20,7 +20,6 @@
 
 package org.efaps.db.print;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -138,10 +137,10 @@ public class LinkToSelectPart
      * {@inheritDoc}
      */
     @Override
-    public void addObject(final ResultSet _rs)
+    public void addObject(final Object[] _row)
         throws SQLException
     {
-        this.idList.add(_rs.getLong(this.idColumnIndex));
+        this.idList.add((Long) _row[this.idColumnIndex - 1]);
     }
 
     /**

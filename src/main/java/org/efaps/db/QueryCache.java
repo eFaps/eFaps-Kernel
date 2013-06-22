@@ -42,6 +42,10 @@ import org.slf4j.LoggerFactory;
  */
 public final class QueryCache
 {
+    /**
+     * DefaultKey.
+     */
+    public static final String DEFAULTKEY = QueryCache.class.getName() + ".DefaultKey";
 
     /**
      * Name of the Cache for Instances.

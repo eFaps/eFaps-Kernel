@@ -32,15 +32,12 @@ import org.efaps.util.EFapsException;
  * instance. The PrintQuery is able to execute various of the parts for the
  * select from EQL definition.
  *
- * TODO description!
- * TODO .value
- * TODO .attribute[ValueUOM].number
- * .attribute[ValueUOM].uom .attribute[ValueUOM].base
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public class PrintQuery extends AbstractPrintQuery
+public class PrintQuery
+    extends AbstractPrintQuery
 {
 
     /**
@@ -52,8 +49,8 @@ public class PrintQuery extends AbstractPrintQuery
      * Initializes this print query depending on a <code>_type</code> and
      * <code>_id</code>.
      *
-     * @param _type     type of the eFaps object to print
-     * @param _id       id of the eFaps object to print
+     * @param _type type of the eFaps object to print
+     * @param _id id of the eFaps object to print
      * @throws EFapsException on error
      */
     public PrintQuery(final Type _type,
@@ -67,8 +64,8 @@ public class PrintQuery extends AbstractPrintQuery
      * Initializes this print query depending on a <code>_type</code> and
      * <code>_id</code>.
      *
-     * @param _type     type of the eFaps object to print
-     * @param _id       id of the eFaps object to print
+     * @param _type type of the eFaps object to print
+     * @param _id id of the eFaps object to print
      * @throws EFapsException on error
      */
     public PrintQuery(final Type _type,
@@ -82,8 +79,8 @@ public class PrintQuery extends AbstractPrintQuery
      * Initializes this print query depending on a <code>_type</code> and
      * <code>_id</code>.
      *
-     * @param _type     type of the eFaps object to print
-     * @param _id       id of the eFaps object to print
+     * @param _type type of the eFaps object to print
+     * @param _id id of the eFaps object to print
      * @throws EFapsException on error
      */
     public PrintQuery(final String _type,
@@ -156,7 +153,8 @@ public class PrintQuery extends AbstractPrintQuery
      * {@inheritDoc}
      */
     @Override
-    public boolean execute() throws EFapsException
+    public boolean execute()
+        throws EFapsException
     {
         boolean ret = false;
         if (isMarked4execute()) {
@@ -165,5 +163,14 @@ public class PrintQuery extends AbstractPrintQuery
             }
         }
         return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isCacheEnabled()
+    {
+        return false;
     }
 }

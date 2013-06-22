@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Type;
@@ -42,6 +43,7 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.infinispan.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -610,7 +612,6 @@ public abstract class AbstractPrintQuery
             if (getInstanceList().size() > 0) {
                 ret =  executeOneCompleteStmt(createSQLStatement(), this.allSelects);
             }
-
             if (ret) {
                 for (final OneSelect onesel : this.allSelects) {
                     if (onesel.getFromSelect() != null) {
@@ -622,14 +623,13 @@ public abstract class AbstractPrintQuery
         return ret;
     }
 
-
     /**
      * Method to create on Statement out of the different parts.
      *
      * @return StringBuilder containing the SQL statement
      * @throws EFapsException on error
      */
-    private String createSQLStatement()
+    protected String createSQLStatement()
         throws EFapsException
     {
 
@@ -691,6 +691,8 @@ public abstract class AbstractPrintQuery
      * @return true if the query contains values, else false
      * @throws EFapsException on error
      */
+
+    @SuppressWarnings("unchecked")
     protected boolean executeOneCompleteStmt(final String _complStmt,
                                              final List<OneSelect> _oneSelects)
         throws EFapsException
@@ -698,38 +700,55 @@ public abstract class AbstractPrintQuery
         boolean ret = false;
         ConnectionResource con = null;
         try {
-            con = Context.getThreadContext().getConnectionResource();
-
             if (AbstractPrintQuery.LOG.isDebugEnabled()) {
-                AbstractPrintQuery.LOG.debug(_complStmt.toString());
+                AbstractPrintQuery.LOG.debug(_complStmt);
             }
 
-            final Statement stmt = con.getConnection().createStatement();
-            final ResultSet rs = stmt.executeQuery(_complStmt.toString());
-            final List<Object[]> values = new ArrayList<Object[]>();
-
-            while (rs.next()) {
-                if (getMainType().getMainTable().getSqlColType() != null) {
-                    values.add(new Object[]{rs.getLong(this.typeColumnIndex), rs.getLong(1)});
-                } else {
-                    values.add(new Object[]{rs.getLong(1)});
+            List<Object[]> rows = null;
+            boolean cached = false;
+            if (isCacheEnabled()) {
+                final QueryKey querykey = QueryKey.get(getKey(), _complStmt);
+                final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
+                if (cache.containsKey(querykey)) {
+                    final Object object = cache.get(querykey);
+                    if (object instanceof List) {
+                        rows = (List<Object[]>) object;
+                    }
+                    cached = true;
                 }
+            }
+
+            if (!cached) {
+                con = Context.getThreadContext().getConnectionResource();
+                final Statement stmt = con.getConnection().createStatement();
+                final ResultSet rs = stmt.executeQuery(_complStmt);
+                final ArrayListHandler handler = new ArrayListHandler();
+                rows = handler.handle(rs);
+                rs.close();
+                stmt.close();
+                con.commit();
+
+                if (isCacheEnabled()) {
+                    final QueryKey querykey = QueryKey.get(getKey(), _complStmt);
+                    final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
+                    cache.put(querykey, rows);
+                }
+            }
+
+            for (final Object[] row : rows) {
                 for (final OneSelect onesel : _oneSelects) {
-                    onesel.addObject(rs);
+                    onesel.addObject(row);
                 }
                 ret = true;
             }
-            rs.close();
-            stmt.close();
-            con.commit();
 
             final List<Instance> tmpList = new ArrayList<Instance>();
             final Map<Instance, Integer> sortMap = new HashMap<Instance, Integer>();
             int i = 0;
-            for (final Object[] row : values) {
+            for (final Object[] row : rows) {
                 final Instance instance;
-                if (row.length == 2) {
-                    instance = Instance.get(Type.get((Long) row[0]), (Long) row[1]);
+                if (getMainType().getMainTable().getSqlColType() != null) {
+                    instance = Instance.get(Type.get((Long) (row[this.typeColumnIndex - 1])), (Long) row[0]);
                 } else {
                     instance = Instance.get(getMainType(), (Long) row[0]);
                 }
@@ -746,7 +765,6 @@ public abstract class AbstractPrintQuery
                 getInstanceList().clear();
                 getInstanceList().addAll(tmpList);
             }
-
         } catch (final SQLException e) {
             throw new EFapsException(InstanceQuery.class, "executeOneCompleteStmt", e);
         } finally {
@@ -799,4 +817,19 @@ public abstract class AbstractPrintQuery
     {
         return !getInstanceList().isEmpty();
     }
+
+
+    /**
+     * @return true if for this query caching is enabled, else false
+     */
+    public abstract boolean isCacheEnabled();
+
+    /**
+     * @return key used in caching
+     */
+    public String getKey()
+    {
+        return QueryCache.DEFAULTKEY;
+    }
+
 }

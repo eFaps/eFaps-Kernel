@@ -20,7 +20,6 @@
 
 package org.efaps.db.print;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.efaps.admin.datamodel.Type;
@@ -57,10 +56,10 @@ public interface ISelectPart
 
     /**
      * Add an Object.
-     * @param _rs ResultSet
+     * @param _row values
      * @throws SQLException on error
      */
-    void addObject(final ResultSet _rs)
+    void addObject(final Object[] _row)
         throws SQLException;
 
     /**
