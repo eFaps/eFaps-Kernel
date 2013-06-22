@@ -75,7 +75,16 @@ public interface KernelSettings
      */
     String LOGIN_TIME_RETRY = "org.efaps.kernel.LoginTimeElapseBeforeRetry";
 
+    /**
+     * Boolean (true/false): deactivate the Caching mechanism for Access.
+     * Default: false
+     */
+    String DEACTIVATE_ACCESSCACHE = "org.efaps.kernel.DeactivateAccessCache";
 
-
+    /**
+     * Boolean (true/false): deactivate the Caching mechanism for Access.
+     * Default: false
+     */
+    String DEACTIVATE_QUERYCACHE = "org.efaps.kernel.DeactivateQueryCache";
 
 }
