@@ -26,6 +26,7 @@ import java.util.Set;
 import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.InfinispanCache;
 import org.infinispan.Cache;
+import org.infinispan.context.Flag;
 import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryRemoved;
@@ -35,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment!
+ * Caching for Queries.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -107,21 +108,22 @@ public final class QueryCache
      */
     public static Cache<QueryKey, Object> getSqlCache()
     {
-        return InfinispanCache.get().<QueryKey, Object>getCache(QueryCache.SQLCACHE);
+        return InfinispanCache.get().<QueryKey, Object>getCache(QueryCache.SQLCACHE).getAdvancedCache()
+                        .withFlags(Flag.IGNORE_RETURN_VALUES);
     }
 
     /**
      * Listener responsible to maintain the two Caches in sync. The
-     * instanceCache will receive the new AccessKey in the moment that a new
-     * AccessKey is inserted.
+     * SQLCache will receive the new QueryKey in the moment that a new
+     * QueryKey is inserted.
      */
     @Listener
     public static class SqlCacheListener
     {
 
         /**
-         * If an AccessKey is inserted to KeyCache the instance will also be
-         * registered in the INSTANCECACHE.
+         * If an QueryKey is inserted to SQLCache the QueryKey will also be
+         * registered in the KeyCache.
          *
          * @param _event event to be loged
          */
@@ -150,18 +152,17 @@ public final class QueryCache
 
     /**
      * Listener responsible to maintain the two Caches in sync. On removal of an
-     * instance from the instanceCache the related AccessKeys from the KeyCache
+     * Key from the KeyCache the related QueryKey from the SQLCache
      * will be removed also.
      */
     @Listener
     public static class KeyCacheListener
     {
-
         /**
-         * If an Instance is removed the related AccessKeys will be removed
-         * also..
+         * If an Key is removed the related QueryKey will be removed
+         * also.
          *
-         * @param _event event to be loged
+         * @param _event event
          */
         @SuppressWarnings("unchecked")
         @CacheEntryRemoved
