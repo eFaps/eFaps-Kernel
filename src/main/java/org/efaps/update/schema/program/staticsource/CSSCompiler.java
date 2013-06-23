@@ -93,13 +93,11 @@ public class CSSCompiler
             in.close();
             checkout.close();
             final ByteArrayOutputStream byteout = new ByteArrayOutputStream();
-            final OutputStreamWriter out = new OutputStreamWriter(byteout);
+            final OutputStreamWriter out = new OutputStreamWriter(byteout, "UTF-8");
             compressor.compress(out, 2000);
             out.flush();
-
-            ret = byteout.toString();
+            ret = byteout.toString("UTF-8");
             ret += "\n";
-
         } catch (final EFapsException e) {
             CSSCompiler.LOG.error("error during checkout of Instance:" + _instance, e);
             e.printStackTrace();

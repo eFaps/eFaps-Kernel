@@ -158,11 +158,11 @@ public class JavaScriptCompiler
                 in.close();
                 checkout.close();
                 final ByteArrayOutputStream byteout = new ByteArrayOutputStream();
-                final OutputStreamWriter out = new OutputStreamWriter(byteout);
+                final OutputStreamWriter out = new OutputStreamWriter(byteout, "UTF-8");
 
                 compressor.compress(out, 140, false, true, true, true);
                 out.flush();
-                ret.append(byteout.toString());
+                ret.append(byteout.toString("UTF-8"));
             }
         } catch (final EFapsException e) {
             JavaScriptCompiler.LOG.error("error during checkout of Instance:" + _instance, e);

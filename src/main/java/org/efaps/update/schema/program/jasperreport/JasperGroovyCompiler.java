@@ -27,6 +27,7 @@ import groovyjarjarasm.asm.ClassWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,8 +95,12 @@ public class JasperGroovyCompiler
         final CompilationUnit unit = new CompilationUnit(loader);
 
         for (int i = 0; i < _units.length; i++) {
-            unit.addSource("calculator_" + _units[i].getName(), new ByteArrayInputStream(_units[i].getSourceCode()
-                            .getBytes()));
+            try {
+                unit.addSource("calculator_" + _units[i].getName(), new ByteArrayInputStream(_units[i].getSourceCode()
+                                .getBytes("UTF-8")));
+            } catch (final UnsupportedEncodingException e) {
+                throw new JRException("Cannot add Source", e);
+            }
         }
 
         final ClassCollector collector = new ClassCollector();

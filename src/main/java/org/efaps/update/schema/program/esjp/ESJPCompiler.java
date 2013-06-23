@@ -550,7 +550,7 @@ public class ESJPCompiler
                 final byte[] bytes = new byte[is.available()];
                 is.read(bytes);
                 is.close();
-                ret.append(new String(bytes));
+                ret.append(new String(bytes, "UTF-8"));
             } catch (final EFapsException e) {
                 throw new IOException("could not checkout class '" + this.javaName + "'", e);
             }

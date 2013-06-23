@@ -518,9 +518,12 @@ public class ApplicationVersion
                     }
                 }
                 try  {
+                    loader.close();
                     Context.commit();
                 } catch (final EFapsException e) {
                     throw new InstallationException("Tranaction could not be commited", e);
+                } catch (final IOException e) {
+                    ApplicationVersion.LOG.error("Could not close loader.");
                 }
                 commit = true;
             } finally {
@@ -591,7 +594,7 @@ public class ApplicationVersion
                         ApplicationVersion.LOG.info("Execute script file '" + getFileName() + "'");
                     }
                     final Reader in = new InputStreamReader(
-                            new URL(getCompleteRootUrl(), getFileName()).openStream());
+                            new URL(getCompleteRootUrl(), getFileName()).openStream(), "UTF-8");
                     javaScriptContext.evaluateReader(scope, in, getFileName(), 1, null);
                     in.close();
                 }
