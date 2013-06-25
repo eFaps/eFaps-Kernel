@@ -66,6 +66,11 @@ public final class JmsHandler
     private static final Logger LOG = LoggerFactory.getLogger(JmsHandler.class);
 
     /**
+     * Key to a configuration.
+     */
+    public static final String ACTIVEJMS = "org.efaps.jms.ActiveJMS";
+
+    /**
      * Mapping of JNDI-Name of the ConnectionFactory to QueueConnection.
      */
     private static final Map<String, QueueConnection> QUEUE2QUECONN = new HashMap<String, QueueConnection>();
@@ -105,90 +110,98 @@ public final class JmsHandler
                     JmsSession.setSessionTimeout(timeout);
                 }
             }
+
+            //JMS-Configuration
+            final SystemConfiguration configJms = SystemConfiguration.get(
+                            UUID.fromString("65b6a1a8-c979-4471-b175-774593f1acd7"));
+            final boolean active = configJms.getAttributeValueAsBoolean(JmsHandler.ACTIVEJMS);
+
+            if (active) {
             // this check is necessary for first install and update
-            if (CIAdminCommon.JmsAbstract.getType() != null) {
-                // remove any existing
-                JmsHandler.stop();
-                final Context ctx = new InitialContext();
-                final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.JmsAbstract);
-                final MultiPrintQuery multi = queryBldr.getPrint();
-                multi.addAttribute(CIAdminCommon.JmsAbstract.Type,
-                                CIAdminCommon.JmsAbstract.Name,
-                                CIAdminCommon.JmsAbstract.ConnectionFactoryJNDI,
-                                CIAdminCommon.JmsAbstract.DestinationJNDI);
-                final SelectBuilder sel = new SelectBuilder().linkto(CIAdminCommon.JmsAbstract.ESJPLink)
-                                .file().label();
-                multi.addSelect(sel);
-                if (multi.executeWithoutAccessCheck()) {
-                    JmsResourceConfig.getResourceConfig().init();
-                }
-                while (multi.next()) {
-                    final Type type = multi.<Type>getAttribute(CIAdminCommon.JmsAbstract.Type);
-                    final String connectionFactoryJNDI = multi
-                                    .<String>getAttribute(CIAdminCommon.JmsAbstract.ConnectionFactoryJNDI);
-                    final String destinationJNDI = multi
-                                    .<String>getAttribute(CIAdminCommon.JmsAbstract.DestinationJNDI);
-                    final String name = multi.<String>getAttribute(CIAdminCommon.JmsAbstract.Name);
-                    final String esjp = multi.<String>getSelect(sel);
-
-                    Session session;
-                    if (type.isKindOf(CIAdminCommon.JmsQueueAbstract.getType())) {
-                        final QueueConnectionFactory queueConnectionFactory = (QueueConnectionFactory) ctx
-                                        .lookup(connectionFactoryJNDI);
-                        final QueueConnection queueConnection;
-                        if (JmsHandler.QUEUE2QUECONN.containsKey(connectionFactoryJNDI)) {
-                            queueConnection = JmsHandler.QUEUE2QUECONN.get(connectionFactoryJNDI);
-                        } else {
-                            queueConnection = queueConnectionFactory.createQueueConnection();
-                        }
-                        JmsHandler.QUEUE2QUECONN.put(connectionFactoryJNDI, queueConnection);
-                        session = queueConnection.createQueueSession(false,
-                                        Session.AUTO_ACKNOWLEDGE);
-                        queueConnection.start();
-                    } else {
-                        final TopicConnectionFactory topicConnectionFactory = (TopicConnectionFactory) ctx
-                                        .lookup(connectionFactoryJNDI);
-                        final TopicConnection topicConn;
-                        if (JmsHandler.TOPIC2QUECONN.containsKey(connectionFactoryJNDI)) {
-                            topicConn = JmsHandler.TOPIC2QUECONN.get(connectionFactoryJNDI);
-                        } else {
-                            topicConn = topicConnectionFactory.createTopicConnection();
-                        }
-                        JmsHandler.TOPIC2QUECONN.put(connectionFactoryJNDI, topicConn);
-                        if (type.isKindOf(CIAdminCommon.JmsTopicDurableConsumer.getType())) {
-                            topicConn.setClientID(org.efaps.db.Context.getThreadContext().getPath() + ":" + name);
-                        }
-                        session = topicConn.createTopicSession(true, Session.AUTO_ACKNOWLEDGE);
-                        topicConn.start();
+                if (CIAdminCommon.JmsAbstract.getType() != null) {
+                    // remove any existing
+                    JmsHandler.stop();
+                    final Context ctx = new InitialContext();
+                    final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.JmsAbstract);
+                    final MultiPrintQuery multi = queryBldr.getPrint();
+                    multi.addAttribute(CIAdminCommon.JmsAbstract.Type,
+                                    CIAdminCommon.JmsAbstract.Name,
+                                    CIAdminCommon.JmsAbstract.ConnectionFactoryJNDI,
+                                    CIAdminCommon.JmsAbstract.DestinationJNDI);
+                    final SelectBuilder sel = new SelectBuilder().linkto(CIAdminCommon.JmsAbstract.ESJPLink)
+                                    .file().label();
+                    multi.addSelect(sel);
+                    if (multi.executeWithoutAccessCheck()) {
+                        JmsResourceConfig.getResourceConfig().init();
                     }
-                    final Destination dest = (Destination) ctx.lookup(destinationJNDI);
+                    while (multi.next()) {
+                        final Type type = multi.<Type>getAttribute(CIAdminCommon.JmsAbstract.Type);
+                        final String connectionFactoryJNDI = multi
+                                        .<String>getAttribute(CIAdminCommon.JmsAbstract.ConnectionFactoryJNDI);
+                        final String destinationJNDI = multi
+                                        .<String>getAttribute(CIAdminCommon.JmsAbstract.DestinationJNDI);
+                        final String name = multi.<String>getAttribute(CIAdminCommon.JmsAbstract.Name);
+                        final String esjp = multi.<String>getSelect(sel);
 
-                    if (type.isKindOf(CIAdminCommon.JmsQueueProducer.getType())
-                                    || type.isKindOf(CIAdminCommon.JmsTopicProducer.getType())) {
-                        final MessageProducer producer;
-                        if (type.isKindOf(CIAdminCommon.JmsQueueProducer.getType())) {
-                            producer = session.createProducer(dest);
+                        Session session;
+                        if (type.isKindOf(CIAdminCommon.JmsQueueAbstract.getType())) {
+                            final QueueConnectionFactory queueConnectionFactory = (QueueConnectionFactory) ctx
+                                            .lookup(connectionFactoryJNDI);
+                            final QueueConnection queueConnection;
+                            if (JmsHandler.QUEUE2QUECONN.containsKey(connectionFactoryJNDI)) {
+                                queueConnection = JmsHandler.QUEUE2QUECONN.get(connectionFactoryJNDI);
+                            } else {
+                                queueConnection = queueConnectionFactory.createQueueConnection();
+                            }
+                            JmsHandler.QUEUE2QUECONN.put(connectionFactoryJNDI, queueConnection);
+                            session = queueConnection.createQueueSession(false,
+                                            Session.AUTO_ACKNOWLEDGE);
+                            queueConnection.start();
                         } else {
-                            producer = ((TopicSession) session).createPublisher((Topic) dest);
+                            final TopicConnectionFactory topicConnectionFactory = (TopicConnectionFactory) ctx
+                                            .lookup(connectionFactoryJNDI);
+                            final TopicConnection topicConn;
+                            if (JmsHandler.TOPIC2QUECONN.containsKey(connectionFactoryJNDI)) {
+                                topicConn = JmsHandler.TOPIC2QUECONN.get(connectionFactoryJNDI);
+                            } else {
+                                topicConn = topicConnectionFactory.createTopicConnection();
+                            }
+                            JmsHandler.TOPIC2QUECONN.put(connectionFactoryJNDI, topicConn);
+                            if (type.isKindOf(CIAdminCommon.JmsTopicDurableConsumer.getType())) {
+                                topicConn.setClientID(org.efaps.db.Context.getThreadContext().getPath() + ":" + name);
+                            }
+                            session = topicConn.createTopicSession(true, Session.AUTO_ACKNOWLEDGE);
+                            topicConn.start();
                         }
-                        producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-                        JmsHandler.NAME2DEF.put(name, new JmsDefinition(name, producer, session));
-                    } else {
-                        final MessageConsumer consumer;
-                        if (type.isKindOf(CIAdminCommon.JmsQueueConsumer.getType())) {
-                            consumer = session.createConsumer(dest);
-                        } else if (type.isKindOf(CIAdminCommon.JmsTopicDurableConsumer.getType())) {
-                            consumer = session.createDurableSubscriber((Topic) dest, name);
+                        final Destination dest = (Destination) ctx.lookup(destinationJNDI);
+
+                        if (type.isKindOf(CIAdminCommon.JmsQueueProducer.getType())
+                                        || type.isKindOf(CIAdminCommon.JmsTopicProducer.getType())) {
+                            final MessageProducer producer;
+                            if (type.isKindOf(CIAdminCommon.JmsQueueProducer.getType())) {
+                                producer = session.createProducer(dest);
+                            } else {
+                                producer = ((TopicSession) session).createPublisher((Topic) dest);
+                            }
+                            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+                            JmsHandler.NAME2DEF.put(name, new JmsDefinition(name, producer, session));
                         } else {
-                            consumer = ((TopicSession) session).createSubscriber((Topic) dest);
+                            final MessageConsumer consumer;
+                            if (type.isKindOf(CIAdminCommon.JmsQueueConsumer.getType())) {
+                                consumer = session.createConsumer(dest);
+                            } else if (type.isKindOf(CIAdminCommon.JmsTopicDurableConsumer.getType())) {
+                                consumer = session.createDurableSubscriber((Topic) dest, name);
+                            } else {
+                                consumer = ((TopicSession) session).createSubscriber((Topic) dest);
+                            }
+                            @SuppressWarnings("unchecked")
+                            final Class<? extends MessageListener> clazz = (Class<? extends MessageListener>) Class
+                                            .forName(esjp.trim(), false, EFapsClassLoader.getInstance());
+                            final MessageListener myListener = clazz.newInstance();
+                            consumer.setMessageListener(myListener);
                         }
-                        @SuppressWarnings("unchecked")
-                        final Class<? extends MessageListener> clazz = (Class<? extends MessageListener>) Class.forName(
-                                        esjp.trim(), false, EFapsClassLoader.getInstance());
-                        final MessageListener myListener = clazz.newInstance();
-                        consumer.setMessageListener(myListener);
+
                     }
-
                 }
             }
         } catch (final NamingException e) {
