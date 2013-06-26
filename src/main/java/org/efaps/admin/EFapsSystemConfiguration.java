@@ -26,32 +26,19 @@ import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- * Enumeration for {@link SystemConfiguration system configurations} used from
- * eFaps.
+ * {@link SystemConfiguration system configurations} used from eFaps kernel.
  *
  * @author The eFaps Team
  * @version $Id$
  */
-public enum EFapsSystemConfiguration
+public final class EFapsSystemConfiguration
 {
     /**
-     * Kernel system configuration.
+     * Utility Class.
      */
-    KERNEL("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079");
-
-    /**
-     * Stores the {@link UUID} of related system configuration.
-     */
-    private final UUID uuid;
-
-    /**
-     * Initializes the {@link #uuid} for the system configuration.
-     *
-     * @param _uuid string representation of the UUID
-     */
-    private EFapsSystemConfiguration(final String _uuid)
+    private EFapsSystemConfiguration()
     {
-        this.uuid = UUID.fromString(_uuid);
+
     }
 
     /**
@@ -61,9 +48,9 @@ public enum EFapsSystemConfiguration
      * @return related system configuration instance
      * @throws CacheReloadException on error
      */
-    public SystemConfiguration get()
+    public static SystemConfiguration get()
         throws CacheReloadException
     {
-        return SystemConfiguration.get(this.uuid);
+        return SystemConfiguration.get(UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
     }
 }

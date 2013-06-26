@@ -57,7 +57,7 @@ public class UserGroupCallbackImpl
     public UserGroupCallbackImpl()
     {
         try {
-            if (!EFapsSystemConfiguration.KERNEL.get().getAttributeValueAsBoolean(KernelSettings.REQUIRE_PERSON_UUID)) {
+            if (!EFapsSystemConfiguration.get().getAttributeValueAsBoolean(KernelSettings.REQUIRE_PERSON_UUID)) {
                 UserGroupCallbackImpl.LOG.warn("BPM is activated but the UUID for Persons is not required. "
                                 + "That might leed to serious problems in the future!!!!!!");
             }

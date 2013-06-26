@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.ci.CIAdminProgram;
 import org.efaps.ci.CIType;
@@ -68,7 +69,7 @@ public class JavaScriptCompiler
         final StringBuilder ret = new StringBuilder();
         final Checkout checkout = new Checkout(_instance);
         try {
-            final SystemConfiguration kernelConfig = EFapsSystemConfiguration.KERNEL.get();
+            final SystemConfiguration kernelConfig = EFapsSystemConfiguration.get();
             final BufferedReader in = new BufferedReader(new InputStreamReader(checkout.execute(), "UTF-8"));
             if (JavaScriptCompiler.LOG.isDebugEnabled()) {
                 final BufferedReader in2 = new BufferedReader(new InputStreamReader(checkout.execute(), "UTF-8"));
@@ -81,7 +82,7 @@ public class JavaScriptCompiler
                 JavaScriptCompiler.LOG.debug(bldr.toString());
                 in2.close();
             }
-            if (kernelConfig.getAttributeValueAsBoolean("JavaScript_deactivate_Compression")) {
+            if (kernelConfig.getAttributeValueAsBoolean(KernelSettings.UPDATE_DEACTIVATEJSCOMP)) {
                 String line = "";
                 while (line != null) {
                     line = in.readLine();
@@ -145,8 +146,8 @@ public class JavaScriptCompiler
                         // Admin_Program_JavaScriptCompiled_Warn: do we want
                         // warnings?
                         try {
-                            final SystemConfiguration kernelConfig = EFapsSystemConfiguration.KERNEL.get();
-                            if (kernelConfig.getAttributeValueAsBoolean("JavaScriptCompiled_Warn")) {
+                            final SystemConfiguration kernelConfig = EFapsSystemConfiguration.get();
+                            if (kernelConfig.getAttributeValueAsBoolean(KernelSettings.UPDATE_ACTIVATEJSCOMPWAR)) {
                                 JavaScriptCompiler.LOG.warn(_warning);
                             }
                         } catch (final EFapsException e) {

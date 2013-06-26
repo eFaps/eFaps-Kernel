@@ -166,7 +166,7 @@ public final class BPM
     public static void initialize()
         throws EFapsException
     {
-        final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
+        final SystemConfiguration config = EFapsSystemConfiguration.get();
         final boolean active = config != null
                         ? config.getAttributeValueAsBoolean(KernelSettings.ACTIVATE_BPM) : false;
         if (active) {
@@ -178,8 +178,7 @@ public final class BPM
 
             System.setProperty(UserGroupCallbackManager.USER_GROUP_CALLBACK_KEY, UserGroupCallbackImpl.class.getName());
 
-            final String level = EFapsSystemConfiguration.KERNEL.get().getAttributeValue(
-                            KernelSettings.BPM_COMPILERLEVEL);
+            final String level = config.getAttributeValue(KernelSettings.BPM_COMPILERLEVEL);
 
             final Properties knowledgeBldrProps = new Properties();
             knowledgeBldrProps.setProperty(JavaDialectConfiguration.JAVA_COMPILER_PROPERTY, "ECLIPSE");

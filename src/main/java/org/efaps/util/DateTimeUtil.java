@@ -27,6 +27,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.joda.time.DateTime;
@@ -97,7 +98,7 @@ public final class DateTimeUtil
         throws EFapsException
     {
         // reads the Value from "Admin_Common_DataBaseTimeZone"
-        final String timezoneID = EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DataBaseTimeZone");
+        final String timezoneID = EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DBTIMEZONE);
         final ISOChronology chron;
         if (timezoneID != null) {
             final DateTimeZone timezone = DateTimeZone.forID(timezoneID);
@@ -124,7 +125,7 @@ public final class DateTimeUtil
     {
         final DateTime ret;
         // reads the Value from "Admin_Common_DataBaseTimeZone"
-        final String timezoneID = EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DataBaseTimeZone");
+        final String timezoneID = EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DBTIMEZONE);
         final ISOChronology chron;
         if (timezoneID != null) {
             final DateTimeZone timezone = DateTimeZone.forID(timezoneID);

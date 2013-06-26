@@ -27,6 +27,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
@@ -542,22 +543,24 @@ public abstract class AbstractCommand
         throws EFapsException
     {
         Menu ret = this.targetMenu;
-        if (this.targetDefaultMenu && EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DefaultMenu") != null) {
+        if (this.targetDefaultMenu
+                        && EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DEFAULTMENU) != null) {
             // reads the Value from "Common_Main_DefaultMenu"
-            if (EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DefaultMenu").equals("none")) {
+            if (EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DEFAULTMENU).equals("none")) {
                 ret = this.targetMenu;
             } else {
-                final Properties prop = EFapsSystemConfiguration.KERNEL.get()
-                                                                .getAttributeValueAsProperties("DefaultMenu");
+                final Properties prop = EFapsSystemConfiguration.get()
+                                .getAttributeValueAsProperties(KernelSettings.DEFAULTMENU);
                 for (int i = 0; i < 99; i++) {
                     if (prop.getProperty("Menu" + i) != null) {
                         final String menuname = prop.getProperty("Menu" + i);
                         if (getTargetTable() != null) {
-                            // if no Enable4TableN property is set or if the Enable4TableN is not false the default
+                            // if no Enable4TableN property is set or if the
+                            // Enable4TableN is not false the default
                             // menu will be added
                             if (prop.getProperty("Enable4Table" + i) == null
                                             || (prop.getProperty("Enable4Table" + i) != null
-                                                            && !prop.getProperty("Enable4Table" + i).equals("false"))) {
+                                            && !prop.getProperty("Enable4Table" + i).equals("false"))) {
                                 if (this.targetMenu == null && ret == null) {
                                     ret = Menu.get(menuname);
                                     break;
@@ -569,7 +572,7 @@ public abstract class AbstractCommand
                         } else if (getTargetForm() != null) {
                             if (prop.getProperty("Enable4Form" + i) == null
                                             || ((prop.getProperty("Enable4Form" + i) != null
-                                                            && !prop.getProperty("Enable4Form" + i).equals("false")))) {
+                                            && !prop.getProperty("Enable4Form" + i).equals("false")))) {
                                 if (this.targetMenu == null && ret == null) {
                                     ret = Menu.get(menuname);
                                     break;

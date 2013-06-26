@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.DateTimeUtil;
@@ -54,7 +55,7 @@ public class DateTimeType
         throws EFapsException
     {
         // reads the Value from "Admin_Common_DataBaseTimeZone"
-        final String timezoneID = EFapsSystemConfiguration.KERNEL.get().getAttributeValue("DataBaseTimeZone");
+        final String timezoneID = EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.DBTIMEZONE);
         final ISOChronology chron;
         if (timezoneID != null) {
             final DateTimeZone timezone = DateTimeZone.forID(timezoneID);

@@ -26,6 +26,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.init.INamingBinds;
 import org.efaps.message.MessageStatusHolder;
 import org.efaps.util.EFapsException;
@@ -63,24 +64,6 @@ public final class Quartz
     private static final Logger LOG = LoggerFactory.getLogger(Quartz.class);
 
     /**
-     * Key for the SystemConfiguration attribute that contains the
-     * properties for the Quartz Scheduler.
-     */
-    private static final String QUARTZPROPS = "QuartzProperties";
-
-    /**
-     * Key for the SystemConfiguration attribute that activates the
-     * SystemMessage Trigger.
-     */
-    private static final String MSGTRIGGERACTIVE = "SystemMessageTriggerActivated";
-
-    /**
-     * Key for the SystemConfiguration attribute that sets the
-     * Interval for the SystemMessage Trigger.
-     */
-    private static final String MSGTRIGGERINTERVAL = "SystemMessageTriggerInterval";
-
-    /**
      * Contains the instance of this singelton.
      */
     private static Quartz QUARTZ;
@@ -107,8 +90,8 @@ public final class Quartz
         Quartz.QUARTZ = new Quartz();
         try {
             //Kernel-Configuration
-            final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
-            final Properties props = config.getAttributeValueAsProperties(Quartz.QUARTZPROPS);
+            final SystemConfiguration config = EFapsSystemConfiguration.get();
+            final Properties props = config.getAttributeValueAsProperties(KernelSettings.QUARTZPROPS);
 
             final StdSchedulerFactory schedFact = new StdSchedulerFactory();
             javax.naming.Context envCtx = null;
@@ -156,8 +139,8 @@ public final class Quartz
             }
             Quartz.QUARTZ.scheduler =  schedFact.getScheduler();
 
-            if (config.getAttributeValueAsBoolean(Quartz.MSGTRIGGERACTIVE)) {
-                final int interval = config.getAttributeValueAsInteger(Quartz.MSGTRIGGERINTERVAL);
+            if (config.getAttributeValueAsBoolean(KernelSettings.MSGTRIGGERACTIVE)) {
+                final int interval = config.getAttributeValueAsInteger(KernelSettings.MSGTRIGGERINTERVAL);
                 final Trigger trigger = TriggerBuilder.newTrigger()
                                 .withIdentity("SystemMessageTrigger")
                                 .withSchedule(SimpleScheduleBuilder.repeatMinutelyForever(interval > 0 ? interval : 1))

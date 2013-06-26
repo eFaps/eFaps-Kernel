@@ -46,12 +46,6 @@ import org.slf4j.LoggerFactory;
  */
 public final class JmsSession
 {
-
-    /**
-     * Key to a configuration.
-     */
-    public static final String SESSIONTIMEOUTKEY = "JmsSessionTimeout";
-
     /**
      * Logger for this class.
      */

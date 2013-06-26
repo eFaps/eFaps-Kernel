@@ -199,7 +199,7 @@ public final class DBProperties
     {
         String value = null;
         try {
-            final SystemConfiguration config = EFapsSystemConfiguration.KERNEL.get();
+            final SystemConfiguration config = EFapsSystemConfiguration.get();
             final boolean showKey = config == null
                             ? false
                             : config.getAttributeValueAsBoolean(KernelSettings.SHOW_DBPROPERTIES_KEY);

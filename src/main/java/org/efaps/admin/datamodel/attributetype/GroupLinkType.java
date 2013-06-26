@@ -71,8 +71,7 @@ public class GroupLinkType
                     _insertUpdate.column(_attribute.getSqlColNames().get(0),
                                     Context.getThreadContext().getPerson().getGroups().iterator().next());
 
-                } else if (EFapsSystemConfiguration.KERNEL.get().getAttributeValueAsBoolean(
-                                KernelSettings.ACTIVATE_GROUPS)) {
+                } else if (EFapsSystemConfiguration.get().getAttributeValueAsBoolean(KernelSettings.ACTIVATE_GROUPS)) {
                     throw new SQLException("Groups are activated in Systemconfiguration but no Group set.");
                 }
             } catch (final EFapsException e) {

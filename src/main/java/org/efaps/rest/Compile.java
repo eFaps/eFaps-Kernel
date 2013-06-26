@@ -24,13 +24,14 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.update.schema.program.esjp.ESJPCompiler;
 import org.efaps.update.schema.program.jasperreport.JasperReportCompiler;
@@ -38,6 +39,8 @@ import org.efaps.update.schema.program.staticsource.CSSCompiler;
 import org.efaps.update.schema.program.staticsource.JavaScriptCompiler;
 import org.efaps.update.schema.program.staticsource.WikiCompiler;
 import org.efaps.update.util.InstallationException;
+import org.efaps.util.EFapsException;
+
 import org.efaps.util.EFapsException;
 
 /**
@@ -99,9 +102,8 @@ public class Compile
         throws EFapsException
     {
         final List<String> ret = new ArrayList<String>();
-        final SystemConfiguration config = SystemConfiguration.get(
-                        UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
-        final String paths = config.getAttributeValue("ClassPaths");
+        final SystemConfiguration config = EFapsSystemConfiguration.get();
+        final String paths = config.getAttributeValue(KernelSettings.CLASSPATHS);
 
         final File folder = new File(paths);
         File[] files = null;

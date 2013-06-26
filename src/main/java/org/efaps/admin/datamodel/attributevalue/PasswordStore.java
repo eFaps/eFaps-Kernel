@@ -26,6 +26,7 @@ import java.io.StringWriter;
 import java.util.Properties;
 
 import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
@@ -102,16 +103,16 @@ public class PasswordStore
     {
         SystemConfiguration config = null;
         try {
-            config = EFapsSystemConfiguration.KERNEL.get();
+            config = EFapsSystemConfiguration.get();
             if (config != null) {
-                final Properties confProps = config.getAttributeValueAsProperties("PasswordStore");
+                final Properties confProps = config.getAttributeValueAsProperties(KernelSettings.PWDSTORE);
                 this.digesterConfig.setAlgorithm(confProps.getProperty(PasswordStore.ALGORITHM,
                                 this.digesterConfig.getAlgorithm()));
                 this.digesterConfig.setIterations(confProps.getProperty(PasswordStore.ITERATIONS,
                                 this.digesterConfig.getIterations().toString()));
                 this.digesterConfig.setSaltSizeBytes(confProps.getProperty(PasswordStore.SALTSIZE,
                                 this.digesterConfig.getSaltSizeBytes().toString()));
-                this.threshold = config.getAttributeValueAsInteger("PasswordRepeatedThreshold");
+                this.threshold = config.getAttributeValueAsInteger(KernelSettings.PWDTH);
             }
         } catch (final EFapsException e) {
             PasswordStore.LOG.error("Error on reading SystemConfiguration for PasswordStore", e);

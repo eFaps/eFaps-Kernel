@@ -659,7 +659,7 @@ public final class Person
     {
         if (_count > 0) {
             final DateTime now = new DateTime(DateTimeUtil.getCurrentTimeFromDB().getTime());
-            final SystemConfiguration kernelConfig = EFapsSystemConfiguration.KERNEL.get();
+            final SystemConfiguration kernelConfig = EFapsSystemConfiguration.get();
 
             final int minutes = kernelConfig.getAttributeValueAsInteger(KernelSettings.LOGIN_TIME_RETRY);
 

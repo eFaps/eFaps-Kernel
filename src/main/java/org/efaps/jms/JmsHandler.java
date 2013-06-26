@@ -41,6 +41,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
@@ -61,14 +63,14 @@ import org.slf4j.LoggerFactory;
 public final class JmsHandler
 {
     /**
+     * Key to a configuration in JMS-module.
+     */
+    public static final String ACTIVEJMS = "org.efaps.jms.ActiveJMS";
+
+    /**
      * Logger for this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(JmsHandler.class);
-
-    /**
-     * Key to a configuration.
-     */
-    public static final String ACTIVEJMS = "org.efaps.jms.ActiveJMS";
 
     /**
      * Mapping of JNDI-Name of the ConnectionFactory to QueueConnection.
@@ -101,11 +103,9 @@ public final class JmsHandler
         throws EFapsException
     {
         try {
-            //Kernel-Configuration
-            final SystemConfiguration config = SystemConfiguration.get(
-                            UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+            final SystemConfiguration config = EFapsSystemConfiguration.get();
             if (config != null) {
-                final int timeout = config.getAttributeValueAsInteger(JmsSession.SESSIONTIMEOUTKEY);
+                final int timeout = config.getAttributeValueAsInteger(KernelSettings.JMS_TIMEOOUT);
                 if (timeout > 0) {
                     JmsSession.setSessionTimeout(timeout);
                 }
@@ -114,7 +114,7 @@ public final class JmsHandler
             //JMS-Configuration
             final SystemConfiguration configJms = SystemConfiguration.get(
                             UUID.fromString("65b6a1a8-c979-4471-b175-774593f1acd7"));
-            final boolean active = configJms.getAttributeValueAsBoolean(JmsHandler.ACTIVEJMS);
+            final boolean active = configJms != null && configJms.getAttributeValueAsBoolean(JmsHandler.ACTIVEJMS);
 
             if (active) {
             // this check is necessary for first install and update
