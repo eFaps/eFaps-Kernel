@@ -347,6 +347,12 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--  to be able to export to excel formats -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.9</version>
+        </dependency>
 
         <!-- Groovy Compiler  -->
         <dependency>
