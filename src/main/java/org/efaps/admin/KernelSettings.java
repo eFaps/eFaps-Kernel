@@ -137,6 +137,11 @@ public interface KernelSettings
     String PWDTH = "org.efaps.kernel.PasswordRepeatedThreshold";
 
     /**
+     * Integer: The Minimum length of a new Password.
+     */
+    String PWDLENGHT = "org.efaps.kernel.PasswordLenghtMinimum";
+
+    /**
      * Properties:  This Attribute defines the Menu which is added as a DefaultMenu to all
      * Menubars. To deactivate this feature set the value to "none". The
      * DefaultMenu can also be deactivated individually in every Command or Menu
