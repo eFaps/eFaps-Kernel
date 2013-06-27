@@ -27,6 +27,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
+import org.apache.commons.dbutils.BasicRowProcessor;
+import org.apache.commons.dbutils.RowProcessor;
 import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +100,15 @@ public class MySQLDatabase
             + "a.constraint_type='FOREIGN KEY' "
             + "and a.CONSTRAINT_SCHEMA=b.CONSTRAINT_SCHEMA "
             + "and a.CONSTRAINT_NAME=b.CONSTRAINT_NAME ";
+
+
+
+    /**
+     * Singleton processor instance that handlers share to save memory. Notice
+     * the default scoping to allow only classes in this package to use this
+     * instance.
+     */
+    private static final RowProcessor ROWPROCESSOR = new BasicRowProcessor();
 
     /**
      * Initializes the mapping between the eFaps column types and the MySQL
@@ -632,5 +643,14 @@ public class MySQLDatabase
             stmt.close();
         }
         return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RowProcessor getRowProcessor()
+    {
+        return MySQLDatabase.ROWPROCESSOR;
     }
 }

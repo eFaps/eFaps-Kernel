@@ -26,6 +26,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
+import org.apache.commons.dbutils.BasicRowProcessor;
+import org.apache.commons.dbutils.RowProcessor;
 import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +84,14 @@ public class DerbyDatabase
               + "where s.AUTHORIZATIONID<>'DBA' "
                     + "and s.SCHEMAID=t.SCHEMAID "
                     + "and t.TABLETYPE='T'";
+
+
+    /**
+     * Singleton processor instance that handlers share to save memory. Notice
+     * the default scoping to allow only classes in this package to use this
+     * instance.
+     */
+    private static final RowProcessor ROWPROCESSOR = new BasicRowProcessor();
 
     /**
      * Constructur.
@@ -505,4 +515,12 @@ public class DerbyDatabase
         return ret;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RowProcessor getRowProcessor()
+    {
+        return DerbyDatabase.ROWPROCESSOR;
+    }
 }
