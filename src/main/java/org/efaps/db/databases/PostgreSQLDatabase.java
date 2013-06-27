@@ -24,10 +24,13 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
+import org.apache.commons.dbutils.BasicRowProcessor;
+import org.apache.commons.dbutils.RowProcessor;
 import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -616,5 +619,49 @@ public class PostgreSQLDatabase
             stmt.close();
         }
         return ret;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RowProcessor getRowProcessor()
+    {
+
+        return new BasicRowProcessor()
+        {
+            /**
+             * Convert a <code>ResultSet</code> row into an
+             * <code>Object[]</code>. This implementation copies column values
+             * into the array in the same order they're returned from the
+             * <code>ResultSet</code>. Array elements will be set to
+             * <code>null</code> if the column was SQL NULL.
+             *
+             * @see org.apache.commons.dbutils.RowProcessor#toArray(java.sql.ResultSet)
+             * @param _rs ResultSet that supplies the array data
+             * @throws SQLException if a database access error occurs
+             * @return the newly created array
+             */
+            @Override
+            public Object[] toArray(final ResultSet _rs)
+                throws SQLException
+            {
+                final ResultSetMetaData metaData = _rs.getMetaData();
+                final int cols = metaData.getColumnCount();
+                final Object[] result = new Object[cols];
+
+                for (int i = 0; i < cols; i++) {
+                    switch (metaData.getColumnType(i + 1)) {
+                        case java.sql.Types.TIMESTAMP:
+                            result[i] = _rs.getTimestamp(i + 1);
+                            break;
+                        default:
+                            result[i] = _rs.getObject(i + 1);
+                    }
+                }
+                return result;
+            }
+        };
     }
 }

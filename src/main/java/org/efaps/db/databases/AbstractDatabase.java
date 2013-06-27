@@ -35,6 +35,7 @@ import java.util.UUID;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.apache.commons.dbutils.RowProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.bpm.NamingStrategy;
 import org.efaps.db.Context;
@@ -1323,6 +1324,14 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
             }
         }
     }
+
+    /**
+     * Get the RowProcessor responsible to read the data from a recordset into
+     * eFaps.
+     *
+     * @return a RowProcessor
+     */
+    public abstract RowProcessor getRowProcessor();
 
     /**
      * Implements the cache for the table information.
