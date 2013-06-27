@@ -560,7 +560,7 @@ public abstract class AbstractCommand
                             // menu will be added
                             if (prop.getProperty("Enable4Table" + i) == null
                                             || (prop.getProperty("Enable4Table" + i) != null
-                                            && !prop.getProperty("Enable4Table" + i).equals("false"))) {
+                                            && !"false".equalsIgnoreCase(prop.getProperty("Enable4Table" + i)))) {
                                 if (this.targetMenu == null && ret == null) {
                                     ret = Menu.get(menuname);
                                     break;
@@ -570,9 +570,9 @@ public abstract class AbstractCommand
                                 }
                             }
                         } else if (getTargetForm() != null) {
-                            if (prop.getProperty("Enable4Form" + i) == null
-                                            || ((prop.getProperty("Enable4Form" + i) != null
-                                            && !prop.getProperty("Enable4Form" + i).equals("false")))) {
+                            // only if a Enabled4FormN property is set to true the menu will be added
+                            if ((prop.getProperty("Enable4Form" + i) != null
+                                            && "true".equalsIgnoreCase(prop.getProperty("Enable4Form" + i)))) {
                                 if (this.targetMenu == null && ret == null) {
                                     ret = Menu.get(menuname);
                                     break;
