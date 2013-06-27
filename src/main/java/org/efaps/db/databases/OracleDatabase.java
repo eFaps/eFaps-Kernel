@@ -541,7 +541,8 @@ public class OracleDatabase
                     final Set<AbstractDatabase.ColumnType> colTypes
                         = OracleDatabase.this.getReadColumnTypes(typeName);
                     if (colTypes == null)  {
-                        throw new SQLException("read unknown column type '" + typeName + "'");
+                        throw new SQLException("read unknown column type '"
+                                            + typeName + "' in column '" + colName + "' for table '" + tableName + "'");
                     }
                     final int size = rs.getInt("COLUMN_SIZE");
                     final int scale = rs.getInt("DECIMAL_DIGITS");
@@ -608,8 +609,8 @@ public class OracleDatabase
                                            final org.efaps.db.databases.AbstractDatabase.ColumnType _columnType)
     {
         final StringBuilder ret = new StringBuilder()
-            .append(" alter ").append(getColumnQuote()).append(_columnName).append(getColumnQuote())
-            .append(" type ")
+            .append(" modify ").append(getColumnQuote()).append(_columnName).append(getColumnQuote())
+            .append(" ")
             .append(getWriteSQLTypeName(_columnType));
         return ret;
     }
