@@ -137,6 +137,9 @@ public class OracleDatabase
                     case java.sql.Types.TIMESTAMP:
                         result[i] = _rs.getTimestamp(i + 1);
                         break;
+                    case java.sql.Types.NUMERIC:
+                        result[i] = _rs.getLong(i + 1);
+                        break;
                     default:
                         result[i] = _rs.getObject(i + 1);
                 }
