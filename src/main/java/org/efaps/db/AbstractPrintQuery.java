@@ -722,7 +722,7 @@ public abstract class AbstractPrintQuery
                 con = Context.getThreadContext().getConnectionResource();
                 final Statement stmt = con.getConnection().createStatement();
                 final ResultSet rs = stmt.executeQuery(_complStmt);
-                final ArrayListHandler handler = new ArrayListHandler();
+                final ArrayListHandler handler = new ArrayListHandler(new RowProcessor());
                 rows = handler.handle(rs);
                 rs.close();
                 stmt.close();

@@ -36,6 +36,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryCache;
 import org.efaps.db.QueryKey;
+import org.efaps.db.RowProcessor;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
@@ -113,11 +114,13 @@ public class LinkFromSelect
         onsel.setFromSelect(this);
         onsel.getSelectParts().add(new ISelectPart() {
 
+            @Override
             public Type getType()
             {
                 return LinkFromSelect.this.type;
             }
 
+            @Override
             public int join(final OneSelect _oneselect,
                             final SQLSelect _select,
                             final int _relIndex)
@@ -294,7 +297,7 @@ public class LinkFromSelect
                 final Statement stmt = con.getConnection().createStatement();
 
                 final ResultSet rs = stmt.executeQuery(_complStmt.toString());
-                final ArrayListHandler handler = new ArrayListHandler();
+                final ArrayListHandler handler = new ArrayListHandler(new RowProcessor());
                 rows = handler.handle(rs);
                 rs.close();
                 stmt.close();
