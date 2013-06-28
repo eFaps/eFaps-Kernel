@@ -663,6 +663,21 @@ public class OracleDatabase
         return ret;
     }
 
+    @Override
+    protected StringBuilder getAlterColumnIsNotNull(final String _columnName,
+                                                    final boolean _isNotNull)
+    {
+        final StringBuilder ret = new StringBuilder()
+            .append(" modify ").append(getColumnQuote()).append(_columnName).append(getColumnQuote())
+            .append(" ");
+            if (_isNotNull) {
+                ret.append(" not null ");
+            } else {
+                ret.append(" null ");
+            };
+        return ret;
+    }
+
     /**
      * {@inheritDoc}
      */

@@ -719,14 +719,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         if (executable) {
             final StringBuilder cmd = new StringBuilder();
             cmd.append("alter table ").append(getTableQuote()).append(_tableName).append(getTableQuote())
-                .append(" alter column ").append(getColumnQuote()).append(_columnName).append(getColumnQuote());
+                .append(getAlterColumnIsNotNull(_columnName, _isNotNull));
 
-            if (_isNotNull) {
-                cmd.append(" set ");
-            } else {
-                cmd.append(" drop ");
-            }
-            cmd.append(" not null");
             AbstractDatabase.LOG.debug("    ..SQL> {}", cmd);
 
             // excecute statement
@@ -744,6 +738,13 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         final T ret = (T) this;
         return ret;
     }
+
+    /**
+     * @param _columnName column to update is not null.
+     * @return sql snipplet
+     */
+    protected abstract StringBuilder getAlterColumnIsNotNull(final String _columnName,
+                                                                 boolean _isNotNull);
 
     /**
      * Check if a specific column contains null values.

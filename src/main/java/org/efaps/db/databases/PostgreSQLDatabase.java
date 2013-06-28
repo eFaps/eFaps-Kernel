@@ -633,6 +633,24 @@ public class PostgreSQLDatabase
      * {@inheritDoc}
      */
     @Override
+    protected StringBuilder getAlterColumnIsNotNull(final String _columnName,
+                                                    final boolean _isNotNull)
+    {
+        final StringBuilder ret = new StringBuilder()
+            .append(" alter column ").append(getColumnQuote()).append(_columnName).append(getColumnQuote());
+        if (_isNotNull) {
+            ret.append(" set ");
+        } else {
+            ret.append(" drop ");
+        }
+        ret.append(" not null");
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected boolean check4NullValues(final Connection _con,
                                        final String _tableName,
                                        final String _columnName)
