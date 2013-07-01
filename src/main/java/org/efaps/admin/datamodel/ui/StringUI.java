@@ -177,7 +177,8 @@ public class StringUI
     {
         String ret = null;
         if (_value.getAttribute() != null && _value.getDbValue() != null) {
-            if (String.valueOf(_value.getDbValue()).length() > _value.getAttribute().getSize()) {
+            if (_value.getAttribute().getSize() > 0
+                            && String.valueOf(_value.getDbValue()).length() > _value.getAttribute().getSize()) {
                 ret = DBProperties.getProperty(StringUI.class.getName() + ".InvalidValue") + " "
                                 + _value.getAttribute().getSize();
             }
