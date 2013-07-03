@@ -22,6 +22,7 @@ package org.efaps.admin.common;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.security.Provider;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -46,6 +47,10 @@ import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.InfinispanCache;
 import org.infinispan.Cache;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.encryption.pbe.config.StringPBEConfig;
+import org.jasypt.properties.EncryptableProperties;
+import org.jasypt.salt.SaltGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,6 +132,17 @@ public final class SystemConfiguration
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(SystemConfiguration.class);
+
+    /**
+     * The configuration for the PBE used for jasypt.
+     */
+    private static final EFapsPBEConfig BPECONF = new EFapsPBEConfig();
+
+    /**
+     * The encryptor for the PBE used for jasypt.
+     */
+    private static StandardPBEStringEncryptor ENCRYPTOR;
+
     /**
      * The instance variable stores the id of this SystemAttribute.
      *
@@ -440,6 +456,44 @@ public final class SystemConfiguration
         return value == null ? 0 : Integer.parseInt(value);
     }
 
+
+    /**
+     * Returns for given <code>_key</code> the related value as Properties. If
+     * no attribute is found an empty Properties is returned.
+     *
+     * @param _key key of searched attribute
+     * @return Properties
+     * @throws EFapsException on error
+     * @see #attributes
+     */
+    public Properties getAttributeValueAsEncryptedProperties(final String _key)
+        throws EFapsException
+    {
+        final Properties properties = getAttributeValueAsProperties(_key, false);
+        final Properties props = new EncryptableProperties(properties, SystemConfiguration.ENCRYPTOR);
+        return props;
+    }
+
+    /**
+     * Returns for given <code>_key</code> the related value as Properties. If
+     * no attribute is found an empty Properties is returned.
+     *
+     * @param _key key of searched attribute
+     * @return Properties
+     * @throws EFapsException on error
+     * @see #attributes
+     */
+    public Properties getAttributeValueAsEncryptedProperties(final String _key,
+                                                             final boolean _concatenate)
+        throws EFapsException
+    {
+        final Properties properties = getAttributeValueAsProperties(_key, _concatenate);
+        final StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setConfig(SystemConfiguration.getPBEConfig());
+        final Properties props = new EncryptableProperties(properties, encryptor);
+        return props;
+    }
+
     /**
      * Returns for given <code>_key</code> the related value as Properties. If
      * no attribute is found an empty Properties is returned.
@@ -454,7 +508,6 @@ public final class SystemConfiguration
     {
         return getAttributeValueAsProperties(_key, false);
     }
-
 
     /**
      * Returns for given <code>_key</code> the related value as Properties. If
@@ -607,6 +660,9 @@ public final class SystemConfiguration
             InfinispanCache.get().<String, SystemConfiguration>getCache(SystemConfiguration.NAMECACHE)
                             .addListener(new CacheLogListener(SystemConfiguration.LOG));
         }
+
+        SystemConfiguration.ENCRYPTOR = new StandardPBEStringEncryptor();
+        SystemConfiguration.ENCRYPTOR.setConfig(SystemConfiguration.getPBEConfig());
     }
 
     /**
@@ -696,6 +752,15 @@ public final class SystemConfiguration
         return ret;
     }
 
+    /**
+     * @return the BPE Configuration.
+     */
+    public static EFapsPBEConfig getPBEConfig()
+    {
+        return SystemConfiguration.BPECONF;
+    }
+
+
     @Override
     public boolean equals(final Object _obj)
     {
@@ -712,5 +777,85 @@ public final class SystemConfiguration
     public int hashCode()
     {
         return  Long.valueOf(getId()).intValue();
+    }
+
+    /**
+     * Configuration class. Currently only the password is used. For all other
+     * <code>null</code>is returnred to use the default values from jasyprt.
+     */
+    public static final class EFapsPBEConfig
+        implements StringPBEConfig
+    {
+        /**
+         * Password.
+         */
+        private char[] password = null;
+
+
+        /**
+         * Sets the password to be used for encryption.
+         * <p>
+         * Determines the result of: {@link #getPassword()} and
+         * {@link #getPasswordCharArray()}.
+         * </p>
+         *
+         * @param password the password to be used.
+         */
+        public void setPassword(final String _password)
+        {
+            if (_password == null) {
+                this.password = null;
+            } else {
+                this.password = _password.toCharArray();
+            }
+        }
+
+        @Override
+        public String getPassword()
+        {
+            return new String(this.password);
+        }
+
+        @Override
+        public String getAlgorithm()
+        {
+            return null;
+        }
+
+        @Override
+        public Integer getKeyObtentionIterations()
+        {
+            return null;
+        }
+
+        @Override
+        public SaltGenerator getSaltGenerator()
+        {
+            return null;
+        }
+
+        @Override
+        public String getProviderName()
+        {
+            return null;
+        }
+
+        @Override
+        public Provider getProvider()
+        {
+            return null;
+        }
+
+        @Override
+        public Integer getPoolSize()
+        {
+            return null;
+        }
+
+        @Override
+        public String getStringOutputType()
+        {
+            return null;
+        }
     }
 }
