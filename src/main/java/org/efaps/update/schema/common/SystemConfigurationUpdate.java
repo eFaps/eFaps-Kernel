@@ -139,7 +139,7 @@ public class SystemConfigurationUpdate
             queryBldr.addWhereAttrEqValue(CIAdminCommon.SystemConfigurationAttribute.Key, this.key);
             queryBldr.addWhereAttrEqValue(CIAdminCommon.SystemConfigurationAttribute.AbstractLink, _instance);
             if (company == null) {
-                queryBldr.addWhereAttrIsNull(CIAdminCommon.SystemConfigurationAttribute.CompanyLink);
+                queryBldr.addWhereAttrEqValue(CIAdminCommon.SystemConfigurationAttribute.CompanyLink, 0);
             } else {
                 queryBldr.addWhereAttrEqValue(CIAdminCommon.SystemConfigurationAttribute.CompanyLink, company.getId());
             }
@@ -155,6 +155,8 @@ public class SystemConfigurationUpdate
             }
             if (company != null) {
                 update.add(CIAdminCommon.SystemConfigurationAttribute.CompanyLink, company.getId());
+            } else {
+                update.add(CIAdminCommon.SystemConfigurationAttribute.CompanyLink, 0);
             }
             update.add(CIAdminCommon.SystemConfigurationAttribute.Value, this.value);
             update.add(CIAdminCommon.SystemConfigurationAttribute.Description, this.description);
