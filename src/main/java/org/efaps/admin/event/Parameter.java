@@ -20,6 +20,7 @@
 
 package org.efaps.admin.event;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +35,12 @@ import org.efaps.db.Instance;
  * @version $Id$
  */
 public class Parameter
+    implements Serializable
 {
+    /**
+     * Serializable.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * This enum holds the definitions of Parameters, to be accessed.
