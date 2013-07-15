@@ -41,8 +41,6 @@ import org.efaps.update.schema.program.staticsource.WikiCompiler;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
-import org.efaps.util.EFapsException;
-
 /**
  * Rest API to compile the different program froms eFaps.
  *
@@ -105,28 +103,32 @@ public class Compile
         final SystemConfiguration config = EFapsSystemConfiguration.get();
         final String paths = config.getAttributeValue(KernelSettings.CLASSPATHS);
 
-        final File folder = new File(paths);
-        File[] files = null;
-        if (folder.isDirectory()) {
-            files = folder.listFiles(new FilenameFilter() {
+        if (paths != null) {
+            final File folder = new File(paths);
+            File[] files = null;
+            if (folder.isDirectory()) {
+                files = folder.listFiles(new FilenameFilter() {
 
-                @Override
-                public boolean accept(final File _dir,
-                                      final String _name)
-                {
-                    final boolean ret;
-                    if (new File(_dir, _name).isDirectory()) {
-                        ret = false;
-                    } else {
-                        final String name = _name.toLowerCase();
-                        ret = name.endsWith(".jar");
+                    @Override
+                    public boolean accept(final File _dir,
+                                          final String _name)
+                    {
+                        final boolean ret;
+                        if (new File(_dir, _name).isDirectory()) {
+                            ret = false;
+                        } else {
+                            final String name = _name.toLowerCase();
+                            ret = name.endsWith(".jar");
+                        }
+                        return ret;
                     }
-                    return ret;
+                });
+                for (final File file : files) {
+                    ret.add(file.getAbsolutePath());
                 }
-            });
-            for (final File file : files) {
-                ret.add(file.getAbsolutePath());
             }
+        } else {
+            AbstractRest.LOG.info("==ClassPath is not configurated==");
         }
         return ret;
     }
