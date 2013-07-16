@@ -98,7 +98,7 @@ public class AttributeSet
 
         if (_typeLinkId > 0) {
             final Type parent = Type.get(_typeLinkId);
-            setParentType(parent);
+            setParentTypeID(_typeLinkId);
             parent.addChildType(this);
             getAttributes().putAll(parent.getAttributes());
         }

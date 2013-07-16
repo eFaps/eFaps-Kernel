@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel;
 
+import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -50,8 +51,12 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  */
 public final class Status
-    implements CacheObjectInterface
+    implements CacheObjectInterface, Serializable
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * This is the SQL select statement to select a role from the database by
@@ -367,60 +372,6 @@ public final class Status
     }
 
     /**
-     * Class for a group of stati.
-     */
-    public static class StatusGroup
-        extends HashMap<String, Status>
-        implements CacheObjectInterface
-    {
-
-        /**
-         * Needed for serialization.
-         */
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * Type this StatusGroup represents.
-         */
-        private final Type type;
-
-        /**
-         * @param _type type to set
-         */
-        public StatusGroup(final Type _type)
-        {
-            this.type = _type;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public long getId()
-        {
-            return this.type.getId();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String getName()
-        {
-            return this.type.getName();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public UUID getUUID()
-        {
-            return this.type.getUUID();
-        }
-    }
-
-    /**
      * @param _grp StatusGroup to be cached
      */
     private static void cacheStatusGroup(final StatusGroup _grp)
@@ -601,5 +552,70 @@ public final class Status
     public int hashCode()
     {
         return  Long.valueOf(getId()).intValue();
+    }
+
+    /**
+     * Class for a group of stati.
+     */
+    public static class StatusGroup
+        extends HashMap<String, Status>
+        implements CacheObjectInterface, Serializable
+    {
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Id of the Type this StatusGroup represents.
+         */
+        private final UUID uuid;
+
+        /**
+         * UUID of the Type this StatusGroup represents.
+         */
+        private final long id;
+
+        /**
+         * Name of the Type this StatusGroup represents.
+         */
+        private final String name;
+
+        /**
+         * @param _type type to set
+         */
+        public StatusGroup(final Type _type)
+        {
+            this.uuid = _type.getUUID();
+            this.id = _type.getId();
+            this.name = _type.getName();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public long getId()
+        {
+            return this.id;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String getName()
+        {
+            return this.name;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public UUID getUUID()
+        {
+            return this.uuid;
+        }
     }
 }

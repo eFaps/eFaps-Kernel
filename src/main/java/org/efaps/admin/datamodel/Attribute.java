@@ -857,6 +857,11 @@ public class Attribute
                                     AttributeType.get(attrTypeId), defaultval,
                                     dimensionUUID);
                     attr.setParent(_type);
+                    if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSetAttribute.uuid)) {
+                        attribute2setId.put(attr, parentSetId);
+                    } else {
+                        _type.addAttribute(attr, false);
+                    }
                     Attribute.cacheAttribute(attr);
                     final UUID uuid = attr.getAttributeType().getUUID();
                     if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_LINK.getUuid())
@@ -880,12 +885,6 @@ public class Attribute
                         linkType.addLink(attr);
                     }
                     attr.readFromDB4Properties();
-
-                    if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSetAttribute.uuid)) {
-                        attribute2setId.put(attr, parentSetId);
-                    } else {
-                        _type.addAttribute(attr, false);
-                    }
                 }
             }
             // make connection between set and attributes

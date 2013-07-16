@@ -153,7 +153,6 @@ public final class AccessType
      */
     public static void initialize()
     {
-        AccessCache.initialize();
         if (InfinispanCache.get().exists(AccessType.UUIDCACHE)) {
             InfinispanCache.get().<UUID, AccessType>getCache(AccessType.UUIDCACHE).clear();
         } else {
@@ -172,6 +171,7 @@ public final class AccessType
             InfinispanCache.get().<String, AccessType>getCache(AccessType.NAMECACHE)
                             .addListener(new CacheLogListener(AccessType.LOG));
         }
+        AccessCache.initialize();
     }
 
     /**

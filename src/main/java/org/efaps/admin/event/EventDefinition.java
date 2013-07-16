@@ -81,16 +81,6 @@ public final class EventDefinition
     private final String methodName;
 
     /**
-     * The variable stores the Method to be invoked.
-     */
-    private Method method = null;
-
-    /**
-     * holds the instance of this.
-     */
-    private Object progInstance = null;
-
-    /**
      * @param _instance Instance of this EventDefinition
      * @param _name name of this EventDefinition
      * @param _indexPos index position of this EventDefinition
@@ -109,7 +99,7 @@ public final class EventDefinition
         this.indexPos = _indexPos;
         this.resourceName = _resourceName;
         this.methodName = _method;
-        setProgramInstance();
+        checkProgramInstance();
         setProperties(_instance);
     }
 
@@ -155,17 +145,20 @@ public final class EventDefinition
     }
 
     /**
-     * Method to set the instance of the esjp.
+     * Method to check if the instance of the esjp is valid.
      */
-    private void setProgramInstance()
+    private void checkProgramInstance()
     {
         try {
             if (EventDefinition.LOG.isDebugEnabled()) {
-                EventDefinition.LOG.debug("setting Instance: {} - {}", this.resourceName, this.methodName);
+                EventDefinition.LOG.debug("checking Instance: {} - {}", this.resourceName, this.methodName);
             }
             final Class<?> cls = Class.forName(this.resourceName, true, EFapsClassLoader.getInstance());
-            this.method = cls.getMethod(this.methodName, new Class[] { Parameter.class });
-            this.progInstance = cls.newInstance();
+            final Method method = cls.getMethod(this.methodName, new Class[] { Parameter.class });
+            final Object progInstance = cls.newInstance();
+            if (EventDefinition.LOG.isDebugEnabled()) {
+                EventDefinition.LOG.debug("found Class: {} and method {}", progInstance, method);
+            }
         } catch (final ClassNotFoundException e) {
             EventDefinition.LOG.error("could not find Class: '{}'", this.resourceName, e);
         } catch (final InstantiationException e) {
@@ -194,19 +187,28 @@ public final class EventDefinition
         _parameter.put(ParameterValues.PROPERTIES, super.getProperties());
         try {
             EventDefinition.LOG.debug("Invoking method '{}' for Resource '{}'", this.methodName, this.resourceName);
-            ret = (Return) this.method.invoke(this.progInstance, _parameter);
+            final Class<?> cls = Class.forName(this.resourceName, true, EFapsClassLoader.getInstance());
+            final Method method = cls.getMethod(this.methodName, new Class[] { Parameter.class });
+            ret = (Return) method.invoke(cls.newInstance(), _parameter);
             EventDefinition.LOG.debug("Terminated invokation of method '{}' for Resource '{}'",
                             this.methodName, this.resourceName);
         } catch (final SecurityException e) {
-            EventDefinition.LOG.error("could not access class: '" + this.resourceName, e);
+            EventDefinition.LOG.error("security wrong: '{}'", this.resourceName, e);
         } catch (final IllegalArgumentException e) {
-            EventDefinition.LOG.error("execute(Context, Instance, Map<TriggerKeys4Values,Map>)", e);
+            EventDefinition.LOG.error("arguments invalid : '{}'- '{}'", this.resourceName, this.methodName, e);
         } catch (final IllegalAccessException e) {
-            EventDefinition.LOG.error("could not access class: '" + this.resourceName, e);
+            EventDefinition.LOG.error("could not access class: '{}'", this.resourceName, e);
         } catch (final InvocationTargetException e) {
-            EventDefinition.LOG.error("could not invoke method: '" + this.methodName
-                            + "' in class: '" + this.resourceName, e);
+            EventDefinition.LOG.error("could not invoke method: '{}' in class: '{}'", this.resourceName,
+                            this.methodName, e);
             throw (EFapsException) e.getCause();
+        } catch (final ClassNotFoundException e) {
+            EventDefinition.LOG.error("class not found: '{}" + this.resourceName, e);
+        } catch (final NoSuchMethodException e) {
+            EventDefinition.LOG.error("could not find method: '{}' in class '{}'",
+                            new Object[] { this.methodName, this.resourceName, e });
+        } catch (final InstantiationException e) {
+            EventDefinition.LOG.error("could not instantiat Class: '{}'", this.resourceName, e);
         }
         return ret;
     }

@@ -211,7 +211,7 @@ public class Type
      * @see #getParentType
      * @see #setParentType
      */
-    private Type parentType = null;
+    private Long parentTypeId = null;
 
     /**
      * Instance variable for all child types derived from this type.
@@ -566,8 +566,8 @@ public class Type
     public Attribute getTypeAttribute()
     {
         Attribute ret;
-        if (this.typeAttributeName == null && this.parentType != null) {
-            ret = this.parentType.getTypeAttribute();
+        if (this.typeAttributeName == null && getParentType() != null) {
+            ret = getParentType().getTypeAttribute();
         } else {
             ret = this.attributes.get(this.typeAttributeName);
         }
@@ -827,7 +827,15 @@ public class Type
      */
     public Type getParentType()
     {
-        return this.parentType;
+        Type ret = null;
+        if (this.parentTypeId != null) {
+            try {
+                ret = Type.get(this.parentTypeId);
+            } catch (final CacheReloadException e) {
+                Type.LOG.error("Could not read parentType for id: {}", this.parentTypeId);
+            }
+        }
+        return ret;
     }
 
     /**
@@ -835,9 +843,9 @@ public class Type
      *
      * @param _parentType parent to set
      */
-    protected void setParentType(final Type _parentType)
+    protected void setParentTypeID(final long _parentTypeId)
     {
-        this.parentType = _parentType;
+        this.parentTypeId = _parentTypeId;
     }
 
     /**
@@ -919,8 +927,8 @@ public class Type
     public SQLTable getMainTable()
     {
         SQLTable ret = this.mainTable;
-        if (this.mainTable == null && this.parentType != null) {
-            ret = this.parentType.getMainTable();
+        if (this.mainTable == null && getParentType() != null) {
+            ret = getParentType().getMainTable();
         }
         return ret;
     }
@@ -972,8 +980,8 @@ public class Type
     public long getStoreId()
     {
         final long ret;
-        if (this.storeId == 0 && this.parentType != null) {
-            ret = this.parentType.getStoreId();
+        if (this.storeId == 0 && getParentType() != null) {
+            ret = getParentType().getStoreId();
         } else {
             ret = this.storeId;
         }
@@ -1154,7 +1162,6 @@ public class Type
     public static void initialize(final Class<?> _class)
         throws CacheReloadException
     {
-        QueryCache.initialize();
         if (InfinispanCache.get().exists(Type.UUIDCACHE)) {
             InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE).clear();
         } else {
@@ -1170,6 +1177,7 @@ public class Type
         } else {
             InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE).addListener(new CacheLogListener(Type.LOG));
         }
+        QueryCache.initialize();
     }
 
     /**
@@ -1330,6 +1338,9 @@ public class Type
                     ret = new Classification(id, uuid, name);
                 } else {
                     ret = new Type(id, uuid, name);
+                    if (parentTypeId != 0) {
+                        ret.setParentTypeID(parentTypeId);
+                    }
                 }
                 ret.setAbstract(trueCriteria == purpose2[Type.Purpose.ABSTRACT.getDigit()]);
 
@@ -1359,7 +1370,6 @@ public class Type
                             ((Classification) ret).getClassifiesType().addClassifiedByType((Classification) ret);
                         }
                     } else {
-                        ret.setParentType(parent);
                         parent.addChildType(ret);
                     }
                 }
