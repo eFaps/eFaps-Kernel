@@ -111,17 +111,17 @@ public final class SQLTable
     /**
      * Name of the Cache by UUID.
      */
-    private static final String UUIDCACHE = "SQLTable4UUID";
+    private static final String UUIDCACHE = SQLTable.class.getName() + ".UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE = "SQLTable4ID";
+    private static final String IDCACHE =  SQLTable.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String NAMECACHE = "SQLTable4Name";
+    private static final String NAMECACHE =  SQLTable.class.getName() + ".Name";
 
     /**
      * Instance variable for the name of the SQL table.

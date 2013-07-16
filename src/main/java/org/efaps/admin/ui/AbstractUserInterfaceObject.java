@@ -382,7 +382,7 @@ public abstract class AbstractUserInterfaceObject
      */
     protected static String getUUIDCacheName(final Class<?> _componentType)
     {
-        return _componentType.getSimpleName() + "4UUID";
+        return _componentType.getName() + ".UUID";
     }
     /**
      * @param _componentType class of the UIObject
@@ -391,7 +391,7 @@ public abstract class AbstractUserInterfaceObject
 
     protected static String getIDCacheName(final Class<?> _componentType)
     {
-        return _componentType.getSimpleName() + "4ID";
+        return _componentType.getName() + ".ID";
     }
 
     /**
@@ -400,7 +400,7 @@ public abstract class AbstractUserInterfaceObject
      */
     protected static String getNameCacheName(final Class<?> _componentType)
     {
-        return _componentType.getSimpleName() + "4Name";
+        return _componentType.getName() + ".Name";
     }
 
     /**

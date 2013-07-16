@@ -148,12 +148,12 @@ public class Attribute
     /**
      * Name of the Cache by Name.
      */
-    private static String NAMECACHE = "Attribute4Name";
+    private static String NAMECACHE = Attribute.class.getName() + ".Name";
 
     /**
      * Name of the Cache by ID.
      */
-    private static String IDCACHE = "Attribute4ID";
+    private static String IDCACHE = Attribute.class.getName() + ".ID";
 
     /**
      * This is the instance variable for the table, where attribute is stored.

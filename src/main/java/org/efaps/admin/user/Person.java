@@ -173,17 +173,17 @@ public final class Person
     /**
      * Name of the Cache by ID.
      */
-    private static String IDCACHE = "Person4ID";
+    private static String IDCACHE = Person.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static String NAMECACHE = "Person4Name";
+    private static String NAMECACHE = Person.class.getName() + ".Name";
 
     /**
      * Name of the Cache by UUID.
      */
-    private static String UUIDCACHE = "Person4UUID";
+    private static String UUIDCACHE = Person.class.getName() + ".UUID";
 
     /**
      * Logging instance used to give logging information of this class.

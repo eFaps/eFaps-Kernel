@@ -56,17 +56,17 @@ public final class BundleMaker
     /**
      * Name of the Cache by Name.
      */
-    private static final String NAMECACHE = "StaticCompiledSource4Name";
+    private static final String NAMECACHE = BundleMaker.class.getName() +  ".Name";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String CACHE4BUNDLEMAP = "BundleMapper";
+    private static final String CACHE4BUNDLEMAP = BundleMaker.class.getName() +  ".BundleMapper";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String CACHE4BUNDLE = "Bundles";
+    private static final String CACHE4BUNDLE = BundleMaker.class.getName() +  ".Bundles";
 
 
     /**

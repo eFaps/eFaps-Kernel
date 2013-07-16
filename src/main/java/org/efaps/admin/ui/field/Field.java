@@ -75,7 +75,7 @@ public class Field
     /**
      * Name of the Cache by ID.
      */
-    private static String IDCACHE = "Field";
+    private static String IDCACHE = Field.class.getName();
 
     /**
      * Logger for this class.

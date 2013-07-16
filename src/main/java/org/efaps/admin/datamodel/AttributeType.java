@@ -91,12 +91,12 @@ public class AttributeType
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE = "AttributeType4ID";
+    private static final String IDCACHE = AttributeType.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String NAMECACHE = "AttributeType4Name";
+    private static final String NAMECACHE = AttributeType.class.getName() + ".Name";
 
     /**
      * The instance variable store the class representation for the attribute

@@ -121,17 +121,17 @@ public final class SystemConfiguration
     /**
      * Name of the Cache by UUID.
      */
-    private static final String UUIDCACHE = "SystemConfiguration4UUID";
+    private static final String UUIDCACHE = SystemConfiguration.class.getName() + ".UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE = "SystemConfiguration4ID";
+    private static final String IDCACHE = SystemConfiguration.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String NAMECACHE = "SystemConfiguration4Name";
+    private static final String NAMECACHE = SystemConfiguration.class.getName() + ".Name";
 
     /**
      * Logging instance used in this class.

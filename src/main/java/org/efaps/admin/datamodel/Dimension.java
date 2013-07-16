@@ -133,22 +133,22 @@ public class Dimension
     /**
      * Name of the Cache by UUID.
      */
-    private static final String UUIDCACHE = "Dimension4UUID";
+    private static final String UUIDCACHE = Dimension.class.getName() + ".UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE = "Dimension4ID";
+    private static final String IDCACHE = Dimension.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String NAMECACHE = "Dimension4Name";
+    private static final String NAMECACHE = Dimension.class.getName() + ".Name";
 
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE4UOM = "UoM4ID";
+    private static final String IDCACHE4UOM = Dimension.class.getName() + ".UoM4ID";
 
     /**
      * List of UoM belonging to this Dimension.

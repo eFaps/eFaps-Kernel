@@ -65,7 +65,7 @@ public final class DBProperties
     /**
      * Name of the Infinispan Cache.
      */
-    private static final String CACHENAME = "DBProperties";
+    private static final String CACHENAME = DBProperties.class.getName();
 
     /**
      * String used instead of a <code>NULL</code> value.

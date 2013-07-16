@@ -101,17 +101,17 @@ public final class Group
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE = "Group4ID";
+    private static final String IDCACHE = Group.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String NAMECACHE = "Group4Name";
+    private static final String NAMECACHE = Group.class.getName() + ".Name";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String UUIDCACHE = "Group4UUID";
+    private static final String UUIDCACHE = Group.class.getName() + ".UUID";
 
 
     /**

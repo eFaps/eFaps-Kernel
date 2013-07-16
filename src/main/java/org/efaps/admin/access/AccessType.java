@@ -96,17 +96,17 @@ public final class AccessType
     /**
      * Name of the Cache by UUID.
      */
-    private static final String UUIDCACHE = "AccessType4UUID";
+    private static final String UUIDCACHE = AccessType.class.getName() + ".UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE = "AccessType4ID";
+    private static final String IDCACHE = AccessType.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String NAMECACHE = "AccessType4Name";
+    private static final String NAMECACHE = AccessType.class.getName() + ".Name";
 
     /**
      * This is the constructor.

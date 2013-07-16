@@ -20,6 +20,7 @@
 
 package org.efaps.admin.common;
 
+import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,8 +48,13 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  */
 public final class NumberGenerator
-    implements CacheObjectInterface
+    implements CacheObjectInterface, Serializable
 {
+
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * This is the SQL select statement to select a role from the database by
@@ -94,17 +100,17 @@ public final class NumberGenerator
     /**
      * Name of the Cache by UUID.
      */
-    private static final String UUIDCACHE = "NumberGenerator4UUID";
+    private static final String UUIDCACHE = NumberGenerator.class.getName() + ".UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE = "NumberGenerator4ID";
+    private static final String IDCACHE = NumberGenerator.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String NAMECACHE = "NumberGenerator4Name";
+    private static final String NAMECACHE = NumberGenerator.class.getName() + ".Name";
 
     /**
      * Logging instance used in this class.

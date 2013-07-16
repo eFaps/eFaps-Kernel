@@ -49,6 +49,10 @@ import org.slf4j.LoggerFactory;
 public final class Store
     extends AbstractAdminObject
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Property to get the compress for this store.
@@ -68,17 +72,17 @@ public final class Store
     /**
      * Name of the Cache by UUID.
      */
-    private static final String UUIDCACHE = "Store4UUID";
+    private static final String UUIDCACHE = Store.class.getName() + ".UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE = "Store4ID";
+    private static final String IDCACHE = Store.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String NAMECACHE = "Store4Name";
+    private static final String NAMECACHE = Store.class.getName() + ".Name";
 
     /**
      * Name of the Resource class of this store.

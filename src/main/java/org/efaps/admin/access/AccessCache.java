@@ -48,12 +48,12 @@ public final class AccessCache
     /**
      * Name of the Cache for Instances.
      */
-    public static final String INSTANCECACHE = AccessCache.class.getName() + ".4Instance";
+    public static final String INSTANCECACHE = AccessCache.class.getName() + ".Instance";
 
     /**
      * Name of the Cache for AccessKey.
      */
-    public static final String KEYCACHE = AccessCache.class.getName() + ".4AccessKey";
+    public static final String KEYCACHE = AccessCache.class.getName() + ".AccessKey";
 
     /**
      * Logging instance used in this class.

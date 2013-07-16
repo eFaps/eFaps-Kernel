@@ -193,17 +193,17 @@ public class Type
     /**
      * Name of the Cache by UUID.
      */
-    private static String UUIDCACHE = "Type4UUID";
+    private static String UUIDCACHE = Type.class.getName() + ".UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static String IDCACHE = "Type4ID";
+    private static String IDCACHE = Type.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static String NAMECACHE = "Type4Name";
+    private static String NAMECACHE = Type.class.getName() + ".Name";
 
     /**
      * Instance variable for the parent type from which this type is derived.

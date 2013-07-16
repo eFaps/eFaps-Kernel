@@ -66,7 +66,7 @@ public class Association
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE = "Association4ID";
+    private static final String IDCACHE = Association.class.getName() + ".ID";
 
     /**
      * Use to mark not found and return <code>null</code>.

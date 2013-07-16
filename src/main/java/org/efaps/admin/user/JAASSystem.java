@@ -125,12 +125,12 @@ public final class JAASSystem
     /**
      * Name of the Cache by ID.
      */
-    private static String IDCACHE = "JAASSystem4ID";
+    private static String IDCACHE = JAASSystem.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static String NAMECACHE = "JAASSystem4Name";
+    private static String NAMECACHE = JAASSystem.class.getName() + ".Name";
 
     /**
      * The class used as principle for persons for this JAAS system is stored

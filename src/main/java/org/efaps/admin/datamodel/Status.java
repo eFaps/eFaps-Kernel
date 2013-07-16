@@ -96,17 +96,17 @@ public final class Status
     /**
      * Name of the Cache by UUID.
      */
-    private static final String UUIDCACHE4GRP = "StatusGroup4UUID";
+    private static final String UUIDCACHE4GRP = Status.class.getName() + ".Group4UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE4STATUS = "Status4ID";
+    private static final String IDCACHE4STATUS = Status.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String NAMECACHE4GRP = "StatusGroup4Name";
+    private static final String NAMECACHE4GRP = Status.class.getName() + ".Group4Name";
 
     /**
      * Logging instance used in this class.

@@ -105,17 +105,17 @@ public final class Role
     /**
      * Name of the Cache by UUID.
      */
-    private static final String UUIDCACHE = "Role4UUID";
+    private static final String UUIDCACHE = Role.class.getName() + ".UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE = "Role4ID";
+    private static final String IDCACHE = Role.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String NAMECACHE = "Role4Name";
+    private static final String NAMECACHE = Role.class.getName() + ".Name";
 
     /**
      * Use to mark not found and return <code>null</code>.

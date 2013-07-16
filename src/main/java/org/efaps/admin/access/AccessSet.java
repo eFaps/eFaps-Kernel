@@ -99,17 +99,17 @@ public final class AccessSet
     /**
      * Name of the Cache by UUID.
      */
-    private static final String UUIDCACHE = "AccessSet4UUID";
+    private static final String UUIDCACHE = AccessSet.class.getName() + ".UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE = "AccessSet4ID";
+    private static final String IDCACHE = AccessSet.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String NAMECACHE = "AccessSet4Name";
+    private static final String NAMECACHE = AccessSet.class.getName() + ".Name";
 
     /**
      * This is the sql select statement to select the links from all access sets

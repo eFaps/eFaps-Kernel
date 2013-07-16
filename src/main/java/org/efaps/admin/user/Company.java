@@ -95,17 +95,17 @@ public final class Company
     /**
      * Name of the Cache by UUID.
      */
-    private static final String UUIDCACHE = "Company4UUID";
+    private static final String UUIDCACHE = Company.class.getName() + ".UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE = "Company4ID";
+    private static final String IDCACHE = Company.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String NAMECACHE = "Company4Name";
+    private static final String NAMECACHE = Company.class.getName() + ".Name";
 
     /**
      * Use to mark not found and return <code>null</code>.

@@ -110,17 +110,17 @@ public final class Consortium
     /**
      * Name of the Cache by UUID.
      */
-    private static final String UUIDCACHE = "Consortium4UUID";
+    private static final String UUIDCACHE = Consortium.class.getName() + ".UUID";
 
     /**
      * Name of the Cache by ID.
      */
-    private static final String IDCACHE = "Consortium4ID";
+    private static final String IDCACHE = Consortium.class.getName() + ".ID";
 
     /**
      * Name of the Cache by Name.
      */
-    private static final String NAMECACHE = "Consortium4Name";
+    private static final String NAMECACHE = Consortium.class.getName() + ".Name";
 
     /**
      * Use to mark not found and return <code>null</code>.

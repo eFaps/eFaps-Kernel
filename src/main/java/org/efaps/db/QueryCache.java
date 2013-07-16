@@ -52,12 +52,12 @@ public final class QueryCache
     /**
      * Name of the Cache for Instances.
      */
-    public static final String SQLCACHE = QueryCache.class.getName() + ".4Sql";
+    public static final String SQLCACHE = QueryCache.class.getName() + ".Sql";
 
     /**
      * Name of the Cache for AccessKey.
      */
-    public static final String KEYCACHE = QueryCache.class.getName() + ".4Key";
+    public static final String KEYCACHE = QueryCache.class.getName() + ".Key";
 
     /**
      * Logging instance used in this class.
