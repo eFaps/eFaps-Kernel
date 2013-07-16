@@ -21,6 +21,7 @@
 package org.efaps.admin.common;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.security.Provider;
 import java.sql.PreparedStatement;
@@ -62,8 +63,12 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  */
 public final class SystemConfiguration
-    implements CacheObjectInterface
+    implements CacheObjectInterface, Serializable
 {
+    /**
+     * Used for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * This is the SQL select statement to select the configs from the database
