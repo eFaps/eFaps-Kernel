@@ -51,6 +51,11 @@ public class PasswordType
     extends StringType
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Logging instance used to give logging information of this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(PasswordType.class);

@@ -41,6 +41,11 @@ public class DecimalWithUoMType
     extends AbstractWithUoMType
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * The method prepares the statement for insert the object in the database.
      * It must be overwritten, because this type has at least two columns.
      * {@inheritDoc}

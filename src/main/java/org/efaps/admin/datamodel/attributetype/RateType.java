@@ -39,6 +39,10 @@ import org.efaps.util.EFapsException;
 public class RateType
     extends AbstractType
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * The method prepares the statement for insert the object in the database.

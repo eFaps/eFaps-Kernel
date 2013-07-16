@@ -41,6 +41,10 @@ import org.efaps.util.EFapsException;
 public class GroupLinkType
     extends PersonLinkType
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * @param _insertUpdate insert / update SQL statement

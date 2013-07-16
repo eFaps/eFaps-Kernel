@@ -29,5 +29,8 @@ package org.efaps.admin.datamodel.attributetype;
 public class BlobType
     extends AbstractFileType
 {
-
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 }

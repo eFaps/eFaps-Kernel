@@ -39,6 +39,11 @@ public class DateType
     extends DateTimeType
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * The value that can be set is a Date, a DateTime or a String
      * yyyy-MM-dd'T'HH:mm:ss.SSSZZ. It will be normalized to ISO Calender with
      * TimeZone from SystemAttribute Admin_Common_DataBaseTimeZone. In case that

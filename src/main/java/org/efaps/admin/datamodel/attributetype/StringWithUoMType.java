@@ -39,6 +39,11 @@ public class StringWithUoMType
     extends AbstractWithUoMType
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * {@inheritDoc}
      */
     @Override

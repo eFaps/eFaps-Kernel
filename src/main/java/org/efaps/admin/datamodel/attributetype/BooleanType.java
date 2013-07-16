@@ -41,6 +41,11 @@ public class BooleanType
     extends AbstractType
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Converts given <code>_value</code> into a {@link Boolean} value and set
      * for the {@link Attribute#getSqlColNames() SQL columns} in
      * <code>_attribute</code> this value in <code>_insertUpdate</code> SQL

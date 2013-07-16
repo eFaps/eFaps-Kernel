@@ -38,6 +38,11 @@ public class OwnerLinkType
     extends PersonLinkType
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * The instance method sets the value in the insert statement to the id of
      * the current context user.
      *

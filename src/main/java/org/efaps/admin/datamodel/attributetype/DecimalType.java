@@ -40,8 +40,14 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class DecimalType extends AbstractType
+public class DecimalType
+    extends AbstractType
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * {@inheritDoc}
      */

@@ -40,6 +40,11 @@ public class ConsortiumLinkType
     extends PersonLinkType
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * @param _insertUpdate     insert / update SQL statement
      * @param _attribute        Attribute to be prepared
      * @param _values           values for the insert or update

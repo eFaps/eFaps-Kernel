@@ -36,6 +36,11 @@ public class ModifiedType
     extends DateTimeType
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * The instance method appends
      * {@link org.efaps.db.databases.AbstractDatabase#getCurrentTimeStamp()} to
      * the SQL statement.

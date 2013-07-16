@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -35,6 +36,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public interface IAttributeType
+    extends Serializable
 {
     /**
      * The method prepares the statement for update the object in the database.

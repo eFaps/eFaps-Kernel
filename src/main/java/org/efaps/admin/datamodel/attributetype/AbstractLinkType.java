@@ -36,6 +36,10 @@ import org.efaps.util.EFapsException;
 public abstract class AbstractLinkType
     extends AbstractType
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Evaluate the value.

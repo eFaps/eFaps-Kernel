@@ -37,6 +37,11 @@ public abstract class AbstractType
     implements IAttributeType
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * {@inheritDoc}
      */
     @Override

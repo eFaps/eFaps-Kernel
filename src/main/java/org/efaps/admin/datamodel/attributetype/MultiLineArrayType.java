@@ -37,6 +37,11 @@ public class MultiLineArrayType
     implements IMultipleAttributeType
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * {@inheritDoc}
      */
     @Override

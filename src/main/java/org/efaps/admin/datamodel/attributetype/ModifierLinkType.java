@@ -38,6 +38,11 @@ public class ModifierLinkType
     extends PersonLinkType
 {
     /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * The instance method appends the SQL columns with always with the id of
      * the current context user as value.
      *

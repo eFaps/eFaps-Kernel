@@ -34,6 +34,10 @@ import org.efaps.db.wrapper.SQLUpdate;
 public class OIDType
     extends StringType
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * An update of an OID is not allowed and therefore a {@link SQLException}
