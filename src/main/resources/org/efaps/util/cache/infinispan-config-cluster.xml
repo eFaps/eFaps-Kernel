@@ -2,19 +2,27 @@
 <infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="urn:infinispan:config:5.3 http://www.infinispan.org/schemas/infinispan-config-5.3.xsd"
     xmlns="urn:infinispan:config:5.3">
-    <global />
+    <global >
+        <transport>
+            <properties>
+                <property name="configurationFile" value="jgroups-tcp.xml" />
+            </properties>
+        </transport>
+    </global>
     <!-- the Access cache -->
     <namedCache name="org.efaps.admin.access.AccessCache.Instance">
         <eviction maxEntries="5000" strategy="LIRS" />
         <!--10 minutes, 5 minutes (miliseconds) -->
         <expiration lifespan="600000" maxIdle="300000" />
-        <compatibility enabled="true" />
+        <clustering mode="dist"/>
+        <compatibility enabled="true"/>
     </namedCache>
     <namedCache name="org.efaps.admin.access.AccessCache.AccessKey">
         <eviction maxEntries="5000" strategy="LIRS" />
         <!--10 minutes, 5 minutes (miliseconds) -->
         <expiration lifespan="600000" maxIdle="300000" />
-        <compatibility enabled="true" />
+        <clustering mode="dist"/>
+        <compatibility enabled="true"/>
     </namedCache>
 
     <!-- the Sql Query cache -->
@@ -22,206 +30,263 @@
         <eviction maxEntries="5000" strategy="LIRS" />
         <!--10 minutes, 5 minutes (miliseconds) -->
         <expiration lifespan="600000" maxIdle="300000" />
-        <compatibility enabled="true" />
+        <clustering mode="dist"/>
+        <compatibility enabled="true"/>
     </namedCache>
     <namedCache name="org.efaps.db.QueryCache.Key">
         <eviction maxEntries="5000" strategy="LIRS" />
         <!--10 minutes, 5 minutes (miliseconds) -->
         <expiration lifespan="600000" maxIdle="300000" />
-        <compatibility enabled="true" />
+        <clustering mode="dist"/>
+        <compatibility enabled="true"/>
     </namedCache>
+
 
     <namedCache name="org.efaps.admin.dbproperty.DBProperties">
         <eviction maxEntries="5000" strategy="LIRS" />
-        <compatibility enabled="true" />
+        <clustering mode="dist"/>
+        <compatibility enabled="true"/>
     </namedCache>
 
     <!-- UserInterface -->
     <namedCache name="org.efaps.admin.ui.field.Field">
         <eviction maxEntries="5000" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.ui.Command.UUID">
         <eviction maxEntries="5000" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.ui.Command.ID">
         <eviction maxEntries="5000" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.ui.Command.Name">
         <eviction maxEntries="5000" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.ui.Menu.UUID">
         <eviction maxEntries="5000" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.ui.Menu.ID">
         <eviction maxEntries="5000" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.ui.Menu.Name">
         <eviction maxEntries="5000" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.ui.Image.UUID">
         <eviction maxEntries="5000" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.ui.Image.ID">
         <eviction maxEntries="5000" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.ui.Image.Name">
         <eviction maxEntries="5000" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
 
     <!-- DateModel -->
     <namedCache name="org.efaps.admin.datamodel.AttributeType.ID">
         <eviction maxEntries="50" strategy="LRU" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.datamodel.AttributeType.Name">
         <eviction maxEntries="50" strategy="LRU" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.datamodel.SQLTable.UUID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.datamodel.SQLTable.ID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.datamodel.SQLTable.Name">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.access.AccessType.UUID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.access.AccessType.ID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.access.AccessType.Name">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.datamodel.Type.UUID">
         <eviction maxEntries="1500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.datamodel.Type.ID">
         <eviction maxEntries="1500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.datamodel.Type.Name">
         <eviction maxEntries="1500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.datamodel.Attribute.Name">
         <eviction maxEntries="5000" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.datamodel.Attribute.ID">
         <eviction maxEntries="5000" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.datamodel.Dimension.UUID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.datamodel.Dimension.ID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.datamodel.Dimension.Name">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.datamodel.Dimension.UoM4ID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.common.NumberGenerator.UUID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.common.NumberGenerator.ID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.common.NumberGenerator.Name">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.common.SystemConfiguration.UUID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.common.SystemConfiguration.ID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.common.SystemConfiguration.Name">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
+
 
     <namedCache name="org.efaps.admin.datamodel.Status.Group4UUID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.datamodel.Status.Group4Name">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.datamodel.Status.ID">
         <eviction maxEntries="5000" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.access.AccessSet.UUID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.access.AccessSet.ID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.access.AccessSet.Name">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
-    <!-- User Caches This Caches are accessed in the given sequence during 
-        the search for a UserObject. That means that for e.g. RoleCache null-Values 
+    <!-- User Caches This Caches are accessed in the given sequence during
+        the search for a UserObject. That means that for e.g. RoleCache null-Values
         for ids will be cached that are not a Role -->
     <namedCache name="org.efaps.admin.user.Role.UUID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.user.Role.ID">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.user.Role.Name">
         <eviction maxEntries="500" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.user.Group.ID">
         <eviction maxEntries="400" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.user.Group.Name">
         <eviction maxEntries="400" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.user.Group.UUID">
         <eviction maxEntries="400" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.user.Company.UUID">
         <eviction maxEntries="300" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.user.Company.ID">
         <eviction maxEntries="300" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.user.Company.Name">
         <eviction maxEntries="300" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.user.Consortium.ID">
         <eviction maxEntries="200" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.user.Consortium.Name">
         <eviction maxEntries="200" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.admin.user.Person.UUID">
         <eviction maxEntries="100" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.user.Person.ID">
         <eviction maxEntries="100" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.user.Person.Name">
         <eviction maxEntries="100" strategy="LIRS" />
+        <clustering mode="dist"/>
     </namedCache>
 
-    <!-- JAASSystme is not clusterable due to use of java.lang.reflect.Method 
-        instance variables -->
+    <!-- JAASSystme is not clusterable due to use of java.lang.reflect.Method instance variables -->
     <namedCache name="org.efaps.admin.user.JAASSystem.ID">
         <eviction maxEntries="5" strategy="LRU" />
     </namedCache>
@@ -231,6 +296,7 @@
 
     <namedCache name="org.efaps.admin.user.Association.ID">
         <eviction maxEntries="50" strategy="LRU" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <!-- Stores are not clusterable. Where to store if they are clustered? -->
@@ -246,13 +312,15 @@
 
     <namedCache name="org.efaps.admin.program.bundle.BundleMaker.Name">
         <eviction maxEntries="150" strategy="LRU" />
+        <clustering mode="dist"/>
     </namedCache>
-    <namedCache
-        name="org.efaps.admin.program.bundle.BundleMaker.BundleMapper">
+    <namedCache name="org.efaps.admin.program.bundle.BundleMaker.BundleMapper">
         <eviction maxEntries="150" strategy="LRU" />
+        <clustering mode="dist"/>
     </namedCache>
     <namedCache name="org.efaps.admin.program.bundle.BundleMaker.Bundles">
         <eviction maxEntries="150" strategy="LRU" />
+        <clustering mode="dist"/>
     </namedCache>
 
     <namedCache name="org.efaps.ui.servlet.StaticContentServlet.Cache">
