@@ -20,6 +20,7 @@
 
 package org.efaps.db.databases.information;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -36,8 +37,13 @@ import org.efaps.util.cache.CacheObjectInterface;
  * @version $Id$
  */
 public class TableInformation
-    implements CacheObjectInterface
+    implements CacheObjectInterface, Serializable
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * Stores the map between a column name and the column information itself.
      *

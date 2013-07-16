@@ -20,6 +20,8 @@
 
 package org.efaps.db.databases.information;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
@@ -29,7 +31,12 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @version $Id$
  */
 public class ForeignKeyInformation
+    implements Serializable
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
     /**
      * Name of the foreign key.
      */
@@ -88,12 +95,6 @@ public class ForeignKeyInformation
     @Override
     public String toString()
     {
-        return new ToStringBuilder(this)
-            .append("foreign key name", this.fkName)
-            .append("column name", this.colName)
-            .append("referenced table name", this.refTableName)
-            .append("referenced column name", this.refColName)
-            .append("cascade delete", this.cascadeDelete)
-            .toString();
+        return ToStringBuilder.reflectionToString(this);
     }
 }

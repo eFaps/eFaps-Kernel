@@ -20,6 +20,7 @@
 
 package org.efaps.db.databases.information;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -32,7 +33,13 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @version $Id$
  */
 public class UniqueKeyInformation
+    implements Serializable
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * Name of the unique key in upper case.
      */
@@ -79,6 +86,16 @@ public class UniqueKeyInformation
     }
 
     /**
+     * Getter method for the instance variable {@link #ukName}.
+     *
+     * @return value of instance variable {@link #ukName}
+     */
+    public String getUkName()
+    {
+        return this.ukName;
+    }
+
+    /**
      * Returns string representation of this class instance. The information
      * includes {@link #ukName} and {@link #columnNames}.
      *
@@ -87,9 +104,6 @@ public class UniqueKeyInformation
     @Override
     public String toString()
     {
-        return new ToStringBuilder(this)
-            .append("ukName", this.ukName)
-            .append("columnNames", this.columnNames)
-            .toString();
+        return ToStringBuilder.reflectionToString(this);
     }
 }

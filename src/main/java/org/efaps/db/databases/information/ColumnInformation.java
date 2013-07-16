@@ -20,6 +20,7 @@
 
 package org.efaps.db.databases.information;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -33,7 +34,13 @@ import org.efaps.db.databases.AbstractDatabase.ColumnType;
  * @version $Id$
  */
 public class ColumnInformation
+    implements Serializable
 {
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * Name of column in upper case.
      *
