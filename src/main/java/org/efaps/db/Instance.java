@@ -144,7 +144,9 @@ public final class Instance
     {
         Type ret = null;
         try {
-            ret = Type.get(this.uuid);
+            if (this.uuid != null) {
+                ret = Type.get(this.uuid);
+            }
         } catch (final CacheReloadException e) {
             Instance.LOG.error("Could not load Type for UUID: {}", this.uuid);
         }
