@@ -180,7 +180,7 @@ public final class Instance
     public String getOid()
     {
         String ret = null;
-        if ((getType() != null) && (getId() != 0)) {
+        if (isValid()) {
             ret = getType().getId() + "." + getId();
         }
         return ret;
