@@ -200,4 +200,13 @@ public class EFapsClassLoader
         }
         return EFapsClassLoader.CLASSLOADER;
     }
+
+    /**
+     * To be able to know if it is the first time the Classloader is wanted.
+     * @return is the static Class loader initialized.
+     */
+    public static boolean isInitialized()
+    {
+        return EFapsClassLoader.CLASSLOADER != null;
+    }
 }

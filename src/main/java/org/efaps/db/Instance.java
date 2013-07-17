@@ -20,9 +20,6 @@
 
 package org.efaps.db;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -55,10 +52,8 @@ public final class Instance
 
     /**
      * The instance variable stores the type definition for which this class is the instance.
-     *
-     * @see #getType()
      */
-    private transient Type type;
+    private final UUID uuid;
 
     /**
      * The instance variable stores the database id of the instance in the database.
@@ -95,15 +90,15 @@ public final class Instance
     /**
      * Constructor used if the type and the database id is known.
      *
-     * @param _type type of the instance
+     * @param _uuid uuid of the type of the instance
      * @param _id id in the database of the instance
      * @param _instanceKey key to this instance
      */
-    private Instance(final Type _type,
+    private Instance(final UUID _uuid,
                      final long _id,
                      final String _instanceKey)
     {
-        this.type = _type;
+        this.uuid = _uuid;
         this.id = _id;
         this.key = _instanceKey;
     }
@@ -130,43 +125,13 @@ public final class Instance
         boolean ret = false;
         if (_obj instanceof Instance) {
             final Instance other = (Instance) _obj;
-            if (other.getType() != null && getType() != null) {
-                ret = (other.getId() == getId()) && (other.getType().getId() == getType().getId());
+            if (other.uuid != null && this.uuid != null) {
+                ret = (other.getId() == getId()) && (other.uuid.equals(this.uuid));
             } else {
                 ret = super.equals(_obj);
             }
         }
         return ret;
-    }
-
-    /**
-     * First, all not transient instance variables are stored, then the UUID of the type is stored.
-     *
-     * @param _out object output stream
-     * @throws IOException from inside called methods
-     */
-    private void writeObject(final ObjectOutputStream _out)
-        throws IOException
-    {
-        _out.defaultWriteObject();
-        _out.writeObject(this.type.getUUID());
-    }
-
-    /**
-     * First all not transient instance variables are read, then the UUID of the type is read and the type is
-     * initialized.
-     *
-     * @param _in object input stream
-     * @throws IOException from inside called methods
-     * @throws CacheReloadException if a class not found
-     * @throws ClassNotFoundException on error
-     *
-     */
-    private void readObject(final ObjectInputStream _in)
-        throws IOException, ClassNotFoundException, CacheReloadException
-    {
-        _in.defaultReadObject();
-        this.type = Type.get((UUID) _in.readObject());
     }
 
     /**
@@ -177,7 +142,23 @@ public final class Instance
      */
     public Type getType()
     {
-        return this.type;
+        Type ret = null;
+        try {
+            ret = Type.get(this.uuid);
+        } catch (final CacheReloadException e) {
+            Instance.LOG.error("Could not load Type for UUID: {}", this.uuid);
+        }
+        return ret;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #uuid}.
+     *
+     * @return value of instance variable {@link #uuid}
+     */
+    public UUID getTypeUUID()
+    {
+        return this.uuid;
     }
 
     /**
@@ -212,7 +193,7 @@ public final class Instance
      */
     public String getKey()
     {
-        return this.key;
+        return this.key == null ? getOid() : this.key;
     }
 
     /**
@@ -222,7 +203,7 @@ public final class Instance
      */
     public boolean isValid()
     {
-        return this.type != null && this.id > 0;
+        return this.uuid != null && this.id > 0;
     }
 
     /**
@@ -231,7 +212,7 @@ public final class Instance
     private void check4Generalised()
         throws EFapsException
     {
-        if (this.type.isGeneralInstance() && !this.generalised) {
+        if (getType().isGeneralInstance() && !this.generalised) {
             GeneralInstance.generaliseInstance(this);
             this.generalised = true;
         }
@@ -393,6 +374,18 @@ public final class Instance
     }
 
     /**
+    *
+    * @param _type type of the instance
+    * @param _id id of the instance
+    * @return instance
+    */
+   public static Instance get(final UUID _typeUUID,
+                              final long _id)
+   {
+       return new Instance(_typeUUID, _id, null);
+   }
+
+    /**
      *
      * @param _type type of the instance
      * @param _id id of the instance
@@ -403,7 +396,7 @@ public final class Instance
                                final long _id,
                                final String _key)
     {
-        return new Instance(_type, _id, _key);
+        return new Instance(_type == null ? null : _type.getUUID(), _id, _key);
     }
 
     /**

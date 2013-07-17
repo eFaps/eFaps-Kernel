@@ -21,10 +21,10 @@
 package org.efaps.admin.access;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Company;
 import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
@@ -63,7 +63,7 @@ public final class AccessKey
     /**
      * Id of a instance type.
      */
-    private final long instanceTypeId;
+    private final UUID instanceTypeUUID;
 
     /**
      * Id of the Instance.
@@ -86,19 +86,19 @@ public final class AccessKey
     private final AccessTypeEnums accessType;
 
     /**
-     * @param _instanceTypeId Id of a instance type
+     * @param _instanceTypeUUID UUID of a instance type
      * @param _instanceId Id of the Instance
      * @param _personId Id of the Person
      * @param _companyId Id of the Company
      * @param _accessType Type of the Access
      */
-    private AccessKey(final long _instanceTypeId,
+    private AccessKey(final UUID _instanceTypeUUID,
                       final long _instanceId,
                       final long _personId,
                       final long _companyId,
                       final AccessTypeEnums _accessType)
     {
-        this.instanceTypeId = _instanceTypeId;
+        this.instanceTypeUUID = _instanceTypeUUID;
         this.instanceId = _instanceId;
         this.personId = _personId;
         this.companyId = _companyId;
@@ -106,13 +106,13 @@ public final class AccessKey
     }
 
     /**
-     * Getter method for the instance variable {@link #instanceTypeId}.
+     * Getter method for the instance variable {@link #instanceTypeUUID}.
      *
-     * @return value of instance variable {@link #instanceTypeId}
+     * @return value of instance variable {@link #instanceTypeUUID}
      */
-    public long getInstanceTypeId()
+    public UUID getInstanceTypeUUID()
     {
-        return this.instanceTypeId;
+        return this.instanceTypeUUID;
     }
 
     /**
@@ -161,7 +161,7 @@ public final class AccessKey
     @Override
     public int hashCode()
     {
-        return (int) (this.instanceTypeId + this.instanceId);
+        return (int) (this.instanceTypeUUID.hashCode() + this.instanceId);
     }
 
     /**
@@ -175,7 +175,7 @@ public final class AccessKey
         boolean ret = false;
         if (_obj instanceof AccessKey) {
             final AccessKey accessKey = (AccessKey) _obj;
-            ret = getInstanceTypeId() == accessKey.getInstanceTypeId()
+            ret = getInstanceTypeUUID() == accessKey.getInstanceTypeUUID()
                             && getInstanceId() == accessKey.getInstanceId()
                             && getPersonId() == accessKey.getPersonId()
                             && getAccessType().equals(accessKey.getAccessType());
@@ -192,7 +192,7 @@ public final class AccessKey
     public Instance getInstance()
         throws CacheReloadException
     {
-        return Instance.get(Type.get(getInstanceTypeId()), getInstanceId());
+        return Instance.get(getInstanceTypeUUID(), getInstanceId());
     }
 
     @Override
@@ -225,7 +225,7 @@ public final class AccessKey
         } else {
             companyIdTmp = company.getId();
         }
-        return new AccessKey(_instance.getType().getId(), _instance.getId(), personIdTmp, companyIdTmp,
+        return new AccessKey(_instance.getTypeUUID(), _instance.getId(), personIdTmp, companyIdTmp,
                         AccessTypeEnums.get(_accessType.getUUID()));
     }
 }
