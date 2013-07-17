@@ -885,6 +885,8 @@ public class Attribute
                         _type.addAttribute(attr, false);
                     }
                     attr.readFromDB4Properties();
+                    // needed due to cluster serialization that does not update automatically
+                    Attribute.cacheAttribute(attr);
                 }
             }
             // make connection between set and attributes
@@ -893,6 +895,8 @@ public class Attribute
                 final Attribute childAttr = entry.getKey();
                 parentset.addAttribute(childAttr, false);
                 childAttr.setParentSet(parentset);
+                // needed due to cluster serialization that does not update automatically
+                Attribute.cacheAttribute(childAttr);
             }
         } catch (final SQLException e) {
             throw new CacheReloadException("Cannot read attributes.", e);

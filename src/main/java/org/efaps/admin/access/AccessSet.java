@@ -589,6 +589,8 @@ public final class AccessSet
                 accessSet.readLinks2DMTypes();
                 accessSet.readLinks2Status();
                 accessSet.readLinks2Person();
+                // needed due to cluster serialization that does not update automatically
+                AccessSet.cacheAccessSet(accessSet);
             }
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read roles", e);

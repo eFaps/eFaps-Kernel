@@ -1383,6 +1383,8 @@ public class Type
                 Attribute.add4Type(ret);
                 ret.readFromDB4Links();
                 ret.readFromDB4Properties();
+                // needed due to cluster serialization that does not update automatically
+                Type.cacheType(ret);
                 Type.LOG.trace("ended reading type '{}'", ret.getName());
             }
         } catch (final EFapsException e) {

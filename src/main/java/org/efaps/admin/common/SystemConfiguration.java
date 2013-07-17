@@ -738,8 +738,8 @@ public final class SystemConfiguration
                 Context.rollback();
             }
             if (sysConfig != null) {
-                SystemConfiguration.cacheSytemConfig(sysConfig);
                 sysConfig.readConfig();
+                SystemConfiguration.cacheSytemConfig(sysConfig);
             }
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read SystemConfiguration", e);

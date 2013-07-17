@@ -460,6 +460,8 @@ public class Dimension
             if (dim != null) {
                 Dimension.cacheDimension(dim);
                 Dimension.getUoMFromDB(Dimension.SQL_SELECT_UOM4DIMID, dim.getId());
+                // needed due to cluster serialization that does not update automatically
+                Dimension.cacheDimension(dim);
             }
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read roles", e);

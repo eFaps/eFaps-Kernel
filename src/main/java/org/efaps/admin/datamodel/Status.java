@@ -451,11 +451,11 @@ public final class Status
                     statusGroup = cache.get(type.getUUID());
                 } else {
                     statusGroup = new StatusGroup(type);
-                    Status.cacheStatusGroup(statusGroup);
                 }
                 final Status status = new Status(statusGroup, id, key, desc);
                 statusGroup.put(status.getKey(), status);
                 Status.cacheStatus(status);
+                Status.cacheStatusGroup(statusGroup);
                 ret = true;
             }
 

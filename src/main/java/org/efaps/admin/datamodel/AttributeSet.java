@@ -102,6 +102,8 @@ public class AttributeSet
             parent.addChildType(this);
             getAttributes().putAll(parent.getAttributes());
         }
+        // needed due to cluster serialization that does not update automatically
+        Type.cacheType(this);
     }
 
     /**

@@ -492,6 +492,8 @@ public final class SQLTable
                     final SQLTable mainTable = SQLTable.get(tableMainId);
                     table.mainTable = mainTable;
                 }
+                // needed due to cluster serialization that does not update automatically
+                SQLTable.cacheSQLTable(table);
             }
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read sql tables", e);
