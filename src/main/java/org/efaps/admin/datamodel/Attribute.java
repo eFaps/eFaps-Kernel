@@ -857,11 +857,6 @@ public class Attribute
                                     AttributeType.get(attrTypeId), defaultval,
                                     dimensionUUID);
                     attr.setParent(_type);
-                    if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSetAttribute.uuid)) {
-                        attribute2setId.put(attr, parentSetId);
-                    } else {
-                        _type.addAttribute(attr, false);
-                    }
                     Attribute.cacheAttribute(attr);
                     final UUID uuid = attr.getAttributeType().getUUID();
                     if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_LINK.getUuid())
@@ -883,6 +878,11 @@ public class Attribute
                         final Type linkType = CIAdminUser.Group.getType();
                         attr.setLink(linkType);
                         linkType.addLink(attr);
+                    }
+                    if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSetAttribute.uuid)) {
+                        attribute2setId.put(attr, parentSetId);
+                    } else {
+                        _type.addAttribute(attr, false);
                     }
                     attr.readFromDB4Properties();
                 }
