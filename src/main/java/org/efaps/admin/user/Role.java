@@ -269,19 +269,14 @@ public final class Role
      */
     private static void cacheRole(final Role _role)
     {
-        final Cache<UUID, Role> cache4UUID = InfinispanCache.get().<UUID, Role>getCache(Role.UUIDCACHE);
-        if (!cache4UUID.containsKey(_role.getUUID())) {
-            cache4UUID.put(_role.getUUID(), _role);
-        }
+        final Cache<UUID, Role> cache4UUID = InfinispanCache.get().<UUID, Role>getIgnReCache(Role.UUIDCACHE);
+        cache4UUID.putIfAbsent(_role.getUUID(), _role);
 
-        final Cache<String, Role> nameCache = InfinispanCache.get().<String, Role>getCache(Role.NAMECACHE);
-        if (!nameCache.containsKey(_role.getName())) {
-            nameCache.put(_role.getName(), _role);
-        }
-        final Cache<Long, Role> idCache = InfinispanCache.get().<Long, Role>getCache(Role.IDCACHE);
-        if (!idCache.containsKey(_role.getId())) {
-            idCache.put(_role.getId(), _role);
-        }
+        final Cache<String, Role> nameCache = InfinispanCache.get().<String, Role>getIgnReCache(Role.NAMECACHE);
+        nameCache.putIfAbsent(_role.getName(), _role);
+
+        final Cache<Long, Role> idCache = InfinispanCache.get().<Long, Role>getIgnReCache(Role.IDCACHE);
+        idCache.putIfAbsent(_role.getId(), _role);
     }
 
     /**

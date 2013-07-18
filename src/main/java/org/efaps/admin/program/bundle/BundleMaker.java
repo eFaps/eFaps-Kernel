@@ -140,7 +140,7 @@ public final class BundleMaker
     public static boolean containsKey(final String _key)
     {
         final Cache<String, BundleInterface> cache = InfinispanCache.get()
-                        .<String, BundleInterface>getCache(BundleMaker.CACHE4BUNDLE);
+                        .<String, BundleInterface>getIgnReCache(BundleMaker.CACHE4BUNDLE);
         return cache.containsKey(_key);
     }
 
@@ -153,8 +153,7 @@ public final class BundleMaker
     public static BundleInterface getBundle(final String _key)
     {
         final Cache<String, BundleInterface> cache = InfinispanCache.get()
-                        .<String, BundleInterface>getCache(BundleMaker.CACHE4BUNDLE);
-
+                        .<String, BundleInterface>getIgnReCache(BundleMaker.CACHE4BUNDLE);
         return cache.get(_key);
     }
 
@@ -199,7 +198,7 @@ public final class BundleMaker
                     builder.append("-");
                 }
                 final Cache<String, StaticCompiledSource> cache = InfinispanCache.get()
-                                .<String, StaticCompiledSource>getCache(BundleMaker.NAMECACHE);
+                                .<String, StaticCompiledSource>getIgnReCache(BundleMaker.NAMECACHE);
                 if (!cache.containsKey(name)) {
                     final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.StaticCompiled);
                     queryBldr.addWhereAttrEqValue(CIAdminProgram.StaticCompiled.Name, name);
@@ -227,7 +226,7 @@ public final class BundleMaker
             bundle.setKey(ret, oids);
 
             final Cache<String, BundleInterface> cache = InfinispanCache.get()
-                            .<String, BundleInterface>getCache(BundleMaker.CACHE4BUNDLE);
+                            .<String, BundleInterface>getIgnReCache(BundleMaker.CACHE4BUNDLE);
             cache.put(ret, bundle);
         } catch (final InstantiationException e) {
             throw new EFapsException(BundleMaker.class,

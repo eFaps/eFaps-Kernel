@@ -415,15 +415,13 @@ public final class JAASSystem
      */
     private static void cacheJAASSystem(final JAASSystem _group)
     {
-        final Cache<String, JAASSystem> nameCache = InfinispanCache.get().<String, JAASSystem>getCache(
+        final Cache<String, JAASSystem> nameCache = InfinispanCache.get().<String, JAASSystem>getIgnReCache(
                         JAASSystem.NAMECACHE);
-        if (!nameCache.containsKey(_group.getName())) {
-            nameCache.put(_group.getName(), _group);
-        }
-        final Cache<Long, JAASSystem> idCache = InfinispanCache.get().<Long, JAASSystem>getCache(JAASSystem.IDCACHE);
-        if (!idCache.containsKey(_group.getId())) {
-            idCache.put(_group.getId(), _group);
-        }
+        nameCache.putIfAbsent(_group.getName(), _group);
+
+        final Cache<Long, JAASSystem> idCache = InfinispanCache.get().<Long, JAASSystem>getIgnReCache(
+                        JAASSystem.IDCACHE);
+        idCache.putIfAbsent(_group.getId(), _group);
     }
 
     /**

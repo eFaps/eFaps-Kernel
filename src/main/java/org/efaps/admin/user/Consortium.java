@@ -286,21 +286,17 @@ public final class Consortium
      */
     private static void cacheConsortium(final Consortium _consortium)
     {
-        final Cache<UUID, Consortium> cache4UUID = InfinispanCache.get().<UUID, Consortium>getCache(
+        final Cache<UUID, Consortium> cache4UUID = InfinispanCache.get().<UUID, Consortium>getIgnReCache(
                         Consortium.UUIDCACHE);
-        if (!cache4UUID.containsKey(_consortium.getUUID())) {
-            cache4UUID.put(_consortium.getUUID(), _consortium);
-        }
+        cache4UUID.putIfAbsent(_consortium.getUUID(), _consortium);
 
-        final Cache<String, Consortium> nameCache = InfinispanCache.get().<String, Consortium>getCache(
+        final Cache<String, Consortium> nameCache = InfinispanCache.get().<String, Consortium>getIgnReCache(
                         Consortium.NAMECACHE);
-        if (!nameCache.containsKey(_consortium.getName())) {
-            nameCache.put(_consortium.getName(), _consortium);
-        }
-        final Cache<Long, Consortium> idCache = InfinispanCache.get().<Long, Consortium>getCache(Consortium.IDCACHE);
-        if (!idCache.containsKey(_consortium.getId())) {
-            idCache.put(_consortium.getId(), _consortium);
-        }
+        nameCache.put(_consortium.getName(), _consortium);
+
+        final Cache<Long, Consortium> idCache = InfinispanCache.get().<Long, Consortium>getIgnReCache(
+                        Consortium.IDCACHE);
+        idCache.put(_consortium.getId(), _consortium);
     }
 
     /**

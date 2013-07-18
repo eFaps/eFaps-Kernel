@@ -409,24 +409,19 @@ public abstract class AbstractUserInterfaceObject
     protected static void cacheUIObject(final AbstractUserInterfaceObject _object)
     {
         final Cache<UUID, AbstractUserInterfaceObject> cache4UUID = InfinispanCache.get()
-                        .<UUID, AbstractUserInterfaceObject>getCache(
+                        .<UUID, AbstractUserInterfaceObject>getIgnReCache(
                                         AbstractUserInterfaceObject.getUUIDCacheName(_object.getClass()));
-        if (!cache4UUID.containsKey(_object.getUUID())) {
-            cache4UUID.put(_object.getUUID(), _object);
-        }
+        cache4UUID.putIfAbsent(_object.getUUID(), _object);
 
         final Cache<String, AbstractUserInterfaceObject> nameCache = InfinispanCache.get()
-                        .<String, AbstractUserInterfaceObject>getCache(
+                        .<String, AbstractUserInterfaceObject>getIgnReCache(
                                         AbstractUserInterfaceObject.getNameCacheName(_object.getClass()));
-        if (!nameCache.containsKey(_object.getName())) {
-            nameCache.put(_object.getName(), _object);
-        }
+        nameCache.putIfAbsent(_object.getName(), _object);
+
         final Cache<Long, AbstractUserInterfaceObject> idCache = InfinispanCache.get()
-                        .<Long, AbstractUserInterfaceObject>getCache(
+                        .<Long, AbstractUserInterfaceObject>getIgnReCache(
                                         AbstractUserInterfaceObject.getIDCacheName(_object.getClass()));
-        if (!idCache.containsKey(_object.getId())) {
-            idCache.put(_object.getId(), _object);
-        }
+        idCache.putIfAbsent(_object.getId(), _object);
     }
 
     /**

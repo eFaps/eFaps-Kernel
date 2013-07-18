@@ -404,15 +404,15 @@ public class Dimension
      */
     private static void cacheDimension(final Dimension _role)
     {
-        final Cache<UUID, Dimension> cache4UUID = InfinispanCache.get().<UUID, Dimension>getIgnoreReturnCache(
+        final Cache<UUID, Dimension> cache4UUID = InfinispanCache.get().<UUID, Dimension>getIgnReCache(
                         Dimension.UUIDCACHE);
         cache4UUID.putIfAbsent(_role.getUUID(), _role);
 
-        final Cache<String, Dimension> nameCache = InfinispanCache.get().<String, Dimension>getIgnoreReturnCache(
+        final Cache<String, Dimension> nameCache = InfinispanCache.get().<String, Dimension>getIgnReCache(
                         Dimension.NAMECACHE);
         nameCache.putIfAbsent(_role.getName(), _role);
 
-        final Cache<Long, Dimension> idCache = InfinispanCache.get().<Long, Dimension>getIgnoreReturnCache(
+        final Cache<Long, Dimension> idCache = InfinispanCache.get().<Long, Dimension>getIgnReCache(
                         Dimension.IDCACHE);
         idCache.putIfAbsent(_role.getId(), _role);
     }

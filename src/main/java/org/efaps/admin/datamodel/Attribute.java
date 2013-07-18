@@ -723,11 +723,11 @@ public class Attribute
      */
     private static void cacheAttribute(final Attribute _attr)
     {
-        final Cache<String, Attribute> nameCache = InfinispanCache.get().<String, Attribute>getIgnoreReturnCache(
+        final Cache<String, Attribute> nameCache = InfinispanCache.get().<String, Attribute>getIgnReCache(
                         Attribute.NAMECACHE);
         nameCache.putIfAbsent(_attr.getKey(), _attr);
 
-        final Cache<Long, Attribute> idCache = InfinispanCache.get().<Long, Attribute>getIgnoreReturnCache(
+        final Cache<Long, Attribute> idCache = InfinispanCache.get().<Long, Attribute>getIgnReCache(
                         Attribute.IDCACHE);
         idCache.putIfAbsent(_attr.getId(), _attr);
     }

@@ -72,11 +72,9 @@ public final class AccessCache
      */
     public static void registerUpdate(final Instance _instance)
     {
-        final Cache<Instance, Set<AccessKey>> instanceCache = InfinispanCache.get().<Instance, Set<AccessKey>>getCache(
+        final Cache<Instance, Set<AccessKey>> instanceCache = InfinispanCache.get().<Instance, Set<AccessKey>>getIgnReCache(
                         AccessCache.INSTANCECACHE);
-        if (instanceCache.containsKey(_instance)) {
-            instanceCache.remove(_instance);
-        }
+        instanceCache.remove(_instance);
     }
 
     /**
@@ -127,7 +125,7 @@ public final class AccessCache
             try {
                 if (!_event.isPre()) {
                     final Cache<Instance, Set<AccessKey>> instanceCache = InfinispanCache.get()
-                                    .<Instance, Set<AccessKey>>getCache(AccessCache.INSTANCECACHE);
+                                    .<Instance, Set<AccessKey>>getIgnReCache(AccessCache.INSTANCECACHE);
 
                     final AccessKey accessKey = (AccessKey) _event.getKey();
                     final Instance instance = accessKey.getInstance();
@@ -166,7 +164,7 @@ public final class AccessCache
         public void onCacheEntryRemoved(final CacheEntryRemovedEvent<?, ?> _event)
         {
             if (_event.isPre()) {
-                final Cache<AccessKey, Boolean> keyCache = InfinispanCache.get().<AccessKey, Boolean>getCache(
+                final Cache<AccessKey, Boolean> keyCache = InfinispanCache.get().<AccessKey, Boolean>getIgnReCache(
                                 AccessCache.KEYCACHE);
                 final Set<AccessKey> accessKeys = (Set<AccessKey>) _event.getValue();
                 for (final AccessKey accessKey : accessKeys) {

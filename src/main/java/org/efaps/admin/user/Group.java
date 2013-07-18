@@ -303,18 +303,14 @@ public final class Group
      */
     private static void cacheGroup(final Group _group)
     {
-        final Cache<String, Group> nameCache = InfinispanCache.get().<String, Group>getCache(Group.NAMECACHE);
-        if (!nameCache.containsKey(_group.getName())) {
-            nameCache.put(_group.getName(), _group);
-        }
-        final Cache<Long, Group> idCache = InfinispanCache.get().<Long, Group>getCache(Group.IDCACHE);
-        if (!idCache.containsKey(_group.getId())) {
-            idCache.put(_group.getId(), _group);
-        }
-        final Cache<UUID, Group> uuidCache = InfinispanCache.get().<UUID, Group>getCache(Group.UUIDCACHE);
-        if (!uuidCache.containsKey(_group.getId())) {
-            uuidCache.put(_group.getUUID(), _group);
-        }
+        final Cache<String, Group> nameCache = InfinispanCache.get().<String, Group>getIgnReCache(Group.NAMECACHE);
+        nameCache.putIfAbsent(_group.getName(), _group);
+
+        final Cache<Long, Group> idCache = InfinispanCache.get().<Long, Group>getIgnReCache(Group.IDCACHE);
+        idCache.putIfAbsent(_group.getId(), _group);
+
+        final Cache<UUID, Group> uuidCache = InfinispanCache.get().<UUID, Group>getIgnReCache(Group.UUIDCACHE);
+        uuidCache.putIfAbsent(_group.getUUID(), _group);
     }
 
     /**

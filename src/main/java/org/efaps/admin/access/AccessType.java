@@ -234,21 +234,16 @@ public final class AccessType
      */
     private static void cacheAccessType(final AccessType _accessType)
     {
-        final Cache<UUID, AccessType> cache4UUID = InfinispanCache.get().<UUID, AccessType>getCache(
+        final Cache<UUID, AccessType> cache4UUID = InfinispanCache.get().<UUID, AccessType>getIgnReCache(
                         AccessType.UUIDCACHE);
-        if (!cache4UUID.containsKey(_accessType.getUUID())) {
-            cache4UUID.put(_accessType.getUUID(), _accessType);
-        }
+        cache4UUID.putIfAbsent(_accessType.getUUID(), _accessType);
 
-        final Cache<String, AccessType> nameCache = InfinispanCache.get().<String, AccessType>getCache(
+        final Cache<String, AccessType> nameCache = InfinispanCache.get().<String, AccessType>getIgnReCache(
                         AccessType.NAMECACHE);
-        if (!nameCache.containsKey(_accessType.getName())) {
-            nameCache.put(_accessType.getName(), _accessType);
-        }
-        final Cache<Long, AccessType> idCache = InfinispanCache.get().<Long, AccessType>getCache(AccessType.IDCACHE);
-        if (!idCache.containsKey(_accessType.getId())) {
-            idCache.put(_accessType.getId(), _accessType);
-        }
+        nameCache.putIfAbsent(_accessType.getName(), _accessType);
+        final Cache<Long, AccessType> idCache = InfinispanCache.get().<Long, AccessType>getIgnReCache(
+                        AccessType.IDCACHE);
+        idCache.putIfAbsent(_accessType.getId(), _accessType);
     }
 
 

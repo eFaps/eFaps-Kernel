@@ -99,7 +99,7 @@ public final class QueryCache
      */
     public static void cleanByKey(final String _key)
     {
-        final Cache<String, Set<QueryKey>> cache = InfinispanCache.get().<String, Set<QueryKey>>getCache(
+        final Cache<String, Set<QueryKey>> cache = InfinispanCache.get().<String, Set<QueryKey>>getIgnReCache(
                         QueryCache.KEYCACHE);
         cache.remove(_key);
     }
@@ -153,7 +153,7 @@ public final class QueryCache
         {
             if (!_event.isPre()) {
                 final Cache<String, Set<QueryKey>> keyCache = InfinispanCache.get()
-                                .<String, Set<QueryKey>>getCache(QueryCache.KEYCACHE);
+                                .<String, Set<QueryKey>>getIgnReCache(QueryCache.KEYCACHE);
 
                 final QueryKey querykey = (QueryKey) _event.getKey();
                 final String key = querykey.getKey();
@@ -190,7 +190,7 @@ public final class QueryCache
         public void onCacheEntryRemoved(final CacheEntryRemovedEvent<?, ?> _event)
         {
             if (_event.isPre()) {
-                final Cache<QueryKey, Object> keyCache = InfinispanCache.get().<QueryKey, Object>getCache(
+                final Cache<QueryKey, Object> keyCache = InfinispanCache.get().<QueryKey, Object>getIgnReCache(
                                 QueryCache.SQLCACHE);
                 final Set<QueryKey> queryKeys = (Set<QueryKey>) _event.getValue();
                 for (final QueryKey queryKey : queryKeys) {

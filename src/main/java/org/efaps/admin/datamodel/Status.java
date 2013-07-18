@@ -376,16 +376,13 @@ public final class Status
      */
     private static void cacheStatusGroup(final StatusGroup _grp)
     {
-        final Cache<String, StatusGroup> nameCache = InfinispanCache.get().<String, StatusGroup>getCache(
+        final Cache<String, StatusGroup> nameCache = InfinispanCache.get().<String, StatusGroup>getIgnReCache(
                         Status.NAMECACHE4GRP);
-        if (!nameCache.containsKey(_grp.getName())) {
-            nameCache.put(_grp.getName(), _grp);
-        }
-        final Cache<UUID, StatusGroup> uuidCache = InfinispanCache.get().<UUID, StatusGroup>getCache(
+        nameCache.putIfAbsent(_grp.getName(), _grp);
+
+        final Cache<UUID, StatusGroup> uuidCache = InfinispanCache.get().<UUID, StatusGroup>getIgnReCache(
                         Status.UUIDCACHE4GRP);
-        if (!uuidCache.containsKey(_grp.getName())) {
-            uuidCache.put(_grp.getUUID(), _grp);
-        }
+        uuidCache.putIfAbsent(_grp.getUUID(), _grp);
     }
 
     /**
@@ -393,11 +390,8 @@ public final class Status
      */
     private static void cacheStatus(final Status _status)
     {
-
-        final Cache<Long, Status> idCache = InfinispanCache.get().<Long, Status>getCache(Status.IDCACHE4STATUS);
-        if (!idCache.containsKey(_status.getId())) {
-            idCache.put(_status.getId(), _status);
-        }
+        final Cache<Long, Status> idCache = InfinispanCache.get().<Long, Status>getIgnReCache(Status.IDCACHE4STATUS);
+            idCache.putIfAbsent(_status.getId(), _status);
     }
 
     /**

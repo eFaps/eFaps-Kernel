@@ -1293,13 +1293,13 @@ public class Type
     protected static void cacheType(final Type _type)
     {
         _type.setUndirty();
-        final Cache<UUID, Type> cache4UUID = InfinispanCache.get().<UUID, Type>getIgnoreReturnCache(Type.UUIDCACHE);
+        final Cache<UUID, Type> cache4UUID = InfinispanCache.get().<UUID, Type>getIgnReCache(Type.UUIDCACHE);
         cache4UUID.put(_type.getUUID(), _type);
 
-        final Cache<String, Type> nameCache = InfinispanCache.get().<String, Type>getIgnoreReturnCache(Type.NAMECACHE);
+        final Cache<String, Type> nameCache = InfinispanCache.get().<String, Type>getIgnReCache(Type.NAMECACHE);
         nameCache.put(_type.getName(), _type);
 
-        final Cache<Long, Type> idCache = InfinispanCache.get().<Long, Type>getIgnoreReturnCache(Type.IDCACHE);
+        final Cache<Long, Type> idCache = InfinispanCache.get().<Long, Type>getIgnReCache(Type.IDCACHE);
         idCache.put(_type.getId(), _type);
     }
 
@@ -1314,12 +1314,12 @@ public class Type
     protected static void cacheTypesByHierachy(final Type _type)
         throws CacheReloadException
     {
-        final Cache<UUID, Type> cache4UUID = InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
+        final Cache<UUID, Type> cache4UUID = InfinispanCache.get().<UUID, Type>getIgnReCache(Type.UUIDCACHE);
         if (cache4UUID.getCacheConfiguration().clustering() != null
                         && !cache4UUID.getCacheConfiguration().clustering().cacheMode().equals(CacheMode.LOCAL)) {
             Type type = _type;
             while (type.getParentTypeId() != null) {
-                final Cache<Long, Type> cache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
+                final Cache<Long, Type> cache = InfinispanCache.get().<Long, Type>getIgnReCache(Type.IDCACHE);
                 if (cache.containsKey(type.getParentTypeId())) {
                     type = cache.get(type.getParentTypeId());
                 } else {

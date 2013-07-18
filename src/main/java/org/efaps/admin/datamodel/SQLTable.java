@@ -439,14 +439,14 @@ public final class SQLTable
      */
     private static void cacheSQLTable(final SQLTable _sqlTable)
     {
-        final Cache<UUID, SQLTable> cache4UUID = InfinispanCache.get().<UUID, SQLTable>getIgnoreReturnCache(
+        final Cache<UUID, SQLTable> cache4UUID = InfinispanCache.get().<UUID, SQLTable>getIgnReCache(
                         SQLTable.UUIDCACHE);
         cache4UUID.putIfAbsent(_sqlTable.getUUID(), _sqlTable);
 
-        final Cache<String, SQLTable> nameCache = InfinispanCache.get().<String, SQLTable>getIgnoreReturnCache(
+        final Cache<String, SQLTable> nameCache = InfinispanCache.get().<String, SQLTable>getIgnReCache(
                         SQLTable.NAMECACHE);
         nameCache.putIfAbsent(_sqlTable.getName(), _sqlTable);
-        final Cache<Long, SQLTable> idCache = InfinispanCache.get().<Long, SQLTable>getIgnoreReturnCache(
+        final Cache<Long, SQLTable> idCache = InfinispanCache.get().<Long, SQLTable>getIgnReCache(
                         SQLTable.IDCACHE);
         idCache.putIfAbsent(_sqlTable.getId(), _sqlTable);
     }

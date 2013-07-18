@@ -355,16 +355,13 @@ public class AttributeType
      */
     private static void cacheAttributeType(final AttributeType _role)
     {
-        final Cache<String, AttributeType> nameCache = InfinispanCache.get().<String, AttributeType>getCache(
-                        AttributeType.NAMECACHE);
-        if (!nameCache.containsKey(_role.getName())) {
-            nameCache.put(_role.getName(), _role);
-        }
-        final Cache<Long, AttributeType> idCache = InfinispanCache.get().<Long, AttributeType>getCache(
+        final Cache<String, AttributeType> nameCache = InfinispanCache.get()
+                        .<String, AttributeType>getIgnReCache(AttributeType.NAMECACHE);
+        nameCache.putIfAbsent(_role.getName(), _role);
+
+        final Cache<Long, AttributeType> idCache = InfinispanCache.get().<Long, AttributeType>getIgnReCache(
                         AttributeType.IDCACHE);
-        if (!idCache.containsKey(_role.getId())) {
-            idCache.put(_role.getId(), _role);
-        }
+        idCache.putIfAbsent(_role.getId(), _role);
     }
 
     /**

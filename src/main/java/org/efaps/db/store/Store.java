@@ -268,18 +268,14 @@ public final class Store
      */
     private static void cacheStore(final Store _store)
     {
-        final Cache<UUID, Store> cache4UUID = InfinispanCache.get().<UUID, Store>getCache(Store.UUIDCACHE);
-        if (!cache4UUID.containsKey(_store.getUUID())) {
-            cache4UUID.put(_store.getUUID(), _store);
-        }
-        final Cache<String, Store> nameCache = InfinispanCache.get().<String, Store>getCache(Store.NAMECACHE);
-        if (!nameCache.containsKey(_store.getName())) {
-            nameCache.put(_store.getName(), _store);
-        }
-        final Cache<Long, Store> idCache = InfinispanCache.get().<Long, Store>getCache(Store.IDCACHE);
-        if (!idCache.containsKey(_store.getId())) {
-            idCache.put(_store.getId(), _store);
-        }
+        final Cache<UUID, Store> cache4UUID = InfinispanCache.get().<UUID, Store>getIgnReCache(Store.UUIDCACHE);
+        cache4UUID.putIfAbsent(_store.getUUID(), _store);
+
+        final Cache<String, Store> nameCache = InfinispanCache.get().<String, Store>getIgnReCache(Store.NAMECACHE);
+        nameCache.putIfAbsent(_store.getName(), _store);
+
+        final Cache<Long, Store> idCache = InfinispanCache.get().<Long, Store>getIgnReCache(Store.IDCACHE);
+        idCache.putIfAbsent(_store.getId(), _store);
     }
 
     /**

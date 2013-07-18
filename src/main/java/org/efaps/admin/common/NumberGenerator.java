@@ -382,22 +382,17 @@ public final class NumberGenerator
      */
     private static void cacheNumberGenerator(final NumberGenerator _numberGenerator)
     {
-        final Cache<UUID, NumberGenerator> cache4UUID = InfinispanCache.get().<UUID, NumberGenerator>getCache(
+        final Cache<UUID, NumberGenerator> cache4UUID = InfinispanCache.get().<UUID, NumberGenerator>getIgnReCache(
                         NumberGenerator.UUIDCACHE);
-        if (!cache4UUID.containsKey(_numberGenerator.getUUID())) {
-            cache4UUID.put(_numberGenerator.getUUID(), _numberGenerator);
-        }
+        cache4UUID.putIfAbsent(_numberGenerator.getUUID(), _numberGenerator);
 
-        final Cache<String, NumberGenerator> nameCache = InfinispanCache.get().<String, NumberGenerator>getCache(
+        final Cache<String, NumberGenerator> nameCache = InfinispanCache.get().<String, NumberGenerator>getIgnReCache(
                         NumberGenerator.NAMECACHE);
-        if (!nameCache.containsKey(_numberGenerator.getName())) {
-            nameCache.put(_numberGenerator.getName(), _numberGenerator);
-        }
-        final Cache<Long, NumberGenerator> idCache = InfinispanCache.get().<Long, NumberGenerator>getCache(
+        nameCache.putIfAbsent(_numberGenerator.getName(), _numberGenerator);
+
+        final Cache<Long, NumberGenerator> idCache = InfinispanCache.get().<Long, NumberGenerator>getIgnReCache(
                         NumberGenerator.IDCACHE);
-        if (!idCache.containsKey(_numberGenerator.getId())) {
-            idCache.put(_numberGenerator.getId(), _numberGenerator);
-        }
+        idCache.putIfAbsent(_numberGenerator.getId(), _numberGenerator);
     }
 
     /**

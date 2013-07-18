@@ -171,10 +171,10 @@ public class Association
      */
     private static void cacheAssociation(final Association _association)
     {
-        final Cache<Long, Association> idCache = InfinispanCache.get().<Long, Association>getCache(Association.IDCACHE);
-        if (!idCache.containsKey(_association.getId())) {
-            idCache.put(_association.getId(), _association);
-        }
+        final Cache<Long, Association> idCache = InfinispanCache.get().<Long, Association>getIgnReCache(
+                        Association.IDCACHE);
+        idCache.putIfAbsent(_association.getId(), _association);
+
     }
 
     /**

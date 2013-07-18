@@ -1488,18 +1488,14 @@ public final class Person
      */
     private static void cachePerson(final Person _person)
     {
-        final Cache<String, Person> nameCache = InfinispanCache.get().<String, Person>getCache(Person.NAMECACHE);
-        if (!nameCache.containsKey(_person.getName())) {
-            nameCache.put(_person.getName(), _person);
-        }
-        final Cache<Long, Person> idCache = InfinispanCache.get().<Long, Person>getCache(Person.IDCACHE);
-        if (!idCache.containsKey(_person.getId())) {
-            idCache.put(_person.getId(), _person);
-        }
-        final Cache<UUID, Person> uuidCache = InfinispanCache.get().<UUID, Person>getCache(Person.UUIDCACHE);
-        if (_person.getUUID() != null && !nameCache.containsKey(_person.getUUID())) {
-            uuidCache.put(_person.getUUID(), _person);
-        }
+        final Cache<String, Person> nameCache = InfinispanCache.get().<String, Person>getIgnReCache(Person.NAMECACHE);
+        nameCache.putIfAbsent(_person.getName(), _person);
+
+        final Cache<Long, Person> idCache = InfinispanCache.get().<Long, Person>getIgnReCache(Person.IDCACHE);
+        idCache.putIfAbsent(_person.getId(), _person);
+
+        final Cache<UUID, Person> uuidCache = InfinispanCache.get().<UUID, Person>getIgnReCache(Person.UUIDCACHE);
+        uuidCache.putIfAbsent(_person.getUUID(), _person);
     }
 
 

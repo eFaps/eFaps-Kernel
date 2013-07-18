@@ -153,7 +153,7 @@ public final class InfinispanCache
      * @param <V> Value
      * @return an AdvancedCache from Infinispan with Ignore return values
      */
-    public <K, V> AdvancedCache<K, V> getIgnoreReturnCache(final String _cacheName)
+    public <K, V> AdvancedCache<K, V> getIgnReCache(final String _cacheName)
     {
         return this.container.<K, V>getCache(_cacheName).getAdvancedCache().withFlags(Flag.IGNORE_RETURN_VALUES);
     }

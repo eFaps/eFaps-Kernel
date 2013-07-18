@@ -675,23 +675,17 @@ public final class SystemConfiguration
      */
     private static void cacheSytemConfig(final SystemConfiguration _sysConfig)
     {
-        final Cache<UUID, SystemConfiguration> cache4UUID = InfinispanCache.get().<UUID, SystemConfiguration>getCache(
-                        SystemConfiguration.UUIDCACHE);
-        if (!cache4UUID.containsKey(_sysConfig.getUUID())) {
-            cache4UUID.put(_sysConfig.getUUID(), _sysConfig);
-        }
+        final Cache<UUID, SystemConfiguration> cache4UUID = InfinispanCache.get()
+                        .<UUID, SystemConfiguration>getIgnReCache(SystemConfiguration.UUIDCACHE);
+        cache4UUID.put(_sysConfig.getUUID(), _sysConfig);
 
         final Cache<String, SystemConfiguration> nameCache = InfinispanCache.get()
-                        .<String, SystemConfiguration>getCache(
-                                        SystemConfiguration.NAMECACHE);
-        if (!nameCache.containsKey(_sysConfig.getName())) {
-            nameCache.put(_sysConfig.getName(), _sysConfig);
-        }
-        final Cache<Long, SystemConfiguration> idCache = InfinispanCache.get().<Long, SystemConfiguration>getCache(
-                        SystemConfiguration.IDCACHE);
-        if (!idCache.containsKey(_sysConfig.getId())) {
-            idCache.put(_sysConfig.getId(), _sysConfig);
-        }
+                        .<String, SystemConfiguration>getIgnReCache(SystemConfiguration.NAMECACHE);
+        nameCache.put(_sysConfig.getName(), _sysConfig);
+
+        final Cache<Long, SystemConfiguration> idCache = InfinispanCache.get()
+                        .<Long, SystemConfiguration>getIgnReCache(SystemConfiguration.IDCACHE);
+        idCache.putIfAbsent(_sysConfig.getId(), _sysConfig);
     }
 
     /**

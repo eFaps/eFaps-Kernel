@@ -548,20 +548,17 @@ public final class AccessSet
      */
     private static void cacheAccessSet(final AccessSet _role)
     {
-        final Cache<UUID, AccessSet> cache4UUID = InfinispanCache.get().<UUID, AccessSet>getCache(AccessSet.UUIDCACHE);
-        if (!cache4UUID.containsKey(_role.getUUID())) {
-            cache4UUID.putAsync(_role.getUUID(), _role);
-        }
+        final Cache<UUID, AccessSet> cache4UUID = InfinispanCache.get().<UUID, AccessSet>getIgnReCache(
+                        AccessSet.UUIDCACHE);
+        cache4UUID.putIfAbsent(_role.getUUID(), _role);
 
-        final Cache<String, AccessSet> nameCache = InfinispanCache.get().<String, AccessSet>getCache(
+        final Cache<String, AccessSet> nameCache = InfinispanCache.get().<String, AccessSet>getIgnReCache(
                         AccessSet.NAMECACHE);
-        if (!nameCache.containsKey(_role.getName())) {
-            nameCache.putAsync(_role.getName(), _role);
-        }
-        final Cache<Long, AccessSet> idCache = InfinispanCache.get().<Long, AccessSet>getCache(AccessSet.IDCACHE);
-        if (!idCache.containsKey(_role.getId())) {
-            idCache.putAsync(_role.getId(), _role);
-        }
+        nameCache.putIfAbsent(_role.getName(), _role);
+
+        final Cache<Long, AccessSet> idCache = InfinispanCache.get().<Long, AccessSet>getIgnReCache(
+                        AccessSet.IDCACHE);
+        idCache.putIfAbsent(_role.getId(), _role);
     }
 
     /**
