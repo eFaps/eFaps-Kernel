@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -170,7 +171,7 @@ public final class AccessSet
      *
      * @see #getDataModelTypes
      */
-    private final Set<Type> dataModelTypes = new HashSet<Type>();
+    private final Set<Long> dataModelTypes = new HashSet<Long>();
 
     /**
      * All related Status of this access set are referenced in this instance
@@ -214,8 +215,25 @@ public final class AccessSet
      *
      * @return the value of the instance variable {@link #dataModelTypes}.
      * @see #dataModelTypes
+     * @throws CacheReloadException on error
      */
     public Set<Type> getDataModelTypes()
+        throws CacheReloadException
+    {
+        final Set<Type> ret = new HashSet<Type>();
+        for (final Long id : this.dataModelTypes) {
+            ret.add(Type.get(id));
+        }
+        return Collections.unmodifiableSet(ret);
+    }
+
+    /**
+     * This is the getter method for instance variable {@link #dataModelTypes}.
+     *
+     * @return the value of the instance variable {@link #dataModelTypes}.
+     * @see #dataModelTypes
+     */
+    public Set<Long> getDataModelTypesIds()
     {
         return this.dataModelTypes;
     }
@@ -328,7 +346,7 @@ public final class AccessSet
                          "read link from AccessSet '{}' (id = {}, uuid = {}) to DataModelType '{}' (id = {} uuid = {})",
                                     getName(), getId(), getUUID(), dataModelType.getName(), dataModelType.getId(),
                                     dataModelType.getUUID());
-                    getDataModelTypes().add(dataModelType);
+                    this.dataModelTypes.add(dataModelType.getId());
                     dataModelType.addAccessSet(this);
                 }
             }

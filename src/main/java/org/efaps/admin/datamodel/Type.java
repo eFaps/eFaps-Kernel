@@ -1322,6 +1322,7 @@ public class Type
      */
     protected static void cacheType(final Type _type)
     {
+        _type.setUndirty();
         final Cache<UUID, Type> cache4UUID = InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
         cache4UUID.put(_type.getUUID(), _type);
 
@@ -1330,7 +1331,7 @@ public class Type
 
         final Cache<Long, Type> idCache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
         idCache.put(_type.getId(), _type);
-        _type.setUndirty();
+
     }
 
     /**
