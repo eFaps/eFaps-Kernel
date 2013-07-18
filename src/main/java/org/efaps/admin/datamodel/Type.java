@@ -1233,12 +1233,13 @@ public class Type
         if (!cache.containsKey(_id)) {
             Type.getTypeFromDB(Type.SQL_ID, _id);
         }
-        final Type ret = cache.get(_id);
+        Type ret = cache.get(_id);
         if (ret.isDirty()) {
             Type.LOG.debug("Recaching dirty Type for id: {}", ret);
             Type.cacheType(ret);
+            ret = cache.get(_id);
         }
-        return cache.get(_id);
+        return ret;
     }
 
     /**
@@ -1256,12 +1257,13 @@ public class Type
         if (!cache.containsKey(_name)) {
             Type.getTypeFromDB(Type.SQL_NAME, _name);
         }
-        final Type ret = cache.get(_name);
-        if (ret.isDirty()) {
+        Type ret = cache.get(_name);
+        if (ret != null && ret.isDirty()) {
             Type.LOG.debug("Recaching dirty Type for name: {}", ret);
             Type.cacheType(ret);
+            ret = cache.get(_name);
         }
-        return cache.get(_name);
+        return ret;
     }
 
     /**
@@ -1279,12 +1281,13 @@ public class Type
         if (!cache.containsKey(_uuid)) {
             Type.getTypeFromDB(Type.SQL_UUID, _uuid.toString());
         }
-        final Type ret = cache.get(_uuid);
+        Type ret = cache.get(_uuid);
         if (ret.isDirty()) {
             Type.LOG.debug("Recaching dirty Type for uuid: {}", ret);
             Type.cacheType(ret);
+            ret = cache.get(_uuid);
         }
-        return cache.get(_uuid);
+        return ret;
     }
 
     /**
