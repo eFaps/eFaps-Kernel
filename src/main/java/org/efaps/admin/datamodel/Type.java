@@ -1235,7 +1235,7 @@ public class Type
         }
         final Type ret = cache.get(_id);
         if (ret.isDirty()) {
-            Type.LOG.info("Recaching dirty Type for id: {}", ret);
+            Type.LOG.debug("Recaching dirty Type for id: {}", ret);
             Type.cacheType(ret);
         }
         return cache.get(_id);
@@ -1258,7 +1258,7 @@ public class Type
         }
         final Type ret = cache.get(_name);
         if (ret.isDirty()) {
-            Type.LOG.info("Recaching dirty Type for name: {}", ret);
+            Type.LOG.debug("Recaching dirty Type for name: {}", ret);
             Type.cacheType(ret);
         }
         return cache.get(_name);
@@ -1281,7 +1281,7 @@ public class Type
         }
         final Type ret = cache.get(_uuid);
         if (ret.isDirty()) {
-            Type.LOG.info("Recaching dirty Type for uuid: {}", ret);
+            Type.LOG.debug("Recaching dirty Type for uuid: {}", ret);
             Type.cacheType(ret);
         }
         return cache.get(_uuid);
