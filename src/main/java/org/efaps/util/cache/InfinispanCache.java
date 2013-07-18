@@ -27,7 +27,9 @@ import javax.naming.NamingException;
 import javax.xml.stream.FactoryConfigurationError;
 
 import org.efaps.init.INamingBinds;
+import org.infinispan.AdvancedCache;
 import org.infinispan.Cache;
+import org.infinispan.context.Flag;
 import org.infinispan.lifecycle.ComponentStatus;
 import org.infinispan.manager.CacheContainer;
 import org.infinispan.manager.DefaultCacheManager;
@@ -140,6 +142,20 @@ public final class InfinispanCache
     public <K, V> Cache<K, V> getCache(final String _cacheName)
     {
         return this.container.getCache(_cacheName);
+    }
+
+    /**
+     * An advanced cache that does not return the value of the previous value in
+     * case of replacement.
+     *
+     * @param _cacheName cache wanted
+     * @param <K> Key
+     * @param <V> Value
+     * @return an AdvancedCache from Infinispan with Ignore return values
+     */
+    public <K, V> AdvancedCache<K, V> getIgnoreReturnCache(final String _cacheName)
+    {
+        return this.container.<K, V>getCache(_cacheName).getAdvancedCache().withFlags(Flag.IGNORE_RETURN_VALUES);
     }
 
     /**

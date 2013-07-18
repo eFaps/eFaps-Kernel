@@ -259,13 +259,6 @@ public class Type
     private SQLTable mainTable = null;
 
     /**
-     * All attributes which are used as links are stored in this map.
-     *
-     * @see #getLinks
-     */
-    private final Map<String, Attribute> links = new HashMap<String, Attribute>();
-
-    /**
      * All access sets  ids which are assigned to this type are store in this
      * instance variable. If <code>null</code> the variable was not evaluated yet;
      *
@@ -440,68 +433,54 @@ public class Type
     }
 
     /**
-     * Add an attribute to this type and all child types of this type.
-     *
-     * @param _attribute attribute to add
+     * Add attributes to this type and all child types of this type.
+     * Recursive method.
      * @param _inherited is the attribute inherited or form this type
+     * @param _attributes attributes to add
      * @throws CacheReloadException on error
      */
-    protected void addAttribute(final Attribute _attribute,
-                                final boolean _inherited)
+    protected void addAttributes(final boolean _inherited,
+                                 final Attribute... _attributes)
         throws CacheReloadException
     {
-        if (!getAttributes().containsKey(_attribute.getName())) {
-            Type.LOG.trace("adding Attribute:'{}' to type: '{}'", _attribute.getName(), getName());
-            _attribute.setParent(getId());
-            // evaluate for type attribute
-            if (_attribute.getAttributeType().getClassRepr().equals(TypeType.class)) {
-                this.typeAttributeName = _attribute.getName();
-            } else if (_attribute.getAttributeType().getClassRepr().equals(StatusType.class) && !_inherited) {
-                // evaluate for status, an inherited attribute will not
-                // overwrite the original attribute
-                this.statusAttributeName = _attribute.getName();
-            } else if (_attribute.getAttributeType().getClassRepr().equals(CompanyLinkType.class)
-                            || _attribute.getAttributeType().getClassRepr().equals(ConsortiumLinkType.class)) {
-                // evaluate for company
-                this.companyAttributeName = _attribute.getName();
-            } else if (_attribute.getAttributeType().getClassRepr().equals(GroupLinkType.class)) {
-                // evaluate for company
-                this.groupAttributeName = _attribute.getName();
-            }
-
-            getAttributes().put(_attribute.getName(), _attribute);
-            if (_attribute.getTable() != null) {
-                getTables().add(_attribute.getTable());
-                _attribute.getTable().add(this);
-                if (getMainTable() == null) {
-                    setMainTable(_attribute.getTable());
+        final List<Attribute> copies = new ArrayList<Attribute>();
+        for (final Attribute attribute : _attributes) {
+            if (!this.attributes.containsKey(attribute.getName())) {
+                Type.LOG.trace("adding Attribute:'{}' to type: '{}'", attribute.getName(), getName());
+                // the parent must be set only on copies, therfor only on inherit
+                if (_inherited) {
+                    attribute.setParent(getId());
                 }
+                // evaluate for type attribute
+                if (attribute.getAttributeType().getClassRepr().equals(TypeType.class)) {
+                    this.typeAttributeName = attribute.getName();
+                } else if (attribute.getAttributeType().getClassRepr().equals(StatusType.class) && !_inherited) {
+                    // evaluate for status, an inherited attribute will not
+                    // overwrite the original attribute
+                    this.statusAttributeName = attribute.getName();
+                } else if (attribute.getAttributeType().getClassRepr().equals(CompanyLinkType.class)
+                                || attribute.getAttributeType().getClassRepr().equals(ConsortiumLinkType.class)) {
+                    // evaluate for company
+                    this.companyAttributeName = attribute.getName();
+                } else if (attribute.getAttributeType().getClassRepr().equals(GroupLinkType.class)) {
+                    // evaluate for group
+                    this.groupAttributeName = attribute.getName();
+                }
+                this.attributes.put(attribute.getName(), attribute);
+                if (attribute.getTable() != null) {
+                    this.tables.add(attribute.getTable());
+                    attribute.getTable().addType(getId());
+                    if (getMainTable() == null) {
+                        setMainTable(attribute.getTable());
+                    }
+                }
+                copies.add(attribute.copy());
+                setDirty();
             }
-            setDirty();
         }
-        for (final Type child : getChildTypes()) {
-            child.addAttribute(_attribute.copy(), true);
-        }
-    }
-
-    /**
-     * Adds link from an attribute to this type. The link is also registered
-     * under the name of all child types of the attribute.
-     *
-     * @param _attr attribute with the link to this type
-     * @throws CacheReloadException on error
-     */
-    protected void addLink(final Attribute _attr)
-        throws CacheReloadException
-    {
-        setDirty();
-        getLinks().put(_attr.getParent().getName() + "\\" + _attr.getName(), _attr);
-        for (final Type type : _attr.getParent().getChildTypes()) {
-            getLinks().put(type.getName() + "\\" + _attr.getName(), _attr);
-        }
-        for (final Type child : getChildTypes()) {
-            if (child.getParentTypeId() == getId()) {
-                child.addLink(_attr);
+        if (!copies.isEmpty()) {
+            for (final Type child : getChildTypes()) {
+                child.addAttributes(true, copies.toArray(new Attribute[copies.size()]));
             }
         }
     }
@@ -812,14 +791,17 @@ public class Type
                                 final boolean _inherit)
         throws CacheReloadException
     {
-        _childType.setDirty();
+        final List<Attribute> copies = new ArrayList<Attribute>();
         for (final Attribute attribute : this.attributes.values()) {
-            _childType.addAttribute(attribute.copy(), true);
+            copies.add(attribute.copy());
         }
-        this.childTypes.add(_childType.getId());
+        _childType.addAttributes(true, copies.toArray(new Attribute[copies.size()]));
+        if (!this.childTypes.contains(_childType.getId())) {
+            this.childTypes.add(_childType.getId());
+            setDirty();
+        }
         Type parent = this;
         while (parent != null) {
-            parent.setDirty();
             if (_inherit) {
                 parent.addChildType(_childType, false);
                 for (final Type child : _childType.getChildTypes()) {
@@ -992,17 +974,6 @@ public class Type
             table = table.getMainTable();
         }
         this.mainTable = table;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #links}.
-     *
-     * @return value of instance variable {@link #links}
-     * @see #links
-     */
-    public Map<String, Attribute> getLinks()
-    {
-        return this.links;
     }
 
     /**
@@ -1180,7 +1151,6 @@ public class Type
                         .append("attributes", this.attributes.size())
                         .append("children", this.childTypes.size())
                         .append("abstract", this.abstractBool)
-                        .append("links", this.links.size())
                         .append("accessSets", this.accessSets.size())
                         .append("companyDependend", isCompanyDepended())
                         .append("groupDependend", isGroupDepended())
@@ -1323,15 +1293,14 @@ public class Type
     protected static void cacheType(final Type _type)
     {
         _type.setUndirty();
-        final Cache<UUID, Type> cache4UUID = InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
+        final Cache<UUID, Type> cache4UUID = InfinispanCache.get().<UUID, Type>getIgnoreReturnCache(Type.UUIDCACHE);
         cache4UUID.put(_type.getUUID(), _type);
 
-        final Cache<String, Type> nameCache = InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE);
+        final Cache<String, Type> nameCache = InfinispanCache.get().<String, Type>getIgnoreReturnCache(Type.NAMECACHE);
         nameCache.put(_type.getName(), _type);
 
-        final Cache<Long, Type> idCache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
+        final Cache<Long, Type> idCache = InfinispanCache.get().<Long, Type>getIgnoreReturnCache(Type.IDCACHE);
         idCache.put(_type.getId(), _type);
-
     }
 
     /**
@@ -1498,15 +1467,12 @@ public class Type
                     }
                     ret.setDirty();
                 }
-                final Set<Type> linktypes = Attribute.add4Type(ret);
+                Attribute.add4Type(ret);
                 ret.readFromDB4Links();
                 ret.readFromDB4Properties();
 
                 // needed due to cluster serialization that does not update automatically
                 Type.cacheTypesByHierachy(ret);
-                for (final Type linktype : linktypes) {
-                    Type.cacheTypesByHierachy(linktype);
-                }
                 Type.LOG.trace("ended reading type '{}'", ret.getName());
             }
         } catch (final EFapsException e) {

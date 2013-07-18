@@ -550,17 +550,17 @@ public final class AccessSet
     {
         final Cache<UUID, AccessSet> cache4UUID = InfinispanCache.get().<UUID, AccessSet>getCache(AccessSet.UUIDCACHE);
         if (!cache4UUID.containsKey(_role.getUUID())) {
-            cache4UUID.put(_role.getUUID(), _role);
+            cache4UUID.putAsync(_role.getUUID(), _role);
         }
 
         final Cache<String, AccessSet> nameCache = InfinispanCache.get().<String, AccessSet>getCache(
                         AccessSet.NAMECACHE);
         if (!nameCache.containsKey(_role.getName())) {
-            nameCache.put(_role.getName(), _role);
+            nameCache.putAsync(_role.getName(), _role);
         }
         final Cache<Long, AccessSet> idCache = InfinispanCache.get().<Long, AccessSet>getCache(AccessSet.IDCACHE);
         if (!idCache.containsKey(_role.getId())) {
-            idCache.put(_role.getId(), _role);
+            idCache.putAsync(_role.getId(), _role);
         }
     }
 

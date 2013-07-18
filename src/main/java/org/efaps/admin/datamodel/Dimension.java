@@ -404,20 +404,17 @@ public class Dimension
      */
     private static void cacheDimension(final Dimension _role)
     {
-        final Cache<UUID, Dimension> cache4UUID = InfinispanCache.get().<UUID, Dimension>getCache(Dimension.UUIDCACHE);
-        if (!cache4UUID.containsKey(_role.getUUID())) {
-            cache4UUID.put(_role.getUUID(), _role);
-        }
+        final Cache<UUID, Dimension> cache4UUID = InfinispanCache.get().<UUID, Dimension>getIgnoreReturnCache(
+                        Dimension.UUIDCACHE);
+        cache4UUID.putIfAbsent(_role.getUUID(), _role);
 
-        final Cache<String, Dimension> nameCache = InfinispanCache.get().<String, Dimension>getCache(
+        final Cache<String, Dimension> nameCache = InfinispanCache.get().<String, Dimension>getIgnoreReturnCache(
                         Dimension.NAMECACHE);
-        if (!nameCache.containsKey(_role.getName())) {
-            nameCache.put(_role.getName(), _role);
-        }
-        final Cache<Long, Dimension> idCache = InfinispanCache.get().<Long, Dimension>getCache(Dimension.IDCACHE);
-        if (!idCache.containsKey(_role.getId())) {
-            idCache.put(_role.getId(), _role);
-        }
+        nameCache.putIfAbsent(_role.getName(), _role);
+
+        final Cache<Long, Dimension> idCache = InfinispanCache.get().<Long, Dimension>getIgnoreReturnCache(
+                        Dimension.IDCACHE);
+        idCache.putIfAbsent(_role.getId(), _role);
     }
 
     /**

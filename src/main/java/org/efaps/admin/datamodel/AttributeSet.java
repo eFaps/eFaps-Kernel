@@ -91,11 +91,8 @@ public class AttributeSet
         final Attribute attr = new Attribute(_id, _name, _sqlColNames, SQLTable.get(_tableId), AttributeType
                         .get("Link"), null, null);
         attr.setParent(getId());
-        addAttribute(attr, false);
-
+        addAttributes(false, attr);
         attr.setLink(_type.getId());
-        _type.addLink(attr);
-
         if (_typeLinkId > 0) {
             final Type parent = Type.get(_typeLinkId);
             setParentTypeID(_typeLinkId);
@@ -141,15 +138,17 @@ public class AttributeSet
      * {@inheritDoc}
      */
     @Override
-    protected void addAttribute(final Attribute _attribute,
-                                final boolean _inherited)
+    protected void addAttributes(final boolean _inherited,
+                                 final Attribute... _attributes)
         throws CacheReloadException
     {
-        super.addAttribute(_attribute, _inherited);
-        // in the superconstructur this method is called, so the set might not
+        super.addAttributes(_inherited, _attributes);
+        // in the superconstructur this method is called, so the <code>Set<code> might not
         // be initialised
         if (this.setAttributes != null) {
-            this.setAttributes.add(_attribute.getName());
+            for (final Attribute attribute : _attributes) {
+                this.setAttributes.add(attribute.getName());
+            }
         }
     }
 

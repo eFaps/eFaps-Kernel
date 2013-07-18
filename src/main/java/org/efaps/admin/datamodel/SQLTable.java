@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -168,7 +169,7 @@ public final class SQLTable
      *
      * @see #getTypes()
      */
-    private final Set<Type> types = new HashSet<Type>();
+    private final Set<Long> types = new HashSet<Long>();
 
     /**
      * The instance variables is set to <i>true</i> if this table is only a read
@@ -215,9 +216,12 @@ public final class SQLTable
      * @param _type TYpe to add
      * @see #types
      */
-    protected void add(final Type _type)
+    protected void addType(final Long _typeId)
     {
-        this.types.add(_type);
+        if (!this.types.contains(_typeId)) {
+            this.types.add(_typeId);
+            setDirty();
+        }
     }
 
     /**
@@ -298,10 +302,16 @@ public final class SQLTable
      *
      * @return value of instance variable {@link #types}
      * @see #types
+     * @throws CacheReloadException on error
      */
     public Set<Type> getTypes()
+        throws CacheReloadException
     {
-        return this.types;
+        final Set<Type> ret = new HashSet<Type>();
+        for (final Long id : this.types) {
+            ret.add(Type.get(id));
+        }
+        return Collections.unmodifiableSet(ret);
     }
 
     /**
@@ -429,19 +439,16 @@ public final class SQLTable
      */
     private static void cacheSQLTable(final SQLTable _sqlTable)
     {
-        final Cache<UUID, SQLTable> cache4UUID = InfinispanCache.get().<UUID, SQLTable>getCache(SQLTable.UUIDCACHE);
-        if (!cache4UUID.containsKey(_sqlTable.getUUID())) {
-            cache4UUID.put(_sqlTable.getUUID(), _sqlTable);
-        }
+        final Cache<UUID, SQLTable> cache4UUID = InfinispanCache.get().<UUID, SQLTable>getIgnoreReturnCache(
+                        SQLTable.UUIDCACHE);
+        cache4UUID.putIfAbsent(_sqlTable.getUUID(), _sqlTable);
 
-        final Cache<String, SQLTable> nameCache = InfinispanCache.get().<String, SQLTable>getCache(SQLTable.NAMECACHE);
-        if (!nameCache.containsKey(_sqlTable.getName())) {
-            nameCache.put(_sqlTable.getName(), _sqlTable);
-        }
-        final Cache<Long, SQLTable> idCache = InfinispanCache.get().<Long, SQLTable>getCache(SQLTable.IDCACHE);
-        if (!idCache.containsKey(_sqlTable.getId())) {
-            idCache.put(_sqlTable.getId(), _sqlTable);
-        }
+        final Cache<String, SQLTable> nameCache = InfinispanCache.get().<String, SQLTable>getIgnoreReturnCache(
+                        SQLTable.NAMECACHE);
+        nameCache.putIfAbsent(_sqlTable.getName(), _sqlTable);
+        final Cache<Long, SQLTable> idCache = InfinispanCache.get().<Long, SQLTable>getIgnoreReturnCache(
+                        SQLTable.IDCACHE);
+        idCache.putIfAbsent(_sqlTable.getId(), _sqlTable);
     }
 
     /**

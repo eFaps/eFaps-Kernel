@@ -25,11 +25,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -725,15 +723,13 @@ public class Attribute
      */
     private static void cacheAttribute(final Attribute _attr)
     {
-        final Cache<String, Attribute> nameCache = InfinispanCache.get().<String, Attribute>getCache(
+        final Cache<String, Attribute> nameCache = InfinispanCache.get().<String, Attribute>getIgnoreReturnCache(
                         Attribute.NAMECACHE);
-        if (!nameCache.containsKey(_attr.getKey())) {
-            nameCache.put(_attr.getKey(), _attr);
-        }
-        final Cache<Long, Attribute> idCache = InfinispanCache.get().<Long, Attribute>getCache(Attribute.IDCACHE);
-        if (!idCache.containsKey(_attr.getId())) {
-            idCache.put(_attr.getId(), _attr);
-        }
+        nameCache.putIfAbsent(_attr.getKey(), _attr);
+
+        final Cache<Long, Attribute> idCache = InfinispanCache.get().<Long, Attribute>getIgnoreReturnCache(
+                        Attribute.IDCACHE);
+        idCache.putIfAbsent(_attr.getId(), _attr);
     }
 
     /**
@@ -817,10 +813,9 @@ public class Attribute
      * @param _type Type the attributes are wanted for
      * @throws EFapsException on error
      */
-    protected static Set<Type> add4Type(final Type _type)
+    protected static void add4Type(final Type _type)
         throws EFapsException
     {
-        final Set<Type> ret = new HashSet<Type>();
         ConnectionResource con = null;
         try {
             con = Context.getThreadContext().getConnectionResource();
@@ -854,7 +849,7 @@ public class Attribute
 
             final Map<Long, AttributeSet> id2Set = new HashMap<Long, AttributeSet>();
             final Map<Attribute, Long> attribute2setId = new HashMap<Attribute, Long>();
-
+            final List<Attribute> attributes = new ArrayList<Attribute>();
             for (final Object[] row : values) {
                 final long id = (Long) row[0];
                 final String name = (String) row[1];
@@ -886,8 +881,6 @@ public class Attribute
                                     || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_STATUS.getUuid())) {
                         final Type linkType = Type.get(typeLinkId);
                         attr.setLink(linkType.getId());
-                        linkType.addLink(attr);
-                        ret.add(linkType);
                         // in case of a PersonLink, CreatorLink or ModifierLink a link to Admin_User_Person
                         // must be set
                     } else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_CREATOR_LINK.getUuid())
@@ -895,22 +888,17 @@ public class Attribute
                                     || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_PERSON_LINK.getUuid())) {
                         final Type linkType = CIAdminUser.Person.getType();
                         attr.setLink(linkType.getId());
-                        linkType.addLink(attr);
-                        ret.add(linkType);
                         // in case of a GroupLink, a link to Admin_User_Group must be set
                     }   else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_GROUP_LINK.getUuid())) {
                         final Type linkType = CIAdminUser.Group.getType();
                         attr.setLink(linkType.getId());
-                        linkType.addLink(attr);
-                        ret.add(linkType);
                     }
                     if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSetAttribute.uuid)) {
                         attribute2setId.put(attr, parentSetId);
                     } else {
-                        _type.addAttribute(attr, false);
+                        attributes.add(attr);
                     }
                     attr.readFromDB4Properties();
-                    // needed due to cluster serialization that does not update automatically
                     Attribute.cacheAttribute(attr);
                 }
             }
@@ -918,12 +906,12 @@ public class Attribute
             for (final Entry<Attribute, Long> entry : attribute2setId.entrySet()) {
                 final AttributeSet parentset = id2Set.get(entry.getValue());
                 final Attribute childAttr = entry.getKey();
-                parentset.addAttribute(childAttr, false);
+                parentset.addAttributes(false, childAttr);
                 childAttr.setParentSet(parentset);
                 // needed due to cluster serialization that does not update automatically
                 Attribute.cacheAttribute(childAttr);
             }
-            return ret;
+            _type.addAttributes(false, attributes.toArray(new Attribute[attributes.size()]));
         } catch (final SQLException e) {
             throw new CacheReloadException("Cannot read attributes.", e);
         } finally {
