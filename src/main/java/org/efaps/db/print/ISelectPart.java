@@ -50,9 +50,11 @@ public interface ISelectPart
 
     /**
      * Method to get the Type the part belongs to.
+     *
      * @return type
      */
     Type getType();
+
 
     /**
      * Add an Object.

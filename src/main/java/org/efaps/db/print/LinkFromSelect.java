@@ -249,10 +249,13 @@ public class LinkFromSelect
 
     /**
      * Recursive method to get all child types for a type.
+     *
      * @param _parent parent type
      * @return list of all child types
+     * @throws CacheReloadException on error
      */
     private List<Type> getAllChildTypes(final Type _parent)
+        throws CacheReloadException
     {
         final List<Type> ret = new ArrayList<Type>();
         for (final Type child : _parent.getChildTypes()) {

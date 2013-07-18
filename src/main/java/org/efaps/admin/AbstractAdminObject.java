@@ -120,6 +120,13 @@ public abstract class AbstractAdminObject
      */
     private boolean eventChecked = false;
 
+
+    /**
+     * Is this Admin Object dirty, meaning was it altered after first initialization and it might be necessary to cadhe it again.
+     */
+    private boolean dirty = false;
+
+
     /**
      * Constructor to set instance variables {@link #id}, {@link #uuid} and
      * {@link #name} of this administrational object.
@@ -155,6 +162,7 @@ public abstract class AbstractAdminObject
                                    final String _toName)
         throws EFapsException
     {
+        setDirty();
     }
 
     /**
@@ -171,6 +179,7 @@ public abstract class AbstractAdminObject
         throws CacheReloadException
     {
         getProperties().put(_name, _value);
+        setDirty();
     }
 
     /**
@@ -191,9 +200,11 @@ public abstract class AbstractAdminObject
      * @param _eventtype Eventtype class name to add
      * @param _eventdef EventDefinition to add
      * @see #events
+     * throws CacheReloadException on error
      */
     public void addEvent(final EventType _eventtype,
                          final EventDefinition _eventdef)
+        throws CacheReloadException
     {
         List<EventDefinition> evenList = this.events.get(_eventtype);
         if (evenList == null) {
@@ -216,6 +227,7 @@ public abstract class AbstractAdminObject
                 }
             });
         }
+        setDirty();
     }
 
     /**
@@ -410,7 +422,6 @@ public abstract class AbstractAdminObject
                     AbstractAdminObject.LOG.debug("     ID: {}, name: {}", row[1], row[3]);
                 }
             }
-
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read db links for " + "'" + getName() + "'", e);
             // CHECKSTYLE:OFF
@@ -486,6 +497,32 @@ public abstract class AbstractAdminObject
         return this.events;
     }
 
+
+    /**
+     * Getter method for the instance variable {@link #dirty}.
+     *
+     * @return value of instance variable {@link #dirty}
+     */
+    public boolean isDirty()
+    {
+        return this.dirty;
+    }
+
+    /**
+     * Declare Object as dirty.
+     */
+    protected void setDirty()
+    {
+        this.dirty = true;
+    }
+
+    /**
+     * Declare Object as undirty.
+     */
+    protected void setUndirty()
+    {
+        this.dirty = false;
+    }
     /**
      * The method overrides the original method 'toString' and returns the name
      * of the user interface object.

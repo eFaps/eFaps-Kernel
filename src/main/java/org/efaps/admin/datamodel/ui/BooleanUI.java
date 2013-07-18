@@ -177,8 +177,8 @@ public class BooleanUI
     {
         String ret;
 
-        if (DBProperties.hasProperty(_attribute.getParent().getName() + "/" + _attribute.getName() + ".false")) {
-            ret = DBProperties.getProperty(_attribute.getParent().getName() + "/" + _attribute.getName() + ".false");
+        if (DBProperties.hasProperty(_attribute.getKey() + ".false")) {
+            ret = DBProperties.getProperty(_attribute.getKey() + ".false");
         } else {
             ret = "FALSE";
         }
@@ -194,8 +194,8 @@ public class BooleanUI
     private String getTrue(final Attribute _attribute)
     {
         String ret;
-        if (DBProperties.hasProperty(_attribute.getParent().getName() + "/" + _attribute.getName() + ".true")) {
-            ret = DBProperties.getProperty(_attribute.getParent().getName() + "/" + _attribute.getName() + ".true");
+        if (DBProperties.hasProperty(_attribute.getKey() + ".true")) {
+            ret = DBProperties.getProperty(_attribute.getKey() + ".true");
         } else {
             ret = "TRUE";
         }

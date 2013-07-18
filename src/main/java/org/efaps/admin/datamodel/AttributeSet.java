@@ -90,16 +90,16 @@ public class AttributeSet
 
         final Attribute attr = new Attribute(_id, _name, _sqlColNames, SQLTable.get(_tableId), AttributeType
                         .get("Link"), null, null);
-        attr.setParent(this);
+        attr.setParent(getId());
         addAttribute(attr, false);
 
-        attr.setLink(_type);
+        attr.setLink(_type.getId());
         _type.addLink(attr);
 
         if (_typeLinkId > 0) {
             final Type parent = Type.get(_typeLinkId);
             setParentTypeID(_typeLinkId);
-            parent.addChildType(this);
+            parent.addChildType(this, true);
             getAttributes().putAll(parent.getAttributes());
         }
         // needed due to cluster serialization that does not update automatically
@@ -143,6 +143,7 @@ public class AttributeSet
     @Override
     protected void addAttribute(final Attribute _attribute,
                                 final boolean _inherited)
+        throws CacheReloadException
     {
         super.addAttribute(_attribute, _inherited);
         // in the superconstructur this method is called, so the set might not

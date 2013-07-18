@@ -166,6 +166,7 @@ public class Classification
     protected void setParentClassification(final Classification _parentClassification)
     {
         this.parent = _parentClassification;
+        setDirty();
     }
 
     /**
@@ -343,9 +344,8 @@ public class Classification
             this.classifyRelation = Type.get(_toId);
         } else if (_linkType.isKindOf(CIAdminDataModel.TypeClassifyCompany.getType())) {
             this.companies.add(Company.get(_toId));
-        } else {
-            super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
+        super.setLinkProperty(_linkType, _toId, _toType, _toName);
     }
 
     /**
@@ -369,9 +369,8 @@ public class Classification
             this.relTypeAttributeName = _value;
         } else if (_name.equals(Classification.Keys.MULTI.value)) {
             this.multipleSelect = !"FALSE".equalsIgnoreCase(_value);
-        } else {
-            super.setProperty(_name, _value);
         }
+        super.setProperty(_name, _value);
     }
 
     /**

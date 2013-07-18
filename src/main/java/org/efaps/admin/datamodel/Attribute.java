@@ -25,9 +25,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -163,20 +165,20 @@ public class Attribute
     private final SQLTable sqlTable;
 
     /**
-     * Instance variable for the link to another type.
+     * Instance variable for the link to another type  id..
      *
      * @see #getLink
      * @see #setLink
      */
-    private Type link = null;
+    private Long link = null;
 
     /**
-     * Instance variable for the parent type.
+     * Instance variable for the parent type id.
      *
      * @see #getParent
      * @see #setParent
      */
-    private Type parent = null;
+    private Long parent = null;
 
     /**
      * This instance variable stores the sql column name.
@@ -234,6 +236,11 @@ public class Attribute
      * a fixed position of each attribute. (Needed e.g for printquery)
      */
     private Map<String, Attribute> dependencies;
+
+    /**
+     * Key of this Attribute. Consist of name of the Parent Type and name of the Attribute itself
+     */
+    private String key;
 
     /**
      * This is the constructor for class {@link Attribute}. Every instance of
@@ -333,11 +340,7 @@ public class Attribute
      */
     public boolean hasLink()
     {
-        boolean ret = false;
-        if (getLink() != null) {
-            ret = true;
-        }
-        return ret;
+        return this.link != null;
     }
 
     /**
@@ -350,7 +353,7 @@ public class Attribute
         final Attribute ret = new Attribute(getId(), getName(), this.sqlTable, this.attributeType, this.defaultValue,
                         this.dimensionUUID, this.required, this.size, this.scale);
         ret.getSqlColNames().addAll(getSqlColNames());
-        ret.setLink(getLink());
+        ret.setLink(this.link);
         ret.getProperties().putAll(getProperties());
         return ret;
     }
@@ -361,9 +364,10 @@ public class Attribute
     @Override
     public void addEvent(final EventType _eventtype,
                          final EventDefinition _eventdef)
+        throws CacheReloadException
     {
         super.addEvent(_eventtype, _eventdef);
-        for (final Type child : this.parent.getChildTypes()) {
+        for (final Type child : getParent().getChildTypes()) {
             final Attribute childAttr = child.getAttribute(getName());
             if (childAttr != null) {
                 childAttr.addEvent(_eventtype, _eventdef);
@@ -385,11 +389,11 @@ public class Attribute
     /**
      * This is the setter method for instance variable {@link #link}.
      *
-     * @param _link new instance of class {@link Type} to set for link
+     * @param _link new instance of class {@link Long} to set for link
      * @see #link
      * @see #getLink
      */
-    protected void setLink(final Type _link)
+    protected void setLink(final Long _link)
     {
         this.link = _link;
     }
@@ -398,20 +402,22 @@ public class Attribute
      * This is the getter method for instance variable {@link #link}.
      *
      * @return value of instance variable {@link #link}
-     * @see #link
-     * @see #setLink
+     * @throws CacheReloadException on erorr
      */
     public Type getLink()
+        throws CacheReloadException
     {
-        return this.link;
+        return Type.get(this.link);
     }
 
     /**
      * Getter method for the instance variable {@link #dependencies}.
      *
      * @return value of instance variable {@link #dependencies}
+     * @throws CacheReloadException on error
      */
     public Map<String, Attribute> getDependencies()
+        throws CacheReloadException
     {
         if (this.dependencies == null) {
             this.dependencies = new TreeMap<String, Attribute>();
@@ -430,11 +436,11 @@ public class Attribute
     /**
      * This is the setter method for instance variable {@link #parent}.
      *
-     * @param _parent new instance of class {@link Type} to set for parent
+     * @param _parent new instance of class {@link Long} to set for parent id
      * @see #parent
      * @see #getParent
      */
-    public void setParent(final Type _parent)
+    public void setParent(final Long _parent)
     {
         this.parent = _parent;
     }
@@ -443,10 +449,18 @@ public class Attribute
      * This is the getter method for instance variable {@link #parent}.
      *
      * @return value of instance variable {@link #parent}
-     * @see #parent
-     * @see #setParent
+     * @throws CacheReloadException on error
      */
     public Type getParent()
+        throws CacheReloadException
+    {
+        return Type.get(this.parent);
+    }
+
+    /**
+     * @return the parent Type id
+     */
+    public Long getParentId()
     {
         return this.parent;
     }
@@ -620,7 +634,14 @@ public class Attribute
      */
     public String getKey()
     {
-        return getParent().getName() + "/" + getName();
+        if (this.key == null) {
+            try {
+                this.key = getParent().getName() + "/" + getName();
+            } catch (final CacheReloadException e) {
+                Attribute.LOG.error("Problems during reading of key for Attribute: {}", this);
+            }
+        }
+        return this.key;
     }
 
     /**
@@ -726,7 +747,7 @@ public class Attribute
     public String toString()
     {
         return new ToStringBuilder(this).appendSuper(super.toString())
-                        .append("attribute name", getParent().getName() + "/" + getName())
+                        .append("attribute key", getKey())
                         .append("attributetype", getAttributeType().toString())
                         .append("required", this.required).toString();
     }
@@ -796,9 +817,10 @@ public class Attribute
      * @param _type Type the attributes are wanted for
      * @throws EFapsException on error
      */
-    protected static void add4Type(final Type _type)
+    protected static Set<Type> add4Type(final Type _type)
         throws EFapsException
     {
+        final Set<Type> ret = new HashSet<Type>();
         ConnectionResource con = null;
         try {
             con = Context.getThreadContext().getConnectionResource();
@@ -856,28 +878,31 @@ public class Attribute
                     final Attribute attr = new Attribute(id, name, sqlCol, SQLTable.get(tableId),
                                     AttributeType.get(attrTypeId), defaultval,
                                     dimensionUUID);
-                    attr.setParent(_type);
-                    Attribute.cacheAttribute(attr);
+                    attr.setParent(_type.getId());
+
                     final UUID uuid = attr.getAttributeType().getUUID();
                     if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_LINK.getUuid())
                                     || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_LINK_WITH_RANGES.getUuid())
                                     || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_STATUS.getUuid())) {
                         final Type linkType = Type.get(typeLinkId);
-                        attr.setLink(linkType);
+                        attr.setLink(linkType.getId());
                         linkType.addLink(attr);
+                        ret.add(linkType);
                         // in case of a PersonLink, CreatorLink or ModifierLink a link to Admin_User_Person
                         // must be set
                     } else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_CREATOR_LINK.getUuid())
                                     || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_MODIFIER_LINK.getUuid())
                                     || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_PERSON_LINK.getUuid())) {
                         final Type linkType = CIAdminUser.Person.getType();
-                        attr.setLink(linkType);
+                        attr.setLink(linkType.getId());
                         linkType.addLink(attr);
+                        ret.add(linkType);
                         // in case of a GroupLink, a link to Admin_User_Group must be set
                     }   else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_GROUP_LINK.getUuid())) {
                         final Type linkType = CIAdminUser.Group.getType();
-                        attr.setLink(linkType);
+                        attr.setLink(linkType.getId());
                         linkType.addLink(attr);
+                        ret.add(linkType);
                     }
                     if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSetAttribute.uuid)) {
                         attribute2setId.put(attr, parentSetId);
@@ -898,6 +923,7 @@ public class Attribute
                 // needed due to cluster serialization that does not update automatically
                 Attribute.cacheAttribute(childAttr);
             }
+            return ret;
         } catch (final SQLException e) {
             throw new CacheReloadException("Cannot read attributes.", e);
         } finally {

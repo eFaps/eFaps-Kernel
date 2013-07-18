@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -68,6 +69,7 @@ import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.InfinispanCache;
 import org.infinispan.Cache;
+import org.infinispan.configuration.cache.CacheMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -214,16 +216,16 @@ public class Type
     private Long parentTypeId = null;
 
     /**
-     * Instance variable for all child types derived from this type.
+     * Instance variable for all child types ids derived from this type.
      *
      * @see #getChildTypes
      */
-    private final Set<Type> childTypes = new HashSet<Type>();
+    private final Set<Long> childTypes = new HashSet<Long>();
 
     /**
-     * Classifications which are classifying this type.
+     * Classification ids which are classifying this type.
      */
-    private final Set<Classification> classifiedByTypes = new HashSet<Classification>();
+    private final Set<Long> classifiedByTypes = new HashSet<Long>();
 
     /**
      * The instance variables stores all attributes for this type object.
@@ -264,13 +266,13 @@ public class Type
     private final Map<String, Attribute> links = new HashMap<String, Attribute>();
 
     /**
-     * All access sets which are assigned to this type are store in this
+     * All access sets  ids which are assigned to this type are store in this
      * instance variable. If <code>null</code> the variable was not evaluated yet;
      *
      * @see #addAccessSet
      * @see #getAccessSets
      */
-    private final Set<AccessSet> accessSets = new HashSet<AccessSet>();
+    private final Set<Long> accessSets = new HashSet<Long>();
 
     /**
      * Have the accessSet been evaluated.
@@ -293,7 +295,7 @@ public class Type
      *
      * @see #setLinkProperty
      */
-    private final Set<Type> allowedEventTypes = new HashSet<Type>();
+    private final Set<Long> allowedEventTypes = new HashSet<Long>();
 
     /**
      * Id of the store for this type.
@@ -442,13 +444,15 @@ public class Type
      *
      * @param _attribute attribute to add
      * @param _inherited is the attribute inherited or form this type
+     * @throws CacheReloadException on error
      */
     protected void addAttribute(final Attribute _attribute,
                                 final boolean _inherited)
+        throws CacheReloadException
     {
         if (!getAttributes().containsKey(_attribute.getName())) {
             Type.LOG.trace("adding Attribute:'{}' to type: '{}'", _attribute.getName(), getName());
-            _attribute.setParent(this);
+            _attribute.setParent(getId());
             // evaluate for type attribute
             if (_attribute.getAttributeType().getClassRepr().equals(TypeType.class)) {
                 this.typeAttributeName = _attribute.getName();
@@ -473,6 +477,7 @@ public class Type
                     setMainTable(_attribute.getTable());
                 }
             }
+            setDirty();
         }
         for (final Type child : getChildTypes()) {
             child.addAttribute(_attribute.copy(), true);
@@ -484,15 +489,18 @@ public class Type
      * under the name of all child types of the attribute.
      *
      * @param _attr attribute with the link to this type
+     * @throws CacheReloadException on error
      */
     protected void addLink(final Attribute _attr)
+        throws CacheReloadException
     {
+        setDirty();
         getLinks().put(_attr.getParent().getName() + "\\" + _attr.getName(), _attr);
         for (final Type type : _attr.getParent().getChildTypes()) {
             getLinks().put(type.getName() + "\\" + _attr.getName(), _attr);
         }
         for (final Type child : getChildTypes()) {
-            if (child.getParentType().getId() == getId()) {
+            if (child.getParentTypeId() == getId()) {
                 child.addLink(_attr);
             }
         }
@@ -729,7 +737,8 @@ public class Type
      */
     public void addAccessSet(final AccessSet _accessSet)
     {
-        this.accessSets.add(_accessSet);
+        this.accessSets.add(_accessSet.getId());
+        setDirty();
     }
 
     /**
@@ -753,8 +762,13 @@ public class Type
                 final Long accessSet = multi.<Long>getAttribute(CIAdminAccess.AccessSet2DataModelType.AccessSetLink);
                 AccessSet.get(accessSet);
             }
+            setDirty();
         }
-        return this.accessSets;
+        final Set<AccessSet> ret = new HashSet<AccessSet>();
+        for (final Long id :this.accessSets) {
+            ret.add(AccessSet.get(id));
+        }
+        return Collections.unmodifiableSet(ret);
     }
 
     /**
@@ -778,11 +792,9 @@ public class Type
         if (_linkType.isKindOf(CIAdminDataModel.Type2Store.getType())) {
             this.storeId = _toId;
         } else if (_linkType.isKindOf(CIAdminDataModel.TypeEventIsAllowedFor.getType())) {
-            final Type eventType = Type.get(_toId);
-            this.allowedEventTypes.add(eventType);
-        } else {
-            super.setLinkProperty(_linkType, _toId, _toType, _toName);
+            this.allowedEventTypes.add(_toId);
         }
+        super.setLinkProperty(_linkType, _toId, _toType, _toName);
     }
 
     /**
@@ -792,17 +804,28 @@ public class Type
      * types) are added.
      *
      * @param _childType child type to add
+     * @param _inherit inherit switch to prevent infinit loop
+     * @throws CacheReloadException on error
      * @see #childTypes
      */
-    protected void addChildType(final Type _childType)
+    protected void addChildType(final Type _childType,
+                                final boolean _inherit)
+        throws CacheReloadException
     {
+        _childType.setDirty();
         for (final Attribute attribute : this.attributes.values()) {
             _childType.addAttribute(attribute.copy(), true);
         }
+        this.childTypes.add(_childType.getId());
         Type parent = this;
         while (parent != null) {
-            parent.getChildTypes().add(_childType);
-            parent.getChildTypes().addAll(_childType.getChildTypes());
+            parent.setDirty();
+            if (_inherit) {
+                parent.addChildType(_childType, false);
+                for (final Type child : _childType.getChildTypes()) {
+                    parent.addChildType(child, false);;
+                }
+            }
             parent = parent.getParentType();
         }
     }
@@ -828,7 +851,7 @@ public class Type
     public Type getParentType()
     {
         Type ret = null;
-        if (this.parentTypeId != null) {
+        if (this.parentTypeId != null && this.parentTypeId != 0) {
             try {
                 ret = Type.get(this.parentTypeId);
             } catch (final CacheReloadException e) {
@@ -839,9 +862,19 @@ public class Type
     }
 
     /**
+     * Getter method for the instance variable {@link #parentTypeId}.
+     *
+     * @return value of instance variable {@link #parentTypeId}
+     */
+    protected Long getParentTypeId()
+    {
+        return this.parentTypeId;
+    }
+
+    /**
      * Setter method for instance variable {@link #parentType}.
      *
-     * @param _parentType parent to set
+     * @param _parentTypeId parentid to set
      */
     protected void setParentTypeID(final long _parentTypeId)
     {
@@ -856,7 +889,8 @@ public class Type
     protected void addClassifiedByType(final Classification _classification)
     {
         this.checked4classifiedBy = true;
-        this.classifiedByTypes.add(_classification);
+        this.classifiedByTypes.add(_classification.getId());
+        setDirty();
     }
 
     /**
@@ -880,8 +914,13 @@ public class Type
                 Type.get(query.getCurrentValue().getId());
             }
             this.checked4classifiedBy = true;
+            setDirty();
         }
-        return this.classifiedByTypes;
+        final Set<Classification> ret = new HashSet<Classification>();
+        for (final Long id : this.classifiedByTypes) {
+            ret.add((Classification) Type.get(id));
+        }
+        return Collections.unmodifiableSet(ret);
     }
 
     /**
@@ -889,10 +928,16 @@ public class Type
      *
      * @return value of instance variable {@link #childTypes}
      * @see #childTypes
+     * @throws CacheReloadException on error
      */
     public Set<Type> getChildTypes()
+        throws CacheReloadException
     {
-        return this.childTypes;
+        final Set<Type> ret = new HashSet<Type>();
+        for (final Long id : this.childTypes) {
+            ret.add(Type.get(id));
+        }
+        return Collections.unmodifiableSet(ret);
     }
 
     /**
@@ -966,10 +1011,16 @@ public class Type
      *
      * @return value of instance variable {@link #allowedEventTypes}
      * @see #allowedEventTypes
+     * @throws CacheReloadException on error
      */
     public Set<Type> getAllowedEventTypes()
+                    throws CacheReloadException
     {
-        return this.allowedEventTypes;
+        final Set<Type> ret = new HashSet<Type>();
+        for (final Long id : this.allowedEventTypes) {
+            ret.add(Type.get(id));
+        }
+        return Collections.unmodifiableSet(ret);
     }
 
     /**
@@ -1034,6 +1085,7 @@ public class Type
             } else {
                 this.typeMenu = Long.valueOf(0);
             }
+            setDirty();
         }
         if (this.typeMenu == 0 && getParentType() != null) {
             ret = getParentType().getTypeMenu();
@@ -1069,6 +1121,7 @@ public class Type
             } else {
                 this.typeIcon = Long.valueOf(0);
             }
+            setDirty();
         }
         if (this.typeIcon == 0 && getParentType() != null) {
             ret = getParentType().getTypeIcon();
@@ -1103,6 +1156,7 @@ public class Type
             } else {
                 this.typeForm = Long.valueOf(0);
             }
+            setDirty();
         }
         if (this.typeForm == 0 && getParentType() != null) {
              ret = getParentType().getTypeForm();
@@ -1122,16 +1176,19 @@ public class Type
     public String toString()
     {
         return new ToStringBuilder(this).appendSuper(super.toString())
-                        .append("parentType", getParentType() != null ? getParentType().getName() : "")
-                        .append("has attributes", !this.attributes.isEmpty())
-                        .append("has children", !this.childTypes.isEmpty())
+                        .append("parentTypeId", this.parentTypeId)
+                        .append("attributes", this.attributes.size())
+                        .append("children", this.childTypes.size())
                         .append("abstract", this.abstractBool)
+                        .append("links", this.links.size())
+                        .append("accessSets", this.accessSets.size())
                         .append("companyDependend", isCompanyDepended())
                         .append("groupDependend", isGroupDepended())
                         .append("statusDependend", isCheckStatus())
                         .append("checked4AccessSet", this.checked4AccessSet)
                         .append("checked4Children", this.checked4Children)
                         .append("checked4classifiedBy", this.checked4classifiedBy)
+                        .append("dirty", isDirty())
                         .toString();
     }
 
@@ -1206,6 +1263,11 @@ public class Type
         if (!cache.containsKey(_id)) {
             Type.getTypeFromDB(Type.SQL_ID, _id);
         }
+        final Type ret = cache.get(_id);
+        if (ret.isDirty()) {
+            Type.LOG.info("Recaching dirty Type for id: {}", ret);
+            Type.cacheType(ret);
+        }
         return cache.get(_id);
     }
 
@@ -1223,6 +1285,11 @@ public class Type
         final Cache<String, Type> cache = InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE);
         if (!cache.containsKey(_name)) {
             Type.getTypeFromDB(Type.SQL_NAME, _name);
+        }
+        final Type ret = cache.get(_name);
+        if (ret.isDirty()) {
+            Type.LOG.info("Recaching dirty Type for name: {}", ret);
+            Type.cacheType(ret);
         }
         return cache.get(_name);
     }
@@ -1242,6 +1309,11 @@ public class Type
         if (!cache.containsKey(_uuid)) {
             Type.getTypeFromDB(Type.SQL_UUID, _uuid.toString());
         }
+        final Type ret = cache.get(_uuid);
+        if (ret.isDirty()) {
+            Type.LOG.info("Recaching dirty Type for uuid: {}", ret);
+            Type.cacheType(ret);
+        }
         return cache.get(_uuid);
     }
 
@@ -1258,6 +1330,49 @@ public class Type
 
         final Cache<Long, Type> idCache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
         idCache.put(_type.getId(), _type);
+        _type.setUndirty();
+    }
+
+    /**
+     * In case of a cluster the types must be cached after the final loading
+     * again to be sure that the last instance including all the changes like
+     * attribute links etc are up to date.
+     *
+     * @param _type Type the Hierachy must be cached
+     * @throws CacheReloadException on error
+     */
+    protected static void cacheTypesByHierachy(final Type _type)
+        throws CacheReloadException
+    {
+        final Cache<UUID, Type> cache4UUID = InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
+        if (cache4UUID.getCacheConfiguration().clustering() != null
+                        && !cache4UUID.getCacheConfiguration().clustering().cacheMode().equals(CacheMode.LOCAL)) {
+            Type type = _type;
+            while (type.getParentTypeId() != null) {
+                final Cache<Long, Type> cache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
+                if (cache.containsKey(type.getParentTypeId())) {
+                    type = cache.get(type.getParentTypeId());
+                } else {
+                    type = type.getParentType();
+                }
+            }
+            type.recacheChildren();
+        }
+    }
+
+    /**
+     * Recache the children in dropdown. Used for Caching in cluster.
+     * @throws CacheReloadException on error
+     */
+    private void recacheChildren()
+        throws CacheReloadException
+    {
+        if (isDirty()) {
+            Type.cacheType(this);
+        }
+        for (final Type child : getChildTypes()) {
+            child.recacheChildren();
+        }
     }
 
     /**
@@ -1369,8 +1484,9 @@ public class Type
                         if (((Classification) ret).isRoot()) {
                             ((Classification) ret).getClassifiesType().addClassifiedByType((Classification) ret);
                         }
+                        ret.setDirty();
                     } else {
-                        parent.addChildType(ret);
+                        parent.addChildType(ret, true);
                     }
                 }
                 if (!ret.checked4Children) {
@@ -1379,12 +1495,17 @@ public class Type
                         Type.LOG.trace("reading Child Type with id: {} for type :{}", childID, ret.getName());
                         Type.get(childID);
                     }
+                    ret.setDirty();
                 }
-                Attribute.add4Type(ret);
+                final Set<Type> linktypes = Attribute.add4Type(ret);
                 ret.readFromDB4Links();
                 ret.readFromDB4Properties();
+
                 // needed due to cluster serialization that does not update automatically
-                Type.cacheType(ret);
+                Type.cacheTypesByHierachy(ret);
+                for (final Type linktype : linktypes) {
+                    Type.cacheTypesByHierachy(linktype);
+                }
                 Type.LOG.trace("ended reading type '{}'", ret.getName());
             }
         } catch (final EFapsException e) {

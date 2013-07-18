@@ -25,6 +25,9 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.GeneralInstance;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
+import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -36,6 +39,11 @@ import org.efaps.db.wrapper.SQLSelect;
 public class GenInstSelectPart
     extends AbstractSelectPart
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(GenInstSelectPart.class);
+
     /**
      * Type the General Instance belongs to.
      */
@@ -101,15 +109,19 @@ public class GenInstSelectPart
     public void add2Where(final OneSelect _oneselect,
                           final SQLSelect _select)
     {
-        if (this.addTypeClause) {
-            _select.addPart(SQLPart.AND).addColumnPart(this.tableIdx, GeneralInstance.ISTYPECOLUMN)
-                .addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
-            _select.addValuePart(this.type.getId());
-            for (final Type childType : this.type.getChildTypes()) {
-                _select.addPart(SQLPart.COMMA);
-                _select.addValuePart(childType.getId());
+        try {
+            if (this.addTypeClause) {
+                _select.addPart(SQLPart.AND).addColumnPart(this.tableIdx, GeneralInstance.ISTYPECOLUMN)
+                    .addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
+                _select.addValuePart(this.type.getId());
+                for (final Type childType : this.type.getChildTypes()) {
+                    _select.addPart(SQLPart.COMMA);
+                    _select.addValuePart(childType.getId());
+                }
+                _select.addPart(SQLPart.PARENTHESIS_CLOSE);
             }
-            _select.addPart(SQLPart.PARENTHESIS_CLOSE);
+        } catch (final CacheReloadException e) {
+            GenInstSelectPart.LOG.error("Could not build where part for General Instance: {}", this);
         }
     }
 }

@@ -79,7 +79,7 @@ public class OIDType
                 final Object[] temp = (Object[]) object;
                 oid.append(temp[0]).append(".").append(temp[1]);
             } else {
-                oid.append(_attribute.getParent().getId()).append(".").append(object);
+                oid.append(_attribute.getParentId()).append(".").append(object);
             }
             ret.add(oid.toString());
         }

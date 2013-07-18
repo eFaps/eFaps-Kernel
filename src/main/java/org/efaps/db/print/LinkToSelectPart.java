@@ -28,6 +28,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,9 +127,14 @@ public class LinkToSelectPart
             LinkToSelectPart.LOG.error("Could not find an Attribute with name '{}' for type:{}", this.attrName,
                             this.type);
         }
-        final Type ret = attr.getLink();
-        if (ret == null) {
-            LinkToSelectPart.LOG.error("No link for Attribute '{}'", attr);
+        Type ret = null;
+        try {
+            ret = attr.getLink();
+            if (ret == null) {
+                LinkToSelectPart.LOG.error("No link for Attribute '{}'", attr);
+            }
+        } catch (final CacheReloadException e) {
+            LinkToSelectPart.LOG.error("Could not get Link for Attribute '{}'", attr);
         }
         return ret;
     }
