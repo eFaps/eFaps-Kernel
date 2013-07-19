@@ -443,14 +443,9 @@ public class Type
                                  final Attribute... _attributes)
         throws CacheReloadException
     {
-        final List<Attribute> copies = new ArrayList<Attribute>();
         for (final Attribute attribute : _attributes) {
             if (!this.attributes.containsKey(attribute.getName())) {
                 Type.LOG.trace("adding Attribute:'{}' to type: '{}'", attribute.getName(), getName());
-                // the parent must be set only on copies, therfor only on inherit
-                if (_inherited) {
-                    attribute.setParent(getId());
-                }
                 // evaluate for type attribute
                 if (attribute.getAttributeType().getClassRepr().equals(TypeType.class)) {
                     this.typeAttributeName = attribute.getName();
@@ -474,12 +469,15 @@ public class Type
                         setMainTable(attribute.getTable());
                     }
                 }
-                copies.add(attribute.copy());
                 setDirty();
             }
         }
-        if (!copies.isEmpty()) {
+        if (_attributes.length > 0) {
             for (final Type child : getChildTypes()) {
+                final List<Attribute> copies = new ArrayList<Attribute>();
+                for (final Attribute attribute : _attributes) {
+                    copies.add(attribute.copy(child.getId()));
+                }
                 child.addAttributes(true, copies.toArray(new Attribute[copies.size()]));
             }
         }
@@ -793,7 +791,7 @@ public class Type
     {
         final List<Attribute> copies = new ArrayList<Attribute>();
         for (final Attribute attribute : this.attributes.values()) {
-            copies.add(attribute.copy());
+            copies.add(attribute.copy(_childType.getId()));
         }
         _childType.addAttributes(true, copies.toArray(new Attribute[copies.size()]));
         if (!this.childTypes.contains(_childType.getId())) {

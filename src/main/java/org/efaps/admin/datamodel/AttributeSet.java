@@ -88,9 +88,8 @@ public class AttributeSet
 
         this.attributeType = _attributeType;
 
-        final Attribute attr = new Attribute(_id, _name, _sqlColNames, SQLTable.get(_tableId), AttributeType
+        final Attribute attr = new Attribute(_id, getId(), _name, _sqlColNames, SQLTable.get(_tableId), AttributeType
                         .get("Link"), null, null);
-        attr.setParent(getId());
         addAttributes(false, attr);
         attr.setLink(_type.getId());
         if (_typeLinkId > 0) {

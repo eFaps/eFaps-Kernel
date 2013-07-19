@@ -176,7 +176,7 @@ public class Attribute
      * @see #getParent
      * @see #setParent
      */
-    private Long parent = null;
+    private final Long parent;
 
     /**
      * This instance variable stores the sql column name.
@@ -256,6 +256,7 @@ public class Attribute
      *             database
      */
     protected Attribute(final long _id,
+                        final long _parentId,
                         final String _name,
                         final String _sqlColNames,
                         final SQLTable _sqlTable,
@@ -266,6 +267,7 @@ public class Attribute
     {
         super(_id, null, _name);
         this.sqlTable = _sqlTable;
+        this.parent = _parentId;
         this.attributeType = _attributeType;
         this.defaultValue = (_defaultValue != null) ? _defaultValue.trim() : null;
         this.dimensionUUID = (_dimensionUUID != null) ? _dimensionUUID.trim() : null;
@@ -310,6 +312,7 @@ public class Attribute
      */
     // CHECKSTYLE:OFF
     private Attribute(final long _id,
+                      final long _parentId,
                       final String _name,
                       final SQLTable _sqlTable,
                       final AttributeType _attributeType,
@@ -321,6 +324,7 @@ public class Attribute
     {
         // CHECKSTYLE:ON
         super(_id, null, _name);
+        this.parent = _parentId;
         this.sqlTable = _sqlTable;
         this.attributeType = _attributeType;
         this.defaultValue = (_defaultValue != null) ? _defaultValue.trim() : null;
@@ -343,13 +347,13 @@ public class Attribute
 
     /**
      * The method makes a clone of the current attribute instance.
-     *
+     * @param _parentId if of the parent type
      * @return clone of current attribute instance
      */
-    protected Attribute copy()
+    protected Attribute copy(final long _parentId)
     {
-        final Attribute ret = new Attribute(getId(), getName(), this.sqlTable, this.attributeType, this.defaultValue,
-                        this.dimensionUUID, this.required, this.size, this.scale);
+        final Attribute ret = new Attribute(getId(), _parentId, getName(), this.sqlTable, this.attributeType,
+                        this.defaultValue, this.dimensionUUID, this.required, this.size, this.scale);
         ret.getSqlColNames().addAll(getSqlColNames());
         ret.setLink(this.link);
         ret.getProperties().putAll(getProperties());
@@ -429,18 +433,6 @@ public class Attribute
             }
         }
         return this.dependencies;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #parent}.
-     *
-     * @param _parent new instance of class {@link Long} to set for parent id
-     * @see #parent
-     * @see #getParent
-     */
-    public void setParent(final Long _parent)
-    {
-        this.parent = _parent;
     }
 
     /**
@@ -870,10 +862,9 @@ public class Attribute
                                     sqlCol, tableId, typeLinkId, dimensionUUID);
                     id2Set.put(id, set);
                 } else {
-                    final Attribute attr = new Attribute(id, name, sqlCol, SQLTable.get(tableId),
+                    final Attribute attr = new Attribute(id,_type.getId(), name, sqlCol, SQLTable.get(tableId),
                                     AttributeType.get(attrTypeId), defaultval,
                                     dimensionUUID);
-                    attr.setParent(_type.getId());
 
                     final UUID uuid = attr.getAttributeType().getUUID();
                     if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_LINK.getUuid())
