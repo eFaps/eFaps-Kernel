@@ -206,7 +206,7 @@ public final class JmsHandler
             }
         } catch (final NamingException e) {
             // this means that a definition cannot be found.
-            JmsHandler.LOG.error("Naming exception in JMS:", e);
+            JmsHandler.LOG.warn("Naming exception for JMS", e);
         } catch (final JMSException e) {
             throw new EFapsException("JMSException", e);
         } catch (final ClassNotFoundException e) {
