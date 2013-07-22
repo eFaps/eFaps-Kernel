@@ -383,6 +383,8 @@ public class Dimension
                 final UoM uom = new UoM(id, dimId, name, numerator, denominator);
                 dim.addUoM(uom);
                 cache.put(uom.getId(), uom);
+                // needed due to cluster serialization that does not update automatically
+                Dimension.cacheDimension(dim);
             }
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read Dimension", e);
@@ -402,19 +404,19 @@ public class Dimension
     /**
      * @param _role Dimension to be cached
      */
-    private static void cacheDimension(final Dimension _role)
+    private static void cacheDimension(final Dimension _dimension)
     {
         final Cache<UUID, Dimension> cache4UUID = InfinispanCache.get().<UUID, Dimension>getIgnReCache(
                         Dimension.UUIDCACHE);
-        cache4UUID.putIfAbsent(_role.getUUID(), _role);
+        cache4UUID.put(_dimension.getUUID(), _dimension);
 
         final Cache<String, Dimension> nameCache = InfinispanCache.get().<String, Dimension>getIgnReCache(
                         Dimension.NAMECACHE);
-        nameCache.putIfAbsent(_role.getName(), _role);
+        nameCache.put(_dimension.getName(), _dimension);
 
         final Cache<Long, Dimension> idCache = InfinispanCache.get().<Long, Dimension>getIgnReCache(
                         Dimension.IDCACHE);
-        idCache.putIfAbsent(_role.getId(), _role);
+        idCache.put(_dimension.getId(), _dimension);
     }
 
     /**
@@ -457,8 +459,6 @@ public class Dimension
             if (dim != null) {
                 Dimension.cacheDimension(dim);
                 Dimension.getUoMFromDB(Dimension.SQL_SELECT_UOM4DIMID, dim.getId());
-                // needed due to cluster serialization that does not update automatically
-                Dimension.cacheDimension(dim);
             }
         } catch (final SQLException e) {
             throw new CacheReloadException("could not read roles", e);
