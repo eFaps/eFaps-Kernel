@@ -1232,7 +1232,7 @@ public class Type
             Type.getTypeFromDB(Type.SQL_ID, _id);
         }
         Type ret = cache.get(_id);
-        if (ret.isDirty()) {
+        if (ret != null && ret.isDirty()) {
             Type.LOG.debug("Recaching dirty Type for id: {}", ret);
             Type.cacheType(ret);
             ret = cache.get(_id);
@@ -1280,7 +1280,7 @@ public class Type
             Type.getTypeFromDB(Type.SQL_UUID, _uuid.toString());
         }
         Type ret = cache.get(_uuid);
-        if (ret.isDirty()) {
+        if (ret != null && ret.isDirty()) {
             Type.LOG.debug("Recaching dirty Type for uuid: {}", ret);
             Type.cacheType(ret);
             ret = cache.get(_uuid);
