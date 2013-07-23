@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
@@ -892,35 +893,31 @@ public abstract class AbstractCommand
     }
 
     /**
-     * @param _linkType type of the link property
-     * @param _toId to id
-     * @param _toType to type
-     * @param _toName to name
-     * @throws EFapsException on error
+     * {@inheritDoc}
      */
     @Override
-    protected void setLinkProperty(final Type _linkType,
+    protected void setLinkProperty(final UUID _linkTypeUUID,
                                    final long _toId,
-                                   final Type _toType,
+                                   final UUID _toTypeUUID,
                                    final String _toName)
         throws EFapsException
     {
-        if (_linkType.isKindOf(CIAdminUserInterface.LinkIcon.getType())) {
+        if (_linkTypeUUID.equals(CIAdminUserInterface.LinkIcon.uuid)) {
             this.icon = RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + _toName);
-        } else if (_linkType.isKindOf(CIAdminUserInterface.LinkTargetForm.getType())) {
+        } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetForm.uuid)) {
             this.targetForm = Form.get(_toId);
-        } else if (_linkType.isKindOf(CIAdminUserInterface.LinkTargetMenu.getType())) {
+        } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetMenu.uuid)) {
             this.targetMenu = Menu.get(_toId);
-        } else if (_linkType.isKindOf(CIAdminUserInterface.LinkTargetSearch.getType())) {
+        } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetSearch.uuid)) {
             this.targetSearch = Search.get(_toId);
-        } else if (_linkType.isKindOf(CIAdminUserInterface.LinkTargetTable.getType())) {
+        } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetTable.uuid)) {
             this.targetTable = Table.get(_toId);
-        } else if (_linkType.isKindOf(CIAdminUserInterface.LinkTargetCommand.getType())) {
+        } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetCommand.uuid)) {
             this.targetCommand = Command.get(_toId);
-        } else if (_linkType.isKindOf(CIAdminUserInterface.LinkTargetHelp.getType())) {
+        } else if (_linkTypeUUID.equals(CIAdminUserInterface.LinkTargetHelp.uuid)) {
             this.targeHelp = _toName;
         } else {
-            super.setLinkProperty(_linkType, _toId, _toType, _toName);
+            super.setLinkProperty(_linkTypeUUID, _toId, _toTypeUUID, _toName);
         }
     }
 

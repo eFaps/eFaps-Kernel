@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.efaps.admin.AbstractAdminObject;
-import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.ci.CIAttribute;
 import org.efaps.ci.CIDB;
@@ -107,27 +106,20 @@ public final class Store
     }
 
     /**
-     * Sets the link properties for this object.
-     *
-     * @param _linkType type of the link property
-     * @param _toId to id
-     * @param _toType to type
-     * @param _toName to name
-     * @throws EFapsException error
+     * {@inheritDoc}
      */
     @Override
-    protected void setLinkProperty(final Type _linkType,
+    protected void setLinkProperty(final UUID _linkTypeUUID,
                                    final long _toId,
-                                   final Type _toType,
+                                   final UUID _toTypeUUID,
                                    final String _toName)
         throws EFapsException
     {
-        if (_linkType.isKindOf(CIDB.Store2Resource.getType())) {
+        if (_linkTypeUUID.equals(CIDB.Store2Resource.uuid)) {
             this.resource = _toName;
             loadResourceProperties(_toId);
-        } else {
-            super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
+        super.setLinkProperty(_linkTypeUUID, _toId, _toTypeUUID, _toName);
     }
 
     /**

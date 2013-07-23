@@ -319,33 +319,25 @@ public class Classification
     }
 
     /**
-     *
-     * Sets the link properties for this object.
-     *
-     * @param _linkType type of the link property
-     * @param _toId to id
-     * @param _toType to type
-     * @param _toName to name
-     * @throws EFapsException o error
-     *
+     * {@inheritDoc}
      */
     @Override
-    protected void setLinkProperty(final Type _linkType,
+    protected void setLinkProperty(final UUID _linkTypeUUID,
                                    final long _toId,
-                                   final Type _toType,
+                                   final UUID _toTypeUUID,
                                    final String _toName)
         throws EFapsException
     {
-        if (_linkType.isKindOf(CIAdminDataModel.TypeClassifies.getType())) {
+        if (_linkTypeUUID.equals(CIAdminDataModel.TypeClassifies.uuid)) {
             final Type type = Type.get(_toId);
             this.classifiesType = type;
             type.addClassifiedByType(this);
-        } else if (_linkType.isKindOf(CIAdminDataModel.TypeClassifyRelation.getType())) {
+        } else if (_linkTypeUUID.equals(CIAdminDataModel.TypeClassifyRelation.uuid)) {
             this.classifyRelation = Type.get(_toId);
-        } else if (_linkType.isKindOf(CIAdminDataModel.TypeClassifyCompany.getType())) {
+        } else if (_linkTypeUUID.equals(CIAdminDataModel.TypeClassifyCompany.uuid)) {
             this.companies.add(Company.get(_toId));
         }
-        super.setLinkProperty(_linkType, _toId, _toType, _toName);
+        super.setLinkProperty(_linkTypeUUID, _toId, _toTypeUUID, _toName);
     }
 
     /**

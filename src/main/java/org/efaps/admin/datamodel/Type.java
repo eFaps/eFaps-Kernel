@@ -472,15 +472,23 @@ public class Type
                 setDirty();
             }
         }
-        if (_attributes.length > 0) {
-            for (final Type child : getChildTypes()) {
-                final List<Attribute> copies = new ArrayList<Attribute>();
-                for (final Attribute attribute : _attributes) {
-                    copies.add(attribute.copy(child.getId()));
-                }
-                child.addAttributes(true, copies.toArray(new Attribute[copies.size()]));
+    }
+
+    /**
+     *
+     */
+    private void inheritAttributes()
+        throws CacheReloadException
+    {
+        Type parent = getParentType();
+        final List<Attribute> attributes = new ArrayList<Attribute>();
+        while (parent != null) {
+            for (final Attribute attribute : getParentType().getAttributes().values()) {
+                attributes.add(attribute.copy(getId()));
             }
+            parent = parent.getParentType();
         }
+        addAttributes(true, attributes.toArray(new Attribute[attributes.size()]));
     }
 
     /**
@@ -749,29 +757,21 @@ public class Type
     }
 
     /**
-     *
-     * Sets the link properties for this object.
-     *
-     * @param _linkType type of the link property
-     * @param _toId to id
-     * @param _toType to type
-     * @param _toName to name
-     * @throws EFapsException o error
-     *
+     * {@inheritDoc}
      */
     @Override
-    protected void setLinkProperty(final Type _linkType,
+    protected void setLinkProperty(final UUID _linkTypeUUID,
                                    final long _toId,
-                                   final Type _toType,
+                                   final UUID _toTypeUUID,
                                    final String _toName)
         throws EFapsException
     {
-        if (_linkType.isKindOf(CIAdminDataModel.Type2Store.getType())) {
+        if (_linkTypeUUID.equals(CIAdminDataModel.Type2Store.uuid)) {
             this.storeId = _toId;
-        } else if (_linkType.isKindOf(CIAdminDataModel.TypeEventIsAllowedFor.getType())) {
+        } else if (_linkTypeUUID.equals(CIAdminDataModel.TypeEventIsAllowedFor.uuid)) {
             this.allowedEventTypes.add(_toId);
         }
-        super.setLinkProperty(_linkType, _toId, _toType, _toName);
+        super.setLinkProperty(_linkTypeUUID, _toId, _toTypeUUID, _toName);
     }
 
     /**
@@ -803,7 +803,7 @@ public class Type
             if (_inherit) {
                 parent.addChildType(_childType, false);
                 for (final Type child : _childType.getChildTypes()) {
-                    parent.addChildType(child, false);;
+                    parent.addChildType(child, false);
                 }
             }
             parent = parent.getParentType();
@@ -1441,7 +1441,6 @@ public class Type
             stmt.close();
             con.commit();
             if (ret != null) {
-                Type.cacheType(ret);
                 if (parentTypeId != 0) {
                     Type.LOG.trace("get parent for id = {}",  parentTypeId);
                     final Type parent = Type.get(parentTypeId);
@@ -1456,24 +1455,22 @@ public class Type
                             ((Classification) ret).getClassifiesType().addClassifiedByType((Classification) ret);
                         }
                         ret.setDirty();
-                    } else {
-                        parent.addChildType(ret, true);
                     }
                 }
                 if (!ret.checked4Children) {
                     ret.checked4Children = true;
                     for (final Long childID : Type.getChildTypeIDs(ret.getId())) {
                         Type.LOG.trace("reading Child Type with id: {} for type :{}", childID, ret.getName());
-                        Type.get(childID);
+                        ret.childTypes.add(childID);
                     }
                     ret.setDirty();
                 }
                 Attribute.add4Type(ret);
                 ret.readFromDB4Links();
                 ret.readFromDB4Properties();
-
+                ret.inheritAttributes();
                 // needed due to cluster serialization that does not update automatically
-                Type.cacheTypesByHierachy(ret);
+                Type.cacheType(ret);
                 Type.LOG.trace("ended reading type '{}'", ret.getName());
             }
         } catch (final EFapsException e) {
@@ -1491,4 +1488,152 @@ public class Type
         }
         return ret;
     }
+
+    /**
+     * @param _typeAttrId
+     * @return
+     */
+    protected static boolean check4Set(final long _typeId)
+        throws CacheReloadException
+    {
+        boolean ret = false;
+        final Cache<Long, Type> cache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
+        if (cache.containsKey(_typeId)) {
+            ret = cache.get(_typeId).getUUID().equals(CIAdminDataModel.AttributeSet.uuid);
+        } else {
+            ConnectionResource con = null;
+            String uuidTmp = "";
+            try {
+                con = Context.getThreadContext().getConnectionResource();
+                PreparedStatement stmt = null;
+                try {
+                    stmt = con.getConnection().prepareStatement(Type.SQL_ID);
+                    stmt.setObject(1, _typeId);
+                    final ResultSet rs = stmt.executeQuery();
+                    while (rs.next()) {
+                        uuidTmp = rs.getString(2).trim();
+                    }
+                    rs.close();
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+                con.commit();
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read child type ids", e);
+            } catch (final EFapsException e) {
+                throw new CacheReloadException("could not read child type ids", e);
+            } finally {
+                if ((con != null) && con.isOpened()) {
+                    try {
+                        con.abort();
+                    } catch (final EFapsException e) {
+                        throw new CacheReloadException("could not read child type ids", e);
+                    }
+                }
+            }
+            ret = UUID.fromString(uuidTmp).equals(CIAdminDataModel.AttributeSet.uuid);
+        }
+        return ret;
+    }
+
+    /**
+     * During the initial caching of types, the mapping does not exists but is necessary.
+     * @param _typeUUID UUID of the type the id is wanted for
+     * @return id of the type
+     * @throws CacheReloadException on error
+     */
+    protected static long getId4UUID(final UUID _typeUUID)
+        throws CacheReloadException
+    {
+        long ret = 0;
+        final Cache<UUID, Type> cache = InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
+        if (cache.containsKey(_typeUUID)) {
+            ret = cache.get(_typeUUID).getId();
+        } else {
+            ConnectionResource con = null;
+            try {
+                con = Context.getThreadContext().getConnectionResource();
+                PreparedStatement stmt = null;
+                try {
+                    stmt = con.getConnection().prepareStatement(Type.SQL_UUID);
+                    stmt.setObject(1, _typeUUID.toString());
+                    final ResultSet rs = stmt.executeQuery();
+                    while (rs.next()) {
+                        ret = rs.getLong(1);
+                    }
+                    rs.close();
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+                con.commit();
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read child type ids", e);
+            } catch (final EFapsException e) {
+                throw new CacheReloadException("could not read child type ids", e);
+            } finally {
+                if ((con != null) && con.isOpened()) {
+                    try {
+                        con.abort();
+                    } catch (final EFapsException e) {
+                        throw new CacheReloadException("could not read child type ids", e);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * During the initial caching of types, the mapping does not exists but is necessary.
+     * @param _typeUUID UUID of the type the id is wanted for
+     * @return id of the type
+     * @throws CacheReloadException on error
+     */
+    public static UUID getUUID4Id(final long _typeId)
+        throws CacheReloadException
+    {
+        UUID ret = null;
+        final Cache<Long, Type> cache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
+        if (cache.containsKey(_typeId)) {
+            ret = cache.get(_typeId).getUUID();
+        } else {
+            ConnectionResource con = null;
+            try {
+                con = Context.getThreadContext().getConnectionResource();
+                PreparedStatement stmt = null;
+                try {
+                    stmt = con.getConnection().prepareStatement(Type.SQL_ID);
+                    stmt.setObject(1, _typeId);
+                    final ResultSet rs = stmt.executeQuery();
+                    while (rs.next()) {
+                        ret = UUID.fromString(rs.getString(2).trim());
+                    }
+                    rs.close();
+                } finally {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+                con.commit();
+            } catch (final SQLException e) {
+                throw new CacheReloadException("could not read child type ids", e);
+            } catch (final EFapsException e) {
+                throw new CacheReloadException("could not read child type ids", e);
+            } finally {
+                if ((con != null) && con.isOpened()) {
+                    try {
+                        con.abort();
+                    } catch (final EFapsException e) {
+                        throw new CacheReloadException("could not read child type ids", e);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
 }

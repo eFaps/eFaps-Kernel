@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.ui.AbstractCollection;
@@ -814,27 +813,19 @@ public class Field
     }
 
     /**
-     *
-     * Set a link property for the field.
-     *
-     * @param _linkType type of the link property
-     * @param _toId to id
-     * @param _toType to type
-     * @param _toName to name
-     * @throws EFapsException on error
+     * {@inheritDoc}
      */
     @Override
-    protected void setLinkProperty(final Type _linkType,
+    protected void setLinkProperty(final UUID _linkTypeUUID,
                                    final long _toId,
-                                   final Type _toType,
+                                   final UUID _toTypeUUID,
                                    final String _toName)
         throws EFapsException
     {
-        if (_linkType.isKindOf(CIAdminUserInterface.LinkIcon.getType())) {
+        if (_linkTypeUUID.equals(CIAdminUserInterface.LinkIcon.uuid)) {
             this.icon = RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE + _toName);
-        } else {
-            super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
+        super.setLinkProperty(_linkTypeUUID, _toId, _toTypeUUID, _toName);
     }
 
     /**

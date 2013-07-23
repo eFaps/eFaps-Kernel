@@ -20,8 +20,6 @@
 
 package org.efaps.admin.ui;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
@@ -50,12 +48,6 @@ public class Form
     private static final long serialVersionUID = 1L;
 
     /**
-     * Stores the mapping from type to tree menu.
-     */
-    private static final Map<Type, Form> TYPE2FORMS = new HashMap<Type, Form>();
-
-
-    /**
      * @param _id       id
      * @param _uuid     UUID
      * @param _name     name
@@ -65,35 +57,6 @@ public class Form
                 final String _name)
     {
         super(_id, _uuid, _name);
-    }
-
-    /**
-     * Sets the link properties for this object.
-     *
-     * @param _linkType type of the link property
-     * @param _toId to id
-     * @param _toType to type
-     * @param _toName to name
-     * @throws EFapsException on error
-     */
-    @Override
-    protected void setLinkProperty(final Type _linkType,
-                                   final long _toId,
-                                   final Type _toType,
-                                   final String _toName)
-        throws EFapsException
-    {
-        if (_linkType.isKindOf(CIAdminUserInterface.LinkIsTypeFormFor.getType())) {
-            final Type type = Type.get(_toId);
-            if (type == null) {
-                Form.LOG.error("Form '" + getName() + "' could not defined as type form for type '" + _toName
-                                + "'! Type does not " + "exists!");
-            } else {
-                Form.TYPE2FORMS.put(type, this);
-            }
-        } else {
-            super.setLinkProperty(_linkType, _toId, _toType, _toName);
-        }
     }
 
     /**

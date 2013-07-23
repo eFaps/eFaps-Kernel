@@ -150,15 +150,15 @@ public abstract class AbstractAdminObject
     /**
      * Sets the link properties for this object.
      *
-     * @param _linkType type of the link property
+     * @param _linkTypeUUID UUID of the type of the link property
      * @param _toId to id
-     * @param _toType to type
+     * @param _toTypeUUID UUDI of the to type
      * @param _toName to name
      * @throws EFapsException on error
      */
-    protected void setLinkProperty(final Type _linkType,
+    protected void setLinkProperty(final UUID _linkTypeUUID,
                                    final long _toId,
-                                   final Type _toType,
+                                   final UUID _toTypeUUID,
                                    final String _toName)
         throws EFapsException
     {
@@ -413,12 +413,12 @@ public abstract class AbstractAdminObject
             con.commit();
 
             for (final Object[] row : values) {
-                final Type conType = Type.get((Long) row[0]);
-                AbstractAdminObject.LOG.debug("     Connection Type: {}", conType);
-                final Type toType = Type.get((Long) row[2]);
-                AbstractAdminObject.LOG.debug("     To Type: {}", toType);
-                if (conType != null && toType != null) {
-                    setLinkProperty(conType, (Long) row[1], toType, String.valueOf(row[3]));
+                final UUID conTypeUUID = Type.getUUID4Id((Long) row[0]);
+                AbstractAdminObject.LOG.debug("     Connection Type UUID: {}", conTypeUUID);
+                final UUID toTypeUUID = Type.getUUID4Id((Long) row[2]);
+                AbstractAdminObject.LOG.debug("     To Type UUID: {}", toTypeUUID);
+                if (conTypeUUID != null && toTypeUUID != null) {
+                    setLinkProperty(conTypeUUID, (Long) row[1], toTypeUUID, String.valueOf(row[3]));
                     AbstractAdminObject.LOG.debug("     ID: {}, name: {}", row[1], row[3]);
                 }
             }

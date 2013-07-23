@@ -21,7 +21,8 @@
 
 package org.efaps.admin.ui.field;
 
-import org.efaps.admin.datamodel.Type;
+import java.util.UUID;
+
 import org.efaps.admin.ui.Command;
 import org.efaps.ci.CIAdminUserInterface;
 import org.efaps.util.EFapsException;
@@ -72,27 +73,19 @@ public class FieldPicker
     }
 
     /**
-     *
-     * Set a link property for the field.
-     *
-     * @param _linkType type of the link property
-     * @param _toId to id
-     * @param _toType to type
-     * @param _toName to name
-     * @throws EFapsException on error
+     * {@inheritDoc}
      */
     @Override
-    protected void setLinkProperty(final Type _linkType,
+    protected void setLinkProperty(final UUID _linkTypeUUID,
                                    final long _toId,
-                                   final Type _toType,
+                                   final UUID _toTypeUUID,
                                    final String _toName)
         throws EFapsException
     {
-        if (_linkType.isKindOf(CIAdminUserInterface.LinkField2Command.getType())) {
+        if (_linkTypeUUID.equals(CIAdminUserInterface.LinkField2Command.uuid)) {
             this.commandID = _toId;
-        } else {
-            super.setLinkProperty(_linkType, _toId, _toType, _toName);
         }
+        super.setLinkProperty(_linkTypeUUID, _toId, _toTypeUUID, _toName);
     }
 
     /**

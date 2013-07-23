@@ -35,7 +35,6 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
-import org.efaps.ci.CIAdminDataModel;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.ColumnInformation;
@@ -712,12 +711,18 @@ public class Attribute
 
     /**
      * @param _attr Attribute to be cached
+     * @param _type Parent Type
      */
-    private static void cacheAttribute(final Attribute _attr)
+    private static void cacheAttribute(final Attribute _attr,
+                                       final Type _type)
     {
         final Cache<String, Attribute> nameCache = InfinispanCache.get().<String, Attribute>getIgnReCache(
                         Attribute.NAMECACHE);
-        nameCache.putIfAbsent(_attr.getKey(), _attr);
+        if (_type != null) {
+            nameCache.putIfAbsent(_type.getName() + "/" + _attr.getName(), _attr);
+        } else {
+            nameCache.putIfAbsent(_attr.getKey(), _attr);
+        }
 
         final Cache<Long, Attribute> idCache = InfinispanCache.get().<Long, Attribute>getIgnReCache(
                         Attribute.IDCACHE);
@@ -727,7 +732,7 @@ public class Attribute
     /**
      * The instance method returns the string representation of this attribute.
      * The string representation of this attribute is the name of the type plus
-     * slash plus name of this attribute.
+     * slash plus name of this attribute. (Must not contain getKey()!!)
      *
      * @return String representation
      */
@@ -735,7 +740,6 @@ public class Attribute
     public String toString()
     {
         return new ToStringBuilder(this).appendSuper(super.toString())
-                        .append("attribute key", getKey())
                         .append("attributetype", getAttributeType().toString())
                         .append("required", this.required).toString();
     }
@@ -855,14 +859,14 @@ public class Attribute
                 final String dimensionUUID = (String) row[9];
 
                 Attribute.LOG.debug("read attribute '{}/{}' (id = {})", _type.getName(), name, id);
-                final Type typeAttr = Type.get(typeAttrId);
+                final boolean isAttrSet = Type.check4Set(typeAttrId);
 
-                if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSet.uuid)) {
+                if (isAttrSet) {
                     final AttributeSet set = new AttributeSet(id, _type, name, AttributeType.get(attrTypeId),
                                     sqlCol, tableId, typeLinkId, dimensionUUID);
                     id2Set.put(id, set);
                 } else {
-                    final Attribute attr = new Attribute(id,_type.getId(), name, sqlCol, SQLTable.get(tableId),
+                    final Attribute attr = new Attribute(id, _type.getId(), name, sqlCol, SQLTable.get(tableId),
                                     AttributeType.get(attrTypeId), defaultval,
                                     dimensionUUID);
 
@@ -870,27 +874,24 @@ public class Attribute
                     if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_LINK.getUuid())
                                     || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_LINK_WITH_RANGES.getUuid())
                                     || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_STATUS.getUuid())) {
-                        final Type linkType = Type.get(typeLinkId);
-                        attr.setLink(linkType.getId());
+                        attr.setLink(typeLinkId);
                         // in case of a PersonLink, CreatorLink or ModifierLink a link to Admin_User_Person
                         // must be set
                     } else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_CREATOR_LINK.getUuid())
                                     || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_MODIFIER_LINK.getUuid())
                                     || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_PERSON_LINK.getUuid())) {
-                        final Type linkType = CIAdminUser.Person.getType();
-                        attr.setLink(linkType.getId());
+                        attr.setLink(Type.getId4UUID(CIAdminUser.Person.uuid));
                         // in case of a GroupLink, a link to Admin_User_Group must be set
                     }   else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_GROUP_LINK.getUuid())) {
-                        final Type linkType = CIAdminUser.Group.getType();
-                        attr.setLink(linkType.getId());
+                        attr.setLink(Type.getId4UUID(CIAdminUser.Group.uuid));
                     }
-                    if (typeAttr.getUUID().equals(CIAdminDataModel.AttributeSetAttribute.uuid)) {
+                    if (isAttrSet) {
                         attribute2setId.put(attr, parentSetId);
                     } else {
                         attributes.add(attr);
                     }
                     attr.readFromDB4Properties();
-                    Attribute.cacheAttribute(attr);
+                    Attribute.cacheAttribute(attr, _type);
                 }
             }
             // make connection between set and attributes
@@ -900,7 +901,7 @@ public class Attribute
                 parentset.addAttributes(false, childAttr);
                 childAttr.setParentSet(parentset);
                 // needed due to cluster serialization that does not update automatically
-                Attribute.cacheAttribute(childAttr);
+                Attribute.cacheAttribute(childAttr, null);
             }
             _type.addAttributes(false, attributes.toArray(new Attribute[attributes.size()]));
         } catch (final SQLException e) {
