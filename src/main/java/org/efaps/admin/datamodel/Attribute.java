@@ -35,6 +35,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
+import org.efaps.ci.CIAdminDataModel;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
 import org.efaps.db.databases.information.ColumnInformation;
@@ -859,9 +860,8 @@ public class Attribute
                 final String dimensionUUID = (String) row[9];
 
                 Attribute.LOG.debug("read attribute '{}/{}' (id = {})", _type.getName(), name, id);
-                final boolean isAttrSet = Type.check4Set(typeAttrId);
 
-                if (isAttrSet) {
+                if (Type.check4Type(typeAttrId, CIAdminDataModel.AttributeSet.uuid)) {
                     final AttributeSet set = new AttributeSet(id, _type, name, AttributeType.get(attrTypeId),
                                     sqlCol, tableId, typeLinkId, dimensionUUID);
                     id2Set.put(id, set);
@@ -885,13 +885,15 @@ public class Attribute
                     }   else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_GROUP_LINK.getUuid())) {
                         attr.setLink(Type.getId4UUID(CIAdminUser.Group.uuid));
                     }
-                    if (isAttrSet) {
+
+                    attr.readFromDB4Properties();
+
+                    if (Type.check4Type(typeAttrId, CIAdminDataModel.AttributeSetAttribute.uuid)) {
                         attribute2setId.put(attr, parentSetId);
                     } else {
                         attributes.add(attr);
+                        Attribute.cacheAttribute(attr, _type);
                     }
-                    attr.readFromDB4Properties();
-                    Attribute.cacheAttribute(attr, _type);
                 }
             }
             // make connection between set and attributes
@@ -901,8 +903,12 @@ public class Attribute
                 parentset.addAttributes(false, childAttr);
                 childAttr.setParentSet(parentset);
                 // needed due to cluster serialization that does not update automatically
-                Attribute.cacheAttribute(childAttr, null);
+                Attribute.cacheAttribute(childAttr, parentset);
             }
+            for (final AttributeSet set : id2Set.values()) {
+                Type.cacheType(set);
+            }
+
             _type.addAttributes(false, attributes.toArray(new Attribute[attributes.size()]));
         } catch (final SQLException e) {
             throw new CacheReloadException("Cannot read attributes.", e);

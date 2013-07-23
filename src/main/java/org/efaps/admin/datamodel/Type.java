@@ -477,18 +477,18 @@ public class Type
     /**
      *
      */
-    private void inheritAttributes()
+    protected void inheritAttributes()
         throws CacheReloadException
     {
         Type parent = getParentType();
-        final List<Attribute> attributes = new ArrayList<Attribute>();
+        final List<Attribute> attributesTmp = new ArrayList<Attribute>();
         while (parent != null) {
             for (final Attribute attribute : getParentType().getAttributes().values()) {
-                attributes.add(attribute.copy(getId()));
+                attributesTmp.add(attribute.copy(getId()));
             }
             parent = parent.getParentType();
         }
-        addAttributes(true, attributes.toArray(new Attribute[attributes.size()]));
+        addAttributes(true, attributesTmp.toArray(new Attribute[attributesTmp.size()]));
     }
 
     /**
@@ -772,42 +772,6 @@ public class Type
             this.allowedEventTypes.add(_toId);
         }
         super.setLinkProperty(_linkTypeUUID, _toId, _toTypeUUID, _toName);
-    }
-
-    /**
-     * Add a new child type for this type. All sub child types of the child type
-     * are also defined as child type of this type.<br/>
-     * Also for all parent types (of this type), the child type (with sub child
-     * types) are added.
-     *
-     * @param _childType child type to add
-     * @param _inherit inherit switch to prevent infinit loop
-     * @throws CacheReloadException on error
-     * @see #childTypes
-     */
-    protected void addChildType(final Type _childType,
-                                final boolean _inherit)
-        throws CacheReloadException
-    {
-        final List<Attribute> copies = new ArrayList<Attribute>();
-        for (final Attribute attribute : this.attributes.values()) {
-            copies.add(attribute.copy(_childType.getId()));
-        }
-        _childType.addAttributes(true, copies.toArray(new Attribute[copies.size()]));
-        if (!this.childTypes.contains(_childType.getId())) {
-            this.childTypes.add(_childType.getId());
-            setDirty();
-        }
-        Type parent = this;
-        while (parent != null) {
-            if (_inherit) {
-                parent.addChildType(_childType, false);
-                for (final Type child : _childType.getChildTypes()) {
-                    parent.addChildType(child, false);
-                }
-            }
-            parent = parent.getParentType();
-        }
     }
 
     /**
@@ -1493,7 +1457,8 @@ public class Type
      * @param _typeAttrId
      * @return
      */
-    protected static boolean check4Set(final long _typeId)
+    protected static boolean check4Type(final long _typeId,
+                                        final UUID _typeUUID)
         throws CacheReloadException
     {
         boolean ret = false;
@@ -1533,7 +1498,7 @@ public class Type
                     }
                 }
             }
-            ret = UUID.fromString(uuidTmp).equals(CIAdminDataModel.AttributeSet.uuid);
+            ret = UUID.fromString(uuidTmp).equals(_typeUUID);
         }
         return ret;
     }

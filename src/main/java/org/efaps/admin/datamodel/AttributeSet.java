@@ -83,7 +83,6 @@ public class AttributeSet
 
         this.attributeName = (_name == null) ? null : _name.trim();
 
-        Type.cacheType(this);
         readFromDB4Properties();
 
         this.attributeType = _attributeType;
@@ -93,13 +92,9 @@ public class AttributeSet
         addAttributes(false, attr);
         attr.setLink(_type.getId());
         if (_typeLinkId > 0) {
-            final Type parent = Type.get(_typeLinkId);
             setParentTypeID(_typeLinkId);
-            parent.addChildType(this, true);
-            getAttributes().putAll(parent.getAttributes());
         }
-        // needed due to cluster serialization that does not update automatically
-        Type.cacheType(this);
+        inheritAttributes();
     }
 
     /**
