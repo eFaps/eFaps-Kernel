@@ -142,9 +142,7 @@ public class SQLInsert
             .append(val)
             .append(Context.getDbType().getSQLPart(SQLPart.PARENTHESIS_CLOSE));
 
-        if (SQLInsert.LOG.isDebugEnabled()) {
-            SQLInsert.LOG.debug(cmd.toString());
-        }
+        SQLInsert.LOG.debug("Executing SQL: {}", cmd.toString());
 
         PreparedStatement stmt;
         if (this.newId && supGenKey) {

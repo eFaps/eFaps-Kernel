@@ -949,7 +949,7 @@ public class Type
      * @throws CacheReloadException on error
      */
     public Set<Type> getAllowedEventTypes()
-                    throws CacheReloadException
+        throws CacheReloadException
     {
         final Set<Type> ret = new HashSet<Type>();
         for (final Long id : this.allowedEventTypes) {

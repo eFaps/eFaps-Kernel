@@ -259,6 +259,7 @@ public class Insert
                                      final long _id)
         throws EFapsException
     {
+        Insert.LOG.debug("Preparing insert on table: {} for Values: {}", _table, _values);
         long ret = _id;
         try {
             final SQLInsert insert = Context.getDbType().newInsert(_table.getSqlTable(),

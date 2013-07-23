@@ -213,7 +213,7 @@ public final class SQLTable
     /**
      * The instance method adds a new type to the type list.
      *
-     * @param _type TYpe to add
+     * @param _typeId id of the Type to add
      * @see #types
      */
     protected void addType(final Long _typeId)
