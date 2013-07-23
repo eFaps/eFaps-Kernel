@@ -241,9 +241,6 @@ public class LinkFromSelect
             select.addPart(SQLPart.PARENTHESIS_CLOSE);
         }
 
-        if (AbstractPrintQuery.LOG.isDebugEnabled()) {
-            AbstractPrintQuery.LOG.debug(select.getSQL());
-        }
         return select.getSQL();
     }
 
@@ -277,9 +274,8 @@ public class LinkFromSelect
         boolean ret = false;
         ConnectionResource con = null;
         try {
-            if (AbstractPrintQuery.LOG.isDebugEnabled()) {
-                AbstractPrintQuery.LOG.debug(_complStmt.toString());
-            }
+
+            AbstractPrintQuery.LOG.debug("Executing SQLL: {}", _complStmt);
 
             List<Object[]> rows = null;
             boolean cached = false;

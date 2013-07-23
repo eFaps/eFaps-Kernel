@@ -122,9 +122,6 @@ public class InstanceQuery
         select.addSection(getOrderBy());
         select.addSection(getLimit());
 
-        if (AbstractObjectQuery.LOG.isDebugEnabled()) {
-            AbstractObjectQuery.LOG.debug(select.getSQL());
-        }
         return select.getSQL();
     }
 
@@ -142,9 +139,7 @@ public class InstanceQuery
         try {
             con = Context.getThreadContext().getConnectionResource();
 
-            if (AbstractObjectQuery.LOG.isDebugEnabled()) {
-                AbstractObjectQuery.LOG.debug(_complStmt.toString());
-            }
+            AbstractObjectQuery.LOG.debug("Executing SQL: {}", _complStmt);
 
             final Statement stmt = con.getConnection().createStatement();
 
