@@ -226,7 +226,7 @@ public class Insert
 
             for (final Entry<SQLTable, Map<Attribute, Value>> entry : getExpr4Tables().entrySet()) {
                 final SQLTable table = entry.getKey();
-                if ((table != mainTable) && !table.isReadOnly()) {
+                if (!table.equals(mainTable) && !table.isReadOnly()) {
                     executeOneStatement(con, table, entry.getValue().values(), id);
                 }
             }
