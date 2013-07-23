@@ -676,9 +676,6 @@ public abstract class AbstractPrintQuery
             oneSel.append2SQLWhere(select);
         }
 
-        if (AbstractPrintQuery.LOG.isDebugEnabled()) {
-            AbstractPrintQuery.LOG.debug(select.getSQL());
-        }
         return select.getSQL();
     }
 
@@ -700,9 +697,7 @@ public abstract class AbstractPrintQuery
         boolean ret = false;
         ConnectionResource con = null;
         try {
-            if (AbstractPrintQuery.LOG.isDebugEnabled()) {
-                AbstractPrintQuery.LOG.debug(_complStmt);
-            }
+            AbstractPrintQuery.LOG.debug("Executing SQL: {}", _complStmt);
 
             List<Object[]> rows = null;
             boolean cached = false;
