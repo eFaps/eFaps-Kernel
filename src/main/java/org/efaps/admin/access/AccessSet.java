@@ -421,7 +421,7 @@ public final class AccessSet
      * Read the related Abstract Person (Role, Person).
      * @throws CacheReloadException on error
      */
-   private void readLinks2Person()
+    private void readLinks2Person()
         throws CacheReloadException
     {
         ConnectionResource con = null;
@@ -550,15 +550,15 @@ public final class AccessSet
     {
         final Cache<UUID, AccessSet> cache4UUID = InfinispanCache.get().<UUID, AccessSet>getIgnReCache(
                         AccessSet.UUIDCACHE);
-        cache4UUID.putIfAbsent(_role.getUUID(), _role);
+        cache4UUID.put(_role.getUUID(), _role);
 
         final Cache<String, AccessSet> nameCache = InfinispanCache.get().<String, AccessSet>getIgnReCache(
                         AccessSet.NAMECACHE);
-        nameCache.putIfAbsent(_role.getName(), _role);
+        nameCache.put(_role.getName(), _role);
 
         final Cache<Long, AccessSet> idCache = InfinispanCache.get().<Long, AccessSet>getIgnReCache(
                         AccessSet.IDCACHE);
-        idCache.putIfAbsent(_role.getId(), _role);
+        idCache.put(_role.getId(), _role);
     }
 
     /**
@@ -589,7 +589,6 @@ public final class AccessSet
                     final String name = rs.getString(3);
                     AccessSet.LOG.debug("read AccessSet '{}' (id = {}, uuid ={})", name, id, uuid);
                     accessSet = new AccessSet(id, uuid, name);
-                    AccessSet.cacheAccessSet(accessSet);
                 }
                 ret = true;
                 rs.close();

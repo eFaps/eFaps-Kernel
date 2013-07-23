@@ -378,11 +378,11 @@ public final class Status
     {
         final Cache<String, StatusGroup> nameCache = InfinispanCache.get().<String, StatusGroup>getIgnReCache(
                         Status.NAMECACHE4GRP);
-        nameCache.putIfAbsent(_grp.getName(), _grp);
+        nameCache.put(_grp.getName(), _grp);
 
         final Cache<UUID, StatusGroup> uuidCache = InfinispanCache.get().<UUID, StatusGroup>getIgnReCache(
                         Status.UUIDCACHE4GRP);
-        uuidCache.putIfAbsent(_grp.getUUID(), _grp);
+        uuidCache.put(_grp.getUUID(), _grp);
     }
 
     /**
@@ -391,7 +391,7 @@ public final class Status
     private static void cacheStatus(final Status _status)
     {
         final Cache<Long, Status> idCache = InfinispanCache.get().<Long, Status>getIgnReCache(Status.IDCACHE4STATUS);
-            idCache.putIfAbsent(_status.getId(), _status);
+        idCache.put(_status.getId(), _status);
     }
 
     /**
