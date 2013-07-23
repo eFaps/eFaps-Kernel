@@ -879,7 +879,9 @@ public class Type
     {
         final Set<Type> ret = new HashSet<Type>();
         for (final Long id : this.childTypes) {
-            ret.add(Type.get(id));
+            final Type child = Type.get(id);
+            ret.add(child);
+            ret.addAll(child.getChildTypes());
         }
         return Collections.unmodifiableSet(ret);
     }
