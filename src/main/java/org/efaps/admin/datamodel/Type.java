@@ -188,6 +188,7 @@ public class Type
      */
     private static final String SQL_CHILD = new SQLSelect()
                     .column("ID")
+                    .column("PURPOSE")
                     .from("V_ADMINTYPE", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "PARENTDMTYPE").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
@@ -1314,13 +1315,13 @@ public class Type
 
     /**
      * @param _parentID id to be searched for
-     * @return a list of ids
+     * @return a list of object containing the id and the purpose
      * @throws CacheReloadException on error
      */
-    private static List<Long> getChildTypeIDs(final long _parentID)
+    private static List<Object[]> getChildTypeIDs(final long _parentID)
         throws CacheReloadException
     {
-        final List<Long> ret = new ArrayList<Long>();
+        final List<Object[]> ret = new ArrayList<Object[]>();
         ConnectionResource con = null;
         try {
             con = Context.getThreadContext().getConnectionResource();
@@ -1330,7 +1331,7 @@ public class Type
                 stmt.setObject(1, _parentID);
                 final ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
-                    ret.add(rs.getLong(1));
+                    ret.add(new Object[] { rs.getLong(1), rs.getInt(2) });
                 }
                 rs.close();
             } finally {
@@ -1374,6 +1375,7 @@ public class Type
             final ResultSet rs = stmt.executeQuery();
             long parentTypeId = 0;
             long id = 0;
+            final char trueCriteria = "1".toCharArray()[0];
             if (rs.next()) {
                 id = rs.getLong(1);
                 final String uuid = rs.getString(2).trim();
@@ -1385,9 +1387,11 @@ public class Type
 
                 final char[] purpose2 = ("00000000" + Integer.toBinaryString(purpose)).toCharArray();
                 ArrayUtils.reverse(purpose2);
-                final char trueCriteria = "1".toCharArray()[0];
                 if (trueCriteria == purpose2[Type.Purpose.CLASSIFICATION.getDigit()]) {
                     ret = new Classification(id, uuid, name);
+                    if (parentTypeId != 0) {
+                        ((Classification) ret).setParentClassification(parentTypeId);
+                    }
                 } else {
                     ret = new Type(id, uuid, name);
                     if (parentTypeId != 0) {
@@ -1414,20 +1418,20 @@ public class Type
                     if (ret.getId() == parent.getId()) {
                         throw new CacheReloadException("child and parent type is equal!child is " + ret);
                     }
-                    if (ret instanceof Classification) {
-                        ((Classification) ret).setParentClassification((Classification) parent);
-                        ((Classification) parent).getChildClassifications().add((Classification) ret);
-                        if (((Classification) ret).isRoot()) {
-                            ((Classification) ret).getClassifiesType().addClassifiedByType((Classification) ret);
-                        }
-                        ret.setDirty();
-                    }
                 }
                 if (!ret.checked4Children) {
                     ret.checked4Children = true;
-                    for (final Long childID : Type.getChildTypeIDs(ret.getId())) {
-                        Type.LOG.trace("reading Child Type with id: {} for type :{}", childID, ret.getName());
-                        ret.childTypes.add(childID);
+                    for (final Object[] childIDs : Type.getChildTypeIDs(ret.getId())) {
+                        Type.LOG.trace("reading Child Type with id: {} for type :{}", childIDs[0], ret.getName());
+                        ret.childTypes.add((Long) childIDs[0]);
+                        if (ret instanceof Classification) {
+                            final char[] purpose = ("00000000" + Integer.toBinaryString((Integer) childIDs[1]))
+                                            .toCharArray();
+                            ArrayUtils.reverse(purpose);
+                            if (trueCriteria == purpose[Type.Purpose.CLASSIFICATION.getDigit()]) {
+                                ((Classification) ret).getChildren().add((Long) childIDs[0]);
+                            }
+                        }
                     }
                     ret.setDirty();
                 }
