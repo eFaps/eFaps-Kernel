@@ -194,7 +194,7 @@ public class CIAdminUser
 
     }
 
-    public static final _Person2Group Person2Group = new _Person2Group("fec64148-a39b-4f69-bedd-9c3bcfe8e1602");
+    public static final _Person2Group Person2Group = new _Person2Group("fec64148-a39b-4f69-bedd-c3bcfe8e1602");
 
     public static class _Person2Group
         extends _Abstract2Abstract
