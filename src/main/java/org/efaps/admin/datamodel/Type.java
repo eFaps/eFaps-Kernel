@@ -1466,7 +1466,7 @@ public class Type
         boolean ret = false;
         final Cache<Long, Type> cache = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
         if (cache.containsKey(_typeId)) {
-            ret = cache.get(_typeId).getUUID().equals(CIAdminDataModel.AttributeSet.uuid);
+            ret = cache.get(_typeId).getUUID().equals(_typeUUID);
         } else {
             ConnectionResource con = null;
             String uuidTmp = "";
