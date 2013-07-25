@@ -52,6 +52,7 @@ import org.efaps.util.ChronologyType;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheLogListener;
+import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.InfinispanCache;
 import org.infinispan.Cache;
 import org.joda.time.Chronology;
@@ -1485,8 +1486,11 @@ public final class Person
 
     /**
      * @param _person Person to be cached
+     * @throws EFapsException
+     * @throws CacheReloadException
      */
     private static void cachePerson(final Person _person)
+        throws EFapsException
     {
         final Cache<String, Person> nameCache = InfinispanCache.get().<String, Person>getIgnReCache(Person.NAMECACHE);
         nameCache.putIfAbsent(_person.getName(), _person);
@@ -1494,8 +1498,10 @@ public final class Person
         final Cache<Long, Person> idCache = InfinispanCache.get().<Long, Person>getIgnReCache(Person.IDCACHE);
         idCache.putIfAbsent(_person.getId(), _person);
 
-        final Cache<UUID, Person> uuidCache = InfinispanCache.get().<UUID, Person>getIgnReCache(Person.UUIDCACHE);
-        uuidCache.putIfAbsent(_person.getUUID(), _person);
+        if (EFapsSystemConfiguration.get().getAttributeValueAsBoolean(KernelSettings.REQUIRE_PERSON_UUID)) {
+            final Cache<UUID, Person> uuidCache = InfinispanCache.get().<UUID, Person>getIgnReCache(Person.UUIDCACHE);
+            uuidCache.putIfAbsent(_person.getUUID(), _person);
+        }
     }
 
 
