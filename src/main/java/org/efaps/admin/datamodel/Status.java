@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ci.CIType;
 import org.efaps.db.Context;
@@ -546,6 +547,12 @@ public final class Status
     public int hashCode()
     {
         return  Long.valueOf(getId()).intValue();
+    }
+
+    @Override
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this);
     }
 
     /**
