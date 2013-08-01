@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -68,6 +69,7 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.admin.user.Role;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.WorkingMemoryLogListener;
 import org.efaps.bpm.timer.ContextTimerJobFactoryManager;
@@ -85,6 +87,7 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.hibernate.cfg.AvailableSettings;
 import org.jbpm.persistence.JpaProcessPersistenceContextManager;
 import org.jbpm.persistence.jta.ContainerManagedTransactionManager;
@@ -94,6 +97,9 @@ import org.jbpm.task.Status;
 import org.jbpm.task.Task;
 import org.jbpm.task.identity.UserGroupCallbackManager;
 import org.jbpm.task.query.TaskSummary;
+import org.jbpm.task.service.Operation;
+import org.jbpm.task.service.OperationCommand;
+import org.jbpm.task.service.TaskService;
 import org.jbpm.task.utils.ContentMarshallerHelper;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.slf4j.Logger;
@@ -111,6 +117,11 @@ public final class BPM
      * Parameter key to be used to pass to the process.
      */
     public static final String OUTPARAMETER4TASKDECISION = "eFapsDecision";
+
+    /**
+     * Parameter key to be used to pass delegates to an Human Task.
+     */
+    public static final String INPUTPARAMETER4DELEGATE = "DelegateIds";
 
     /**
      * Logging instance used in this class.
@@ -322,6 +333,80 @@ public final class BPM
         }
     }
 
+    /**
+     * @param _taskSummary taskSummary the Delegate Roles are wanted for.
+     * @return List of Roles
+     * @throws CacheReloadException on error
+     */
+    public static List<Role> getDelegates4Task(final TaskSummary _taskSummary)
+        throws CacheReloadException
+    {
+        final List<Role> ret = new ArrayList<Role>();
+        final Object values = BPM.getTaskData(_taskSummary);
+        if (values instanceof Map) {
+            final String delegatesStr = (String) ((Map<?, ?>) values).get(BPM.INPUTPARAMETER4DELEGATE);
+            if (delegatesStr != null && !delegatesStr.isEmpty()) {
+                final String[] delegates = delegatesStr.split(";");
+                for (final String delegate : delegates) {
+                    final Role role = Role.get(UUID.fromString(delegate));
+                    if (role != null) {
+                        ret.add(role);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * @param _taskSummary task to be delgate
+     * @param _targetUserId userid of the user the task will be delegated to
+     * @throws EFapsException on error
+     */
+    public static void delegateTask(final TaskSummary _taskSummary,
+                                    final String _targetUserId)
+        throws EFapsException
+    {
+        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
+        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+        // check if must be claimed still
+        if (Status.Ready.equals(_taskSummary.getStatus())) {
+            final boolean isRole = Role.get(UUID.fromString(_targetUserId)) != null;
+            if (isRole) {
+                final TaskService taskService = UserTaskService.getService(null);
+                final List<OperationCommand> commands = taskService.getCommandsForOperation(Operation.Delegate);
+                for (final OperationCommand cmd : commands) {
+                    cmd.setExec(Operation.Delegate);
+                }
+            }
+
+            service.delegate(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString(),
+                            _targetUserId);
+
+            if (isRole) {
+                final TaskService taskService = UserTaskService.getService(null);
+                final List<OperationCommand> commands = taskService.getCommandsForOperation(Operation.Delegate);
+                for (final OperationCommand cmd : commands) {
+                    cmd.setExec(Operation.Claim);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param _taskSummary task to be claimed
+     * @throws EFapsException on error
+     */
+    public static void releaseTask(final TaskSummary _taskSummary)
+        throws EFapsException
+    {
+        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
+        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+        // check if must be claimed still
+        if (Status.Reserved.equals(_taskSummary.getStatus())) {
+            service.release(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
+        }
+    }
 
     /**
      * @param _taskSummary TaskSummary
