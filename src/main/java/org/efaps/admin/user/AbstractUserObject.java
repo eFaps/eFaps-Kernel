@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.UUID;
 
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Type;
@@ -305,6 +306,37 @@ public abstract class AbstractUserObject
                 rsrc.abort();
             }
         }
+    }
+
+    /**
+     * Returns for given parameter <i>_uuid</i> the instance of class
+     * {@link AbstractUserObject}. The returned AbstractUserObject can be a
+     * {@link Role}, {@link Group}, {@link Company}, {@link Consortium}
+     * or {@link Person}. It is searched in the given sequence. User is searched last
+     * due to the reason that it is the only object that is not always stored
+     * in a cache an might produce queries against the DataBase
+     *
+     * @param _uuid UUID to search in the cache
+     * @return instance of class {@link AbstractUserObject}
+     * @throws EFapsException on error
+     */
+    public static AbstractUserObject getUserObject(final UUID _uuid)
+        throws EFapsException
+    {
+        AbstractUserObject ret = Role.get(_uuid);
+        if (ret == null) {
+            ret = Group.get(_uuid);
+        }
+        if (ret == null) {
+            ret = Company.get(_uuid);
+        }
+        if (ret == null) {
+            ret = Consortium.get(_uuid);
+        }
+        if (ret == null) {
+            ret = Person.get(_uuid);
+        }
+        return ret;
     }
 
     /**
