@@ -28,6 +28,7 @@ import org.drools.runtime.Environment;
 import org.drools.runtime.EnvironmentName;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.bpm.task.SessionFactoryImpl;
 import org.efaps.bpm.workitem.HumanTaskWorkItemHandler;
 import org.jbpm.task.service.TaskService;
 import org.jbpm.task.service.local.LocalTaskService;
@@ -72,6 +73,7 @@ public final class UserTaskService
                 emf = Persistence.createEntityManagerFactory("org.jbpm.persistence.jpa");
             }
             final TaskService taskService = new TaskService(emf, SystemEventListenerFactory.getSystemEventListener());
+            taskService.setTaskSessionFactory(new SessionFactoryImpl(taskService, emf));
             UserTaskService.INSTANCE = taskService;
         }
         return UserTaskService.INSTANCE;

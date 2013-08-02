@@ -72,6 +72,7 @@ import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.user.Role;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.WorkingMemoryLogListener;
+import org.efaps.bpm.task.TaskAdminstration;
 import org.efaps.bpm.timer.ContextTimerJobFactoryManager;
 import org.efaps.bpm.transaction.ConnectionProvider;
 import org.efaps.bpm.transaction.TransactionHelper;
@@ -570,6 +571,14 @@ public final class BPM
         // final String language = Context.getThreadContext().getLanguage();
         ret.addAll(service.getTasksByStatusByProcessIdByTaskName(_processInstanceId, _status, _taskName, "en-UK"));
         return ret;
+    }
+
+    /**
+     * @return the TaskAdmin
+     */
+    public static TaskAdminstration getTaskAdmin()
+    {
+        return (TaskAdminstration) UserTaskService.getService(null).createTaskAdmin();
     }
 
     /**
