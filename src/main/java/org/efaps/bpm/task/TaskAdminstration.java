@@ -60,4 +60,29 @@ public class TaskAdminstration
         return (List<TaskSummary>) this.tpm.queryWithParametersInTransaction("TasksByStatus", params);
     }
 
+
+    /**
+     * @return the task in status Reserved
+     */
+    @SuppressWarnings("unchecked")
+    public List<TaskSummary> getReservedTasks()
+    {
+        final HashMap<String, Object> params = TaskPersistenceManager.addParametersToMap(
+                        "status", Status.Reserved,
+                        "language", "en-UK");
+        return (List<TaskSummary>) this.tpm.queryWithParametersInTransaction("TasksByStatus", params);
+    }
+
+    /**
+     * @return the task in status Error
+     */
+    @SuppressWarnings("unchecked")
+    public List<TaskSummary> getErrorTasks()
+    {
+        final HashMap<String, Object> params = TaskPersistenceManager.addParametersToMap(
+                        "status", Status.Error,
+                        "language", "en-UK");
+        return (List<TaskSummary>) this.tpm.queryWithParametersInTransaction("TasksByStatus", params);
+    }
+
 }
