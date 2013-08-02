@@ -72,6 +72,7 @@ import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.user.Role;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.WorkingMemoryLogListener;
+import org.efaps.bpm.process.ProcessAdmin;
 import org.efaps.bpm.task.TaskAdminstration;
 import org.efaps.bpm.timer.ContextTimerJobFactoryManager;
 import org.efaps.bpm.transaction.ConnectionProvider;
@@ -579,6 +580,14 @@ public final class BPM
     public static TaskAdminstration getTaskAdmin()
     {
         return (TaskAdminstration) UserTaskService.getService(null).createTaskAdmin();
+    }
+
+    /**
+     * @return the TaskAdmin
+     */
+    public static ProcessAdmin getProcessAdmin()
+    {
+        return new ProcessAdmin();
     }
 
     /**

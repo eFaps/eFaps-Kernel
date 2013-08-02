@@ -30,6 +30,7 @@ import org.drools.runtime.StatefulKnowledgeSession;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.bpm.task.SessionFactoryImpl;
 import org.efaps.bpm.workitem.HumanTaskWorkItemHandler;
+import org.jbpm.process.audit.JPAProcessInstanceDbLog;
 import org.jbpm.task.service.TaskService;
 import org.jbpm.task.service.local.LocalTaskService;
 import org.jbpm.task.utils.OnErrorAction;
@@ -93,6 +94,8 @@ public final class UserTaskService
             _ksession.getWorkItemManager().registerWorkItemHandler("Human Task", humanTaskHandler);
             BPM.registerWorkItemHandler("Human Task", humanTaskHandler);
             humanTaskHandler.connect();
+            // set the environment for the Process Instance Logger
+            JPAProcessInstanceDbLog.setEnvironment(_ksession.getEnvironment());
         }
         return UserTaskService.LOCAL;
     }
