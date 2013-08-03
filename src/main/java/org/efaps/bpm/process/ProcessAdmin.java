@@ -23,7 +23,9 @@ package org.efaps.bpm.process;
 import java.util.List;
 
 import org.jbpm.process.audit.JPAProcessInstanceDbLog;
+import org.jbpm.process.audit.NodeInstanceLog;
 import org.jbpm.process.audit.ProcessInstanceLog;
+import org.jbpm.process.audit.VariableInstanceLog;
 
 /**
  * TODO comment!
@@ -33,12 +35,69 @@ import org.jbpm.process.audit.ProcessInstanceLog;
  */
 public class ProcessAdmin
 {
+    /**
+     * @return list of all active processes for the given processId.
+     */
+    public List<ProcessInstanceLog> getActiveProcessInstances(final String _processId)
+    {
+        return JPAProcessInstanceDbLog.findActiveProcessInstances(_processId);
+    }
+
+    /**
+     * @return list of all NodeInstance logs for the given processInstanceId.
+     */
+    public List<NodeInstanceLog> getNodeInstances(final Long _processInstanceId)
+    {
+        return JPAProcessInstanceDbLog.findNodeInstances(_processInstanceId);
+    }
+
+    /**
+     * @return list of all NodeInstance logs for the given processInstanceId and NodeId.
+     */
+    public List<NodeInstanceLog> getNodeInstances(final Long _processInstanceId,
+                                                  final String _nodeId)
+    {
+        return JPAProcessInstanceDbLog.findNodeInstances(_processInstanceId, _nodeId);
+    }
+
+    /**
+     * @return processes for the given processId.
+     */
+    public ProcessInstanceLog getProcessInstance(final Long _processInstanceId)
+    {
+        return JPAProcessInstanceDbLog.findProcessInstance(_processInstanceId);
+    }
 
     /**
      * @return list of all found process Instances.
      */
-    public List<ProcessInstanceLog> findProcessInstances()
+    public List<ProcessInstanceLog> getProcessInstances()
     {
         return JPAProcessInstanceDbLog.findProcessInstances();
+    }
+
+    /**
+     * @return list of all processes for the given processId.
+     */
+    public List<ProcessInstanceLog> getProcessInstances(final String _processId)
+    {
+        return JPAProcessInstanceDbLog.findProcessInstances(_processId);
+    }
+
+    /**
+     * @return list of all variable logs for the given processinstanceId.
+     */
+    public List<VariableInstanceLog> getVariableInstances(final Long _processInstanceId)
+    {
+        return JPAProcessInstanceDbLog.findVariableInstances(_processInstanceId);
+    }
+
+    /**
+     * @return list of all variable logs for the given processinstanceId and variable id.
+     */
+    public List<VariableInstanceLog> getVariableInstances(final Long _processInstanceId,
+                                                          final String _variableId)
+    {
+        return JPAProcessInstanceDbLog.findVariableInstances(_processInstanceId, _variableId);
     }
 }
