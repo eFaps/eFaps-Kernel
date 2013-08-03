@@ -36,6 +36,7 @@ import org.jbpm.process.audit.VariableInstanceLog;
 public class ProcessAdmin
 {
     /**
+     * @param _processId processId
      * @return list of all active processes for the given processId.
      */
     public List<ProcessInstanceLog> getActiveProcessInstances(final String _processId)
@@ -44,6 +45,7 @@ public class ProcessAdmin
     }
 
     /**
+     * @param _processInstanceId processInstanceId
      * @return list of all NodeInstance logs for the given processInstanceId.
      */
     public List<NodeInstanceLog> getNodeInstances(final Long _processInstanceId)
@@ -52,6 +54,8 @@ public class ProcessAdmin
     }
 
     /**
+     * @param _processInstanceId processInstanceId
+     * @param _nodeId NodeId
      * @return list of all NodeInstance logs for the given processInstanceId and NodeId.
      */
     public List<NodeInstanceLog> getNodeInstances(final Long _processInstanceId,
@@ -61,6 +65,7 @@ public class ProcessAdmin
     }
 
     /**
+     * @param _processInstanceId processInstanceId
      * @return processes for the given processId.
      */
     public ProcessInstanceLog getProcessInstance(final Long _processInstanceId)
@@ -77,6 +82,7 @@ public class ProcessAdmin
     }
 
     /**
+     * @param _processId processId
      * @return list of all processes for the given processId.
      */
     public List<ProcessInstanceLog> getProcessInstances(final String _processId)
@@ -85,6 +91,7 @@ public class ProcessAdmin
     }
 
     /**
+     * @param _processInstanceId processInstanceId
      * @return list of all variable logs for the given processinstanceId.
      */
     public List<VariableInstanceLog> getVariableInstances(final Long _processInstanceId)
@@ -93,6 +100,8 @@ public class ProcessAdmin
     }
 
     /**
+     * @param _processInstanceId processInstanceId
+     * @param _variableId variable id
      * @return list of all variable logs for the given processinstanceId and variable id.
      */
     public List<VariableInstanceLog> getVariableInstances(final Long _processInstanceId,
