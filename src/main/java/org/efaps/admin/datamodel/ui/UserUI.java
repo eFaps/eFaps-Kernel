@@ -21,6 +21,7 @@
 package org.efaps.admin.datamodel.ui;
 
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.user.Company;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
@@ -58,6 +59,9 @@ public class UserUI
         } else if (value instanceof Group) {
             final Group group = (Group) value;
             ret = group.getName();
+        } else if (value instanceof Company) {
+            final Company company = (Company) value;
+            ret = company.getName();
         } else {
             ret = DBProperties.getProperty("org.efaps.admin.datamodel.ui.UserUI.None");
         }
@@ -82,6 +86,9 @@ public class UserUI
         } else if (_fieldValue.getValue() instanceof Group) {
             final Group group = (Group) _fieldValue.getValue();
             value = group.getName();
+        } else if (_fieldValue.getValue() instanceof Company) {
+            final Company company = (Company) _fieldValue.getValue();
+            value = company.getName();
         } else {
             value = _fieldValue.getValue() == null ? "" : _fieldValue.getValue().toString();
         }
@@ -95,6 +102,9 @@ public class UserUI
         } else if (_fieldValue2.getValue() instanceof Group) {
             final Group group = (Group) _fieldValue2.getValue();
             value2 = group.getName();
+        } else if (_fieldValue2.getValue() instanceof Company) {
+            final Company company = (Company) _fieldValue2.getValue();
+            value2 = company.getName();
         } else {
             value2 = _fieldValue2.getValue() == null ? "" : _fieldValue2.getValue().toString();
         }

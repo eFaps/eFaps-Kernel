@@ -21,8 +21,10 @@
 package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.EFapsException;
@@ -72,5 +74,27 @@ public class CompanyLinkType
                 throw new SQLException("could not fetch company id", e);
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object readValue(final Attribute _attribute,
+                            final List<Object> _objectList)
+        throws EFapsException
+    {
+        Object ret = null;
+        final Object obj = _objectList.get(0);
+        if (obj != null) {
+            long id = 0;
+            if (obj instanceof Number) {
+                id = ((Number) obj).longValue();
+            } else if (obj != null) {
+                id = Long.parseLong(obj.toString());
+            }
+            ret = Company.get(id);
+        }
+        return ret;
     }
 }
