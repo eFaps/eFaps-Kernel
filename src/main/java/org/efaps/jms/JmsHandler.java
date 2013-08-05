@@ -208,7 +208,8 @@ public final class JmsHandler
             // this means that a definition cannot be found.
             JmsHandler.LOG.warn("Naming exception for JMS", e);
         } catch (final JMSException e) {
-            throw new EFapsException("JMSException", e);
+            // this means normally that e.g. no jms server was found
+            JmsHandler.LOG.error("JMS not working!!!!!!!", e);
         } catch (final ClassNotFoundException e) {
             throw new EFapsException("ClassNotFoundException", e);
         } catch (final InstantiationException e) {
