@@ -31,6 +31,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ci.CIStatus;
 import org.efaps.ci.CIType;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -318,6 +319,35 @@ public final class Status
         throws CacheReloadException
     {
         return Status.get(_ciType.uuid).get(_key);
+    }
+
+    /**
+     * Method to get a Status from the cache.
+     *
+     * @param _ciType CIType of the StatusGroup
+     * @param _key key of the Status
+     * @return Status
+     * @throws CacheReloadException on error
+     */
+    public static Status find(final CIType _ciType,
+                              final CIStatus _status)
+        throws CacheReloadException
+    {
+        return Status.get(_ciType.uuid).get(_status.key);
+    }
+
+    /**
+     * Method to get a Status from the cache.
+     *
+     * @param _ciType CIType of the StatusGroup
+     * @param _key key of the Status
+     * @return Status
+     * @throws CacheReloadException on error
+     */
+    public static Status find(final CIStatus _status)
+        throws CacheReloadException
+    {
+        return Status.get(_status.ciType.uuid).get(_status.key);
     }
 
     /**
