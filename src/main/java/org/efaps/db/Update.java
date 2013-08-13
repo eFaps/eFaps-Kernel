@@ -344,7 +344,7 @@ public class Update
                         attributes);
 
         if (!hasAccess) {
-            throw new EFapsException(getClass(), "execute.NoAccess");
+            throw new EFapsException(getClass(), "execute.NoAccess", Context.getThreadContext().getPerson());
         }
         executeWithoutAccessCheck();
     }
