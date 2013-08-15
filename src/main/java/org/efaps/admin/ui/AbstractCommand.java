@@ -20,6 +20,7 @@
 
 package org.efaps.admin.ui;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -226,25 +227,19 @@ public abstract class AbstractCommand
     /**
      * The instance variable stores the target connect attribute used for the
      * connect in a form.
-     *
-     * @see #getTargetConnectAttribute
-     * @see #setTargetConnectAttribute
      */
-    private Attribute targetConnectAttribute = null;
+    private long targetConnectAttributeId = 0;
 
     /**
      * The instance variable stores the create type for the target user
      * interface object.
-     *
-     * @see #getTargetCreateType
-     * @see #setTargetCreateType
      */
-    private Type targetCreateType = null;
+    private long targetCreateTypeId = 0;
 
     /**
      * Classifications that will be added to the object on create.
      */
-    private final Set<Classification> targetCreateClassification = new HashSet<Classification>();
+    private final Set<Long> targetCreateClassificationIds = new HashSet<Long>();
 
     /**
      * Is the target Menu/Command the default.
@@ -486,12 +481,12 @@ public abstract class AbstractCommand
      * {@link #targetConnectAttribute}.
      *
      * @return value of instance variable {@link #targetConnectAttribute}
-     * @see #targetConnectAttribute
-     * @see #setTargetConnectAttribute
+     * @throws CacheReloadException on error
      */
     public Attribute getTargetConnectAttribute()
+        throws CacheReloadException
     {
-        return this.targetConnectAttribute;
+        return Attribute.get(this.targetConnectAttributeId);
     }
 
     /**
@@ -499,12 +494,12 @@ public abstract class AbstractCommand
      * {@link #targetCreateType}.
      *
      * @return value of instance variable {@link #targetCreateType}
-     * @see #targetCreateType
-     * @see #setTargetCreateType
+     * @throws CacheReloadException on error
      */
     public Type getTargetCreateType()
+        throws CacheReloadException
     {
-        return this.targetCreateType;
+        return Type.get(this.targetCreateTypeId);
     }
 
     /**
@@ -572,8 +567,8 @@ public abstract class AbstractCommand
                             }
                         } else if (getTargetForm() != null) {
                             // only if a Enabled4FormN property is set to true the menu will be added
-                            if ((prop.getProperty("Enable4Form" + i) != null
-                                            && "true".equalsIgnoreCase(prop.getProperty("Enable4Form" + i)))) {
+                            if (prop.getProperty("Enable4Form" + i) != null
+                                            && "true".equalsIgnoreCase(prop.getProperty("Enable4Form" + i))) {
                                 if (this.targetMenu == null && ret == null) {
                                     ret = Menu.get(menuname);
                                     break;
@@ -633,7 +628,7 @@ public abstract class AbstractCommand
         for (final String value : values) {
             final Type classification = Type.get(value.trim());
             if (classification != null) {
-                this.targetCreateClassification.add((Classification) classification);
+                this.targetCreateClassificationIds.add(classification.getId());
             }
         }
     }
@@ -642,10 +637,16 @@ public abstract class AbstractCommand
      * Getter method for instance variable {@link #targetCreateClassification}.
      *
      * @return value of instance variable {@link #targetCreateClassification}
+     * @throws CacheReloadException on error
      */
     public Set<Classification> getTargetCreateClassification()
+        throws CacheReloadException
     {
-        return this.targetCreateClassification;
+        final Set<Classification> ret = new HashSet<Classification>();
+        for (final Long id : this.targetCreateClassificationIds) {
+            ret.add(Classification.get(id));
+        }
+        return Collections.unmodifiableSet(ret);
     }
 
     /**
@@ -960,9 +961,11 @@ public abstract class AbstractCommand
         } else if ("TargetCmdRevise".equals(_name)) {
             this.targetCmdRevise = "TRUE".equalsIgnoreCase(_value);
         } else if ("TargetConnectAttribute".equals(_name)) {
-            this.targetConnectAttribute = Attribute.get(_value);
+            final Attribute attr = Attribute.get(_value);
+            this.targetConnectAttributeId = attr == null ? 0 : attr.getId();
         } else if ("TargetCreateType".equals(_name)) {
-            this.targetCreateType = Type.get(_value);
+            final Type type = Type.get(_value);
+            this.targetCreateTypeId = type == null ? 0 : type.getId();
         } else if ("TargetCreateClassifications".equals(_name)) {
             setTargetCreateClassifications(_value);
         } else if ("TargetDefaultMenu".equals(_name)) {
