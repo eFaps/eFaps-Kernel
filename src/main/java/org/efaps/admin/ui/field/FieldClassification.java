@@ -122,16 +122,25 @@ public class FieldClassification
     {
         boolean ret = false;
         if (!_parent.isAbstract()) {
-            ret = _parent.hasAccess(_instance, _accessType);
+            ret = _parent.hasAccess(getInstance4Classification(_instance, _parent), _accessType);
         }
         if (!ret) {
             for (final Classification childClass : _parent.getChildClassifications()) {
-                ret = childClass.hasAccess(_instance, _accessType);
+                ret = childClass.hasAccess(getInstance4Classification(_instance, childClass), _accessType);
                 if (ret) {
                     break;
                 }
             }
         }
         return ret;
+    }
+
+    private Instance getInstance4Classification(final Instance _instance,
+                                                final Classification _clazz) {
+        Instance inst = _instance;
+        if (!(_instance.getType() instanceof Classification)) {
+            inst = Instance.get(_clazz, 0);
+        }
+        return inst;
     }
 }
