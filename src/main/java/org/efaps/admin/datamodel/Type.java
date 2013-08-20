@@ -698,21 +698,25 @@ public class Type
                                               final AccessType _accessType)
         throws EFapsException
     {
-        final List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);
         Map<Instance, Boolean> ret = new HashMap<Instance, Boolean>();
-        if (events != null) {
-            final Parameter parameter = new Parameter();
-            parameter.put(ParameterValues.OTHERS, _instances);
-            parameter.put(ParameterValues.ACCESSTYPE, _accessType);
-            parameter.put(ParameterValues.CLASS, this);
-
-            for (final EventDefinition event : events) {
-                final Return retrn = event.execute(parameter);
-                ret = (Map<Instance, Boolean>) retrn.get(ReturnValues.VALUES);
-            }
+        if (_instances != null && !_instances.isEmpty() && _instances.size() == 1) {
+            final Instance instance = _instances.get(0);
+            ret.put(instance, hasAccess(instance, _accessType));
         } else {
-            for (final Instance instance : _instances) {
-                ret.put(instance, true);
+            final List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);
+            if (events != null) {
+                final Parameter parameter = new Parameter();
+                parameter.put(ParameterValues.OTHERS, _instances);
+                parameter.put(ParameterValues.ACCESSTYPE, _accessType);
+                parameter.put(ParameterValues.CLASS, this);
+                for (final EventDefinition event : events) {
+                    final Return retrn = event.execute(parameter);
+                    ret = (Map<Instance, Boolean>) retrn.get(ReturnValues.VALUES);
+                }
+            } else {
+                for (final Instance instance : _instances) {
+                    ret.put(instance, true);
+                }
             }
         }
         return ret;
