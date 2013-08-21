@@ -1398,9 +1398,9 @@ public class Type
                     }
                 } else {
                     ret = new Type(id, uuid, name);
-                    if (parentTypeId != 0) {
-                        ret.setParentTypeID(parentTypeId);
-                    }
+                }
+                if (parentTypeId != 0) {
+                    ret.setParentTypeID(parentTypeId);
                 }
                 ret.setAbstract(trueCriteria == purpose2[Type.Purpose.ABSTRACT.getDigit()]);
 
