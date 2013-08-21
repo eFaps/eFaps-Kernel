@@ -174,8 +174,8 @@ public class Classification
 
     /**
      * Getter method for instance variable {@link #childs}.
-     *
      * @return value of instance variable {@link #childs}
+     * @throws CacheReloadException on error
      */
     public Set<Classification> getChildClassifications()
         throws CacheReloadException
@@ -214,6 +214,7 @@ public class Classification
      * classification will be returned.
      *
      * @return value of instance variable {@link #classifiesType}
+     * @throws CacheReloadException on error
      */
     public Type getClassifiesType()
         throws CacheReloadException
@@ -233,6 +234,7 @@ public class Classification
      * classification will be returned.
      *
      * @return value of instance variable {@link #classifyRelation}
+     * @throws CacheReloadException on error
      */
     public Type getClassifyRelationType()
         throws CacheReloadException
@@ -252,8 +254,10 @@ public class Classification
      * classification will be returned.
      *
      * @return value of instance variable {@link #relLinkAttributeName}
+     * @throws CacheReloadException on error
      */
-    public String getRelLinkAttributeName() throws CacheReloadException
+    public String getRelLinkAttributeName()
+        throws CacheReloadException
     {
         final String ret;
         if (this.relLinkAttributeName == null && this.parent != null) {
@@ -269,8 +273,10 @@ public class Classification
      * variable is null the value for this instance variable of the parent
      * classification will be returned.
      * @return value of instance variable {@link #relTypeAttributeName}
+     * @throws CacheReloadException on error
      */
-    public String getRelTypeAttributeName() throws CacheReloadException
+    public String getRelTypeAttributeName()
+        throws CacheReloadException
     {
         final String ret;
         if (this.relTypeAttributeName == null && this.parent != null) {
@@ -295,6 +301,7 @@ public class Classification
      * Getter method for the instance variable {@link #multipleSelect}.
      *
      * @return value of instance variable {@link #multipleSelect}
+     * @throws CacheReloadException on error
      */
     public boolean isMultipleSelect()
         throws CacheReloadException
@@ -316,6 +323,7 @@ public class Classification
      * @param _company copmany that will be checked for assignment
      * @return true it the root classification of this classification is
      *         assigned to the given company, else
+     * @throws CacheReloadException on error
      */
     public boolean isAssigendTo(final Company _company)
         throws CacheReloadException

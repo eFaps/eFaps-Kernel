@@ -476,7 +476,8 @@ public class Type
     }
 
     /**
-     *
+     * inherit Attributes
+     * @throws CacheReloadException on error
      */
     protected void inheritAttributes()
         throws CacheReloadException
@@ -1464,8 +1465,14 @@ public class Type
     }
 
     /**
-     * @param _typeAttrId
-     * @return
+     * Compares a given id and uuid of a type to evaluate if they are from the
+     * same Type. In case that they are not cached (during initialize) teh
+     * database is requested.
+     *
+     * @param _typeId Id of the type to be checked
+     * @param _typeUUID uuid of the type to be checked
+     * @return true if the id and the uuid belong to the same type
+     * @throws CacheReloadException on error
      */
     protected static boolean check4Type(final long _typeId,
                                         final UUID _typeUUID)
@@ -1564,7 +1571,7 @@ public class Type
 
     /**
      * During the initial caching of types, the mapping does not exists but is necessary.
-     * @param _typeUUID UUID of the type the id is wanted for
+     * @param _typeId id of the type the UUID is wanted for
      * @return id of the type
      * @throws CacheReloadException on error
      */
