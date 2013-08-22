@@ -778,12 +778,12 @@ public class TypeUpdate
                         query.executeWithoutAccessCheck();
                         if (query.next()) {
                             final Instance instance = query.getCurrentValue();
-                            addValue("ParentType", "" + instance.getId());
+                            addValue(CIAdminDataModel.Type.ParentType.name, "" + instance.getId());
                         } else {
-                            addValue("ParentType", null);
+                            addValue(CIAdminDataModel.Type.ParentType.name, null);
                         }
                     } else {
-                        addValue("ParentType", null);
+                        addValue(CIAdminDataModel.Type.ParentType.name, null);
                     }
                     if ((this.parentClassType != null) && (this.parentClassType.length() > 0)) {
                         final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.Type);
@@ -792,12 +792,12 @@ public class TypeUpdate
                         query.executeWithoutAccessCheck();
                         if (query.next()) {
                             final Instance instance = query.getCurrentValue();
-                            addValue("ParentClassType", "" + instance.getId());
+                            addValue(CIAdminDataModel.Type.ParentClassType.name, "" + instance.getId());
                         } else {
-                            addValue("ParentClassType", null);
+                            addValue(CIAdminDataModel.Type.ParentClassType.name, null);
                         }
                     } else {
-                        addValue("ParentClassType", null);
+                        addValue(CIAdminDataModel.Type.ParentClassType.name, null);
                     }
                 }
 
