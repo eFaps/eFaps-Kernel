@@ -178,7 +178,7 @@ public class OracleDatabase
         final Statement stmt = _connection.createStatement();
         try {
             final ResultSet resultset = stmt
-                        .executeQuery("select product from product_component_version where product like 'Oracle%';");
+                        .executeQuery("select product from product_component_version where product like 'Oracle%'");
             ret = resultset.next();
             resultset.close();
         } finally {
