@@ -626,6 +626,11 @@ public class TypeUpdate
         private String parentType = null;
 
         /**
+         * Stores the name of the parent classification type.
+         */
+        private String parentClassType = null;
+
+        /**
          * All attributes of the type are stored in this list.
          *
          * @see #updateInDB
@@ -665,8 +670,8 @@ public class TypeUpdate
          */
         @Override
         protected void readXML(final List<String> _tags,
-                               final Map<String, String> _attributes,
-                               final String _text)
+                                 final Map<String, String> _attributes,
+                                 final String _text)
         {
             final String value = _tags.get(0);
             if ("purpose".equals(value)) {
@@ -686,7 +691,11 @@ public class TypeUpdate
                     }
                     addValue("Purpose", valueTmp.toString());
                 } else if (_tags.size() == 2) {
-                    getProperties().put(Classification.Keys.LINKATTR.getValue(), _text);
+                    if ("LinkColumn".equals(_tags.get(1))) {
+                        getProperties().put(Classification.Keys.LINKATTR.getValue(), _text);
+                    } else if ("parent".equals(_tags.get(1))) {
+                        this.parentClassType = _text;
+                    }
                 }
             } else if ("attribute".equals(value)) {
                 if (_tags.size() == 1) {
@@ -712,11 +721,11 @@ public class TypeUpdate
                     addLink(TypeUpdate.LINK2CLASSIFYREL,
                                     new LinkInstance(_attributes.get(Classification.Keys.RELTYPE.getValue())));
                     getProperties().put(Classification.Keys.RELTYPEATTR.getValue(),
-                                        _attributes.get(Classification.Keys.RELTYPEATTR.getValue()));
+                                    _attributes.get(Classification.Keys.RELTYPEATTR.getValue()));
                     getProperties().put(Classification.Keys.RELLINKATTR.getValue(),
-                                        _attributes.get(Classification.Keys.RELLINKATTR.getValue()));
+                                    _attributes.get(Classification.Keys.RELLINKATTR.getValue()));
                     getProperties().put(Classification.Keys.MULTI.getValue(),
-                                        _attributes.get(Classification.Keys.MULTI.getValue()));
+                                    _attributes.get(Classification.Keys.MULTI.getValue()));
                 } else if ((_tags.size() == 2) && "company".equals(_tags.get(1))) {
                     addLink(TypeUpdate.LINK2CLASSIFYCOMPANY, new LinkInstance(_text));
                 } else {
@@ -775,6 +784,20 @@ public class TypeUpdate
                         }
                     } else {
                         addValue("ParentType", null);
+                    }
+                    if ((this.parentClassType != null) && (this.parentClassType.length() > 0)) {
+                        final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.Type);
+                        queryBldr.addWhereAttrEqValue(CIAdminDataModel.Type.Name, this.parentClassType);
+                        final InstanceQuery query = queryBldr.getQuery();
+                        query.executeWithoutAccessCheck();
+                        if (query.next()) {
+                            final Instance instance = query.getCurrentValue();
+                            addValue("ParentClassType", "" + instance.getId());
+                        } else {
+                            addValue("ParentClassType", null);
+                        }
+                    } else {
+                        addValue("ParentClassType", null);
                     }
                 }
 

@@ -154,6 +154,7 @@ public class Type
                     .column("NAME")
                     .column("PURPOSE")
                     .column("PARENTDMTYPE")
+                    .column("PARENTCLASSDMTYPE")
                     .from("V_ADMINTYPE", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "UUID").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
@@ -167,6 +168,7 @@ public class Type
                     .column("NAME")
                     .column("PURPOSE")
                     .column("PARENTDMTYPE")
+                    .column("PARENTCLASSDMTYPE")
                     .from("V_ADMINTYPE", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "ID").addPart(SQLPart.EQUAL).addValuePart("?").toString();
 
@@ -179,6 +181,7 @@ public class Type
                     .column("NAME")
                     .column("PURPOSE")
                     .column("PARENTDMTYPE")
+                    .column("PARENTCLASSDMTYPE")
                     .from("V_ADMINTYPE", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "NAME").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
@@ -191,6 +194,17 @@ public class Type
                     .column("PURPOSE")
                     .from("V_ADMINTYPE", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "PARENTDMTYPE").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * SQL select statement to select the ids of child types from the database.
+     */
+    private static final String SQL_CLASSCHILD = new SQLSelect()
+                    .column("ID")
+                    .column("PURPOSE")
+                    .from("V_ADMINTYPE", 0)
+                    .addPart(SQLPart.WHERE).addColumnPart(0, "PARENTCLASSDMTYPE")
+                        .addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
 
     /**
@@ -1323,7 +1337,8 @@ public class Type
      * @return a list of object containing the id and the purpose
      * @throws CacheReloadException on error
      */
-    private static List<Object[]> getChildTypeIDs(final long _parentID)
+    private static List<Object[]> getChildTypeIDs(final long _parentID,
+                                                  final String _statement)
         throws CacheReloadException
     {
         final List<Object[]> ret = new ArrayList<Object[]>();
@@ -1332,7 +1347,7 @@ public class Type
             con = Context.getThreadContext().getConnectionResource();
             PreparedStatement stmt = null;
             try {
-                stmt = con.getConnection().prepareStatement(Type.SQL_CHILD);
+                stmt = con.getConnection().prepareStatement(_statement);
                 stmt.setObject(1, _parentID);
                 final ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
@@ -1379,6 +1394,7 @@ public class Type
             stmt.setObject(1, _criteria);
             final ResultSet rs = stmt.executeQuery();
             long parentTypeId = 0;
+            long parentClassTypeId = 0;
             long id = 0;
             final char trueCriteria = "1".toCharArray()[0];
             if (rs.next()) {
@@ -1387,15 +1403,17 @@ public class Type
                 final String name = rs.getString(3).trim();
                 final int purpose = rs.getInt(4);
                 parentTypeId = rs.getLong(5);
+                parentClassTypeId = rs.getLong(6);
 
-                Type.LOG.debug("read type '{}' (id = {}) (purpose = {})", name, id, purpose);
+                Type.LOG.debug("read type '{}' (id = {}) (purpose = {}) (parentTypeId = {}) (parentClassTypeId = {})",
+                                name, id, purpose, parentTypeId, parentClassTypeId);
 
                 final char[] purpose2 = ("00000000" + Integer.toBinaryString(purpose)).toCharArray();
                 ArrayUtils.reverse(purpose2);
                 if (trueCriteria == purpose2[Type.Purpose.CLASSIFICATION.getDigit()]) {
                     ret = new Classification(id, uuid, name);
-                    if (parentTypeId != 0) {
-                        ((Classification) ret).setParentClassification(parentTypeId);
+                    if (parentClassTypeId != 0) {
+                        ((Classification)ret).setParentClassification(parentClassTypeId);
                     }
                 } else {
                     ret = new Type(id, uuid, name);
@@ -1426,16 +1444,15 @@ public class Type
                 }
                 if (!ret.checked4Children) {
                     ret.checked4Children = true;
-                    for (final Object[] childIDs : Type.getChildTypeIDs(ret.getId())) {
+                    for (final Object[] childIDs : Type.getChildTypeIDs(ret.getId(), Type.SQL_CHILD)) {
                         Type.LOG.trace("reading Child Type with id: {} for type :{}", childIDs[0], ret.getName());
                         ret.childTypes.add((Long) childIDs[0]);
-                        if (ret instanceof Classification) {
-                            final char[] purpose = ("00000000" + Integer.toBinaryString((Integer) childIDs[1]))
-                                            .toCharArray();
-                            ArrayUtils.reverse(purpose);
-                            if (trueCriteria == purpose[Type.Purpose.CLASSIFICATION.getDigit()]) {
-                                ((Classification) ret).getChildren().add((Long) childIDs[0]);
-                            }
+                    }
+                    if (ret instanceof Classification) {
+                        for (final Object[] childIDs : Type.getChildTypeIDs(ret.getId(), Type.SQL_CLASSCHILD)) {
+                            Type.LOG.trace("reading Child class Type with id: {} for type :{}",
+                                            childIDs[0], ret.getName());
+                            ((Classification)ret).getChildren().add((Long) childIDs[0]);
                         }
                     }
                     ret.setDirty();
