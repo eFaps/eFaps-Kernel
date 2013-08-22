@@ -138,12 +138,17 @@ public class OracleDatabase
                         result[i] = _rs.getTimestamp(i + 1);
                         break;
                     case java.sql.Types.NUMERIC:
-                        result[i] = _rs.getLong(i + 1);
+                        if (metaData.getScale(i+1) > 0) {
+                            result[i] = _rs.getBigDecimal(i + 1);
+                        } else {
+                            result[i] = _rs.getLong(i + 1);
+                        }
                         break;
                     default:
                         result[i] = _rs.getObject(i + 1);
                 }
             }
+
             return result;
         }
     };
@@ -663,18 +668,21 @@ public class OracleDatabase
         return ret;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected StringBuilder getAlterColumnIsNotNull(final String _columnName,
                                                     final boolean _isNotNull)
     {
         final StringBuilder ret = new StringBuilder()
-            .append(" modify ").append(getColumnQuote()).append(_columnName).append(getColumnQuote())
-            .append(" ");
-            if (_isNotNull) {
-                ret.append(" not null ");
-            } else {
-                ret.append(" null ");
-            };
+                        .append(" modify ").append(getColumnQuote()).append(_columnName).append(getColumnQuote())
+                        .append(" ");
+        if (_isNotNull) {
+            ret.append(" not null ");
+        } else {
+            ret.append(" null ");
+        }
         return ret;
     }
 

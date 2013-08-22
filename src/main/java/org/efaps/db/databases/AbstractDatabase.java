@@ -741,10 +741,11 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
 
     /**
      * @param _columnName column to update is not null.
+     * @param _isNotNull is the column not null
      * @return sql snipplet
      */
     protected abstract StringBuilder getAlterColumnIsNotNull(final String _columnName,
-                                                                 boolean _isNotNull);
+                                                             boolean _isNotNull);
 
     /**
      * Check if a specific column contains null values.
