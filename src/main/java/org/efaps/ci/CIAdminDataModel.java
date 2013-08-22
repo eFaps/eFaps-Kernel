@@ -53,7 +53,7 @@ public class CIAdminDataModel
             super(_uuid);
         }
 
-        public final CIAttribute SQLCacheExpr = new CIAttribute(this, "SQLCacheExpr");
+        public final CIAttribute ParentClassType = new CIAttribute(this, "ParentClassType");
         public final CIAttribute ParentType = new CIAttribute(this, "ParentType");
     }
 
