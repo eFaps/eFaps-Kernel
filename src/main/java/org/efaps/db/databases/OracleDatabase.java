@@ -53,7 +53,6 @@ public class OracleDatabase
     extends AbstractDatabase<OracleDatabase>
 {
 
-
     /**
      * Logging instance used in this class.
      */

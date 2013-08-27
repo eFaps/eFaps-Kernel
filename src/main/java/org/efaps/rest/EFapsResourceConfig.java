@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.core.spi.scanning.Scanner;
-import com.sun.jersey.core.spi.scanning.ScannerException;
 import com.sun.jersey.core.spi.scanning.ScannerListener;
 import com.sun.jersey.core.util.Closing;
 import com.sun.jersey.spi.container.ReloadListener;
@@ -206,13 +205,15 @@ public class EFapsResourceConfig
                     final String fileName = checkout.getFileName();
                     new Closing(new BufferedInputStream(in)).f(new Closing.Closure()
                     {
-
                         @Override
                         public void f(final InputStream _in)
-                            throws IOException
                         {
                             EFapsResourceConfig.LOG.debug("Scanning '{}' for annotations.", fileName);
-                            _sl.onProcess(fileName, _in);
+                            try {
+                                _sl.onProcess(fileName, _in);
+                            } catch (final IOException e) {
+                               EFapsResourceConfig.LOG.error("Error on reading file {}", fileName);
+                            }
                         }
                     });
                 }
@@ -220,9 +221,9 @@ public class EFapsResourceConfig
                     Context.rollback();
                 }
             } catch (final IOException e) {
-                throw new ScannerException("IO error when scanning file ", e);
+                EFapsResourceConfig.LOG.error("IO error when scanning file ", e);
             } catch (final EFapsException e) {
-                throw new ScannerException("EFapsException when scanning file ", e);
+                EFapsResourceConfig.LOG.error("EFapsException when scanning file ", e);
             }
         }
     }

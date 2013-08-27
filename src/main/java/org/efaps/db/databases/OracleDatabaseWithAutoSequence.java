@@ -21,8 +21,12 @@
 package org.efaps.db.databases;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The database driver is used for Oracle databases starting with version 9i.
@@ -35,6 +39,42 @@ import java.sql.Statement;
 public class OracleDatabaseWithAutoSequence
     extends OracleDatabase
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(OracleDatabaseWithAutoSequence.class);
+
+
+    /**
+     * {@inheritDoc}
+     * @throws SQLException
+     */
+    @Override
+    public boolean isConnected(final Connection _connection)
+        throws SQLException
+    {
+        boolean ret = false;
+        final Statement stmt = _connection.createStatement();
+        try {
+            OracleDatabaseWithAutoSequence.LOG.debug("Checking if connected");
+            final ResultSet resultset = stmt
+                        .executeQuery("select product from product_component_version where product like 'Oracle%'");
+            ret = resultset.next();
+            resultset.close();
+            if (ret) {
+                // check if this database is rally one with AutoSequence by checking for a trigger.
+                final ResultSet resultset2 = stmt
+                            .executeQuery(" select * from user_triggers where trigger_name = 'T_CMABSTRACT_TRG'");
+                ret = resultset2.next();
+                resultset2.close();
+            }
+        } finally {
+            stmt.close();
+        }
+        return ret;
+    }
+
+
     /**
      * For the database from vendor Oracle, an eFaps SQL table with
      * auto increment is created in this steps:
@@ -57,46 +97,6 @@ public class OracleDatabaseWithAutoSequence
      * The creation of the table itself is done by calling the inherited method
      * {@link OracleDatabase#createTable}
      *
-     * @param _con            SQL connection
-     * @param _table          name of the table to create
-     * @param _parentTable    name of the parent table
-     * @return this vendor specific DB definition
-     * @throws SQLException if trigger could not be created
-     * @see OracleDatabase#createTable(Connection, String, String)
-     */
-/* TODO
-    @Override()
-    public OracleDatabaseWithAutoSequence createTable(final Connection _con,
-                                                      final String _table,
-                                                      final String _parentTable)
-        throws SQLException
-    {
-        super.createTable(_con, _table, _parentTable);
-
-        if (_parentTable == null)  {
-            final Statement stmt = _con.createStatement();
-
-            try  {
-                // create trigger for auto increment
-                final StringBuilder cmd = new StringBuilder()
-                    .append("create trigger ").append(_table).append("_TRG")
-                    .append("  before insert on ").append(_table)
-                    .append("  for each row ")
-                    .append("begin")
-                    .append("  select ").append(_table).append("_SEQ.nextval ")
-                    .append("      into :new.ID from dual;")
-                    .append("end;");
-                stmt.executeUpdate(cmd.toString());
-            } finally  {
-                stmt.close();
-            }
-        }
-        return this;
-    }
-*/
-
-
-    /**
      * {@inheritDoc}
      */
     @Override

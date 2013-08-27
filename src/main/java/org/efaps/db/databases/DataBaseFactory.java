@@ -55,8 +55,8 @@ public abstract class DataBaseFactory
         DataBaseFactory.CLAZZNAMES.add("org.efaps.db.databases.PostgreSQLDatabase");
         DataBaseFactory.CLAZZNAMES.add("org.efaps.db.databases.DerbyDatabase");
         DataBaseFactory.CLAZZNAMES.add("org.efaps.db.databases.MySQLDatabase");
-        DataBaseFactory.CLAZZNAMES.add("org.efaps.db.databases.OracleDatabase");
         DataBaseFactory.CLAZZNAMES.add("org.efaps.db.databases.OracleDatabaseWithAutoSequence");
+        DataBaseFactory.CLAZZNAMES.add("org.efaps.db.databases.OracleDatabase");
     }
 
     /**
@@ -68,8 +68,10 @@ public abstract class DataBaseFactory
         AbstractDatabase<?> ret = null;
         for (final String clazzName : DataBaseFactory.CLAZZNAMES) {
             try {
+                DataBaseFactory.LOG.debug("Checking for DataBase connetion with class: '{}'", clazzName);
                 ret = (AbstractDatabase<?>) Class.forName(clazzName).newInstance();
                 if (ret.isConnected(_connection)) {
+                    DataBaseFactory.LOG.debug("DataBase found: '{}'", clazzName);
                     break;
                 }
             } catch (final ClassNotFoundException e) {
@@ -79,7 +81,7 @@ public abstract class DataBaseFactory
             } catch (final IllegalAccessException e) {
                 DataBaseFactory.LOG.error("Error on instanciating of {} {}", clazzName, e);
             } catch (final SQLException e) {
-                DataBaseFactory.LOG.error("Catched Error from DataBase {}, trying next.", clazzName, e);
+                DataBaseFactory.LOG.warn("Catched Error from DataBase {}, trying next.", clazzName, e);
             }
         }
         return ret;
