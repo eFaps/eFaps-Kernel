@@ -64,11 +64,13 @@ import org.drools.time.impl.TimerJobFactoryManager;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.admin.user.AbstractUserObject;
 import org.efaps.admin.user.Role;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.WorkingMemoryLogListener;
@@ -95,6 +97,8 @@ import org.jbpm.persistence.JpaProcessPersistenceContextManager;
 import org.jbpm.persistence.jta.ContainerManagedTransactionManager;
 import org.jbpm.process.audit.JPAWorkingMemoryDbLogger;
 import org.jbpm.task.Content;
+import org.jbpm.task.I18NText;
+import org.jbpm.task.OrganizationalEntity;
 import org.jbpm.task.Status;
 import org.jbpm.task.Task;
 import org.jbpm.task.identity.UserGroupCallbackManager;
@@ -373,23 +377,50 @@ public final class BPM
         final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
-            final boolean isRole = Role.get(UUID.fromString(_targetUserId)) != null;
-            if (isRole) {
-                final TaskService taskService = UserTaskService.getService(null);
-                final List<OperationCommand> commands = taskService.getCommandsForOperation(Operation.Delegate);
-                for (final OperationCommand cmd : commands) {
-                    cmd.setExec(Operation.Delegate);
+            boolean add = true;
+            final Task task = service.getTask(_taskSummary.getId());
+            final List<OrganizationalEntity> owners = task.getPeopleAssignments().getPotentialOwners();
+            for (final OrganizationalEntity org : owners) {
+                if (_targetUserId.equals(org.getId())) {
+                    add = false;
                 }
             }
+            if (add) {
+                final boolean isRole = Role.get(UUID.fromString(_targetUserId)) != null;
+                if (isRole) {
+                    final TaskService taskService = UserTaskService.getService(null);
+                    final List<OperationCommand> commands = taskService.getCommandsForOperation(Operation.Delegate);
+                    for (final OperationCommand cmd : commands) {
+                        cmd.setExec(Operation.Delegate);
+                    }
+                }
 
-            service.delegate(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString(),
-                            _targetUserId);
+                service.delegate(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString(),
+                                _targetUserId);
 
-            if (isRole) {
-                final TaskService taskService = UserTaskService.getService(null);
-                final List<OperationCommand> commands = taskService.getCommandsForOperation(Operation.Delegate);
-                for (final OperationCommand cmd : commands) {
-                    cmd.setExec(Operation.Claim);
+                final List<I18NText> descr = task.getDescriptions();
+                final String txt = DBProperties.getFormatedDBProperty(
+                                "org.efaps.bpm.BPM.delegateText",
+                                new Object[] { Context.getThreadContext().getPerson().getName(),
+                                          AbstractUserObject.getUserObject(UUID.fromString(_targetUserId)).getName() });
+                if (descr.isEmpty()) {
+                    final I18NText i18n = new I18NText();
+                    i18n.setText(txt);
+                    i18n.setLanguage("en-UK");
+                    descr.add(i18n);
+                } else {
+                    final String oldTxt = descr.get(0).getText();
+                    if (!oldTxt.contains(txt)) {
+                        descr.get(0).setText(descr.get(0).getText() + " - " + txt);
+                    }
+                }
+
+                if (isRole) {
+                    final TaskService taskService = UserTaskService.getService(null);
+                    final List<OperationCommand> commands = taskService.getCommandsForOperation(Operation.Delegate);
+                    for (final OperationCommand cmd : commands) {
+                        cmd.setExec(Operation.Claim);
+                    }
                 }
             }
         }
