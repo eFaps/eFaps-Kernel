@@ -545,7 +545,7 @@ public final class SystemConfiguration
                 final Properties propsTmp = new Properties();
                 if (valueTmp != null) {
                     try {
-                        propsTmp.load(new StringReader(value));
+                        propsTmp.load(new StringReader(valueTmp));
                     } catch (final IOException e) {
                         throw new EFapsException(SystemConfiguration.class, "getAttributeValueAsPropertiesConcat", e);
                     }
