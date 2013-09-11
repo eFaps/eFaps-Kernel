@@ -378,6 +378,23 @@ public final class Application
                                                           final List<String> _classpath)
         throws InstallationException
     {
+        return Application.getApplicationsFromClassPath(_application, _classpath).get(_application);
+    }
+
+
+    /**
+     * Method to get all applications from the class path.
+     *
+     * @param _application searched application in the class path
+     * @param _classpath class path (list of the complete class path)
+     * @return List of applications
+     * @throws InstallationException if the install.xml file in the class path
+     *             could not be accessed
+     */
+    public static Map<String, Application> getApplicationsFromClassPath(final String _application,
+                                                                        final List<String> _classpath)
+        throws InstallationException
+    {
         final ClassLoader cl = Application.class.getClassLoader();
 
         // get install application (read from all install xml files)
@@ -394,8 +411,7 @@ public final class Application
             throw new InstallationException("Could not access the install.xml file "
                             + "(in path META-INF/efaps/ path of each eFaps install jar).", e);
         }
-
-        return appls.get(_application);
+        return appls;
     }
 
     /**

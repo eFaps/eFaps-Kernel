@@ -269,7 +269,7 @@ public abstract class AbstractUpdate
      * @see #uuid
      * @see #setUUID
      */
-    protected String getUUID()
+    public String getUUID()
     {
         return this.uuid;
     }
@@ -330,7 +330,7 @@ public abstract class AbstractUpdate
      * @return value of instance variable {@link #definitions}
      * @see #definitions
      */
-    protected List<AbstractDefinition> getDefinitions()
+    public List<AbstractDefinition> getDefinitions()
     {
         return this.definitions;
     }
@@ -510,7 +510,7 @@ public abstract class AbstractUpdate
     /**
      *
      */
-    protected abstract class AbstractDefinition
+    public abstract class AbstractDefinition
     {
 
         /**
@@ -1059,7 +1059,7 @@ public abstract class AbstractUpdate
          * @return value of the set attribute value in this definition
          * @see #values
          */
-        protected String getValue(final String _name)
+        public String getValue(final String _name)
         {
             return this.values.get(_name);
         }
