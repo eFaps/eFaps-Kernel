@@ -159,5 +159,16 @@ public interface KernelSettings
      * "/tmp/Jetty_0_0_0_0_8060_efaps.war__efaps__.bo28gn/webapp/WEB-INF/lib/"
      */
     String CLASSPATHS = "org.efaps.kernel.rest.ClassPaths";
+
+    /**
+     * Properties. Can be Concatenated.
+     * e.g. for Archives:<br/>
+     * Archives_ArchiveRoot.Role.AsList=Role1;Role2<br/>
+     * Archives_ArchiveRoot.Role.SimpleAccess4Type=Archives_Admin<br/>
+     * Archives_ArchiveRoot.AccessSets=Archives_Modifier<br/>
+     * Archives_ArchiveNode.ParentAttribute=ParentLink<br/>
+     * Archives_ArchiveFile.ParentAttribute=ParentLink<br/>
+     */
+    String ACCESS4OBJECT = "org.efaps.kernel.AccessCheck4Object";
 }
 
