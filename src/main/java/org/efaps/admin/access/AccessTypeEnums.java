@@ -47,6 +47,8 @@ public enum AccessTypeEnums
     CREATE("1dd13a42-e04f-4bce-85cf-3931ae94267f"),
     /** Access type for delete access. */
     DELETE("47d74dd6-4929-4927-a490-82998363c409"),
+    /** Access type for grant access. */
+    GRANT("89362f2b-7a93-4133-8262-0b2925e285cb"),
     /** Access type for modify access. */
     MODIFY("778592ad-a99f-4912-b94d-b05c305381d8"),
     /** Access type for read access. */
