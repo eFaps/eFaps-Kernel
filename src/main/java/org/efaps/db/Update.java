@@ -197,18 +197,26 @@ public class Update
         boolean ret = false;
         final List<EventDefinition> triggers = getInstance().getType().getEvents(_eventtype);
         if (triggers != null) {
-            // convert the map in a more simple map (following exsiting api)
-            final Map<Attribute, Object[]> values = new HashMap<Attribute, Object[]>();
-            for (final Entry<Attribute, Value> entry : this.trigRelevantAttr2values.entrySet()) {
-                values.put(entry.getKey(), entry.getValue().getValues());
-            }
             final Parameter parameter = new Parameter();
-            parameter.put(ParameterValues.NEW_VALUES, values);
+            parameter.put(ParameterValues.NEW_VALUES, getNewValuesMap());
             parameter.put(ParameterValues.INSTANCE, getInstance());
             for (final EventDefinition evenDef : triggers) {
                 evenDef.execute(parameter);
             }
             ret = true;
+        }
+        return ret;
+    }
+
+    /**
+     * @return the map of new values send to the triggers
+     */
+    protected final Map<Attribute, Object[]> getNewValuesMap()
+    {
+        // convert the map in a more simple map (following existing API)
+        final Map<Attribute, Object[]> ret = new HashMap<Attribute, Object[]>();
+        for (final Entry<Attribute, Value> entry : this.trigRelevantAttr2values.entrySet()) {
+            ret.put(entry.getKey(), entry.getValue().getValues());
         }
         return ret;
     }
