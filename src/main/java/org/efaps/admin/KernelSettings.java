@@ -49,7 +49,7 @@ public interface KernelSettings
     String ACTIVATE_GROUPS = "org.efaps.kernel.ActivateGroups";
 
     /**
-     * Boolean (true/false): activate the BPM process mechanism.
+     * Boolean (true/false): show the Keys for the DBProperties..
      */
     String SHOW_DBPROPERTIES_KEY = "org.efaps.kernel.ShowDBPropertiesKey";
 
