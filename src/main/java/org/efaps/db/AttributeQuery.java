@@ -182,6 +182,18 @@ public class AttributeQuery
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void prepareQuery()
+        throws EFapsException
+    {
+        super.prepareQuery();
+        // to be sure that the table the attribute is in, is part of the indexed tables
+        getIndex4SqlTable(this.attribute.getTable());
+    }
+
+    /**
      * Execute the actual statement against the database.
      * @param _complStmt        Statment to be executed
      * @return true if executed with success
