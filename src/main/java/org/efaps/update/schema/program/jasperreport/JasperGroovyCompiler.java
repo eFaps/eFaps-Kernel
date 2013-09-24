@@ -42,6 +42,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.Phases;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 
 /**
  * Calculator compiler that uses groovy to compile expressions. It is used due
@@ -90,8 +91,7 @@ public class JasperGroovyCompiler
         final CompilerConfiguration config = new CompilerConfiguration();
         config.setClasspath(_classpath);
         config.setVerbose(true);
-        final GroovyClassLoader loader = new GroovyClassLoader(JasperGroovyCompiler.class.getClassLoader(), config,
-                        true);
+        final GroovyClassLoader loader = new GroovyClassLoader(EFapsClassLoader.getInstance(), config, true);
         final CompilationUnit unit = new CompilationUnit(loader);
 
         for (int i = 0; i < _units.length; i++) {

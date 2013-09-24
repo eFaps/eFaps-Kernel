@@ -120,8 +120,7 @@ public class JasperReportCompiler
         }
         final DefaultJasperReportsContext reportContext = DefaultJasperReportsContext.getInstance();
         reportContext.setProperty(JRCompiler.COMPILER_CLASSPATH, classPath.toString());
-        reportContext.setProperty("net.sf.jasperreports.compiler.groovy",
-                                 "org.efaps.update.schema.program.jasperreport.JasperGroovyCompiler");
+        reportContext.setProperty("net.sf.jasperreports.compiler.groovy", JasperGroovyCompiler.class.getName());
 
         try {
             final JasperDesign jasperDesign = JasperUtil.getJasperDesign(_instSource);
