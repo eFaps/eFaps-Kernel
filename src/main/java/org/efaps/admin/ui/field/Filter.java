@@ -49,7 +49,9 @@ public class Filter
         /** No filter. */
         NONE,
         /** Filter presenting a picker list. */
-        PICKLIST;
+        PICKLIST,
+        /** Filter for Status Attributes. */
+        STATUS;
     }
 
     /**

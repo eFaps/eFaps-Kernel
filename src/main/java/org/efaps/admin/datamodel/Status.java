@@ -325,7 +325,7 @@ public final class Status
      * Method to get a Status from the cache.
      *
      * @param _ciType CIType of the StatusGroup
-     * @param _key key of the Status
+     * @param _status CIStatus the Status is wanted for
      * @return Status
      * @throws CacheReloadException on error
      */
@@ -339,8 +339,7 @@ public final class Status
     /**
      * Method to get a Status from the cache.
      *
-     * @param _ciType CIType of the StatusGroup
-     * @param _key key of the Status
+     * @param _status CIStatus the Status is wanted for
      * @return Status
      * @throws CacheReloadException on error
      */
