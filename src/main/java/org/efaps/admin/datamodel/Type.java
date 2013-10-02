@@ -490,7 +490,7 @@ public class Type
     }
 
     /**
-     * inherit Attributes
+     * Inherit Attributes are child types.
      * @throws CacheReloadException on error
      */
     protected void inheritAttributes()
@@ -1334,6 +1334,7 @@ public class Type
 
     /**
      * @param _parentID id to be searched for
+     * @param _statement statement to be executed
      * @return a list of object containing the id and the purpose
      * @throws CacheReloadException on error
      */
@@ -1413,7 +1414,7 @@ public class Type
                 if (trueCriteria == purpose2[Type.Purpose.CLASSIFICATION.getDigit()]) {
                     ret = new Classification(id, uuid, name);
                     if (parentClassTypeId != 0) {
-                        ((Classification)ret).setParentClassification(parentClassTypeId);
+                        ((Classification) ret).setParentClassification(parentClassTypeId);
                     }
                 } else {
                     ret = new Type(id, uuid, name);
@@ -1452,7 +1453,7 @@ public class Type
                         for (final Object[] childIDs : Type.getChildTypeIDs(ret.getId(), Type.SQL_CLASSCHILD)) {
                             Type.LOG.trace("reading Child class Type with id: {} for type :{}",
                                             childIDs[0], ret.getName());
-                            ((Classification)ret).getChildren().add((Long) childIDs[0]);
+                            ((Classification) ret).getChildren().add((Long) childIDs[0]);
                         }
                     }
                     ret.setDirty();
