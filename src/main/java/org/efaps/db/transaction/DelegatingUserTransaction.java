@@ -20,6 +20,8 @@
 
 package org.efaps.db.transaction;
 
+import java.util.UUID;
+
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -28,6 +30,7 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
+import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
@@ -66,7 +69,8 @@ public class DelegatingUserTransaction
         throws NotSupportedException, SystemException
     {
         try {
-            Context.begin("QuartzTrigger", false);
+            // QuartzTrigger
+            Context.begin(Person.get(UUID.fromString("df2f02a7-c556-49ad-b019-e13db66e1cbf")).getName(), false);
         } catch (final EFapsException e) {
             try {
                 if (Context.isTMActive()) {
