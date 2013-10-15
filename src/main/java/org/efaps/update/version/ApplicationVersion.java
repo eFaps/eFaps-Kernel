@@ -491,7 +491,8 @@ public class ApplicationVersion
                     throw new InstallationException("Context could not be started", e);
                 }
                 final ClassLoader parent = getClass().getClassLoader();
-                final EFapsClassLoader efapsClassLoader = new EFapsClassLoader(parent);
+                final EFapsClassLoader efapsClassLoader = new EFapsClassLoader(parent,
+                                ApplicationVersion.this.application.getClassPathElements());
                 final CompilerConfiguration config = new CompilerConfiguration();
                 config.setClasspathList(ApplicationVersion.this.application.getClassPathElements());
                 final GroovyClassLoader loader = new GroovyClassLoader(efapsClassLoader, config);

@@ -21,9 +21,15 @@
 package org.efaps.admin.program.esjp;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.efaps.admin.datamodel.Type;
@@ -71,6 +77,8 @@ public class EFapsClassLoader
      */
     private final Type classType;
 
+    private URLClassLoader nested;
+
     /**
      * Constructor setting the Parent of the EFapsClassLoader in ClassLoader.
      *
@@ -80,6 +88,26 @@ public class EFapsClassLoader
     {
         super(_parentClassLoader);
         this.classType = CIAdminProgram.JavaClass.getType();
+    }
+
+    /**
+     * @param _parent parent classloader
+     * @param _classPathElements classpath elements
+     */
+    public EFapsClassLoader(final ClassLoader _parent,
+                            final List<String> _classPathElements)
+    {
+        super(_parent);
+        this.classType = CIAdminProgram.JavaClass.getType();
+        final List<URL> urls = new ArrayList<URL>();
+        for (final String _classPathElement : _classPathElements) {
+            try {
+                urls.add(new File(_classPathElement).toURI().toURL());
+            } catch (final MalformedURLException e) {
+                EFapsClassLoader.LOG.error("Invalid URL for Classloader: {}", _classPathElement);
+            }
+        }
+        this.nested = new URLClassLoader(urls.toArray(new URL[urls.size()]));
     }
 
     /**
@@ -96,10 +124,17 @@ public class EFapsClassLoader
         if (b == null) {
             b = loadClassData(_name);
         }
+        Class<?> ret;
         if (b == null) {
-            throw new ClassNotFoundException(_name);
+            if (this.nested != null) {
+                ret = this.nested.loadClass(_name);
+            } else {
+                throw new ClassNotFoundException(_name);
+            }
+        } else {
+            ret = defineClass(_name, b, 0, b.length);
         }
-        return defineClass(_name, b, 0, b.length);
+        return ret;
     }
 
     /**
