@@ -65,9 +65,9 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public class SaxHandler extends DefaultHandler
+public class SaxHandler
+    extends DefaultHandler
 {
-
     /**
      * Tags used in this Handler.
      */
@@ -104,7 +104,8 @@ public class SaxHandler extends DefaultHandler
      * @throws SAXException on parse exception
      * @throws IOException on file access error
      */
-    public IUpdate parse(final URL _url) throws SAXException, IOException
+    public IUpdate parse(final URL _url)
+        throws SAXException, IOException
     {
         this.url = _url;
 
@@ -141,7 +142,10 @@ public class SaxHandler extends DefaultHandler
      * @throws SAXException on error
      */
     @Override
-    public void characters(final char[] _ch, final int _start, final int _length) throws SAXException
+    public void characters(final char[] _ch,
+                           final int _start,
+                           final int _length)
+        throws SAXException
     {
 
         if (_length > 0) {
@@ -163,12 +167,15 @@ public class SaxHandler extends DefaultHandler
      * @throws SAXException on error
      */
     @Override
-    public void endElement(final String _uri, final String _localName, final String _qName) throws SAXException
+    public void endElement(final String _uri,
+                           final String _localName,
+                           final String _qName)
+        throws SAXException
     {
         if (!this.called) {
             this.update.readXML(this.tag, this.attributes, (this.content != null)
-                                                        ? this.content.toString().trim()
-                                                        : null);
+                            ? this.content.toString().trim()
+                            : null);
             this.called = true;
             this.content = null;
         }
@@ -188,15 +195,17 @@ public class SaxHandler extends DefaultHandler
      * @throws SAXException on error
      */
     @Override
-    public void startElement(final String _uri, final String _localName, final String _qName,
+    public void startElement(final String _uri,
+                             final String _localName,
+                             final String _qName,
                              final Attributes _attributes)
         throws SAXException
     {
         if (this.update != null) {
             if (!this.called && !this.tag.isEmpty()) {
                 this.update.readXML(this.tag, this.attributes, (this.content != null)
-                                                                ? this.content.toString().trim()
-                                                                : null);
+                                ? this.content.toString().trim()
+                                : null);
             }
             this.called = false;
             this.content = null;
@@ -260,7 +269,7 @@ public class SaxHandler extends DefaultHandler
         } else if ("wiki-image".equals(_qName)) {
             this.update = new WikiImageUpdate(this.url);
         } else {
-            throw new SAXException("Unknown XML Tag " + _qName);
+            this.update = new DefaultEmptyUpdate(this.url);
         }
     }
 }
