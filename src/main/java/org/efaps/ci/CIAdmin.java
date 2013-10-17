@@ -51,13 +51,13 @@ public class CIAdmin
         public final CIAttribute Modified = new CIAttribute(this, "Modified");
     }
 
-    public static final _Langauge Language = new _Langauge("56851b99-c5fe-41f5-9e95-d7d94137acc1");
+    public static final _Language Language = new _Language("56851b99-c5fe-41f5-9e95-d7d94137acc1");
 
-    public static class _Langauge
+    public static class _Language
         extends CIType
     {
 
-        protected _Langauge(final String _uuid)
+        protected _Language(final String _uuid)
         {
             super(_uuid);
         }
