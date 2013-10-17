@@ -221,8 +221,8 @@ public class CIAdminUser
             super(_uuid);
         }
 
-        public final CIAttribute UserFromLink = new CIAttribute(this, "UserLink");
-        public final CIAttribute UserToLink = new CIAttribute(this, "CompanyLink");
+        public final CIAttribute UserLink = new CIAttribute(this, "UserLink");
+        public final CIAttribute CompanyLink = new CIAttribute(this, "CompanyLink");
 
     }
 
