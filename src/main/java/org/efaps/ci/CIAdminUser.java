@@ -210,6 +210,23 @@ public class CIAdminUser
 
     }
 
+    public static final _Person2Company Person2Company = new _Person2Company("a79898fb-966a-44ee-a338-d034e2aad83a");
+
+    public static class _Person2Company
+        extends _Abstract2Abstract
+    {
+
+        protected _Person2Company(final String _uuid)
+        {
+            super(_uuid);
+        }
+
+        public final CIAttribute UserFromLink = new CIAttribute(this, "UserLink");
+        public final CIAttribute UserToLink = new CIAttribute(this, "CompanyLink");
+
+    }
+
+
     public static final _AttributeAbstract AttributeAbstract = new _AttributeAbstract("d9dd0971-0bb9-4ac1-ba46-8aefd5e8badb");
 
     public static class _AttributeAbstract
