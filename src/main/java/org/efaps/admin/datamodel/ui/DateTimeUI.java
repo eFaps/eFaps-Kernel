@@ -67,6 +67,16 @@ public class DateTimeUI
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStringValue(final FieldValue _fieldValue)
+        throws EFapsException
+    {
+        return _fieldValue.getValue().toString();
+    }
+
+    /**
      *  {@inheritDoc}
      */
     @Override
@@ -93,6 +103,23 @@ public class DateTimeUI
         int ret = 0;
         if (_fieldValue.getValue() instanceof DateTime && _fieldValue2.getValue() instanceof DateTime) {
             ret = DateTimeComparator.getInstance().compare(_fieldValue.getValue(), _fieldValue2.getValue());
+        }
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object format(final Object _object,
+                         final String _pattern)
+        throws EFapsException
+    {
+        Object ret;
+        if (_object instanceof DateTime) {
+           ret = ((DateTime) _object).toString(_pattern, Context.getThreadContext().getLocale());
+        } else {
+            ret =_object;
         }
         return ret;
     }

@@ -38,6 +38,7 @@ public interface UIInterface
     String EFAPSTMPTAG = " eFapsTempTag ";
 
     /**
+     * Should be moved to the webapp.
      * Method to get the Value for creation in an html document.
      *
      * @param _fieldValue Fieldvalue the representation is requested
@@ -48,6 +49,7 @@ public interface UIInterface
         throws EFapsException;
 
     /**
+     * Should be moved to the webapp.
      * Method to get the Value for editing in an html document.
      *
      * @param _fieldValue Fieldvalue the representation is requested
@@ -58,6 +60,7 @@ public interface UIInterface
         throws EFapsException;
 
     /**
+     * Should be moved to the webapp.
      * Method to get the Value for viewing in an html document.
      *
      * @param _fieldValue Fieldvalue the representation is requested
@@ -67,9 +70,11 @@ public interface UIInterface
     String getReadOnlyHtml(final FieldValue _fieldValue)
         throws EFapsException;
 
+
+
     /**
      * Method to get a String representation of the value. This is used e.g. for
-     * labels. In comparison to the Html-Methods it should not contain html.
+     * labels and Phrases.
      *
      * @param _fieldValue Fieldvalue the representation is requested
      * @return String representation of the object for viewing

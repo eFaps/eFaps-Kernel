@@ -22,7 +22,6 @@ package org.efaps.admin.datamodel.ui;
 
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.format.DateTimeFormat;
@@ -56,8 +55,12 @@ public class DateUI
             if (datetime != null) {
                 // format the Date with the Locale and Chronology from the user
                 // context
-                final DateMidnight dateTmp = new DateMidnight(datetime.getYear(), datetime.getMonthOfYear(),
-                                datetime.getDayOfMonth(), Context.getThreadContext().getChronology());
+                final DateTime dateTmp = new DateTime().withTimeAtStartOfDay()
+                                .withYear(datetime.getYear())
+                                .withMonthOfYear(datetime.getMonthOfYear())
+                                .withDayOfMonth(datetime.getDayOfMonth())
+                                .withChronology(Context.getThreadContext().getChronology());
+
                 final DateTimeFormatter formatter = DateTimeFormat.mediumDate();
 
                 ret = dateTmp.toString(formatter.withLocale(Context.getThreadContext().getLocale()));
@@ -72,14 +75,27 @@ public class DateUI
      * {@inheritDoc}
      */
     @Override
+    public String getStringValue(final FieldValue _fieldValue)
+        throws EFapsException
+    {
+        return _fieldValue.getValue().toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Object getObject4Compare(final FieldValue _fieldValue)
         throws EFapsException
     {
         Object ret;
         if (_fieldValue != null && _fieldValue.getValue() instanceof DateTime) {
             final DateTime datetime = (DateTime) _fieldValue.getValue();
-            ret = new DateMidnight(datetime.getYear(), datetime.getMonthOfYear(),
-                            datetime.getDayOfMonth(), Context.getThreadContext().getChronology()).toDateTime();
+            ret = new DateTime().withTimeAtStartOfDay()
+                            .withYear(datetime.getYear())
+                            .withMonthOfYear(datetime.getMonthOfYear())
+                            .withDayOfMonth(datetime.getDayOfMonth())
+                            .withChronology(Context.getThreadContext().getChronology());
         } else {
             ret = _fieldValue.getValue();
         }
@@ -96,6 +112,23 @@ public class DateUI
         int ret = 0;
         if (_fieldValue.getValue() instanceof DateTime && _fieldValue2.getValue() instanceof DateTime) {
             ret = DateTimeComparator.getDateOnlyInstance().compare(_fieldValue.getValue(), _fieldValue2.getValue());
+        }
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object format(final Object _object,
+                         final String _pattern)
+        throws EFapsException
+    {
+        Object ret;
+        if (_object instanceof DateTime) {
+           ret = ((DateTime) _object).toString(_pattern, Context.getThreadContext().getLocale());
+        } else {
+            ret =_object;
         }
         return ret;
     }
