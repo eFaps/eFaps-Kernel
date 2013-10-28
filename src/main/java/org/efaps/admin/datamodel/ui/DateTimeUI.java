@@ -73,7 +73,11 @@ public class DateTimeUI
     public String getStringValue(final FieldValue _fieldValue)
         throws EFapsException
     {
-        return _fieldValue.getValue().toString();
+        String ret = null;
+        if (_fieldValue.getValue() != null) {
+            ret = _fieldValue.getValue().toString();
+        }
+        return ret;
     }
 
     /**
