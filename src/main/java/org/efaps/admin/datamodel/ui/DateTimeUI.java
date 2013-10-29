@@ -121,9 +121,9 @@ public class DateTimeUI
     {
         Object ret;
         if (_object instanceof DateTime) {
-           ret = ((DateTime) _object).toString(_pattern, Context.getThreadContext().getLocale());
+            ret = ((DateTime) _object).toString(_pattern, Context.getThreadContext().getLocale());
         } else {
-            ret =_object;
+            ret = _object;
         }
         return ret;
     }
