@@ -100,7 +100,7 @@ public class CachedPrintQuery
     @Override
     public String getKey()
     {
-        return this.key;
+        return this.key == null ? super.getKey() : this.key;
     }
 
     /**
