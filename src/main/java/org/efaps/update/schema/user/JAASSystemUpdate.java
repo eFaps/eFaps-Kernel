@@ -97,50 +97,51 @@ public class JAASSystemUpdate
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
-            if ("assigned-group".equals(value))  {
+            if ("assigned-group".equals(value)) {
                 addLink(JAASSystemUpdate.LINK2GROUPS, new LinkInstance(_text, "Key", _attributes.get("key")));
-            } else if ("assigned-person".equals(value))  {
+            } else if ("assigned-person".equals(value)) {
                 addLink(JAASSystemUpdate.LINK2PERSONS, new LinkInstance(_text, "Key", _attributes.get("key")));
-            } else if ("assigned-role".equals(value))  {
+            } else if ("assigned-role".equals(value)) {
                 addLink(JAASSystemUpdate.LINK2ROLES, new LinkInstance(_text, "Key", _attributes.get("key")));
-            } else if ("group".equals(value))  {
-                if (_tags.size() > 1)  {
+            } else if ("group".equals(value)) {
+                if (_tags.size() > 1) {
                     final String subValue = _tags.get(1);
-                    if ("classname".equals(subValue))  {
+                    if ("classname".equals(subValue)) {
                         addValue("ClassNameGroup", _text);
-                    } else if ("key-method".equals(subValue))  {
+                    } else if ("key-method".equals(subValue)) {
                         addValue("MethodNameGroupKey", _text);
                     }
                 }
-            } else if ("person".equals(value))  {
-                if (_tags.size() > 1)  {
+            } else if ("person".equals(value)) {
+                if (_tags.size() > 1) {
                     final String subValue = _tags.get(1);
-                    if ("classname".equals(subValue))  {
+                    if ("classname".equals(subValue)) {
                         addValue("ClassNamePerson", _text);
-                    } else if ("email-method".equals(subValue))  {
+                    } else if ("email-method".equals(subValue)) {
                         addValue("MethodNamePersonEmail", _text);
-                    } else if ("firstname-method".equals(subValue))  {
+                    } else if ("firstname-method".equals(subValue)) {
                         addValue("MethodNamePersonFirstName", _text);
-                    } else if ("key-method".equals(subValue))  {
+                    } else if ("key-method".equals(subValue)) {
                         addValue("MethodNamePersonKey", _text);
-                    } else if ("lastname-method".equals(subValue))  {
+                    } else if ("lastname-method".equals(subValue)) {
                         addValue("MethodNamePersonLastName", _text);
-                    } else if ("name-method".equals(subValue))  {
+                    } else if ("name-method".equals(subValue)) {
                         addValue("MethodNamePersonName", _text);
                     }
                 }
-            } else if ("role".equals(value))  {
-                if (_tags.size() > 1)  {
+            } else if ("role".equals(value)) {
+                if (_tags.size() > 1) {
                     final String subValue = _tags.get(1);
-                    if ("classname".equals(subValue))  {
+                    if ("classname".equals(subValue)) {
                         addValue("ClassNameRole", _text);
-                    } else if ("key-method".equals(subValue))  {
+                    } else if ("key-method".equals(subValue)) {
                         addValue("MethodNameRoleKey", _text);
                     }
                 }
-            } else  {
+            } else {
                 super.readXML(_tags, _attributes, _text);
             }
         }

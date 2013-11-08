@@ -28,6 +28,8 @@ import java.util.Set;
 
 import org.efaps.update.LinkInstance;
 import org.efaps.update.schema.AbstractFileUpdate;
+import org.efaps.update.schema.ui.ImageUpdate;
+import org.efaps.util.EFapsException;
 
 /**
  * Handles the import / update of BPM Images for eFaps read from a XML
@@ -97,18 +99,20 @@ public class BPMImageUpdate
          * @param _tags         current path as list of single tags
          * @param _attributes   attributes for current path
          * @param _text         content for current path
+         * @throws EFapsException
          */
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
-            if ("processId".equals(value))  {
+            if ("processId".equals(value)) {
                 // assigns a type the image for which this image instance is
                 // the type icon
                 addLink(BPMImageUpdate.BPM2IMAGE, new LinkInstance(_text));
-            } else  {
+            } else {
                 super.readXML(_tags, _attributes, _text);
             }
         }

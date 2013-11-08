@@ -171,11 +171,13 @@ public class TypeUpdate
          * @param _tags list of the tags
          * @param _attributes attributes
          * @param _text text
+         * @throws EFapsException
          */
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
 
             final String value = _tags.get(0);
@@ -501,11 +503,13 @@ public class TypeUpdate
          * @param _tags current path as list of single tags
          * @param _attributes attributes for current path
          * @param _text content for current path
+         * @throws EFapsException
          */
         @Override
         public void readXML(final List<String> _tags,
                             final Map<String, String> _attributes,
                             final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("name".equals(value)) {
@@ -667,11 +671,13 @@ public class TypeUpdate
          * @param _tags tags
          * @param _attributes attributes
          * @param _text text
+         * @throws EFapsException
          */
         @Override
         protected void readXML(final List<String> _tags,
-                                 final Map<String, String> _attributes,
-                                 final String _text)
+                               final Map<String, String> _attributes,
+                               final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("purpose".equals(value)) {

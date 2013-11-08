@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.efaps.update.LinkInstance;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -99,30 +100,31 @@ public class MenuUpdate
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
-            if ("childs".equals(value))  {
-                if (_tags.size() > 1)  {
+            if ("childs".equals(value)) {
+                if (_tags.size() > 1) {
                     final String subValue = _tags.get(1);
-                    if ("child".equals(subValue))  {
+                    if ("child".equals(subValue)) {
                         // assigns / removes child commands / menus to this menu
                         if (!"remove".equals(_attributes.get("modus"))) {
                             final LinkInstance child = new LinkInstance(_text);
                             final String order = _attributes.get("order");
-                            if (order != null)  {
+                            if (order != null) {
                                 child.setOrder(Integer.parseInt(order));
                             }
                             addLink(MenuUpdate.LINK2CHILD, child);
                         }
-                    } else  {
+                    } else {
                         super.readXML(_tags, _attributes, _text);
                     }
                 }
-            } else if ("type".equals(value))  {
+            } else if ("type".equals(value)) {
                 // assigns a type the menu for which this menu instance is the type
                 // tree menu
                 addLink(MenuUpdate.LINK2TYPE, new LinkInstance(_text));
-            } else  {
+            } else {
                 super.readXML(_tags, _attributes, _text);
             }
         }

@@ -110,9 +110,13 @@ public class AccessSetUpdate
 
         /**
          * {@inheritDoc}
+         * @throws EFapsException
          */
         @Override
-        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("access-type".equals(value)) {

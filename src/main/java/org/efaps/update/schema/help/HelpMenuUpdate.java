@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -84,11 +85,13 @@ public class HelpMenuUpdate
 
         /**
          * {@inheritDoc}
+         * @throws EFapsException
          */
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("childs".equals(value)) {

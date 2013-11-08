@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.efaps.update.AbstractUpdate;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -79,11 +80,12 @@ public class WebDAVUpdate
         public void readXML(final List<String> _tags,
                             final Map<String, String> _attributes,
                             final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
-            if ("path".equals(value))  {
+            if ("path".equals(value)) {
                 addValue("Path", value);
-            } else  {
+            } else {
                 super.readXML(_tags, _attributes, _text);
             }
         }

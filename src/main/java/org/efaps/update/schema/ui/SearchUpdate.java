@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.efaps.update.LinkInstance;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -82,19 +83,20 @@ public class SearchUpdate
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
-            if ("default".equals(value))  {
-                if (_tags.size() > 1)  {
+            if ("default".equals(value)) {
+                if (_tags.size() > 1) {
                     final String subValue = _tags.get(1);
-                    if ("command".equals(subValue))  {
+                    if ("command".equals(subValue)) {
                         // assigns a command as default for the search menu
                         addLink(SearchUpdate.LINK2DEFAULTCMD, new LinkInstance(_text));
-                    } else  {
+                    } else {
                         super.readXML(_tags, _attributes, _text);
                     }
                 }
-            } else  {
+            } else {
                 super.readXML(_tags, _attributes, _text);
             }
         }

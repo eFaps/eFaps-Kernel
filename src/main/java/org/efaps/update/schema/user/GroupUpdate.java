@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.schema.user.CompanyUpdate.CompanyDefinition;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -64,6 +66,7 @@ public class GroupUpdate
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("status".equals(value)) {

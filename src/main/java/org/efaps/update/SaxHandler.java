@@ -54,6 +54,7 @@ import org.efaps.update.schema.user.CompanyUpdate;
 import org.efaps.update.schema.user.GroupUpdate;
 import org.efaps.update.schema.user.JAASSystemUpdate;
 import org.efaps.update.schema.user.RoleUpdate;
+import org.efaps.util.EFapsException;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -173,9 +174,13 @@ public class SaxHandler
         throws SAXException
     {
         if (!this.called) {
-            this.update.readXML(this.tag, this.attributes, (this.content != null)
-                            ? this.content.toString().trim()
-                            : null);
+            try {
+                this.update.readXML(this.tag, this.attributes, (this.content != null)
+                                ? this.content.toString().trim()
+                                : null);
+            } catch (final EFapsException e) {
+                throw new SAXException(e);
+            }
             this.called = true;
             this.content = null;
         }
@@ -203,9 +208,13 @@ public class SaxHandler
     {
         if (this.update != null) {
             if (!this.called && !this.tag.isEmpty()) {
-                this.update.readXML(this.tag, this.attributes, (this.content != null)
-                                ? this.content.toString().trim()
-                                : null);
+                try {
+                    this.update.readXML(this.tag, this.attributes, (this.content != null)
+                                    ? this.content.toString().trim()
+                                    : null);
+                } catch (final EFapsException e) {
+                    throw new SAXException(e);
+                }
             }
             this.called = false;
             this.content = null;

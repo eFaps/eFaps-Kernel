@@ -95,11 +95,13 @@ public class DimensionUpdate
 
         /**
          * {@inheritDoc}
+         * @throws EFapsException
          */
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("numerator".equals(value)) {
@@ -185,11 +187,13 @@ public class DimensionUpdate
 
         /**
          * {@inheritDoc}
+         * @throws EFapsException
          */
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("description".equals(value)) {
@@ -201,7 +205,7 @@ public class DimensionUpdate
                 } else {
                     this.curUoM.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
                 }
-            }  else {
+            } else {
                 super.readXML(_tags, _attributes, _text);
             }
         }

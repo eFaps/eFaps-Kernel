@@ -159,11 +159,13 @@ public abstract class AbstractUpdate
      * @param _text content text of this tags path TODO: error could not be
      *            thrown because db properties is not read correctly
      * @throws SAXException on error
+     * @throws EFapsException
      */
+    @Override
     public void readXML(final List<String> _tags,
                         final Map<String, String> _attributes,
                         final String _text)
-        throws SAXException
+        throws SAXException, EFapsException
     {
         if (_tags.size() == 1) {
             final String value = _tags.get(0);
@@ -224,6 +226,7 @@ public abstract class AbstractUpdate
      * @param _profiles     the Profiles assigned
      * @throws InstallationException from called update methods
      */
+    @Override
     public void updateInDB(final JexlContext _jexlContext,
                            final UpdateLifecycle _step,
                            final Set<Profile> _profiles)
@@ -246,6 +249,7 @@ public abstract class AbstractUpdate
      *
      * @return value of instance variable {@link #url}
      */
+    @Override
     public URL getURL()
     {
         return this.url;
@@ -294,6 +298,7 @@ public abstract class AbstractUpdate
      * @see #fileApplication
      * @see #setFileApplication
      */
+    @Override
     public String getFileApplication()
     {
         return this.fileApplication;

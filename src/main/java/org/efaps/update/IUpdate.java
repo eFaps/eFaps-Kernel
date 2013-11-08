@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.apache.commons.jexl.JexlContext;
 import org.efaps.update.util.InstallationException;
+import org.efaps.util.EFapsException;
 import org.xml.sax.SAXException;
 
 /**
@@ -63,11 +64,12 @@ public interface IUpdate
      * @param _attributes   map of attributes for current tag
      * @param _text         content text of this tags path
      * @throws SAXException on error
+     * @throws EFapsException
      */
     void readXML(final List<String> _tags,
                  final Map<String, String> _attributes,
                  final String _text)
-        throws SAXException;
+        throws SAXException, EFapsException;
 
     /**
      * @return the URL of the CI.

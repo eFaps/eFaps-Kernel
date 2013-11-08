@@ -30,6 +30,7 @@ import org.efaps.admin.event.EventType;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.event.Event;
+import org.efaps.util.EFapsException;
 
 /**
  * This Class is responsible for the Update of "Command" in the Database.
@@ -143,9 +144,13 @@ public class CommandUpdate extends AbstractUpdate
          * @param _tags List of tags
          * @param _attributes map of attributes
          * @param _text text
+         * @throws EFapsException
          */
         @Override
-        protected void readXML(final List<String> _tags, final Map<String, String> _attributes, final String _text)
+        protected void readXML(final List<String> _tags,
+                               final Map<String, String> _attributes,
+                               final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("access".equals(value)) {
@@ -174,19 +179,19 @@ public class CommandUpdate extends AbstractUpdate
                 if (_tags.size() == 2) {
                     final String subValue = _tags.get(1);
                     final String name = _attributes.get("name") == null
-                            ? getValue("Name") + "." +  subValue : _attributes.get("name");
+                                    ? getValue("Name") + "." + subValue : _attributes.get("name");
                     if ("evaluate".equals(subValue)) {
                         getEvents().add(new Event(name, EventType.UI_TABLE_EVALUATE,
-                                                  _attributes.get("program"), _attributes.get("method"),
-                                                  _attributes.get("index")));
+                                        _attributes.get("program"), _attributes.get("method"),
+                                        _attributes.get("index")));
                     } else if ("execute".equals(subValue)) {
                         getEvents().add(new Event(name, EventType.UI_COMMAND_EXECUTE,
-                                                  _attributes.get("program"), _attributes.get("method"),
-                                                  _attributes.get("index")));
+                                        _attributes.get("program"), _attributes.get("method"),
+                                        _attributes.get("index")));
                     } else if ("instance".equals(subValue)) {
                         getEvents().add(new Event(name, EventType.UI_INSTANCEMANAGER,
-                                                  _attributes.get("program"), _attributes.get("method"),
-                                                  _attributes.get("index")));
+                                        _attributes.get("program"), _attributes.get("method"),
+                                        _attributes.get("index")));
                     } else if ("command".equals(subValue)) {
                         // assigns a command as target for this command definition.
                         addLink(CommandUpdate.LINK2TARGETCMD, new LinkInstance(_text));
@@ -204,12 +209,12 @@ public class CommandUpdate extends AbstractUpdate
                         addLink(CommandUpdate.LINK2TARGETTABLE, new LinkInstance(_text));
                     } else if ("trigger".equals(subValue)) {
                         getEvents().add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
-                                                  _attributes.get("program"), _attributes.get("method"),
-                                                  _attributes.get("index")));
+                                        _attributes.get("program"), _attributes.get("method"),
+                                        _attributes.get("index")));
                     } else if ("validate".equals(subValue)) {
                         getEvents().add(new Event(name, EventType.UI_VALIDATE,
-                                                  _attributes.get("program"), _attributes.get("method"),
-                                                  _attributes.get("index")));
+                                        _attributes.get("program"), _attributes.get("method"),
+                                        _attributes.get("index")));
                     } else if ("help".equals(subValue)) {
                         // assigns a wiki as target for this command definition.
                         addLink(CommandUpdate.LINK2TARGETHELP, new LinkInstance(_text));

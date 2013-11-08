@@ -99,11 +99,13 @@ public class StoreUpdate
          * @param _tags list of tags
          * @param _attributes attributes
          * @param _text text
+         * @throws EFapsException
          */
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             super.readXML(_tags, _attributes, _text);
         }
@@ -128,17 +130,19 @@ public class StoreUpdate
          * @param _tags List of tags
          * @param _attributes map of attributes
          * @param _text text
+         * @throws EFapsException
          */
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("resource".equals(value)) {
                 if (_tags.size() == 1) {
                     this.resource = new ResourceDefinition(_attributes.get("class"),
-                                                           _attributes.get("compress"));
+                                    _attributes.get("compress"));
                 } else {
                     this.resource.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
                 }

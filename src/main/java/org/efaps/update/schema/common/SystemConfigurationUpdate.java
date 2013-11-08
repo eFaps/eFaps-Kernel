@@ -104,11 +104,13 @@ public class SystemConfigurationUpdate
          * @param _tags         current path as list of single tags
          * @param _attributes   attributes for current path
          * @param _text         content for current path
+         * @throws EFapsException
          */
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String tmpValue = _tags.get(0);
             if ("key".equals(tmpValue)) {
@@ -191,21 +193,23 @@ public class SystemConfigurationUpdate
          * @param _tags         current path as list of single tags
          * @param _attributes   attributes for current path
          * @param _text         content for current path
+         * @throws EFapsException
          */
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("attribute".equals(value)) {
-                if (_tags.size() == 1)  {
+                if (_tags.size() == 1) {
                     this.curAttr = new AttributeDefinition();
                     this.attributes.add(this.curAttr);
-                } else  {
+                } else {
                     this.curAttr.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
                 }
-            } else  {
+            } else {
                 super.readXML(_tags, _attributes, _text);
             }
         }

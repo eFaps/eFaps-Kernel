@@ -131,11 +131,13 @@ public abstract class AbstractCollectionUpdate
 
         /**
          * {@inheritDoc}
+         * @throws EFapsException
          */
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("evaluate".equals(value)) {
@@ -153,7 +155,7 @@ public abstract class AbstractCollectionUpdate
                 // assigns a table as target for this field definition
                 addLink(AbstractCollectionUpdate.LINK2TARGETTABLE, new LinkInstance(_text));
             } else if ("picker".equals(value)) {
-                 // assigns a picker as target for this field definition
+                // assigns a picker as target for this field definition
                 addLink(AbstractCollectionUpdate.LINK2PICKER, new LinkInstance(_attributes.get("name")));
             } else if ("trigger".equals(value)) {
                 if (_tags.size() == 1) {
@@ -207,11 +209,13 @@ public abstract class AbstractCollectionUpdate
          * @param _tags tags
          * @param _attributes attributes
          * @param _text text
+         * @throws EFapsException
          */
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("field".equals(value)) {

@@ -96,20 +96,21 @@ public abstract class AbstractFileUpdate
          * @param _tags         current path as list of single tags
          * @param _attributes   attributes for current path
          * @param _text         content for current path
+         * @throws EFapsException
          */
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
-            if ("file".equals(value))  {
+            if ("file".equals(value)) {
                 this.file = _text;
-            } else  {
+            } else {
                 super.readXML(_tags, _attributes, _text);
             }
         }
-
 
         /**
          * Updates / creates the instance in the database. If a

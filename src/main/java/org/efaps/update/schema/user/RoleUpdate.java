@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.efaps.update.AbstractUpdate;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -77,13 +78,14 @@ public class RoleUpdate
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
-            if ("status".equals(value))  {
+            if ("status".equals(value)) {
                 addValue("Status", _text);
-            } else if ("global".equals(value))  {
+            } else if ("global".equals(value)) {
                 RoleUpdate.this.global = Boolean.valueOf(_text);
-            } else  {
+            } else {
                 super.readXML(_tags, _attributes, _text);
             }
         }
