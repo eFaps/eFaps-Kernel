@@ -29,6 +29,7 @@ import java.util.Set;
 import org.efaps.admin.event.EventType;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.event.Event;
+import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
@@ -78,11 +79,13 @@ public class FormUpdate
     {
         /**
          * {@inheritDoc}
+         * @throws EFapsException
          */
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("type".equals(value)) {

@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,9 +107,10 @@ public class OracleDatabaseWithAutoSequence
     {
         final Statement stmt = _con.createStatement();
         try {
+            final String tableName = getName4DB(_table, 25);
             // create sequence
             StringBuilder cmd = new StringBuilder()
-                .append("create sequence ").append(_table).append("_SEQ ")
+                .append("create sequence ").append(tableName).append("_SEQ")
                 .append("  increment by 1 ")
                 .append("  start with 1 ")
                 .append("  nocache");
@@ -116,15 +118,17 @@ public class OracleDatabaseWithAutoSequence
 
             // create trigger for auto increment
             cmd = new StringBuilder()
-                .append("create trigger ").append(_table).append("_TRG")
+                .append("create trigger ").append(tableName).append("_TRG")
                 .append("  before insert on ").append(_table)
                 .append("  for each row ")
                 .append("begin")
-                .append("  select ").append(_table).append("_SEQ.nextval ")
+                .append("  select ").append(tableName).append("_SEQ.nextval ")
                 .append("      into :new.ID from dual;")
                 .append("end;");
             stmt.executeUpdate(cmd.toString());
 
+        } catch (final EFapsException e) {
+            throw new SQLException(e);
         } finally {
             stmt.close();
         }

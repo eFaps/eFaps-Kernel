@@ -603,7 +603,7 @@ public class SQLTableUpdate
                 if (!Context.getDbType().existsTable(con.getConnection(), tableName)
                         && !Context.getDbType().existsView(con.getConnection(), tableName))  {
 
-                    SQLTableUpdate.LOG.info("    Create DB SQL Table '{}' for '{}'", tableName, getValue("name"));
+                    SQLTableUpdate.LOG.info("    Create DB SQL Table '{}' for '{}'", tableName, getValue("Name"));
 
                     Context.getDbType().createTable(con.getConnection(), tableName);
 
