@@ -117,7 +117,14 @@ public final class Context
             }
 
             Context.DATASOURCE = (DataSource) envCtx.lookup(INamingBinds.RESOURCE_DATASOURCE);
-            Context.DBTYPE = DataBaseFactory.getDatabase(Context.DATASOURCE.getConnection());
+            try {
+                final AbstractDatabase<?> dbType  = (AbstractDatabase<?>) envCtx.lookup(INamingBinds.RESOURCE_DBTYPE);
+                Context.DBTYPE = dbType;
+            } catch (final NamingException e) {
+                Context.LOG.info("Expected NamingException during evaluation for Context, No action required");
+                Context.DBTYPE = DataBaseFactory.getDatabase(Context.DATASOURCE.getConnection());
+            }
+
             Context.TRANSMANAG = (TransactionManager) envCtx.lookup(INamingBinds.RESOURCE_TRANSMANAG);
 
             try {
