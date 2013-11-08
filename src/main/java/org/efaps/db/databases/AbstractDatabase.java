@@ -20,7 +20,6 @@
 
 package org.efaps.db.databases;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -599,7 +598,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      *
      * @param _con SQL connection
      * @param _table name of the table to create
-     * @return this instance
+     * @return name of the table as it is insert into the database
      * @throws SQLException if the create of the table failed
      */
     public abstract T createTable(final Connection _con,
@@ -1064,12 +1063,23 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
     }
 
     /**
-     * @param _name name
-     * @return name
+     * @param _name name of the constraint as defined
+     * @return name as used by the database
      * @throws IOException on error
      */
     public String getConstrainName(final String _name)
-        throws IOException
+        throws EFapsException
+    {
+        return _name;
+    }
+
+    /**
+     * @param _name name of the table as defined
+     * @return name as used by the database
+     * @throws IOException on error
+     */
+    public String getTableName(final String _name)
+        throws EFapsException
     {
         return _name;
     }

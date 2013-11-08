@@ -22,6 +22,7 @@ package org.efaps.db.databases;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -36,6 +37,7 @@ import java.util.zip.CheckedInputStream;
 import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.RowProcessor;
 import org.efaps.db.databases.information.TableInformation;
+import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -351,7 +353,7 @@ public class OracleDatabase
 
             // create table itself
             final StringBuilder cmd = new StringBuilder()
-                .append("create table ").append(_table).append(" (")
+                .append("create table ").append(getTableName(_table)).append(" (")
                 .append("  ID number not null,")
                 .append("  constraint ");
 
@@ -361,7 +363,7 @@ public class OracleDatabase
             cmd.append(")");
             stmt.executeUpdate(cmd.toString());
 
-        } catch (final IOException e) {
+        } catch (final EFapsException e) {
             e.printStackTrace();
         } finally  {
             stmt.close();
@@ -610,26 +612,57 @@ public class OracleDatabase
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String getConstrainName(final String _name) throws IOException
+    public String getConstrainName(final String _name)
+        throws EFapsException
+    {
+        return getName4DB(_name, 30);
+    }
+
+    /**
+     * @param _name
+     * @param _maxLength
+     * @return
+     */
+    protected String getName4DB(final String _name,
+                                final int _maxLength)
+        throws EFapsException
     {
         String ret = _name;
         if (_name.length() > 30) {
-            final byte[] buffer = _name.getBytes("UTF8");
-            final ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
-            final CheckedInputStream cis = new CheckedInputStream(bais, new Adler32());
-            final byte[] readBuffer = new byte[5];
-            long value = 0;
-            while (cis.read(readBuffer) >= 0) {
-                value = cis.getChecksum().getValue();
+            try {
+                final byte[] buffer = _name.getBytes("UTF8");
+                final ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
+                final CheckedInputStream cis = new CheckedInputStream(bais, new Adler32());
+                final byte[] readBuffer = new byte[5];
+                long value = 0;
+                while (cis.read(readBuffer) >= 0) {
+                    value = cis.getChecksum().getValue();
+                }
+                final String valueSt = String.valueOf(value);
+                ret = ret.substring(0, 30);
+                final int sizeSuf = ret.length() - valueSt.length();
+                ret = ret.substring(0, sizeSuf) + value;
+            } catch (final UnsupportedEncodingException e) {
+                throw new EFapsException("UnsupportedEncodingException", e);
+            } catch (final IOException e) {
+                throw new EFapsException("IOException", e);
             }
-
-            final String valueSt = String.valueOf(value);
-            ret = ret.substring(0, 30);
-            final int sizeSuf = ret.length() - valueSt.length();
-            ret = ret.substring(0, sizeSuf) + value;
         }
         return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getTableName(final String _name)
+        throws EFapsException
+    {
+        return getName4DB(_name, 30);
     }
 
     /**

@@ -606,11 +606,16 @@ public class SQLTableUpdate
                 if (!Context.getDbType().existsTable(con.getConnection(), tableName)
                         && !Context.getDbType().existsView(con.getConnection(), tableName))  {
 
-                    if (SQLTableUpdate.LOG.isInfoEnabled()) {
-                        SQLTableUpdate.LOG.info("    Create DB SQL Table '" + tableName + "'");
-                    }
+                    SQLTableUpdate.LOG.info("    Create DB SQL Table '{}'", tableName);
 
                     Context.getDbType().createTable(con.getConnection(), tableName);
+
+                    final String dbTableName = Context.getDbType().getTableName(tableName);
+                    if (tableName.equals(dbTableName)) {
+                        addValue("SQLTable", dbTableName);
+                        SQLTableUpdate.LOG
+                            .info("    Changed name of DB SQL Table from '{}' to '{}'", tableName, dbTableName);
+                    }
                     SQLTableUpdate.this.created = true;
                 }
                 con.commit();
