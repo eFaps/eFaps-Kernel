@@ -20,7 +20,6 @@
 
 package org.efaps.update.schema.datamodel;
 
-import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -192,7 +191,7 @@ public class SQLTableUpdate
             String nameTmp = null;
             try {
                 nameTmp = Context.getDbType().getConstrainName(_name);
-            } catch (final IOException e) {
+            } catch (final EFapsException e) {
                 SQLTableUpdate.LOG.error("UniqueKey could not be retrieved. Name {}, columns: {} ", _name, _columns);
             }
             this.name = nameTmp;
@@ -255,7 +254,7 @@ public class SQLTableUpdate
             String nameTmp = null;
             try {
                 nameTmp =  Context.getDbType().getConstrainName(_name);
-            } catch (final IOException e) {
+            } catch (final EFapsException e) {
                 SQLTableUpdate.LOG.error("ForeignKey could not be retrieved. Name {}, key: {} ", _name, _key);
             }
             this.name = nameTmp;
