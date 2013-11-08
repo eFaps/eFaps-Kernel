@@ -374,15 +374,13 @@ public class SQLTableUpdate
         private boolean view;
 
         /**
-         *
-         * @param _tags         current path as list of single tags
-         * @param _attributes   attributes for current path
-         * @param _text         content for current path
+         * {@inheritDoc}
          */
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("database".equals(value))  {
@@ -412,14 +410,14 @@ public class SQLTableUpdate
                                                             _attributes.get("reference"),
                                                             "true".equals(_attributes.get("cascade"))));
                     } else if ("parent-table".equals(subValue))  {
-                        this.parentSQLTableName = _text;
+                        this.parentSQLTableName = Context.getDbType().getTableName(_text);
                     } else if ("sql".equals(subValue))  {
                         this.sqls.add(_text);
                     } else if ("table-name".equals(subValue))  {
-                        addValue("SQLTable", _text);
+                        addValue("SQLTable", Context.getDbType().getTableName(_text));
                         addValue("SQLColumnID", "ID");
                     } else if ("view-name".equals(subValue))  {
-                        addValue("SQLTable", _text);
+                        addValue("SQLTable", Context.getDbType().getTableName(_text));
                         addValue("SQLColumnID", "ID");
                         this.view = true;
                     } else if ("unique".equals(subValue))  {
@@ -544,7 +542,7 @@ public class SQLTableUpdate
          */
         @SuppressFBWarnings(
                         value = { "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" },
-                        justification = "The script cannot made static")
+                        justification = "The script cannot be made static")
         protected void executeSQLs()
             throws InstallationException
         {
@@ -605,16 +603,10 @@ public class SQLTableUpdate
                 if (!Context.getDbType().existsTable(con.getConnection(), tableName)
                         && !Context.getDbType().existsView(con.getConnection(), tableName))  {
 
-                    SQLTableUpdate.LOG.info("    Create DB SQL Table '{}'", tableName);
+                    SQLTableUpdate.LOG.info("    Create DB SQL Table '{}' for '{}'", tableName, getValue("name"));
 
                     Context.getDbType().createTable(con.getConnection(), tableName);
 
-                    final String dbTableName = Context.getDbType().getTableName(tableName);
-                    if (tableName.equals(dbTableName)) {
-                        addValue("SQLTable", dbTableName);
-                        SQLTableUpdate.LOG
-                            .info("    Changed name of DB SQL Table from '{}' to '{}'", tableName, dbTableName);
-                    }
                     SQLTableUpdate.this.created = true;
                 }
                 con.commit();

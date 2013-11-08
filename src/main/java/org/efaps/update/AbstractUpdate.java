@@ -605,10 +605,12 @@ public abstract class AbstractUpdate
          * @param _tags         tag to reas
          * @param _attributes   attributes
          * @param _text         text
+         * @throws EFapsException on error
          */
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
                                final String _text)
+            throws EFapsException
         {
             final String value = _tags.get(0);
             if ("name".equals(value)) {
