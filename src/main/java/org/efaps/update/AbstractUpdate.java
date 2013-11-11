@@ -159,7 +159,7 @@ public abstract class AbstractUpdate
      * @param _text content text of this tags path TODO: error could not be
      *            thrown because db properties is not read correctly
      * @throws SAXException on error
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     @Override
     public void readXML(final List<String> _tags,

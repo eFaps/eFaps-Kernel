@@ -89,8 +89,8 @@ public class FormUpdate
         {
             final String value = _tags.get(0);
             if ("type".equals(value)) {
-                // assigns a type the form for which this form instance is the
-                // classification form menu
+                // assigns a type to the form for which this form instance is the
+                // classification form
                 addLink(FormUpdate.LINK2TYPE, new LinkInstance(_text));
             } else if ("trigger".equals(value)) {
                 if (_tags.size() == 1) {
