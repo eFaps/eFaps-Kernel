@@ -21,7 +21,8 @@
 package org.efaps.update.version;
 
 import groovy.lang.Binding;
-import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyShell;
+import groovy.lang.Script;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,7 +40,6 @@ import org.apache.commons.digester3.annotations.rules.CallParam;
 import org.apache.commons.digester3.annotations.rules.ObjectCreate;
 import org.apache.commons.digester3.annotations.rules.SetProperty;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.codehaus.groovy.control.CompilerConfiguration;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.Context;
 import org.efaps.update.Install;
@@ -491,40 +491,23 @@ public class ApplicationVersion
                     throw new InstallationException("Context could not be started", e);
                 }
                 final ClassLoader parent = getClass().getClassLoader();
-                final EFapsClassLoader efapsClassLoader = new EFapsClassLoader(parent,
-                                ApplicationVersion.this.application.getClassPathElements());
-                final CompilerConfiguration config = new CompilerConfiguration();
-                config.setClasspathList(ApplicationVersion.this.application.getClassPathElements());
-                final GroovyClassLoader loader = new GroovyClassLoader(efapsClassLoader, config);
+                final EFapsClassLoader efapsClassLoader = EFapsClassLoader.getOfflineInstance(parent);
+
                 if (getCode() != null) {
-                    final Class<?> clazz = loader.parseClass(getCode());
-                    groovy.lang.Script go;
-                    try {
-                        go = (groovy.lang.Script) clazz.newInstance();
+                    final Binding binding = new Binding();
+                    binding.setVariable("EFAPS_LOGGER", ApplicationVersion.LOG);
+                    binding.setVariable("EFAPS_USERNAME", _userName);
+                    binding.setVariable("EFAPS_PASSWORD", _userName);
+                    binding.setVariable("EFAPS_ROOTURL", getCompleteRootUrl());
 
-                        final Binding binding = new Binding();
-                        binding.setVariable("EFAPS_LOGGER", ApplicationVersion.LOG);
-                        binding.setVariable("EFAPS_USERNAME", _userName);
-                        binding.setVariable("EFAPS_PASSWORD", _userName);
-                        binding.setVariable("EFAPS_ROOTURL", getCompleteRootUrl());
-                        go.setBinding(binding);
-
-                        final Object[] args = {};
-                        go.invokeMethod("run", args);
-
-                    } catch (final InstantiationException e) {
-                        throw new InstallationException("InstantiationException in Groovy", e);
-                    } catch (final IllegalAccessException e) {
-                        throw new InstallationException("IllegalAccessException in Groovy", e);
-                    }
+                    final GroovyShell shell = new GroovyShell(efapsClassLoader, binding);
+                    final Script script = shell.parse(getCode());
+                    script.run();
                 }
                 try  {
-                    loader.close();
                     Context.commit();
                 } catch (final EFapsException e) {
-                    throw new InstallationException("Tranaction could not be commited", e);
-                } catch (final IOException e) {
-                    ApplicationVersion.LOG.error("Could not close loader.");
+                    throw new InstallationException("Transaction could not be commited", e);
                 }
                 commit = true;
             } finally {

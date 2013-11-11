@@ -48,6 +48,7 @@ import org.apache.commons.digester3.binder.DigesterLoader;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.tools.ant.DirectoryScanner;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Context;
@@ -520,10 +521,10 @@ public final class Application
     protected void install(final String _userName,
                            final String _password,
                            final Set<Profile> _profiles,
-                           final boolean _withDependency
-                           )
+                           final boolean _withDependency)
         throws InstallationException
     {
+
         // install dependency if required
         if (_withDependency) {
             for (final Dependency dependency : this.dependencies) {
@@ -541,6 +542,7 @@ public final class Application
         final Map<String, Integer> latestVersions;
         try {
             Context.begin();
+            EFapsClassLoader.getOfflineInstance(getClass().getClassLoader());
             latestVersions = this.install.getLatestVersions();
             Context.rollback();
         } catch (final EFapsException e) {
@@ -551,9 +553,8 @@ public final class Application
         Application.LOG.info("Install application '" + this.application + "'");
 
         for (final ApplicationVersion version : this.versions) {
-            if (Application.LOG.isInfoEnabled()) {
-                Application.LOG.info("Check version " + version.getNumber());
-            }
+            Application.LOG.info("Check version '{}'", version.getNumber());
+
             if ((latestVersion != null) && (version.getNumber() < latestVersion)) {
                 if (Application.LOG.isInfoEnabled()) {
                     Application.LOG.info("Version " + version.getNumber() + " already installed");
@@ -605,29 +606,21 @@ public final class Application
 
         // load installed versions
         Context.begin();
+        EFapsClassLoader.getOfflineInstance(getClass().getClassLoader());
         final Map<String, Integer> latestVersions = this.install.getLatestVersions();
         Context.rollback();
         final long latestVersion = latestVersions.get(this.application);
 
         final ApplicationVersion version = getLastVersion();
         if (version.getNumber() == latestVersion) {
-            if (Application.LOG.isInfoEnabled()) {
-                Application.LOG.info("Update version "
-                                + version.getNumber()
-                                + " of application '"
-                                + this.application
-                                + "'");
-            }
+            Application.LOG.info("Update version '{}' of application '{}' ", version.getNumber(), this.application);
+
             version.install(this.install, version.getNumber(), _profiles, _userName, _password);
-            if (Application.LOG.isInfoEnabled()) {
-                Application.LOG.info("Finished update of version " + version.getNumber());
-            }
+
+            Application.LOG.info("Finished update of version '{}'", version.getNumber());
         } else {
-            Application.LOG.error("Version "
-                            + version.getNumber()
-                            + " of application '"
-                            + this.application
-                            + "' not installed and could not updated!");
+            Application.LOG.error("Version {}' of application '{}'  not installed and could not updated!",
+                            version.getNumber(), this.application);
         }
     }
 

@@ -21,16 +21,8 @@
 package org.efaps.admin.program.esjp;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminProgram;
@@ -63,51 +55,27 @@ public class EFapsClassLoader
     private static final Logger LOG = LoggerFactory.getLogger(EFapsClassLoader.class);
 
     /**
-     * should the Class be kept in a local Cache.
-     */
-    private static boolean HOLDCLASSESINCACHE = false;
-
-    /**
-     * holds all allready loaded Classes.
-     */
-    private static final Map<String, byte[]> LOADEDCLASSES = new HashMap<String, byte[]>();
-
-    /**
      * Type instance of compile EJSP program.
      */
     private final Type classType;
 
-    private URLClassLoader nested;
+    /**
+     * Is the classloader permitted to load from the eFaps DataBase.
+     */
+    private final boolean offline;
 
     /**
      * Constructor setting the Parent of the EFapsClassLoader in ClassLoader.
      *
      * @param _parentClassLoader the Parent of the this EFapsClassLoader
+     * @param _offline has the classloader tehr rigth to access the dataBase
      */
-    public EFapsClassLoader(final ClassLoader _parentClassLoader)
+    private EFapsClassLoader(final ClassLoader _parentClassLoader,
+                             final boolean _offline)
     {
         super(_parentClassLoader);
+        this.offline = _offline;
         this.classType = CIAdminProgram.JavaClass.getType();
-    }
-
-    /**
-     * @param _parent parent classloader
-     * @param _classPathElements classpath elements
-     */
-    public EFapsClassLoader(final ClassLoader _parent,
-                            final List<String> _classPathElements)
-    {
-        super(_parent);
-        this.classType = CIAdminProgram.JavaClass.getType();
-        final List<URL> urls = new ArrayList<URL>();
-        for (final String _classPathElement : _classPathElements) {
-            try {
-                urls.add(new File(_classPathElement).toURI().toURL());
-            } catch (final MalformedURLException e) {
-                EFapsClassLoader.LOG.error("Invalid URL for Classloader: {}", _classPathElement);
-            }
-        }
-        this.nested = new URLClassLoader(urls.toArray(new URL[urls.size()]));
     }
 
     /**
@@ -120,19 +88,16 @@ public class EFapsClassLoader
     public Class<?> findClass(final String _name)
         throws ClassNotFoundException
     {
-        byte[] b = getLoadedClasse(_name);
-        if (b == null) {
-            b = loadClassData(_name);
-        }
-        Class<?> ret;
-        if (b == null) {
-            if (this.nested != null) {
-                ret = this.nested.loadClass(_name);
+        Class<?> ret = null;
+        if (this.offline) {
+            throw new ClassNotFoundException(_name);
+        } else {
+            final byte[] b = loadClassData(_name);
+            if (b != null) {
+                ret = defineClass(_name, b, 0, b.length);
             } else {
                 throw new ClassNotFoundException(_name);
             }
-        } else {
-            ret = defineClass(_name, b, 0, b.length);
         }
         return ret;
     }
@@ -159,16 +124,10 @@ public class EFapsClassLoader
      * @param _resourceName name of the Resource to load
      * @return byte[] containing the compiled javaclass
      */
-    public byte[] loadClassData(final String _resourceName)
+    protected byte[] loadClassData(final String _resourceName)
     {
-        if (EFapsClassLoader.LOG.isDebugEnabled()) {
-            EFapsClassLoader.LOG.debug("Loading Class '" + _resourceName + "' from Database");
-        }
+        EFapsClassLoader.LOG.debug("Loading Class '{}' from Database.", _resourceName);
         final byte[] x = read(_resourceName);
-
-        if (x != null && EFapsClassLoader.HOLDCLASSESINCACHE) {
-            EFapsClassLoader.LOADEDCLASSES.put(_resourceName, x);
-        }
         return x;
     }
 
@@ -183,11 +142,7 @@ public class EFapsClassLoader
     public byte[] read(final String _resourceName)
     {
         byte[] ret = null;
-
-        if (EFapsClassLoader.LOG.isDebugEnabled()) {
-            EFapsClassLoader.LOG.debug("read '" + _resourceName + "'");
-        }
-
+        EFapsClassLoader.LOG.debug("read ''", _resourceName);
         try {
             final QueryBuilder queryBuilder = new QueryBuilder(this.classType);
             queryBuilder.addWhereAttrEqValue("Name", _resourceName);
@@ -202,22 +157,11 @@ public class EFapsClassLoader
                 is.close();
             }
         } catch (final EFapsException e) {
-            EFapsClassLoader.LOG.error("could not access the Database for reading '" + _resourceName + "'", e);
+            EFapsClassLoader.LOG.error("could not access the Database for reading '{}'", e , _resourceName);
         } catch (final IOException e) {
-            EFapsClassLoader.LOG.error("could not read the Javaclass '" + _resourceName + "'", e);
+            EFapsClassLoader.LOG.error("could not read the Javaclass '{}'", e, _resourceName);
         }
         return ret;
-    }
-
-    /**
-     * Get the Binary Class stored in the local Cache.
-     *
-     * @param _resourceName Name of the Class
-     * @return binary Class, null if not in Cache
-     */
-    public byte[] getLoadedClasse(final String _resourceName)
-    {
-        return EFapsClassLoader.LOADEDCLASSES.get(_resourceName);
     }
 
     /**
@@ -231,7 +175,24 @@ public class EFapsClassLoader
     public static synchronized EFapsClassLoader getInstance()
     {
         if (EFapsClassLoader.CLASSLOADER == null) {
-            EFapsClassLoader.CLASSLOADER = new EFapsClassLoader(EFapsClassLoader.class.getClassLoader());
+            EFapsClassLoader.CLASSLOADER = new EFapsClassLoader(EFapsClassLoader.class.getClassLoader(), false);
+        }
+        return EFapsClassLoader.CLASSLOADER;
+    }
+
+
+    /**
+     * Get the current EFapsClassLoader.
+     * This static method is used to provide a way to use the same classloader
+     * in different threads, due to the reason that using different classloader
+     * instances might bring the problem of "instanceof" return unexpected results.
+     *
+     * @return the current EFapsClassLoader
+     */
+    public static synchronized EFapsClassLoader getOfflineInstance(final ClassLoader _parent)
+    {
+        if (EFapsClassLoader.CLASSLOADER == null) {
+            EFapsClassLoader.CLASSLOADER = new EFapsClassLoader(_parent, true);
         }
         return EFapsClassLoader.CLASSLOADER;
     }

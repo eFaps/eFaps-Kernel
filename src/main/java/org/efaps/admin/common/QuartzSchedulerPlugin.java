@@ -124,7 +124,7 @@ public class QuartzSchedulerPlugin
                 }
                 @SuppressWarnings("unchecked")
                 final Class<?  extends Job> clazz = (Class<? extends Job>) Class.forName(esjp, false,
-                                new EFapsClassLoader(this.getClass().getClassLoader()));
+                                 EFapsClassLoader.getInstance());
                 // class must be instantiated to force that related esjps are also loaded here
                 clazz.newInstance();
                 final JobDetail jobDetail =  JobBuilder.newJob(clazz)
