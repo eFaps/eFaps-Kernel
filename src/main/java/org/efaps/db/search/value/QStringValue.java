@@ -57,15 +57,15 @@ public class QStringValue
      */
     @Override
     public QStringValue prepare(final AbstractObjectQuery<?> _query,
-                                 final AbstractQPart _part)
+                                final AbstractQPart _part)
         throws EFapsException
     {
         if (_part instanceof AbstractQAttrCompare) {
-            if (_part instanceof QMatch) {
-                this.value = this.value.replace("*", "%");
-            }
             if (((AbstractQAttrCompare) _part).isIgnoreCase()) {
                 this.value = this.value.toUpperCase(Context.getThreadContext().getLocale());
+            }
+            if (_part instanceof QMatch) {
+                this.value =  Context.getDbType().prepare4Match(this.value);
             }
         }
         return this;

@@ -65,6 +65,23 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
 {
 
     /**
+     * Pattern that  will be translated in a pattern that matches any sequence
+     * of zero or more characters.
+     */
+    public static final String WILDCARDPATTERN = "*";
+
+    /**
+     * Pattern that  will be translated in a pattern that matches any any
+     * single character.
+     */
+    public static final String SINGLECHARACTERPATTERN = "?";
+
+    /**
+     * Character used to escape the above patterns.
+     */
+    public static final String ESCAPECHARACTER = "\\";
+
+    /**
      * Pattern for the schema.
      */
     private static String SCHEMAPATTERN = null;
@@ -960,6 +977,29 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
     public String escapeForWhere(final String _value)
     {
         return "'" + StringUtils.replace(_value, "'", "''") + "'";
+    }
+
+    /**
+     * @param _value value to be prepared for use in a match
+     * @return string prepared for match
+     */
+    public String prepare4Match(final String _value)
+    {
+        // Remove double escapes
+        String ret = StringUtils.replace(_value, "\\\\", "\\");
+        // escape '%' percent and '_' underscore
+        ret = StringUtils.replace(ret, "%", "\\%");
+        ret = StringUtils.replace(ret, "_", "\\_");
+        // replace any '*' that is not escaped by a '\'
+        ret = ret.replaceAll("(?<!\\\\)\\" + AbstractDatabase.WILDCARDPATTERN, "%");
+        // remove the escapecharacter from the '\*' and replace with a simple '*'
+        ret = ret.replaceAll("(?>\\\\)\\" + AbstractDatabase.WILDCARDPATTERN, AbstractDatabase.WILDCARDPATTERN);
+        // replace any '?' that is not escaped by a '_'
+        ret = ret.replaceAll("(?<!\\\\)\\" + AbstractDatabase.SINGLECHARACTERPATTERN, "_");
+        // remove the escapecharacter from the '\?' and replace with a simple '?'
+        ret = ret.replaceAll("(?>\\\\)\\" + AbstractDatabase.SINGLECHARACTERPATTERN,
+                        AbstractDatabase.SINGLECHARACTERPATTERN);
+        return ret;
     }
 
     /**

@@ -631,6 +631,8 @@ public class QueryBuilder
             ret = new QNumberValue(((Instance) _value).getId());
         } else if (_value instanceof UoM) {
             ret = new QNumberValue(((UoM) _value).getId());
+        } else if (_value instanceof AbstractQValue) {
+            ret = (AbstractQValue) _value;
         } else {
             throw new EFapsException(QueryBuilder.class, "notsuported");
         }
