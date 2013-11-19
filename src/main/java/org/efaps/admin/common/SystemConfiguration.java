@@ -484,6 +484,7 @@ public final class SystemConfiguration
      * no attribute is found an empty Properties is returned.
      *
      * @param _key key of searched attribute
+     * @param _concatenate is concatenate or not
      * @return Properties
      * @throws EFapsException on error
      * @see #attributes
@@ -790,7 +791,6 @@ public final class SystemConfiguration
          */
         private char[] password = null;
 
-
         /**
          * Sets the password to be used for encryption.
          * <p>
@@ -798,7 +798,7 @@ public final class SystemConfiguration
          * {@link #getPasswordCharArray()}.
          * </p>
          *
-         * @param password the password to be used.
+         * @param _password the password to be used.
          */
         public void setPassword(final String _password)
         {
