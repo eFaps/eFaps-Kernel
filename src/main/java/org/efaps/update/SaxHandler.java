@@ -269,8 +269,6 @@ public class SaxHandler
             this.update = new RoleUpdate(this.url);
         } else if ("user-group".equals(_qName)) {
             this.update = new GroupUpdate(this.url);
-        } else if ("import".equals(_qName)) {
-            this.update = new ImportUpdate();
         } else if ("dbproperties".equals(_qName)) {
             this.update = new DBPropertiesUpdate(this.url);
         } else if ("help-menu".equals(_qName)) {

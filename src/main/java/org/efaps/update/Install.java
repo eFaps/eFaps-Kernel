@@ -303,7 +303,7 @@ public class Install
         if (!this.initialised) {
             this.initialised = true;
             this.cache.clear();
-
+            AppDependency.initialise();
             for (final FileType fileType : FileType.values()) {
 
                 if (fileType == FileType.XML) {

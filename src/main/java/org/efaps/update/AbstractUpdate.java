@@ -233,7 +233,7 @@ public abstract class AbstractUpdate
         throws InstallationException
     {
         for (final AbstractDefinition def : this.definitions) {
-            if (def.isValidVersion(_jexlContext)
+            if (def.isValidVersion(_jexlContext) && def.appDependenciesMet()
                             && (def.getProfiles().isEmpty()
                                             || CollectionUtils.containsAny(_profiles, def.getProfiles()))) {
                 if ((this.url != null) && AbstractUpdate.LOG.isDebugEnabled()) {
@@ -513,11 +513,10 @@ public abstract class AbstractUpdate
     }
 
     /**
-     *
+     * Base Definition.
      */
     public abstract class AbstractDefinition
     {
-
         /**
          * Expression of this definition if this definition must be installed.
          *
@@ -527,17 +526,9 @@ public abstract class AbstractUpdate
         private String expression = null;
 
         /**
-         * This instance variable stores the type of Definition (default:
-         * "replace"). Possible values are:
-         * <ul>
-         * <li>"replace"</li>
-         * <li>"update"</li>
-         * </ul>
-         *
-         * @see #getType()
-         * @see #setType(String)
+         * Instance of this definition.
          */
-        private String type = "replace";
+        private Instance instance = null;
 
         /**
          * The value depending on the attribute name for this definition.
@@ -575,14 +566,14 @@ public abstract class AbstractUpdate
         private final List<Event> events = new ArrayList<Event>();
 
         /**
-         * Instance of this definition.
-         */
-        private Instance instance = null;
-
-        /**
          * Profiles this Definition is activated for.
          */
         private final Set<Profile> profiles = new HashSet<Profile>();
+
+        /**
+         * Application Dependencies this Definition is activated for.
+         */
+        private final Set<AppDependency> appDependencies = new HashSet<AppDependency>();
 
         /**
          * Default constructor for the attribute by which the object is searched
@@ -631,6 +622,13 @@ public abstract class AbstractUpdate
                         this.profiles.add(Profile.getProfile(_attributes.get("name")));
                     }
                 }
+            } else if ("application-dependencies".equals(value))  {
+                if (_tags.size() > 1)  {
+                    final String subValue = _tags.get(1);
+                    if ("application".equals(subValue))  {
+                        this.appDependencies.add(AppDependency.getAppDependency(_attributes.get("name")));
+                    }
+                }
             } else {
                 throw new Error("Unknown Tag '" + _tags + "' (file " + AbstractUpdate.this.url + ")");
             }
@@ -665,6 +663,28 @@ public abstract class AbstractUpdate
                 throw new InstallationException("isValidVersion.JEXLExpressionNotEvaluatable", e);
             }
             return exec;
+        }
+
+        /**
+         * @return true if one of the AppDependencies is met
+         * @throws InstallationException on error
+         */
+        public boolean appDependenciesMet()
+            throws InstallationException
+        {
+            boolean ret;
+            if (this.appDependencies.isEmpty()) {
+                ret = true;
+            } else {
+                ret = false;
+                for (final AppDependency appDep : this.appDependencies) {
+                    if (appDep.isMet()) {
+                        ret = true;
+                        break;
+                    }
+                }
+            }
+            return ret;
         }
 
         /**
@@ -949,9 +969,7 @@ public abstract class AbstractUpdate
                         insert.add(_linktype.childAttrName, "" + allLinks.get(j).getChildId());
                         insert.executeWithoutAccessCheck();
                     }
-
                 } else {
-
                     // insert, update the LinkInstances or in case of replace
                     // remove them
                     for (final LinkInstance onelink : allLinks) {
@@ -972,11 +990,6 @@ public abstract class AbstractUpdate
                             }
                             insert.executeWithoutAccessCheck();
                             onelink.setOid(insert.getInstance().getOid());
-                        } else {
-                            if (!getType().equals("update") && onelink.getOid() != null) {
-                                final Delete del = new Delete(onelink.getOid());
-                                del.executeWithoutAccessCheck();
-                            }
                         }
                     }
                 }
@@ -991,7 +1004,7 @@ public abstract class AbstractUpdate
          * @param _properties new properties to set
          * @throws EFapsException if properties could not be set TODO: rework of
          *             the update algorithm (not always a complete delete and
-         *             and new create is needed) TODO: description
+         *             and new create is needed)
          */
         protected void setPropertiesInDb(final Instance _instance,
                                          final Map<String, String> _properties)
@@ -1008,7 +1021,7 @@ public abstract class AbstractUpdate
                     new Delete(query.getCurrentValue()).executeWithoutAccessCheck();
                 }
 
-                // add current properites
+                // add current properties
                 if (_properties != null) {
                     for (final Map.Entry<String, String> entry : _properties.entrySet()) {
                         final Insert insert = new Insert("Admin_Common_Property");
@@ -1126,16 +1139,6 @@ public abstract class AbstractUpdate
         }
 
         /**
-         * This is the getter method for the instance variable {@link #type}.
-         *
-         * @return value of instance variable {@link #type}
-         */
-        public String getType()
-        {
-            return this.type;
-        }
-
-        /**
          * This is the getter method for the instance variable {@link #instance}.
          *
          * @return value of instance variable {@link #instance}
@@ -1153,16 +1156,6 @@ public abstract class AbstractUpdate
         protected void setInstance(final Instance _instance)
         {
             this.instance = _instance;
-        }
-
-        /**
-         * This is the setter method for the instance variable {@link #type}.
-         *
-         * @param _type the type to set
-         */
-        public void setType(final String _type)
-        {
-            this.type = _type;
         }
 
         /**

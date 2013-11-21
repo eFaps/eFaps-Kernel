@@ -171,7 +171,7 @@ public class TypeUpdate
          * @param _tags list of the tags
          * @param _attributes attributes
          * @param _text text
-         * @throws EFapsException
+         * @throws EFapsException on error
          */
         @Override
         protected void readXML(final List<String> _tags,
@@ -254,7 +254,6 @@ public class TypeUpdate
          *
          * @return value of instance variable {@link #type}
          */
-        @Override
         public String getType()
         {
             return this.type;
@@ -265,7 +264,6 @@ public class TypeUpdate
          *
          * @param _type value for instance variable {@link #type}
          */
-        @Override
         public void setType(final String _type)
         {
             this.type = _type;
