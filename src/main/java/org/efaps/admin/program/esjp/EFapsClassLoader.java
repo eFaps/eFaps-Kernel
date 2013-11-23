@@ -24,8 +24,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminProgram;
+import org.efaps.ci.CIType;
 import org.efaps.db.Checkout;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public class EFapsClassLoader
+public final class EFapsClassLoader
     extends ClassLoader
 {
 
@@ -57,7 +57,7 @@ public class EFapsClassLoader
     /**
      * Type instance of compile EJSP program.
      */
-    private final Type classType;
+    private final CIType classType;
 
     /**
      * Is the classloader permitted to load from the eFaps DataBase.
@@ -75,7 +75,7 @@ public class EFapsClassLoader
     {
         super(_parentClassLoader);
         this.offline = _offline;
-        this.classType = CIAdminProgram.JavaClass.getType();
+        this.classType = CIAdminProgram.JavaClass;
     }
 
     /**
@@ -186,7 +186,7 @@ public class EFapsClassLoader
      * This static method is used to provide a way to use the same classloader
      * in different threads, due to the reason that using different classloader
      * instances might bring the problem of "instanceof" return unexpected results.
-     *
+     * @param _parent parent classloader
      * @return the current EFapsClassLoader
      */
     public static synchronized EFapsClassLoader getOfflineInstance(final ClassLoader _parent)
