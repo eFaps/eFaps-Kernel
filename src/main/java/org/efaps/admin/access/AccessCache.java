@@ -72,8 +72,9 @@ public final class AccessCache
      */
     public static void registerUpdate(final Instance _instance)
     {
-        final Cache<Instance, Set<AccessKey>> instanceCache = InfinispanCache.get().<Instance, Set<AccessKey>>getIgnReCache(
-                        AccessCache.INSTANCECACHE);
+        AccessCache.LOG.debug("registered Update for Instance: {}", _instance);
+        final Cache<Instance, Set<AccessKey>> instanceCache = InfinispanCache.get()
+                        .<Instance, Set<AccessKey>>getIgnReCache(AccessCache.INSTANCECACHE);
         instanceCache.remove(_instance);
     }
 
