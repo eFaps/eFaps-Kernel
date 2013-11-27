@@ -487,7 +487,9 @@ public abstract class AbstractStoreResource
         protected void beforeClose()
             throws IOException
         {
-            this.in.close();
+            if (this.in != null) {
+                this.in.close();
+            }
         }
 
         /**
@@ -552,7 +554,7 @@ public abstract class AbstractStoreResource
         public int available()
             throws IOException
         {
-            return this.in.available();
+            return this.in == null ? 1 : this.in.available();
         }
 
         /**
@@ -589,7 +591,9 @@ public abstract class AbstractStoreResource
 
         /**
          * @param _b byte to read
-         * @return d
+         * @return     the total number of bytes read into the buffer, or
+         *             <code>-1</code> if there is no more data because the end of
+         *             the stream has been reached.
          * @throws IOException on error
          * @see InputStream#read(byte[])
          */
@@ -597,14 +601,16 @@ public abstract class AbstractStoreResource
         public int read(final byte[] _b)
             throws IOException
         {
-            return this.in.read(_b);
+            return this.in == null ? -1 : this.in.read(_b);
         }
 
         /**
          * @param _b byte
          * @param _off offset
          * @param _len length
-         * @return int
+         * @return     the total number of bytes read into the buffer, or
+         *             <code>-1</code> if there is no more data because the end of
+         *             the stream has been reached.
          * @throws IOException on error
          * @see InputStream#read(byte[], int, int)
          */
@@ -614,7 +620,7 @@ public abstract class AbstractStoreResource
                         final int _len)
             throws IOException
         {
-            return this.in.read(_b, _off, _len);
+            return this.in == null ? -1 : this.in.read(_b, _off, _len);
         }
 
         /**
@@ -625,12 +631,14 @@ public abstract class AbstractStoreResource
         public void reset()
             throws IOException
         {
-            this.in.reset();
+            if (this.in != null) {
+                this.in.reset();
+            }
         }
 
         /**
          * @param _n n to skip
-         * @return long
+         * @return the actual number of bytes skipped.
          * @throws IOException on error
          * @see InputStream#skip(long)
          */
@@ -638,7 +646,7 @@ public abstract class AbstractStoreResource
         public long skip(final long _n)
             throws IOException
         {
-            return this.in.skip(_n);
+            return this.in == null ? 0 : this.in.skip(_n);
         }
     }
 }
