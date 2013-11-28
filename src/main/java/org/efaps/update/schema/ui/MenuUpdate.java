@@ -47,9 +47,8 @@ public class MenuUpdate
                                                            "Admin_UI_Command", "ToCommand");
 
     /** Link from menu to type as type tree menu. */
-    private static final Link LINK2TYPE = new Link("Admin_UI_LinkIsTypeTreeFor",
-                                                   "From",
-                                                   "Admin_DataModel_Type", "To");
+    private static final Link LINK2TYPE = new UniqueLink("Admin_UI_LinkIsTypeTreeFor", "From",
+                                                         "Admin_DataModel_Type", "To");
 
     static  {
         MenuUpdate.ALLLINKS.add(MenuUpdate.LINK2CHILD);
@@ -107,15 +106,8 @@ public class MenuUpdate
                 if (_tags.size() > 1) {
                     final String subValue = _tags.get(1);
                     if ("child".equals(subValue)) {
-                        // assigns / removes child commands / menus to this menu
-                        if (!"remove".equals(_attributes.get("modus"))) {
-                            final LinkInstance child = new LinkInstance(_text);
-                            final String order = _attributes.get("order");
-                            if (order != null) {
-                                child.setOrder(Integer.parseInt(order));
-                            }
-                            addLink(MenuUpdate.LINK2CHILD, child);
-                        }
+                        final LinkInstance child = new LinkInstance(_text);
+                        addLink(MenuUpdate.LINK2CHILD, child);
                     } else {
                         super.readXML(_tags, _attributes, _text);
                     }

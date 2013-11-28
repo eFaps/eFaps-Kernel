@@ -44,9 +44,7 @@ public class ImageUpdate
     /**
      * Link from menu to type as type tree menu.
      */
-    private static final Link LINK2TYPE
-        = new Link("Admin_UI_LinkIsTypeIconFor",
-                   "From",
+    private static final Link LINK2TYPE = new UniqueLink("Admin_UI_LinkIsTypeIconFor", "From",
                    "Admin_DataModel_Type", "To");
 
     /**
@@ -56,7 +54,6 @@ public class ImageUpdate
     static  {
         ImageUpdate.ALLLINKS.add(ImageUpdate.LINK2TYPE);
     }
-
 
     /**
      * Default constructor to initialize this image update instance for given
@@ -99,7 +96,7 @@ public class ImageUpdate
          * @param _tags         current path as list of single tags
          * @param _attributes   attributes for current path
          * @param _text         content for current path
-         * @throws EFapsException
+         * @throws EFapsException on error
          */
         @Override
         protected void readXML(final List<String> _tags,

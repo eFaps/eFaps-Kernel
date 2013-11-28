@@ -191,15 +191,12 @@ public abstract class AbstractCollectionUpdate
     protected class Definition
         extends AbstractDefinition
     {
-
         /** All fields for the collection are stored in this variable. */
         private final List<AbstractCollectionUpdate.FieldDefinition> fields
                                                             = new ArrayList<AbstractCollectionUpdate.FieldDefinition>();
 
-  /**
+        /**
          * Current read field definition.
-         *
-         * @see #readXML(List, Map, String)
          */
         private FieldDefinition curField = null;
 
@@ -271,14 +268,14 @@ public abstract class AbstractCollectionUpdate
             final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             while (query.next()) {
-                final Instance field = query.getCurrentValue();
-                setPropertiesInDb(field, null);
-                removeLinksInDB(field, AbstractCollectionUpdate.LINKFIELD2ICON);
-                removeLinksInDB(field, AbstractCollectionUpdate.LINK2TARGETTABLE);
-                removeLinksInDB(field, AbstractCollectionUpdate.LINK2PICKER);
+                final Instance instField = query.getCurrentValue();
+                setPropertiesInDb(instField, null);
+                removeLinksInDB(instField, AbstractCollectionUpdate.LINKFIELD2ICON);
+                removeLinksInDB(instField, AbstractCollectionUpdate.LINK2TARGETTABLE);
+                removeLinksInDB(instField, AbstractCollectionUpdate.LINK2PICKER);
                 // remove events
                 final QueryBuilder eventQueryBldr = new QueryBuilder(CIAdminEvent.Definition);
-                eventQueryBldr.addWhereAttrEqValue(CIAdminEvent.Definition.Abstract, field.getId());
+                eventQueryBldr.addWhereAttrEqValue(CIAdminEvent.Definition.Abstract, instField.getId());
                 final InstanceQuery eventQuery = eventQueryBldr.getQuery();
                 eventQuery.execute();
                 while (eventQuery.next()) {
@@ -292,7 +289,7 @@ public abstract class AbstractCollectionUpdate
                     }
                     new Delete(event).executeWithoutAccessCheck();
                 }
-                new Delete(field).executeWithoutAccessCheck();
+                new Delete(instField).executeWithoutAccessCheck();
             }
 
             // append new fields

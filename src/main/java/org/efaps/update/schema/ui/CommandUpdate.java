@@ -61,26 +61,30 @@ public class CommandUpdate extends AbstractUpdate
                                                             "UserLink");
 
     /** Link from command to icon. */
-    private static final Link LINK2ICON = new Link("Admin_UI_LinkIcon", "From", "Admin_UI_Image", "To");
+    private static final Link LINK2ICON = new UniqueLink("Admin_UI_LinkIcon", "From", "Admin_UI_Image", "To");
 
     /** Link from command to command as target. */
-    private static final Link LINK2TARGETCMD = new Link("Admin_UI_LinkTargetCommand", "From", "Admin_UI_Command", "To");
+    private static final Link LINK2TARGETCMD = new UniqueLink("Admin_UI_LinkTargetCommand", "From", "Admin_UI_Command",
+                    "To");
 
     /** Link from command to table as target. */
-    private static final Link LINK2TARGETTABLE = new Link("Admin_UI_LinkTargetTable", "From", "Admin_UI_Table", "To");
+    private static final Link LINK2TARGETTABLE = new UniqueLink("Admin_UI_LinkTargetTable", "From", "Admin_UI_Table",
+                    "To");
 
     /** Link from command to form as target. */
-    private static final Link LINK2TARGETFORM = new Link("Admin_UI_LinkTargetForm", "From", "Admin_UI_Form", "To");
+    private static final Link LINK2TARGETFORM = new UniqueLink("Admin_UI_LinkTargetForm", "From", "Admin_UI_Form",
+                    "To");
 
     /** Link from command to menu as target. */
-    private static final Link LINK2TARGETMENU = new Link("Admin_UI_LinkTargetMenu", "From", "Admin_UI_Menu", "To");
+    private static final Link LINK2TARGETMENU = new UniqueLink("Admin_UI_LinkTargetMenu", "From", "Admin_UI_Menu",
+                    "To");
 
     /** Link from command to search as target. */
-    private static final Link LINK2TARGETSEARCH = new Link("Admin_UI_LinkTargetSearch", "From", "Admin_UI_Search",
+    private static final Link LINK2TARGETSEARCH = new UniqueLink("Admin_UI_LinkTargetSearch", "From", "Admin_UI_Search",
                                                            "To");
 
     /** Link from command to wiki. */
-    private static final Link LINK2TARGETHELP = new Link("Admin_UI_LinkTargetHelp", "FromMenuLink",
+    private static final Link LINK2TARGETHELP = new UniqueLink("Admin_UI_LinkTargetHelp", "FromMenuLink",
                                                          "Admin_Program_Wiki", "ToWikiLink");
 
     static {
@@ -95,6 +99,9 @@ public class CommandUpdate extends AbstractUpdate
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETMENU);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETSEARCH);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETHELP);
+
+        ((UniqueLink) CommandUpdate.LINK2TARGETTABLE).add2UniqueGroup(CommandUpdate.LINK2TARGETFORM);
+        ((UniqueLink) CommandUpdate.LINK2TARGETFORM).add2UniqueGroup(CommandUpdate.LINK2TARGETTABLE);
     }
 
     /**
@@ -144,7 +151,7 @@ public class CommandUpdate extends AbstractUpdate
          * @param _tags List of tags
          * @param _attributes map of attributes
          * @param _text text
-         * @throws EFapsException
+         * @throws EFapsException on error
          */
         @Override
         protected void readXML(final List<String> _tags,

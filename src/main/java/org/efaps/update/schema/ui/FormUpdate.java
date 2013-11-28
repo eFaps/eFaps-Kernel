@@ -40,7 +40,8 @@ public class FormUpdate
 {
 
     /** Link from form to type as classification form. */
-    private static final Link LINK2TYPE = new Link("Admin_UI_LinkIsTypeFormFor", "From", "Admin_DataModel_Type", "To");
+    private static final Link LINK2TYPE = new UniqueLink("Admin_UI_LinkIsTypeFormFor", "From", "Admin_DataModel_Type",
+                    "To");
 
     /**
      * Set of all links.

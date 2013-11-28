@@ -22,14 +22,16 @@ package org.efaps.update;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.jexl.Expression;
@@ -43,9 +45,7 @@ import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
-import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
-import org.efaps.db.SelectBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.event.Event;
 import org.efaps.update.util.InstallationException;
@@ -383,7 +383,6 @@ public abstract class AbstractUpdate
      */
     protected static class Link
     {
-
         /** Name of the link. */
         private final String linkName;
 
@@ -496,7 +495,6 @@ public abstract class AbstractUpdate
     protected static class OrderedLink
         extends AbstractUpdate.Link
     {
-
         /**
          * @param _linkName name of the link itself
          * @param _parentAttrName name of the parent attribute in the link
@@ -509,6 +507,51 @@ public abstract class AbstractUpdate
                            final String _childAttrName)
         {
             super(_linkName, _parentAttrName, _childTypeName, _childAttrName);
+        }
+    }
+
+    /**
+     * Some links has a order in the database. This means that the connections
+     * must be made in the order they are defined in the XML update file.
+     */
+    protected static class UniqueLink
+        extends AbstractUpdate.Link
+    {
+        /**
+         * Link must be unique over a group of links.
+         */
+        private final Set<Link> uniqueGroup = new HashSet<Link>();
+
+        /**
+         * @param _linkName name of the link itself
+         * @param _parentAttrName name of the parent attribute in the link
+         * @param _childTypeName name of the child type
+         * @param _childAttrName name of the child attribute in the link
+         */
+        public UniqueLink(final String _linkName,
+                          final String _parentAttrName,
+                          final String _childTypeName,
+                          final String _childAttrName)
+        {
+            super(_linkName, _parentAttrName, _childTypeName, _childAttrName);
+        }
+
+        /**
+         * @param _link link to be added to the unique group
+         */
+        public void add2UniqueGroup(final Link _link)
+        {
+            this.uniqueGroup.add(_link);
+        }
+
+        /**
+         * Getter method for the instance variable {@link #uniqueGroup}.
+         *
+         * @return value of instance variable {@link #uniqueGroup}
+         */
+        public Set<Link> getUniqueGroup()
+        {
+            return this.uniqueGroup;
         }
     }
 
@@ -702,8 +745,7 @@ public abstract class AbstractUpdate
         /**
          * @param _step current update step
          * @param _allLinkTypes set of all type of links
-         * @throws InstallationException if update failed TODO: do not throw
-         *             EFapsException
+         * @throws InstallationException if update failed
          */
         protected void updateInDB(final UpdateLifecycle _step,
                                   final Set<AbstractUpdate.Link> _allLinkTypes)
@@ -828,7 +870,8 @@ public abstract class AbstractUpdate
         }
 
         /**
-         * Remove all links from given object (defined by the instance).
+         * Remove all links  of a specific type from a
+         * given object (defined by the instance).
          *
          * @param _instance instance for which all links must be removed
          * @param _linkType type of link which must be removed
@@ -859,137 +902,113 @@ public abstract class AbstractUpdate
                                     final Set<LinkInstance> _links)
             throws EFapsException
         {
-
-            final Map<Long, LinkInstance> existing = new HashMap<Long, LinkInstance>();
-
-            boolean order = false;
-            // only if new Links are given something must be done
             if (_links != null) {
-
-                final List<LinkInstance> allLinks = new ArrayList<LinkInstance>();
-
-                // add the existing Links as LinkInstance to the List of all
-                // Links
-                final QueryBuilder queryBldr = new QueryBuilder(Type.get(_linktype.linkName));
-                queryBldr.addWhereAttrEqValue(_linktype.parentAttrName, _instance.getId());
-                final MultiPrintQuery multi = queryBldr.getPrint();
-                multi.addAttribute("Type", "OID" , "ID");
-                final SelectBuilder selId = new SelectBuilder().linkto(_linktype.childAttrName).id();
-                final SelectBuilder selType = new SelectBuilder().linkto(_linktype.childAttrName).type();
-                multi.addSelect(selId, selType);
-                for (final String attrName : _linktype.getKeyAttributes()) {
-                    final SelectBuilder selAttr = new SelectBuilder().linkto(_linktype.childAttrName)
-                                                                .attribute(attrName);
-                    multi.addSelect(selAttr);
-                }
-                multi.executeWithoutAccessCheck();
-                while (multi.next()) {
-                    final Type tempType = multi.getCurrentInstance().getType();
-                    final Type childType = multi.<Type>getSelect(selType);
-                    // check if this is a correct Link for this LinkType
-                    if (tempType.isKindOf(_linktype.getLinkType()) && childType.isKindOf(_linktype.getChildType())) {
-
-                        final LinkInstance oldLink = new LinkInstance();
-                        for (final String attrName : _linktype.getKeyAttributes()) {
-                            final SelectBuilder selAttr = new SelectBuilder().linkto(_linktype.childAttrName)
-                                                                        .attribute(attrName);
-                            final Object ob = multi.getSelect(selAttr);
-                            String tmp;
-                            if (ob instanceof Type) {
-                                tmp = ((Long) ((Type) ob).getId()).toString();
-                            } else {
-                                tmp = (String) ob;
-                            }
-                            oldLink.getKeyAttr2Value().put(attrName, tmp);
-                        }
-                        final long childId = multi.<Long>getSelect(selId);
-                        oldLink.setChildId(childId);
-                        oldLink.setOid(multi.<String>getAttribute("OID"));
-                        oldLink.setId(multi.<Long>getAttribute("ID"));
-                        allLinks.add(oldLink);
-                        existing.put(childId, oldLink);
+                final Iterator<LinkInstance> linkIter = _links.iterator();
+                // 1. search the object to be linked to, if not found remove it
+                while (linkIter.hasNext()) {
+                    final LinkInstance oneLink = linkIter.next();
+                    final QueryBuilder queryBldr = new QueryBuilder(Type.get(_linktype.childTypeName));
+                    for (final Entry<String, String> entry : oneLink.getKeyAttr2Value().entrySet()) {
+                        queryBldr.addWhereAttrEqValue(entry.getKey(), entry.getValue());
                     }
-                }
-
-                // add the new LinkInstances to the List of all Linkinstances
-                for (final LinkInstance onelink : _links) {
-                    // search the id for the Linked Object
-                    final QueryBuilder queryBldr2 = new QueryBuilder(Type.get(_linktype.childTypeName));
-                    for (final Entry<String, String> entry : onelink.getKeyAttr2Value().entrySet()) {
-                        queryBldr2.addWhereAttrEqValue(entry.getKey(), entry.getValue());
-                    }
-                    final InstanceQuery query = queryBldr2.getQuery();
-                    query.executeWithoutAccessCheck();
-                    if (query.next()) {
-                        final Long id = query.getCurrentValue().getId();
-                        if (id != null) {
-                            boolean add = true;
-                            if (existing.get(id) != null) {
-                                existing.get(id).setUpdate(true);
-                                existing.get(id).setValues(onelink.getValuesMap());
-                                add = false;
-                            }
-                            if (add) {
-                                onelink.setChildId(id);
-                                onelink.setInsert(true);
-                                if (onelink.getOrder() == 0) {
-                                    allLinks.add(onelink);
-                                } else {
-                                    allLinks.add(onelink.getOrder() - 1, onelink);
-                                    order = true;
-                                }
-                            }
+                    final InstanceQuery query = queryBldr.getQuery();
+                    final List<Instance> childInsts = query.executeWithoutAccessCheck();
+                    // only if a child object is found the next steps are done
+                    if (childInsts.size() == 1) {
+                        oneLink.setChildInstance(childInsts.get(0));
+                        // 2. search if a link already exists
+                        final QueryBuilder linkQueryBldr = new QueryBuilder(Type.get(_linktype.linkName));
+                        linkQueryBldr.addWhereAttrEqValue(_linktype.parentAttrName, _instance);
+                        linkQueryBldr.addWhereAttrEqValue(_linktype.childAttrName, oneLink.getChildInstance());
+                        final InstanceQuery linkQuery = linkQueryBldr.getQuery();
+                        final List<Instance> linkInsts = linkQuery.executeWithoutAccessCheck();
+                        if (linkInsts.size() == 1) {
+                            oneLink.setInstance(linkInsts.get(0));
                         }
+                    } else if (childInsts.size() < 1) {
+                        linkIter.remove();
+                        AbstractUpdate.LOG.error("No object found for link definition {}", oneLink);
                     } else {
-                        AbstractUpdate.LOG.error(_linktype.childTypeName + " '" + onelink.getKeyAttr2Value()
-                                                    + "' not found!");
+                        linkIter.remove();
+                        AbstractUpdate.LOG.error("more than one object found for link definition {}", oneLink);
                     }
                 }
-                final Map<Long, LinkInstance> orderid = new TreeMap<Long, LinkInstance>();
-                if (order) {
-                    for (final LinkInstance onelink : allLinks) {
-                        if (onelink.getId() != null) {
-                            orderid.put(onelink.getId(), onelink);
-                        }
-                    }
-                    int i = 0;
-                    for (final Entry<Long, LinkInstance> entry : orderid.entrySet()) {
-                        // if they are the same don't do anything
-                        if (!entry.getValue().equals(allLinks.get(i))) {
-                            final Update update = new Update(entry.getValue().getOid());
-                            update.add(_linktype.childAttrName, "" + allLinks.get(i).getChildId());
-                            update.executeWithoutAccessCheck();
-                        }
-                        i++;
-                    }
 
-                    for (int j = i; j < allLinks.size(); j++) {
+                final List<Instance> childInsts = new ArrayList<Instance>();
+                for (final LinkInstance oneLink : _links) {
+                    childInsts.add(oneLink.getChildInstance());
+                }
+
+                // 3. look if there are any other links of this type already connected to the parent
+                // which are not given explicitly and remove them
+                final QueryBuilder queryBldr = new QueryBuilder(Type.get(_linktype.linkName));
+                queryBldr.addWhereAttrEqValue(_linktype.parentAttrName, _instance);
+                queryBldr.addWhereAttrNotEqValue(_linktype.childAttrName, childInsts.toArray());
+                final InstanceQuery query = queryBldr.getQuery();
+                query.executeWithoutAccessCheck();
+                while (query.next()) {
+                    new Delete(query.getCurrentValue()).executeWithoutTrigger();
+                }
+
+                // 4. check if the link must be unique and remove existing links
+                if (_linktype instanceof UniqueLink) {
+                    final QueryBuilder uniqueQueryBldr = new QueryBuilder(Type.get(_linktype.linkName));
+                    uniqueQueryBldr.addWhereAttrEqValue(_linktype.parentAttrName, _instance);
+                    final InstanceQuery uniqueQuery = uniqueQueryBldr.getQuery();
+                    uniqueQuery.executeWithoutAccessCheck();
+                    while (uniqueQuery.next()) {
+                        new Delete(uniqueQuery.getCurrentValue()).executeWithoutTrigger();
+                    }
+                    // remove also the links from the unique group
+                    for (final Link checkLink : ((UniqueLink) _linktype).getUniqueGroup()) {
+                        final QueryBuilder unGrpQueryBldr = new QueryBuilder(Type.get(checkLink.linkName));
+                        unGrpQueryBldr.addWhereAttrEqValue(_linktype.parentAttrName, _instance);
+                        final InstanceQuery unGrpQuery = unGrpQueryBldr.getQuery();
+                        unGrpQuery.executeWithoutAccessCheck();
+                        while (unGrpQuery.next()) {
+                            new Delete(unGrpQuery.getCurrentValue()).executeWithoutTrigger();
+                        }
+                    }
+                }
+
+                // 5. Insert the links which are not existing yet
+                for (final LinkInstance oneLink : _links) {
+                    if (oneLink.getInstance() == null){
                         final Insert insert = new Insert(_linktype.linkName);
-                        insert.add(_linktype.parentAttrName, "" + _instance.getId());
-                        insert.add(_linktype.childAttrName, "" + allLinks.get(j).getChildId());
+                        insert.add(_linktype.parentAttrName, _instance);
+                        insert.add(_linktype.childAttrName, oneLink.getChildInstance());
                         insert.executeWithoutAccessCheck();
+                        oneLink.setInstance(insert.getInstance());
                     }
-                } else {
-                    // insert, update the LinkInstances or in case of replace
-                    // remove them
-                    for (final LinkInstance onelink : allLinks) {
-                        if (onelink.isUpdate()) {
-                            final Update update = new Update(_linktype.getChildType(), onelink.getChildId().toString());
+                }
 
-                            for (final Map.Entry<String, String> value : onelink.getValuesMap().entrySet()) {
-                                update.add(value.getKey(), value.getValue());
-                            }
+                // 6. Order if necessary
+                if (_linktype instanceof OrderedLink) {
+                    final List<Instance> childOrder = new ArrayList<Instance>();
+                    for (final LinkInstance oneLink : _links) {
+                        childOrder.add(oneLink.getChildInstance());
+                    }
+                    final ArrayList<LinkInstance> linkOrder = new ArrayList<LinkInstance>(_links);
+                    Collections.sort(linkOrder, new Comparator<LinkInstance>()
+                    {
+                        @Override
+                        public int compare(final LinkInstance _o1,
+                                           final LinkInstance _o2)
+                        {
+                            return Long.valueOf(_o1.getInstance().getId()).compareTo(
+                                            Long.valueOf(_o2.getInstance().getId()));
+                        }
+                    });
+
+                    final Iterator<LinkInstance> sortedIter = linkOrder.iterator();
+                    final Iterator<Instance> childIter = childOrder.iterator();
+                    while (sortedIter.hasNext()) {
+                        final LinkInstance linkInst = sortedIter.next();
+                        final Instance childInst = childIter.next();
+                        if (!linkInst.getChildInstance().equals(childInst)) {
+                            final Update update = new Update(linkInst.getInstance());
+                            update.add(_linktype.childAttrName, childInst);
                             update.executeWithoutAccessCheck();
-                        } else if (onelink.isInsert()) {
-                            final Insert insert = new Insert(_linktype.linkName);
-                            insert.add(_linktype.parentAttrName, "" + _instance.getId());
-                            insert.add(_linktype.childAttrName, "" + onelink.getChildId());
-
-                            for (final Map.Entry<String, String> value : onelink.getValuesMap().entrySet()) {
-                                insert.add(value.getKey(), value.getValue());
-                            }
-                            insert.executeWithoutAccessCheck();
-                            onelink.setOid(insert.getInstance().getOid());
                         }
                     }
                 }
@@ -1084,26 +1103,12 @@ public abstract class AbstractUpdate
             return this.values.get(_name);
         }
 
-
         /**
          * @param _name Name ot set
          */
         protected void setName(final String _name)
         {
             addValue("Name", _name);
-        }
-
-        /**
-         * Returns a string representation with values of all instance variables
-         * of a definition.
-         *
-         * @return string representation of this definition of an access type
-         *         update
-         */
-        @Override
-        public String toString()
-        {
-            return ToStringBuilder.reflectionToString(this);
         }
 
         /**
@@ -1166,6 +1171,19 @@ public abstract class AbstractUpdate
         public Set<Profile> getProfiles()
         {
             return this.profiles;
+        }
+
+        /**
+         * Returns a string representation with values of all instance variables
+         * of a definition.
+         *
+         * @return string representation of this definition of an access type
+         *         update
+         */
+        @Override
+        public String toString()
+        {
+            return ToStringBuilder.reflectionToString(this);
         }
     }
 }

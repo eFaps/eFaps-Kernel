@@ -23,6 +23,8 @@ package org.efaps.update;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.efaps.db.Instance;
+
 /**
  * TODO description!
  *
@@ -32,46 +34,25 @@ import java.util.Map;
  */
 public class LinkInstance
 {
-
     /**
      * Mapping for the values.
      */
     private final Map<String, String> valuesMap = new HashMap<String, String>();
 
     /**
-     * Order of this link.
-     */
-    private int order = 0;;
-
-    /**
-     * Id of the child.
-     */
-    private Long childId;
-
-    /**
-     * Id.
-     */
-    private Long id;
-
-    /**
-     * OID.
-     */
-    private String oid;
-
-    /**
-     * To be updated.
-     */
-    private boolean update = false;
-
-    /**
-     * To be updated.
-     */
-    private boolean insert = false;
-
-    /**
      * Map of Names of a attribute to the values of this attribute.
      */
     private final Map<String, String> keyAttr2Value = new HashMap<String, String>();
+
+    /**
+     * Instance of the object the link links to.
+     */
+    private Instance childInstance;
+
+    /**
+     * Instance of the object the link links to.
+     */
+    private Instance instance;
 
     /**
      * Constructor not setting nothing. Careful the keyAttrputs must be set!
@@ -96,7 +77,8 @@ public class LinkInstance
      * @param _name key for the keyfield "Name"
      * @param _values valuue
      */
-    public LinkInstance(final String _name, final String... _values)
+    public LinkInstance(final String _name,
+                        final String... _values)
     {
         this.keyAttr2Value.put("Name", _name);
         for (int i = 0; i < _values.length; i += 2) {
@@ -112,26 +94,6 @@ public class LinkInstance
     public Map<String, String> getKeyAttr2Value()
     {
         return this.keyAttr2Value;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #order}.
-     *
-     * @return value of instance variable {@link #order}
-     */
-    public int getOrder()
-    {
-        return this.order;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #order}.
-     *
-     * @param _order the order to set
-     */
-    public void setOrder(final int _order)
-    {
-        this.order = _order;
     }
 
     /**
@@ -154,102 +116,44 @@ public class LinkInstance
     }
 
     /**
-     * This is the setter method for the instance variable {@link #childId}.
+     * Setter method for the instance variable {@link #childInstance}.
      *
-     * @param _childid the _id to set
+     * @param _instance Instance to set
      */
-    public void setChildId(final Long _childid)
+    public void setChildInstance(final Instance _instance)
     {
-        this.childId = _childid;
+       this.childInstance = _instance;
     }
 
     /**
-     * This is the getter method for the instance variable {@link #childId}.
+     * Getter method for the instance variable {@link #childInstance}.
      *
-     * @return value of instance variable {@link #childId}
+     * @return value of instance variable {@link #childInstance}
      */
-    public Long getChildId()
+    public Instance getChildInstance()
     {
-        return this.childId;
+        return this.childInstance;
     }
 
-    /**
-     * This is the getter method for the instance variable {@link #update}.
-     *
-     * @return value of instance variable {@link #update}
-     */
-    public boolean isUpdate()
-    {
-        return this.update;
-    }
 
     /**
-     * This is the setter method for the instance variable {@link #update}.
+     * Getter method for the instance variable {@link #instance}.
      *
-     * @param _update the update to set
+     * @return value of instance variable {@link #instance}
      */
-    public void setUpdate(final boolean _update)
+    public Instance getInstance()
     {
-        this.update = _update;
+        return this.instance;
     }
 
-    /**
-     * This is the getter method for the instance variable {@link #insert}.
-     *
-     * @return value of instance variable {@link #insert}
-     */
-    public boolean isInsert()
-    {
-        return this.insert;
-    }
 
     /**
-     * This is the setter method for the instance variable {@link #insert}.
+     * Setter method for instance variable {@link #instance}.
      *
-     * @param _insert the insert to set
+     * @param _instance value for instance variable {@link #instance}
      */
-    public void setInsert(final boolean _insert)
+    public void setInstance(final Instance _instance)
     {
-        this.insert = _insert;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #oid}.
-     *
-     * @return value of instance variable {@link #oid}
-     */
-    public String getOid()
-    {
-        return this.oid;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #oid}.
-     *
-     * @param _oid the oid to set
-     */
-    public void setOid(final String _oid)
-    {
-        this.oid = _oid;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #id}.
-     *
-     * @return value of instance variable {@link #id}
-     */
-    public Long getId()
-    {
-        return this.id;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #id}.
-     *
-     * @param _id the id to set
-     */
-    public void setId(final Long _id)
-    {
-        this.id = _id;
+        this.instance = _instance;
     }
 }

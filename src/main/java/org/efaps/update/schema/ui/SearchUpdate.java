@@ -38,8 +38,7 @@ public class SearchUpdate
     extends MenuUpdate
 {
     /** Link from search to default search command. */
-    private static final Link LINK2DEFAULTCMD = new Link("Admin_UI_LinkDefaultSearchCommand",
-                                                         "From",
+    private static final Link LINK2DEFAULTCMD = new UniqueLink("Admin_UI_LinkDefaultSearchCommand", "From",
                                                          "Admin_UI_Command", "To");
 
     /**
