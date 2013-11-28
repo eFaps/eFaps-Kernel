@@ -21,14 +21,11 @@
 package org.efaps.update.schema.user;
 
 import java.net.URL;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.efaps.db.Insert;
 import org.efaps.update.AbstractUpdate;
-import org.efaps.update.LinkInstance;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
@@ -40,38 +37,13 @@ import org.efaps.util.EFapsException;
 public class JAASSystemUpdate
     extends AbstractUpdate
 {
-    /** Link from JAAS systems to persons. */
-    private static final Link LINK2PERSONS = new Link("Admin_User_JAASKey",
-                                                      "JAASSystemLink",
-                                                      "Admin_User_Person", "UserLink");
-
-    /** Link from JAAS systems to roles. */
-    private static final Link LINK2ROLES = new Link("Admin_User_JAASKey",
-                                                    "JAASSystemLink",
-                                                    "Admin_User_RoleAbstract", "UserLink");
-
-    /** Link from JAAS systems to groups. */
-    private static final Link LINK2GROUPS = new Link("Admin_User_JAASKey",
-                                                     "JAASSystemLink",
-                                                     "Admin_User_Group", "UserLink");
-
-    /**
-     * Hold the link definitions.
-     */
-    private static final Set <Link> ALLLINKS = new HashSet<Link>();
-    static {
-        JAASSystemUpdate.ALLLINKS.add(JAASSystemUpdate.LINK2PERSONS);
-        JAASSystemUpdate.ALLLINKS.add(JAASSystemUpdate.LINK2ROLES);
-        JAASSystemUpdate.ALLLINKS.add(JAASSystemUpdate.LINK2GROUPS);
-    }
-
     /**
      *
      * @param _url        URL of the file
      */
     public JAASSystemUpdate(final URL _url)
     {
-        super(_url, "Admin_User_JAASSystem", JAASSystemUpdate.ALLLINKS);
+        super(_url, "Admin_User_JAASSystem");
     }
 
     /**
@@ -100,13 +72,7 @@ public class JAASSystemUpdate
             throws EFapsException
         {
             final String value = _tags.get(0);
-            if ("assigned-group".equals(value)) {
-                addLink(JAASSystemUpdate.LINK2GROUPS, new LinkInstance(_text, "Key", _attributes.get("key")));
-            } else if ("assigned-person".equals(value)) {
-                addLink(JAASSystemUpdate.LINK2PERSONS, new LinkInstance(_text, "Key", _attributes.get("key")));
-            } else if ("assigned-role".equals(value)) {
-                addLink(JAASSystemUpdate.LINK2ROLES, new LinkInstance(_text, "Key", _attributes.get("key")));
-            } else if ("group".equals(value)) {
+            if ("group".equals(value)) {
                 if (_tags.size() > 1) {
                     final String subValue = _tags.get(1);
                     if ("classname".equals(subValue)) {
