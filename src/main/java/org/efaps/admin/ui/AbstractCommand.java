@@ -624,7 +624,7 @@ public abstract class AbstractCommand
     private void setTargetCreateClassifications(final String _value)
         throws CacheReloadException
     {
-        final String[] values = _value.split(",");
+        final String[] values = _value.split(";");
         for (final String value : values) {
             final Type classification = Type.get(value.trim());
             if (classification != null) {
@@ -966,7 +966,7 @@ public abstract class AbstractCommand
         } else if ("TargetCreateType".equals(_name)) {
             final Type type = Type.get(_value);
             this.targetCreateTypeId = type == null ? 0 : type.getId();
-        } else if ("TargetCreateClassifications".equals(_name)) {
+        } else if (_name != null && _name.startsWith("TargetCreateClassifications")) {
             setTargetCreateClassifications(_value);
         } else if ("TargetDefaultMenu".equals(_name)) {
             this.targetDefaultMenu = "none".equalsIgnoreCase(_value);
