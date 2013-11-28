@@ -964,14 +964,25 @@ public abstract class AbstractUpdate
                     }
                 }
 
-                // 5. Insert the links which are not existing yet
+                // 5. Insert the links which are not existing yet and update given values
                 for (final LinkInstance oneLink : _links) {
+                    Update update;
+                    boolean exec = false;
                     if (oneLink.getInstance() == null){
-                        final Insert insert = new Insert(_linktype.linkName);
-                        insert.add(_linktype.parentAttrName, _instance);
-                        insert.add(_linktype.childAttrName, oneLink.getChildInstance());
-                        insert.executeWithoutAccessCheck();
-                        oneLink.setInstance(insert.getInstance());
+                        update = new Insert(_linktype.linkName);
+                        update.add(_linktype.parentAttrName, _instance);
+                        update.add(_linktype.childAttrName, oneLink.getChildInstance());
+                        exec = true;
+                    } else {
+                        update = new Update(oneLink.getInstance());
+                    }
+                    for (final Entry<String, String> entry : oneLink.getValuesMap().entrySet()) {
+                        update.add(entry.getKey(), entry.getValue());
+                        exec = true;
+                    }
+                    if (exec) {
+                        update.executeWithoutAccessCheck();
+                        oneLink.setInstance(update.getInstance());
                     }
                 }
 
