@@ -943,7 +943,8 @@ public abstract class AbstractUpdate
                 // which are not given explicitly and remove them
                 final QueryBuilder queryBldr = new QueryBuilder(Type.get(_linktype.linkName));
                 queryBldr.addWhereAttrEqValue(_linktype.parentAttrName, _instance);
-                queryBldr.addWhereAttrNotEqValue(_linktype.childAttrName, childInsts.toArray());
+                queryBldr.addWhereAttrNotEqValue(_linktype.childAttrName,
+                                childInsts.isEmpty() ? 0 : childInsts.toArray());
                 final InstanceQuery query = queryBldr.getQuery();
                 query.executeWithoutAccessCheck();
                 while (query.next()) {
@@ -968,7 +969,7 @@ public abstract class AbstractUpdate
                 for (final LinkInstance oneLink : _links) {
                     Update update;
                     boolean exec = false;
-                    if (oneLink.getInstance() == null){
+                    if (oneLink.getInstance() == null) {
                         update = new Insert(_linktype.linkName);
                         update.add(_linktype.parentAttrName, _instance);
                         update.add(_linktype.childAttrName, oneLink.getChildInstance());
