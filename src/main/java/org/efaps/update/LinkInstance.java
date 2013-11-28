@@ -23,6 +23,7 @@ package org.efaps.update;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.db.Instance;
 
 /**
@@ -135,7 +136,6 @@ public class LinkInstance
         return this.childInstance;
     }
 
-
     /**
      * Getter method for the instance variable {@link #instance}.
      *
@@ -146,7 +146,6 @@ public class LinkInstance
         return this.instance;
     }
 
-
     /**
      * Setter method for instance variable {@link #instance}.
      *
@@ -156,4 +155,11 @@ public class LinkInstance
     {
         this.instance = _instance;
     }
+
+    @Override
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this);
+    }
+
 }
