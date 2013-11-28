@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.efaps.update.AbstractUpdate;
-import org.efaps.update.schema.user.CompanyUpdate.CompanyDefinition;
 import org.efaps.util.EFapsException;
 
 /**
