@@ -952,13 +952,6 @@ public abstract class AbstractUpdate
 
                 // 4. check if the link must be unique and remove existing links
                 if (_linktype instanceof UniqueLink) {
-                    final QueryBuilder uniqueQueryBldr = new QueryBuilder(Type.get(_linktype.linkName));
-                    uniqueQueryBldr.addWhereAttrEqValue(_linktype.parentAttrName, _instance);
-                    final InstanceQuery uniqueQuery = uniqueQueryBldr.getQuery();
-                    uniqueQuery.executeWithoutAccessCheck();
-                    while (uniqueQuery.next()) {
-                        new Delete(uniqueQuery.getCurrentValue()).executeWithoutTrigger();
-                    }
                     // remove also the links from the unique group
                     for (final Link checkLink : ((UniqueLink) _linktype).getUniqueGroup()) {
                         final QueryBuilder unGrpQueryBldr = new QueryBuilder(Type.get(checkLink.linkName));
