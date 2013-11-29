@@ -99,9 +99,6 @@ public class CommandUpdate extends AbstractUpdate
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETMENU);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETSEARCH);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETHELP);
-
-        ((UniqueLink) CommandUpdate.LINK2TARGETTABLE).add2UniqueGroup(CommandUpdate.LINK2TARGETFORM);
-        ((UniqueLink) CommandUpdate.LINK2TARGETFORM).add2UniqueGroup(CommandUpdate.LINK2TARGETTABLE);
     }
 
     /**

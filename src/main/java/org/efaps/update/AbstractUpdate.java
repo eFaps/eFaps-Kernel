@@ -41,6 +41,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdmin;
 import org.efaps.ci.CIAdminCommon;
+import org.efaps.db.AttributeQuery;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -941,8 +942,12 @@ public abstract class AbstractUpdate
 
                 // 3. look if there are any other links of this type already connected to the parent
                 // which are not given explicitly and remove them
+                final QueryBuilder attrQueryBldr = new QueryBuilder(Type.get(_linktype.childTypeName));
+                final AttributeQuery attrQuery = attrQueryBldr.getAttributeQuery("ID");
+                attrQuery.setIncludeChildTypes(false);
                 final QueryBuilder queryBldr = new QueryBuilder(Type.get(_linktype.linkName));
                 queryBldr.addWhereAttrEqValue(_linktype.parentAttrName, _instance);
+                queryBldr.addWhereAttrInQuery(_linktype.childAttrName, attrQuery);
                 if (!childInsts.isEmpty()) {
                     queryBldr.addWhereAttrNotEqValue(_linktype.childAttrName, childInsts.toArray());
                 }
@@ -956,8 +961,12 @@ public abstract class AbstractUpdate
                 if (_linktype instanceof UniqueLink) {
                     // remove also the links from the unique group
                     for (final Link checkLink : ((UniqueLink) _linktype).getUniqueGroup()) {
+                        final QueryBuilder unGrpAttrQueryBldr = new QueryBuilder(Type.get(checkLink.childTypeName));
+                        final AttributeQuery unGrpAttrQuery = unGrpAttrQueryBldr.getAttributeQuery("ID");
+                        unGrpAttrQuery.setIncludeChildTypes(false);
                         final QueryBuilder unGrpQueryBldr = new QueryBuilder(Type.get(checkLink.linkName));
-                        unGrpQueryBldr.addWhereAttrEqValue(_linktype.parentAttrName, _instance);
+                        unGrpQueryBldr.addWhereAttrEqValue(checkLink.parentAttrName, _instance);
+                        unGrpQueryBldr.addWhereAttrInQuery(checkLink.childAttrName, unGrpAttrQuery);
                         final InstanceQuery unGrpQuery = unGrpQueryBldr.getQuery();
                         unGrpQuery.executeWithoutAccessCheck();
                         while (unGrpQuery.next()) {
