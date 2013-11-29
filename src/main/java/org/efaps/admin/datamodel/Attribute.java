@@ -83,7 +83,11 @@ public class Attribute
         /** Attribute type Multi Line Array. */
         ATTRTYPE_MULTILINEARRAY("adb13c3d-9506-4da2-8d75-b54c76779c6c"),
         /** Attribute type Status. */
-        ATTRTYPE_STATUS("0161bcdb-45e9-4839-a709-3a1c56f8a76a");
+        ATTRTYPE_STATUS("0161bcdb-45e9-4839-a709-3a1c56f8a76a"),
+        /** Attribute type Enum. */
+        ATTRTYPE_ENUM("b7c6a324-5dec-425f-b778-fa8fabf80202"),
+        /** Attribute type BitEnum. */
+        ATTRTYPE_BITENUM("a9b1abde-d58d-4aea-8cdc-f2870111f1cd");
 
         /**
          * Stored the UUID for the given type.
@@ -133,6 +137,7 @@ public class Attribute
                     .column("SQLCOLUMN")
                     .column("DEFAULTVAL")
                     .column("DIMENSION")
+                    .column("CLASSNAME")
                     .from("V_ADMINATTRIBUTE", 0)
                     .addPart(SQLPart.WHERE).addColumnPart(0, "DMTYPE").addPart(SQLPart.EQUAL).addValuePart("?")
                     .toString();
@@ -239,6 +244,14 @@ public class Attribute
      * Key of this Attribute. Consist of name of the Parent Type and name of the Attribute itself
      */
     private String key;
+
+    /**
+     * ClassName of this Attribute. Used only in case of
+     * {@link org.efaps.admin.datamodel.attributetype.EnumType}
+     * and
+     * {@link org.efaps.admin.datamodel.attributetype.BitEnumType}.
+     */
+    private String className;
 
     /**
      * This is the constructor for class {@link Attribute}. Every instance of
@@ -356,6 +369,7 @@ public class Attribute
                         this.defaultValue, this.dimensionUUID, this.required, this.size, this.scale);
         ret.getSqlColNames().addAll(getSqlColNames());
         ret.setLink(this.link);
+        ret.setClassName(getClassName());
         ret.getProperties().putAll(getProperties());
         return ret;
     }
@@ -635,6 +649,26 @@ public class Attribute
     }
 
     /**
+     * Getter method for the instance variable {@link #className}.
+     *
+     * @return value of instance variable {@link #className}
+     */
+    public String getClassName()
+    {
+        return this.className;
+    }
+
+    /**
+     * Setter method for instance variable {@link #className}.
+     *
+     * @param _className value for instance variable {@link #className}
+     */
+    protected void setClassName(final String _className)
+    {
+        this.className = _className;
+    }
+
+    /**
      * Method to initialize this Cache.
      *
      * @param _class clas that called this method
@@ -833,7 +867,8 @@ public class Attribute
                                     rs.getLong(7),
                                     rs.getString(8),
                                     rs.getString(9),
-                                    rs.getString(10)
+                                    rs.getString(10),
+                                    rs.getString(11)
                     });
                 }
                 rs.close();
@@ -858,6 +893,7 @@ public class Attribute
                 final String sqlCol = (String) row[7];
                 final String defaultval = (String) row[8];
                 final String dimensionUUID = (String) row[9];
+                final String className = (String) row[10];
 
                 Attribute.LOG.debug("read attribute '{}/{}' (id = {})", _type.getName(), name, id);
 
@@ -882,10 +918,16 @@ public class Attribute
                                     || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_PERSON_LINK.getUuid())) {
                         attr.setLink(Type.getId4UUID(CIAdminUser.Person.uuid));
                         // in case of a GroupLink, a link to Admin_User_Group must be set
-                    }   else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_GROUP_LINK.getUuid())) {
+                    } else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_GROUP_LINK.getUuid())) {
                         attr.setLink(Type.getId4UUID(CIAdminUser.Group.uuid));
+                        // in case of a Enum and BitEnum the className must be set
+                    } else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_ENUM.getUuid())
+                                    || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_BITENUM.getUuid())) {
+                        if (className == null || (className != null && className.isEmpty())) {
+                            Attribute.LOG.error("An Attribute of Type Enum or BitEnum must have a className: {}", attr);
+                        }
+                        attr.setClassName(className.trim());
                     }
-
                     attr.readFromDB4Properties();
 
                     if (Type.check4Type(typeAttrId, CIAdminDataModel.AttributeSetAttribute.uuid)) {

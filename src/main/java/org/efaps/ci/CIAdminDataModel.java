@@ -74,6 +74,7 @@ public class CIAdminDataModel
         public final CIAttribute TypeLink = new CIAttribute(this, "TypeLink");
         public final CIAttribute DefaultValue = new CIAttribute(this, "DefaultValue");
         public final CIAttribute DimensionUUID = new CIAttribute(this, "DimensionUUID");
+        public final CIAttribute ClassName = new CIAttribute(this, "ClassName");
 
     }
 

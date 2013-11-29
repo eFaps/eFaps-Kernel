@@ -164,6 +164,11 @@ public class TypeUpdate
          * e.g. IntegerWithUoM).
          */
         private String dimensionUUID;
+        /**
+         * ClassName for this Attribute. (Used in conjunction with
+         * e.g. EnumType and BitEnumType).
+         */
+        private String className;
 
         /**
          * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List,
@@ -181,7 +186,9 @@ public class TypeUpdate
         {
 
             final String value = _tags.get(0);
-            if ("defaultvalue".equals(value)) {
+            if ("className".equals(value)) {
+                this.className = _text;
+            } if ("defaultvalue".equals(value)) {
                 this.defaultValue = _text;
             } else if ("dimensionUUID".equals(value)) {
                 this.dimensionUUID = _text;
@@ -364,6 +371,9 @@ public class TypeUpdate
             }
             if (this.dimensionUUID != null) {
                 update.add(CIAdminDataModel.Attribute.DimensionUUID, this.dimensionUUID);
+            }
+            if (this.className != null) {
+                update.add(CIAdminDataModel.Attribute.ClassName, this.className);
             }
             if (_setID != 0) {
                 update.add(CIAdminDataModel.AttributeSetAttribute.ParentAttributeSet, _setID);
@@ -682,16 +692,16 @@ public class TypeUpdate
                 if (_tags.size() == 1) {
                     Integer valueTmp = 0;
                     if ("true".equalsIgnoreCase(_attributes.get("abstract"))) {
-                        valueTmp = valueTmp + Type.Purpose.ABSTRACT.getId();
+                        valueTmp = valueTmp + Type.Purpose.ABSTRACT.getInt();
                     }
                     if ("true".equalsIgnoreCase(_attributes.get("classification"))) {
-                        valueTmp = valueTmp + Type.Purpose.CLASSIFICATION.getId();
+                        valueTmp = valueTmp + Type.Purpose.CLASSIFICATION.getInt();
                     }
                     if ("true".equalsIgnoreCase(_attributes.get("GeneralInstance"))) {
-                        valueTmp = valueTmp + Type.Purpose.GENERALINSTANCE.getId();
+                        valueTmp = valueTmp + Type.Purpose.GENERALINSTANCE.getInt();
                     }
                     if ("false".equalsIgnoreCase(_attributes.get("GeneralInstance"))) {
-                        valueTmp = valueTmp + Type.Purpose.NOGENERALINSTANCE.getId();
+                        valueTmp = valueTmp + Type.Purpose.NOGENERALINSTANCE.getInt();
                     }
                     addValue("Purpose", valueTmp.toString());
                 } else if (_tags.size() == 2) {

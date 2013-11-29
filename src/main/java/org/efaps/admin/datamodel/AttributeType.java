@@ -111,7 +111,7 @@ public class AttributeType
     /**
      * The instance variable stores the instance for the user interface.
      */
-    private UIInterface uiAttrType;
+    private IUIProvider uiAttrType;
 
     /**
      * The instance variable store the behavior, if an update is made. If the
@@ -167,7 +167,7 @@ public class AttributeType
         }
 
         try {
-            this.uiAttrType = (UIInterface) Class.forName(_uiAttrTypeName).newInstance();
+            this.uiAttrType = (IUIProvider) Class.forName(_uiAttrTypeName).newInstance();
             this.uiProvider = (IUIProvider) Class.forName(_uiAttrTypeName).newInstance();
         } catch (final ClassNotFoundException e) {
             throw new EFapsException(getClass(), "setUIClass.ClassNotFoundException", e, _uiAttrTypeName);
@@ -212,7 +212,13 @@ public class AttributeType
      */
     public UIInterface getUI()
     {
-        return this.uiAttrType;
+        UIInterface ret;
+        if (this.uiAttrType instanceof UIInterface) {
+            ret = (UIInterface) this.uiAttrType;
+        } else {
+            ret = null;
+        }
+        return ret;
     }
 
     /**

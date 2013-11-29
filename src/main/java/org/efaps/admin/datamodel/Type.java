@@ -32,10 +32,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
+import org.efaps.admin.datamodel.attributetype.BitEnumType;
 import org.efaps.admin.datamodel.attributetype.CompanyLinkType;
 import org.efaps.admin.datamodel.attributetype.ConsortiumLinkType;
 import org.efaps.admin.datamodel.attributetype.GroupLinkType;
@@ -87,51 +87,33 @@ public class Type
     /**
      * Enum for the different purpose of a type.
      */
-    public enum Purpose {
+    public enum Purpose
+        implements IBitEnum
+    {
         /** Abstract purpose. */
-        ABSTRACT(1, 0),
+        ABSTRACT,
         /** classification purpose. */
-        CLASSIFICATION(2, 1),
+        CLASSIFICATION,
         /** GeneralInstane. */
-        GENERALINSTANCE(4, 2),
+        GENERALINSTANCE,
         /** No GeneralInstane. */
-        NOGENERALINSTANCE(8, 3);
-        /** id of this purpose. */
-        private final int id;
-        /** digit of this purpose. */
-        private final int digit;
+        NOGENERALINSTANCE;
 
         /**
-         * Constructor setting the id.
-         *
-         * @param _id id of this purpose
-         * @param _digit digit of this purpose
+         * {@inheritDoc}
          */
-        private Purpose(final int _id,
-                        final int _digit)
+        public int getInt()
         {
-            this.id = _id;
-            this.digit = _digit;
+            return BitEnumType.getInt4Index( ordinal());
         }
 
         /**
-         * Getter method for the instance variable {@link #digit}.
-         *
-         * @return value of instance variable {@link #digit}
+         * {@inheritDoc}
          */
-        public int getDigit()
+        @Override
+        public int getBitIndex()
         {
-            return this.digit;
-        }
-
-        /**
-         * Getter method for instance variable {@link #id}.
-         *
-         * @return id of this purpose
-         */
-        public Integer getId()
-        {
-            return this.id;
+            return ordinal();
         }
     }
 
@@ -1397,7 +1379,7 @@ public class Type
             long parentTypeId = 0;
             long parentClassTypeId = 0;
             long id = 0;
-            final char trueCriteria = "1".toCharArray()[0];
+
             if (rs.next()) {
                 id = rs.getLong(1);
                 final String uuid = rs.getString(2).trim();
@@ -1409,9 +1391,7 @@ public class Type
                 Type.LOG.debug("read type '{}' (id = {}) (purpose = {}) (parentTypeId = {}) (parentClassTypeId = {})",
                                 name, id, purpose, parentTypeId, parentClassTypeId);
 
-                final char[] purpose2 = ("00000000" + Integer.toBinaryString(purpose)).toCharArray();
-                ArrayUtils.reverse(purpose2);
-                if (trueCriteria == purpose2[Type.Purpose.CLASSIFICATION.getDigit()]) {
+                if (BitEnumType.isSelected(purpose, Type.Purpose.CLASSIFICATION)) {
                     ret = new Classification(id, uuid, name);
                     if (parentClassTypeId != 0) {
                         ((Classification) ret).setParentClassification(parentClassTypeId);
@@ -1422,12 +1402,12 @@ public class Type
                 if (parentTypeId != 0) {
                     ret.setParentTypeID(parentTypeId);
                 }
-                ret.setAbstract(trueCriteria == purpose2[Type.Purpose.ABSTRACT.getDigit()]);
+                ret.setAbstract(BitEnumType.isSelected(purpose, Type.Purpose.ABSTRACT));
 
-                if (trueCriteria == purpose2[Type.Purpose.GENERALINSTANCE.getDigit()]) {
+                if (BitEnumType.isSelected(purpose, Type.Purpose.GENERALINSTANCE)) {
                     ret.setGeneralInstance(true);
                 }
-                if (trueCriteria == purpose2[Type.Purpose.NOGENERALINSTANCE.getDigit()]) {
+                if (BitEnumType.isSelected(purpose, Type.Purpose.NOGENERALINSTANCE)) {
                     ret.setGeneralInstance(false);
                 }
             }
