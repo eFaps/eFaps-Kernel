@@ -28,6 +28,8 @@ import java.util.UUID;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Dimension.UoM;
+import org.efaps.admin.datamodel.IBitEnum;
+import org.efaps.admin.datamodel.IEnum;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAttribute;
@@ -52,6 +54,7 @@ import org.efaps.db.search.compare.QNotIn;
 import org.efaps.db.search.section.QOrderBySection;
 import org.efaps.db.search.section.QWhereSection;
 import org.efaps.db.search.value.AbstractQValue;
+import org.efaps.db.search.value.QBitValue;
 import org.efaps.db.search.value.QBooleanValue;
 import org.efaps.db.search.value.QClassValue;
 import org.efaps.db.search.value.QDateTimeValue;
@@ -631,6 +634,10 @@ public class QueryBuilder
             ret = new QNumberValue(((Instance) _value).getId());
         } else if (_value instanceof UoM) {
             ret = new QNumberValue(((UoM) _value).getId());
+        } else if (_value instanceof IBitEnum) {
+            ret = new QBitValue(((IBitEnum) _value));
+        } else if (_value instanceof IEnum) {
+            ret = new QNumberValue(((IEnum) _value).getInt());
         } else if (_value instanceof AbstractQValue) {
             ret = (AbstractQValue) _value;
         } else {

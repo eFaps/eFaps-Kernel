@@ -27,6 +27,7 @@ import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.search.AbstractQPart;
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.value.AbstractQValue;
+import org.efaps.db.search.value.QBitValue;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -101,7 +102,8 @@ public class QEqual
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
-        if (this.values.size() > 1) {
+        if (this.values.size() > 1
+                        || (this.values.size() > 0 && this.values.get(0) instanceof QBitValue)) {
             _sql.addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
             boolean first = true;
             for (final AbstractQValue value : this.values) {
