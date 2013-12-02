@@ -72,6 +72,35 @@ public class BitEnumType
         return ret;
     }
 
+    @Override
+    protected Integer eval(final Attribute _attribute,
+                           final Object[] _value)
+    {
+        final Integer ret;
+        if (_value == null) {
+            ret = null;
+        } else {
+            Integer tmp = null;
+            for (final Object obj : _value) {
+                if ((obj instanceof String) && (((String) obj).length() > 0)) {
+                    tmp = tmp == null ? Integer.parseInt((String) obj) : tmp + Integer.parseInt((String) obj);
+                } else if (obj instanceof Integer) {
+                    tmp = tmp == null ? (Integer) obj : tmp + (Integer) obj;
+                } else if (obj instanceof Long) {
+                    tmp = tmp == null ? ((Long) obj).intValue() : tmp + ((Long) obj).intValue();
+                } else  {
+                    final Integer tmp2 = eval4Enum(_attribute, obj);
+                    if (tmp2 != null) {
+                        tmp = tmp == null ? tmp2 : tmp + tmp2;
+                    }
+                }
+            }
+            ret = tmp;
+        }
+        return ret;
+    }
+
+
     /**
      * @param _int  the integer value
      * @param _enum enum to be check if it is selected
