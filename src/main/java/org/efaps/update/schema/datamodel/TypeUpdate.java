@@ -188,7 +188,7 @@ public class TypeUpdate
             final String value = _tags.get(0);
             if ("className".equals(value)) {
                 this.className = _text;
-            } if ("defaultvalue".equals(value)) {
+            } else if ("defaultvalue".equals(value)) {
                 this.defaultValue = _text;
             } else if ("dimensionUUID".equals(value)) {
                 this.dimensionUUID = _text;
