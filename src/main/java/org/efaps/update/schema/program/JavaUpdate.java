@@ -23,6 +23,7 @@ package org.efaps.update.schema.program;
 import java.net.URL;
 import java.util.Set;
 
+import org.efaps.db.Instance;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.schema.program.esjp.ESJPImporter;
@@ -74,7 +75,12 @@ public class JavaUpdate
         /**
          * Importer for the ESJP.
          */
-        private ESJPImporter javaCode = null;
+        private ESJPImporter importer = null;
+
+        /**
+         * Is update of the given esjp allowed.
+         */
+        private boolean updateAllowed = true;
 
         /**
          * @param _url URL to the java file
@@ -95,20 +101,26 @@ public class JavaUpdate
         protected void searchInstance()
             throws InstallationException
         {
-            if (this.javaCode == null) {
-                this.javaCode = new ESJPImporter(getUrl());
+            if (this.importer == null) {
+                this.importer = new ESJPImporter(getUrl());
             }
-            setName(this.javaCode.getProgramName());
+            setName(this.importer.getProgramName());
 
-            if (this.javaCode.getEFapsUUID() != null) {
-                addValue("UUID", this.javaCode.getEFapsUUID().toString());
+            if (this.importer.getEFapsUUID() != null) {
+                addValue("UUID", this.importer.getEFapsUUID().toString());
             }
 
-            if (this.javaCode.getRevision() != null) {
-                addValue("Revision", this.javaCode.getRevision());
+            if (this.importer.getRevision() != null) {
+                addValue("Revision", this.importer.getRevision());
             }
             if (getInstance() == null) {
-                setInstance(this.javaCode.searchInstance());
+                final Instance instTmp = this.importer.searchInstance();
+                setInstance(instTmp);
+                if (instTmp == null) {
+                    this.updateAllowed = true;
+                } else {
+                    this.updateAllowed = this.importer.isUpdate();
+                }
             }
         }
 
@@ -127,9 +139,13 @@ public class JavaUpdate
             throws InstallationException
         {
             if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
-                AbstractUpdate.LOG.info("    Update {} '{}'", getInstance().getType().getName(),
-                                this.javaCode.getProgramName());
-                this.javaCode.updateDB(getInstance());
+                if (this.updateAllowed) {
+                    AbstractUpdate.LOG.info("    Update {} '{}'", getInstance().getType().getName(),
+                                    this.importer.getProgramName());
+                    this.importer.updateDB(getInstance());
+                } else {
+                    AbstractUpdate.LOG.info("    No Update set for esjp: {}", this.importer.getProgramName());
+                }
             } else  {
                 super.updateInDB(_step, _allLinkTypes);
             }
@@ -142,10 +158,10 @@ public class JavaUpdate
         protected String getRevision()
             throws InstallationException
         {
-            if (this.javaCode == null) {
-                this.javaCode = new ESJPImporter(getUrl());
+            if (this.importer == null) {
+                this.importer = new ESJPImporter(getUrl());
             }
-            return this.javaCode.getRevision();
+            return this.importer.getRevision();
         }
     }
 }

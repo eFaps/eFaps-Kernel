@@ -80,6 +80,14 @@ public class ESJPImporter
     }
 
     /**
+     * @return check if this esjp is update allowed
+     */
+    public boolean isUpdate()
+    {
+        return !getCode().toString().contains("@EFapsNoUpdate");
+    }
+
+    /**
      * This Method extracts the UUID from the ESJP.
      *
      * @return UUID of the ESJP
@@ -88,7 +96,6 @@ public class ESJPImporter
     protected UUID evalUUID()
     {
         UUID uuid = null;
-
         final Pattern uuidPattern = Pattern.compile("@EFapsUUID ?\\( ?\\\"[0-9a-z\\-]*\\\" ?\\)");
         final Matcher uuidMatcher = uuidPattern.matcher(getCode());
         if (uuidMatcher.find()) {
