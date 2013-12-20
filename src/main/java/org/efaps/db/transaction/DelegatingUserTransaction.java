@@ -20,8 +20,6 @@
 
 package org.efaps.db.transaction;
 
-import java.util.UUID;
-
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -30,7 +28,6 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
-import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
@@ -43,6 +40,7 @@ import org.efaps.util.EFapsException;
 public class DelegatingUserTransaction
     implements UserTransaction
 {
+    private String userName;
 
     /**
      * TransactionManager.
@@ -69,8 +67,7 @@ public class DelegatingUserTransaction
         throws NotSupportedException, SystemException
     {
         try {
-            // QuartzTrigger
-            Context.begin(Person.get(UUID.fromString("df2f02a7-c556-49ad-b019-e13db66e1cbf")).getName(), false);
+            Context.begin(getUserName(), false);
         } catch (final EFapsException e) {
             try {
                 if (Context.isTMActive()) {
@@ -164,5 +161,21 @@ public class DelegatingUserTransaction
         throws SystemException
     {
         this.transmanager.setTransactionTimeout(_timeOut);
+    }
+
+    /**
+     * @return the userName
+     */
+    public String getUserName()
+    {
+        return userName;
+    }
+
+    /**
+     * @param userName the userName to set
+     */
+    public void setUserName(final String userName)
+    {
+        this.userName = userName;
     }
 }

@@ -21,12 +21,14 @@
 package org.efaps.admin.common;
 
 import java.util.Properties;
+import java.util.UUID;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
+import org.efaps.admin.user.Person;
 import org.efaps.db.transaction.DelegatingUserTransaction;
 import org.efaps.init.INamingBinds;
 import org.efaps.message.MessageStatusHolder;
@@ -113,15 +115,17 @@ public final class Quartz
                     Quartz.LOG.info("Catched NamingException on evaluation for Quartz");
                 }
             }
-            String user_tx = lookup + "/" + INamingBinds.RESOURCE_USERTRANSACTION;
             try {
-                DelegatingUserTransaction trans = (DelegatingUserTransaction) envCtx.lookupLink(user_tx);
-            } catch (NamingException e) {
+                final DelegatingUserTransaction trans = (DelegatingUserTransaction) envCtx
+                                .lookup(INamingBinds.RESOURCE_USERTRANSACTION);
+                // QuartzTrigger
+                trans.setUserName(Person.get(UUID.fromString("df2f02a7-c556-49ad-b019-e13db66e1cbf")).getName());
+            } catch (final NamingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
-            props.put(StdSchedulerFactory.PROP_SCHED_USER_TX_URL, user_tx);
+            props.put(StdSchedulerFactory.PROP_SCHED_USER_TX_URL, lookup + "/" + INamingBinds.RESOURCE_USERTRANSACTION);
             props.put(StdSchedulerFactory.PROP_SCHED_WRAP_JOB_IN_USER_TX, "true");
             props.put(StdSchedulerFactory.PROP_THREAD_POOL_CLASS, "org.quartz.simpl.SimpleThreadPool");
             props.put("org.quartz.plugin.jobInitializer.class", "org.efaps.admin.common.QuartzSchedulerPlugin");
