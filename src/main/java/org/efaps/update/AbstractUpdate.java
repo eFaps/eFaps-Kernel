@@ -617,7 +617,7 @@ public abstract class AbstractUpdate
         /**
          * Application Dependencies this Definition is activated for.
          */
-        private final Set<AppDependency> appDependencies = new HashSet<AppDependency>();
+        private final Map<AppDependency, Boolean> appDependencies = new HashMap<AppDependency, Boolean>();
 
         /**
          * Default constructor for the attribute by which the object is searched
@@ -670,7 +670,9 @@ public abstract class AbstractUpdate
                 if (_tags.size() > 1)  {
                     final String subValue = _tags.get(1);
                     if ("application".equals(subValue))  {
-                        this.appDependencies.add(AppDependency.getAppDependency(_attributes.get("name")));
+                        final AppDependency dep = AppDependency.getAppDependency(_attributes.get("name"));
+                        final Boolean exclude = Boolean.valueOf(_attributes.get("exclude"));
+                        this.appDependencies.put(dep, exclude);
                     }
                 }
             } else {
@@ -721,8 +723,9 @@ public abstract class AbstractUpdate
                 ret = true;
             } else {
                 ret = false;
-                for (final AppDependency appDep : this.appDependencies) {
-                    if (appDep.isMet()) {
+                for (final Entry<AppDependency, Boolean> entry : this.appDependencies.entrySet()) {
+                    final boolean met = entry.getKey().isMet();
+                    if ((met && !entry.getValue()) || (!met && entry.getValue())) {
                         ret = true;
                         break;
                     }
