@@ -105,14 +105,17 @@ public class JaxbType
             ret = (String) _value[0];
         } else {
             try {
-                final Class<?> clazz = Class.forName(_attribute.getClassName(), false, EFapsClassLoader.getInstance());
-                final IJaxb jaxb = (IJaxb) clazz.newInstance();
-                final JAXBContext jc = JAXBContext.newInstance(jaxb.getClasses());
-                final Marshaller marshaller = jc.createMarshaller();
-                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-                final StringWriter writer = new StringWriter();
-                marshaller.marshal(_value[0], writer);
-                ret = writer.toString();
+                final Object object = _value[0];
+                if (object != null) {
+                    final Class<?> clazz = Class.forName(_attribute.getClassName(), false, EFapsClassLoader.getInstance());
+                    final IJaxb jaxb = (IJaxb) clazz.newInstance();
+                    final JAXBContext jc = JAXBContext.newInstance(jaxb.getClasses());
+                    final Marshaller marshaller = jc.createMarshaller();
+                    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+                    final StringWriter writer = new StringWriter();
+                    marshaller.marshal(_value[0], writer);
+                    ret = writer.toString();
+                }
             } catch (final ClassNotFoundException e) {
                 throw new SQLException("ClassNotFoundException", e);
             } catch (final InstantiationException e) {
@@ -138,12 +141,14 @@ public class JaxbType
     {
         Object ret = null;
         try {
-            final Class<?> clazz = Class.forName(_attribute.getClassName(), false, EFapsClassLoader.getInstance());
-            final IJaxb jaxb = (IJaxb) clazz.newInstance();
-            final JAXBContext jc = JAXBContext.newInstance(jaxb.getClasses());
-            final Unmarshaller unmarshaller = jc.createUnmarshaller();
-            final StringReader reader = new StringReader(_str);
-            ret = unmarshaller.unmarshal(reader);
+            if (_str != null && !_str.isEmpty()) {
+                final Class<?> clazz = Class.forName(_attribute.getClassName(), false, EFapsClassLoader.getInstance());
+                final IJaxb jaxb = (IJaxb) clazz.newInstance();
+                final JAXBContext jc = JAXBContext.newInstance(jaxb.getClasses());
+                final Unmarshaller unmarshaller = jc.createUnmarshaller();
+                final StringReader reader = new StringReader(_str);
+                ret = unmarshaller.unmarshal(reader);
+            }
         } catch (final ClassNotFoundException e) {
             throw new EFapsException("ClassNotFoundException", e);
         } catch (final InstantiationException e) {
