@@ -511,7 +511,7 @@ public class TypeUpdate
          * @param _tags current path as list of single tags
          * @param _attributes attributes for current path
          * @param _text content for current path
-         * @throws EFapsException
+         * @throws EFapsException on error
          */
         @Override
         public void readXML(final List<String> _tags,
@@ -679,7 +679,7 @@ public class TypeUpdate
          * @param _tags tags
          * @param _attributes attributes
          * @param _text text
-         * @throws EFapsException
+         * @throws EFapsException on error
          */
         @Override
         protected void readXML(final List<String> _tags,
