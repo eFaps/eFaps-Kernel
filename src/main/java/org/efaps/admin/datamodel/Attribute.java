@@ -87,7 +87,9 @@ public class Attribute
         /** Attribute type Enum. */
         ATTRTYPE_ENUM("b7c6a324-5dec-425f-b778-fa8fabf80202"),
         /** Attribute type BitEnum. */
-        ATTRTYPE_BITENUM("a9b1abde-d58d-4aea-8cdc-f2870111f1cd");
+        ATTRTYPE_BITENUM("a9b1abde-d58d-4aea-8cdc-f2870111f1cd"),
+        /** Attribute type BitEnum. */
+        ATTRTYPE_JAXB("58817bd8-db76-4b40-8acd-18112fe96170");
 
         /**
          * Stored the UUID for the given type.
@@ -259,15 +261,17 @@ public class Attribute
      * identifier (parameter <i>_id</i>).
      *
      * @param _id id of the attribute
+     * @param _parentId id of the parent type
      * @param _name name of the instance
      * @param _sqlColNames name of the SQL columns
      * @param _sqlTable table of this attribute
      * @param _attributeType type of this attribute
      * @param _defaultValue default value for this attribute
      * @param _dimensionUUID UUID of the Dimension
-     * @throws EFapsException on error while retreiving column informationfrom
+     * @throws EFapsException on error while retrieving column information from
      *             database
      */
+    //CHECKSTYLE:OFF
     protected Attribute(final long _id,
                         final long _parentId,
                         final String _name,
@@ -276,6 +280,7 @@ public class Attribute
                         final AttributeType _attributeType,
                         final String _defaultValue,
                         final String _dimensionUUID)
+    //CHECKSTYLE:ON
         throws EFapsException
     {
         super(_id, null, _name);
@@ -922,9 +927,11 @@ public class Attribute
                         attr.setLink(Type.getId4UUID(CIAdminUser.Group.uuid));
                         // in case of a Enum and BitEnum the className must be set
                     } else if (uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_ENUM.getUuid())
-                                    || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_BITENUM.getUuid())) {
+                                    || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_BITENUM.getUuid())
+                                    || uuid.equals(Attribute.AttributeTypeDef.ATTRTYPE_JAXB.getUuid())) {
                         if (className == null || (className != null && className.isEmpty())) {
-                            Attribute.LOG.error("An Attribute of Type Enum or BitEnum must have a className: {}", attr);
+                            Attribute.LOG.error("An Attribute of Type Enum, BitEnum, Jaxb must have a className: {}",
+                                            attr);
                         }
                         attr.setClassName(className.trim());
                     }
