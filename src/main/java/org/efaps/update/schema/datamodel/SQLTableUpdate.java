@@ -694,10 +694,17 @@ public class SQLTableUpdate
                             Context.getDbType().updateColumnIsNotNull(con.getConnection(), tableName, column.name,
                                             column.isNotNull);
                         }
+                        // the scale must never be made smaller, because it would lead to data loss
                         if (column.length > 0
-                                        && (colInfo.getSize() != column.length || colInfo.getScale() != column.scale)) {
-                            Context.getDbType().updateColumn(con.getConnection(), tableName, column.name,
-                                            column.type, column.length, column.scale);
+                                        && (colInfo.getSize() >= column.length && colInfo.getScale() >= column.scale)) {
+                            try {
+                                Context.getDbType().updateColumn(con.getConnection(), tableName, column.name,
+                                                column.type, column.length, column.scale);
+                            } catch (final SQLException e) {
+                                SQLTableUpdate.LOG
+                                    .warn("Catched SQL Exception while trying to update Table: '{}', Column: '{}'",
+                                                tableName, column.name);
+                            }
                         }
                     } else  {
                         Context.getDbType().addTableColumn(con.getConnection(), tableName,
