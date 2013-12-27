@@ -107,7 +107,8 @@ public class JaxbType
             try {
                 final Object object = _value[0];
                 if (object != null) {
-                    final Class<?> clazz = Class.forName(_attribute.getClassName(), false, EFapsClassLoader.getInstance());
+                    final Class<?> clazz = Class.forName(_attribute.getClassName(), false,
+                                    EFapsClassLoader.getInstance());
                     final IJaxb jaxb = (IJaxb) clazz.newInstance();
                     final JAXBContext jc = JAXBContext.newInstance(jaxb.getClasses());
                     final Marshaller marshaller = jc.createMarshaller();

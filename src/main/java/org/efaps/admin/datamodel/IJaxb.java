@@ -21,6 +21,8 @@
 
 package org.efaps.admin.datamodel;
 
+import org.efaps.util.EFapsException;
+
 
 /**
  * TODO comment!
@@ -36,4 +38,11 @@ public interface IJaxb
      */
     Class<?>[] getClasses();
 
+    /**
+     * @param _object object retrieved from the database and parsed
+     * @return String for use in the UserInterface
+     * @throws EFapsException on error
+     */
+    String getUIValue(final Object _object)
+                    throws EFapsException;
 }
