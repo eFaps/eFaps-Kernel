@@ -696,7 +696,7 @@ public class SQLTableUpdate
                         }
                         // the scale must never be made smaller, because it would lead to data loss
                         if (column.length > 0
-                                        && (colInfo.getSize() >= column.length && colInfo.getScale() >= column.scale)) {
+                                        && (colInfo.getSize() <= column.length && colInfo.getScale() <= column.scale)) {
                             try {
                                 Context.getDbType().updateColumn(con.getConnection(), tableName, column.name,
                                                 column.type, column.length, column.scale);
