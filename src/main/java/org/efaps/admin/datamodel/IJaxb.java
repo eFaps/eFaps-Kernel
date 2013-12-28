@@ -18,11 +18,11 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.admin.datamodel;
 
+import org.efaps.admin.datamodel.ui.UIValue;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.util.EFapsException;
-
 
 /**
  * TODO comment!
@@ -32,17 +32,18 @@ import org.efaps.util.EFapsException;
  */
 public interface IJaxb
 {
-
     /**
      * @return list of classes used for the
      */
     Class<?>[] getClasses();
 
     /**
-     * @param _object object retrieved from the database and parsed
+     * @param _mode TargetMode the value is wanted for
+     * @param _value UIValue
      * @return String for use in the UserInterface
      * @throws EFapsException on error
      */
-    String getUIValue(final Object _object)
-                    throws EFapsException;
+    String getUISnipplet(final TargetMode _mode,
+                         final UIValue _value)
+        throws EFapsException;
 }
