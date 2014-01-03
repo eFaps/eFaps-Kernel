@@ -20,7 +20,8 @@
 
 package org.efaps.bpm.listener;
 
-import org.drools.SystemEventListener;
+
+import org.kie.internal.SystemEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

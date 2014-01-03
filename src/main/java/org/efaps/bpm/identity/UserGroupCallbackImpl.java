@@ -30,7 +30,7 @@ import org.efaps.admin.KernelSettings;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
 import org.efaps.util.EFapsException;
-import org.jbpm.task.identity.UserGroupCallback;
+import org.kie.api.task.UserGroupCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,11 +107,15 @@ public class UserGroupCallbackImpl
     {
         UserGroupCallbackImpl.LOG.debug("checking for existence of Group: {}", _groupId);
         boolean ret = false;
-        try {
-            final Role role = org.efaps.admin.user.Role.get(UUID.fromString(_groupId));
-            ret = role != null;
-        } catch (final EFapsException e) {
-            UserGroupCallbackImpl.LOG.error("error while checkin for existence of Group: '{}'", _groupId);
+        if ("Administrators".equals(_groupId)) {
+            ret = true;
+        } else {
+            try {
+                final Role role = org.efaps.admin.user.Role.get(UUID.fromString(_groupId));
+                ret = role != null;
+            } catch (final EFapsException e) {
+                UserGroupCallbackImpl.LOG.error("error while checkin for existence of Group: '{}'", _groupId);
+            }
         }
         UserGroupCallbackImpl.LOG.debug("result for existence check for Group: '{}' is: {}", _groupId, ret);
         return ret;

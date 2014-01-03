@@ -23,16 +23,12 @@ package org.efaps.bpm;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.UUID;
 
 import javax.naming.InitialContext;
@@ -41,26 +37,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.transaction.UserTransaction;
 
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseConfiguration;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.SessionConfiguration;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderConfiguration;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.builder.conf.ClassLoaderCacheOption;
-import org.drools.io.ResourceFactory;
-import org.drools.persistence.jpa.JPAKnowledgeService;
 import org.drools.persistence.jta.JtaTransactionManager;
-import org.drools.rule.builder.dialect.java.JavaDialectConfiguration;
-import org.drools.runtime.Environment;
-import org.drools.runtime.EnvironmentName;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.process.NodeInstance;
-import org.drools.runtime.process.ProcessInstance;
-import org.drools.runtime.process.WorkItemHandler;
-import org.drools.time.impl.TimerJobFactoryManager;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.common.SystemConfiguration;
@@ -75,42 +52,47 @@ import org.efaps.admin.user.Role;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.WorkingMemoryLogListener;
 import org.efaps.bpm.process.ProcessAdmin;
+import org.efaps.bpm.runtime.ManagerFactoryImpl;
+import org.efaps.bpm.runtime.RegisterableItemsFactoryImpl;
 import org.efaps.bpm.task.TaskAdminstration;
-import org.efaps.bpm.timer.ContextTimerJobFactoryManager;
 import org.efaps.bpm.transaction.ConnectionProvider;
 import org.efaps.bpm.transaction.TransactionHelper;
 import org.efaps.bpm.workitem.EsjpWorkItemHandler;
 import org.efaps.bpm.workitem.ManualTaskItemHandler;
-import org.efaps.bpm.workitem.SignallingHandlerWrapper;
 import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Checkout;
 import org.efaps.db.Context;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
-import org.efaps.db.transaction.ConnectionResource;
-import org.efaps.db.wrapper.SQLPart;
-import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.hibernate.cfg.AvailableSettings;
-import org.jbpm.persistence.JpaProcessPersistenceContextManager;
-import org.jbpm.persistence.jta.ContainerManagedTransactionManager;
-import org.jbpm.process.audit.JPAWorkingMemoryDbLogger;
-import org.jbpm.task.Content;
-import org.jbpm.task.I18NText;
-import org.jbpm.task.OrganizationalEntity;
-import org.jbpm.task.Status;
-import org.jbpm.task.Task;
-import org.jbpm.task.identity.UserGroupCallbackManager;
-import org.jbpm.task.query.TaskSummary;
-import org.jbpm.task.service.Operation;
-import org.jbpm.task.service.OperationCommand;
-import org.jbpm.task.service.TaskService;
-import org.jbpm.task.utils.ContentMarshallerHelper;
+import org.jbpm.process.audit.JPAAuditLogService;
+import org.jbpm.runtime.manager.impl.RuntimeEnvironmentBuilder;
+import org.jbpm.services.task.impl.model.I18NTextImpl;
+import org.jbpm.services.task.utils.ContentMarshallerHelper;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
+import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.manager.RuntimeEngine;
+import org.kie.api.runtime.manager.RuntimeManager;
+import org.kie.api.runtime.process.NodeInstance;
+import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.api.task.TaskService;
+import org.kie.api.task.model.Content;
+import org.kie.api.task.model.I18NText;
+import org.kie.api.task.model.OrganizationalEntity;
+import org.kie.api.task.model.Status;
+import org.kie.api.task.model.Task;
+import org.kie.api.task.model.TaskSummary;
+import org.kie.internal.io.ResourceFactory;
+import org.kie.internal.runtime.manager.RuntimeEnvironment;
+import org.kie.internal.runtime.manager.context.CorrelationKeyContext;
+import org.kie.internal.runtime.manager.context.EmptyContext;
+import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
+import org.kie.internal.task.api.InternalTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 /**
  * TODO comment!
  *
@@ -135,38 +117,14 @@ public final class BPM
     private static final Logger LOG = LoggerFactory.getLogger(BPM.class);
 
     /**
-     * SQL select statement to select a type from the database by its UUID.
+     * SingletonRuntimeManager.
      */
-    private static final String SQL_SESSIONID = new SQLSelect()
-                    .column("ID")
-                    .from("ht_session_info", 0)
-                    .addPart(SQLPart.ORDERBY).addValuePart("last_modification_date")
-                    .toString();
+    private static RuntimeManager SMANAGER;
 
     /**
-     * The used Bpm instance.
+     * PerProcessInstanceRuntimeManager.
      */
-    private static BPM BPMINSTANCE;
-
-    /**
-     * Mapping of the WorkItemhandlers used in this session.
-     */
-    private final Map<String, WorkItemHandler> workItemsHandlers = new HashMap<String, WorkItemHandler>();
-
-    /**
-     * Id of the KnowledgeSession.
-     */
-    private Integer ksessionId;
-
-    /**
-     * Instance of the used KnowledgeBase.
-     */
-    private KnowledgeBase kbase;
-
-    /**
-     * Environment used for hibernate persistence.
-     */
-    private Environment env;
+    private static RuntimeManager PMANAGER;
 
     /**
      * Create Singelton.
@@ -187,71 +145,19 @@ public final class BPM
         final boolean active = config != null
                         ? config.getAttributeValueAsBoolean(KernelSettings.ACTIVATE_BPM) : false;
         if (active) {
-            if (BPM.BPMINSTANCE != null) {
-                UserTaskService.dispose();
+
+            if (BPM.SMANAGER != null) {
+                BPM.SMANAGER.close();
             }
-            BPM.BPMINSTANCE = new BPM();
-            BPM.BPMINSTANCE.ksessionId = BPM.BPMINSTANCE.getKSessionIDFromDB();
-
-            System.setProperty(UserGroupCallbackManager.USER_GROUP_CALLBACK_KEY, UserGroupCallbackImpl.class.getName());
-
-            final String level = config.getAttributeValue(KernelSettings.BPM_COMPILERLEVEL);
-
-            final Properties knowledgeBldrProps = new Properties();
-            knowledgeBldrProps.setProperty(JavaDialectConfiguration.JAVA_COMPILER_PROPERTY, "ECLIPSE");
-            knowledgeBldrProps.setProperty("drools.dialect.java.compiler.lnglevel", level == null ? "1.7" : level);
-            knowledgeBldrProps.setProperty(ClassLoaderCacheOption.PROPERTY_NAME, "false");
-
-            final KnowledgeBuilderConfiguration knowledgeBldrConfig = KnowledgeBuilderFactory
-                            .newKnowledgeBuilderConfiguration(knowledgeBldrProps, EFapsClassLoader.getInstance());
-
-            final KnowledgeBuilder knowledgeBldr = KnowledgeBuilderFactory.newKnowledgeBuilder(knowledgeBldrConfig);
-
-            BPM.add2KnowledgeBuilder(knowledgeBldr);
-
-            final Properties kowledgeBaseProps = new Properties();
-
-            final KnowledgeBaseConfiguration kowledgeBaseConfig = KnowledgeBaseFactory.newKnowledgeBaseConfiguration(
-                            kowledgeBaseProps, EFapsClassLoader.getInstance());
-
-            BPM.BPMINSTANCE.kbase = KnowledgeBaseFactory.newKnowledgeBase(kowledgeBaseConfig);
-
-            if (knowledgeBldr.hasErrors()) {
-                BPM.LOG.error("Could not build Knowledge Packages: {}", knowledgeBldr.getErrors());
+            if (BPM.PMANAGER != null) {
+                BPM.PMANAGER.close();
             }
-
-            BPM.BPMINSTANCE.kbase.addKnowledgePackages(knowledgeBldr.getKnowledgePackages());
-            final Map<String, String> properties = new HashMap<String, String>();
-            properties.put(AvailableSettings.DIALECT, Context.getDbType().getHibernateDialect());
-            properties.put(AvailableSettings.SHOW_SQL, String.valueOf(BPM.LOG.isDebugEnabled()));
-            properties.put(AvailableSettings.FORMAT_SQL, "true");
-            properties.put("drools.processInstanceManagerFactory",
-                            "org.jbpm.persistence.processinstance.JPAProcessInstanceManagerFactory");
-            properties.put("drools.processSignalManagerFactory",
-                            "org.jbpm.persistence.processinstance.JPASignalManagerFactory");
-            // we might need that later
-            // properties.put(AvailableSettings.SESSION_FACTORY_NAME,
-            // "java:comp/env/test");
-            properties.put(AvailableSettings.RELEASE_CONNECTIONS, "after_transaction");
-            properties.put(AvailableSettings.CONNECTION_PROVIDER, ConnectionProvider.class.getName());
-
-            properties.put(org.hibernate.ejb.AvailableSettings.NAMING_STRATEGY, NamingStrategy.class.getName());
-
-            final EntityManagerFactory emf = Persistence
-                            .createEntityManagerFactory("org.jbpm.persistence.jpa", properties);
-
-            BPM.BPMINSTANCE.env = KnowledgeBaseFactory.newEnvironment();
-            BPM.BPMINSTANCE.env.set(EnvironmentName.ENTITY_MANAGER_FACTORY, emf);
-            BPM.BPMINSTANCE.env.set(EnvironmentName.TRANSACTION_MANAGER, new ContainerManagedTransactionManager());
-            BPM.BPMINSTANCE.env.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER,
-                            new JpaProcessPersistenceContextManager(BPM.BPMINSTANCE.env));
 
             UserTransaction userTrans = null;
             InitialContext context = null;
             try {
                 context = new InitialContext();
                 userTrans = TransactionHelper.findUserTransaction();
-                BPM.BPMINSTANCE.env.set(EnvironmentName.TRANSACTION, userTrans);
                 Object object = null;
                 try {
                     object = context.lookup(JtaTransactionManager.DEFAULT_USER_TRANSACTION_NAME);
@@ -267,25 +173,44 @@ public final class BPM
                 BPM.LOG.error("Could not initialise JNDI InitialContext", ex);
             }
 
-            final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
+            final RegisterableItemsFactoryImpl itemsFactory = new RegisterableItemsFactoryImpl();
+            itemsFactory.addWorkItemHandler("ESJPNode", EsjpWorkItemHandler.class);
+            itemsFactory.addWorkItemHandler("Manual Task", ManualTaskItemHandler.class);
+            itemsFactory.addProcessListener(WorkingMemoryLogListener.class);
 
-            UserTaskService.getTaskService(ksession);
+            final Map<String, String> properties = new HashMap<String, String>();
+            properties.put(AvailableSettings.DIALECT, Context.getDbType().getHibernateDialect());
+            properties.put(AvailableSettings.SHOW_SQL, String.valueOf(BPM.LOG.isDebugEnabled()));
+            properties.put(AvailableSettings.FORMAT_SQL, "true");
+            properties.put(AvailableSettings.RELEASE_CONNECTIONS, "after_transaction");
+            properties.put(AvailableSettings.CONNECTION_PROVIDER, ConnectionProvider.class.getName());
+            properties.put(org.hibernate.ejb.AvailableSettings.NAMING_STRATEGY, NamingStrategy.class.getName());
 
-            final EsjpWorkItemHandler esjphandler = new EsjpWorkItemHandler();
-            ksession.getWorkItemManager().registerWorkItemHandler("ESJPNode", esjphandler);
-            BPM.BPMINSTANCE.workItemsHandlers.put("ESJPNode", esjphandler);
+            final EntityManagerFactory emf = Persistence
+                            .createEntityManagerFactory("org.jbpm.persistence.jpa", properties);
 
-            final ManualTaskItemHandler mthandler = new ManualTaskItemHandler();
-            ksession.getWorkItemManager().registerWorkItemHandler("Manual Task", mthandler);
-            BPM.BPMINSTANCE.workItemsHandlers.put("Manual Task", mthandler);
+            final RuntimeEnvironmentBuilder builder = RuntimeEnvironmentBuilder.getDefault()
+                            .classLoader(EFapsClassLoader.getInstance())
+                            .userGroupCallback(new UserGroupCallbackImpl())
+                            .entityManagerFactory(emf)
+                            .registerableItemsFactory(itemsFactory)
+                            .persistence(true);
+
+            BPM.add2EnvironmentBuilder(builder);
+
+            final RuntimeEnvironment environment = builder.get();
+            final ManagerFactoryImpl factory = new ManagerFactoryImpl();
+
+            BPM.PMANAGER = factory.newPerProcessInstanceRuntimeManager(environment);
+            BPM.SMANAGER = factory.newSingletonRuntimeManager(environment);
         }
     }
 
     /**
-     * @param _kbuilder KnowledgeBuilder
-     * @throws EFapsException on eror
+     * @param _envBuilder RuntimeEnvironmentBuilder
+     * @throws EFapsException on error
      */
-    private static void add2KnowledgeBuilder(final KnowledgeBuilder _kbuilder)
+    private static void add2EnvironmentBuilder(final RuntimeEnvironmentBuilder _envBuilder)
         throws EFapsException
     {
         final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.BPM);
@@ -294,7 +219,7 @@ public final class BPM
         while (query.next()) {
             final Checkout checkout = new Checkout(query.getCurrentValue());
             final InputStream in = checkout.execute();
-            _kbuilder.add(ResourceFactory.newInputStreamResource(in), ResourceType.BPMN2);
+            _envBuilder.addAsset(ResourceFactory.newInputStreamResource(in), ResourceType.BPMN2);
         }
     }
 
@@ -306,8 +231,8 @@ public final class BPM
     public static ProcessInstance startProcess(final String _processId,
                                                final Map<String, Object> _params)
     {
-        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
-        UserTaskService.getTaskService(ksession);
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(CorrelationKeyContext.get());
+        final KieSession ksession = runtimeEngine.getKieSession();
         return ksession.startProcess(_processId, _params);
     }
 
@@ -318,7 +243,9 @@ public final class BPM
      */
     public static Collection<NodeInstance> getActiveNodes4ProcessId(final long _processInstanceId)
     {
-        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(
+                        ProcessInstanceIdContext.get(_processInstanceId));
+        final KieSession ksession = runtimeEngine.getKieSession();
         final ProcessInstance processInstance = ksession.getProcessInstance(_processInstanceId);
         return processInstance == null ? Collections.<NodeInstance>emptyList()
                         : ((WorkflowProcessInstance) processInstance).getNodeInstances();
@@ -331,11 +258,12 @@ public final class BPM
     public static void claimTask(final TaskSummary _taskSummary)
         throws EFapsException
     {
-        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
-        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext.get(_taskSummary
+                        .getProcessInstanceId()));
+        final TaskService taskService = runtimeEngine.getTaskService();
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
-            service.claim(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
+            taskService.claim(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
         }
     }
 
@@ -373,12 +301,12 @@ public final class BPM
                                     final String _targetUserId)
         throws EFapsException
     {
-        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
-        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(CorrelationKeyContext.get());
+        final TaskService taskService = runtimeEngine.getTaskService();
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
             boolean add = true;
-            final Task task = service.getTask(_taskSummary.getId());
+            final Task task = taskService.getTaskById(_taskSummary.getId());
             final List<OrganizationalEntity> owners = task.getPeopleAssignments().getPotentialOwners();
             for (final OrganizationalEntity org : owners) {
                 if (_targetUserId.equals(org.getId())) {
@@ -388,14 +316,13 @@ public final class BPM
             if (add) {
                 final boolean isRole = Role.get(UUID.fromString(_targetUserId)) != null;
                 if (isRole) {
-                    final TaskService taskService = UserTaskService.getService(null);
-                    final List<OperationCommand> commands = taskService.getCommandsForOperation(Operation.Delegate);
-                    for (final OperationCommand cmd : commands) {
-                        cmd.setExec(Operation.Delegate);
-                    }
+//                    final List<OperationCommand> commands = taskService.getCommandsForOperation(Operation.Delegate);
+//                    for (final OperationCommand cmd : commands) {
+//                        cmd.setExec(Operation.Delegate);
+//                    }
                 }
 
-                service.delegate(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString(),
+                taskService.delegate(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString(),
                                 _targetUserId);
 
                 final List<I18NText> descr = task.getDescriptions();
@@ -404,23 +331,22 @@ public final class BPM
                                 new Object[] { Context.getThreadContext().getPerson().getName(),
                                           AbstractUserObject.getUserObject(UUID.fromString(_targetUserId)).getName() });
                 if (descr.isEmpty()) {
-                    final I18NText i18n = new I18NText();
+                    final I18NTextImpl i18n = new I18NTextImpl();
                     i18n.setText(txt);
                     i18n.setLanguage("en-UK");
                     descr.add(i18n);
                 } else {
                     final String oldTxt = descr.get(0).getText();
                     if (!oldTxt.contains(txt)) {
-                        descr.get(0).setText(descr.get(0).getText() + " - " + txt);
+                        ((I18NTextImpl) descr.get(0)).setText(descr.get(0).getText() + " - " + txt);
                     }
                 }
 
                 if (isRole) {
-                    final TaskService taskService = UserTaskService.getService(null);
-                    final List<OperationCommand> commands = taskService.getCommandsForOperation(Operation.Delegate);
-                    for (final OperationCommand cmd : commands) {
-                        cmd.setExec(Operation.Claim);
-                    }
+//                    final List<OperationCommand> commands = taskService.getCommandsForOperation(Operation.Delegate);
+//                    for (final OperationCommand cmd : commands) {
+//                        cmd.setExec(Operation.Claim);
+//                    }
                 }
             }
         }
@@ -433,11 +359,12 @@ public final class BPM
     public static void releaseTask(final TaskSummary _taskSummary)
         throws EFapsException
     {
-        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
-        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext.get(_taskSummary
+                        .getProcessInstanceId()));
+        final TaskService taskService = runtimeEngine.getTaskService();
         // check if must be claimed still
         if (Status.Reserved.equals(_taskSummary.getStatus())) {
-            service.release(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
+            taskService.release(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
         }
     }
 
@@ -452,17 +379,18 @@ public final class BPM
                                    final Map<String, Object> _values)
         throws EFapsException
     {
-        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
-        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext.get(_taskSummary
+                        .getProcessInstanceId()));
+        final TaskService taskService = runtimeEngine.getTaskService();
 
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
-            service.claim(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
+            taskService.claim(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
         }
         if (Status.InProgress.equals(_taskSummary.getStatus())) {
-            service.resume(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
+            taskService.resume(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
         } else {
-            service.start(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
+            taskService.start(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
         }
 
         final Parameter parameter = new Parameter();
@@ -497,7 +425,7 @@ public final class BPM
         } catch (final NoSuchMethodException e) {
             BPM.LOG.error("Class could not be found.", e);
         }
-        service.completeWithResults(_taskSummary.getId(),
+        taskService.complete(_taskSummary.getId(),
                         Context.getThreadContext().getPerson().getUUID().toString(), results);
     }
 
@@ -508,13 +436,15 @@ public final class BPM
     public static Object getTaskData(final TaskSummary _taskSummary)
     {
         Object ret = null;
-        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
-        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
-        final Task task = service.getTask(_taskSummary.getId());
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext.get(_taskSummary
+                        .getProcessInstanceId()));
+        final TaskService taskService = runtimeEngine.getTaskService();
+        final Task task = taskService.getTaskById(_taskSummary.getId());
         final long contentId = task.getTaskData().getDocumentContentId();
         if (contentId != -1) {
-            final Content content = service.getContent(contentId);
-            ret = ContentMarshallerHelper.unmarshall(content.getContent(), ksession.getEnvironment(),
+            final Content content = taskService.getContentById(contentId);
+            ret = ContentMarshallerHelper.unmarshall(content.getContent(),
+                            runtimeEngine.getKieSession().getEnvironment(),
                             BPM.class.getClassLoader());
         }
         return ret;
@@ -526,15 +456,15 @@ public final class BPM
     public static List<TaskSummary> getTasksAssignedAsPotentialOwner()
     {
         final List<TaskSummary> ret = new ArrayList<TaskSummary>();
-        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
-        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+        final RuntimeEngine runtimeEngine = BPM.SMANAGER.getRuntimeEngine(EmptyContext.get());
+        final TaskService taskService = runtimeEngine.getTaskService();
         try {
             if (Context.getThreadContext().getPerson().getUUID() == null) {
                 BPM.LOG.error("User '{}' has no UUID assigned.", Context.getThreadContext().getPerson().getName());
             } else {
                 final String persId = Context.getThreadContext().getPerson().getUUID().toString();
                 // final String language = Context.getThreadContext().getLanguage();
-                ret.addAll(service.getTasksAssignedAsPotentialOwner(persId, "en-UK"));
+                ret.addAll(taskService.getTasksAssignedAsPotentialOwner(persId, "en-UK"));
             }
         } catch (final EFapsException e) {
             BPM.LOG.error("Error on retrieving List of TaskSummaries.");
@@ -548,8 +478,8 @@ public final class BPM
     public static List<TaskSummary> getTasksOwned()
     {
         final List<TaskSummary> ret = new ArrayList<TaskSummary>();
-        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
-        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+        final RuntimeEngine runtimeEngine = BPM.SMANAGER.getRuntimeEngine(EmptyContext.get());
+        final TaskService taskService = runtimeEngine.getTaskService();
         try {
             if (Context.getThreadContext().getPerson().getUUID() == null) {
                 BPM.LOG.error("User '{}' has no UUID assigned.", Context.getThreadContext().getPerson().getName());
@@ -560,7 +490,7 @@ public final class BPM
                 status.add(Status.InProgress);
                 status.add(Status.Reserved);
                 status.add(Status.Suspended);
-                ret.addAll(service.getTasksOwned(persId, status, "en-UK"));
+                ret.addAll(taskService.getTasksOwnedByStatus(persId, status, "en-UK"));
             }
         } catch (final EFapsException e) {
             BPM.LOG.error("Error on retrieving List of TaskSummaries.");
@@ -578,11 +508,11 @@ public final class BPM
                                                                 final List<Status> _status)
     {
         final List<TaskSummary> ret = new ArrayList<TaskSummary>();
-        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
-        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(EmptyContext.get());
+        final TaskService taskService = runtimeEngine.getTaskService();
 
         // final String language = Context.getThreadContext().getLanguage();
-        ret.addAll(service.getTasksByStatusByProcessId(_processInstanceId, _status, "en-UK"));
+        ret.addAll(taskService.getTasksByStatusByProcessInstanceId(_processInstanceId, _status, "en-UK"));
         return ret;
     }
 
@@ -597,11 +527,11 @@ public final class BPM
                                                                           final String _taskName)
     {
         final List<TaskSummary> ret = new ArrayList<TaskSummary>();
-        final StatefulKnowledgeSession ksession = BPM.BPMINSTANCE.getKnowledgeSession();
-        final org.jbpm.task.TaskService service = UserTaskService.getTaskService(ksession);
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(CorrelationKeyContext.get());
+        runtimeEngine.getTaskService();
 
         // final String language = Context.getThreadContext().getLanguage();
-        ret.addAll(service.getTasksByStatusByProcessIdByTaskName(_processInstanceId, _status, _taskName, "en-UK"));
+       // ret.addAll(taskService.gett .getTasksByStatusByProcessIdByTaskName(_processInstanceId, _status, _taskName, "en-UK"));
         return ret;
     }
 
@@ -610,7 +540,9 @@ public final class BPM
      */
     public static TaskAdminstration getTaskAdmin()
     {
-        return (TaskAdminstration) UserTaskService.getService(null).createTaskAdmin();
+        final RuntimeEngine runtimeEngine = BPM.SMANAGER.getRuntimeEngine(EmptyContext.get());
+        final TaskService taskService = runtimeEngine.getTaskService();
+        return new TaskAdminstration((InternalTaskService) taskService);
     }
 
     /**
@@ -618,97 +550,7 @@ public final class BPM
      */
     public static ProcessAdmin getProcessAdmin()
     {
-        return new ProcessAdmin();
-    }
-
-    /**
-     * @param _key              the key for the WorkItemHandler
-     * @param _workItemHandler   WorkItemHandler to add
-     */
-    protected static void registerWorkItemHandler(final String _key,
-                                                  final WorkItemHandler _workItemHandler)
-    {
-        BPM.BPMINSTANCE.workItemsHandlers.put(_key, _workItemHandler);
-    }
-
-    /**
-     * @return the id of the session from the database.
-     * @throws EFapsException on error
-     */
-    private Integer getKSessionIDFromDB()
-        throws EFapsException
-    {
-        Integer ret = null;
-        ConnectionResource con = null;
-        try {
-            con = Context.getThreadContext().getConnectionResource();
-            if (Context.getDbType().existsTable(con.getConnection(), "ht_session_info")) {
-                final PreparedStatement stmt = con.getConnection().prepareStatement(BPM.SQL_SESSIONID);
-                final ResultSet rs = stmt.executeQuery();
-                if (rs.next()) {
-                    ret = rs.getInt(1);
-                }
-                rs.close();
-                stmt.close();
-            }
-            con.commit();
-        } catch (final EFapsException e) {
-            BPM.LOG.error("initialiseCache()", e);
-        } catch (final SQLException e) {
-            BPM.LOG.error("initialiseCache()", e);
-        } finally {
-            if ((con != null) && con.isOpened()) {
-                try {
-                    con.abort();
-                } catch (final EFapsException e) {
-                    throw new EFapsException("could not read session id", e);
-                }
-            }
-        }
-        return ret;
-    }
-
-    /**
-     * @return the KnowledgeSession
-     */
-    private StatefulKnowledgeSession getKnowledgeSession()
-    {
-        final SessionConfiguration sessionConfig = new SessionConfiguration(EFapsClassLoader.getInstance()) {
-            private final TimerJobFactoryManager contextTimerJobFactoryManager = new ContextTimerJobFactoryManager();
-
-            @Override
-            public TimerJobFactoryManager getTimerJobFactoryManager()
-            {
-                return this.contextTimerJobFactoryManager;
-            }
-        };
-
-        StatefulKnowledgeSession ksession;
-        if (this.ksessionId == null) {
-            ksession = JPAKnowledgeService.newStatefulKnowledgeSession(
-                            this.kbase,
-                            sessionConfig,
-                            this.env);
-
-            this.ksessionId = ksession.getId();
-        } else {
-            ksession = JPAKnowledgeService.loadStatefulKnowledgeSession(
-                            this.ksessionId,
-                            this.kbase,
-                            sessionConfig,
-                            this.env);
-        }
-
-        for (final Map.Entry<String, WorkItemHandler> entry : this.workItemsHandlers.entrySet()) {
-            final SignallingHandlerWrapper sigWrapper = new SignallingHandlerWrapper(entry.getValue(), null,
-                            ksession);
-            ksession.getWorkItemManager().registerWorkItemHandler(entry.getKey(), sigWrapper);
-        }
-
-        final JPAWorkingMemoryDbLogger logger = new JPAWorkingMemoryDbLogger(ksession);
-        ksession.addEventListener(logger);
-
-        WorkingMemoryLogListener.attach(ksession);
-        return ksession;
+        final RuntimeEngine runtimeEngine = BPM.SMANAGER.getRuntimeEngine(EmptyContext.get());
+        return new ProcessAdmin(new JPAAuditLogService(runtimeEngine.getKieSession().getEnvironment()));
     }
 }

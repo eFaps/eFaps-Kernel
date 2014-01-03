@@ -18,13 +18,11 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.bpm.task;
+package org.efaps.bpm.runtime;
 
-import javax.persistence.EntityManagerFactory;
-
-import org.jbpm.task.admin.TasksAdmin;
-import org.jbpm.task.service.TaskService;
-import org.jbpm.task.service.persistence.TaskSessionFactoryImpl;
+import org.jbpm.runtime.manager.impl.RuntimeManagerFactoryImpl;
+import org.kie.api.runtime.manager.RuntimeEnvironment;
+import org.kie.internal.runtime.manager.TaskServiceFactory;
 
 /**
  * TODO comment!
@@ -32,24 +30,13 @@ import org.jbpm.task.service.persistence.TaskSessionFactoryImpl;
  * @author The eFaps Team
  * @version $Id$
  */
-public class SessionFactoryImpl
-    extends TaskSessionFactoryImpl
+public class ManagerFactoryImpl
+    extends RuntimeManagerFactoryImpl
 {
 
-    /**
-     * @param _taskService  TaskServcie
-     * @param _emf          EntityManagerFactory
-     */
-    public SessionFactoryImpl(final TaskService _taskService,
-                              final EntityManagerFactory _emf)
-    {
-        super(_taskService, _emf);
-    }
-
     @Override
-    public TasksAdmin createTaskAdmin()
+    protected TaskServiceFactory getTaskServiceFactory(final RuntimeEnvironment _environment)
     {
-        return new TaskAdminstration(super.createTaskServiceSession().getTaskPersistenceManager());
+        return new LocalTaskServiceFactoryImpl(_environment);
     }
-
 }

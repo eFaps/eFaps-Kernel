@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.drools.runtime.KnowledgeRuntime;
-import org.drools.runtime.process.WorkItem;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -38,13 +36,16 @@ import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
-import org.jbpm.process.workitem.wsht.LocalHTWorkItemHandler;
-import org.jbpm.task.Group;
-import org.jbpm.task.OrganizationalEntity;
-import org.jbpm.task.Task;
-import org.jbpm.task.TaskService;
-import org.jbpm.task.User;
-import org.jbpm.task.utils.OnErrorAction;
+import org.jbpm.services.task.impl.model.GroupImpl;
+import org.jbpm.services.task.impl.model.UserImpl;
+import org.jbpm.services.task.wih.LocalHTWorkItemHandler;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.process.WorkItem;
+import org.kie.api.task.model.Group;
+import org.kie.api.task.model.OrganizationalEntity;
+import org.kie.api.task.model.Task;
+import org.kie.api.task.model.User;
+import org.kie.internal.task.api.model.InternalPeopleAssignments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,29 +69,18 @@ public class HumanTaskWorkItemHandler
      */
     private static final Logger LOG = LoggerFactory.getLogger(HumanTaskWorkItemHandler.class);
 
-    /**
-     * @param _client   client
-     * @param _session  Session
-     * @param _action   Action
-     * @param _classLoader  Classloader
-     */
-    public HumanTaskWorkItemHandler(final TaskService _client,
-                                    final KnowledgeRuntime _session,
-                                    final OnErrorAction _action,
-                                    final ClassLoader _classLoader)
-    {
-        super(_client, _session, _action, _classLoader);
-    }
+
+
 
     @Override
-    protected Task createTaskBasedOnWorkItemParams(final WorkItem _workItem)
+    protected Task createTaskBasedOnWorkItemParams(final KieSession _ksession, final WorkItem _workItem)
     {
-        final Task ret = super.createTaskBasedOnWorkItemParams(_workItem);
+        final Task ret = super.createTaskBasedOnWorkItemParams(_ksession, _workItem);
         try {
             final Person person = Context.getThreadContext().getPerson();
             if (person != null) {
-                final User user = new User(person.getUUID().toString());
-                ret.getPeopleAssignments().setTaskInitiator(user);
+                final User user = new UserImpl(person.getUUID().toString());
+                ((InternalPeopleAssignments) ret.getPeopleAssignments()).setTaskInitiator(user);
             }
             final List<OrganizationalEntity> potOwners = ret.getPeopleAssignments().getPotentialOwners();
 
@@ -132,11 +122,11 @@ public class HumanTaskWorkItemHandler
                 final List<OrganizationalEntity> newPotOwners = new ArrayList<OrganizationalEntity>();
                 for (final Object user : newUser) {
                     if (user instanceof Role) {
-                        final Group group = new Group(((Role) user).getUUID().toString());
+                        final Group group = new GroupImpl(((Role) user).getUUID().toString());
                         newPotOwners.add(group);
                     }
                 }
-                ret.getPeopleAssignments().setPotentialOwners(newPotOwners);
+                ((InternalPeopleAssignments) ret.getPeopleAssignments()).setPotentialOwners(newPotOwners);
             }
         } catch (final EFapsException e) {
             HumanTaskWorkItemHandler.LOG.error("Catched error on creation of task", e);

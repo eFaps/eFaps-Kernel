@@ -21,13 +21,15 @@
 
 package org.efaps.bpm.task;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.jbpm.task.Status;
-import org.jbpm.task.admin.TasksAdminImpl;
-import org.jbpm.task.query.TaskSummary;
-import org.jbpm.task.service.persistence.TaskPersistenceManager;
+import org.kie.api.task.model.Status;
+import org.kie.api.task.model.TaskSummary;
+import org.kie.internal.task.api.InternalTaskService;
+import org.kie.internal.task.api.TaskQueryService;
 
 
 /**
@@ -37,52 +39,63 @@ import org.jbpm.task.service.persistence.TaskPersistenceManager;
  * @version $Id$
  */
 public class TaskAdminstration
-    extends TasksAdminImpl
 {
 
+    private final InternalTaskService taskService;
+
     /**
-     * @param _tpm taskPersitencemanager
+     * @param _taskService
      */
-    public TaskAdminstration(final TaskPersistenceManager _tpm)
+    public TaskAdminstration(final InternalTaskService _taskService)
     {
-        super(_tpm);
+        this.taskService =_taskService;
     }
 
     /**
      * @return the task in status ready
      */
-    @SuppressWarnings("unchecked")
     public List<TaskSummary> getReadyTasks()
     {
-        final HashMap<String, Object> params = TaskPersistenceManager.addParametersToMap(
-                        "status", Status.Ready,
-                        "language", "en-UK");
-        return (List<TaskSummary>) this.tpm.queryWithParametersInTransaction("TasksByStatus", params);
+        final Map<String, List<?>> params = new HashMap<String, List<?>>();
+        params.put(TaskQueryService.STATUS_LIST, Arrays.asList(Status.Ready));
+        return this.taskService.getTasksByVariousFields(params, true);
     }
-
 
     /**
      * @return the task in status Reserved
      */
-    @SuppressWarnings("unchecked")
     public List<TaskSummary> getReservedTasks()
     {
-        final HashMap<String, Object> params = TaskPersistenceManager.addParametersToMap(
-                        "status", Status.Reserved,
-                        "language", "en-UK");
-        return (List<TaskSummary>) this.tpm.queryWithParametersInTransaction("TasksByStatus", params);
+        final Map<String, List<?>> params = new HashMap<String, List<?>>();
+        params.put(TaskQueryService.STATUS_LIST, Arrays.asList(Status.Reserved));
+        return this.taskService.getTasksByVariousFields(params, true);
     }
 
     /**
      * @return the task in status Error
      */
-    @SuppressWarnings("unchecked")
     public List<TaskSummary> getErrorTasks()
     {
-        final HashMap<String, Object> params = TaskPersistenceManager.addParametersToMap(
-                        "status", Status.Error,
-                        "language", "en-UK");
-        return (List<TaskSummary>) this.tpm.queryWithParametersInTransaction("TasksByStatus", params);
+        final Map<String, List<?>> params = new HashMap<String, List<?>>();
+        params.put(TaskQueryService.STATUS_LIST, Arrays.asList(Status.Error));
+        return this.taskService.getTasksByVariousFields(params, true);
+    }
+
+
+    /**
+     * @return
+     */
+    public List<TaskSummary> getActiveTasks()
+    {
+        return this.taskService.getActiveTasks();
+    }
+
+    /**
+     * @return
+     */
+    public List<TaskSummary> getCompletedTasks()
+    {
+        return this.taskService.getCompletedTasks();
     }
 
 }

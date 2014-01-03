@@ -24,9 +24,9 @@ package org.efaps.bpm.workitem;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.drools.process.instance.WorkItemHandler;
-import org.drools.runtime.process.WorkItem;
-import org.drools.runtime.process.WorkItemManager;
+import org.kie.api.runtime.process.WorkItem;
+import org.kie.api.runtime.process.WorkItemHandler;
+import org.kie.api.runtime.process.WorkItemManager;
 
 /**
  * An Item Handler for Manual task that actual does nothing at all.

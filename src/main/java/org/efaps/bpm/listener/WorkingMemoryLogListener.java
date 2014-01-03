@@ -21,9 +21,9 @@
 
 package org.efaps.bpm.listener;
 
-import org.drools.audit.WorkingMemoryLogger;
-import org.drools.audit.event.LogEvent;
-import org.drools.event.KnowledgeRuntimeEventManager;
+import org.drools.core.audit.WorkingMemoryLogger;
+import org.drools.core.audit.event.LogEvent;
+import org.kie.internal.event.KnowledgeRuntimeEventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

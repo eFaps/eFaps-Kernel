@@ -22,7 +22,7 @@ package org.efaps.bpm.process;
 
 import java.util.List;
 
-import org.jbpm.process.audit.JPAProcessInstanceDbLog;
+import org.jbpm.process.audit.JPAAuditLogService;
 import org.jbpm.process.audit.NodeInstanceLog;
 import org.jbpm.process.audit.ProcessInstanceLog;
 import org.jbpm.process.audit.VariableInstanceLog;
@@ -35,13 +35,23 @@ import org.jbpm.process.audit.VariableInstanceLog;
  */
 public class ProcessAdmin
 {
+    private final JPAAuditLogService jpaAuditLogService;
+
+    /**
+     * @param _jpaAuditLogService
+     */
+    public ProcessAdmin(final JPAAuditLogService _jpaAuditLogService)
+    {
+        this.jpaAuditLogService = _jpaAuditLogService;
+    }
+
     /**
      * @param _processId processId
      * @return list of all active processes for the given processId.
      */
     public List<ProcessInstanceLog> getActiveProcessInstances(final String _processId)
     {
-        return JPAProcessInstanceDbLog.findActiveProcessInstances(_processId);
+        return this.jpaAuditLogService.findActiveProcessInstances(_processId);
     }
 
     /**
@@ -50,7 +60,7 @@ public class ProcessAdmin
      */
     public List<NodeInstanceLog> getNodeInstances(final Long _processInstanceId)
     {
-        return JPAProcessInstanceDbLog.findNodeInstances(_processInstanceId);
+        return this.jpaAuditLogService.findNodeInstances(_processInstanceId);
     }
 
     /**
@@ -61,7 +71,7 @@ public class ProcessAdmin
     public List<NodeInstanceLog> getNodeInstances(final Long _processInstanceId,
                                                   final String _nodeId)
     {
-        return JPAProcessInstanceDbLog.findNodeInstances(_processInstanceId, _nodeId);
+        return this.jpaAuditLogService.findNodeInstances(_processInstanceId, _nodeId);
     }
 
     /**
@@ -70,7 +80,7 @@ public class ProcessAdmin
      */
     public ProcessInstanceLog getProcessInstance(final Long _processInstanceId)
     {
-        return JPAProcessInstanceDbLog.findProcessInstance(_processInstanceId);
+        return this.jpaAuditLogService .findProcessInstance(_processInstanceId);
     }
 
     /**
@@ -78,7 +88,7 @@ public class ProcessAdmin
      */
     public List<ProcessInstanceLog> getProcessInstances()
     {
-        return JPAProcessInstanceDbLog.findProcessInstances();
+        return this.jpaAuditLogService.findProcessInstances();
     }
 
     /**
@@ -87,7 +97,7 @@ public class ProcessAdmin
      */
     public List<ProcessInstanceLog> getProcessInstances(final String _processId)
     {
-        return JPAProcessInstanceDbLog.findProcessInstances(_processId);
+        return this.jpaAuditLogService.findProcessInstances(_processId);
     }
 
     /**
@@ -96,7 +106,7 @@ public class ProcessAdmin
      */
     public List<VariableInstanceLog> getVariableInstances(final Long _processInstanceId)
     {
-        return JPAProcessInstanceDbLog.findVariableInstances(_processInstanceId);
+        return this.jpaAuditLogService.findVariableInstances(_processInstanceId);
     }
 
     /**
@@ -107,6 +117,6 @@ public class ProcessAdmin
     public List<VariableInstanceLog> getVariableInstances(final Long _processInstanceId,
                                                           final String _variableId)
     {
-        return JPAProcessInstanceDbLog.findVariableInstances(_processInstanceId, _variableId);
+        return this.jpaAuditLogService.findVariableInstances(_processInstanceId, _variableId);
     }
 }

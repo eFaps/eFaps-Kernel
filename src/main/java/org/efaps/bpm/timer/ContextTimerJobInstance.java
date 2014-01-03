@@ -20,12 +20,12 @@
 
 package org.efaps.bpm.timer;
 
+import org.drools.core.time.InternalSchedulerService;
+import org.drools.core.time.Job;
+import org.drools.core.time.JobContext;
+import org.drools.core.time.JobHandle;
+import org.drools.core.time.Trigger;
 import org.drools.persistence.jpa.JpaTimerJobInstance;
-import org.drools.time.InternalSchedulerService;
-import org.drools.time.Job;
-import org.drools.time.JobContext;
-import org.drools.time.JobHandle;
-import org.drools.time.Trigger;
 import org.efaps.db.Context;
 
 /**
@@ -37,6 +37,10 @@ import org.efaps.db.Context;
 public class ContextTimerJobInstance
     extends JpaTimerJobInstance
 {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructor.
