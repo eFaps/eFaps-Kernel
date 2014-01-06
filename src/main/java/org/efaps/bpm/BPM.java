@@ -91,6 +91,7 @@ import org.kie.internal.runtime.manager.context.CorrelationKeyContext;
 import org.kie.internal.runtime.manager.context.EmptyContext;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import org.kie.internal.task.api.InternalTaskService;
+import org.kie.internal.task.api.model.InternalTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
@@ -517,22 +518,15 @@ public final class BPM
     }
 
     /**
-     * @param _processInstanceId ProcessInstance the task are wanted for
-     * @param _status status
-     * @param _taskName name of the task
-     * @return list of tasks
+     * @param _taskSummary summary the task is wanted for
+     * @return internal task object
      */
-    public static List<TaskSummary> getTasksByStatusByProcessIdByTaskName(final long _processInstanceId,
-                                                                          final List<Status> _status,
-                                                                          final String _taskName)
+    public static InternalTask getTaskById(final TaskSummary _taskSummary)
     {
-        final List<TaskSummary> ret = new ArrayList<TaskSummary>();
-        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(CorrelationKeyContext.get());
-        runtimeEngine.getTaskService();
-
-        // final String language = Context.getThreadContext().getLanguage();
-       // ret.addAll(taskService.gett .getTasksByStatusByProcessIdByTaskName(_processInstanceId, _status, _taskName, "en-UK"));
-        return ret;
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext.get(_taskSummary
+                        .getProcessInstanceId()));
+        final TaskService taskService = runtimeEngine.getTaskService();
+        return (InternalTask) taskService.getTaskById(_taskSummary.getId());
     }
 
     /**
