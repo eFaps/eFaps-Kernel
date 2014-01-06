@@ -37,7 +37,7 @@
     ************************************************************************* -->
     <packaging>jar</packaging>
     <artifactId>efaps-kernel</artifactId>
-<version>3.1.9-SNAPSHOT</version>
+
     <description>eFaps is a framework used to map objects with or without attached files to
 a relational database and optional file systems (only for attaches files). Configurable access control can be provided down to object and attribute level depending on implementation and use case. Depending on requirements, events (like triggers) allow to implement business logic and to separate business logic from user interface.
 The framework includes integrations (e.g. webdav, full text search) and a web application as 'simple' configurable user interface. Some best practises, example web application modules (e.g. team work module) support administrators and implementers using this framework.
@@ -352,6 +352,18 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>3.9</version>
+        </dependency>
+        <!-- used to read the jrxml definitions used by jasper -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>4.0.0.RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Groovy Compiler  -->
