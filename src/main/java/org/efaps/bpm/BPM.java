@@ -509,11 +509,29 @@ public final class BPM
                                                                 final List<Status> _status)
     {
         final List<TaskSummary> ret = new ArrayList<TaskSummary>();
-        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(EmptyContext.get());
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext.get(_processInstanceId));
         final TaskService taskService = runtimeEngine.getTaskService();
 
         // final String language = Context.getThreadContext().getLanguage();
         ret.addAll(taskService.getTasksByStatusByProcessInstanceId(_processInstanceId, _status, "en-UK"));
+        return ret;
+    }
+
+    /**
+     * @param _processInstanceId ProcessInstance the task are wanted for
+     * @param _status status
+     * @param _taskName name of the task wanted
+     * @return list of tasks
+     */
+    public static List<TaskSummary> getTasksByStatusByProcessInstanceIdByTaskName(final long _processInstanceId,
+                                                                                  final List<Status> _status,
+                                                                                  final String _taskName)
+    {
+        final List<TaskSummary> ret = new ArrayList<TaskSummary>();
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext
+                        .get(_processInstanceId));
+        final InternalTaskService taskService = (InternalTaskService) runtimeEngine.getTaskService();
+        taskService.getTasksByStatusByProcessInstanceIdByTaskName(_processInstanceId, _status, _taskName, "en-UK");
         return ret;
     }
 
