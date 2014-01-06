@@ -25,6 +25,7 @@ import javax.persistence.EntityManagerFactory;
 import org.jbpm.runtime.manager.impl.SimpleRuntimeEnvironment;
 import org.jbpm.services.task.HumanTaskServiceFactory;
 import org.jbpm.services.task.audit.JPATaskLifeCycleEventListener;
+import org.jbpm.services.task.lifecycle.listeners.BAMTaskEventListener;
 import org.kie.api.runtime.manager.RuntimeEnvironment;
 import org.kie.api.task.TaskService;
 import org.kie.internal.runtime.manager.TaskServiceFactory;
@@ -62,6 +63,7 @@ public class LocalTaskServiceFactoryImpl
                         .environment(this.runtimeEnvironment.getEnvironment())
                         .entityManagerFactory(emf)
                         .listener(new JPATaskLifeCycleEventListener())
+                        .listener(new BAMTaskEventListener())
                         .userGroupCallback(this.runtimeEnvironment.getUserGroupCallback())
                         .getTaskService();
         }
