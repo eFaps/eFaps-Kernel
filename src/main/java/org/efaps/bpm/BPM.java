@@ -49,6 +49,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.user.AbstractUserObject;
 import org.efaps.admin.user.Role;
+import org.efaps.bpm.compiler.KnowledgeBuilderFactoryServiceImpl;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.WorkingMemoryLogListener;
 import org.efaps.bpm.process.ProcessAdmin;
@@ -85,6 +86,7 @@ import org.kie.api.task.model.OrganizationalEntity;
 import org.kie.api.task.model.Status;
 import org.kie.api.task.model.Task;
 import org.kie.api.task.model.TaskSummary;
+import org.kie.internal.builder.KnowledgeBuilderFactoryService;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.runtime.manager.RuntimeEnvironment;
 import org.kie.internal.runtime.manager.context.CorrelationKeyContext;
@@ -92,6 +94,7 @@ import org.kie.internal.runtime.manager.context.EmptyContext;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import org.kie.internal.task.api.InternalTaskService;
 import org.kie.internal.task.api.model.InternalTask;
+import org.kie.internal.utils.ServiceRegistryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
@@ -173,6 +176,10 @@ public final class BPM
             } catch (final NamingException ex) {
                 BPM.LOG.error("Could not initialise JNDI InitialContext", ex);
             }
+
+            // register our own KnowledgeBuilderFactoryService
+            ServiceRegistryImpl.getInstance().addDefault(KnowledgeBuilderFactoryService.class,
+                            KnowledgeBuilderFactoryServiceImpl.class.getName());
 
             final RegisterableItemsFactoryImpl itemsFactory = new RegisterableItemsFactoryImpl();
             itemsFactory.addWorkItemHandler("ESJPNode", EsjpWorkItemHandler.class);
@@ -509,7 +516,8 @@ public final class BPM
                                                                 final List<Status> _status)
     {
         final List<TaskSummary> ret = new ArrayList<TaskSummary>();
-        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext.get(_processInstanceId));
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext
+                        .get(_processInstanceId));
         final TaskService taskService = runtimeEngine.getTaskService();
 
         // final String language = Context.getThreadContext().getLanguage();
