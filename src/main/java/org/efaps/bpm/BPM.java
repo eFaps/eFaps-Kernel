@@ -69,6 +69,7 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.hibernate.cfg.AvailableSettings;
 import org.jbpm.process.audit.JPAAuditLogService;
+import org.jbpm.runtime.manager.impl.PerProcessInstanceRuntimeManager;
 import org.jbpm.runtime.manager.impl.RuntimeEnvironmentBuilder;
 import org.jbpm.services.task.impl.model.I18NTextImpl;
 import org.jbpm.services.task.utils.ContentMarshallerHelper;
@@ -88,6 +89,7 @@ import org.kie.api.task.model.Task;
 import org.kie.api.task.model.TaskSummary;
 import org.kie.internal.builder.KnowledgeBuilderFactoryService;
 import org.kie.internal.io.ResourceFactory;
+import org.kie.internal.runtime.manager.Mapper;
 import org.kie.internal.runtime.manager.RuntimeEnvironment;
 import org.kie.internal.runtime.manager.context.CorrelationKeyContext;
 import org.kie.internal.runtime.manager.context.EmptyContext;
@@ -251,12 +253,29 @@ public final class BPM
      */
     public static Collection<NodeInstance> getActiveNodes4ProcessId(final long _processInstanceId)
     {
-        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(
-                        ProcessInstanceIdContext.get(_processInstanceId));
-        final KieSession ksession = runtimeEngine.getKieSession();
-        final ProcessInstance processInstance = ksession.getProcessInstance(_processInstanceId);
+        ProcessInstance processInstance = null;
+        if (BPM.processIsActiv(_processInstanceId)) {
+            final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext
+                            .get(_processInstanceId));
+            final KieSession ksession = runtimeEngine.getKieSession();
+            processInstance = ksession.getProcessInstance(_processInstanceId);
+        }
         return processInstance == null ? Collections.<NodeInstance>emptyList()
                         : ((WorkflowProcessInstance) processInstance).getNodeInstances();
+    }
+
+    /**
+     * Check for the PerProcessInstanceRuntimeManager if the process for the
+     * given processInstanceId is still active.
+     *
+     * @param _processInstanceId processInstanceId to be checked if still activ
+     * @return true if activ, else fasle
+     */
+    public static boolean processIsActiv(final long _processInstanceId)
+    {
+        final ProcessInstanceIdContext context = ProcessInstanceIdContext.get(_processInstanceId);
+        final Mapper mapper = ((PerProcessInstanceRuntimeManager) BPM.PMANAGER).getMapper();
+        return mapper.findMapping(context) != null;
     }
 
     /**

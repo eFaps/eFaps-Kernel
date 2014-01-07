@@ -35,10 +35,13 @@ import org.jbpm.process.audit.VariableInstanceLog;
  */
 public class ProcessAdmin
 {
+    /**
+     * Underlying audit service used for administration.
+     */
     private final JPAAuditLogService jpaAuditLogService;
 
     /**
-     * @param _jpaAuditLogService
+     * @param _jpaAuditLogService audit service to be used
      */
     public ProcessAdmin(final JPAAuditLogService _jpaAuditLogService)
     {

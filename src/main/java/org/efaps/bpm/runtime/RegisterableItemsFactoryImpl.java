@@ -48,6 +48,7 @@ public class RegisterableItemsFactoryImpl
 
         final HumanTaskWorkItemHandler humanTaskHandler = new HumanTaskWorkItemHandler();
         humanTaskHandler.setRuntimeManager(((RuntimeEngineImpl) _runtime).getManager());
+
         if (_runtime.getTaskService() instanceof EventService) {
             ((EventService) _runtime.getTaskService()).registerTaskEventListener(listener);
         }
@@ -56,11 +57,10 @@ public class RegisterableItemsFactoryImpl
             ((Disposable) _runtime).addDisposeListener(new DisposeListener()
             {
                 @Override
-                public void onDispose(final RuntimeEngine runtime)
+                public void onDispose(final RuntimeEngine _runtime)
                 {
-                    if (runtime.getTaskService() instanceof EventService) {
-                        ((EventService) runtime.getTaskService()).clearTaskEventListeners();
-                        ;
+                    if (_runtime.getTaskService() instanceof EventService) {
+                        ((EventService) _runtime.getTaskService()).clearTaskEventListeners();
                     }
                 }
             });
