@@ -260,6 +260,14 @@ public final class BPM
     }
 
     /**
+     * When the task has a single potential owner, it transitions into the
+     * Reserved state, indicating that it is assigned to a single actual owner.
+     * Otherwise (i.e., when it has multiple potential owners or is assigned to
+     * a work queue), it transitions into the Ready state, indicating that it
+     * can be claimed by one of its potential owners. Once a potential owner
+     * claims the task, it transitions into the Reserved state, making that
+     * potential owner the actual owner.
+     *
      * @param _taskSummary task to be claimed
      * @throws EFapsException on error
      */
@@ -274,6 +282,59 @@ public final class BPM
             taskService.claim(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
         }
     }
+
+    /**
+     * Task’s potential owners, actual owner or business administrator can
+     * forward an active task to another person or a set of people, replacing
+     * himself by those people in the list of potential owners. Potential owners
+     * can only forward tasks that are in the Ready state. Forwarding is
+     * possible if the task has a set of individually assigned potential owners,
+     * not if its potential owners are assigned using one or many groups. If the
+     * task is in the Reserved or InProgress state then the task is implicitly
+     * released first, that is, the task is transitioned into the Ready state.
+     * Business data associated with the task is kept. The user performing the
+     * forward is removed from the set of potential owners of the task, and the
+     * forwardee is added to the set of potential owners.
+     *
+     * @param _taskSummary task to be claimed
+     * @param _userId userid of the forwarder
+     * @param _targetEntityId target entity
+     * @throws EFapsException on error
+     */
+    public static void forwardTask(final TaskSummary _taskSummary,
+                                   final String _userId,
+                                   final String _targetEntityId)
+        throws EFapsException
+    {
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext.get(_taskSummary
+                        .getProcessInstanceId()));
+        final TaskService taskService = runtimeEngine.getTaskService();
+        taskService.forward(_taskSummary.getId(), _userId, _targetEntityId);
+    }
+
+    /**
+     * Task’s potential owners, actual owner or business administrator can
+     * delegate a task to another user, making that user the actual owner of the
+     * task, and also adding her to the list of potential owners in case she is
+     * not, yet. A task can be delegated when it is in an active state (Ready,
+     * Reserved, InProgress), and transitions the task into the Reserved state.
+     * Business data associated with the task is kept.
+     *
+     * @param _taskSummary  TaskSummary
+     * @param _userId       UserId
+     * @param _targetEntityId   target entity
+     * @throws EFapsException
+     */
+    public static void delegateTask(final TaskSummary _taskSummary,
+                                   final String _userId,
+                                   final String _targetEntityId)
+    {
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext.get(_taskSummary
+                        .getProcessInstanceId()));
+        final TaskService taskService = runtimeEngine.getTaskService();
+        taskService.delegate(_taskSummary.getId(), _userId, _targetEntityId);
+    }
+
 
     /**
      * @param _taskSummary taskSummary the Delegate Roles are wanted for.
@@ -311,6 +372,7 @@ public final class BPM
     {
         final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(CorrelationKeyContext.get());
         final TaskService taskService = runtimeEngine.getTaskService();
+       // runtimeEngine.getKieSession().execute(new GenericCommand(){})
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
             boolean add = true;
@@ -324,7 +386,7 @@ public final class BPM
             if (add) {
                 final boolean isRole = Role.get(UUID.fromString(_targetUserId)) != null;
                 if (isRole) {
-//                    final List<OperationCommand> commands = taskService.getCommandsForOperation(Operation.Delegate);
+//  final List<OperationCommand> commands = taskService.getCommandsForOperation(Operation.Delegate);
 //                    for (final OperationCommand cmd : commands) {
 //                        cmd.setExec(Operation.Delegate);
 //                    }
@@ -361,6 +423,15 @@ public final class BPM
     }
 
     /**
+     * The current actual owner of a human task may release a task to again make
+     * it available for all potential owners. A task can be released from active
+     * states that have an actual owner (Reserved, InProgress), transitioning it
+     * into the Ready state. Business data associated with the task
+     * (intermediate result data, ad-hoc attachments and comments) is kept. A
+     * task that is currently InProgress can be stopped by the actual owner,
+     * transitioning it into state Reserved. Business data associated with the
+     * task as well as its actual owner is kept.
+     *
      * @param _taskSummary task to be claimed
      * @throws EFapsException on error
      */
