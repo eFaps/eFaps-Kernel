@@ -547,23 +547,28 @@ public class OneSelect
      * @return  Object
      * @throws EFapsException on error
      */
-    private Object getObject(final Object _object) throws EFapsException
+    private Object getObject(final Object _object)
+        throws EFapsException
     {
-        Object ret = null;
+        final Object ret;
         // inside a fromobject the correct value must be set
-        if (_object instanceof Number && this.fromSelect != null) {
-            final List<Object> tmpList = new ArrayList<Object>();
-            final Long id = ((Number) _object).longValue();
-            final Iterator<Long> relIter = this.relIdList.iterator();
-            final Iterator<Object> objIter = this.objectList.iterator();
-            while (relIter.hasNext()) {
-                final Long rel = relIter.next();
-                final Object obj = objIter.next();
-                if (rel.equals(id)) {
-                    tmpList.add(obj);
+        if (this.fromSelect != null) {
+            if (_object instanceof Number) {
+                final List<Object> tmpList = new ArrayList<Object>();
+                final Long id = ((Number) _object).longValue();
+                final Iterator<Long> relIter = this.relIdList.iterator();
+                final Iterator<Object> objIter = this.objectList.iterator();
+                while (relIter.hasNext()) {
+                    final Long rel = relIter.next();
+                    final Object obj = objIter.next();
+                    if (rel.equals(id)) {
+                        tmpList.add(obj);
+                    }
                 }
+                ret = this.valueSelect.getValue(tmpList);
+            } else {
+                ret = null;
             }
-            ret = this.valueSelect.getValue(tmpList);
         } else {
             ret = this.getObject();
         }
