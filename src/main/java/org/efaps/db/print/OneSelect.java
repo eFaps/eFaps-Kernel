@@ -578,7 +578,8 @@ public class OneSelect
      * @return  object for this OneSelect
      * @throws EFapsException on error
      */
-    public Object getObject() throws EFapsException
+    public Object getObject()
+        throws EFapsException
     {
         Object ret = null;
         if (this.valueSelect == null) {
