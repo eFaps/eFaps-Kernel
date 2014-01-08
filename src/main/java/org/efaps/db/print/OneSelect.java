@@ -552,28 +552,21 @@ public class OneSelect
     {
         final Object ret;
         // inside a fromobject the correct value must be set
-        if (this.fromSelect != null) {
-            if (_object instanceof Number) {
-                final List<Object> tmpList = new ArrayList<Object>();
-                final Long id = ((Number) _object).longValue();
-                final Iterator<Long> relIter = this.relIdList.iterator();
-                final Iterator<Object> objIter = this.objectList.iterator();
-                while (relIter.hasNext()) {
-                    final Long rel = relIter.next();
-                    final Object obj = objIter.next();
-                    if (rel.equals(id)) {
-                        tmpList.add(obj);
-                    }
-                }
-                ret = this.valueSelect.getValue(tmpList);
-            } else {
-                // in case of an attributeset there is no value at all therefore return null
-                if (this.fromSelect.getType() instanceof AttributeSet) {
-                    ret = null;
-                } else {
-                    ret = this.getObject();
+        if (this.fromSelect != null && _object instanceof Number) {
+
+            final List<Object> tmpList = new ArrayList<Object>();
+            final Long id = ((Number) _object).longValue();
+            final Iterator<Long> relIter = this.relIdList.iterator();
+            final Iterator<Object> objIter = this.objectList.iterator();
+            while (relIter.hasNext()) {
+                final Long rel = relIter.next();
+                final Object obj = objIter.next();
+                if (rel.equals(id)) {
+                    tmpList.add(obj);
                 }
             }
+            ret = this.valueSelect.getValue(tmpList);
+
         } else {
             ret = this.getObject();
         }
@@ -590,7 +583,17 @@ public class OneSelect
         Object ret = null;
         if (this.valueSelect == null) {
             if (this.fromSelect.hasResult()) {
-                ret = this.fromSelect.getMainOneSelect().getObject(this.currentObject);
+                if (this.idList.size() > 1) {
+                    if (this.currentObject != null) {
+                        ret = this.fromSelect.getMainOneSelect().getObject(this.currentObject);
+                    }
+                } else {
+                    if (this.idList.size() == 1) {
+                        if (this.objectList.get(0) != null) {
+                            ret = this.fromSelect.getMainOneSelect().getObject(this.currentObject);
+                        }
+                    }
+                }
             }
         } else {
             // if the currentObject is not null it means that the values are
