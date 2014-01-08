@@ -567,7 +567,12 @@ public class OneSelect
                 }
                 ret = this.valueSelect.getValue(tmpList);
             } else {
-                ret = null;
+                // in case of an attributeset there is no value at all therefore return null
+                if (this.fromSelect.getType() instanceof AttributeSet) {
+                    ret = null;
+                } else {
+                    ret = this.getObject();
+                }
             }
         } else {
             ret = this.getObject();
