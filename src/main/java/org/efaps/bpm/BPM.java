@@ -280,6 +280,16 @@ public final class BPM
     }
 
     /**
+     * @param _processInstanceId id of the processinstanc to be aborted
+     */
+    public static void abortProcessInstance(final long _processInstanceId)
+    {
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext
+                        .get(_processInstanceId));
+        runtimeEngine.getKieSession().abortProcessInstance(_processInstanceId);
+    }
+
+    /**
      * When the task has a single potential owner, it transitions into the
      * Reserved state, indicating that it is assigned to a single actual owner.
      * Otherwise (i.e., when it has multiple potential owners or is assigned to
