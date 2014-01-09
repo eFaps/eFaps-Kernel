@@ -81,6 +81,15 @@ public class TaskAdminstration
         return this.taskService.getTasksByVariousFields(params, true);
     }
 
+    /**
+     * @return the task in status Error
+     */
+    public List<TaskSummary> getExitedTasks()
+    {
+        final Map<String, List<?>> params = new HashMap<String, List<?>>();
+        params.put(TaskQueryService.STATUS_LIST, Arrays.asList(Status.Exited));
+        return this.taskService.getTasksByVariousFields(params, true);
+    }
 
     /**
      * @return

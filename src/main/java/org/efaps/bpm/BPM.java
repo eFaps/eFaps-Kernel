@@ -50,6 +50,7 @@ import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.user.AbstractUserObject;
 import org.efaps.admin.user.Role;
 import org.efaps.bpm.compiler.KnowledgeBuilderFactoryServiceImpl;
+import org.efaps.bpm.identity.EntityMapper;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
 import org.efaps.bpm.listener.WorkingMemoryLogListener;
 import org.efaps.bpm.process.ProcessAdmin;
@@ -298,7 +299,8 @@ public final class BPM
         final TaskService taskService = runtimeEngine.getTaskService();
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
-            taskService.claim(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
+            taskService.claim(_taskSummary.getId(),
+                            EntityMapper.getUserId(Context.getThreadContext().getPerson().getUUID()));
         }
     }
 
@@ -316,19 +318,19 @@ public final class BPM
      * forwardee is added to the set of potential owners.
      *
      * @param _taskSummary task to be claimed
-     * @param _userId userid of the forwarder
      * @param _targetEntityId target entity
      * @throws EFapsException on error
      */
     public static void forwardTask(final TaskSummary _taskSummary,
-                                   final String _userId,
                                    final String _targetEntityId)
         throws EFapsException
     {
         final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext.get(_taskSummary
                         .getProcessInstanceId()));
         final TaskService taskService = runtimeEngine.getTaskService();
-        taskService.forward(_taskSummary.getId(), _userId, _targetEntityId);
+        taskService.forward(_taskSummary.getId(),
+                        EntityMapper.getUserId(Context.getThreadContext().getPerson().getUUID()),
+                        EntityMapper.getEntityId(_targetEntityId));
     }
 
     /**
@@ -340,18 +342,19 @@ public final class BPM
      * Business data associated with the task is kept.
      *
      * @param _taskSummary  TaskSummary
-     * @param _userId       UserId
      * @param _targetEntityId   target entity
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     public static void delegateTask(final TaskSummary _taskSummary,
-                                   final String _userId,
-                                   final String _targetEntityId)
+                                    final String _targetEntityId)
+        throws EFapsException
     {
         final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext.get(_taskSummary
                         .getProcessInstanceId()));
         final TaskService taskService = runtimeEngine.getTaskService();
-        taskService.delegate(_taskSummary.getId(), _userId, _targetEntityId);
+        taskService.delegate(_taskSummary.getId(),
+                        EntityMapper.getUserId(Context.getThreadContext().getPerson().getUUID()),
+                        EntityMapper.getEntityId(_targetEntityId));
     }
 
 
@@ -385,8 +388,8 @@ public final class BPM
      * @param _targetUserId userid of the user the task will be delegated to
      * @throws EFapsException on error
      */
-    public static void delegateTask(final TaskSummary _taskSummary,
-                                    final String _targetUserId)
+    public static void delegateTask4Role(final TaskSummary _taskSummary,
+                                         final String _targetUserId)
         throws EFapsException
     {
         final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(CorrelationKeyContext.get());
@@ -462,8 +465,41 @@ public final class BPM
         final TaskService taskService = runtimeEngine.getTaskService();
         // check if must be claimed still
         if (Status.Reserved.equals(_taskSummary.getStatus())) {
-            taskService.release(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
+            taskService.release(_taskSummary.getId(),
+                            EntityMapper.getUserId(Context.getThreadContext().getPerson().getUUID()));
         }
+    }
+
+    /**
+     * Stop a task that is in process.
+     *
+     * @param _taskSummary task to be claimed
+     * @throws EFapsException on error
+     */
+    public static void stopTask(final TaskSummary _taskSummary)
+        throws EFapsException
+    {
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext.get(_taskSummary
+                        .getProcessInstanceId()));
+        final TaskService taskService = runtimeEngine.getTaskService();
+        taskService.stop(_taskSummary.getId(),
+                        EntityMapper.getUserId(Context.getThreadContext().getPerson().getUUID()));
+    }
+
+    /**
+     * Stop a task that is in process.
+     *
+     * @param _taskSummary task to be claimed
+     * @throws EFapsException on error
+     */
+    public static void exitTask(final TaskSummary _taskSummary)
+        throws EFapsException
+    {
+        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext.get(_taskSummary
+                        .getProcessInstanceId()));
+        final TaskService taskService = runtimeEngine.getTaskService();
+        taskService.exit(_taskSummary.getId(),
+                        EntityMapper.getUserId(Context.getThreadContext().getPerson().getUUID()));
     }
 
     /**
@@ -560,7 +596,7 @@ public final class BPM
             if (Context.getThreadContext().getPerson().getUUID() == null) {
                 BPM.LOG.error("User '{}' has no UUID assigned.", Context.getThreadContext().getPerson().getName());
             } else {
-                final String persId = Context.getThreadContext().getPerson().getUUID().toString();
+                final String persId = EntityMapper.getUserId(Context.getThreadContext().getPerson().getUUID());
                 // final String language = Context.getThreadContext().getLanguage();
                 ret.addAll(taskService.getTasksAssignedAsPotentialOwner(persId, "en-UK"));
             }
@@ -582,7 +618,7 @@ public final class BPM
             if (Context.getThreadContext().getPerson().getUUID() == null) {
                 BPM.LOG.error("User '{}' has no UUID assigned.", Context.getThreadContext().getPerson().getName());
             } else {
-                final String persId = Context.getThreadContext().getPerson().getUUID().toString();
+                final String persId = EntityMapper.getUserId(Context.getThreadContext().getPerson().getUUID());
                 // final String language = Context.getThreadContext().getLanguage();
                 final List<Status> status = new ArrayList<Status>();
                 status.add(Status.InProgress);

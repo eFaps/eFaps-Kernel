@@ -20,6 +20,8 @@
 
 package org.efaps.admin;
 
+import java.util.UUID;
+
 /**
  * TODO comment!
  *
@@ -28,6 +30,23 @@ package org.efaps.admin;
  */
 public interface KernelSettings
 {
+    ///////////////////////////////
+    // Static Variables use by the kernel
+    ///////////////////////////////
+
+    /**
+     * Fixed UUID of the Main Administrator Person.
+     */
+    UUID USER_PERSON_ADMINISTRATOR = UUID.fromString("f48e4b45-d910-4ac8-8a08-a4e99b9ade09");
+
+    /**
+     * Fixed UUID of the Main Administration Role.
+     */
+    UUID USER_ROLE_ADMINISTRATION = UUID.fromString("1d89358d-165a-4689-8c78-fc625d37aacd");
+
+    ///////////////////////////////
+    // Settings Parameters
+    ///////////////////////////////
 
     /**
      * Boolean (true/false): activate the BPM process mechanism. Default: false;
