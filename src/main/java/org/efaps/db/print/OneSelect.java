@@ -540,7 +540,7 @@ public class OneSelect
     }
 
     /**
-     * Get an object from a n to 1 Relation.Therefore the given object
+     * Get an object from a "n to 1" Relation.Therefore the given object
      * is used to filter only the valid values from the by the Database
      * returned objects.
      * @param _object Object used as filter (must be an <code>Long</code> Id)
@@ -553,7 +553,6 @@ public class OneSelect
         final Object ret;
         // inside a fromobject the correct value must be set
         if (this.fromSelect != null && _object instanceof Number) {
-
             final List<Object> tmpList = new ArrayList<Object>();
             final Long id = ((Number) _object).longValue();
             final Iterator<Long> relIter = this.relIdList.iterator();
@@ -566,7 +565,6 @@ public class OneSelect
                 }
             }
             ret = this.valueSelect.getValue(tmpList);
-
         } else {
             ret = this.getObject();
         }
@@ -583,17 +581,14 @@ public class OneSelect
     {
         Object ret = null;
         if (this.valueSelect == null) {
+            // if the fromSelect has data
             if (this.fromSelect.hasResult()) {
-                if (this.idList.size() > 1) {
-                    if (this.currentObject != null) {
-                        ret = this.fromSelect.getMainOneSelect().getObject(this.currentObject);
-                    }
-                } else {
-                    if (this.idList.size() == 1) {
-                        if (this.objectList.get(0) != null) {
-                            ret = this.fromSelect.getMainOneSelect().getObject(this.currentObject);
-                        }
-                    }
+                // and there are more than one id the current object must not be null
+                if (this.idList.size() > 1 && this.currentObject != null) {
+                    ret = this.fromSelect.getMainOneSelect().getObject(this.currentObject);
+                // or if there is only one id the first objectvalue must not be null
+                } else if (this.idList.size() == 1 && this.objectList.get(0) != null) {
+                    ret = this.fromSelect.getMainOneSelect().getObject(this.currentObject);
                 }
             }
         } else {
