@@ -168,8 +168,10 @@ public final class AccessCache
                 final Cache<AccessKey, Boolean> keyCache = InfinispanCache.get().<AccessKey, Boolean>getIgnReCache(
                                 AccessCache.KEYCACHE);
                 final Set<AccessKey> accessKeys = (Set<AccessKey>) _event.getValue();
-                for (final AccessKey accessKey : accessKeys) {
-                    keyCache.remove(accessKey);
+                if (accessKeys != null) {
+                    for (final AccessKey accessKey : accessKeys) {
+                        keyCache.remove(accessKey);
+                    }
                 }
             }
         }
