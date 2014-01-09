@@ -37,6 +37,7 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.SchedulerPlugin;
 
 /**
@@ -55,11 +56,14 @@ public class QuartzSchedulerPlugin
      * @see org.quartz.spi.SchedulerPlugin#initialize(java.lang.String, org.quartz.Scheduler)
      * @param _name         Name of the scheduler
      * @param _scheduler    scheduler
+     * @param _loadHelper   The classLoadHelper the <code>SchedulerFactory</code> is
+     *                      actually using
      * @throws SchedulerException on error
      */
     @Override
     public void initialize(final String _name,
-                           final Scheduler _scheduler)
+                           final Scheduler _scheduler,
+                           final ClassLoadHelper _loadHelper)
         throws SchedulerException
     {
         try {
