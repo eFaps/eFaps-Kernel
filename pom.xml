@@ -172,11 +172,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <version>${slf4j.version}</version>
         </dependency>
 
-        <!-- JDBC driver, Postgres JDBC was released from thierd parties only -->
+        <!-- JDBC driver -->
         <dependency>
-            <groupId>org.jumpmind.symmetric.jdbc</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.2-1002-jdbc4</version>
+            <version>9.3-1100-jdbc41</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -314,6 +314,17 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>de.jollyday</groupId>
+            <artifactId>jollyday</artifactId>
+            <version>0.4.7</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- the yuicompressor is used to compress javascript and css files -->
