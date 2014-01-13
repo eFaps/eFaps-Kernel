@@ -193,8 +193,10 @@ public final class QueryCache
                 final Cache<QueryKey, Object> keyCache = InfinispanCache.get().<QueryKey, Object>getIgnReCache(
                                 QueryCache.SQLCACHE);
                 final Set<QueryKey> queryKeys = (Set<QueryKey>) _event.getValue();
-                for (final QueryKey queryKey : queryKeys) {
-                    keyCache.remove(queryKey);
+                if (queryKeys != null) {
+                    for (final QueryKey queryKey : queryKeys) {
+                        keyCache.remove(queryKey);
+                    }
                 }
             }
         }
