@@ -33,7 +33,7 @@ import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Database class for the MySQL database.
@@ -183,7 +183,7 @@ public class MySQLDatabase
      * @throws SQLException on error while executing sql statements
      */
     @Override
-    @SuppressWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
+    @SuppressFBWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     public void deleteAll(final Connection _con)
         throws SQLException
     {

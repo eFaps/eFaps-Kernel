@@ -1485,8 +1485,7 @@ public final class Person
 
     /**
      * @param _person Person to be cached
-     * @throws EFapsException
-     * @throws CacheReloadException
+     * @throws EFapsException on error
      */
     private static void cachePerson(final Person _person)
         throws EFapsException

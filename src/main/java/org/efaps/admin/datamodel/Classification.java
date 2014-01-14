@@ -30,8 +30,6 @@ import org.efaps.admin.user.Company;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class extending type for classification purpose.
@@ -86,11 +84,6 @@ public class Classification
             return this.value;
         }
     }
-
-    /**
-     * Logging instance used in this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(Classification.class);
 
     /**
      * Instance variable for the parent classification this classification is
@@ -446,5 +439,4 @@ public class Classification
     {
         return (Classification) Type.get(_uuid);
     }
-
 }

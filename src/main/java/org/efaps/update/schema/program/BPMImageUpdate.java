@@ -28,7 +28,6 @@ import java.util.Set;
 
 import org.efaps.update.LinkInstance;
 import org.efaps.update.schema.AbstractFileUpdate;
-import org.efaps.update.schema.ui.ImageUpdate;
 import org.efaps.util.EFapsException;
 
 /**
@@ -99,7 +98,7 @@ public class BPMImageUpdate
          * @param _tags         current path as list of single tags
          * @param _attributes   attributes for current path
          * @param _text         content for current path
-         * @throws EFapsException
+         * @throws EFapsException on error
          */
         @Override
         protected void readXML(final List<String> _tags,

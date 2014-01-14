@@ -267,8 +267,8 @@ public final class Company
         final Cache<UUID, Company> cache4UUID = InfinispanCache.get().<UUID, Company>getIgnReCache(Company.UUIDCACHE);
         cache4UUID.putIfAbsent(_role.getUUID(), _role);
 
-        final Cache<String, Company> nameCache = InfinispanCache.get().<String, Company>getIgnReCache(Company.NAMECACHE);
-        nameCache.putIfAbsent(_role.getName(), _role);
+        final Cache<String, Company> naCache = InfinispanCache.get().<String, Company>getIgnReCache(Company.NAMECACHE);
+        naCache.putIfAbsent(_role.getName(), _role);
 
         final Cache<Long, Company> idCache = InfinispanCache.get().<Long, Company>getIgnReCache(Company.IDCACHE);
         idCache.putIfAbsent(_role.getId(), _role);

@@ -41,7 +41,7 @@ import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * The database driver is used for Oracle databases starting with version 9i.
@@ -139,7 +139,7 @@ public class OracleDatabase
                         result[i] = _rs.getTimestamp(i + 1);
                         break;
                     case java.sql.Types.NUMERIC:
-                        if (metaData.getScale(i+1) > 0) {
+                        if (metaData.getScale(i + 1) > 0) {
                             result[i] = _rs.getBigDecimal(i + 1);
                         } else {
                             result[i] = _rs.getLong(i + 1);
@@ -253,7 +253,7 @@ public class OracleDatabase
      * @throws SQLException if delete of the views, tables or sequences failed
      */
     @Override
-    @SuppressWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
+    @SuppressFBWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     public void deleteAll(final Connection _con)
         throws SQLException
     {
@@ -468,7 +468,7 @@ public class OracleDatabase
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
+    @SuppressFBWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     public boolean existsSequence(final Connection _con,
                                   final String _name)
         throws SQLException
@@ -623,9 +623,10 @@ public class OracleDatabase
     }
 
     /**
-     * @param _name
-     * @param _maxLength
-     * @return
+     * @param _name name
+     * @param _maxLength maximum length
+     * @return new name
+     * @throws EFapsException on error
      */
     protected String getName4DB(final String _name,
                                 final int _maxLength)

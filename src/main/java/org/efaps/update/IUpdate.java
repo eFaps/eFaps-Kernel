@@ -64,7 +64,7 @@ public interface IUpdate
      * @param _attributes   map of attributes for current tag
      * @param _text         content text of this tags path
      * @throws SAXException on error
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     void readXML(final List<String> _tags,
                  final Map<String, String> _attributes,

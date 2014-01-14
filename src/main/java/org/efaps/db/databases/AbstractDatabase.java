@@ -1105,7 +1105,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
     /**
      * @param _name name of the constraint as defined
      * @return name as used by the database
-     * @throws IOException on error
+     * @throws EFapsException on error
      */
     public String getConstrainName(final String _name)
         throws EFapsException
@@ -1116,7 +1116,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
     /**
      * @param _name name of the table as defined
      * @return name as used by the database
-     * @throws IOException on error
+     * @throws EFapsException on error
      */
     public String getTableName(final String _name)
         throws EFapsException

@@ -155,7 +155,7 @@ public class StatusGroupUpdate
          * @param _tags current path as list of single tags
          * @param _attributes attributes for current path
          * @param _text content for current path
-         * @throws EFapsException
+         * @throws EFapsException on error
          */
         @Override
         protected void readXML(final List<String> _tags,

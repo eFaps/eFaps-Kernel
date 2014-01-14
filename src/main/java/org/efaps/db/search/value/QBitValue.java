@@ -52,10 +52,13 @@ public class QBitValue
      */
     private final IBitEnum bitEnum;
 
+    /**
+     * Set of integr allready added.
+     */
     private final Set<Integer> added = new HashSet<Integer>();;
 
     /**
-     * @param _iBitEnum
+     * @param _bitEnum bit enum to be used
      */
     public QBitValue(final IBitEnum _bitEnum)
     {

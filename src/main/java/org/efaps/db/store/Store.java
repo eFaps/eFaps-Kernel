@@ -49,11 +49,6 @@ public final class Store
     extends AbstractAdminObject
 {
     /**
-     * Needed for serialization.
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
      * Property to get the compress for this store.
      */
     public static final String PROPERTY_COMPRESS = "StoreCompress";
@@ -62,6 +57,11 @@ public final class Store
      * Property name to get the JDNI Name.
      */
     public static final String PROPERTY_JNDINAME = "StoreJNDIName";
+
+    /**
+     * Needed for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Logging instance used in this class.

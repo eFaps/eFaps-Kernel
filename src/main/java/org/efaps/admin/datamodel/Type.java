@@ -102,9 +102,10 @@ public class Type
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getInt()
         {
-            return BitEnumType.getInt4Index( ordinal());
+            return BitEnumType.getInt4Index(ordinal());
         }
 
         /**

@@ -402,7 +402,7 @@ public class Dimension
     }
 
     /**
-     * @param _role Dimension to be cached
+     * @param _dimension Dimension to be cached
      */
     private static void cacheDimension(final Dimension _dimension)
     {

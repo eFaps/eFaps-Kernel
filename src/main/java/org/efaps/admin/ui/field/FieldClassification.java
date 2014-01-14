@@ -135,8 +135,14 @@ public class FieldClassification
         return ret;
     }
 
+    /**
+     * @param _instance Instance of the classifcation
+     * @param _clazz    classification to be searched
+     * @return Instance of the classification
+     */
     private Instance getInstance4Classification(final Instance _instance,
-                                                final Classification _clazz) {
+                                                final Classification _clazz)
+    {
         Instance inst = _instance;
         if (!(_instance.getType() instanceof Classification)) {
             inst = Instance.get(_clazz, 0);

@@ -35,7 +35,7 @@ import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * @author The eFaps Team
@@ -116,7 +116,7 @@ public abstract class AbstractUserObject
      *                      system
      * @throws EFapsException if the assignment could not be made
      */
-    @SuppressWarnings("SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING")
+    @SuppressFBWarnings("SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING")
     public void assignToJAASSystem(final JAASSystem _jaasSystem,
                                    final String _jaasKey)
         throws EFapsException
@@ -190,7 +190,7 @@ public abstract class AbstractUserObject
      * @param _object user object to which this user object is assigned
      * @throws EFapsException if assignment could not be done
      */
-    @SuppressWarnings("SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING")
+    @SuppressFBWarnings("SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING")
     protected void assignToUserObjectInDb(final Type _assignType,
                                           final JAASSystem _jaasSystem,
                                           final AbstractUserObject _object)

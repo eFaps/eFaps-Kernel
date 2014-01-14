@@ -376,16 +376,16 @@ public final class Instance
     }
 
     /**
-    *
-    * @param _type type of the instance
-    * @param _id id of the instance
-    * @return instance
-    */
-   public static Instance get(final UUID _typeUUID,
-                              final long _id)
-   {
-       return new Instance(_typeUUID, _id, null);
-   }
+     *
+     * @param _typeUUID UUID of the instance
+     * @param _id id of the instance
+     * @return instance
+     */
+    public static Instance get(final UUID _typeUUID,
+                               final long _id)
+    {
+        return new Instance(_typeUUID, _id, null);
+    }
 
     /**
      *

@@ -120,9 +120,9 @@ public abstract class AbstractAdminObject
      */
     private boolean eventChecked = false;
 
-
     /**
-     * Is this Admin Object dirty, meaning was it altered after first initialization and it might be necessary to cadhe it again.
+     * Is this Admin Object dirty, meaning was it altered after first initialization
+     * and it might be necessary to cache it again.
      */
     private boolean dirty = false;
 
@@ -200,7 +200,7 @@ public abstract class AbstractAdminObject
      * @param _eventtype Eventtype class name to add
      * @param _eventdef EventDefinition to add
      * @see #events
-     * throws CacheReloadException on error
+     * @throws CacheReloadException on error
      */
     public void addEvent(final EventType _eventtype,
                          final EventDefinition _eventdef)

@@ -68,7 +68,7 @@ public class EnumType
                     list.add(getEnum4Int(_attribute, num));
                 }
             }
-            ret = list.isEmpty() ? null : (list.size() > 1 ? list : list.get(0)) ;
+            ret = list.isEmpty() ? null : (list.size() > 1 ? list : list.get(0));
         }
         return ret;
     }
@@ -126,6 +126,11 @@ public class EnumType
         _update.column(_attribute.getSqlColNames().get(0), eval(_attribute, _values));
     }
 
+    /**
+     * @param _attribute    Attribute for this enumtype
+     * @param _value        value to be evluated
+     * @return  integer value
+     */
     protected Integer eval(final Attribute _attribute,
                            final Object[] _value)
     {
@@ -144,6 +149,11 @@ public class EnumType
         return ret;
     }
 
+    /**
+     * @param _attribute    Attribute for this enumtype
+     * @param _value        value to be evluated
+     * @return  integer value
+     */
     protected Integer eval4Enum(final Attribute _attribute,
                                 final Object _value)
     {

@@ -99,7 +99,7 @@ public class StoreUpdate
          * @param _tags list of tags
          * @param _attributes attributes
          * @param _text text
-         * @throws EFapsException
+         * @throws EFapsException on error
          */
         @Override
         protected void readXML(final List<String> _tags,
@@ -130,7 +130,7 @@ public class StoreUpdate
          * @param _tags List of tags
          * @param _attributes map of attributes
          * @param _text text
-         * @throws EFapsException
+         * @throws EFapsException on error
          */
         @Override
         protected void readXML(final List<String> _tags,

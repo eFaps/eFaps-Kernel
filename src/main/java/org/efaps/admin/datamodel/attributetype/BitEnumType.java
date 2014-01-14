@@ -104,7 +104,7 @@ public class BitEnumType
     /**
      * @param _int  the integer value
      * @param _enum enum to be check if it is selected
-     * @return
+     * @return true if selected else false
      */
     public static boolean isSelected(final Integer _int,
                                      final IBitEnum _enum)

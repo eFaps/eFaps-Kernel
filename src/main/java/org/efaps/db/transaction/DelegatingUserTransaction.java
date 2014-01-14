@@ -40,6 +40,9 @@ import org.efaps.util.EFapsException;
 public class DelegatingUserTransaction
     implements UserTransaction
 {
+    /**
+     * Username of the transaction.
+     */
     private String userName;
 
     /**
@@ -168,14 +171,14 @@ public class DelegatingUserTransaction
      */
     public String getUserName()
     {
-        return userName;
+        return this.userName;
     }
 
     /**
-     * @param userName the userName to set
+     * @param _userName the userName to set
      */
-    public void setUserName(final String userName)
+    public void setUserName(final String _userName)
     {
-        this.userName = userName;
+        this.userName = _userName;
     }
 }

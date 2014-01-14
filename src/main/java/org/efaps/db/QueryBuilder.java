@@ -635,7 +635,7 @@ public class QueryBuilder
         } else if (_value instanceof UoM) {
             ret = new QNumberValue(((UoM) _value).getId());
         } else if (_value instanceof IBitEnum) {
-            ret = new QBitValue(((IBitEnum) _value));
+            ret = new QBitValue((IBitEnum) _value);
         } else if (_value instanceof IEnum) {
             ret = new QNumberValue(((IEnum) _value).getInt());
         } else if (_value instanceof AbstractQValue) {
