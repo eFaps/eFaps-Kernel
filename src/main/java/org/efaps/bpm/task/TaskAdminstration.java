@@ -41,14 +41,17 @@ import org.kie.internal.task.api.TaskQueryService;
 public class TaskAdminstration
 {
 
+    /**
+     * TaskService used to execute the commands.
+     */
     private final InternalTaskService taskService;
 
     /**
-     * @param _taskService
+     * @param _taskService  TaskService used to execute the commands
      */
     public TaskAdminstration(final InternalTaskService _taskService)
     {
-        this.taskService =_taskService;
+        this.taskService = _taskService;
     }
 
     /**
@@ -92,7 +95,7 @@ public class TaskAdminstration
     }
 
     /**
-     * @return
+     * @return list of active Tasks
      */
     public List<TaskSummary> getActiveTasks()
     {
@@ -100,11 +103,10 @@ public class TaskAdminstration
     }
 
     /**
-     * @return
+     * @return list of completed Tasks
      */
     public List<TaskSummary> getCompletedTasks()
     {
         return this.taskService.getCompletedTasks();
     }
-
 }

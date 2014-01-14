@@ -69,9 +69,6 @@ public class HumanTaskWorkItemHandler
      */
     private static final Logger LOG = LoggerFactory.getLogger(HumanTaskWorkItemHandler.class);
 
-
-
-
     @Override
     protected Task createTaskBasedOnWorkItemParams(final KieSession _ksession, final WorkItem _workItem)
     {
