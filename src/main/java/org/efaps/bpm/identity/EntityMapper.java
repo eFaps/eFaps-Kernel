@@ -74,4 +74,21 @@ public final class EntityMapper
         }
         return ret;
     }
+
+    /**
+     * @param _userId id of a user as managed by jBPM
+     * @return UUID for eFaps UserManagement
+     */
+    public static UUID getUUID(final String _userId)
+    {
+        UUID ret;
+        if ("Administrator".equals(_userId)) {
+            ret = KernelSettings.USER_PERSON_ADMINISTRATOR;
+        } else if ("Administration".equals(_userId)) {
+            ret = KernelSettings.USER_ROLE_ADMINISTRATION;
+        } else {
+            ret = UUID.fromString(_userId);
+        }
+        return ret;
+    }
 }
