@@ -20,7 +20,12 @@
 
 package org.efaps.bpm.runtime;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.efaps.bpm.workitem.EsjpWorkItemHandler;
 import org.efaps.bpm.workitem.HumanTaskWorkItemHandler;
+import org.efaps.bpm.workitem.SignallingHandlerWrapper;
 import org.jbpm.runtime.manager.impl.DefaultRegisterableItemsFactory;
 import org.jbpm.runtime.manager.impl.RuntimeEngineImpl;
 import org.jbpm.services.task.wih.ExternalTaskEventListener;
@@ -66,5 +71,14 @@ public class RegisterableItemsFactoryImpl
             });
         }
         return humanTaskHandler;
+    }
+
+    @Override
+    public Map<String, WorkItemHandler> getWorkItemHandlers(final RuntimeEngine _runtime)
+    {
+        final Map<String, WorkItemHandler> ret = new HashMap<String, WorkItemHandler>();
+        ret.put("ESJPNode", new SignallingHandlerWrapper(new EsjpWorkItemHandler()));
+        ret.putAll(super.getWorkItemHandlers(_runtime));
+        return ret;
     }
 }

@@ -23,7 +23,6 @@ package org.efaps.bpm.workitem;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.api.runtime.process.WorkItemManager;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,27 +46,17 @@ public class SignallingHandlerWrapper
     private String eventType;
 
     /**
-     * Session for the Wrapper.
-     */
-    private final StatefulKnowledgeSession ksession;
-
-    /**
      * Key to the exception returned to the Process.
      */
     private String workItemExceptionParameterName = "org.efaps.bpm.workitem.exception";
 
     /**
      * @param _originalTaskHandler  task handler that will be wrapped in
-     * @param _eventType            tzpe of event
-     * @param _ksession             session
      */
-    public SignallingHandlerWrapper(final WorkItemHandler _originalTaskHandler,
-                                    final String _eventType,
-                                    final StatefulKnowledgeSession _ksession)
+    public SignallingHandlerWrapper(final WorkItemHandler _originalTaskHandler)
     {
         super(_originalTaskHandler);
-        this.eventType = _eventType;
-        this.ksession = _ksession;
+        this.eventType = null;
     }
 
     /**
@@ -81,9 +70,9 @@ public class SignallingHandlerWrapper
         _workItem.getParameters().put(this.workItemExceptionParameterName, _cause);
         final String eventTypeTmp = getEventType(_cause, _workItem);
         SignallingHandlerWrapper.LOG.debug("Signaling event with eventType: {}", eventTypeTmp);
-        this.ksession.signalEvent(eventTypeTmp, _workItem, _workItem.getProcessInstanceId());
+        ((org.drools.core.process.instance.WorkItemManager) _manager).signalEvent(eventTypeTmp, _workItem,
+                        _workItem.getProcessInstanceId());
     }
-
 
     /**
      * @param _cause    cause the ventype is wanted for
@@ -117,8 +106,8 @@ public class SignallingHandlerWrapper
         _workItem.getParameters().put(this.workItemExceptionParameterName, _cause);
         final String eventTypeTmp = getEventType(_cause, _workItem);
         SignallingHandlerWrapper.LOG.debug("Signaling event with eventType: {}", eventTypeTmp);
-
-        this.ksession.signalEvent(eventTypeTmp, _workItem, _workItem.getProcessInstanceId());
+        ((org.drools.core.process.instance.WorkItemManager) _manager).signalEvent(eventTypeTmp, _workItem,
+                        _workItem.getProcessInstanceId());
     }
 
     /**
