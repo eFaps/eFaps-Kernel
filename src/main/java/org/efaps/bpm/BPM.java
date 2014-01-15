@@ -420,7 +420,8 @@ public final class BPM
 //                    }
                 }
 
-                taskService.delegate(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString(),
+                taskService.delegate(_taskSummary.getId(),
+                                EntityMapper.getUserId(Context.getThreadContext().getPerson().getUUID()),
                                 _targetUserId);
 
                 final List<I18NText> descr = task.getDescriptions();
@@ -525,12 +526,15 @@ public final class BPM
 
         // check if must be claimed still
         if (Status.Ready.equals(_taskSummary.getStatus())) {
-            taskService.claim(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
+            taskService.claim(_taskSummary.getId(),
+                            EntityMapper.getUserId(Context.getThreadContext().getPerson().getUUID()));
         }
         if (Status.InProgress.equals(_taskSummary.getStatus())) {
-            taskService.resume(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
+            taskService.resume(_taskSummary.getId(),
+                            EntityMapper.getUserId(Context.getThreadContext().getPerson().getUUID()));
         } else {
-            taskService.start(_taskSummary.getId(), Context.getThreadContext().getPerson().getUUID().toString());
+            taskService.start(_taskSummary.getId(),
+                            EntityMapper.getUserId(Context.getThreadContext().getPerson().getUUID()));
         }
 
         final Parameter parameter = new Parameter();
@@ -566,7 +570,7 @@ public final class BPM
             BPM.LOG.error("Class could not be found.", e);
         }
         taskService.complete(_taskSummary.getId(),
-                        Context.getThreadContext().getPerson().getUUID().toString(), results);
+                             EntityMapper.getUserId(Context.getThreadContext().getPerson().getUUID()), results);
     }
 
     /**
