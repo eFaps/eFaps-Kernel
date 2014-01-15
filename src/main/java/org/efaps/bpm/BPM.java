@@ -59,6 +59,7 @@ import org.efaps.bpm.runtime.RegisterableItemsFactoryImpl;
 import org.efaps.bpm.task.TaskAdminstration;
 import org.efaps.bpm.transaction.ConnectionProvider;
 import org.efaps.bpm.transaction.TransactionHelper;
+import org.efaps.bpm.workitem.ManualTaskItemHandler;
 import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Checkout;
 import org.efaps.db.Context;
@@ -183,6 +184,7 @@ public final class BPM
                             KnowledgeBuilderFactoryServiceImpl.class.getName());
 
             final RegisterableItemsFactoryImpl itemsFactory = new RegisterableItemsFactoryImpl();
+            itemsFactory.addWorkItemHandler("Manual Task", ManualTaskItemHandler.class);
             itemsFactory.addProcessListener(WorkingMemoryLogListener.class);
 
             final Map<String, String> properties = new HashMap<String, String>();
