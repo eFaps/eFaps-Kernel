@@ -18,7 +18,7 @@
                 <property name="hibernate.search.default.exclusive_index_use" value="false" />
 
                 <!-- Use latest Lucene version -->
-                <property name="hibernate.search.lucene_version" value="LUCENE_36" />
+                <property name="hibernate.search.lucene_version" value="LUCENE_CURRENT" />
             </properties>
         </indexing>
         <eviction maxEntries="5000" strategy="LIRS" />
