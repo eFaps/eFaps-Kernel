@@ -199,8 +199,8 @@ public final class EventDefinition
         } catch (final IllegalAccessException e) {
             EventDefinition.LOG.error("could not access class: '{}'", this.resourceName, e);
         } catch (final InvocationTargetException e) {
-            EventDefinition.LOG.error("could not invoke method: '{}' in class: '{}'", this.resourceName,
-                            this.methodName, e);
+            EventDefinition.LOG.error("could not invoke method: '{}' in class: '{}'", this.methodName,
+                            this.resourceName, e);
             throw (EFapsException) e.getCause();
         } catch (final ClassNotFoundException e) {
             EventDefinition.LOG.error("class not found: '{}" + this.resourceName, e);
