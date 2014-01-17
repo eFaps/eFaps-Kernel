@@ -39,7 +39,7 @@ public class Return
      */
     public enum ReturnValues
     {
-        /** Used to return code sniplett that will be represented as is. */
+        /** Used to return the instance after creating a new one.*/
         INSTANCE,
         /** Used to return code sniplett that will be represented as is. */
         SNIPLETT,
