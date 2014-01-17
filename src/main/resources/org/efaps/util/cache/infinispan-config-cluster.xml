@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="urn:infinispan:config:6.0 http://www.infinispan.org/schemas/infinispan-config-6.0.xsd" 
+<infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="urn:infinispan:config:6.0 http://www.infinispan.org/schemas/infinispan-config-6.0.xsd"
     xmlns="urn:infinispan:config:6.0">
     <global >
         <transport>
@@ -24,6 +24,40 @@
         <clustering mode="dist"/>
         <compatibility enabled="true"/>
     </namedCache>
+
+    <!-- *************************************** -->
+    <!-- Cache to store Lucene's file metadata -->
+    <!-- *************************************** -->
+    <namedCache name="LuceneIndexesMetadata">
+    <clustering mode="replication">
+        <stateTransfer fetchInMemoryState="true" />
+        <sync replTimeout="25000" />
+    </clustering>
+    <indexing enabled="false" />
+</namedCache>
+
+    <!-- **************************** -->
+    <!-- Cache to store Lucene data -->
+    <!-- **************************** -->
+    <namedCache name="LuceneIndexesData">
+        <clustering mode="distribution">
+            <stateTransfer fetchInMemoryState="true" />
+            <sync replTimeout="25000" />
+        </clustering>
+        <indexing enabled="false" />
+    </namedCache>
+
+    <!-- ***************************** -->
+    <!-- Cache to store Lucene locks -->
+    <!-- ***************************** -->
+    <namedCache name="LuceneIndexesLocking">
+        <clustering mode="replication">
+            <stateTransfer fetchInMemoryState="true" />
+            <sync replTimeout="25000" />
+        </clustering>
+        <indexing enabled="false" />
+    </namedCache>
+
 
     <!-- the Sql Query cache -->
     <namedCache name="org.efaps.db.QueryCache.Sql">

@@ -1,10 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="urn:infinispan:config:6.0 http://www.infinispan.org/schemas/infinispan-config-6.0.xsd" 
+<infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="urn:infinispan:config:6.0 http://www.infinispan.org/schemas/infinispan-config-6.0.xsd"
     xmlns="urn:infinispan:config:6.0">
     <global />
+
     <!-- the Access cache -->
-    <namedCache name="org.efaps.admin.access.AccessCache.Instance">
+    <namedCache name="org.efaps.admin.access.AccessCache.Index">
+        <indexing enabled="true">
+            <properties>
+                 <!-- Use our custom IndexManager; TODO autoinject by default? -->
+                <property name="hibernate.search.default.indexmanager" value="org.infinispan.query.indexmanager.InfinispanIndexManager" />
+
+                <!-- specify the managed index is to be shared across the nodes -->
+                <property name="hibernate.search.default.directory_provider" value="infinispan" />
+
+                <!-- Supporting exclusive index usage will require lock cleanup on crashed nodes to be implemented -->
+                <property name="hibernate.search.default.exclusive_index_use" value="false" />
+
+                <!-- Use latest Lucene version -->
+                <property name="hibernate.search.lucene_version" value="LUCENE_36" />
+            </properties>
+        </indexing>
         <eviction maxEntries="5000" strategy="LIRS" />
         <!--10 minutes, 5 minutes (miliseconds) -->
         <expiration lifespan="600000" maxIdle="300000" />
@@ -15,6 +31,27 @@
         <!--10 minutes, 5 minutes (miliseconds) -->
         <expiration lifespan="600000" maxIdle="300000" />
         <compatibility enabled="true" />
+    </namedCache>
+
+   <!-- *************************************** -->
+    <!-- Cache to store Lucene's file metadata -->
+    <!-- *************************************** -->
+    <namedCache name="LuceneIndexesMetadata">
+        <indexing enabled="false" />
+    </namedCache>
+
+    <!-- **************************** -->
+    <!-- Cache to store Lucene data -->
+    <!-- **************************** -->
+    <namedCache name="LuceneIndexesData">
+        <indexing enabled="false" />
+    </namedCache>
+
+    <!-- ***************************** -->
+    <!-- Cache to store Lucene locks -->
+    <!-- ***************************** -->
+    <namedCache name="LuceneIndexesLocking">
+        <indexing enabled="false" />
     </namedCache>
 
     <!-- the Sql Query cache -->
@@ -170,8 +207,8 @@
         <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
 
-    <!-- User Caches This Caches are accessed in the given sequence during 
-        the search for a UserObject. That means that for e.g. RoleCache null-Values 
+    <!-- User Caches This Caches are accessed in the given sequence during
+        the search for a UserObject. That means that for e.g. RoleCache null-Values
         for ids will be cached that are not a Role -->
     <namedCache name="org.efaps.admin.user.Role.UUID">
         <eviction maxEntries="500" strategy="LIRS" />
@@ -220,7 +257,7 @@
         <eviction maxEntries="100" strategy="LIRS" />
     </namedCache>
 
-    <!-- JAASSystme is not clusterable due to use of java.lang.reflect.Method 
+    <!-- JAASSystme is not clusterable due to use of java.lang.reflect.Method
         instance variables -->
     <namedCache name="org.efaps.admin.user.JAASSystem.ID">
         <eviction maxEntries="5" strategy="LRU" />

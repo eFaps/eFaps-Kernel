@@ -155,7 +155,8 @@ public final class InfinispanCache
      */
     public <K, V> AdvancedCache<K, V> getIgnReCache(final String _cacheName)
     {
-        return this.container.<K, V>getCache(_cacheName).getAdvancedCache().withFlags(Flag.IGNORE_RETURN_VALUES);
+        return this.container.<K, V>getCache(_cacheName).getAdvancedCache()
+                        .withFlags(Flag.IGNORE_RETURN_VALUES, Flag.SKIP_REMOTE_LOOKUP, Flag.SKIP_CACHE_LOAD);
     }
 
     /**

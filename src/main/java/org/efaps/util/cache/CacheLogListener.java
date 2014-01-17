@@ -92,8 +92,10 @@ public class CacheLogListener
     @CacheEntryCreated
     public void onCacheEntryCreated(final CacheEntryCreatedEvent<?, ?> _event)
     {
-        if (!_event.isPre()) {
-            this.log.trace("Added key: '{}' to Cache '{}'. ", _event.getKey(), _event.getCache().getName());
+        if (_event.isPre()) {
+            this.log.trace("before - Added key: '{}' to Cache '{}'. ", _event.getKey(), _event.getCache().getName());
+        } else {
+            this.log.trace("after - Added key: '{}' to Cache '{}'. ", _event.getKey(), _event.getCache().getName());
         }
     }
 
@@ -112,9 +114,12 @@ public class CacheLogListener
     @CacheEntryModified
     public void onCacheEntryModified(final CacheEntryModifiedEvent<?, ?> _event)
     {
-        this.log.trace("modified key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
+        if (_event.isPre()) {
+            this.log.trace("before - modified key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
+        } else {
+            this.log.trace("after - modified key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
+        }
     }
-
 
     /**
      * @param _event event to be loged
@@ -150,7 +155,12 @@ public class CacheLogListener
     @CacheEntryRemoved
     public void onCacheEntryRemoved(final CacheEntryRemovedEvent<?, ?> _event)
     {
-        this.log.trace("removed key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
+        if (_event.isPre()) {
+            this.log.trace("before - removed key: '{}' from Cache '{}'. ", _event.getKey(),
+                            _event.getCache().getName());
+        } else {
+            this.log.trace("after - removed key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
+        }
     }
 
     /**

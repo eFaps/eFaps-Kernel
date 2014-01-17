@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+AccessCache.LOG.debug("registered Update for Instance: {}", _instance); * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,20 @@
 
 package org.efaps.admin.access;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.efaps.db.Instance;
 import org.efaps.util.cache.CacheLogListener;
-import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.InfinispanCache;
 import org.infinispan.Cache;
 import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
-import org.infinispan.notifications.cachelistener.annotation.CacheEntryRemoved;
 import org.infinispan.notifications.cachelistener.event.CacheEntryCreatedEvent;
-import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
+import org.infinispan.query.Search;
+import org.infinispan.query.SearchManager;
+import org.infinispan.query.dsl.Query;
+import org.infinispan.query.dsl.QueryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ public final class AccessCache
     /**
      * Name of the Cache for Instances.
      */
-    public static final String INSTANCECACHE = AccessCache.class.getName() + ".Instance";
+    public static final String INDEXCACHE = AccessCache.class.getName() + ".Index";
 
     /**
      * Name of the Cache for AccessKey.
@@ -68,14 +69,48 @@ public final class AccessCache
     }
 
     /**
+     * @param _personId personid the access cache must be clean for
+     */
+    public static void clean4Person(final long _personId)
+    {
+        AccessCache.LOG.debug("Cleaning cache for Person: {}", _personId);
+        final Cache<String, AccessKey> indexCache = InfinispanCache.get()
+                        .<String, AccessKey>getIgnReCache(AccessCache.INDEXCACHE);
+        final SearchManager searchManager = Search.getSearchManager(indexCache);
+        final QueryFactory<?> qf = searchManager.getQueryFactory();
+        final Query query = qf.from(AccessKey.class).having("personId").eq(_personId).toBuilder().build();
+        final List<?> result = query.list();
+        if (result != null) {
+            for (final Object key : result) {
+                AccessCache.getKeyCache().remove(key);
+                indexCache.remove(((AccessKey) key).getIndexKey());
+            }
+        }
+    }
+
+    /**
      * @param _instance Instance the update will be registered for
      */
     public static void registerUpdate(final Instance _instance)
     {
         AccessCache.LOG.debug("registered Update for Instance: {}", _instance);
-        final Cache<Instance, Set<AccessKey>> instanceCache = InfinispanCache.get()
-                        .<Instance, Set<AccessKey>>getIgnReCache(AccessCache.INSTANCECACHE);
-        instanceCache.remove(_instance);
+
+        final Cache<String, AccessKey> indexCache = InfinispanCache.get()
+                        .<String, AccessKey>getIgnReCache(AccessCache.INDEXCACHE);
+        final SearchManager searchManager = Search.getSearchManager(indexCache);
+        final QueryFactory<?> qf = searchManager.getQueryFactory();
+        final Query query = qf.from(AccessKey.class)
+                        .having("instanceTypeUUID").like(_instance.getTypeUUID().toString())
+                        .and()
+                        .having("instanceId").eq(_instance.getId())
+                        .toBuilder().build();
+        final List<?> result = query.list();
+        if (result != null) {
+            for (final Object key : result) {
+                AccessCache.getKeyCache().remove(key);
+                indexCache.remove(((AccessKey) key).getIndexKey());
+            }
+        }
     }
 
     /**
@@ -83,13 +118,12 @@ public final class AccessCache
      */
     public static void initialize()
     {
-        if (InfinispanCache.get().exists(AccessCache.INSTANCECACHE)) {
-            InfinispanCache.get().<Instance, Set<AccessKey>>getCache(AccessCache.INSTANCECACHE).clear();
+        if (InfinispanCache.get().exists(AccessCache.INDEXCACHE)) {
+            InfinispanCache.get().<Instance, Set<AccessKey>>getCache(AccessCache.INDEXCACHE).clear();
         } else {
-            final Cache<Instance, Set<AccessKey>> cache = InfinispanCache.get().<Instance, Set<AccessKey>>getCache(
-                            AccessCache.INSTANCECACHE);
+            final Cache<String, AccessKey> cache = InfinispanCache.get().<String, AccessKey>getCache(
+                            AccessCache.INDEXCACHE);
             cache.addListener(new CacheLogListener(AccessCache.LOG));
-            cache.addListener(new InstanceCacheListener());
         }
         if (InfinispanCache.get().exists(AccessCache.KEYCACHE)) {
             InfinispanCache.get().<AccessKey, Boolean>getCache(AccessCache.KEYCACHE).clear();
@@ -106,7 +140,7 @@ public final class AccessCache
      */
     public static Cache<AccessKey, Boolean> getKeyCache()
     {
-        return  InfinispanCache.get().<AccessKey, Boolean>getCache(AccessCache.KEYCACHE);
+        return  InfinispanCache.get().<AccessKey, Boolean>getIgnReCache(AccessCache.KEYCACHE);
     }
 
     /**
@@ -117,62 +151,19 @@ public final class AccessCache
     public static class KeyCacheListener
     {
         /**
-         * If an AccessKey is inserted to KeyCache the instance will also be registered in the INSTANCECACHE.
-         * @param _event event to be loged
+         * If an AccessKey is inserted to KeyCache the instance will also be
+         * registered in the INDEXCACHE.
+         *
+         * @param _event event to be logged
          */
         @CacheEntryCreated
         public void onCacheEntryCreated(final CacheEntryCreatedEvent<?, ?> _event)
         {
-            try {
-                if (!_event.isPre()) {
-                    final Cache<Instance, Set<AccessKey>> instanceCache = InfinispanCache.get()
-                                    .<Instance, Set<AccessKey>>getIgnReCache(AccessCache.INSTANCECACHE);
-
-                    final AccessKey accessKey = (AccessKey) _event.getKey();
-                    final Instance instance = accessKey.getInstance();
-
-                    Set<AccessKey> accessKeys;
-                    if (instanceCache.containsKey(instance)) {
-                        accessKeys = instanceCache.get(instance);
-                    } else {
-                        accessKeys = new HashSet<AccessKey>();
-                        instanceCache.put(instance, accessKeys);
-                    }
-                    accessKeys.add(accessKey);
-                }
-            } catch (final CacheReloadException e) {
-                AccessCache.LOG.error("Error on syncing the Caches for AccessCache", e);
-            }
-        }
-    }
-
-    /**
-     * Listener responsible to maintain the two Caches in sync. On removal of an
-     * instance from the instanceCache the related AccessKeys from the KeyCache
-     * will be removed also.
-     */
-    @Listener
-    public static class InstanceCacheListener
-    {
-        /**
-         * If an Instance is removed the related AccessKeys will be removed
-         * also..
-         *
-         * @param _event event to be loged
-         */
-        @SuppressWarnings("unchecked")
-        @CacheEntryRemoved
-        public void onCacheEntryRemoved(final CacheEntryRemovedEvent<?, ?> _event)
-        {
-            if (_event.isPre()) {
-                final Cache<AccessKey, Boolean> keyCache = InfinispanCache.get().<AccessKey, Boolean>getIgnReCache(
-                                AccessCache.KEYCACHE);
-                final Set<AccessKey> accessKeys = (Set<AccessKey>) _event.getValue();
-                if (accessKeys != null) {
-                    for (final AccessKey accessKey : accessKeys) {
-                        keyCache.remove(accessKey);
-                    }
-                }
+            if (!_event.isPre()) {
+                final Cache<String, AccessKey> indexCache = InfinispanCache.get()
+                                .<String, AccessKey>getIgnReCache(AccessCache.INDEXCACHE);
+                final AccessKey accessKey = (AccessKey) _event.getKey();
+                indexCache.put(accessKey.getIndexKey(), accessKey);
             }
         }
     }

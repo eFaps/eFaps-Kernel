@@ -31,6 +31,9 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 
 /**
  * Used as a key to store the results of a Query related to access in a map.<br/>
@@ -51,6 +54,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @author The eFaps Team
  * @version $Id$
  */
+@Indexed
 public final class AccessKey
     implements Serializable
 {
@@ -63,16 +67,19 @@ public final class AccessKey
     /**
      * Id of a instance type.
      */
+    @Field(analyze = Analyze.NO)
     private final UUID instanceTypeUUID;
 
     /**
      * Id of the Instance.
      */
+    @Field(analyze = Analyze.NO)
     private final long instanceId;
 
     /**
      * Id of the Person.
      */
+    @Field(analyze = Analyze.NO)
     private final long personId;
 
     /**
@@ -193,6 +200,18 @@ public final class AccessKey
         throws CacheReloadException
     {
         return Instance.get(getInstanceTypeUUID(), getInstanceId());
+    }
+
+    /**
+     * @return indexkey for mapping
+     */
+    protected String getIndexKey()
+    {
+        return new StringBuilder().append(this.instanceTypeUUID)
+                        .append("-").append(this.instanceId)
+                        .append("-").append(this.personId)
+                        .append("-").append(this.companyId)
+                        .append("-").append(this.accessType).toString();
     }
 
     @Override

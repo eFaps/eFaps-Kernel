@@ -111,6 +111,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         </repository>
     </distributionManagement>
 
+    <properties>
+        <hibernate.version>4.1.1.Final</hibernate.version>
+    </properties>
+
+
     <!-- ************************************************************************
     * Project itself
     ************************************************************************* -->
@@ -451,6 +456,18 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <artifactId>infinispan-core</artifactId>
             <version>6.0.1.Final</version>
         </dependency>
+        <dependency>
+            <groupId>org.infinispan</groupId>
+            <artifactId>infinispan-query</artifactId>
+            <version>6.0.1.Final</version>
+        </dependency>
+        <!-- Used by infinispan to search
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-search</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+        -->
 
        <!-- JBPM and related classes -->
        <dependency>
@@ -481,12 +498,12 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.1.10.Final</version>
+            <version>${hibernate.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>4.1.10.Final</version>
+            <version>${hibernate.version}</version>
         </dependency>
         <!-- janino cannot be used due to compile errors with jBPM
         <dependency>
