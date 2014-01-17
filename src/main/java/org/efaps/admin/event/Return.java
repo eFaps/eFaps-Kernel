@@ -40,6 +40,8 @@ public class Return
     public enum ReturnValues
     {
         /** Used to return code sniplett that will be represented as is. */
+        INSTANCE,
+        /** Used to return code sniplett that will be represented as is. */
         SNIPLETT,
         /** Used to return a Map of Values. */
         VALUES,
