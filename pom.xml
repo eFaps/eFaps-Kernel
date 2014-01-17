@@ -111,11 +111,6 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         </repository>
     </distributionManagement>
 
-    <properties>
-        <hibernate.version>4.1.1.Final</hibernate.version>
-    </properties>
-
-
     <!-- ************************************************************************
     * Project itself
     ************************************************************************* -->
@@ -489,6 +484,21 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-executor</artifactId>
             <version>6.0.1.Final</version>
+             <exclusions>
+                <!-- use the lucen wich comes with jBPM-->
+                <exclusion>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+        </exclusion>
+        <exclusion>
+        <groupId>org.apache.lucene</groupId>
+  <artifactId>lucene-queryparser</artifactId>
+        </exclusion>
+        <exclusion>
+        <groupId>org.apache.lucene</groupId>
+  <artifactId>lucene-analyzers-common</artifactId>
+        </exclusion>
+        </exclusions>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
@@ -498,13 +508,37 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>${hibernate.version}</version>
+            <version>4.1.1.Final</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>${hibernate.version}</version>
+            <version>4.1.1.Final</version>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate.common</groupId>
+            <artifactId>hibernate-commons-annotations</artifactId>
+            <version>4.0.4.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-search-engine</artifactId>
+            <version>4.4.2.Final</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>solr-analysis-extras</artifactId>
+                    <groupId>org.apache.solr</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-search-infinispan</artifactId>
+            <version>4.4.2.Final</version>
+        </dependency>
+
+
+
         <!-- janino cannot be used due to compile errors with jBPM
         <dependency>
             <groupId>org.codehaus.janino</groupId>

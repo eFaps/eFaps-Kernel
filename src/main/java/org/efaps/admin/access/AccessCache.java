@@ -76,14 +76,16 @@ public final class AccessCache
         AccessCache.LOG.debug("Cleaning cache for Person: {}", _personId);
         final Cache<String, AccessKey> indexCache = InfinispanCache.get()
                         .<String, AccessKey>getIgnReCache(AccessCache.INDEXCACHE);
-        final SearchManager searchManager = Search.getSearchManager(indexCache);
-        final QueryFactory<?> qf = searchManager.getQueryFactory();
-        final Query query = qf.from(AccessKey.class).having("personId").eq(_personId).toBuilder().build();
-        final List<?> result = query.list();
-        if (result != null) {
-            for (final Object key : result) {
-                AccessCache.getKeyCache().remove(key);
-                indexCache.remove(((AccessKey) key).getIndexKey());
+        if (!indexCache.isEmpty()) {
+            final SearchManager searchManager = Search.getSearchManager(indexCache);
+            final QueryFactory<?> qf = searchManager.getQueryFactory();
+            final Query query = qf.from(AccessKey.class).having("personId").eq(_personId).toBuilder().build();
+            final List<?> result = query.list();
+            if (result != null) {
+                for (final Object key : result) {
+                    AccessCache.getKeyCache().remove(key);
+                    indexCache.remove(((AccessKey) key).getIndexKey());
+                }
             }
         }
     }
@@ -97,18 +99,20 @@ public final class AccessCache
 
         final Cache<String, AccessKey> indexCache = InfinispanCache.get()
                         .<String, AccessKey>getIgnReCache(AccessCache.INDEXCACHE);
-        final SearchManager searchManager = Search.getSearchManager(indexCache);
-        final QueryFactory<?> qf = searchManager.getQueryFactory();
-        final Query query = qf.from(AccessKey.class)
-                        .having("instanceTypeUUID").like(_instance.getTypeUUID().toString())
-                        .and()
-                        .having("instanceId").eq(_instance.getId())
-                        .toBuilder().build();
-        final List<?> result = query.list();
-        if (result != null) {
-            for (final Object key : result) {
-                AccessCache.getKeyCache().remove(key);
-                indexCache.remove(((AccessKey) key).getIndexKey());
+        if (!indexCache.isEmpty()) {
+            final SearchManager searchManager = Search.getSearchManager(indexCache);
+            final QueryFactory<?> qf = searchManager.getQueryFactory();
+            final Query query = qf.from(AccessKey.class)
+                            .having("instanceTypeUUID").like(_instance.getTypeUUID().toString())
+                            .and()
+                            .having("instanceId").eq(_instance.getId())
+                            .toBuilder().build();
+            final List<?> result = query.list();
+            if (result != null) {
+                for (final Object key : result) {
+                    AccessCache.getKeyCache().remove(key);
+                    indexCache.remove(((AccessKey) key).getIndexKey());
+                }
             }
         }
     }
