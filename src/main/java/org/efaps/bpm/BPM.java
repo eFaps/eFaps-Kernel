@@ -677,7 +677,8 @@ public final class BPM
         final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext
                         .get(_processInstanceId));
         final InternalTaskService taskService = (InternalTaskService) runtimeEngine.getTaskService();
-        taskService.getTasksByStatusByProcessInstanceIdByTaskName(_processInstanceId, _status, _taskName, "en-UK");
+        ret.addAll(taskService.getTasksByStatusByProcessInstanceIdByTaskName(_processInstanceId, _status, _taskName,
+                        "en-UK"));
         return ret;
     }
 
