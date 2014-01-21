@@ -563,6 +563,15 @@ public final class SystemConfiguration
         return ret;
     }
 
+    /**
+     * Reload the current SystemConfiguration by removing it from the Cache.
+     */
+    public void reload()
+    {
+        InfinispanCache.get().<UUID, SystemConfiguration>getCache(SystemConfiguration.UUIDCACHE).remove(this.uuid);
+        InfinispanCache.get().<Long, SystemConfiguration>getCache(SystemConfiguration.UUIDCACHE).remove(this.id);
+        InfinispanCache.get().<String, SystemConfiguration>getCache(SystemConfiguration.UUIDCACHE).remove(this.name);
+    }
 
     /**
      * Read the config.
