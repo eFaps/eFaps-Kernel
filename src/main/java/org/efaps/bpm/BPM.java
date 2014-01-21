@@ -654,12 +654,13 @@ public final class BPM
                                                                 final List<Status> _status)
     {
         final List<TaskSummary> ret = new ArrayList<TaskSummary>();
-        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext
-                        .get(_processInstanceId));
-        final TaskService taskService = runtimeEngine.getTaskService();
+        if (BPM.processIsActiv(_processInstanceId)) {
+            final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext
+                            .get(_processInstanceId));
+            final TaskService taskService = runtimeEngine.getTaskService();
 
-        // final String language = Context.getThreadContext().getLanguage();
-        ret.addAll(taskService.getTasksByStatusByProcessInstanceId(_processInstanceId, _status, "en-UK"));
+            ret.addAll(taskService.getTasksByStatusByProcessInstanceId(_processInstanceId, _status, "en-UK"));
+        }
         return ret;
     }
 
@@ -674,11 +675,13 @@ public final class BPM
                                                                                   final String _taskName)
     {
         final List<TaskSummary> ret = new ArrayList<TaskSummary>();
-        final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext
-                        .get(_processInstanceId));
-        final InternalTaskService taskService = (InternalTaskService) runtimeEngine.getTaskService();
-        ret.addAll(taskService.getTasksByStatusByProcessInstanceIdByTaskName(_processInstanceId, _status, _taskName,
-                        "en-UK"));
+        if (BPM.processIsActiv(_processInstanceId)) {
+            final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext
+                            .get(_processInstanceId));
+            final InternalTaskService taskService = (InternalTaskService) runtimeEngine.getTaskService();
+            ret.addAll(taskService.getTasksByStatusByProcessInstanceIdByTaskName(_processInstanceId, _status, _taskName,
+                            "en-UK"));
+        }
         return ret;
     }
 
