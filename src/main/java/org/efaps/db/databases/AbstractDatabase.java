@@ -663,8 +663,6 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
      *            specified)
      * @param _length length of column to add (or 0 if not specified)
      * @param _scale scale of the column (or 0 if not specified)
-     * @param _isNotNull <i>true</i> means that the column has no
-     *            <code>null</code> values
      * @return this instance
      * @throws SQLException if the column could not be added to the tables
      */
@@ -675,8 +673,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
                             final ColumnType _columnType,
                             final String _defaultValue,
                             final int _length,
-                            final int _scale,
-                            final boolean _isNotNull)
+                            final int _scale)
         throws SQLException
     {
         // CHECKSTYLE:ON
@@ -695,9 +692,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
         if (_defaultValue != null) {
             cmd.append(" default ").append(_defaultValue);
         }
-        if (_isNotNull) {
-            cmd.append(" not null");
-        }
+
         AbstractDatabase.LOG.debug("    ..SQL> " + cmd.toString());
 
         final Statement stmt = _con.createStatement();

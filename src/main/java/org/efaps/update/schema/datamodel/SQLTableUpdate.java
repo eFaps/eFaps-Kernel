@@ -708,8 +708,11 @@ public class SQLTableUpdate
                         }
                     } else  {
                         Context.getDbType().addTableColumn(con.getConnection(), tableName,
-                                column.name, column.type, null, column.length, column.scale,
-                                column.isNotNull);
+                                column.name, column.type, null, column.length, column.scale);
+                        if (column.isNotNull) {
+                            Context.getDbType().updateColumnIsNotNull(con.getConnection(), tableName, column.name,
+                                            column.isNotNull);
+                        }
                     }
                 }
 

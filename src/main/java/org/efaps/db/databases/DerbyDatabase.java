@@ -297,8 +297,6 @@ public class DerbyDatabase
      * @param _length       length of column to add (or 0 if not specified)
      * @param _scale        scale of the column to add (or 0 if not
      *                      specified)
-     * @param _isNotNull    <i>true</i> means that the column has no
-     *                      <code>null</code> values
      * @throws SQLException if the column could not be added to the tables
      * @return this
      */
@@ -310,14 +308,13 @@ public class DerbyDatabase
                                         final ColumnType _columnType,
                                         final String _defaultValue,
                                         final int _length,
-                                        final int _scale,
-                                        final boolean _isNotNull)
+                                        final int _scale)
         throws SQLException
     {
       //CHECKSTYLE:ON
         String defaultValue = _defaultValue;
 
-        if (_isNotNull && (defaultValue == null))  {
+        if (defaultValue == null)  {
             switch (_columnType)  {
                 case INTEGER:
                 case REAL:
@@ -333,7 +330,7 @@ public class DerbyDatabase
             }
         }
         return super.addTableColumn(_con, _tableName, _columnName, _columnType,
-                                    defaultValue, _length, _scale, _isNotNull);
+                                    defaultValue, _length, _scale);
     }
 
     /**
