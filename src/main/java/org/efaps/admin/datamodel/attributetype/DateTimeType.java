@@ -29,6 +29,7 @@ import java.util.List;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.db.Context;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
@@ -36,7 +37,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.ReadableDateTime;
 import org.joda.time.chrono.ISOChronology;
-import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * @author The eFaps Team
@@ -153,7 +153,7 @@ public class DateTimeType
     {
         String ret = "";
         if (_value instanceof ReadableDateTime) {
-            ret = ((ReadableDateTime) _value).toDateTime().toString(ISODateTimeFormat.dateHourMinuteSecondFraction());
+            ret = Context.getDbType().getStr4DateTime((ReadableDateTime) _value);
         } else if (_value instanceof String) {
             ret = (String) _value;
         }

@@ -32,6 +32,8 @@ import java.util.Map;
 import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.RowProcessor;
 import org.efaps.db.databases.information.TableInformation;
+import org.joda.time.ReadableDateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -193,9 +195,27 @@ public class PostgreSQLDatabase
      * {@inheritDoc}
      */
     @Override
-    public String getTimestampValue(final String _isoDateTime)
+    public String getTimestampValue(final String _dateTimeStr)
     {
-        return "timestamp '" + _isoDateTime + "'";
+        return "timestamp '" + _dateTimeStr + "'";
+    }
+
+    /**
+     * {@inheritDoc} <br/>
+     * Postgres does not work with the year "ZERO" therefore the year
+     * is translated like a Gregorian/Julian Calendar (ZERO = -1)
+     */
+    @Override
+    public String getStr4DateTime(final ReadableDateTime _value)
+    {
+        String ret;
+        if (_value.getEra() == 0) {
+            ret = _value.toDateTime().minusYears(1).toString(ISODateTimeFormat.dateHourMinuteSecondFraction());
+            ret = ret.substring(1) + " BC";
+        } else {
+            ret = _value.toDateTime().toString(ISODateTimeFormat.dateHourMinuteSecondFraction());
+        }
+        return ret;
     }
 
     /**
@@ -207,8 +227,7 @@ public class PostgreSQLDatabase
         return _value;
     }
 
-
-/**
+    /**
      * <p>This is the PostgreSQL specific implementation of an all deletion.
      * Following order is used to remove all eFaps specific information:
      * <ul>

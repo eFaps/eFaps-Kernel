@@ -51,6 +51,8 @@ import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.AbstractCache;
 import org.efaps.util.cache.CacheReloadException;
+import org.joda.time.ReadableDateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
@@ -366,10 +368,21 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
     /**
      * Get the vendor specific Timestamp cast implementation.
      *
-     * @param _isoDateTime dateTime that will be casted to an timestamp
+     * @param _dateString dateTime that will be casted to an timestamp
      * @return vendor specific implementation of timestamp
      */
-    public abstract String getTimestampValue(final String _isoDateTime);
+    public abstract String getTimestampValue(final String _dateString);
+
+    /**
+     * Method is used to generate the "dateString" used by the
+     * vendor specific Timestamp cast implementation.
+     * @see AbstractDatabase#getTimestampValue(String)
+     * @param _value    ReadableDateTime to be converted in a String
+     */
+    public String getStr4DateTime(final ReadableDateTime _value)
+    {
+        return _value.toDateTime().toString(ISODateTimeFormat.dateHourMinuteSecondFraction());
+    }
 
     /**
      * Get the vendor specific Boolean cast implementation.
