@@ -44,7 +44,12 @@ public final class AppConfigHandler
         /**
          * Deactivate the AccessCache.
          */
-        ACCESSCACHE_DEACTIVATE("org.efaps.application.config.AccessCache.deactivate");
+        ACCESSCACHE_DEACTIVATE("org.efaps.application.config.AccessCache.deactivate"),
+
+        /**
+         * Deactivate the AccessCache.
+         */
+        QUERYCACHE_DEACTIVATE("org.efaps.application.config.QueryCache.deactivate");
 
         /**
          * Key of the enum instance.
@@ -81,12 +86,18 @@ public final class AppConfigHandler
     private final boolean accessCacheDeactivated;
 
     /**
+     * Possibility to deactivate the AccessCache.
+     */
+    private final boolean queryCacheDeactivated;
+
+    /**
      * Singleton Constructor.
      * @param _values values for the init
      */
     private AppConfigHandler(final Map<String, String> _values)
     {
         this.accessCacheDeactivated =  "true".equalsIgnoreCase(_values.get(Parameter.ACCESSCACHE_DEACTIVATE.getKey()));
+        this.queryCacheDeactivated =  "true".equalsIgnoreCase(_values.get(Parameter.QUERYCACHE_DEACTIVATE.getKey()));
     }
 
     /**
@@ -97,6 +108,16 @@ public final class AppConfigHandler
     public boolean isAccessCacheDeactivated()
     {
         return this.accessCacheDeactivated;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #queryCacheDeactivated}.
+     *
+     * @return value of instance variable {@link #queryCacheDeactivated}
+     */
+    public boolean isQueryCacheDeactivated()
+    {
+        return this.queryCacheDeactivated;
     }
 
     /**

@@ -23,8 +23,10 @@ package org.efaps.db;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.efaps.admin.AppConfigHandler;
 import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.InfinispanCache;
+import org.efaps.util.cache.NoOpCache;
 import org.infinispan.Cache;
 import org.infinispan.context.Flag;
 import org.infinispan.notifications.Listener;
@@ -65,6 +67,12 @@ public final class QueryCache
     private static final Logger LOG = LoggerFactory.getLogger(QueryCache.class);
 
     /**
+     * NoOp cache in case the QueryCache mechanism is deactivated.
+     */
+    private static NoOpQueryCache NOOP;
+
+
+    /**
      * Utility class therefore no public Constructor.
      */
     private QueryCache()
@@ -76,21 +84,25 @@ public final class QueryCache
      */
     public static void initialize()
     {
-        if (InfinispanCache.get().exists(QueryCache.KEYCACHE)) {
-            InfinispanCache.get().<String, Set<QueryKey>>getCache(QueryCache.KEYCACHE).clear();
+        if (AppConfigHandler.get().isQueryCacheDeactivated()) {
+            QueryCache.NOOP = new NoOpQueryCache();
         } else {
-            final Cache<String, Set<QueryKey>> cache = InfinispanCache.get().<String, Set<QueryKey>>getCache(
-                            QueryCache.KEYCACHE);
-            cache.addListener(new CacheLogListener(QueryCache.LOG));
-            cache.addListener(new KeyCacheListener());
-        }
-        if (InfinispanCache.get().exists(QueryCache.SQLCACHE)) {
-            InfinispanCache.get().<QueryKey, Object>getCache(QueryCache.SQLCACHE).clear();
-        } else {
-            final Cache<QueryKey, Object> cache = InfinispanCache.get().<QueryKey, Object>getCache(
-                            QueryCache.SQLCACHE);
-            cache.addListener(new CacheLogListener(QueryCache.LOG));
-            cache.addListener(new SqlCacheListener());
+            if (InfinispanCache.get().exists(QueryCache.KEYCACHE)) {
+                InfinispanCache.get().<String, Set<QueryKey>>getCache(QueryCache.KEYCACHE).clear();
+            } else {
+                final Cache<String, Set<QueryKey>> cache = InfinispanCache.get().<String, Set<QueryKey>>getCache(
+                                QueryCache.KEYCACHE);
+                cache.addListener(new CacheLogListener(QueryCache.LOG));
+                cache.addListener(new KeyCacheListener());
+            }
+            if (InfinispanCache.get().exists(QueryCache.SQLCACHE)) {
+                InfinispanCache.get().<QueryKey, Object>getCache(QueryCache.SQLCACHE).clear();
+            } else {
+                final Cache<QueryKey, Object> cache = InfinispanCache.get().<QueryKey, Object>getCache(
+                                QueryCache.SQLCACHE);
+                cache.addListener(new CacheLogListener(QueryCache.LOG));
+                cache.addListener(new SqlCacheListener());
+            }
         }
     }
 
@@ -99,9 +111,11 @@ public final class QueryCache
      */
     public static void cleanByKey(final String _key)
     {
-        final Cache<String, Set<QueryKey>> cache = InfinispanCache.get().<String, Set<QueryKey>>getIgnReCache(
-                        QueryCache.KEYCACHE);
-        cache.remove(_key);
+        if (!AppConfigHandler.get().isQueryCacheDeactivated()) {
+            final Cache<String, Set<QueryKey>> cache = InfinispanCache.get().<String, Set<QueryKey>>getIgnReCache(
+                            QueryCache.KEYCACHE);
+            cache.remove(_key);
+        }
     }
 
     /**
@@ -113,14 +127,16 @@ public final class QueryCache
                            final QueryKey _querykey,
                            final Object _object)
     {
-        final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
-        if (_cacheDef.getMaxIdleTime() != 0) {
-            cache.put(_querykey, _object, _cacheDef.getLifespan(), _cacheDef.getLifespanUnit(),
-                            _cacheDef.getMaxIdleTime(), _cacheDef.getMaxIdleTimeUnit());
-        } else if (_cacheDef.getLifespan() != 0) {
-            cache.put(_querykey, _object, _cacheDef.getLifespan(), _cacheDef.getLifespanUnit());
-        } else {
-            cache.put(_querykey, _object);
+        if (!AppConfigHandler.get().isQueryCacheDeactivated()) {
+            final Cache<QueryKey, Object> cache = QueryCache.getSqlCache();
+            if (_cacheDef.getMaxIdleTime() != 0) {
+                cache.put(_querykey, _object, _cacheDef.getLifespan(), _cacheDef.getLifespanUnit(),
+                                _cacheDef.getMaxIdleTime(), _cacheDef.getMaxIdleTimeUnit());
+            } else if (_cacheDef.getLifespan() != 0) {
+                cache.put(_querykey, _object, _cacheDef.getLifespan(), _cacheDef.getLifespanUnit());
+            } else {
+                cache.put(_querykey, _object);
+            }
         }
     }
 
@@ -129,8 +145,14 @@ public final class QueryCache
      */
     public static Cache<QueryKey, Object> getSqlCache()
     {
-        return InfinispanCache.get().<QueryKey, Object>getCache(QueryCache.SQLCACHE).getAdvancedCache()
-                        .withFlags(Flag.IGNORE_RETURN_VALUES);
+        Cache<QueryKey, Object> ret;
+        if (AppConfigHandler.get().isQueryCacheDeactivated()) {
+            ret = QueryCache.NOOP;
+        } else {
+            ret = InfinispanCache.get().<QueryKey, Object>getCache(QueryCache.SQLCACHE).getAdvancedCache()
+                            .withFlags(Flag.IGNORE_RETURN_VALUES);
+        }
+        return ret;
     }
 
     /**
@@ -200,5 +222,14 @@ public final class QueryCache
                 }
             }
         }
+    }
+
+    /**
+     * Implementation of a Cache that actually does not store anything.
+     */
+    private static class NoOpQueryCache
+        extends NoOpCache<QueryKey, Object>
+    {
+
     }
 }
