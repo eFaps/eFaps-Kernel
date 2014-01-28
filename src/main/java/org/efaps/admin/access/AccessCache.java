@@ -23,9 +23,11 @@ package org.efaps.admin.access;
 import java.util.List;
 import java.util.Set;
 
+import org.efaps.admin.AppConfigHandler;
 import org.efaps.db.Instance;
 import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.InfinispanCache;
+import org.efaps.util.cache.NoOpCache;
 import org.infinispan.Cache;
 import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
@@ -55,6 +57,8 @@ public final class AccessCache
      * Name of the Cache for AccessKey.
      */
     public static final String KEYCACHE = AccessCache.class.getName() + ".AccessKey";
+
+    private static NoOpAccessCache NOOP;
 
     /**
      * Logging instance used in this class.
@@ -95,23 +99,26 @@ public final class AccessCache
      */
     public static void registerUpdate(final Instance _instance)
     {
-        AccessCache.LOG.debug("registered Update for Instance: {}", _instance);
-
-        final Cache<String, AccessKey> indexCache = InfinispanCache.get()
-                        .<String, AccessKey>getIgnReCache(AccessCache.INDEXCACHE);
-        if (!indexCache.isEmpty()) {
-            final SearchManager searchManager = Search.getSearchManager(indexCache);
-            final QueryFactory<?> qf = searchManager.getQueryFactory();
-            final Query query = qf.from(AccessKey.class)
-                            .having("instanceTypeUUID").like(_instance.getTypeUUID().toString())
-                            .and()
-                            .having("instanceId").eq(_instance.getId())
-                            .toBuilder().build();
-            final List<?> result = query.list();
-            if (result != null) {
-                for (final Object key : result) {
-                    AccessCache.getKeyCache().remove(key);
-                    indexCache.remove(((AccessKey) key).getIndexKey());
+        if (AppConfigHandler.get().isAccessCacheDeactivated()) {
+            AccessCache.LOG.debug("AccessCache is deactivated.");
+        } else {
+            AccessCache.LOG.debug("registered Update for Instance: {}", _instance);
+            final Cache<String, AccessKey> indexCache = InfinispanCache.get()
+                            .<String, AccessKey>getIgnReCache(AccessCache.INDEXCACHE);
+            if (!indexCache.isEmpty()) {
+                final SearchManager searchManager = Search.getSearchManager(indexCache);
+                final QueryFactory<?> qf = searchManager.getQueryFactory();
+                final Query query = qf.from(AccessKey.class)
+                                .having("instanceTypeUUID").like(_instance.getTypeUUID().toString())
+                                .and()
+                                .having("instanceId").eq(_instance.getId())
+                                .toBuilder().build();
+                final List<?> result = query.list();
+                if (result != null) {
+                    for (final Object key : result) {
+                        AccessCache.getKeyCache().remove(key);
+                        indexCache.remove(((AccessKey) key).getIndexKey());
+                    }
                 }
             }
         }
@@ -122,20 +129,24 @@ public final class AccessCache
      */
     public static void initialize()
     {
-        if (InfinispanCache.get().exists(AccessCache.INDEXCACHE)) {
-            InfinispanCache.get().<Instance, Set<AccessKey>>getCache(AccessCache.INDEXCACHE).clear();
+        if (AppConfigHandler.get().isAccessCacheDeactivated()) {
+            AccessCache.NOOP = new NoOpAccessCache();
         } else {
-            final Cache<String, AccessKey> cache = InfinispanCache.get().<String, AccessKey>getCache(
-                            AccessCache.INDEXCACHE);
-            cache.addListener(new CacheLogListener(AccessCache.LOG));
-        }
-        if (InfinispanCache.get().exists(AccessCache.KEYCACHE)) {
-            InfinispanCache.get().<AccessKey, Boolean>getCache(AccessCache.KEYCACHE).clear();
-        } else {
-            final Cache<AccessKey, Boolean> cache = InfinispanCache.get().<AccessKey, Boolean>getCache(
-                            AccessCache.KEYCACHE);
-            cache.addListener(new CacheLogListener(AccessCache.LOG));
-            cache.addListener(new KeyCacheListener());
+            if (InfinispanCache.get().exists(AccessCache.INDEXCACHE)) {
+                InfinispanCache.get().<Instance, Set<AccessKey>>getCache(AccessCache.INDEXCACHE).clear();
+            } else {
+                final Cache<String, AccessKey> cache = InfinispanCache.get().<String, AccessKey>getCache(
+                                AccessCache.INDEXCACHE);
+                cache.addListener(new CacheLogListener(AccessCache.LOG));
+            }
+            if (InfinispanCache.get().exists(AccessCache.KEYCACHE)) {
+                InfinispanCache.get().<AccessKey, Boolean>getCache(AccessCache.KEYCACHE).clear();
+            } else {
+                final Cache<AccessKey, Boolean> cache = InfinispanCache.get().<AccessKey, Boolean>getCache(
+                                AccessCache.KEYCACHE);
+                cache.addListener(new CacheLogListener(AccessCache.LOG));
+                cache.addListener(new KeyCacheListener());
+            }
         }
     }
 
@@ -144,7 +155,13 @@ public final class AccessCache
      */
     public static Cache<AccessKey, Boolean> getKeyCache()
     {
-        return  InfinispanCache.get().<AccessKey, Boolean>getIgnReCache(AccessCache.KEYCACHE);
+        Cache<AccessKey, Boolean> ret;
+        if (AppConfigHandler.get().isAccessCacheDeactivated()) {
+            ret = AccessCache.NOOP;
+        } else {
+            ret = InfinispanCache.get().<AccessKey, Boolean>getIgnReCache(AccessCache.KEYCACHE);
+        }
+        return ret;
     }
 
     /**
@@ -170,5 +187,14 @@ public final class AccessCache
                 indexCache.put(accessKey.getIndexKey(), accessKey);
             }
         }
+    }
+
+    /**
+     * Implementation of a Cache that actually does not store anything
+     */
+    private static class NoOpAccessCache
+        extends NoOpCache<AccessKey, Boolean>
+    {
+
     }
 }
