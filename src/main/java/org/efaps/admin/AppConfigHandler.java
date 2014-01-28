@@ -21,10 +21,14 @@
 
 package org.efaps.admin;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
  * Class used to set the configuration of an single instance of eFaps.
+ * It can only be instantiated once. If it was not instantiated before the
+ * first access a default instance of <code>AppConfigHandler</code> will be
+ * created.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -86,6 +90,16 @@ public final class AppConfigHandler
     }
 
     /**
+     * Getter method for the instance variable {@link #accessCacheDeactivated}.
+     *
+     * @return value of instance variable {@link #accessCacheDeactivated}
+     */
+    public boolean isAccessCacheDeactivated()
+    {
+        return this.accessCacheDeactivated;
+    }
+
+    /**
      * Init the Handler. Can only be executed once.
      * @param _values values for the init
      */
@@ -95,7 +109,6 @@ public final class AppConfigHandler
             AppConfigHandler.HANDLER = new AppConfigHandler(_values);
         }
     }
-
 
     /**
      * Is the Handler initialized.
@@ -107,18 +120,14 @@ public final class AppConfigHandler
         return AppConfigHandler.HANDLER != null;
     }
 
-
-    public static AppConfigHandler get() {
-        return AppConfigHandler.HANDLER;
-    }
-
     /**
-     * Getter method for the instance variable {@link #accessCacheDeactivated}.
-     *
-     * @return value of instance variable {@link #accessCacheDeactivated}
+     * @return the instance of the AppConfigHandler
      */
-    public boolean isAccessCacheDeactivated()
+    public static AppConfigHandler get()
     {
-        return this.accessCacheDeactivated;
+        if (!AppConfigHandler.initialized()) {
+            AppConfigHandler.init(Collections.<String, String>emptyMap());
+        }
+        return AppConfigHandler.HANDLER;
     }
 }

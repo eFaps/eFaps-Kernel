@@ -58,6 +58,9 @@ public final class AccessCache
      */
     public static final String KEYCACHE = AccessCache.class.getName() + ".AccessKey";
 
+    /**
+     * NoOp cache in case the AccessCache mechanism is deactivated.
+     */
     private static NoOpAccessCache NOOP;
 
     /**
@@ -190,7 +193,7 @@ public final class AccessCache
     }
 
     /**
-     * Implementation of a Cache that actually does not store anything
+     * Implementation of a Cache that actually does not store anything.
      */
     private static class NoOpAccessCache
         extends NoOpCache<AccessKey, Boolean>
