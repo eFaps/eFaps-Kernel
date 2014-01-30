@@ -749,11 +749,12 @@ public class Type
             while (multi.next()) {
                 final Long accessSet = multi.<Long>getAttribute(CIAdminAccess.AccessSet2DataModelType.AccessSetLink);
                 AccessSet.get(accessSet);
+                this.accessSets.add(accessSet);
             }
             setDirty();
         }
         final Set<AccessSet> ret = new HashSet<AccessSet>();
-        for (final Long id :this.accessSets) {
+        for (final Long id : this.accessSets) {
             ret.add(AccessSet.get(id));
         }
         return Collections.unmodifiableSet(ret);
