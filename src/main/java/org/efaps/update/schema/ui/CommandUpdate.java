@@ -38,7 +38,8 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class CommandUpdate extends AbstractUpdate
+public class CommandUpdate
+    extends AbstractUpdate
 {
     /**
      * Set of all links used by commands.
@@ -182,8 +183,10 @@ public class CommandUpdate extends AbstractUpdate
             } else if ("target".equals(value)) {
                 if (_tags.size() == 2) {
                     final String subValue = _tags.get(1);
-                    final String name = _attributes.get("name") == null
-                                    ? getValue("Name") + "." + subValue : _attributes.get("name");
+                    final String name = (_attributes.get("name") == null
+                                    ? getValue("Name") + "." + subValue : _attributes.get("name"))
+                                                    + (_attributes.get("index") == null
+                                                    ? "" : ("." + _attributes.get("index")));
                     if ("evaluate".equals(subValue)) {
                         getEvents().add(new Event(name, EventType.UI_TABLE_EVALUATE,
                                         _attributes.get("program"), _attributes.get("method"),
