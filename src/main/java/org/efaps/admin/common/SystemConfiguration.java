@@ -569,8 +569,8 @@ public final class SystemConfiguration
     public void reload()
     {
         InfinispanCache.get().<UUID, SystemConfiguration>getCache(SystemConfiguration.UUIDCACHE).remove(this.uuid);
-        InfinispanCache.get().<Long, SystemConfiguration>getCache(SystemConfiguration.UUIDCACHE).remove(this.id);
-        InfinispanCache.get().<String, SystemConfiguration>getCache(SystemConfiguration.UUIDCACHE).remove(this.name);
+        InfinispanCache.get().<Long, SystemConfiguration>getCache(SystemConfiguration.IDCACHE).remove(this.id);
+        InfinispanCache.get().<String, SystemConfiguration>getCache(SystemConfiguration.NAMECACHE).remove(this.name);
     }
 
     /**
