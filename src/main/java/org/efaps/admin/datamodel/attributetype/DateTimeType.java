@@ -84,8 +84,10 @@ public class DateTimeType
                                 dateTime.getMillisOfSecond(),
                                 chron);
                 ret.add(unlocalized);
-            } else if (ret != null) {
+            } else if (object != null) {
                 ret.add(new DateTime());
+            } else {
+                ret.add(null);
             }
         }
         return _objectList.size() > 0 ? (ret.size() > 1 ? ret : ret.get(0)) : null;
