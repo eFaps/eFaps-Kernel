@@ -84,9 +84,9 @@ public class EsjpWorkItemHandler
             final Parameter parameter = new Parameter();
             parameter.put(ParameterValues.BPM_VALUES, _workItem.getParameters());
             try {
-                final Class<?> esjp = Class.forName(esjpName, true,
+                final Class<?> esjp = Class.forName(esjpName.trim(), true,
                                 EFapsClassLoader.getInstance());
-                final Method method = esjp.getMethod(methodName, new Class[] { Parameter.class });
+                final Method method = esjp.getMethod(methodName.trim(), new Class[] { Parameter.class });
                 final Return ret = (Return) method.invoke(esjp.newInstance(), parameter);
                 if (ret != null) {
                     final Object values = ret.get(ReturnValues.VALUES);
