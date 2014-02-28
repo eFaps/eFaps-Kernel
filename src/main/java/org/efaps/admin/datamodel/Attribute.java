@@ -602,13 +602,13 @@ public class Attribute
                                 final Object... _values)
         throws SQLException
     {
-        Object tmp = _values;
+        Object[] tmp = _values;
         try {
             final List<Return> returns = executeEvents(EventType.UPDATE_VALUE, ParameterValues.CLASS, this,
                             ParameterValues.OTHERS, _values);
             for (final Return aRet : returns) {
                 if (aRet.contains(ReturnValues.VALUES)) {
-                    tmp = aRet.get(ReturnValues.VALUES);
+                    tmp = (Object[]) aRet.get(ReturnValues.VALUES);
                 }
             }
         } catch (final EFapsException e) {
@@ -629,13 +629,13 @@ public class Attribute
                                 final Object... _values)
         throws SQLException
     {
-        Object tmp = _values;
+        Object[] tmp = _values;
         try {
             final List<Return> returns = executeEvents(EventType.UPDATE_VALUE, ParameterValues.CLASS, this,
                             ParameterValues.OTHERS, _values);
             for (final Return aRet : returns) {
                 if (aRet.contains(ReturnValues.VALUES)) {
-                    tmp = aRet.get(ReturnValues.VALUES);
+                    tmp = (Object[]) aRet.get(ReturnValues.VALUES);
                 }
             }
         } catch (final EFapsException e) {
