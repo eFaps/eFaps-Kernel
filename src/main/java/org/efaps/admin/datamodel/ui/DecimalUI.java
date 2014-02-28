@@ -67,7 +67,11 @@ public class DecimalUI
             final List<?> values = (List<?>) value;
             boolean first = true;
             for (final Object obj : values) {
-                final String tmp = obj != null ? obj instanceof Number ? formatter.format(obj) : obj.toString() : "";
+                final int scale = ((BigDecimal) value).scale();
+                if (formatter.getMinimumFractionDigits() < scale) {
+                    formatter.setMinimumFractionDigits(scale);
+                }
+                final String tmp = evalString4Object(formatter, obj);
                 if (tmp != null) {
                     if (first) {
                         first = false;
@@ -78,9 +82,7 @@ public class DecimalUI
                 }
             }
         } else {
-            final String tmp = value != null
-                            ? (value instanceof Number ? formatter.format(value) : value.toString())
-                            : "";
+            final String tmp = evalString4Object(formatter, value);
             if (tmp != null) {
                 ret.append("<span name=\"").append(field.getName()).append("\" ")
                     .append(UIInterface.EFAPSTMPTAG).append(">")
@@ -106,9 +108,7 @@ public class DecimalUI
         if (_fieldValue.getAttribute() != null) {
             formatter.setMaximumFractionDigits(_fieldValue.getAttribute().getScale());
         }
-        final String tmp = value != null
-                        ? (value instanceof Number ? formatter.format(value) : value.toString())
-                        : "";
+        final String tmp = evalString4Object(formatter, value);
         ret.append("<input type=\"hidden\" ").append(" name=\"").append(field.getName())
                         .append("\" value=\"").append(StringEscapeUtils.escapeHtml4(tmp)).append("\"")
                         .append(UIInterface.EFAPSTMPTAG).append("/>");
@@ -133,9 +133,7 @@ public class DecimalUI
         if (_fieldValue.getAttribute() != null) {
             formatter.setMaximumFractionDigits(_fieldValue.getAttribute().getScale());
         }
-        final String tmp = value != null
-                        ? (value instanceof Number ? formatter.format(value) : value.toString())
-                        : "";
+        final String tmp = evalString4Object(formatter, value);
         if (_fieldValue.getTargetMode().equals(TargetMode.SEARCH)) {
             ret.append("<input type=\"text\"").append(" size=\"").append(field.getCols()).append("\" name=\"")
                             .append(field.getName()).append("\" value=\"")
@@ -161,6 +159,29 @@ public class DecimalUI
         return ret.toString();
     }
 
+    private String evalString4Object(final DecimalFormat formatter,
+                                     final Object _object)
+    {
+        final String ret;
+        if (_object == null) {
+            ret = "";
+        } else {
+            if (_object instanceof Number) {
+                if (_object instanceof BigDecimal) {
+                    final int scale = ((BigDecimal) _object).scale();
+                    if (formatter.getMinimumFractionDigits() < scale) {
+                        formatter.setMinimumFractionDigits(scale);
+                    }
+                }
+                ret = formatter.format(_object);
+            } else {
+                ret = _object.toString();
+            }
+        }
+        return ret;
+    }
+
+
     /**
      * {@inheritDoc}
      */
@@ -173,11 +194,7 @@ public class DecimalUI
         if (_fieldValue.getAttribute() != null) {
             formatter.setMaximumFractionDigits(_fieldValue.getAttribute().getScale());
         }
-        return _fieldValue.getValue() != null
-                        ? (_fieldValue.getValue() instanceof Number
-                        ? formatter.format(_fieldValue.getValue())
-                        : _fieldValue.getValue().toString())
-                        : "";
+        return evalString4Object(formatter, _fieldValue.getValue()) ;
     }
 
     /**
@@ -234,7 +251,18 @@ public class DecimalUI
         final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
                         .getLocale());
         formatter.applyPattern(_pattern);
-        return formatter.format(_object);
+        Object ret;
+        if (_object instanceof BigDecimal &&
+                        formatter.getNegativeSuffix().isEmpty() && "-".equals(formatter.getNegativePrefix())
+                        && formatter.getPositiveSuffix().isEmpty() && formatter.getPositivePrefix().isEmpty()) {
+            int scale = formatter.getMinimumFractionDigits();
+            if (scale < formatter.getMaximumFractionDigits()) {
+                scale = formatter.getMaximumFractionDigits();
+            }
+            ret = ((BigDecimal) _object).setScale(scale, BigDecimal.ROUND_HALF_UP);
+        } else {
+            ret = formatter.format(_object);
+        }
+        return ret;
     }
-
 }
