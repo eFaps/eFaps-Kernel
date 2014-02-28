@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2014 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,9 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
@@ -599,7 +602,19 @@ public class Attribute
                                 final Object... _values)
         throws SQLException
     {
-        this.attributeType.getDbAttrType().prepareInsert(_insert, this, _values);
+        Object tmp = _values;
+        try {
+            final List<Return> returns = executeEvents(EventType.UPDATE_VALUE, ParameterValues.CLASS, this,
+                            ParameterValues.OTHERS, _values);
+            for (final Return aRet : returns) {
+                if (aRet.contains(ReturnValues.VALUES)) {
+                    tmp = aRet.get(ReturnValues.VALUES);
+                }
+            }
+        } catch (final EFapsException e) {
+            throw new SQLException(e);
+        }
+        this.attributeType.getDbAttrType().prepareInsert(_insert, this, tmp);
     }
 
     /**
@@ -614,7 +629,19 @@ public class Attribute
                                 final Object... _values)
         throws SQLException
     {
-        this.attributeType.getDbAttrType().prepareUpdate(_update, this, _values);
+        Object tmp = _values;
+        try {
+            final List<Return> returns = executeEvents(EventType.UPDATE_VALUE, ParameterValues.CLASS, this,
+                            ParameterValues.OTHERS, _values);
+            for (final Return aRet : returns) {
+                if (aRet.contains(ReturnValues.VALUES)) {
+                    tmp = aRet.get(ReturnValues.VALUES);
+                }
+            }
+        } catch (final EFapsException e) {
+            throw new SQLException(e);
+        }
+        this.attributeType.getDbAttrType().prepareUpdate(_update, this, tmp);
     }
 
     /**
@@ -627,7 +654,15 @@ public class Attribute
     public Object readDBValue(final List<Object> _objectList)
         throws EFapsException
     {
-        return this.attributeType.getDbAttrType().readValue(this, _objectList);
+        Object ret = this.attributeType.getDbAttrType().readValue(this, _objectList);
+        final List<Return> returns = executeEvents(EventType.READ_VALUE, ParameterValues.CLASS, this,
+                        ParameterValues.OTHERS, ret);
+        for (final Return aRet : returns) {
+            if (aRet.contains(ReturnValues.VALUES)) {
+                ret = aRet.get(ReturnValues.VALUES);
+            }
+        }
+        return ret;
     }
 
     /**
