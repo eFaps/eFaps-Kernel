@@ -159,7 +159,12 @@ public class DecimalUI
         return ret.toString();
     }
 
-    private String evalString4Object(final DecimalFormat formatter,
+    /**
+     * @param _formatter Formatter to be used
+     * @param _object object to be formatted
+     * @return String vor the object
+     */
+    private String evalString4Object(final DecimalFormat _formatter,
                                      final Object _object)
     {
         final String ret;
@@ -169,11 +174,11 @@ public class DecimalUI
             if (_object instanceof Number) {
                 if (_object instanceof BigDecimal) {
                     final int scale = ((BigDecimal) _object).scale();
-                    if (formatter.getMinimumFractionDigits() < scale) {
-                        formatter.setMinimumFractionDigits(scale);
+                    if (_formatter.getMinimumFractionDigits() < scale) {
+                        _formatter.setMinimumFractionDigits(scale);
                     }
                 }
-                ret = formatter.format(_object);
+                ret = _formatter.format(_object);
             } else {
                 ret = _object.toString();
             }
@@ -194,7 +199,7 @@ public class DecimalUI
         if (_fieldValue.getAttribute() != null) {
             formatter.setMaximumFractionDigits(_fieldValue.getAttribute().getScale());
         }
-        return evalString4Object(formatter, _fieldValue.getValue()) ;
+        return evalString4Object(formatter, _fieldValue.getValue());
     }
 
     /**
@@ -252,8 +257,8 @@ public class DecimalUI
                         .getLocale());
         formatter.applyPattern(_pattern);
         Object ret;
-        if (_object instanceof BigDecimal &&
-                        formatter.getNegativeSuffix().isEmpty() && "-".equals(formatter.getNegativePrefix())
+        if (_object instanceof BigDecimal
+                        && formatter.getNegativeSuffix().isEmpty() && "-".equals(formatter.getNegativePrefix())
                         && formatter.getPositiveSuffix().isEmpty() && formatter.getPositivePrefix().isEmpty()) {
             int scale = formatter.getMinimumFractionDigits();
             if (scale < formatter.getMaximumFractionDigits()) {
