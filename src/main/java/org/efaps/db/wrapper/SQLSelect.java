@@ -161,27 +161,27 @@ public class SQLSelect
     }
 
     /**
-    *
-    * @param _tableName name of the SQL table
-    * @param _tableIndex index of the table used within the SQL select
-    *            statement
-    * @param _columnNames names of the columns of table <code>_tableName</code>
-    *            used for &quot;left join&quot;
-    * @param _joinTableIndex index of the table from which is joined
-    * @param _joinColumnNames names of the column of the table from which is
-    *            joined
-    * @return this SQL select statement instance
-    */
-   public SQLSelect leftJoin(final String _tableName,
-                             final int _tableIndex,
-                             final String[] _columnNames,
-                             final int _joinTableIndex,
-                             final String[] _joinColumnNames)
-   {
-       this.fromTables.add(new FromTableLeftJoin(_tableName, _tableIndex, _columnNames,
+     *
+     * @param _tableName name of the SQL table
+     * @param _tableIndex index of the table used within the SQL select
+     *            statement
+     * @param _columnNames names of the columns of table <code>_tableName</code>
+     *            used for &quot;left join&quot;
+     * @param _joinTableIndex index of the table from which is joined
+     * @param _joinColumnNames names of the column of the table from which is
+     *            joined
+     * @return this SQL select statement instance
+     */
+    public SQLSelect leftJoin(final String _tableName,
+                              final int _tableIndex,
+                              final String[] _columnNames,
+                              final int _joinTableIndex,
+                              final String[] _joinColumnNames)
+    {
+        this.fromTables.add(new FromTableLeftJoin(_tableName, _tableIndex, _columnNames,
                                                  _joinTableIndex, _joinColumnNames));
-       return this;
-   }
+        return this;
+    }
 
    /**
     *

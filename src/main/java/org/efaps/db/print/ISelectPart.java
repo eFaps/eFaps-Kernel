@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2014 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,4 +78,12 @@ public interface ISelectPart
      */
     void add2Where(final OneSelect _oneselect,
                    final SQLSelect _select);
+
+
+    /**
+     * Move the SelectPart one step forward.
+     * @throws EFapsException on error
+     */
+    void next()
+        throws EFapsException;
 }

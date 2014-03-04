@@ -26,6 +26,8 @@ import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Instance;
+import org.efaps.db.print.LinkToSelectPart;
 import org.efaps.db.print.OneSelect;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -128,6 +130,15 @@ public class AttributeValueSelect
     public Object getValue(final List<Object> _objectList)
         throws EFapsException
     {
+        // check it the right attribute was selected during preparation
+        if (getParentSelectPart() != null && getParentSelectPart() instanceof LinkToSelectPart) {
+            final Instance linkInstance = ((LinkToSelectPart) getParentSelectPart()).getCurrentInstance();
+            if (linkInstance != null && linkInstance.isValid()) {
+                if (linkInstance.getType().getId() != this.attribute.getParentId()) {
+                    this.attribute = linkInstance.getType().getAttribute(this.attribute.getName());
+                }
+            }
+        }
         Object ret = this.attribute.readDBValue(_objectList);
         int i = this.attribute.getSqlColNames().size();
         for (final Attribute attr : this.attribute.getDependencies().values()) {

@@ -189,8 +189,10 @@ public class MultiPrintQuery
      * Method to move the iterator to the next value.
      *
      * @return true if the iterator was moved successfully to the next value
+     * @throws EFapsException on error
      */
     public boolean next()
+        throws EFapsException
     {
         boolean ret = false;
         if (this.iterator == null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2014 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +115,6 @@ public class OneSelect
      * PrintQuery this ONeSelct belongs to.
      */
     private final AbstractPrintQuery query;
-
 
     /**
      * Iterator for the objects.
@@ -772,8 +771,10 @@ public class OneSelect
 
     /**
      * @return true if next, else false
+     * @throws EFapsException on error
      */
     public boolean next()
+        throws EFapsException
     {
         boolean ret = false;
         if (this.objectIterator == null) {
@@ -786,6 +787,9 @@ public class OneSelect
             this.currentObject = this.objectIterator.next();
             this.currentId = this.idIterator.next();
             ret = true;
+            for (final ISelectPart part : getSelectParts()) {
+                part.next();
+            }
         }
         return ret;
     }

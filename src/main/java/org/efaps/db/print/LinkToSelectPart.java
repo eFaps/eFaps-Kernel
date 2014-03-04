@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2014 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,12 @@ package org.efaps.db.print;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Instance;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -34,6 +36,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Select Part for <code>linkto[ATTRIBUTENAME]</code>.
+ * After invoking <code>{@link #next()}</code> currentinstance contains
+ * the instance it was linked to.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -62,10 +66,36 @@ public class LinkToSelectPart
     private int idColumnIndex;
 
     /**
+     * index of the id Column.
+     */
+    private int typeColumnIndex = -1;
+
+    /**
      * List of ids retrieved from the ResultSet returned
      * from the eFaps database. It represent one row in a result set.
      */
     private final List<Long> idList = new ArrayList<Long>();
+
+    /**
+     * List of typeIds retrieved from the ResultSet returned
+     * from the eFaps database. It represent one row in a result set.
+     */
+    private final List<Long> typeIdList = new ArrayList<Long>();
+
+    /**
+     * Iterator for the ids.
+     */
+    private Iterator<Long> idIterator;
+
+    /**
+     * Iterator for the ypeIds.
+     */
+    private Iterator<Long> typeIdIterator;
+
+    /**
+     * The instance this Select is linked to.
+     */
+    private Instance currentInstance;
 
     /**
      * @param _attrName attribute name
@@ -113,6 +143,11 @@ public class LinkToSelectPart
         }
         _select.column(ret, "ID");
         this.idColumnIndex = _select.getColumns().size();
+        // select the type column if it has one
+        if (attr.getLink().getMainTable().getSqlColType() != null) {
+            _select.column(ret, attr.getLink().getMainTable().getSqlColType());
+            this.typeColumnIndex = _select.getColumns().size();
+        }
         return ret;
     }
 
@@ -147,6 +182,9 @@ public class LinkToSelectPart
         throws SQLException
     {
         this.idList.add((Long) _row[this.idColumnIndex - 1]);
+        if (this.typeColumnIndex > -1) {
+            this.typeIdList.add((Long) _row[this.typeColumnIndex - 1]);
+        }
     }
 
     /**
@@ -156,5 +194,45 @@ public class LinkToSelectPart
     public Object getObject()
     {
         return this.idList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void next()
+        throws EFapsException
+    {
+        if (this.typeIdIterator == null) {
+            this.typeIdIterator = this.typeIdList.iterator();
+        }
+        if (this.idIterator == null) {
+            this.idIterator = this.idList.iterator();
+        }
+        if (this.idIterator.hasNext()) {
+            final Long idTmp = this.idIterator.next();
+            if (idTmp == null) {
+                this.currentInstance = Instance.get("");
+            } else {
+                if (this.typeIdList.isEmpty()) {
+                    this.currentInstance = Instance.get(this.type.getAttribute(this.attrName).getLink(), idTmp);
+                } else {
+                    final Long typeIdTmp = this.typeIdIterator.next();
+                    if (typeIdTmp != null) {
+                        this.currentInstance = Instance.get(Type.get(typeIdTmp), idTmp);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Getter method for the instance variable {@link #currentInstance}.
+     *
+     * @return value of instance variable {@link #currentInstance}
+     */
+    public Instance getCurrentInstance()
+    {
+        return this.currentInstance;
     }
 }
