@@ -1018,6 +1018,7 @@ public class Type
                 ret = Menu.get(menuId);
                 if (ret != null) {
                     this.typeMenu = ret.getId();
+                    ret.setTypeMenu(true);
                 } else {
                     this.typeMenu = Long.valueOf(0);
                 }

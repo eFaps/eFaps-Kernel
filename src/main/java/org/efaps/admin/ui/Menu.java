@@ -24,6 +24,8 @@ import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUserInterface;
+import org.efaps.db.Instance;
+import org.efaps.jaas.AppAccessHandler;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.slf4j.Logger;
@@ -47,6 +49,11 @@ public class Menu
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Menu is type menu tree.
+     */
+    private boolean typeMenu = false;
 
     /**
      * Constructor to set the id and name of the menu object.
@@ -77,6 +84,45 @@ public class Menu
         } else {
             add(_sortId, command);
         }
+    }
+
+    /**
+     * The instance method sets a boolean type menu tree.
+     *
+     * @param _typeMenu boolean to set.
+     */
+    public void setTypeMenu(final boolean _typeMenu)
+    {
+        this.typeMenu = _typeMenu;
+    }
+
+
+    /**
+     * This is the getter method for the instance variable {@link #typeMenu}.
+     *
+     * @return value of instance variable {@link #typeMenu}
+     * @see #setTypeMenu
+     * @see #typeMenu
+     */
+    public boolean isTypeMenu()
+    {
+        return this.typeMenu;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasAccess(final TargetMode _targetMode,
+                             final Instance _instance)
+        throws EFapsException
+    {
+        boolean ret = super.hasAccess(_targetMode, _instance);
+
+        if (!ret && getCommands().size() > 0 && !AppAccessHandler.excludeMode() && isTypeMenu()) {
+            ret = true;
+        }
+        return ret;
     }
 
     /**
