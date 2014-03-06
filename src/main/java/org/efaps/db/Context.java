@@ -849,13 +849,17 @@ public final class Context
 
     /**
      * Set the Company currently valid for this context.
-     *
+     * @param _company Company to set
      * @throws CacheReloadException on error
      */
     public void setCompany(final Company _company)
         throws CacheReloadException
     {
-        this.companyId = _company.getId();
+        if (_company == null) {
+            this.companyId = null;
+        } else {
+            this.companyId = _company.getId();
+        }
     }
 
     /**
