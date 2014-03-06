@@ -848,6 +848,17 @@ public final class Context
     }
 
     /**
+     * Set the Company currently valid for this context.
+     *
+     * @throws CacheReloadException on error
+     */
+    public void setCompany(final Company _company)
+        throws CacheReloadException
+    {
+        this.companyId = _company.getId();
+    }
+
+    /**
      * This is the getter method for instance variable {@link #locale}.
      *
      * @return value of instance variable {@link #locale}

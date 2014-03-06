@@ -145,6 +145,17 @@ public class CIAdminUser
         }
     }
 
+    public static final _Company Company = new _Company("6a5388e9-7f7f-4bc0-b7a0-3245302faad5");
+
+    public static class _Company
+        extends _Abstract
+    {
+        protected _Company(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
     public static final _RoleAbstract RoleAbstract = new _RoleGlobal("2f970c5c-41be-444f-b129-e6779e24c3fa");
 
     public static class _RoleAbstract
