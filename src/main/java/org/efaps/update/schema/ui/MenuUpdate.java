@@ -44,7 +44,7 @@ public class MenuUpdate
     /** Link from menu to child command / menu. */
     private static final Link LINK2CHILD = new OrderedLink("Admin_UI_Menu2Command",
                                                            "FromMenu",
-                                                           "Admin_UI_Command", "ToCommand");
+                                                           "Admin_UI_Command", "ToCommand").setIncludeChildTypes(true);
 
     /** Link from menu to type as type tree menu. */
     private static final Link LINK2TYPE = new UniqueLink("Admin_UI_LinkIsTypeTreeFor", "From",

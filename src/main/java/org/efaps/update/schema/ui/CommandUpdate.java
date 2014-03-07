@@ -48,7 +48,7 @@ public class CommandUpdate
 
     /** Link from UI object to role. */
     private static final Link LINK2ACCESSROLE = new Link("Admin_UI_Access", "UILink",
-                    "Admin_User_RoleAbstract", "UserLink");
+                    "Admin_User_RoleAbstract", "UserLink").setIncludeChildTypes(true);
 
     /** Link from UI object to person. */
     private static final Link LINK2ACCESSPERSON = new Link("Admin_UI_Access", "UILink", "Admin_User_Person",

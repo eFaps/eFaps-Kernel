@@ -408,6 +408,11 @@ public abstract class AbstractUpdate
         private final Set<String> keyAttributes = new HashSet<String>();
 
         /**
+         * Include the child types during evaluation.
+         */
+        private boolean includeChildTypes = false;
+
+        /**
          * Constructor used to initialize the instance variables.
          *
          * @param _linkName name of the link itself
@@ -472,6 +477,28 @@ public abstract class AbstractUpdate
         public Set<String> getKeyAttributes()
         {
             return this.keyAttributes;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #includeChildTypes}.
+         *
+         * @return value of instance variable {@link #includeChildTypes}
+         */
+        public boolean isIncludeChildTypes()
+        {
+            return this.includeChildTypes;
+        }
+
+        /**
+         * Setter method for instance variable {@link #includeChildTypes}.
+         *
+         * @param _includeChildTypes value for instance variable {@link #includeChildTypes}
+         * @return this instance for chaining
+         */
+        public Link setIncludeChildTypes(final boolean _includeChildTypes)
+        {
+            this.includeChildTypes = _includeChildTypes;
+            return this;
         }
 
         /**
@@ -947,7 +974,7 @@ public abstract class AbstractUpdate
                 // which are not given explicitly and remove them
                 final QueryBuilder attrQueryBldr = new QueryBuilder(Type.get(_linktype.childTypeName));
                 final AttributeQuery attrQuery = attrQueryBldr.getAttributeQuery("ID");
-                attrQuery.setIncludeChildTypes(false);
+                attrQuery.setIncludeChildTypes(_linktype.isIncludeChildTypes());
                 final QueryBuilder queryBldr = new QueryBuilder(Type.get(_linktype.linkName));
                 queryBldr.addWhereAttrEqValue(_linktype.parentAttrName, _instance);
                 queryBldr.addWhereAttrInQuery(_linktype.childAttrName, attrQuery);
@@ -966,7 +993,7 @@ public abstract class AbstractUpdate
                     for (final Link checkLink : ((UniqueLink) _linktype).getUniqueGroup()) {
                         final QueryBuilder unGrpAttrQueryBldr = new QueryBuilder(Type.get(checkLink.childTypeName));
                         final AttributeQuery unGrpAttrQuery = unGrpAttrQueryBldr.getAttributeQuery("ID");
-                        unGrpAttrQuery.setIncludeChildTypes(false);
+                        unGrpAttrQuery.setIncludeChildTypes(_linktype.isIncludeChildTypes());
                         final QueryBuilder unGrpQueryBldr = new QueryBuilder(Type.get(checkLink.linkName));
                         unGrpQueryBldr.addWhereAttrEqValue(checkLink.parentAttrName, _instance);
                         unGrpQueryBldr.addWhereAttrInQuery(checkLink.childAttrName, unGrpAttrQuery);
