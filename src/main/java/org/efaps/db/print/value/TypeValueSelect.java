@@ -23,7 +23,7 @@ package org.efaps.db.print.value;
 import java.math.BigDecimal;
 
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ci.CIAdminDataModel;
 import org.efaps.db.print.OneSelect;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -78,7 +78,9 @@ public class TypeValueSelect
     {
         Object ret = null;
         Type tempType;
-        if (this.type.getMainTable().getSqlColType() != null && _currentObject != null) {
+        if (this.type.getMainTable().getSqlColType() == null) {
+            tempType = this.type;
+        } else if (_currentObject != null) {
             // check is necessary because Oracle JDBC returns for getObject always a BigDecimal
             if (_currentObject instanceof BigDecimal) {
                 tempType = Type.get(((BigDecimal) _currentObject).longValue());
@@ -86,13 +88,13 @@ public class TypeValueSelect
                 tempType = Type.get((Long) _currentObject);
             }
         } else {
-            tempType = this.type;
+            tempType = null;
         }
-        if (getChildValueSelect() != null) {
+        if (tempType != null && getChildValueSelect() != null) {
             if ("label".equals(getChildValueSelect().getValueType())) {
-                ret = DBProperties.getProperty(tempType.getName() + ".Label");
+                ret = tempType.getLabel();
             } else if ("oid".equals(getChildValueSelect().getValueType())) {
-                ret = new StringBuilder().append(Type.get("Admin_DataModel_Type").getId()).append(".").append(
+                ret = new StringBuilder().append(CIAdminDataModel.Type.getType().getId()).append(".").append(
                                 tempType.getId()).toString();
             } else if ("UUID".equals(getChildValueSelect().getValueType())) {
                 ret = tempType.getUUID();
