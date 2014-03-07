@@ -22,7 +22,12 @@
 package org.efaps.db;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -93,10 +98,14 @@ public class QueryBuilder
     private final List<AbstractQPart> orders = new ArrayList<AbstractQPart>();
 
     /**
-     * UUID of th etype used for the instance query.
+     * UUID of the type used for generated instance query.
      */
-    private final UUID typeUUID;
+    private UUID typeUUID;
 
+    /**
+     * List of type that should be included.
+     */
+    private final Set<UUID> types = new LinkedHashSet<UUID>();
 
     /**
      * Query this QueryBuilder will return.
@@ -121,7 +130,7 @@ public class QueryBuilder
      */
     public QueryBuilder(final Type _type)
     {
-        this.typeUUID = _type.getUUID();
+        this(_type.getUUID());
     }
 
     /**
@@ -130,6 +139,87 @@ public class QueryBuilder
     public QueryBuilder(final CIType _ciType)
     {
         this(_ciType.getType());
+    }
+
+    /**
+     * Add a type to the QueryBuilder. Search for the common parent
+     * and use it as baseType.
+     * @param _uuid uudi of the types to be added to the QueryBuilder
+     * @throws EFapsException on error
+     */
+    public void addType(final UUID... _uuid)
+        throws EFapsException
+    {
+        final Set<Type> types = new HashSet<Type>();
+        for (final UUID uuid : _uuid) {
+            types.add(Type.get(uuid));
+        }
+        addType(types.toArray(new Type[types.size()]));
+    }
+
+    /**
+     * Add a type to the QueryBuilder. Search for the common parent
+     * and use it as baseType.
+     * @param _ciType CIType of the types to be added to the QueryBuilder
+     * @throws EFapsException on error
+     */
+    public void addType(final CIType... _ciType)
+        throws EFapsException
+    {
+        final Set<Type> types = new HashSet<Type>();
+        for (final CIType ciType : _ciType) {
+            types.add(ciType.getType());
+        }
+        addType(types.toArray(new Type[types.size()]));
+    }
+
+    /**
+     * Add a type to the QueryBuilder. Search for the common parent
+     * and use it as baseType.
+     * @param _type types to be added to the QueryBuilder
+     * @throws EFapsException on error
+     */
+    public void addType(final Type... _type)
+        throws EFapsException
+    {
+        final List<Type> allType = new ArrayList<Type>();
+        if (this.types.isEmpty()) {
+            allType.add(Type.get(this.typeUUID));
+        }
+        for (final UUID type : this.types) {
+            allType.add(Type.get(type));
+        }
+        Collections.addAll(allType, _type);
+
+        //make for every type a list of types up to the parent
+        final List<List<Type>> typeLists = new ArrayList<List<Type>>();
+        for (final Type type : allType) {
+            final List<Type> typesTmp = new ArrayList<Type>();
+            typeLists.add(typesTmp);
+            Type tmpType = type;
+            while (tmpType != null) {
+                typesTmp.add(tmpType);
+                tmpType = tmpType.getParentType();
+            }
+        }
+
+        final Set<Type> common = new LinkedHashSet<Type>();
+        if (!typeLists.isEmpty()) {
+            final Iterator<List<Type>> iterator = typeLists.iterator();
+            common.addAll(iterator.next());
+            while (iterator.hasNext()) {
+                common.retainAll(iterator.next());
+            }
+        }
+        if (common.isEmpty()) {
+            throw new EFapsException(QueryBuilder.class, "noCommon", allType);
+        } else {
+            // first common type
+            this.typeUUID = common.iterator().next().getUUID();
+            for (final Type type : allType) {
+                this.types.add(type.getUUID());
+            }
+        }
     }
 
     /**
@@ -673,7 +763,7 @@ public class QueryBuilder
      *
      * @return value of instance variable {@link #typeUUID}
      */
-    public UUID getTypeUUID()
+    public final UUID getTypeUUID()
     {
         return this.typeUUID;
     }
@@ -687,20 +777,9 @@ public class QueryBuilder
         if (this.query == null) {
             try {
                 this.query = new InstanceQuery(this.typeUUID);
+                prepareQuery();
             } catch (final CacheReloadException e) {
                 QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
-            }
-            if (!this.compares.isEmpty()) {
-                final QAnd and = this.or ? new QOr() : new QAnd();
-                for (final AbstractQAttrCompare compare : this.compares) {
-                    and.addPart(compare);
-                }
-                this.query.setWhere(new QWhereSection(and));
-            }
-            if (!this.orders.isEmpty()) {
-                final QOrderBySection orderBy = new QOrderBySection(
-                                this.orders.toArray(new AbstractQPart[this.orders.size()]));
-                this.query.setOrderBy(orderBy);
             }
         }
         return (InstanceQuery) this.query;
@@ -716,46 +795,12 @@ public class QueryBuilder
         if (this.query == null) {
             try {
                 this.query = new CachedInstanceQuery(_key, this.typeUUID);
+                prepareQuery();
             } catch (final CacheReloadException e) {
                 QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
             }
-            if (!this.compares.isEmpty()) {
-                final QAnd and = this.or ? new QOr() : new QAnd();
-                for (final AbstractQAttrCompare compare : this.compares) {
-                    and.addPart(compare);
-                }
-                this.query.setWhere(new QWhereSection(and));
-            }
-            if (!this.orders.isEmpty()) {
-                final QOrderBySection orderBy = new QOrderBySection(
-                                this.orders.toArray(new AbstractQPart[this.orders.size()]));
-                this.query.setOrderBy(orderBy);
-            }
         }
         return (CachedInstanceQuery) this.query;
-    }
-
-    /**
-     * Method to get a MultiPrintQuery.
-     * @return MultiPrintQuery based on the InstanceQuery
-     * @throws EFapsException on error
-     */
-    public MultiPrintQuery getPrint()
-        throws EFapsException
-    {
-        return new MultiPrintQuery(getQuery().execute());
-    }
-
-    /**
-     * Method to get a CachedMultiPrintQuery.
-     * @param _key key used for Caching
-     * @return MultiPrintQuery based on the InstanceQuery
-     * @throws EFapsException on error
-     */
-    public CachedMultiPrintQuery getCachedPrint(final String _key)
-        throws EFapsException
-    {
-        return new CachedMultiPrintQuery(getCachedQuery(_key).execute(), _key);
     }
 
     /**
@@ -780,17 +825,67 @@ public class QueryBuilder
         if (this.query == null) {
             try {
                 this.query = new AttributeQuery(this.typeUUID, _attributeName);
+                prepareQuery();
             } catch (final CacheReloadException e) {
                 QueryBuilder.LOG.error("Could not open AttributeQuery for uuid: {}", this.typeUUID);
             }
-            if (!this.compares.isEmpty()) {
-                final QAnd and = this.or ? new QOr() : new QAnd();
-                for (final AbstractQAttrCompare compare : this.compares) {
-                    and.addPart(compare);
-                }
-                this.query.setWhere(new QWhereSection(and));
-            }
         }
         return (AttributeQuery) this.query;
+    }
+
+    /**
+     * Prepare the Query.
+     * @throws CacheReloadException on error
+     */
+    private void prepareQuery()
+        throws CacheReloadException
+    {
+        if (!this.types.isEmpty()) {
+            // force the include
+            this.query.setIncludeChildTypes(true);
+            final Type baseType = Type.get(this.typeUUID);
+            final QEqual eqPart = new QEqual(new QAttribute(baseType.getTypeAttribute()));
+
+            for (final UUID type : this.types) {
+                eqPart.addValue(new QNumberValue(Type.get(type).getId()));
+            }
+            this.compares.add(eqPart);
+        }
+
+        if (!this.compares.isEmpty()) {
+            final QAnd and = this.or ? new QOr() : new QAnd();
+            for (final AbstractQAttrCompare compare : this.compares) {
+                and.addPart(compare);
+            }
+            this.query.setWhere(new QWhereSection(and));
+        }
+        if (!this.orders.isEmpty()) {
+            final QOrderBySection orderBy = new QOrderBySection(
+                            this.orders.toArray(new AbstractQPart[this.orders.size()]));
+            this.query.setOrderBy(orderBy);
+        }
+    }
+
+    /**
+     * Method to get a MultiPrintQuery.
+     * @return MultiPrintQuery based on the InstanceQuery
+     * @throws EFapsException on error
+     */
+    public MultiPrintQuery getPrint()
+        throws EFapsException
+    {
+        return new MultiPrintQuery(getQuery().execute());
+    }
+
+    /**
+     * Method to get a CachedMultiPrintQuery.
+     * @param _key key used for Caching
+     * @return MultiPrintQuery based on the InstanceQuery
+     * @throws EFapsException on error
+     */
+    public CachedMultiPrintQuery getCachedPrint(final String _key)
+        throws EFapsException
+    {
+        return new CachedMultiPrintQuery(getCachedQuery(_key).execute(), _key);
     }
 }
