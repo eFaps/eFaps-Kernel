@@ -150,11 +150,11 @@ public class QueryBuilder
     public void addType(final UUID... _uuid)
         throws EFapsException
     {
-        final Set<Type> types = new HashSet<Type>();
+        final Set<Type> typesTmp = new HashSet<Type>();
         for (final UUID uuid : _uuid) {
-            types.add(Type.get(uuid));
+            typesTmp.add(Type.get(uuid));
         }
-        addType(types.toArray(new Type[types.size()]));
+        addType(typesTmp.toArray(new Type[typesTmp.size()]));
     }
 
     /**
@@ -166,11 +166,11 @@ public class QueryBuilder
     public void addType(final CIType... _ciType)
         throws EFapsException
     {
-        final Set<Type> types = new HashSet<Type>();
+        final Set<Type> typesTmp = new HashSet<Type>();
         for (final CIType ciType : _ciType) {
-            types.add(ciType.getType());
+            typesTmp.add(ciType.getType());
         }
-        addType(types.toArray(new Type[types.size()]));
+        addType(typesTmp.toArray(new Type[typesTmp.size()]));
     }
 
     /**
