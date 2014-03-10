@@ -172,16 +172,16 @@ public class SelectBuilder
     }
 
     /**
-    * Add oid select part.
-    *
-    * @return this
-    */
-   public SelectBuilder instance()
-   {
-       addPoint();
-       this.bldr.append("instance");
-       return this;
-   }
+     * Add oid select part.
+     *
+     * @return this
+     */
+    public SelectBuilder instance()
+    {
+        addPoint();
+        this.bldr.append("instance");
+        return this;
+    }
 
     /**
      * Add type select part.
