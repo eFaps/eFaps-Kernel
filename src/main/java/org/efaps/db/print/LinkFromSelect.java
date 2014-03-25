@@ -230,9 +230,13 @@ public class LinkFromSelect
                     }
                     select.addValuePart(atype.getId());
                 }
+                if (first) {
+                    LinkFromSelect.LOG.error("The type is declared abstract but does not have children: {}", this.type);
+                }
             } else {
                 select.addValuePart(this.type.getId());
             }
+
             select.addPart(SQLPart.PARENTHESIS_CLOSE);
         }
 
