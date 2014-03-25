@@ -24,6 +24,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -48,6 +49,11 @@ public class ClassSelectPart
      * Classification this select part belongs to.
      */
     private final Classification classification;
+
+    /**
+     * index of the table.
+     */
+    private int tableIdx;
 
     /**
      * @param _classification   classification
@@ -81,7 +87,20 @@ public class ClassSelectPart
             ret = _oneSelect.getNewTableIndex(tableName, column, _relIndex);
             _select.leftJoin(tableName, ret, column, _relIndex, "ID");
         }
+        this.tableIdx = ret;
         return ret;
+    }
+
+    @Override
+    public void add2Where(final OneSelect _oneselect,
+                          final SQLSelect _select)
+    {
+        if (this.classification.getMainTable().getSqlColType() != null) {
+            _select.addPart(SQLPart.AND)
+                    .addColumnPart(this.tableIdx, this.classification.getMainTable().getSqlColType())
+                    .addPart(SQLPart.EQUAL)
+                    .addValuePart(this.classification.getId());
+        }
     }
 
     /**
