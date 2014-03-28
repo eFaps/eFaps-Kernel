@@ -221,7 +221,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.jasypt</groupId>
             <artifactId>jasypt</artifactId>
-            <version>1.9.1</version>
+            <version>1.9.2</version>
         </dependency>
 
         <!-- For interpreting expressions (e.g. of xml definitions) -->
