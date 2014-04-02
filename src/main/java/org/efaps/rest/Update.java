@@ -39,11 +39,10 @@ import org.efaps.update.Install;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
-
-import com.sun.jersey.multipart.BodyPart;
-import com.sun.jersey.multipart.BodyPartEntity;
-import com.sun.jersey.multipart.MultiPart;
-import com.sun.jersey.multipart.MultiPartMediaTypes;
+import org.glassfish.jersey.media.multipart.BodyPart;
+import org.glassfish.jersey.media.multipart.BodyPartEntity;
+import org.glassfish.jersey.media.multipart.MultiPart;
+import org.glassfish.jersey.media.multipart.MultiPartMediaTypes;
 
 /**
  * Rest API to update files in eFaps.
@@ -98,16 +97,17 @@ public class Update
 
                     final FileType filetype = FileType.getFileTypeByExensione(ending);
 
-                    AbstractRest.LOG.info("= Receieved: " + file.getName());
+                    AbstractRest.LOG.info("= Receieved: '{}'", file.getName());
                     if (filetype != null) {
                         files.put(file, filetype);
                     }
                 }
-
-                for (final Entry<File, FileType> entry : files.entrySet()) {
-                    AbstractRest.LOG.info("...Updating " + entry.getKey().getName());
+                if (!files.isEmpty()) {
                     final Install install = new Install();
-                    install.addFile(entry.getKey().toURI().toURL(), entry.getValue().getType());
+                    for (final Entry<File, FileType> entry : files.entrySet()) {
+                        AbstractRest.LOG.info("...Adding to Update: '{}' ", entry.getKey().getName());
+                        install.addFile(entry.getKey().toURI().toURL(), entry.getValue().getType());
+                    }
                     install.updateLatest(null);
                 }
                 AbstractRest.LOG.info("===End of Update via REST===");

@@ -20,6 +20,8 @@
 
 package org.efaps.jms;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -32,12 +34,11 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.rest.EFapsResourceConfig;
+import org.efaps.rest.EFapsResourceConfig.EFapsResourceFinder;
 import org.efaps.util.EFapsException;
+import org.glassfish.jersey.server.internal.scanning.AnnotationAcceptingListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.jersey.core.spi.scanning.Scanner;
-import com.sun.jersey.spi.scanning.AnnotationScannerListener;
 
 /**
  * TODO comment!
@@ -89,21 +90,32 @@ public final class JmsResourceConfig
         throws EFapsException
     {
         @SuppressWarnings("unchecked")
-        final AnnotationScannerListener asl = new AnnotationScannerListener(
-                            EFapsClassLoader.getInstance(),
-                            XmlAccessorType.class,
-                            XmlType.class,
-                            XmlElementWrapper.class,
-                            XmlElementRef.class,
-                            XmlRootElement.class,
-                            XmlAttribute.class);
-        try {
-            final Scanner scanner = EFapsResourceConfig.EfapsResourceScanner.class.newInstance();
-            scanner.scan(asl);
-        } catch (final InstantiationException e) {
-            throw new EFapsException("InstantiationException", e);
-        } catch (final IllegalAccessException e) {
-            throw new EFapsException("IllegalAccessException", e);
+        final AnnotationAcceptingListener asl = new AnnotationAcceptingListener(
+                        EFapsClassLoader.getInstance(),
+                        XmlAccessorType.class,
+                        XmlType.class,
+                        XmlElementWrapper.class,
+                        XmlElementRef.class,
+                        XmlRootElement.class,
+                        XmlAttribute.class);
+        final EFapsResourceFinder resourceFinder = new EFapsResourceConfig.EFapsResourceFinder();
+        while (resourceFinder.hasNext()) {
+            final String next = resourceFinder.next();
+            if (asl.accept(next)) {
+                final InputStream in = resourceFinder.open();
+                try {
+                    JmsResourceConfig.LOG.debug("Scanning '{}' for annotations.", next);
+                    asl.process(next, in);
+                } catch (final IOException e) {
+                    JmsResourceConfig.LOG.warn("Cannot process '{}'", next);
+                } finally {
+                    try {
+                        in.close();
+                    } catch (final IOException ex) {
+                        JmsResourceConfig.LOG.trace("Error closing resource stream.", ex);
+                    }
+                }
+            }
         }
         this.classes.clear();
         this.classes.addAll(asl.getAnnotatedClasses());

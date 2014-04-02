@@ -20,11 +20,13 @@
 
 package org.efaps.rest;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.Path;
@@ -34,30 +36,26 @@ import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.Checkout;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.ResourceFinder;
+import org.glassfish.jersey.server.internal.scanning.AnnotationAcceptingListener;
+import org.glassfish.jersey.server.spi.Container;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.jersey.api.core.DefaultResourceConfig;
-import com.sun.jersey.core.spi.scanning.Scanner;
-import com.sun.jersey.core.spi.scanning.ScannerListener;
-import com.sun.jersey.core.util.Closing;
-import com.sun.jersey.spi.container.ReloadListener;
-import com.sun.jersey.spi.scanning.AnnotationScannerListener;
-import com.sun.jersey.spi.scanning.PathProviderScannerListener;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: EFapsResourceConfig.java 9319 2013-04-30 18:30:17Z
- *          jan@moxter.net $
+ * @version $Id$
  */
 public class EFapsResourceConfig
-    extends DefaultResourceConfig
-    implements ReloadListener
+    extends ResourceConfig
 {
 
     /**
@@ -66,9 +64,9 @@ public class EFapsResourceConfig
     private static final Logger LOG = LoggerFactory.getLogger(EFapsResourceConfig.class);
 
     /**
-     * Scanner for the class files.
+     * ResourceFinder for the class files.
      */
-    private final Scanner scanner = new EfapsResourceScanner();
+    private final ResourceFinder resourceFinder = new EFapsResourceFinder();
 
     /**
      * Cached classes.
@@ -80,6 +78,7 @@ public class EFapsResourceConfig
      */
     public EFapsResourceConfig()
     {
+        super(MultiPartFeature.class);
         init();
     }
 
@@ -89,11 +88,29 @@ public class EFapsResourceConfig
      */
     public void init()
     {
-        final AnnotationScannerListener asl = new PathProviderScannerListener(EFapsClassLoader.getInstance());
-        this.scanner.scan(asl);
-        getClasses().addAll(asl.getAnnotatedClasses());
-        getClasses().add(Compile.class);
-        getClasses().add(Update.class);
+        final AnnotationAcceptingListener asl = AnnotationAcceptingListener
+                        .newJaxrsResourceAndProviderListener(EFapsClassLoader.getInstance());
+        while (this.resourceFinder.hasNext()) {
+            final String next = this.resourceFinder.next();
+            if (asl.accept(next)) {
+                final InputStream in = this.resourceFinder.open();
+                try {
+                    EFapsResourceConfig.LOG.debug("Scanning '{}' for annotations.", next);
+                    asl.process(next, in);
+                } catch (final IOException e) {
+                    EFapsResourceConfig.LOG.warn("Cannot process '{}'", next);
+                } finally {
+                    try {
+                        in.close();
+                    } catch (final IOException ex) {
+                        EFapsResourceConfig.LOG.trace("Error closing resource stream.", ex);
+                    }
+                }
+            }
+        }
+        registerClasses(asl.getAnnotatedClasses());
+        registerClasses(Compile.class);
+        registerClasses(Update.class);
         if (EFapsResourceConfig.LOG.isInfoEnabled() && !getClasses().isEmpty()) {
             final Set<Class<?>> rootResourceClasses = get(Path.class);
             if (rootResourceClasses.isEmpty()) {
@@ -111,35 +128,6 @@ public class EFapsResourceConfig
         }
         this.cachedClasses.clear();
         this.cachedClasses.addAll(getClasses());
-    }
-
-    /**
-     * Perform a new search for resource classes and provider classes.
-     */
-    @Override
-    public void onReload()
-    {
-        final Set<Class<?>> classesToRemove = new HashSet<Class<?>>();
-        final Set<Class<?>> classesToAdd = new HashSet<Class<?>>();
-
-        for (final Class<?> c : getClasses()) {
-            if (!this.cachedClasses.contains(c)) {
-                classesToAdd.add(c);
-            }
-        }
-
-        for (final Class<?> c : this.cachedClasses) {
-            if (!getClasses().contains(c)) {
-                classesToRemove.add(c);
-            }
-        }
-
-        getClasses().clear();
-
-        init();
-
-        getClasses().addAll(classesToAdd);
-        getClasses().removeAll(classesToRemove);
     }
 
     /**
@@ -173,20 +161,56 @@ public class EFapsResourceConfig
     }
 
     /**
-     * Scanner for esjps.
+     * Perform a new search for resource classes and provider classes.
+     * @param _container Container
      */
-    public static class EfapsResourceScanner
-        implements Scanner
+    public void onReload(final Container _container)
     {
+        final Set<Class<?>> classesToRemove = new HashSet<Class<?>>();
+        final Set<Class<?>> classesToAdd = new HashSet<Class<?>>();
+
+        for (final Class<?> c : getClasses()) {
+            if (!this.cachedClasses.contains(c)) {
+                classesToAdd.add(c);
+            }
+        }
+
+        for (final Class<?> c : this.cachedClasses) {
+            if (!getClasses().contains(c)) {
+                classesToRemove.add(c);
+            }
+        }
+
+        getClasses().clear();
+
+        init();
+
+        getClasses().addAll(classesToAdd);
+        getClasses().removeAll(classesToRemove);
+    }
+
+    /**
+     * Finder for esjps.
+     */
+    public static class EFapsResourceFinder
+        implements ResourceFinder
+    {
+        /**
+         * underlying Iterator.
+         */
+        private Iterator<Instance> iter;
+
+        /**
+         * Current inputStream.
+         */
+        private InputStream in;
 
         /**
          * Scan the esjps for annotations.
-         *
-         * @param _sl scan listener
          */
-        @Override
-        public void scan(final ScannerListener _sl)
+        private void init()
         {
+            final List<Instance> instances = new ArrayList<Instance>();
             try {
                 // in case of jboss the transaction filter is not executed
                 // before the
@@ -200,31 +224,77 @@ public class EFapsResourceConfig
                 final InstanceQuery query = queryBldr.getQuery();
                 query.executeWithoutAccessCheck();
                 while (query.next()) {
-                    final Checkout checkout = new Checkout(query.getCurrentValue());
-                    final InputStream in = checkout.execute();
-                    final String fileName = checkout.getFileName();
-                    new Closing(new BufferedInputStream(in)).f(new Closing.Closure()
-                    {
-                        @Override
-                        public void f(final InputStream _in)
-                        {
-                            EFapsResourceConfig.LOG.debug("Scanning '{}' for annotations.", fileName);
-                            try {
-                                _sl.onProcess(fileName, _in);
-                            } catch (final IOException e) {
-                               EFapsResourceConfig.LOG.error("Error on reading file {}", fileName);
-                            }
-                        }
-                    });
+                    instances.add(query.getCurrentValue());
                 }
                 if (contextStarted) {
                     Context.rollback();
                 }
-            } catch (final IOException e) {
-                EFapsResourceConfig.LOG.error("IO error when scanning file ", e);
             } catch (final EFapsException e) {
                 EFapsResourceConfig.LOG.error("EFapsException when scanning file ", e);
             }
+            this.iter = instances.iterator();
+        }
+
+        /**
+         * @param _instance instacne of be read.
+         * @return the name of the class file
+         */
+        private String readCurrent(final Instance _instance)
+        {
+            String ret = "";
+            try {
+                // in case of jboss the transaction filter is not executed
+                // before the
+                // init method is called therefore a Context must be opened
+                boolean contextStarted = false;
+                if (!Context.isThreadActive()) {
+                    Context.begin(null, false);
+                    contextStarted = true;
+                }
+
+                final Checkout checkout = new Checkout(_instance);
+                this.in = checkout.execute();
+                ret = checkout.getFileName() + ".class";
+                if (contextStarted) {
+                    Context.rollback();
+                }
+            } catch (final EFapsException e) {
+                EFapsResourceConfig.LOG.error("EFapsException when scanning file ", e);
+            }
+            return ret;
+        }
+
+        @Override
+        public boolean hasNext()
+        {
+            if (this.iter == null) {
+                init();
+            }
+            return this.iter.hasNext();
+        }
+
+        @Override
+        public String next()
+        {
+            return readCurrent(this.iter.next());
+        }
+
+        @Override
+        public InputStream open()
+        {
+            return this.in;
+        }
+
+        @Override
+        public void reset()
+        {
+            init();
+        }
+
+        @Override
+        public void remove()
+        {
+            // nothing to do here
         }
     }
 }
