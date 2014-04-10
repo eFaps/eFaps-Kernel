@@ -60,6 +60,8 @@ public class DateTimeUI
                 ret = datetime.withChronology(Context.getThreadContext().getChronology()).toString(
                                 formatter.withLocale(Context.getThreadContext().getLocale()));
             }
+        } else if (_fieldValue.getValue() instanceof String) {
+            ret = (String) _fieldValue.getValue();
         } else if (_fieldValue.getValue() != null) {
             throw new EFapsException(this.getClass(), "getViewHtml.noDateTime", (Object[]) null);
         }
