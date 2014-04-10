@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -37,6 +39,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.transaction.UserTransaction;
 
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.drools.persistence.jta.JtaTransactionManager;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
@@ -52,6 +55,8 @@ import org.efaps.admin.user.Role;
 import org.efaps.bpm.compiler.KnowledgeBuilderFactoryServiceImpl;
 import org.efaps.bpm.identity.EntityMapper;
 import org.efaps.bpm.identity.UserGroupCallbackImpl;
+import org.efaps.bpm.listener.AsyncCalls;
+import org.efaps.bpm.listener.IAsyncListener;
 import org.efaps.bpm.listener.WorkingMemoryLogListener;
 import org.efaps.bpm.process.ProcessAdmin;
 import org.efaps.bpm.runtime.ManagerFactoryImpl;
@@ -573,6 +578,8 @@ public final class BPM
         }
         taskService.complete(_taskSummary.getId(),
                              EntityMapper.getUserId(Context.getThreadContext().getPerson().getUUID()), results);
+
+        BPM.invokeAsyncListeners(AsyncCalls.AFTER_EXECUTE, _taskSummary, results);
     }
 
     /**
@@ -714,5 +721,146 @@ public final class BPM
     {
         final RuntimeEngine runtimeEngine = BPM.SMANAGER.getRuntimeEngine(EmptyContext.get());
         return new ProcessAdmin(new JPAAuditLogService(runtimeEngine.getKieSession().getEnvironment()));
+    }
+
+    /**
+     * Invoke the listener.
+     * @param _call call to be executed
+     * @param _taskSummary  tasksummary of the task involved
+     * @param _values values form eFaps
+     */
+    private static void invokeAsyncListeners(final AsyncCalls _call,
+                                             final TaskSummary _taskSummary,
+                                             final Map<String, Object> _values)
+    {
+        // exec esjp
+        try {
+            final Class<?> listenerClass = Class.forName("org.efaps.esjp.bpm.listener.ReviewListener", true,
+                            EFapsClassLoader.getInstance());
+            final IAsyncListener listener = (IAsyncListener) listenerClass.newInstance();
+
+            final Object taskData = BPM.getTaskData(_taskSummary);
+
+            final String userName = Context.getThreadContext().getPerson().getName();
+            final ListenerThread threat = new ListenerThread(userName,  listener, _call, _values, taskData);
+
+            final BasicThreadFactory factory = new BasicThreadFactory.Builder()
+                            .namingPattern("eFapsBPMListenerThreat-%d")
+                            .priority(Thread.MIN_PRIORITY)
+                            .build();
+            final ExecutorService exec = Executors.newSingleThreadExecutor(factory);
+            exec.submit(threat);
+            exec.shutdown();
+
+        } catch (final ClassNotFoundException e) {
+            BPM.LOG.error("Class could not be found.", e);
+        } catch (final InstantiationException e) {
+            BPM.LOG.error("Class could not be instantiation.", e);
+        } catch (final IllegalAccessException e) {
+            BPM.LOG.error("Class could not be accessed.", e);
+        } catch (final IllegalArgumentException e) {
+            BPM.LOG.error("Illegal Argument.", e);
+        } catch (final SecurityException e) {
+            BPM.LOG.error("Class could not be found.", e);
+        } catch (final EFapsException e) {
+            BPM.LOG.error("EFapsException catched", e);
+        }
+    }
+
+    /**
+     * Threat to execute the listeners.
+     */
+    private static class ListenerThread
+        implements Runnable
+    {
+
+        /**
+         * Listener to be executed.
+         */
+        private final IAsyncListener listener;
+
+        /**
+         * Call to be executed on the listener.
+         */
+        private final AsyncCalls call;
+
+        /**
+         * value mapping.
+         */
+        private final Map<String, Object> values;
+
+        /**
+         * Data from the task.
+         */
+        private final Object taskData;
+        /**
+         * UserName the Context will be spanned for.
+         */
+        private final String userName;
+
+        /**
+         * @param _userName userName
+         * @param _listener listener
+         * @param _call     call
+         * @param _values   values
+         * @param _taskData taskdata
+         */
+        public ListenerThread(final String _userName,
+                              final IAsyncListener _listener,
+                              final AsyncCalls _call,
+                              final Map<String, Object> _values,
+                              final Object _taskData)
+        {
+            this.userName = _userName;
+            this.listener = _listener;
+            this.call = _call;
+            this.values = _values;
+            this.taskData = _taskData;
+        }
+
+        /**
+         * When an object implementing interface <code>Runnable</code> is used
+         * to create a thread, starting the thread causes the object's
+         * <code>run</code> method to be called in that separately executing
+         * thread.
+         * <p>
+         * The general contract of the method <code>run</code> is that it may
+         * take any action whatsoever.
+         *
+         * @see     java.lang.Thread#run()
+         */
+        public void run()
+        {
+            try {
+                if (!Context.isTMActive()) {
+                    Context.begin(this.userName, false);
+                }
+            } catch (final EFapsException e) {
+                BPM.LOG.error("Context problem", e);
+            }
+            try {
+                switch (this.call) {
+                    case AFTER_EXECUTE:
+                        this.listener.onAfterExecute(this.values, this.taskData);
+                        break;
+                    default:
+                        break;
+                }
+            } catch (final EFapsException e) {
+                BPM.LOG.error("execution problem", e);
+            } finally {
+                try {
+                    if (!Context.isTMNoTransaction()) {
+                        if (Context.isTMActive()) {
+                            Context.commit();
+                        } else {
+                            Context.rollback();
+                        }
+                    }
+                } catch (final EFapsException e) {
+                    BPM.LOG.error("Context problem", e);
+                }
+            }
+        }
     }
 }
