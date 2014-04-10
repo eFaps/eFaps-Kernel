@@ -46,7 +46,10 @@ private final static String[] tests = new String[]{
     "Text$Expr",
     "Text$$<Expr>",
     "Dies ist ein Test fuer $<Expr1> und $<Expr2>",
-    "Dies ist ein Test fuer $<Expr1> und $<Expr2>\nin zwei Zeilen mit $<Expr3> in 2. Zeile."
+    "Dies ist ein Test fuer $<Expr1> und $<Expr2>\nin zwei Zeilen mit $<Expr3> in 2. Zeile.",
+     "$<attribute[NAME]>",
+     "$<attribute[NAME].format[dd/mmm/yyy]>",
+     "$<attribute[NAME].format[dd-mmm-yyy]>"
 };
 
 private final static String[][] expressions = new String[][]{
@@ -55,7 +58,10 @@ private final static String[][] expressions = new String[][]{
     {},
     {"Expr"},
     {"Expr1", "Expr2"},
-    {"Expr1", "Expr2", "Expr3"}
+    {"Expr1", "Expr2", "Expr3"},
+    {"attribute[NAME]"},
+    {"attribute[NAME].format[dd/mmm/yyy]"},
+    {"attribute[NAME].format[dd-mmm-yyy]"}
 };
 
 
@@ -130,7 +136,9 @@ PARSER_END(ValueParser)
        "\u0023",
        "\u0024",
        "\u002c",
+       "\u002d",
        "\u002e",
+       "\u002f",
        "\u0041"-"\u005b",
        "\u005d",
        "\u005f",
