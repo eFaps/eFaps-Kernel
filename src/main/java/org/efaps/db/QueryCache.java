@@ -20,8 +20,7 @@
 
 package org.efaps.db;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.efaps.admin.AppConfigHandler;
 import org.efaps.util.cache.CacheLogListener;
@@ -31,9 +30,11 @@ import org.infinispan.Cache;
 import org.infinispan.context.Flag;
 import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
-import org.infinispan.notifications.cachelistener.annotation.CacheEntryRemoved;
 import org.infinispan.notifications.cachelistener.event.CacheEntryCreatedEvent;
-import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
+import org.infinispan.query.Search;
+import org.infinispan.query.SearchManager;
+import org.infinispan.query.dsl.Query;
+import org.infinispan.query.dsl.QueryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +60,7 @@ public final class QueryCache
     /**
      * Name of the Cache for AccessKey.
      */
-    public static final String KEYCACHE = QueryCache.class.getName() + ".Key";
+    public static final String INDEXCACHE = QueryCache.class.getName() + ".Index";
 
     /**
      * Logging instance used in this class.
@@ -87,13 +88,12 @@ public final class QueryCache
         if (AppConfigHandler.get().isQueryCacheDeactivated()) {
             QueryCache.NOOP = new NoOpQueryCache();
         } else {
-            if (InfinispanCache.get().exists(QueryCache.KEYCACHE)) {
-                InfinispanCache.get().<String, Set<QueryKey>>getCache(QueryCache.KEYCACHE).clear();
+            if (InfinispanCache.get().exists(QueryCache.INDEXCACHE)) {
+                InfinispanCache.get().<String, QueryKey>getCache(QueryCache.INDEXCACHE).clear();
             } else {
-                final Cache<String, Set<QueryKey>> cache = InfinispanCache.get().<String, Set<QueryKey>>getCache(
-                                QueryCache.KEYCACHE);
+                final Cache<String, QueryKey> cache = InfinispanCache.get().<String, QueryKey>getCache(
+                                QueryCache.INDEXCACHE);
                 cache.addListener(new CacheLogListener(QueryCache.LOG));
-                cache.addListener(new KeyCacheListener());
             }
             if (InfinispanCache.get().exists(QueryCache.SQLCACHE)) {
                 InfinispanCache.get().<QueryKey, Object>getCache(QueryCache.SQLCACHE).clear();
@@ -112,9 +112,20 @@ public final class QueryCache
     public static void cleanByKey(final String _key)
     {
         if (!AppConfigHandler.get().isQueryCacheDeactivated()) {
-            final Cache<String, Set<QueryKey>> cache = InfinispanCache.get().<String, Set<QueryKey>>getIgnReCache(
-                            QueryCache.KEYCACHE);
-            cache.remove(_key);
+            final Cache<String, QueryKey> indexCache = InfinispanCache.get().<String, QueryKey>getIgnReCache(
+                            QueryCache.INDEXCACHE);
+            if (!indexCache.isEmpty()) {
+                final SearchManager searchManager = Search.getSearchManager(indexCache);
+                final QueryFactory<?> qf = searchManager.getQueryFactory();
+                final Query query = qf.from(QueryKey.class).having("key").eq(_key).toBuilder().build();
+                final List<?> result = query.list();
+                if (result != null) {
+                    for (final Object key : result) {
+                        QueryCache.getSqlCache().remove(key);
+                        indexCache.remove(((QueryKey) key).getIndexKey());
+                    }
+                }
+            }
         }
     }
 
@@ -166,60 +177,19 @@ public final class QueryCache
 
         /**
          * If an QueryKey is inserted to SQLCache the QueryKey will also be
-         * registered in the KeyCache.
+         * registered in the IndexCache.
          *
-         * @param _event event to be loged
+         * @param _event event to be logged
          */
         @CacheEntryCreated
         public void onCacheEntryCreated(final CacheEntryCreatedEvent<?, ?> _event)
         {
             if (!_event.isPre()) {
-                final Cache<String, Set<QueryKey>> keyCache = InfinispanCache.get()
-                                .<String, Set<QueryKey>>getIgnReCache(QueryCache.KEYCACHE);
+                final Cache<String, QueryKey> indexCache = InfinispanCache.get()
+                                .<String, QueryKey>getIgnReCache(QueryCache.INDEXCACHE);
 
                 final QueryKey querykey = (QueryKey) _event.getKey();
-                final String key = querykey.getKey();
-
-                Set<QueryKey> queryKeys;
-                if (keyCache.containsKey(key)) {
-                    queryKeys = keyCache.get(key);
-                } else {
-                    queryKeys = new HashSet<QueryKey>();
-                    keyCache.put(key, queryKeys);
-                }
-                queryKeys.add(querykey);
-            }
-
-        }
-    }
-
-    /**
-     * Listener responsible to maintain the two Caches in sync. On removal of an
-     * Key from the KeyCache the related QueryKey from the SQLCache will be
-     * removed also.
-     */
-    @Listener
-    public static class KeyCacheListener
-    {
-
-        /**
-         * If an Key is removed the related QueryKey will be removed also.
-         *
-         * @param _event event
-         */
-        @SuppressWarnings("unchecked")
-        @CacheEntryRemoved
-        public void onCacheEntryRemoved(final CacheEntryRemovedEvent<?, ?> _event)
-        {
-            if (_event.isPre()) {
-                final Cache<QueryKey, Object> keyCache = InfinispanCache.get().<QueryKey, Object>getIgnReCache(
-                                QueryCache.SQLCACHE);
-                final Set<QueryKey> queryKeys = (Set<QueryKey>) _event.getValue();
-                if (queryKeys != null) {
-                    for (final QueryKey queryKey : queryKeys) {
-                        keyCache.remove(queryKey);
-                    }
-                }
+                indexCache.put(querykey.getIndexKey(), querykey);
             }
         }
     }

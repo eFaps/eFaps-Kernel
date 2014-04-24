@@ -61,7 +61,22 @@
         <expiration lifespan="600000" maxIdle="300000" />
         <compatibility enabled="true" />
     </namedCache>
-    <namedCache name="org.efaps.db.QueryCache.Key">
+    <namedCache name="org.efaps.db.QueryCache.Index">
+        <indexing enabled="true">
+            <properties>
+                 <!-- Use our custom IndexManager; TODO autoinject by default? -->
+                <property name="hibernate.search.default.indexmanager" value="org.infinispan.query.indexmanager.InfinispanIndexManager" />
+
+                <!-- specify the managed index is to be shared across the nodes -->
+                <property name="hibernate.search.default.directory_provider" value="infinispan" />
+
+                <!-- Supporting exclusive index usage will require lock cleanup on crashed nodes to be implemented -->
+                <property name="hibernate.search.default.exclusive_index_use" value="false" />
+
+                <!-- Use latest Lucene version -->
+                <property name="hibernate.search.lucene_version" value="LUCENE_CURRENT" />
+            </properties>
+        </indexing>
         <eviction maxEntries="5000" strategy="LIRS" />
         <!--10 minutes, 5 minutes (miliseconds) -->
         <expiration lifespan="600000" maxIdle="300000" />

@@ -24,6 +24,9 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 
 /**
  * TODO comment!
@@ -31,10 +34,10 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author The eFaps Team
  * @version $Id$
  */
+@Indexed
 public final class QueryKey
     implements Serializable
 {
-
     /**
      *
      */
@@ -48,6 +51,7 @@ public final class QueryKey
     /**
      * The name of the sql statement.
      */
+    @Field(analyze = Analyze.NO)
     private final String key;
 
     /**
@@ -79,6 +83,14 @@ public final class QueryKey
     public String getKey()
     {
         return this.key;
+    }
+
+    /**
+     * @return string used as unique value for indexing
+     */
+    protected String getIndexKey()
+    {
+        return getKey() + getSql();
     }
 
     /**

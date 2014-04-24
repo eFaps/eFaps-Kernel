@@ -21,7 +21,6 @@ AccessCache.LOG.debug("registered Update for Instance: {}", _instance); * Copyri
 package org.efaps.admin.access;
 
 import java.util.List;
-import java.util.Set;
 
 import org.efaps.admin.AppConfigHandler;
 import org.efaps.db.Instance;
@@ -136,7 +135,7 @@ public final class AccessCache
             AccessCache.NOOP = new NoOpAccessCache();
         } else {
             if (InfinispanCache.get().exists(AccessCache.INDEXCACHE)) {
-                InfinispanCache.get().<Instance, Set<AccessKey>>getCache(AccessCache.INDEXCACHE).clear();
+                InfinispanCache.get().<String, AccessKey>getCache(AccessCache.INDEXCACHE).clear();
             } else {
                 final Cache<String, AccessKey> cache = InfinispanCache.get().<String, AccessKey>getCache(
                                 AccessCache.INDEXCACHE);
