@@ -69,10 +69,11 @@ public class Return
      * @param _key      key to set
      * @param _value    value to set
      */
-    public void put(final Return.ReturnValues _key,
-                    final Object _value)
+    public Return put(final Return.ReturnValues _key,
+                      final Object _value)
     {
         this.map.put(_key, _value);
+        return this;
     }
 
     /**
