@@ -268,8 +268,10 @@ public abstract class AbstractPrintQuery
         throws EFapsException
     {
         final Type type = getMainType();
-        final AttributeSet set = AttributeSet.find(type.getName(), _setName);
-        addAttributeSet(set);
+        if(type != null) {
+            final AttributeSet set = AttributeSet.find(type.getName(), _setName);
+            addAttributeSet(set);
+        }
         return this;
     }
 
