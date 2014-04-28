@@ -173,6 +173,7 @@ public class AttributeQuery
             }
         }
         select.addSection(getWhere());
+        select.addSection(getOrderBy());
         select.addSection(getLimit());
 
         if (AbstractObjectQuery.LOG.isDebugEnabled()) {
