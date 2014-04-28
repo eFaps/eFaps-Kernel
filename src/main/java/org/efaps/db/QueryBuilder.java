@@ -118,6 +118,11 @@ public class QueryBuilder
     private boolean or = false;
 
     /**
+     * List for the query to be executed, defaults to none.
+     */
+    private int limit = -1;
+
+    /**
      * @param _typeUUID     uuid of the type this query is based on
      */
     public QueryBuilder(final UUID _typeUUID)
@@ -693,6 +698,9 @@ public class QueryBuilder
         return desc;
     }
 
+
+
+
     /**
      * Get the QAbstractValue for a value.
      * @param _value    value the QAbstractValue is wanted for
@@ -756,6 +764,26 @@ public class QueryBuilder
     {
         this.or = _or;
         return this;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #limit}.
+     *
+     * @return value of instance variable {@link #limit}
+     */
+    public int getLimit()
+    {
+        return this.limit;
+    }
+
+    /**
+     * Setter method for instance variable {@link #limit}.
+     *
+     * @param _limit value for instance variable {@link #limit}
+     */
+    public void setLimit(final int _limit)
+    {
+        this.limit = _limit;
     }
 
     /**
@@ -863,6 +891,9 @@ public class QueryBuilder
             final QOrderBySection orderBy = new QOrderBySection(
                             this.orders.toArray(new AbstractQPart[this.orders.size()]));
             this.query.setOrderBy(orderBy);
+        }
+        if (this.limit > 0) {
+            this.query.setLimit(this.limit);
         }
     }
 
