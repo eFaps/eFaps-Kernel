@@ -189,5 +189,14 @@ public interface KernelSettings
      * Archives_ArchiveFile.ParentAttribute=ParentLink<br/>
      */
     String ACCESS4OBJECT = "org.efaps.kernel.AccessCheck4Object";
+
+    /**
+     * Profiles to be applied on update if not specified explicitly.
+     * Properties. Can be Concatenated.
+     * e.g. for Archives:<br/>
+     * eFapsApp-Sales=Role.AsList=ubicaciones;products<br/>
+     */
+    String PROFILES4UPDATE = "org.efaps.kernel.update.Profiles";
+
 }
 

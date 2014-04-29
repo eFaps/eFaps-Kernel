@@ -103,7 +103,7 @@ public class Update
                     }
                 }
                 if (!files.isEmpty()) {
-                    final Install install = new Install();
+                    final Install install = new Install(true);
                     for (final Entry<File, FileType> entry : files.entrySet()) {
                         AbstractRest.LOG.info("...Adding to Update: '{}' ", entry.getKey().getName());
                         install.addFile(entry.getKey().toURI().toURL(), entry.getValue().getType());

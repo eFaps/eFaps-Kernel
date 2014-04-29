@@ -29,18 +29,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Context;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
-import org.efaps.update.schema.datamodel.SQLTableUpdate;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -58,7 +61,7 @@ public class Install
     /**
      * Logging instance used to give logging information of this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(SQLTableUpdate.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Install.class);
 
     /**
      * All defined file urls which are updated.
@@ -83,6 +86,27 @@ public class Install
      */
     private final Map<Class<? extends IUpdate>, List<IUpdate>> cache
         = new HashMap<Class<? extends IUpdate>, List<IUpdate>>();
+
+    /**
+     * Evaluate the profiles from SystemConfiguration.
+     */
+    private final boolean evaluateProfiles;
+
+    /**
+     * Standard Constructor.
+     */
+    public Install()
+    {
+        this(false);
+    }
+
+    /**
+     * @param _evaluateProfiles evaluate profiles from systemconfiguration
+     */
+    public Install(final boolean _evaluateProfiles)
+    {
+       this.evaluateProfiles = _evaluateProfiles;
+    }
 
     /**
      * Installs the XML update scripts of the schema definitions for this
@@ -149,19 +173,17 @@ public class Install
                         }
                     });
                     for (final IUpdate update : updates) {
-                        update.updateInDB(jexlContext, step, _profiles);
-                        if (!bigTrans) {
-                            try {
+                        try {
+                            update.updateInDB(jexlContext, step,
+                                            evaluateProfiles(update.getFileApplication(), _profiles));
+                            if (!bigTrans) {
                                 Context.commit();
-                            } catch (final EFapsException e) {
-                                throw new InstallationException("Transaction commit failed", e);
-                            }
-                            try {
                                 Context.begin(user);
-                            } catch (final EFapsException e) {
-                                throw new InstallationException("Transaction start failed", e);
                             }
+                        } catch (final EFapsException e) {
+                            throw new InstallationException("Transaction start failed", e);
                         }
+
                     }
                 }
             } else if (Install.LOG.isInfoEnabled())  {
@@ -225,8 +247,7 @@ public class Install
             if (Install.LOG.isInfoEnabled()) {
                 Install.LOG.info("..Running Lifecycle step " + step);
             }
-            for (final Map.Entry<Class<? extends IUpdate>, List<IUpdate>> entry
-                            : this.cache.entrySet()) {
+            for (final Map.Entry<Class<? extends IUpdate>, List<IUpdate>> entry : this.cache.entrySet()) {
                 for (final IUpdate update : entry.getValue()) {
                     final Integer latestVersion = versions.get(update.getFileApplication());
                     // initialize JexlContext (used to evaluate version)
@@ -235,22 +256,17 @@ public class Install
                         jexlContext.getVars().put("version", latestVersion);
                         jexlContext.getVars().put("latest", latestVersion);
                     }
-                    // and create
-                    update.updateInDB(jexlContext, step, _profiles);
-                    if (!bigTrans) {
+                    try {
+                        // and create
+                        update.updateInDB(jexlContext, step, evaluateProfiles(update.getFileApplication(), _profiles));
                         if (!bigTrans) {
-                            try {
-                                Context.commit();
-                            } catch (final EFapsException e) {
-                                throw new InstallationException("Transaction commit failed", e);
-                            }
-                            try {
-                                Context.begin(user);
-                            } catch (final EFapsException e) {
-                                throw new InstallationException("Transaction start failed", e);
-                            }
+                            Context.commit();
+                            Context.begin(user);
                         }
+                    } catch (final EFapsException e) {
+                        throw new InstallationException("Transaction start failed", e);
                     }
+
                 }
             }
         }
@@ -414,6 +430,37 @@ public class Install
         return new ToStringBuilder(this)
             .append("urls", this.files)
             .toString();
+    }
+
+    /**
+     * @param _application  application used as key for SystemConfiguration
+     * @param _profile      profiles
+     * @return set of profiles
+     * @throws EFapsException on error
+     */
+    private Set<Profile> evaluateProfiles(final String _application,
+                                          final Set<Profile> _profile)
+        throws EFapsException
+    {
+        final Set<Profile> ret;
+        if (_profile == null && _application != null) {
+            ret = new HashSet<Profile>();
+            final Properties props = EFapsSystemConfiguration.get().getAttributeValueAsProperties(
+                            KernelSettings.PROFILES4UPDATE, true);
+            if (props.containsKey(_application)) {
+                final String[] profileNames = props.getProperty(_application).split(";");
+                for (final String name : profileNames) {
+                    ret.add(Profile.getProfile(name));
+                }
+            }
+            if (ret.isEmpty()) {
+                ret.add(Profile.getDefaultProfile());
+            }
+        } else {
+            ret = _profile;
+        }
+        Install.LOG.debug("Applying profiles: {}", ret);
+        return ret;
     }
 
     /**
