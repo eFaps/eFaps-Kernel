@@ -844,13 +844,16 @@ public abstract class AbstractUpdate
                                             final List<Instance> _eventInstList)
             throws EFapsException
         {
-            final QueryBuilder queryBldr = new QueryBuilder(CIAdminEvent.Definition);
-            queryBldr.addWhereAttrEqValue(CIAdminEvent.Definition.Abstract, _instance);
-            final InstanceQuery query = queryBldr.getQuery();
-            final List<Instance> instances = query.executeWithoutAccessCheck();
-            final List<?> obsoletes = ListUtils.removeAll(instances, _eventInstList);
-            for (final Object inst : obsoletes) {
-                new Delete((Instance) inst).executeWithoutAccessCheck();
+            // check it not first install
+            if (CIAdminEvent.Definition.getType().getMainTable() != null) {
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminEvent.Definition);
+                queryBldr.addWhereAttrEqValue(CIAdminEvent.Definition.Abstract, _instance);
+                final InstanceQuery query = queryBldr.getQuery();
+                final List<Instance> instances = query.executeWithoutAccessCheck();
+                final List<?> obsoletes = ListUtils.removeAll(instances, _eventInstList);
+                for (final Object inst : obsoletes) {
+                    new Delete((Instance) inst).executeWithoutAccessCheck();
+                }
             }
         }
 

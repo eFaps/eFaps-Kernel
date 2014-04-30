@@ -533,6 +533,14 @@ public class SQLTableUpdate
             }
         }
 
+        @Override
+        protected void removeObsoleteEvents(final Instance _instance,
+                                            final List<Instance> _eventInstList)
+            throws EFapsException
+        {
+            // in this case no events are possible so do nothing
+        }
+
         /**
          * Execute defined {@link #sqls SQL statements} in the database.
          *
@@ -540,8 +548,7 @@ public class SQLTableUpdate
          * @see #sqls
          * @see #updateInDB
          */
-        @SuppressFBWarnings(
-                        value = { "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" },
+        @SuppressFBWarnings(value = { "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" },
                         justification = "The script cannot be made static")
         protected void executeSQLs()
             throws InstallationException

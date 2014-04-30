@@ -147,7 +147,9 @@ public class AccessSetUpdate
          * {@inheritDoc}
          */
         @Override
-        protected void setLinksInDB(final Instance _instance, final Link _linktype, final Set<LinkInstance> _links)
+        protected void setLinksInDB(final Instance _instance,
+                                    final Link _linktype,
+                                    final Set<LinkInstance> _links)
             throws EFapsException
         {
             if (_links != null) {
