@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
@@ -41,6 +42,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdmin;
 import org.efaps.ci.CIAdminCommon;
+import org.efaps.ci.CIAdminEvent;
 import org.efaps.db.AttributeQuery;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -820,14 +822,35 @@ public abstract class AbstractUpdate
                         }
                     }
                     setPropertiesInDb(this.instance, this.properties);
-
-                    for (final Event event : this.events) {
-                        final Instance newInstance = event.updateInDB(this.instance, getValue("Name"));
-                        setPropertiesInDb(newInstance, event.getProperties());
+                    final List<Instance> eventInstList = new ArrayList<Instance>();
+                    for (final Event event : getEvents()) {
+                        final Instance eventInst = event.updateInDB(this.instance, getValue("Name"));
+                        setPropertiesInDb(eventInst, event.getProperties());
+                        eventInstList.add(eventInst);
                     }
+                    removeObsoleteEvents(this.instance, eventInstList);
                 } catch (final EFapsException e) {
                     throw new InstallationException("update did not work", e);
                 }
+            }
+        }
+
+        /**
+         * @param _instance Instance that will be checked 4 obsolete events
+         * @param _eventInstList list of valid event Instances
+         * @throws EFapsException on error
+         */
+        protected void removeObsoleteEvents(final Instance _instance,
+                                            final List<Instance> _eventInstList)
+            throws EFapsException
+        {
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminEvent.Definition);
+            queryBldr.addWhereAttrEqValue(CIAdminEvent.Definition.Abstract, _instance);
+            final InstanceQuery query = queryBldr.getQuery();
+            final List<Instance> instances = query.executeWithoutAccessCheck();
+            final List<?> obsoletes = ListUtils.removeAll(instances, _eventInstList);
+            for (final Object inst : obsoletes) {
+                new Delete((Instance) inst).executeWithoutAccessCheck();
             }
         }
 

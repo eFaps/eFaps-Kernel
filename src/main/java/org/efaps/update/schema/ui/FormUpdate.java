@@ -95,7 +95,7 @@ public class FormUpdate
                 addLink(FormUpdate.LINK2TYPE, new LinkInstance(_text));
             } else if ("trigger".equals(value)) {
                 if (_tags.size() == 1) {
-                    getEvents().add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
+                    addEvent(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
                                     _attributes.get("program"), _attributes.get("method"), _attributes.get("index")));
                 } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
                     getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);

@@ -142,7 +142,7 @@ public abstract class AbstractCollectionUpdate
             final String value = _tags.get(0);
             if ("evaluate".equals(value)) {
                 if (_tags.size() == 1) {
-                    getEvents().add(new Event(_attributes.get("name"), EventType.UI_TABLE_EVALUATE, _attributes
+                    addEvent(new Event(_attributes.get("name"), EventType.UI_TABLE_EVALUATE, _attributes
                                     .get("program"), _attributes.get("method"), _attributes.get("index")));
                 } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
                     getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);

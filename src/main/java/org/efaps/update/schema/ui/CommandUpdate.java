@@ -140,7 +140,8 @@ public class CommandUpdate
      * Definition for a command.
      *
      */
-    protected class CommandDefinition extends AbstractDefinition
+    protected class CommandDefinition
+        extends AbstractDefinition
     {
 
         /**
@@ -188,15 +189,15 @@ public class CommandUpdate
                                                     + (_attributes.get("index") == null
                                                     ? "" : ("." + _attributes.get("index")));
                     if ("evaluate".equals(subValue)) {
-                        getEvents().add(new Event(name, EventType.UI_TABLE_EVALUATE,
+                        addEvent(new Event(name, EventType.UI_TABLE_EVALUATE,
                                         _attributes.get("program"), _attributes.get("method"),
                                         _attributes.get("index")));
                     } else if ("execute".equals(subValue)) {
-                        getEvents().add(new Event(name, EventType.UI_COMMAND_EXECUTE,
+                        addEvent(new Event(name, EventType.UI_COMMAND_EXECUTE,
                                         _attributes.get("program"), _attributes.get("method"),
                                         _attributes.get("index")));
                     } else if ("instance".equals(subValue)) {
-                        getEvents().add(new Event(name, EventType.UI_INSTANCEMANAGER,
+                        addEvent(new Event(name, EventType.UI_INSTANCEMANAGER,
                                         _attributes.get("program"), _attributes.get("method"),
                                         _attributes.get("index")));
                     } else if ("command".equals(subValue)) {
@@ -215,11 +216,11 @@ public class CommandUpdate
                         // assigns a table as target for this command definition.
                         addLink(CommandUpdate.LINK2TARGETTABLE, new LinkInstance(_text));
                     } else if ("trigger".equals(subValue)) {
-                        getEvents().add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
+                        addEvent(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
                                         _attributes.get("program"), _attributes.get("method"),
                                         _attributes.get("index")));
                     } else if ("validate".equals(subValue)) {
-                        getEvents().add(new Event(name, EventType.UI_VALIDATE,
+                        addEvent(new Event(name, EventType.UI_VALIDATE,
                                         _attributes.get("program"), _attributes.get("method"),
                                         _attributes.get("index")));
                     } else if ("help".equals(subValue)) {
