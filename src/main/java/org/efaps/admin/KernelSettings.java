@@ -78,6 +78,11 @@ public interface KernelSettings
     String REQUIRE_PERSON_UUID = "org.efaps.kernel.RequirePersonUUID";
 
     /**
+     * String: activate the BPM process mechanism.
+     */
+    String USERUI_DISPLAYPERSON = "org.efaps.kernel.UserUIDisplay4Person";
+
+    /**
      * Integer: Maximum number of tries to login with the wrong Password into
      * eFaps, before the User is going to be deactivated. To deactivate this
      * mechanism set the value to 0.

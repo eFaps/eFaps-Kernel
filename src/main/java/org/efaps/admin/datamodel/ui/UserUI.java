@@ -20,10 +20,17 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.text.StrSubstitutor;
+import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Company;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Person;
+import org.efaps.admin.user.Person.AttrName;
 import org.efaps.admin.user.Role;
 import org.efaps.util.EFapsException;
 
@@ -52,7 +59,16 @@ public class UserUI
         final Object value = _fieldValue.getValue();
         if (value instanceof Person) {
             final Person person = (Person) value;
-            ret = person.getName();
+            String display = EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.USERUI_DISPLAYPERSON);
+            if (display == null) {
+                display = "${LASTNAME}, ${FIRSTNAME}";
+            }
+            final Map<String, String> values = new HashMap<String, String>();
+            for (final AttrName attr : AttrName.values()) {
+                values.put(attr.name(), person.getAttrValue(attr));
+            }
+            final StrSubstitutor sub = new StrSubstitutor(values);
+            ret =  sub.replace(display);
         } else if (value instanceof Role) {
             final Role role = (Role) value;
             ret = role.getName();
