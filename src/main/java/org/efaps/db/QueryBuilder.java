@@ -803,6 +803,18 @@ public class QueryBuilder
     }
 
     /**
+     * Get the base type.
+     *
+     * @return the basetype of this QueryBuilder
+     * @throws CacheReloadException on error
+     */
+    public final Type getType()
+        throws CacheReloadException
+    {
+        return Type.get(this.typeUUID);
+    }
+
+    /**
      * Get the constructed query.
      * @return the query
      */
