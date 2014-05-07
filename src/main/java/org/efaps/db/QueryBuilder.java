@@ -122,6 +122,12 @@ public class QueryBuilder
      */
     private int limit = -1;
 
+
+    /**
+     * Should the child types be also be included in this search?
+     */
+    private boolean includeChildTypes = true;
+
     /**
      * @param _typeUUID     uuid of the type this query is based on
      */
@@ -805,6 +811,7 @@ public class QueryBuilder
         if (this.query == null) {
             try {
                 this.query = new InstanceQuery(this.typeUUID);
+                this.query.setIncludeChildTypes(isIncludeChildTypes());
                 prepareQuery();
             } catch (final CacheReloadException e) {
                 QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
@@ -823,6 +830,7 @@ public class QueryBuilder
         if (this.query == null) {
             try {
                 this.query = new CachedInstanceQuery(_key, this.typeUUID);
+                this.query.setIncludeChildTypes(isIncludeChildTypes());
                 prepareQuery();
             } catch (final CacheReloadException e) {
                 QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
@@ -918,5 +926,25 @@ public class QueryBuilder
         throws EFapsException
     {
         return new CachedMultiPrintQuery(getCachedQuery(_key).execute(), _key);
+    }
+
+    /**
+     * Getter method for the instance variable {@link #includeChildTypes}.
+     *
+     * @return value of instance variable {@link #includeChildTypes}
+     */
+    public boolean isIncludeChildTypes()
+    {
+        return this.includeChildTypes;
+    }
+
+    /**
+     * Setter method for instance variable {@link #includeChildTypes}.
+     *
+     * @param _includeChildTypes value for instance variable {@link #includeChildTypes}
+     */
+    public void setIncludeChildTypes(final boolean _includeChildTypes)
+    {
+        this.includeChildTypes = _includeChildTypes;
     }
 }
