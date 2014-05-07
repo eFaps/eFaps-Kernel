@@ -844,8 +844,10 @@ public abstract class AbstractUpdate
                                             final List<Instance> _eventInstList)
             throws EFapsException
         {
-            // check it not first install
-            if (CIAdminEvent.Definition.getType().getMainTable() != null) {
+            // check it not first install and only for the objects that are inside the "t_cmabstract" sql table
+            if (CIAdminEvent.Definition.getType().getMainTable() != null
+                            && CIAdmin.Abstract.getType().getMainTable() != null
+                            && CIAdmin.Abstract.getType().getMainTable().equals(_instance.getType().getMainTable())) {
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminEvent.Definition);
                 queryBldr.addWhereAttrEqValue(CIAdminEvent.Definition.Abstract, _instance);
                 final InstanceQuery query = queryBldr.getQuery();
