@@ -50,7 +50,8 @@ public class AccessSetUpdate
 
     /** Link to Status. */
     private static final Link LINK2STATUS = new Link("Admin_Access_AccessSet2Status", "AccessSetLink",
-                                                     "Admin_DataModel_StatusAbstract", "SatusLink", "Type", "Key");
+                                                     "Admin_DataModel_StatusAbstract",
+                                                     "SatusLink", "Type", "Key").setIncludeChildTypes(true);
 
     /** Link to persons. */
     private static final Link LINK2PERSON = new Link("Admin_Access_AccessSet2UserAbstract", "AccessSetLink",
