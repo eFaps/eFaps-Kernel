@@ -143,7 +143,7 @@ public final class Listener
      * @return lst of classes found
      * @throws EFapsException on error
      */
-    public final <T extends IEsjpListener> List<T> invoke(final Class<? extends IEsjpListener> _class)
+    public <T extends IEsjpListener> List<T> invoke(final Class<? extends IEsjpListener> _class)
         throws EFapsException
     {
         init();
@@ -151,10 +151,11 @@ public final class Listener
         for (final Class<?> clazz : this.classes) {
             if (_class.isAssignableFrom(clazz)) {
                 try {
-                    @SuppressWarnings("unchecked") final T obj = (T) clazz.newInstance();
+                    @SuppressWarnings("unchecked")
+                    final T obj = (T) clazz.newInstance();
                     ret.add(obj);
                     Listener.LOG.debug("Found class: {}", obj);
-                } catch (InstantiationException | IllegalAccessException e) {
+                } catch (final InstantiationException | IllegalAccessException e) {
                     throw new EFapsException("Could not get.", e);
                 }
             }
