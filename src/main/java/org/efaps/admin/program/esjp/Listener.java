@@ -23,6 +23,8 @@ package org.efaps.admin.program.esjp;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -140,6 +142,7 @@ public final class Listener
 
     /**
      * @param _class interface class
+     * @param <T> class extending the interface
      * @return lst of classes found
      * @throws EFapsException on error
      */
@@ -151,11 +154,33 @@ public final class Listener
         for (final Class<?> clazz : this.classes) {
             if (_class.isAssignableFrom(clazz)) {
                 try {
-                    @SuppressWarnings("unchecked")
-                    final T obj = (T) clazz.newInstance();
-                    ret.add(obj);
-                    Listener.LOG.debug("Found class: {}", obj);
+                    boolean hasConst = false;
+                    final Constructor<?>[] constructors = clazz.getConstructors();
+                    for (final Constructor<?> constructor : constructors) {
+                        if (constructor.isAccessible() && constructor.getParameterTypes().length ==0) {
+                            hasConst = true;
+                        }
+                    }
+                    if (hasConst) {
+                        @SuppressWarnings("unchecked")
+                        final T obj = (T) clazz.newInstance();
+                        ret.add(obj);
+                        Listener.LOG.debug("Found class: {}", obj);
+                    } else {
+                        @SuppressWarnings("unchecked")
+                        final T obj = (T) clazz.getMethod("get").invoke(null);
+                        ret.add(obj);
+                        Listener.LOG.debug("Found class: {}", obj);
+                    }
                 } catch (final InstantiationException | IllegalAccessException e) {
+                    throw new EFapsException("Could not get.", e);
+                }  catch (final SecurityException e) {
+                    throw new EFapsException("Could not get.", e);
+                } catch (final IllegalArgumentException e) {
+                    throw new EFapsException("Could not get.", e);
+                } catch (final InvocationTargetException e) {
+                    throw new EFapsException("Could not get.", e);
+                } catch (final NoSuchMethodException e) {
                     throw new EFapsException("Could not get.", e);
                 }
             }
