@@ -183,6 +183,11 @@ public class Field
     private UIInterface classUI = null;
 
     /**
+     * The class is used to generate for a field user specific field values.
+     */
+    private IUIProvider uiProvider = null;
+
+    /**
      * This field can be sorted in a Webtable.
      *
      * @see #isSortAble()
@@ -501,7 +506,7 @@ public class Field
      */
     public IUIProvider getUIProvider()
     {
-        return (IUIProvider) this.classUI;
+        return this.uiProvider == null ? (IUIProvider) this.classUI : this.uiProvider;
     }
 
     /**
@@ -845,6 +850,17 @@ public class Field
         } else if ("ClassNameUI".equals(_name)) {
             try {
                 this.classUI = (UIInterface) Class.forName(_value).newInstance();
+            } catch (final ClassNotFoundException e) {
+                throw new CacheReloadException("could not found class '" + _value + "' for '" + getName() + "'", e);
+            } catch (final InstantiationException e) {
+                throw new CacheReloadException("could not instantiate class '" + _value + "' for '" + getName() + "'",
+                                e);
+            } catch (final IllegalAccessException e) {
+                throw new CacheReloadException("could not access class '" + _value + "' for '" + getName() + "'", e);
+            }
+        } else if ("UIProvider".equals(_name)) {
+            try {
+                this.uiProvider = (IUIProvider) Class.forName(_value).newInstance();
             } catch (final ClassNotFoundException e) {
                 throw new CacheReloadException("could not found class '" + _value + "' for '" + getName() + "'", e);
             } catch (final InstantiationException e) {
