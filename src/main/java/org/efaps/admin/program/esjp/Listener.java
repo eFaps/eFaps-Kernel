@@ -157,7 +157,7 @@ public final class Listener
                     boolean hasConst = false;
                     final Constructor<?>[] constructors = clazz.getConstructors();
                     for (final Constructor<?> constructor : constructors) {
-                        if (constructor.isAccessible() && constructor.getParameterTypes().length ==0) {
+                        if (constructor.isAccessible() && constructor.getParameterTypes().length == 0) {
                             hasConst = true;
                         }
                     }
@@ -165,12 +165,12 @@ public final class Listener
                         @SuppressWarnings("unchecked")
                         final T obj = (T) clazz.newInstance();
                         ret.add(obj);
-                        Listener.LOG.debug("Found class: {}", obj);
+                        Listener.LOG.debug("Instancated class: {}", obj);
                     } else {
                         @SuppressWarnings("unchecked")
                         final T obj = (T) clazz.getMethod("get").invoke(null);
                         ret.add(obj);
-                        Listener.LOG.debug("Found class: {}", obj);
+                        Listener.LOG.debug("Usted static get for class: {}", obj);
                     }
                 } catch (final InstantiationException | IllegalAccessException e) {
                     throw new EFapsException("Could not get.", e);

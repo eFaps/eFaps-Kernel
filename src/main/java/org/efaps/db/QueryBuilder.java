@@ -231,6 +231,10 @@ public class QueryBuilder
                 this.types.add(type.getUUID());
             }
         }
+        // special case handling
+        if (this.types.size() == 1 && this.types.iterator().next().equals(this.typeUUID)) {
+            this.types.clear();
+        }
     }
 
     /**
