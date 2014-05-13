@@ -157,7 +157,7 @@ public final class Listener
                     boolean hasConst = false;
                     final Constructor<?>[] constructors = clazz.getConstructors();
                     for (final Constructor<?> constructor : constructors) {
-                        if (constructor.isAccessible() && constructor.getParameterTypes().length == 0) {
+                        if (constructor.getParameterTypes().length == 0) {
                             hasConst = true;
                         }
                     }
