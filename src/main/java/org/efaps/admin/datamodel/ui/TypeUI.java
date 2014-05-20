@@ -47,16 +47,9 @@ public class TypeUI
         throws EFapsException
     {
         String ret = null;
-
         if (_fieldValue.getValue() instanceof Type) {
-            final Type value = (Type) _fieldValue.getValue();
-
-            final String name = value.getName();
-
-            ret = DBProperties.getProperty(name + ".Label");
-
-        } else {
-            throw new EFapsException(this.getClass(), "getViewHtml.noType", (Object[]) null);
+            final Type type = (Type) _fieldValue.getValue();
+            ret = type.getLabel();
         }
         return ret;
     }
