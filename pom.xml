@@ -356,6 +356,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                     <artifactId>jdtcore</artifactId>
                     <groupId>eclipse</groupId>
                 </exclusion>
+                 <!-- Exlclude because it vrings version 2.x -->
+                <exclusion>
+                    <artifactId>servlet-api</artifactId>
+                    <groupId>javax.servlet</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!--  to be able to export to excel formats -->
