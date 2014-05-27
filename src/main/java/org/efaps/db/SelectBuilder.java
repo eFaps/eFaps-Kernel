@@ -88,6 +88,15 @@ public class SelectBuilder
     }
 
     /**
+     * @param _attribute    attribute to link from
+     * @return this
+     */
+    public SelectBuilder linkfrom(final CIAttribute _attribute)
+    {
+        return linkfrom(_attribute.ciType, _attribute);
+    }
+
+    /**
      * @param _type         type to link from
      * @param _attribute    attribute to link from
      * @return this
