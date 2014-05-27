@@ -60,4 +60,18 @@ public class EnumUI
     {
         return null;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object transformObject(final UIValue _uiValue,
+                                  final Object _object)
+        throws EFapsException
+    {
+        if (_object instanceof Serializable) {
+            _uiValue.setDbValue((Serializable) _object);
+        }
+        return _object;
+    }
 }

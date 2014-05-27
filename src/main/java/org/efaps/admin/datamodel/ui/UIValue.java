@@ -34,6 +34,7 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -55,7 +56,7 @@ public final class UIValue
     /**
      * Value form the database.
      */
-    private final Serializable dbValue;
+    private Serializable dbValue;
 
     /**
      * Id of the field this Value belongs to.
@@ -76,6 +77,18 @@ public final class UIValue
      * The TargetMode the value is wanted for.
      */
     private TargetMode targetMode;
+
+    /**
+     * The variable stores the field instance for this value.
+     *
+     * @see #getInstance
+     */
+    private Instance instance;
+
+    /**
+     * Object that will be passed to the event as CLASS.
+     */
+    private Object classObject;
 
     /**
      * @param _field        Field
@@ -147,6 +160,8 @@ public final class UIValue
             if (ret == null && getUIProvider() != null) {
                 ret = getUIProvider().getValue(this);
             }
+        } else if (getUIProvider() != null) {
+            ret = getUIProvider().transformObject(this, ret);
         }
         return ret;
     }
@@ -172,6 +187,8 @@ public final class UIValue
             if (ret == null && getUIProvider() != null) {
                 ret = getUIProvider().getValue(this);
             }
+        } else if (getUIProvider() != null) {
+            ret = getUIProvider().transformObject(this, ret);
         }
         return ret;
     }
@@ -255,9 +272,10 @@ public final class UIValue
             if (events != null) {
                 final Parameter parameter = new Parameter();
                 parameter.put(ParameterValues.ACCESSMODE, _targetMode);
+                parameter.put(ParameterValues.INSTANCE, this.instance);
+                parameter.put(ParameterValues.CLASS, this.classObject);
                 parameter.put(ParameterValues.UIOBJECT, this);
                 parameter.put(ParameterValues.CALL_INSTANCE, null);
-                parameter.put(ParameterValues.INSTANCE, null);
                 parameter.put(ParameterValues.REQUEST_INSTANCES, null);
                 if (parameter.get(ParameterValues.PARAMETERS) == null) {
                     parameter.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
@@ -276,5 +294,60 @@ public final class UIValue
             }
         }
         return ret;
+    }
+
+    /**
+     * Setter method for instance variable {@link #dbValue}.
+     *
+     * @param _dbValue value for instance variable {@link #dbValue}
+     */
+    protected void setDbValue(final Serializable _dbValue)
+    {
+        this.dbValue = _dbValue;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #instance}.
+     *
+     * @return value of instance variable {@link #instance}
+     */
+    public Instance getInstance()
+    {
+        return this.instance;
+    }
+
+    /**
+     * Setter method for instance variable {@link #instance}.
+     *
+     * @param _instance value for instance variable {@link #instance}
+     * @return this, for chaining
+     */
+    public UIValue setInstance(final Instance _instance)
+    {
+        this.instance = _instance;
+        return this;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #classObject}.
+     *
+     * @return value of instance variable {@link #classObject}
+     */
+    public Object getClassObject()
+    {
+        return this.classObject;
+    }
+
+    /**
+     * Setter method for instance variable {@link #classObject}.
+     *
+     * @param _classObject value for instance variable {@link #classObject}
+     * @return this, for chaining
+     */
+    public UIValue setClassObject(final Object _classObject)
+    {
+        this.classObject = _classObject;
+        return this;
     }
 }

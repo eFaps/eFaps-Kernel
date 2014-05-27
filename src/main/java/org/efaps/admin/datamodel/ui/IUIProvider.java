@@ -52,4 +52,17 @@ public interface IUIProvider
     String validateValue(final UIValue _uiValue)
         throws EFapsException;
 
+    /**
+     * Method is used to transform a object retrieved from an FieldValue Event into
+     * the form specified by the UIProvider.
+     *
+     * @param _uiValue UIValue to transform
+     * @param _object the object to transform
+     * @return the transformed value
+     * @throws EFapsException on error
+     */
+    Object transformObject(final UIValue _uiValue,
+                           final Object _object)
+        throws EFapsException;
+
 }

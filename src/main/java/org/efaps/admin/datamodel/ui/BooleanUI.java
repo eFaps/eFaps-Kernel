@@ -20,14 +20,17 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * A boolean value is shown in create mode with radio boxen which are only
@@ -202,15 +205,55 @@ public class BooleanUI
         return ret;
     }
 
+    /**
+     * Method to evaluate a String representation for the boolean.
+     *
+     * @param _uiValue  UIValue the String representation is wanted for
+     * @param _key      key the String representation is wanted for
+     * @return String representation
+     */
+    private String getLabel(final UIValue _uiValue,
+                            final Boolean _key)
+        throws CacheReloadException
+    {
+        String ret = BooleanUtils.toStringTrueFalse(_key);
+        if (_uiValue.getAttribute() != null
+                        && DBProperties.hasProperty(_uiValue.getAttribute().getKey() + "."
+                                        + BooleanUtils.toStringTrueFalse(_key))) {
+            ret = DBProperties.getProperty(_uiValue.getAttribute().getKey() + "."
+                            + BooleanUtils.toStringTrueFalse(_key));
+        } else if (DBProperties
+                        .hasProperty(_uiValue.getField().getLabel() + "." + BooleanUtils.toStringTrueFalse(_key))) {
+            ret = DBProperties.getProperty(_uiValue.getField().getLabel() + "." + BooleanUtils.toStringTrueFalse(_key));
+        }
+        return ret;
+    }
+
     @Override
     public Object getValue(final UIValue _uiValue)
         throws EFapsException
     {
         final Map<Object, Object> ret = new TreeMap<Object, Object>();
-        final Attribute attribute = _uiValue.getAttribute();
-        ret.put(getTrue(attribute), Boolean.TRUE);
-        ret.put(getFalse(attribute), Boolean.FALSE);
+        ret.put(getLabel(_uiValue, Boolean.TRUE), Boolean.TRUE);
+        ret.put(getLabel(_uiValue, Boolean.FALSE), Boolean.FALSE);
         return ret;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object transformObject(final UIValue _uiValue,
+                                  final Object _object)
+        throws EFapsException
+    {
+        Object ret = null;
+        if (_object instanceof Map) {
+            ret = _object;
+        } else if (_object instanceof Serializable) {
+            _uiValue.setDbValue((Serializable) _object);
+            ret = getValue(_uiValue);
+        }
+        return ret;
+    }
 }
