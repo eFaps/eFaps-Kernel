@@ -236,9 +236,15 @@ public abstract class AbstractUpdate
         throws InstallationException
     {
         for (final AbstractDefinition def : this.definitions) {
+            // only execute if
+            // 1. valid version
+            // 2. application dependcies are met
+            // 3. profiles is empty or the profile list contains the profile of the definition
+            //    or the default profile must be applied
             if (def.isValidVersion(_jexlContext) && def.appDependenciesMet()
                             && (def.getProfiles().isEmpty()
-                                            || CollectionUtils.containsAny(_profiles, def.getProfiles()))) {
+                                            || CollectionUtils.containsAny(_profiles, def.getProfiles())
+                                            || def.isApplyDefault(_profiles, this.definitions))) {
                 if ((this.url != null) && AbstractUpdate.LOG.isDebugEnabled()) {
                     AbstractUpdate.LOG.debug("Executing '" + this.url.toString() + "'");
                 }
@@ -756,6 +762,32 @@ public abstract class AbstractUpdate
                     final boolean met = entry.getKey().isMet();
                     if ((met && !entry.getValue()) || (!met && entry.getValue())) {
                         ret = true;
+                        break;
+                    }
+                }
+            }
+            return ret;
+        }
+
+        /**
+         * @param _profiles set of profiles as defined by an version
+         *                  file o via SystemConfiguration for the execution of an CIItem
+         * @param  _definitions the list of definitions that are contained in the same CIItem
+         * @return true if this definition must be
+         * @throws InstallationException on error
+         */
+        public boolean isApplyDefault(final Set<Profile> _profiles,
+                                      final List<AbstractDefinition> _definitions)
+            throws InstallationException
+        {
+            boolean ret = false;
+            // only applies if this definition is marked as the default
+            if (getProfiles().contains(Profile.getDefaultProfile())) {
+                ret = true;
+                // if one of the definitions is enabled by its profile the default must not be applied
+                for (final AbstractDefinition def: _definitions) {
+                    if (CollectionUtils.containsAny(_profiles, def.getProfiles())) {
+                        ret = false;
                         break;
                     }
                 }

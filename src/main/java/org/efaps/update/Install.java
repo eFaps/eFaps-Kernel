@@ -105,7 +105,7 @@ public class Install
      */
     public Install(final boolean _evaluateProfiles)
     {
-       this.evaluateProfiles = _evaluateProfiles;
+        this.evaluateProfiles = _evaluateProfiles;
     }
 
     /**
@@ -420,16 +420,13 @@ public class Install
     }
 
     /**
-     * Returns a string representation with values of all instance variables.
+     * Getter method for the instance variable {@link #evaluateProfiles}.
      *
-     * @return string representation of this Application
+     * @return value of instance variable {@link #evaluateProfiles}
      */
-    @Override
-    public String toString()
+    protected boolean isEvaluateProfiles()
     {
-        return new ToStringBuilder(this)
-            .append("urls", this.files)
-            .toString();
+        return this.evaluateProfiles;
     }
 
     /**
@@ -461,6 +458,19 @@ public class Install
         }
         Install.LOG.debug("Applying profiles: {}", ret);
         return ret;
+    }
+
+    /**
+     * Returns a string representation with values of all instance variables.
+     *
+     * @return string representation of this Application
+     */
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this)
+            .append("urls", this.files)
+            .toString();
     }
 
     /**
