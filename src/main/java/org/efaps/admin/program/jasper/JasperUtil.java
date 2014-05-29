@@ -24,6 +24,7 @@ import java.io.InputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
@@ -76,7 +77,7 @@ public final class JasperUtil
             JasperUtil.LOG.debug("Loading JasperDesign for :{}", _instance);
             final Digester digester = new Digester();
             JRXmlDigesterFactory.configureDigester(digester);
-            final JRXmlLoader loader = new JRXmlLoader(digester);
+            final JRXmlLoader loader = new JRXmlLoader(DefaultJasperReportsContext.getInstance(), digester);
             jasperDesign = loader.loadXML(source);
         } catch (final ParserConfigurationException e) {
             throw new EFapsException(JasperUtil.class, "getJasperDesign", e);
