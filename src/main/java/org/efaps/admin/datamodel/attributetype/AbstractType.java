@@ -24,6 +24,7 @@ import java.sql.SQLException;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.IAttributeType;
+import org.efaps.db.Instance;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLUpdate;
@@ -63,6 +64,31 @@ public abstract class AbstractType
         throws SQLException
     {
         prepare(_update, _attribute, _values);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void valiate4Update(final Attribute _attribute,
+                               final Instance _instance,
+                               final Object[] _value)
+        throws EFapsException
+    {
+        // as default the value is valid and therefore no error must be thrown
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void valiate4Insert(final Attribute _attribute,
+                               final Instance _instance,
+                               final Object[] _value)
+        throws EFapsException
+    {
+        // as default the value is valid and therefore no error must be thrown
     }
 
     /**

@@ -241,6 +241,18 @@ public class Insert
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void validate(final Instance _instance,
+                            final Value _value)
+        throws EFapsException
+    {
+        _value.getAttribute().getAttributeType().getDbAttrType()
+                        .valiate4Insert(_value.getAttribute(), getInstance(), _value.getValues());
+    }
+
+    /**
      * A new statement must be created an executed for one table. If the
      * parameter '_id' is set to <code>0</code>, a new id is generated. If the
      * JDBC driver supports method <code>getGeneratedKeys</code>, this method is

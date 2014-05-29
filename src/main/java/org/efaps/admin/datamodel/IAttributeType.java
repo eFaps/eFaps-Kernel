@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.efaps.db.Instance;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.util.EFapsException;
@@ -96,5 +97,36 @@ public interface IAttributeType
      * @throws EFapsException on error
      */
     String toString4Where(final Object _value)
+        throws EFapsException;
+
+    /**
+     * Method is executed on addition of an Attribute/Value pair for an Update
+     * on an Instance to validate if the value is permitted. Must throw the
+     * exception if not valid.
+     *
+     * @param _attribute    the Attribute that will be updated with the _value
+     * @param _instance     Instance that will be updated
+     * @param _value        value that will be used for the update
+     * @throws EFapsException if not valid
+     */
+    void valiate4Update(final Attribute _attribute,
+                        final Instance _instance,
+                        final Object[] _value)
+        throws EFapsException;
+
+    /**
+     * Method is executed on addition of an Attribute/Value pair for an Insert
+     * on an Instance to validate if the value is permitted. Must throw the
+     * exception if not valid.<br/>
+     * The given instance is expected to be invalid, but must contain the type.
+     *
+     * @param _attribute    the Attribute that will be updated with the _value
+     * @param _instance     Instance that will be updated
+     * @param _value        value that will be used for the update
+     * @throws EFapsException if not valid
+     */
+    void valiate4Insert(final Attribute _attribute,
+                        final Instance _instance,
+                        final Object[] _value)
         throws EFapsException;
 }

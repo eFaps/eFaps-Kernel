@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2014 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,12 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.Status;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
+
 /**
  *
  * @author The eFaps Team
@@ -32,4 +38,62 @@ public class StatusType
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void valiate4Update(final Attribute _attribute,
+                               final Instance _instance,
+                               final Object[] _value)
+        throws EFapsException
+    {
+        super.valiate4Update(_attribute, _instance, _value);
+        validate(_attribute, _instance, _value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void valiate4Insert(final Attribute _attribute,
+                               final Instance _instance,
+                               final Object[] _value)
+        throws EFapsException
+    {
+        super.valiate4Update(_attribute, _instance, _value);
+        validate(_attribute, _instance, _value);
+    }
+
+    /**
+     * Method is executed on addition of an Attribute/Value pair for an Insert
+     * and Update to validate if the value is permitted. Will throw the
+     * exception if not valid.<br/>
+     *
+     * @param _attribute    the Attribute that will be updated with the _value
+     * @param _instance     Instance that will be updated
+     * @param _value        value that will be used for the update
+     * @throws EFapsException if not valid
+     */
+    private void validate(final Attribute _attribute,
+                          final Instance _instance,
+                          final Object[] _value)
+        throws EFapsException
+    {
+        final Long value = eval(_value);
+        // check the basic values
+        if (value == null) {
+            throw new EFapsException(StatusType.class, "ValueIsNull", _attribute, _instance, _value);
+        } else {
+            final Status status = Status.get(value);
+            final Type statusType = _attribute.getLink();
+            if (statusType == null) {
+                throw new EFapsException(StatusType.class, "AttributeNoStatus", _attribute, _instance, _value);
+            } else {
+                if (!status.getStatusGroup().equals(Status.get(statusType.getUUID()))) {
+                    throw new EFapsException(StatusType.class, "ValueIsNotValid", _attribute, _instance, _value);
+                }
+            }
+        }
+    }
 }

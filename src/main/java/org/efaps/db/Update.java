@@ -291,6 +291,7 @@ public class Update
             }
         }
         final Value value = getValue(_attr, _value);
+        validate(getInstance(), value);
         Map<Attribute, Value> expressions = this.expr4Tables.get(_attr.getTable());
         if (expressions == null) {
             expressions = new HashMap<Attribute, Value>();
@@ -304,6 +305,19 @@ public class Update
             this.trigRelevantAttr2values.put(_attr, value);
         }
         return ret;
+    }
+
+    /**
+     * @param _instance instance to be validated
+     * @param _value value to be validated
+     * @throws EFapsException if invalid
+     */
+    protected void validate(final Instance _instance,
+                            final Value _value)
+        throws EFapsException
+    {
+        _value.getAttribute().getAttributeType().getDbAttrType()
+                        .valiate4Update(_value.getAttribute(), getInstance(), _value.getValues());
     }
 
     /**
