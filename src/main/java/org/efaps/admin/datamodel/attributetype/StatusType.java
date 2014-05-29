@@ -86,7 +86,9 @@ public class StatusType
             throw new EFapsException(StatusType.class, "ValueIsNull", _attribute, _instance, _value);
         } else {
             final Status status = Status.get(value);
-            final Type statusType = _attribute.getLink();
+            // the statusType must be evaluated by the instance type due to the reason that the attribute
+            // belongs to an abstract type
+            final Type statusType = _instance.getType().getStatusAttribute().getLink();
             if (statusType == null) {
                 throw new EFapsException(StatusType.class, "AttributeNoStatus", _attribute, _instance, _value);
             } else {
