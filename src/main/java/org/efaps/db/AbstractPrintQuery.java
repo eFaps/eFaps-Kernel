@@ -776,13 +776,16 @@ public abstract class AbstractPrintQuery
      * @param _tableName    tablename the index is wanted for
      * @param _column       name of the column, used for the relation
      * @param _relIndex     relation the table is used in
+     * @param _clazzId      optional id of the classification
      * @return  index of the table or null if not found
      */
     public Integer getTableIndex(final String _tableName,
                                  final String _column,
-                                 final int _relIndex)
+                                 final int _relIndex,
+                                 final Long _clazzId)
     {
-        return this.sqlTable2Index.get(_relIndex + "__" + _tableName + "__" + _column);
+        return this.sqlTable2Index.get(_relIndex + "__" + _tableName + "__" + _column
+                        + (_clazzId == null ? "" : "__" + _clazzId));
     }
 
     /**
@@ -791,14 +794,17 @@ public abstract class AbstractPrintQuery
      * @param _tableName    tablename the index is wanted for
      * @param _column       name of the column, used for the relation
      * @param _relIndex     relation the table is used in
+     * @param _clazzId      optional id of the classification
      * @return new index for the table
      */
     public Integer getNewTableIndex(final String _tableName,
                                     final String _column,
-                                    final Integer _relIndex)
+                                    final Integer _relIndex,
+                                    final Long _clazzId)
     {
         this.tableIndex++;
-        this.sqlTable2Index.put(_relIndex + "__" + _tableName + "__" + _column, this.tableIndex);
+        this.sqlTable2Index.put(_relIndex + "__" + _tableName + "__" + _column
+                        + (_clazzId == null ? "" : "__" + _clazzId), this.tableIndex);
         return this.tableIndex;
     }
 

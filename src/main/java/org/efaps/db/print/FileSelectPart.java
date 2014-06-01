@@ -53,9 +53,9 @@ public class FileSelectPart
     {
         final int relIndex = super.join(_oneSelect, _select, _relIndex);
         Integer ret;
-        ret = _oneSelect.getTableIndex(AbstractStoreResource.TABLENAME_STORE, "ID", relIndex);
+        ret = _oneSelect.getTableIndex(AbstractStoreResource.TABLENAME_STORE, "ID", relIndex, null);
         if (ret == null) {
-            ret = _oneSelect.getNewTableIndex(AbstractStoreResource.TABLENAME_STORE, "ID", relIndex);
+            ret = _oneSelect.getNewTableIndex(AbstractStoreResource.TABLENAME_STORE, "ID", relIndex, null);
             _select.leftJoin(AbstractStoreResource.TABLENAME_STORE, ret, "ID", relIndex, "ID");
         }
         _select.column(ret, "ID");

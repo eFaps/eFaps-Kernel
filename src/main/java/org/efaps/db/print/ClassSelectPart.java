@@ -82,9 +82,9 @@ public class ClassSelectPart
             throw new EFapsException(ClassSelectPart.class, "joinNoAttribute");
         }
         final String column = attr.getSqlColNames().get(0);
-        ret = _oneSelect.getTableIndex(tableName, column, _relIndex);
+        ret = _oneSelect.getTableIndex(tableName, column, _relIndex, this.classification.getId());
         if (ret == null) {
-            ret = _oneSelect.getNewTableIndex(tableName, column, _relIndex);
+            ret = _oneSelect.getNewTableIndex(tableName, column, _relIndex, this.classification.getId());
             _select.leftJoin(tableName, ret, column, _relIndex, "ID");
         }
         this.tableIdx = ret;

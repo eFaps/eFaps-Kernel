@@ -865,6 +865,9 @@ public class Type
             setDirty();
         }
         final Set<Classification> ret = new HashSet<Classification>();
+        if (getParentType() != null) {
+            ret.addAll(getParentType().getClassifiedByTypes());
+        }
         for (final Long id : this.classifiedByTypes) {
             ret.add((Classification) Type.get(id));
         }

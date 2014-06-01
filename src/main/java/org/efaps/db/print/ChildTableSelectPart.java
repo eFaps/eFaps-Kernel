@@ -74,9 +74,9 @@ public class ChildTableSelectPart
     {
         Integer ret;
         final String tableName = this.table.getSqlTable();
-        ret = _oneSelect.getTableIndex(tableName, "ID", _relIndex);
+        ret = _oneSelect.getTableIndex(tableName, "ID", _relIndex, null);
         if (ret == null) {
-            ret = _oneSelect.getNewTableIndex(tableName, "ID", _relIndex);
+            ret = _oneSelect.getNewTableIndex(tableName, "ID", _relIndex, null);
             _select.leftJoin(tableName, ret, "ID", _relIndex, "ID");
         }
         return ret;

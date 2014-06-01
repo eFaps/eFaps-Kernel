@@ -76,10 +76,10 @@ public class GenInstSelectPart
                     final int _relIndex)
     {
         this.tableIdx = _oneSelect.getTableIndex(GeneralInstance.TABLENAME,
-                        GeneralInstance.ISIDCOLUMN + "_" + GeneralInstance.ISTYPECOLUMN, _relIndex);
+                        GeneralInstance.ISIDCOLUMN + "_" + GeneralInstance.ISTYPECOLUMN, _relIndex, null);
         if (this.tableIdx == null) {
             this.tableIdx = _oneSelect.getNewTableIndex(GeneralInstance.TABLENAME,
-                            GeneralInstance.ISIDCOLUMN + "_" + GeneralInstance.ISTYPECOLUMN, _relIndex);
+                            GeneralInstance.ISIDCOLUMN + "_" + GeneralInstance.ISTYPECOLUMN, _relIndex, null);
             if (getType().getMainTable().getSqlColType() != null) {
                 _select.leftJoin(GeneralInstance.TABLENAME, this.tableIdx,
                                 new String[] {GeneralInstance.ISIDCOLUMN, GeneralInstance.ISTYPECOLUMN},

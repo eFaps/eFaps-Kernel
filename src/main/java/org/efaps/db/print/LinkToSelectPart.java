@@ -127,18 +127,18 @@ public class LinkToSelectPart
         Integer relIndex = _relIndex;
         if (attr != null && !attr.getTable().equals(this.type.getMainTable())) {
             final String childTableName = attr.getTable().getSqlTable();
-            relIndex = _oneSelect.getTableIndex(childTableName, "ID", _relIndex);
+            relIndex = _oneSelect.getTableIndex(childTableName, "ID", _relIndex, null);
             if (relIndex == null) {
-                relIndex = _oneSelect.getNewTableIndex(childTableName, "ID", _relIndex);
+                relIndex = _oneSelect.getNewTableIndex(childTableName, "ID", _relIndex, null);
                 _select.leftJoin(childTableName, relIndex, "ID", _relIndex, "ID");
             }
         }
         Integer ret;
         final String tableName = attr.getLink().getMainTable().getSqlTable();
         final String column = attr.getSqlColNames().get(0);
-        ret = _oneSelect.getTableIndex(tableName, column, relIndex);
+        ret = _oneSelect.getTableIndex(tableName, column, relIndex, null);
         if (ret == null) {
-            ret = _oneSelect.getNewTableIndex(tableName, column, relIndex);
+            ret = _oneSelect.getNewTableIndex(tableName, column, relIndex, null);
             _select.leftJoin(tableName, ret, "ID", relIndex, column);
         }
         _select.column(ret, "ID");

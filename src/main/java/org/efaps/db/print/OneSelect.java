@@ -728,17 +728,19 @@ public class OneSelect
      * @param _tableName    tablename the index is wanted for
      * @param _column       name of the column, used for the relation
      * @param _relIndex     relation the table is used in
+     * @param _clazzId      optional id of the classification
      * @return new index for the table
      */
     public Integer getNewTableIndex(final String _tableName,
                                     final String _column,
-                                    final Integer _relIndex)
+                                    final Integer _relIndex,
+                                    final Long _clazzId)
     {
         int ret;
         if (this.valueSelect == null && this.fromSelect != null) {
-            ret = this.fromSelect.getNewTableIndex(_tableName, _column, _relIndex);
+            ret = this.fromSelect.getNewTableIndex(_tableName, _column, _relIndex, _clazzId);
         } else {
-            ret = this.query.getNewTableIndex(_tableName, _column, _relIndex);
+            ret = this.query.getNewTableIndex(_tableName, _column, _relIndex, _clazzId);
         }
         return ret;
     }
@@ -753,18 +755,20 @@ public class OneSelect
      * {@link org.efaps.db.PrintQuery#getTableIndex(String, Integer)}
      * @param _tableName tablename the index is wanted for
      * @param _column       name of the column, used for the relation
-     * @param _relIndex relation the table is used in
+     * @param _relIndex     relation the table is used in
+     * @param _clazzId      optional id of the classification
      * @return index of the table or null if not found
      */
     public Integer getTableIndex(final String _tableName,
                                  final String _column,
-                                 final int _relIndex)
+                                 final int _relIndex,
+                                 final Long _clazzId)
     {
         Integer ret;
         if (this.valueSelect == null && this.fromSelect != null) {
-            ret = this.fromSelect.getTableIndex(_tableName, _column, _relIndex);
+            ret = this.fromSelect.getTableIndex(_tableName, _column, _relIndex, _clazzId);
         } else {
-            ret = this.query.getTableIndex(_tableName, _column, _relIndex);
+            ret = this.query.getTableIndex(_tableName, _column, _relIndex, _clazzId);
         }
         return ret;
     }
