@@ -49,7 +49,12 @@ public final class AppConfigHandler
         /**
          * Deactivate the AccessCache.
          */
-        QUERYCACHE_DEACTIVATE("org.efaps.application.config.QueryCache.deactivate");
+        QUERYCACHE_DEACTIVATE("org.efaps.application.config.QueryCache.deactivate"),
+
+        /**
+         * The id of this system as needed by the GeneralInstance mechanism.
+         */
+        SYSTEMID("org.efaps.application.config.SystemID");
 
         /**
          * Key of the enum instance.
@@ -76,7 +81,7 @@ public final class AppConfigHandler
     }
 
     /**
-     * Singelton instance.
+     * Singleton instance.
      */
     private static AppConfigHandler HANDLER;
 
@@ -91,6 +96,11 @@ public final class AppConfigHandler
     private final boolean queryCacheDeactivated;
 
     /**
+     *  The id of this system as needed by the GeneralInstance mechanism.
+     */
+    private final int systemID;
+
+    /**
      * Singleton Constructor.
      * @param _values values for the init
      */
@@ -98,6 +108,11 @@ public final class AppConfigHandler
     {
         this.accessCacheDeactivated =  "true".equalsIgnoreCase(_values.get(Parameter.ACCESSCACHE_DEACTIVATE.getKey()));
         this.queryCacheDeactivated =  "true".equalsIgnoreCase(_values.get(Parameter.QUERYCACHE_DEACTIVATE.getKey()));
+        if (_values.containsKey(Parameter.SYSTEMID.getKey())) {
+            this.systemID = Integer.parseInt(_values.get(Parameter.SYSTEMID.getKey()));
+        } else {
+            this.systemID = 0;
+        }
     }
 
     /**
@@ -118,6 +133,16 @@ public final class AppConfigHandler
     public boolean isQueryCacheDeactivated()
     {
         return this.queryCacheDeactivated;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #systemID}.
+     *
+     * @return value of instance variable {@link #systemID}
+     */
+    public int getSystemID()
+    {
+        return this.systemID;
     }
 
     /**
