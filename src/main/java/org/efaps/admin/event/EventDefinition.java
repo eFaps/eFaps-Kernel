@@ -22,6 +22,7 @@ package org.efaps.admin.event;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Type;
@@ -184,7 +185,7 @@ public final class EventDefinition
         throws EFapsException
     {
         Return ret = null;
-        _parameter.put(ParameterValues.PROPERTIES, super.getProperties());
+        _parameter.put(ParameterValues.PROPERTIES, new HashMap<String, String>(super.getProperties()));
         try {
             EventDefinition.LOG.debug("Invoking method '{}' for Resource '{}'", this.methodName, this.resourceName);
             final Class<?> cls = Class.forName(this.resourceName, true, EFapsClassLoader.getInstance());

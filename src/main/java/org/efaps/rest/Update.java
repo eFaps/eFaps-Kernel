@@ -34,6 +34,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
+import org.efaps.admin.AppConfigHandler;
 import org.efaps.update.FileType;
 import org.efaps.update.Install;
 import org.efaps.update.util.InstallationException;
@@ -55,6 +56,11 @@ public class Update
     extends AbstractRest
 {
     /**
+     * Name of the folder inside the "official" temporary folder.
+     */
+    public static final String TMPFOLDERNAME = "eFapsUpdate";
+
+    /**
      * Called on post to consume files used to update.
      *
      * @param _multiPart Mulitpart containing the update files
@@ -66,11 +72,13 @@ public class Update
         try {
             if (hasAccess()) {
                 AbstractRest.LOG.info("===Start of Update via REST===");
-                final File temp = File.createTempFile("eFaps", ".tmp");
-
-                final File tmpfld = temp.getParentFile();
-                temp.delete();
-                final File updateFolder = new File(tmpfld, "eFapsUpdate");
+                File tmpfld = AppConfigHandler.get().getTempFolder();
+                if (tmpfld == null) {
+                    final File temp = File.createTempFile("eFaps", ".tmp");
+                    tmpfld = temp.getParentFile();
+                    temp.delete();
+                }
+                final File updateFolder = new File(tmpfld, Update.TMPFOLDERNAME);
                 if (!updateFolder.exists()) {
                     updateFolder.mkdirs();
                 }

@@ -21,6 +21,8 @@
 
 package org.efaps.admin;
 
+import java.io.File;
+import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 
@@ -54,7 +56,12 @@ public final class AppConfigHandler
         /**
          * The id of this system as needed by the GeneralInstance mechanism.
          */
-        SYSTEMID("org.efaps.application.config.SystemID");
+        SYSTEMID("org.efaps.application.config.SystemID"),
+
+        /**
+         * The id of this system as needed by the GeneralInstance mechanism.
+         */
+        TEMPFOLDER("org.efaps.application.config.TempFolder");
 
         /**
          * Key of the enum instance.
@@ -101,6 +108,11 @@ public final class AppConfigHandler
     private final int systemID;
 
     /**
+     * URI to the temp folder used by eFaps.
+     */
+    private final URI tmpURI;
+
+    /**
      * Singleton Constructor.
      * @param _values values for the init
      */
@@ -112,6 +124,11 @@ public final class AppConfigHandler
             this.systemID = Integer.parseInt(_values.get(Parameter.SYSTEMID.getKey()));
         } else {
             this.systemID = 0;
+        }
+        if (_values.containsKey(Parameter.TEMPFOLDER.getKey())) {
+            this.tmpURI = URI.create(_values.get(Parameter.TEMPFOLDER.getKey()));
+        } else {
+            this.tmpURI = null;
         }
     }
 
@@ -143,6 +160,20 @@ public final class AppConfigHandler
     public int getSystemID()
     {
         return this.systemID;
+    }
+
+    /**
+     * @return if defined the tempfolder for eFaps, else null
+     */
+    public File getTempFolder()
+    {
+        File ret;
+        if (this.tmpURI == null) {
+            ret = null;
+        } else {
+            ret = new File(this.tmpURI);
+        }
+        return ret;
     }
 
     /**

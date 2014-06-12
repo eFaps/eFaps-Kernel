@@ -31,6 +31,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.efaps.admin.AbstractAdminObject;
+import org.efaps.admin.AppConfigHandler;
 import org.efaps.db.Checkout;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -47,6 +48,11 @@ public class TempFileBundle
 {
 
     /**
+     * Name of the folder inside the "official" temporary folder.
+     */
+    public static final String TMPFOLDERNAME = "eFapsFileBundles";
+
+    /**
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(AbstractAdminObject.class);
@@ -56,8 +62,19 @@ public class TempFileBundle
      */
     private static File TMPFOLDER = new File("");
     static {
-        final File tmp = FileUtils.getTempDirectory();
-        TempFileBundle.TMPFOLDER = new File(tmp, "eFapsTempFileBundles");
+        File tmpfld = AppConfigHandler.get().getTempFolder();
+        if (tmpfld == null) {
+            File temp;
+            try {
+                temp = File.createTempFile("eFaps", ".tmp");
+                tmpfld = temp.getParentFile();
+                temp.delete();
+            } catch (final IOException e) {
+                TempFileBundle.LOG.error("Cannot create temp file", e);
+            }
+
+        }
+        TempFileBundle.TMPFOLDER = new File(tmpfld, TempFileBundle.TMPFOLDERNAME);
         if (!TempFileBundle.TMPFOLDER.exists()) {
             final boolean mkdir = TempFileBundle.TMPFOLDER.mkdir();
             if (!mkdir) {
