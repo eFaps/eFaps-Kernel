@@ -93,23 +93,31 @@ public final class AccessKey
     private final AccessTypeEnums accessType;
 
     /**
+     * Is this key only valid for one Time access.
+     */
+    private final boolean oneTime;
+
+    /**
      * @param _instanceTypeUUID UUID of a instance type
      * @param _instanceId Id of the Instance
      * @param _personId Id of the Person
      * @param _companyId Id of the Company
      * @param _accessType Type of the Access
+     * @param _oneTime  ontime access definition
      */
     private AccessKey(final UUID _instanceTypeUUID,
                       final long _instanceId,
                       final long _personId,
                       final long _companyId,
-                      final AccessTypeEnums _accessType)
+                      final AccessTypeEnums _accessType,
+                      final boolean _oneTime)
     {
         this.instanceTypeUUID = _instanceTypeUUID;
         this.instanceId = _instanceId;
         this.personId = _personId;
         this.companyId = _companyId;
         this.accessType = _accessType;
+        this.oneTime = _oneTime;
     }
 
     /**
@@ -163,33 +171,13 @@ public final class AccessKey
     }
 
     /**
-     * @return id represented by this instance
+     * Getter method for the instance variable {@link #oneTime}.
+     *
+     * @return value of instance variable {@link #oneTime}
      */
-    @Override
-    public int hashCode()
+    public boolean isOneTime()
     {
-        return (int) (this.instanceTypeUUID.hashCode() + this.instanceId);
-    }
-
-    /**
-     * @param _obj Object to compare
-     * @return <i>true</i> if the given object in _obj is an instance and holds
-     *         the same type and id
-     */
-    @Override
-    public boolean equals(final Object _obj)
-    {
-        boolean ret = false;
-        if (_obj instanceof AccessKey) {
-            final AccessKey accessKey = (AccessKey) _obj;
-            ret = getInstanceTypeUUID() == accessKey.getInstanceTypeUUID()
-                            && getInstanceId() == accessKey.getInstanceId()
-                            && getPersonId() == accessKey.getPersonId()
-                            && getAccessType().equals(accessKey.getAccessType());
-        } else {
-            super.equals(_obj);
-        }
-        return ret;
+        return this.oneTime;
     }
 
     /**
@@ -214,6 +202,36 @@ public final class AccessKey
                         .append("-").append(this.accessType).toString();
     }
 
+    /**
+     * @return id represented by this instance
+     */
+    @Override
+    public int hashCode()
+    {
+        return (int) (this.instanceTypeUUID.hashCode() + this.instanceId);
+    }
+
+    /**
+     * @param _obj Object to compare
+     * @return <i>true</i> if the given object in _obj is an instance and holds
+     *         the same type and id
+     */
+    @Override
+    public boolean equals(final Object _obj)
+    {
+        boolean ret = false;
+        if (_obj instanceof AccessKey) {
+            final AccessKey accessKey = (AccessKey) _obj;
+            ret = getInstanceTypeUUID().equals(accessKey.getInstanceTypeUUID())
+                            && getInstanceId() == accessKey.getInstanceId()
+                            && getPersonId() == accessKey.getPersonId()
+                            && getAccessType().equals(accessKey.getAccessType());
+        } else {
+            super.equals(_obj);
+        }
+        return ret;
+    }
+
     @Override
     public String toString()
     {
@@ -228,6 +246,34 @@ public final class AccessKey
      */
     public static AccessKey get(final Instance _instance,
                                 final AccessType _accessType)
+        throws EFapsException
+    {
+        return AccessKey.get(_instance, _accessType, false);
+    }
+
+    /**
+     * @param _instance Instance the AccessKey is wanted for
+     * @param _accessType AccessTyep the AccessKey is wanted for
+     * @throws EFapsException on error
+     * @return new AccessKey instance
+     */
+    public static AccessKey getOneTime(final Instance _instance,
+                                       final AccessType _accessType)
+        throws EFapsException
+    {
+        return AccessKey.get(_instance, _accessType, true);
+    }
+
+    /**
+     * @param _instance Instance the AccessKey is wanted for
+     * @param _accessType AccessTyep the AccessKey is wanted for
+     * @param _oneTime oneTime
+     * @throws EFapsException on error
+     * @return new AccessKey instance
+     */
+    private  static AccessKey get(final Instance _instance,
+                                  final AccessType _accessType,
+                                  final boolean _oneTime)
         throws EFapsException
     {
         final Person person = Context.getThreadContext().getPerson();
@@ -245,6 +291,6 @@ public final class AccessKey
             companyIdTmp = company.getId();
         }
         return new AccessKey(_instance.getTypeUUID(), _instance.getId(), personIdTmp, companyIdTmp,
-                        AccessTypeEnums.get(_accessType.getUUID()));
+                        AccessTypeEnums.get(_accessType.getUUID()), _oneTime);
     }
 }

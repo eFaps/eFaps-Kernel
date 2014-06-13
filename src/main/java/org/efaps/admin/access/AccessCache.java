@@ -1,5 +1,5 @@
 /*
-AccessCache.LOG.debug("registered Update for Instance: {}", _instance); * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2013 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,12 @@ import org.efaps.admin.AppConfigHandler;
 import org.efaps.db.Instance;
 import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.InfinispanCache;
-import org.efaps.util.cache.NoOpCache;
 import org.infinispan.Cache;
+import org.infinispan.commands.read.GetKeyValueCommand;
+import org.infinispan.commands.write.PutKeyValueCommand;
+import org.infinispan.container.entries.CacheEntry;
+import org.infinispan.context.InvocationContext;
+import org.infinispan.interceptors.base.BaseCustomInterceptor;
 import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
 import org.infinispan.notifications.cachelistener.event.CacheEntryCreatedEvent;
@@ -56,11 +60,6 @@ public final class AccessCache
      * Name of the Cache for AccessKey.
      */
     public static final String KEYCACHE = AccessCache.class.getName() + ".AccessKey";
-
-    /**
-     * NoOp cache in case the AccessCache mechanism is deactivated.
-     */
-    private static NoOpAccessCache NOOP;
 
     /**
      * Logging instance used in this class.
@@ -131,24 +130,21 @@ public final class AccessCache
      */
     public static void initialize()
     {
-        if (AppConfigHandler.get().isAccessCacheDeactivated()) {
-            AccessCache.NOOP = new NoOpAccessCache();
+        if (InfinispanCache.get().exists(AccessCache.INDEXCACHE)) {
+            InfinispanCache.get().<String, AccessKey>getCache(AccessCache.INDEXCACHE).clear();
         } else {
-            if (InfinispanCache.get().exists(AccessCache.INDEXCACHE)) {
-                InfinispanCache.get().<String, AccessKey>getCache(AccessCache.INDEXCACHE).clear();
-            } else {
-                final Cache<String, AccessKey> cache = InfinispanCache.get().<String, AccessKey>getCache(
-                                AccessCache.INDEXCACHE);
-                cache.addListener(new CacheLogListener(AccessCache.LOG));
-            }
-            if (InfinispanCache.get().exists(AccessCache.KEYCACHE)) {
-                InfinispanCache.get().<AccessKey, Boolean>getCache(AccessCache.KEYCACHE).clear();
-            } else {
-                final Cache<AccessKey, Boolean> cache = InfinispanCache.get().<AccessKey, Boolean>getCache(
-                                AccessCache.KEYCACHE);
-                cache.addListener(new CacheLogListener(AccessCache.LOG));
-                cache.addListener(new KeyCacheListener());
-            }
+            final Cache<String, AccessKey> cache = InfinispanCache.get().<String, AccessKey>getCache(
+                            AccessCache.INDEXCACHE);
+            cache.addListener(new CacheLogListener(AccessCache.LOG));
+        }
+        if (InfinispanCache.get().exists(AccessCache.KEYCACHE)) {
+            InfinispanCache.get().<AccessKey, Boolean>getCache(AccessCache.KEYCACHE).clear();
+        } else {
+            final Cache<AccessKey, Boolean> cache = InfinispanCache.get().<AccessKey, Boolean>getCache(
+                            AccessCache.KEYCACHE);
+            cache.addListener(new CacheLogListener(AccessCache.LOG));
+            cache.addListener(new KeyCacheListener());
+            cache.getAdvancedCache().addInterceptor(new Interceptor(), 0);
         }
     }
 
@@ -157,13 +153,7 @@ public final class AccessCache
      */
     public static Cache<AccessKey, Boolean> getKeyCache()
     {
-        Cache<AccessKey, Boolean> ret;
-        if (AppConfigHandler.get().isAccessCacheDeactivated()) {
-            ret = AccessCache.NOOP;
-        } else {
-            ret = InfinispanCache.get().<AccessKey, Boolean>getIgnReCache(AccessCache.KEYCACHE);
-        }
-        return ret;
+        return InfinispanCache.get().<AccessKey, Boolean>getIgnReCache(AccessCache.KEYCACHE);
     }
 
     /**
@@ -192,11 +182,56 @@ public final class AccessCache
     }
 
     /**
-     * Implementation of a Cache that actually does not store anything.
+     * Interceptor.
      */
-    private static class NoOpAccessCache
-        extends NoOpCache<AccessKey, Boolean>
+    private static class Interceptor
+        extends BaseCustomInterceptor
     {
 
+        @Override
+        public Object visitPutKeyValueCommand(final InvocationContext _ctx,
+                                              final PutKeyValueCommand _command)
+            throws Throwable
+        {
+            final Object ret;
+            if (AppConfigHandler.get().isAccessCacheDeactivated()) {
+                // even if the access cache is deactivated a OneTime Key will be
+                // stored for one access and then removed
+                final AccessKey key = (AccessKey) _command.getKey();
+                if (key.isOneTime()) {
+                    ret = invokeNextInterceptor(_ctx, _command);
+                } else {
+                    ret = null;
+                }
+            } else {
+                ret = invokeNextInterceptor(_ctx, _command);
+            }
+            return ret;
+        }
+
+        @Override
+        public Object visitGetKeyValueCommand(final InvocationContext _ctx,
+                                              final GetKeyValueCommand _command)
+            throws Throwable
+        {
+            // change the command so that it returns the entry
+            final Object[] parameters = _command.getParameters();
+            parameters[2] = Boolean.TRUE;
+            _command.setParameters(GetKeyValueCommand.COMMAND_ID, parameters);
+
+            final Object tmp = invokeNextInterceptor(_ctx, _command);
+            final Object ret;
+            if (tmp == null) {
+                ret = null;
+            } else {
+                final CacheEntry entry = ((CacheEntry) tmp);
+                final AccessKey key = (AccessKey) entry.getKey();
+                if (key.isOneTime()) {
+                    AccessCache.getKeyCache().remove(key);
+                }
+                ret = entry.getValue();
+            }
+            return ret;
+        }
     }
 }
