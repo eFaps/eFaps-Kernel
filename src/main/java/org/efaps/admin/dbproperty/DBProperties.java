@@ -24,8 +24,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Formatter;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.MissingFormatArgumentException;
+import java.util.Set;
 
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
@@ -94,7 +96,7 @@ public final class DBProperties
                     .addColumnPart(3, "LANG").toString();
 
     /**
-     * SQL Statement used to find a property used if with the prior Statement no
+     * SQL Statement used to find a property used if with the previous Statement no
      * result where found.
      */
     private static final String SQLSELECTDEF = new SQLSelect()
@@ -105,6 +107,30 @@ public final class DBProperties
                     .addPart(SQLPart.ORDERBY)
                     .addColumnPart(1, "SEQUENCE").addPart(SQLPart.DESC).toString();
 
+    /**
+     * SQL Statement used to get the properties that must be cached on start.
+     */
+    private static final String SQLSELECTONSTART = new SQLSelect()
+                    .column(0, "PROPKEY")
+                    .column(0, "DEFAULTV")
+                    .column(2, "VALUE")
+                    .column(3, "LANG")
+                    .from("T_ADPROP", 0)
+                    .innerJoin("T_ADPROPBUN", 1, "ID", 0, "BUNDLEID")
+                    .leftJoin("T_ADPROPLOC", 2, "PROPID", 0, "ID")
+                    .leftJoin("T_ADLANG", 3, "ID", 2, "LANGID")
+                    .addPart(SQLPart.WHERE)
+                    .addColumnPart(1, "CACHEONSTART").addPart(SQLPart.EQUAL).addBooleanValue(true)
+                    .addPart(SQLPart.ORDERBY)
+                    .addColumnPart(1, "SEQUENCE").addPart(SQLPart.ASC).addPart(SQLPart.COMMA)
+                    .addColumnPart(0, "PROPKEY").toString();
+
+    /**
+     * SQL Statement to get a list of languages.
+     */
+    private static final String SQLLANG = new SQLSelect()
+                    .column("LANG")
+                    .from("T_ADLANG").toString();
     /**
      * Private Constructor for Utility class.
      */
@@ -337,7 +363,63 @@ public final class DBProperties
     }
 
     /**
-     * Initialize the Cache be calling it. USed from runtime level.
+     * Load the properties that must be cached on start.
+     */
+    private static void cacheOnStart()
+    {
+        try {
+            boolean closeContext = false;
+            if (!Context.isThreadActive()) {
+                Context.begin();
+                closeContext = true;
+            }
+            final ConnectionResource con = Context.getThreadContext().getConnectionResource();
+            final PreparedStatement stmtLang = con.getConnection().prepareStatement(DBProperties.SQLLANG);
+            final ResultSet rsLang = stmtLang.executeQuery();
+            final Set<String> languages = new HashSet<String>();
+            while (rsLang.next()) {
+                languages.add(rsLang.getString(1).trim());
+            }
+            rsLang.close();
+            stmtLang.close();
+            final Cache<String, String> cache = InfinispanCache.get().<String, String>getCache(
+                            DBProperties.CACHENAME);
+            final PreparedStatement stmt = con.getConnection().prepareStatement(DBProperties.SQLSELECTONSTART);
+            final ResultSet resultset = stmt.executeQuery();
+            while (resultset.next()) {
+                final String propKey = resultset.getString(1).trim();
+                final String defaultValue = resultset.getString(2);
+                if (defaultValue != null) {
+                     final String value = defaultValue.trim();
+                     for (final String lang : languages) {
+                         final String cachKey = lang + ":" + propKey;
+                         if (!cache.containsKey(cachKey)) {
+                             cache.put(cachKey, value);
+                         }
+                     }
+                }
+                final String value = resultset.getString(3);
+                final String lang = resultset.getString(4);
+                if (value != null) {
+                    final String cachKey = lang.trim() + ":" + propKey;
+                    cache.put(cachKey, value.trim());
+                }
+            }
+            resultset.close();
+            stmt.close();
+            con.commit();
+            if (closeContext) {
+                Context.rollback();
+            }
+        } catch (final EFapsException e) {
+            DBProperties.LOG.error("initialiseCache()", e);
+        } catch (final SQLException e) {
+            DBProperties.LOG.error("initialiseCache()", e);
+        }
+    }
+
+    /**
+     * Initialize the Cache be calling it. Used from runtime level.
      */
     public static void initialize()
     {
@@ -347,5 +429,6 @@ public final class DBProperties
             InfinispanCache.get().<String, String>getCache(DBProperties.CACHENAME)
                             .addListener(new CacheLogListener(DBProperties.LOG));
         }
+        DBProperties.cacheOnStart();
     }
 }

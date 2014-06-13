@@ -34,6 +34,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.jexl.JexlContext;
+import org.apache.commons.lang3.BooleanUtils;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdmin;
 import org.efaps.db.Insert;
@@ -102,6 +103,11 @@ public class DBPropertiesUpdate
      * Sequence of the Bundle.
      */
     private String bundlesequence;
+
+    /**
+     * Set the load on start.
+     */
+    private boolean cacheOnStart;
 
     /**
      * root of the XML-file to be imported.
@@ -197,6 +203,7 @@ public class DBPropertiesUpdate
             insert.add("Name", this.bundlename);
             insert.add("UUID", this.bundeluuid);
             insert.add("Sequence", this.bundlesequence);
+            insert.add("CacheOnStart", this.cacheOnStart);
             insert.executeWithoutAccessCheck();
 
             ret = insert.getId();
@@ -497,6 +504,7 @@ public class DBPropertiesUpdate
         } else if ("bundle".equals(value)) {
             this.bundlename = _attributes.get("name");
             this.bundlesequence = _attributes.get("sequence");
+            this.cacheOnStart = BooleanUtils.toBoolean(_attributes.get("cacheOnStart"));
         } else if ("resource".equals(value)) {
             if (_tags.size() == 1) {
                 this.curResource = new Resource();
