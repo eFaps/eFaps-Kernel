@@ -39,12 +39,15 @@ import org.efaps.util.EFapsException;
 import org.jbpm.services.task.impl.model.GroupImpl;
 import org.jbpm.services.task.impl.model.UserImpl;
 import org.jbpm.services.task.wih.LocalHTWorkItemHandler;
+import org.jbpm.services.task.wih.util.PeopleAssignmentHelper;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.task.model.Group;
 import org.kie.api.task.model.OrganizationalEntity;
 import org.kie.api.task.model.Task;
 import org.kie.api.task.model.User;
+import org.kie.internal.task.api.TaskModelProvider;
+import org.kie.internal.task.api.model.InternalOrganizationalEntity;
 import org.kie.internal.task.api.model.InternalPeopleAssignments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +73,8 @@ public class HumanTaskWorkItemHandler
     private static final Logger LOG = LoggerFactory.getLogger(HumanTaskWorkItemHandler.class);
 
     @Override
-    protected Task createTaskBasedOnWorkItemParams(final KieSession _ksession, final WorkItem _workItem)
+    protected Task createTaskBasedOnWorkItemParams(final KieSession _ksession,
+                                                   final WorkItem _workItem)
     {
         final Task ret = super.createTaskBasedOnWorkItemParams(_ksession, _workItem);
         try {
@@ -79,6 +83,26 @@ public class HumanTaskWorkItemHandler
                 final User user = new UserImpl(person.getUUID().toString());
                 ((InternalPeopleAssignments) ret.getPeopleAssignments()).setTaskInitiator(user);
             }
+            // the original implementation does not allow to add groups as bussinessadministrator
+            final String baIds = (String)_workItem.getParameter(PeopleAssignmentHelper.BUSINESSADMINISTRATOR_ID);
+            if (baIds != null && !baIds.isEmpty()) {
+                final List<OrganizationalEntity> baList = ret.getPeopleAssignments().getBusinessAdministrators();
+                final String separator = System.getProperty("org.jbpm.ht.user.separator", ",");
+                for (final String baId : baIds.split(separator)) {
+                    final Role role = Role.get(UUID.fromString(baId));
+                    if (role != null) {
+                        final Group group = TaskModelProvider.getFactory().newGroup();
+                        ((InternalOrganizationalEntity) group).setId(baId);
+                        // this works only due to the reason that the Group "equal" implementation uses only the id
+                        if (baList.contains(group)) {
+                            baList.remove(group);
+                        }
+                        baList.add(group);
+                    }
+                }
+                ((InternalPeopleAssignments) ret.getPeopleAssignments()).setBusinessAdministrators(baList);
+            }
+
             final List<OrganizationalEntity> potOwners = ret.getPeopleAssignments().getPotentialOwners();
 
             final List<AbstractUserObject> users = new ArrayList<AbstractUserObject>();
