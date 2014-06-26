@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.collections4.iterators.ReverseListIterator;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.access.AccessCache;
 import org.efaps.admin.access.AccessTypeEnums;
@@ -70,18 +71,13 @@ public class Update
 
     /**
      * The instance variable stores the instance for which this update is made.
-     *
-     * @see #getInstance
-     * @see #setInstance
      */
     private Instance instance = null;
 
     /**
-     * Mapping of table to AttributeType.
-     *
-     * @see #getExpr4Tables
+     * Mapping of SQL-Table to Attribute and Value.
      */
-    private final Map<SQLTable, Map<Attribute, Value>> expr4Tables = new Hashtable<SQLTable, Map<Attribute, Value>>();
+    private final Map<SQLTable, List<Value>> table2values = new Hashtable<SQLTable, List<Value>>();
 
     /**
      * Mapping of attribute to values.
@@ -292,12 +288,12 @@ public class Update
         }
         final Value value = getValue(_attr, _value);
         validate(getInstance(), value);
-        Map<Attribute, Value> expressions = this.expr4Tables.get(_attr.getTable());
-        if (expressions == null) {
-            expressions = new HashMap<Attribute, Value>();
-            this.expr4Tables.put(_attr.getTable(), expressions);
+        List<Value> values = this.table2values.get(_attr.getTable());
+        if (values == null) {
+            values = new ArrayList<Value>();
+            this.table2values.put(_attr.getTable(), values);
         }
-        expressions.put(_attr, value);
+        values.add(value);
 
         this.attr2values.put(_attr, value);
 
@@ -345,6 +341,16 @@ public class Update
             }
         }
         return new Value(_attr, _value == null ? null : values.toArray());
+    }
+
+    /**
+     * Getter method for the instance variable {@link #table2values}.
+     *
+     * @return value of instance variable {@link #table2values}
+     */
+    protected Map<SQLTable, List<Value>> getTable2values()
+    {
+        return this.table2values;
     }
 
     /**
@@ -417,12 +423,23 @@ public class Update
             ConnectionResource con = null;
             try {
                 con = context.getConnectionResource();
-                for (final Entry<SQLTable, Map<Attribute, Value>> entry : this.expr4Tables.entrySet()) {
+                for (final Entry<SQLTable, List<Value>> entry : this.table2values.entrySet()) {
                     final SQLUpdate update = Context.getDbType().newUpdate(entry.getKey().getSqlTable(),
-                                                                           entry.getKey().getSqlColId(),
-                                                                           this.instance.getId());
-                    for (final Value value : entry.getValue().values()) {
-                        value.attribute.prepareDBUpdate(update, value.values);
+                                    entry.getKey().getSqlColId(),
+                                    this.instance.getId());
+                    // iterate in reverse order and only execute the ones that are not added yet, permitting
+                    // to overwrite the value for attributes by adding them later
+                    final ReverseListIterator<Value> iterator = new ReverseListIterator<Value>(entry.getValue());
+
+                    final Set<String> added = new HashSet<String>();
+                    while (iterator.hasNext()) {
+                        final Value value = iterator.next();
+                        final String colKey = value.getAttribute().getSqlColNames().toString();
+                        if (!added.contains(colKey)) {
+                            value.getAttribute().prepareDBUpdate(update, value.getValues());
+                            added.add(colKey);
+                        }
+
                     }
                     update.execute(con.getConnection());
                 }
@@ -451,13 +468,7 @@ public class Update
         return getInstance().getType();
     }
 
-    /**
-     * @return the expr4Tables
-     */
-    public Map<SQLTable, Map<Attribute, Value>> getExpr4Tables()
-    {
-        return this.expr4Tables;
-    }
+
 
     /**
      * The instance method returns the id of {@link #instance}.

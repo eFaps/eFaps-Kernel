@@ -21,13 +21,16 @@
 package org.efaps.db;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.collections4.iterators.ReverseListIterator;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
@@ -114,8 +117,8 @@ public class Insert
     private void addTables()
     {
         for (final SQLTable table : getType().getTables()) {
-            if (!getExpr4Tables().containsKey(table)) {
-                getExpr4Tables().put(table, new HashMap<Attribute, Update.Value>());
+            if (!getTable2values().containsKey(table)) {
+                getTable2values().put(table, new ArrayList<Value>());
             }
         }
     }
@@ -217,7 +220,7 @@ public class Insert
 
             final SQLTable mainTable = getType().getMainTable();
 
-            final long id = executeOneStatement(con, mainTable, getExpr4Tables().get(mainTable).values(), 0);
+            final long id = executeOneStatement(con, mainTable, getTable2values().get(mainTable), 0);
 
             setInstance(Instance.get(getInstance().getType(), id));
 
@@ -226,10 +229,10 @@ public class Insert
 
             GeneralInstance.insert(getInstance(), con.getConnection());
 
-            for (final Entry<SQLTable, Map<Attribute, Value>> entry : getExpr4Tables().entrySet()) {
+            for (final Entry<SQLTable, List<Value>> entry :  getTable2values().entrySet()) {
                 final SQLTable table = entry.getKey();
                 if (!table.equals(mainTable) && !table.isReadOnly()) {
-                    executeOneStatement(con, table, entry.getValue().values(), id);
+                    executeOneStatement(con, table, entry.getValue(), id);
                 }
             }
             con.commit();
@@ -269,7 +272,7 @@ public class Insert
      */
     private long executeOneStatement(final ConnectionResource _con,
                                      final SQLTable _table,
-                                     final Collection<Update.Value> _values,
+                                     final List<Value> _values,
                                      final long _id)
         throws EFapsException
     {
@@ -287,8 +290,16 @@ public class Insert
                 insert.column(_table.getSqlColType(), getType().getId());
             }
 
-            for (final Update.Value value : _values) {
-                value.getAttribute().prepareDBInsert(insert, value.getValues());
+            final ReverseListIterator<Value> iterator = new ReverseListIterator<Value>(_values);
+
+            final Set<String> added = new HashSet<String>();
+            while (iterator.hasNext()) {
+                final Value value = iterator.next();
+                final String colKey = value.getAttribute().getSqlColNames().toString();
+                if (!added.contains(colKey)) {
+                    value.getAttribute().prepareDBInsert(insert, value.getValues());
+                    added.add(colKey);
+                }
             }
 
             final Long bck = insert.execute(_con.getConnection());

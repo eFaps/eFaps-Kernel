@@ -301,9 +301,9 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
 
         <!-- to define a higher version (needed from another tool) -->
         <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>3.2.1</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.0</version>
         </dependency>
 
         <!--
