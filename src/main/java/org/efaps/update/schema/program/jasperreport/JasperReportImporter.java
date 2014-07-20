@@ -26,8 +26,8 @@ import java.util.UUID;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.design.JRDesignParameter;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
@@ -70,7 +70,8 @@ public class JasperReportImporter
     {
         super.readCode();
         try {
-            this.jasperDesign = new JRXmlLoader(JRXmlDigesterFactory.createDigester()).loadXML(newCodeInputStream());
+            this.jasperDesign = new JRXmlLoader(DefaultJasperReportsContext.getInstance(),
+                            JRXmlDigesterFactory.createDigester()).loadXML(newCodeInputStream());
         } catch (final ParserConfigurationException e) {
             throw new InstallationException("source code for " + getUrl() + "could not be parsed", e);
         } catch (final SAXException e) {
@@ -106,14 +107,6 @@ public class JasperReportImporter
     @Override
     protected UUID evalUUID()
     {
-        UUID ret = null;
-        final JRDesignParameter para = (JRDesignParameter) this.jasperDesign.getParametersMap().get("EFAPS_DEFINITION");
-        if (para != null) {
-            final String uuid = para.getPropertiesMap().getProperty("UUID");
-            if (uuid != null) {
-                ret = UUID.fromString(uuid);
-            }
-        }
-        return ret;
+        return this.jasperDesign.getUUID();
     }
 }
