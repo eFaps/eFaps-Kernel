@@ -35,6 +35,8 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import org.efaps.ci.CIAdminProgram;
 import org.efaps.update.schema.program.AbstractSourceImporter;
 import org.efaps.update.util.InstallationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -46,6 +48,11 @@ import org.xml.sax.SAXException;
 public class JasperReportImporter
     extends AbstractSourceImporter
 {
+    /**
+     * Logging instance used to give logging information of this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(JasperReportImporter.class);
+
     /**
      * Design of the current report.
      */
@@ -77,7 +84,9 @@ public class JasperReportImporter
         } catch (final SAXException e) {
             throw new InstallationException("source code for " + getUrl() + "could not parsed", e);
         } catch (final JRException e) {
-            throw new InstallationException("source code for " + getUrl() + "could not encoded", e);
+            // the error is very useful for the user so print it to the log
+            LOG.error("The file {} cannot be read due to an JRException {}", getUrl(), e);
+            throw new InstallationException("source code for " + getUrl() + "throws JRException", e);
         } catch (final UnsupportedEncodingException e) {
             throw new InstallationException("source code for " + getUrl() + "could not encoded", e);
         }
