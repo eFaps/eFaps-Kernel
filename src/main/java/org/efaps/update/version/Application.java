@@ -185,9 +185,8 @@ public final class Application
     @SetProperty(pattern = "install/rootPackage", attributeName = "name")
     private String rootPackageName;
 
-
     /**
-     * USed in combination with the digester.
+     * Used in combination with the digester.
      */
     private Map<String, String> tmpElements = new HashMap<String, String>();
 
@@ -303,7 +302,7 @@ public final class Application
                                                        final Map<String, String> _file2typeMapping)
         throws InstallationException
     {
-        final Map<String, String> file2typeMapping = (_file2typeMapping == null)
+        final Map<String, String> file2typeMapping = _file2typeMapping == null
                         ? Application.DEFAULT_TYPE_MAPPING
                         : _file2typeMapping;
         final Application appl;
@@ -351,10 +350,10 @@ public final class Application
                                        final List<String> _excludes)
     {
         final DirectoryScanner ds = new DirectoryScanner();
-        final String[] included = (_includes == null)
+        final String[] included = _includes == null
                         ? Application.DEFAULT_INCLUDES.toArray(new String[Application.DEFAULT_INCLUDES.size()])
                         : _includes.toArray(new String[_includes.size()]);
-        final String[] excluded = (_excludes == null)
+        final String[] excluded = _excludes == null
                         ? Application.DEFAULT_EXCLUDES.toArray(new String[Application.DEFAULT_EXCLUDES.size()])
                         : _excludes.toArray(new String[_excludes.size()]);
         ds.setIncludes(included);
@@ -453,7 +452,7 @@ public final class Application
                                   final boolean _addRuntimeClassPath)
         throws InstallationException
     {
-        (new Application((URL) null, _classpath)).compileAll(_userName, _addRuntimeClassPath);
+        new Application((URL) null, _classpath).compileAll(_userName, _addRuntimeClassPath);
     }
 
     /**
@@ -507,6 +506,25 @@ public final class Application
     }
 
     /**
+     * Installs current application including existing {@link #dependencies}.
+     *
+     * @param _userName name of logged in user
+     * @param _password password of logged in user
+     * @param _profiles set of profile to be applied
+     * @param _compile  compile during the install
+     * @throws InstallationException for all cases the installation failed
+     * @see #install(String, String, boolean)
+     */
+    public void install(final String _userName,
+                        final String _password,
+                        final Set<Profile> _profiles,
+                        final boolean _compile)
+        throws InstallationException
+    {
+        this.install(_userName, _password, _profiles, _compile, true);
+    }
+
+    /**
      * For each version in {@link #versions} is tested, if it is already
      * installed. If not already installed, the version is installed. Only if
      * <code>_withDependency</code> is defined, also the {@link #dependencies}
@@ -521,6 +539,7 @@ public final class Application
     protected void install(final String _userName,
                            final String _password,
                            final Set<Profile> _profiles,
+                           final boolean _compile,
                            final boolean _withDependency)
         throws InstallationException
     {
@@ -531,7 +550,7 @@ public final class Application
                 dependency.resolve();
                 final Application appl = Application.getApplicationFromJarFile(
                                 dependency.getJarFile(), this.classpathElements);
-                appl.install(_userName, _password, dependency.getProfiles(), false);
+                appl.install(_userName, _password, dependency.getProfiles(), _compile, false);
             }
         }
 
@@ -554,8 +573,8 @@ public final class Application
 
         for (final ApplicationVersion version : this.versions) {
             Application.LOG.info("Check version '{}'", version.getNumber());
-
-            if ((latestVersion != null) && (version.getNumber() < latestVersion)) {
+            version.setCompile(_compile);
+            if (latestVersion != null && version.getNumber() < latestVersion) {
                 if (Application.LOG.isInfoEnabled()) {
                     Application.LOG.info("Version " + version.getNumber() + " already installed");
                 }
