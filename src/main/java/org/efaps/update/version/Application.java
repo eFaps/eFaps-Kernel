@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -221,8 +222,6 @@ public final class Application
      * @param _classpathElements elements of the class path
      * @return application instance with all version information
      * @throws InstallationException if version XML file could not be parsed
-     *             TODO: description TODO: better definition of include dir /
-     *             file
      */
     public static Application getApplication(final URL _versionUrl,
                                              final URL _rootUrl,
@@ -395,11 +394,15 @@ public final class Application
                                                                         final List<String> _classpath)
         throws InstallationException
     {
-        final ClassLoader cl = Application.class.getClassLoader();
-
-        // get install application (read from all install xml files)
         final Map<String, Application> appls = new HashMap<String, Application>();
         try {
+            final ClassLoader parent = Application.class.getClassLoader();
+            final List<URL> urls = new ArrayList<>();
+            for (final String pathElement : _classpath) {
+                urls.add(new File(pathElement).toURI().toURL());
+            }
+            final URLClassLoader cl = URLClassLoader.newInstance(urls.toArray(new URL[urls.size()]), parent);
+            // get install application (read from all install xml files)
             final Enumeration<URL> urlEnum = cl.getResources("META-INF/efaps/install.xml");
             while (urlEnum.hasMoreElements()) {
                 // TODO: why class path?
@@ -477,7 +480,7 @@ public final class Application
         try {
             Context.begin(_userName);
             try {
-                new ESJPCompiler(this.classpathElements).compile(null, _addRuntimeClassPath);
+                new ESJPCompiler(getClassPathElements()).compile(null, _addRuntimeClassPath);
             } catch (final InstallationException e) {
                 Application.LOG.error(" error during compilation of ESJP.");
             }
@@ -587,7 +590,6 @@ public final class Application
                     }
                 }
                 try {
-                    // TODO: correct exception handling in the installation
                     version.install(this.install, getLastVersion().getNumber(), _profiles, _userName, _password);
                   //CHECKSTYLE:OFF
                 } catch (final Exception e) {
@@ -610,8 +612,7 @@ public final class Application
      * Updates the last installed version.
      *
      * @param _userName name of logged in user
-     * @param _password password of logged in user TODO: throw Exceptions
-     *            instead of logging errors
+     * @param _password password of logged in user
      * @param _profiles Profiles to be applied
      * @throws Exception on error
      */
