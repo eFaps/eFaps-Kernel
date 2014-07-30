@@ -505,7 +505,7 @@ public final class Application
                         final Set<Profile> _profiles)
         throws InstallationException
     {
-        this.install(_userName, _password, _profiles, true);
+        this.install(_userName, _password, _profiles, null);
     }
 
     /**
@@ -514,14 +514,14 @@ public final class Application
      * @param _userName name of logged in user
      * @param _password password of logged in user
      * @param _profiles set of profile to be applied
-     * @param _compile  compile during the install
+     * @param _compile  compile during the install/ if null the setting from the version.xml applies
      * @throws InstallationException for all cases the installation failed
      * @see #install(String, String, boolean)
      */
     public void install(final String _userName,
                         final String _password,
                         final Set<Profile> _profiles,
-                        final boolean _compile)
+                        final Boolean _compile)
         throws InstallationException
     {
         this.install(_userName, _password, _profiles, _compile, true);
@@ -536,13 +536,14 @@ public final class Application
      * @param _userName name of the installation user
      * @param _password password of the installation user
      * @param _profiles set of profile to be applied
+     * @param _compile  compile during the install/ if null the setting from the version.xml applies
      * @param _withDependency must the dependency also installed?
      * @throws InstallationException if installation failed
      */
     protected void install(final String _userName,
                            final String _password,
                            final Set<Profile> _profiles,
-                           final boolean _compile,
+                           final Boolean _compile,
                            final boolean _withDependency)
         throws InstallationException
     {
@@ -576,7 +577,9 @@ public final class Application
 
         for (final ApplicationVersion version : this.versions) {
             Application.LOG.info("Check version '{}'", version.getNumber());
-            version.setCompile(_compile);
+            if (_compile != null) {
+                version.setCompile(_compile);
+            }
             if (latestVersion != null && version.getNumber() < latestVersion) {
                 if (Application.LOG.isInfoEnabled()) {
                     Application.LOG.info("Version " + version.getNumber() + " already installed");
