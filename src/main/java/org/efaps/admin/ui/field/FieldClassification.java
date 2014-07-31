@@ -73,13 +73,14 @@ public class FieldClassification
     @Override
     public boolean hasAccess(final TargetMode _targetMode,
                              final Instance _instance,
-                             final AbstractCommand _callCmd)
+                             final AbstractCommand _callCmd,
+                             final Instance _callInstance)
         throws EFapsException
     {
         boolean ret = false;
         final String[] names = getClassificationName().split(";");
         for (final String className : names) {
-            if (Classification.get(className) != null && (Classification.get(className))
+            if (Classification.get(className) != null && Classification.get(className)
                                             .isAssigendTo(Context.getThreadContext().getCompany())
                             && !AppAccessHandler.excludeMode()) {
                 final Classification clazz = Classification.get(className);
@@ -100,6 +101,8 @@ public class FieldClassification
             parameter.put(ParameterValues.UIOBJECT, this);
             parameter.put(ParameterValues.ACCESSMODE, _targetMode);
             parameter.put(ParameterValues.INSTANCE, _instance);
+            parameter.put(ParameterValues.CALL_CMD, _callCmd);
+            parameter.put(ParameterValues.CALL_INSTANCE, _callInstance);
             for (final EventDefinition event : events) {
                 final Return retIn = event.execute(parameter);
                 ret = retIn.get(ReturnValues.TRUE) != null;

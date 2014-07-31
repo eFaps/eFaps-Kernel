@@ -209,7 +209,7 @@ public abstract class AbstractUserInterfaceObject
                              final Instance _instance)
         throws EFapsException
     {
-        return hasAccess(_targetMode, _instance, null);
+        return hasAccess(_targetMode, _instance, null, null);
     }
 
     /**
@@ -229,13 +229,15 @@ public abstract class AbstractUserInterfaceObject
      * @param _targetMode targetmode of the access
      * @param _instance the field will represent, e.g. on edit mode
      * @param _callCmd the cmd that called this UI-Object
+     * @param _callInstance the instance the object is called in
      * @return <i>true</i> if context user has access, otherwise <i>false</i> is
      *         returned
      * @throws EFapsException on error
      */
     public boolean hasAccess(final TargetMode _targetMode,
                              final Instance _instance,
-                             final AbstractCommand _callCmd)
+                             final AbstractCommand _callCmd,
+                             final Instance _callInstance)
         throws EFapsException
     {
         boolean ret = false;
@@ -258,7 +260,7 @@ public abstract class AbstractUserInterfaceObject
             // second it must be checked for the others, if no companies had to
             // be checked or
             // if the check on companies was positiv
-            if ((!company && !checked) || (company && checked)) {
+            if (!company && !checked || company && checked) {
                 for (final Long userId : getAccess()) {
                     final AbstractUserObject userObject = AbstractUserObject.getUserObject(userId);
                     if (!(userObject instanceof Company)) {
@@ -278,6 +280,7 @@ public abstract class AbstractUserInterfaceObject
             parameter.put(ParameterValues.ACCESSMODE, _targetMode);
             parameter.put(ParameterValues.INSTANCE, _instance);
             parameter.put(ParameterValues.CALL_CMD, _callCmd);
+            parameter.put(ParameterValues.CALL_INSTANCE, _callInstance);
             for (final EventDefinition event : events) {
                 final Return retIn = event.execute(parameter);
                 if (retIn.get(ReturnValues.TRUE) == null) {
