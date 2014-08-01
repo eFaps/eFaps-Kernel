@@ -73,7 +73,7 @@ public final class Context
     /**
      * Key used to access the current company from the userattributes.
      */
-    public static final String CURRENTCOMPANY = "CurrentCompany";
+    public static final String CURRENTCOMPANY = Context.class.getName() + ".CurrentCompany";
 
     /**
      * Logging instance used in this class.
@@ -306,9 +306,9 @@ public final class Context
         this.inherit = _inherit;
         this.transaction = _transaction;
 
-        this.parameters = (_parameters == null) ? new HashMap<String, String[]>() : _parameters;
-        this.fileParameters = (_fileParameters == null) ? new HashMap<String, FileParameter>() : _fileParameters;
-        this.sessionAttributes = (_sessionAttributes == null) ? new HashMap<String, Object>() : _sessionAttributes;
+        this.parameters = _parameters == null ? new HashMap<String, String[]>() : _parameters;
+        this.fileParameters = _fileParameters == null ? new HashMap<String, FileParameter>() : _fileParameters;
+        this.sessionAttributes = _sessionAttributes == null ? new HashMap<String, Object>() : _sessionAttributes;
         try {
             setConnection(Context.DATASOURCE.getConnection());
         } catch (final SQLException e) {
@@ -402,13 +402,13 @@ public final class Context
         }
 
         setConnection(null);
-        if ((getThreadLocal().get() != null) && (getThreadLocal().get() == this)) {
+        if (getThreadLocal().get() != null && getThreadLocal().get() == this) {
             getThreadLocal().set(null);
         }
         // check if all JDBC connection are close...
         for (final ConnectionResource con : this.connectionStore) {
             try {
-                if ((con.getConnection() != null) && !con.getConnection().isClosed()) {
+                if (con.getConnection() != null && !con.getConnection().isClosed()) {
                     con.getConnection().close();
                     Context.LOG.error("connection was not closed!");
                 }
@@ -521,7 +521,7 @@ public final class Context
         String value = null;
         if (this.parameters != null) {
             final String[] values = this.parameters.get(_key);
-            if ((values != null) && (values.length > 0)) {
+            if (values != null && values.length > 0) {
                 value = values[0];
             }
         }
@@ -1026,8 +1026,8 @@ public final class Context
                                 final boolean _inherit)
         throws EFapsException
     {
-        if ((_inherit && Context.INHERITTHREADCONTEXT.get() != null)
-                        || (!_inherit  && Context.THREADCONTEXT.get() != null)) {
+        if (_inherit && Context.INHERITTHREADCONTEXT.get() != null
+                        || !_inherit  && Context.THREADCONTEXT.get() != null) {
             throw new EFapsException(Context.class, "begin.Context4ThreadAlreadSet");
         }
 
@@ -1051,7 +1051,7 @@ public final class Context
         } catch (final SystemException e) {
             throw new EFapsException(Context.class, "begin.getTransactionSystemException", e);
         }
-        final Context context = new Context(transaction, (_locale == null) ? Locale.ENGLISH : _locale,
+        final Context context = new Context(transaction, _locale == null ? Locale.ENGLISH : _locale,
                         _sessionAttributes, _parameters, _fileParameters, _inherit);
         if (_inherit) {
             Context.INHERITTHREADCONTEXT.set(context);

@@ -46,8 +46,7 @@ import org.efaps.util.EFapsException;
  * called explicitly.
  *
  * @author The eFasp Team
- * @version $Id: UserAttributesSet.java 3924 2011-03-31 15:40:15Z
- *          miguel.a.aranya $
+ * @version $Id$
  */
 public class UserAttributesSet
     implements Serializable
@@ -57,7 +56,7 @@ public class UserAttributesSet
      * This static variable is the Key used to store the UserAttribtues into the
      * SessionContext {@link #org.efaps.db.Context.getUserAttribute()}.
      */
-    public static final String CONTEXTMAPKEY = "eFapsUserAttributes";
+    public static final String CONTEXTMAPKEY = UserAttributesSet.class.getName() + ".UserAttributes";
 
     /**
      * Needed for serialization.
