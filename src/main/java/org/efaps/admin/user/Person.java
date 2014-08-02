@@ -171,6 +171,79 @@ public final class Person
                     .toString();
 
     /**
+     * SQL select statement to select the relation to active companies.
+     */
+    private static final String SQL_COMPANY = new SQLSelect()
+                    .column("USERABSTRACTTO")
+                    .from("V_USERPERSON2COMPANY", 0)
+                    .innerJoin("T_USERABSTRACT", 1, "ID", 0, "USERABSTRACTTO")
+                    .addPart(SQLPart.WHERE).addColumnPart(1, "STATUS").addPart(SQLPart.EQUAL).addBooleanValue(true)
+                    .addPart(SQLPart.AND).addColumnPart(0, "USERABSTRACTFROM")
+                        .addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+    /**
+     * SQL select statement to select the relation to active companies including the JAASYSTEM as filter.
+     */
+    private static final String SQL_COMPANYJAASKEY = new SQLSelect()
+                    .column("USERABSTRACTTO")
+                    .from("V_USERPERSON2COMPANY", 0)
+                    .innerJoin("T_USERABSTRACT", 1, "ID", 0, "USERABSTRACTTO")
+                    .addPart(SQLPart.WHERE).addColumnPart(1, "STATUS").addPart(SQLPart.EQUAL).addBooleanValue(true)
+                    .addPart(SQLPart.AND).addColumnPart(0, "USERABSTRACTFROM")
+                        .addPart(SQLPart.EQUAL).addValuePart("?")
+                    .addPart(SQLPart.AND).addColumnPart(0, "JAASSYSID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * SQL select statement to select the relation to active roles.
+     */
+    private static final String SQL_ROLE = new SQLSelect()
+                    .column("USERABSTRACTTO")
+                    .from("V_USERPERSON2ROLE", 0)
+                    .innerJoin("T_USERABSTRACT", 1, "ID", 0, "USERABSTRACTTO")
+                    .addPart(SQLPart.WHERE).addColumnPart(1, "STATUS").addPart(SQLPart.EQUAL).addBooleanValue(true)
+                    .addPart(SQLPart.AND).addColumnPart(0, "USERABSTRACTFROM")
+                        .addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+    /**
+     * SQL select statement to select the relation to active roles including the JAASYSTEM as filter.
+     */
+    private static final String SQL_ROLEJAASKEY = new SQLSelect()
+                    .column("USERABSTRACTTO")
+                    .from("V_USERPERSON2ROLE", 0)
+                    .innerJoin("T_USERABSTRACT", 1, "ID", 0, "USERABSTRACTTO")
+                    .addPart(SQLPart.WHERE).addColumnPart(1, "STATUS").addPart(SQLPart.EQUAL).addBooleanValue(true)
+                    .addPart(SQLPart.AND).addColumnPart(0, "USERABSTRACTFROM")
+                        .addPart(SQLPart.EQUAL).addValuePart("?")
+                    .addPart(SQLPart.AND).addColumnPart(0, "JAASSYSID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+    /**
+     * SQL select statement to select the relation to active groups.
+     */
+    private static final String SQL_GROUP = new SQLSelect()
+                    .column("USERABSTRACTTO")
+                    .from("V_USERPERSON2GROUP", 0)
+                    .innerJoin("T_USERABSTRACT", 1, "ID", 0, "USERABSTRACTTO")
+                    .addPart(SQLPart.WHERE).addColumnPart(1, "STATUS").addPart(SQLPart.EQUAL).addBooleanValue(true)
+                    .addPart(SQLPart.AND).addColumnPart(0, "USERABSTRACTFROM")
+                        .addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+    /**
+     * SQL select statement to select the relation to active groups including the JAASYSTEM as filter.
+     */
+    private static final String SQL_GROUPJAASKEY = new SQLSelect()
+                    .column("V_USERPERSON2GROUP")
+                    .from("V_USERPERSON2ROLE", 0)
+                    .innerJoin("T_USERABSTRACT", 1, "ID", 0, "USERABSTRACTTO")
+                    .addPart(SQLPart.WHERE).addColumnPart(1, "STATUS").addPart(SQLPart.EQUAL).addBooleanValue(true)
+                    .addPart(SQLPart.AND).addColumnPart(0, "USERABSTRACTFROM")
+                        .addPart(SQLPart.EQUAL).addValuePart("?")
+                    .addPart(SQLPart.AND).addColumnPart(0, "JAASSYSID").addPart(SQLPart.EQUAL).addValuePart("?")
+                    .toString();
+
+
+    /**
      * Name of the Cache by ID.
      */
     private static String IDCACHE = Person.class.getName() + ".ID";
@@ -607,7 +680,7 @@ public final class Person
                     }
                     rsrc.commit();
                 } finally {
-                    if ((rsrc != null) && rsrc.isOpened()) {
+                    if (rsrc != null && rsrc.isOpened()) {
                         rsrc.abort();
                     }
                 }
@@ -722,7 +795,7 @@ public final class Person
             }
             rsrc.commit();
         } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
+            if (rsrc != null && rsrc.isOpened()) {
                 rsrc.abort();
             }
         }
@@ -827,7 +900,7 @@ public final class Person
             }
             rsrc.commit();
         } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
+            if (rsrc != null && rsrc.isOpened()) {
                 rsrc.abort();
             }
         }
@@ -892,7 +965,7 @@ public final class Person
                 ret.add(association);
             }
         } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
+            if (rsrc != null && rsrc.isOpened()) {
                 rsrc.abort();
             }
         }
@@ -918,19 +991,16 @@ public final class Person
             final List<Long> companyIds = new ArrayList<Long>();
             rsrc = Context.getThreadContext().getConnectionResource();
 
-            Statement stmt = null;
-
+            PreparedStatement stmt = null;
             try {
-                final StringBuilder cmd = new StringBuilder();
-                cmd.append("select ").append("USERABSTRACTTO ").append("from V_USERPERSON2COMPANY ")
-                                .append("where USERABSTRACTFROM=").append(getId());
-
-                if (_jaasSystem != null) {
-                    cmd.append(" and JAASSYSID=").append(_jaasSystem.getId());
+                if (_jaasSystem == null) {
+                    stmt = rsrc.getConnection().prepareStatement(SQL_COMPANY);
+                } else {
+                    stmt = rsrc.getConnection().prepareStatement(SQL_COMPANYJAASKEY);
+                    stmt.setObject(1, _jaasSystem.getId());
                 }
-
-                stmt = rsrc.getConnection().createStatement();
-                final ResultSet resultset = stmt.executeQuery(cmd.toString());
+                stmt.setObject(1, getId());
+                final ResultSet resultset = stmt.executeQuery();
                 while (resultset.next()) {
                     companyIds.add(resultset.getLong(1));
                 }
@@ -953,7 +1023,7 @@ public final class Person
                 ret.add(company);
             }
         } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
+            if (rsrc != null && rsrc.isOpened()) {
                 rsrc.abort();
             }
         }
@@ -1019,18 +1089,16 @@ public final class Person
         try {
             final List<Long> roleIds = new ArrayList<Long>();
             rsrc = Context.getThreadContext().getConnectionResource();
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             try {
-                final StringBuilder cmd = new StringBuilder();
-                cmd.append("select ").append("USERABSTRACTTO ").append("from V_USERPERSON2ROLE ").append(
-                                "where USERABSTRACTFROM=").append(getId());
-
-                if (_jaasSystem != null) {
-                    cmd.append(" and JAASSYSID=").append(_jaasSystem.getId());
+                if (_jaasSystem == null) {
+                    stmt = rsrc.getConnection().prepareStatement(SQL_ROLE);
+                } else {
+                    stmt = rsrc.getConnection().prepareStatement(SQL_ROLEJAASKEY);
+                    stmt.setObject(1, _jaasSystem.getId());
                 }
-
-                stmt = rsrc.getConnection().createStatement();
-                final ResultSet resultset = stmt.executeQuery(cmd.toString());
+                stmt.setObject(1, getId());
+                final ResultSet resultset = stmt.executeQuery();
                 while (resultset.next()) {
                     roleIds.add(resultset.getLong(1));
                 }
@@ -1053,12 +1121,12 @@ public final class Person
             for (final Long roleId : roleIds) {
                 final Role role = Role.get(roleId);
                 if (!AppAccessHandler.excludeMode()
-                                || (AppAccessHandler.excludeMode() && roleUUIDs.contains(role.getUUID()))) {
+                                || AppAccessHandler.excludeMode() && roleUUIDs.contains(role.getUUID())) {
                     ret.add(role);
                 }
             }
         } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
+            if (rsrc != null && rsrc.isOpened()) {
                 rsrc.abort();
             }
         }
@@ -1160,19 +1228,16 @@ public final class Person
             final List<Long> groupIds = new ArrayList<Long>();
             rsrc = Context.getThreadContext().getConnectionResource();
 
-            Statement stmt = null;
-
+            PreparedStatement stmt = null;
             try {
-                final StringBuilder cmd = new StringBuilder();
-                cmd.append("select ").append("USERABSTRACTTO ").append("from V_USERPERSON2GROUP ").append(
-                                "where USERABSTRACTFROM=").append(getId());
-
-                if (_jaasSystem != null) {
-                    cmd.append(" and JAASSYSID=").append(_jaasSystem.getId());
+                if (_jaasSystem == null) {
+                    stmt = rsrc.getConnection().prepareStatement(SQL_GROUP);
+                } else {
+                    stmt = rsrc.getConnection().prepareStatement(SQL_GROUPJAASKEY);
+                    stmt.setObject(1, _jaasSystem.getId());
                 }
-
-                stmt = rsrc.getConnection().createStatement();
-                final ResultSet resultset = stmt.executeQuery(cmd.toString());
+                stmt.setObject(1, getId());
+                final ResultSet resultset = stmt.executeQuery();
                 while (resultset.next()) {
                     groupIds.add(resultset.getLong(1));
                 }
@@ -1193,7 +1258,7 @@ public final class Person
                 ret.add(Group.get(groupId));
             }
         } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
+            if (rsrc != null && rsrc.isOpened()) {
                 rsrc.abort();
             }
         }
@@ -1316,7 +1381,7 @@ public final class Person
             }
             rsrc.commit();
         } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
+            if (rsrc != null && rsrc.isOpened()) {
                 rsrc.abort();
             }
         }
@@ -1549,7 +1614,7 @@ public final class Person
                 }
             }
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 con.abort();
             }
         }
@@ -1607,7 +1672,7 @@ public final class Person
             }
             rsrc.commit();
         } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
+            if (rsrc != null && rsrc.isOpened()) {
                 rsrc.abort();
             }
         }
@@ -1710,7 +1775,7 @@ public final class Person
             }
             rsrc.commit();
         } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
+            if (rsrc != null && rsrc.isOpened()) {
                 rsrc.abort();
             }
         }
