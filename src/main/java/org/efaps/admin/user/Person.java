@@ -233,8 +233,8 @@ public final class Person
      * SQL select statement to select the relation to active groups including the JAASYSTEM as filter.
      */
     private static final String SQL_GROUPJAASKEY = new SQLSelect()
-                    .column("V_USERPERSON2GROUP")
-                    .from("V_USERPERSON2ROLE", 0)
+                    .column("USERABSTRACTTO")
+                    .from("V_USERPERSON2GROUP", 0)
                     .innerJoin("T_USERABSTRACT", 1, "ID", 0, "USERABSTRACTTO")
                     .addPart(SQLPart.WHERE).addColumnPart(1, "STATUS").addPart(SQLPart.EQUAL).addBooleanValue(true)
                     .addPart(SQLPart.AND).addColumnPart(0, "USERABSTRACTFROM")
@@ -997,7 +997,7 @@ public final class Person
                     stmt = rsrc.getConnection().prepareStatement(SQL_COMPANY);
                 } else {
                     stmt = rsrc.getConnection().prepareStatement(SQL_COMPANYJAASKEY);
-                    stmt.setObject(1, _jaasSystem.getId());
+                    stmt.setObject(2, _jaasSystem.getId());
                 }
                 stmt.setObject(1, getId());
                 final ResultSet resultset = stmt.executeQuery();
@@ -1095,7 +1095,7 @@ public final class Person
                     stmt = rsrc.getConnection().prepareStatement(SQL_ROLE);
                 } else {
                     stmt = rsrc.getConnection().prepareStatement(SQL_ROLEJAASKEY);
-                    stmt.setObject(1, _jaasSystem.getId());
+                    stmt.setObject(2, _jaasSystem.getId());
                 }
                 stmt.setObject(1, getId());
                 final ResultSet resultset = stmt.executeQuery();
@@ -1234,7 +1234,7 @@ public final class Person
                     stmt = rsrc.getConnection().prepareStatement(SQL_GROUP);
                 } else {
                     stmt = rsrc.getConnection().prepareStatement(SQL_GROUPJAASKEY);
-                    stmt.setObject(1, _jaasSystem.getId());
+                    stmt.setObject(2, _jaasSystem.getId());
                 }
                 stmt.setObject(1, getId());
                 final ResultSet resultset = stmt.executeQuery();
