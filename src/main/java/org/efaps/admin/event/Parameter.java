@@ -109,6 +109,12 @@ public class Parameter
          */
         PARAMETERS,
         /**
+         * Parameters that were stored from a parent so that the child can used them also.
+         * Contains a map (key is string, value is string array),
+         * e.g. used by pickers to have the parameters from the form that opened it
+         */
+        PARENTPARAMETERS,
+        /**
          * Holds the Properties of the trigger.
          */
         PROPERTIES,
@@ -200,7 +206,7 @@ public class Parameter
     public String[] getParameterValues(final String _key)
     {
         final Map<String, String[]> params = getParameters();
-        return (params != null) ? params.get(_key) : null;
+        return params != null ? params.get(_key) : null;
     }
 
     /**
@@ -215,7 +221,7 @@ public class Parameter
     public String getParameterValue(final String _key)
     {
         final String[] paramValues = getParameterValues(_key);
-        return ((paramValues != null) && (paramValues.length > 0)) ? paramValues[0] : null;
+        return paramValues != null && paramValues.length > 0 ? paramValues[0] : null;
     }
 
     /**
