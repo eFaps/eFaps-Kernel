@@ -42,6 +42,7 @@ public class CIAdminUser
         }
 
         public final CIAttribute Name = new CIAttribute(this, "Name");
+        public final CIAttribute Note = new CIAttribute(this, "Note");
         public final CIAttribute UUID = new CIAttribute(this, "UUID");
         public final CIAttribute Revision = new CIAttribute(this, "Revision");
         public final CIAttribute Status = new CIAttribute(this, "Status");

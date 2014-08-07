@@ -30,6 +30,8 @@ import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.Context;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.db.QueryBuilder;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -174,7 +176,7 @@ public abstract class AbstractUserObject
 
             rsrc.commit();
         } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
+            if (rsrc != null && rsrc.isOpened()) {
                 rsrc.abort();
             }
         }
@@ -248,7 +250,7 @@ public abstract class AbstractUserObject
             }
             rsrc.commit();
         } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
+            if (rsrc != null && rsrc.isOpened()) {
                 rsrc.abort();
             }
         }
@@ -302,7 +304,96 @@ public abstract class AbstractUserObject
             }
             rsrc.commit();
         } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
+            if (rsrc != null && rsrc.isOpened()) {
+                rsrc.abort();
+            }
+        }
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #status}.
+     *
+     * @return value of instance variable {@link #status}
+     */
+    public boolean getStatus()
+    {
+        return this.status;
+    }
+
+    /**
+     * This is the setter method for the instance variable {@link #status}.
+     *
+     * @param _status the status to set
+     */
+    public void setStatus(final boolean _status)
+    {
+        this.status = _status;
+    }
+
+    /**
+     * Get the note belonging to this UserObject.
+     * <b>Careful. Executes Query against the Database and therefore might be slow.</b>
+     * @return the note belonging to the UserObject
+     * @throws EFapsException on error during reading
+     */
+    public String getNote()
+        throws EFapsException
+    {
+        String ret = "";
+        final QueryBuilder queryBldr = new QueryBuilder(CIAdminUser.Abstract);
+        queryBldr.addWhereAttrEqValue(CIAdminUser.Abstract.ID, getId());
+        final MultiPrintQuery multi = queryBldr.getPrint();
+        multi.addAttribute(CIAdminUser.Abstract.Note);
+        if (multi.execute()) {
+            multi.next();
+            ret = multi.getAttribute(CIAdminUser.Abstract.Note);
+        }
+        return ret;
+    }
+
+    /**
+     * Method to set the status of a UserObject in the eFaps Database.
+     *
+     * @param _status status to set
+     * @throws EFapsException on error
+     */
+    protected void setStatusInDB(final boolean _status)
+        throws EFapsException
+    {
+        ConnectionResource rsrc = null;
+        try {
+            final Context context = Context.getThreadContext();
+            rsrc = context.getConnectionResource();
+
+            PreparedStatement stmt = null;
+            final StringBuilder cmd = new StringBuilder();
+            try {
+
+                cmd.append(" update T_USERABSTRACT set STATUS=? where ID=").append(getId());
+                stmt = rsrc.getConnection().prepareStatement(cmd.toString());
+                stmt.setBoolean(1, _status);
+                final int rows = stmt.executeUpdate();
+                if (rows == 0) {
+                    AbstractUserObject.LOG.error("could not execute '" + cmd.toString()
+                            + "' to update status information for person '" + toString() + "'");
+                    throw new EFapsException(getClass(), "setStatusInDB.NotUpdated", cmd.toString(), getName());
+                }
+            } catch (final SQLException e) {
+                AbstractUserObject.LOG.error("could not execute '" + cmd.toString()
+                        + "' to update status information for person '" + toString() + "'", e);
+                throw new EFapsException(getClass(), "setStatusInDB.SQLException", e, cmd.toString(), getName());
+            } finally {
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                } catch (final SQLException e) {
+                    throw new EFapsException(getClass(), "setStatusInDB.SQLException", e, cmd.toString(), getName());
+                }
+            }
+            rsrc.commit();
+        } finally {
+            if (rsrc != null && rsrc.isOpened()) {
                 rsrc.abort();
             }
         }
@@ -399,73 +490,5 @@ public abstract class AbstractUserObject
             ret = Person.get(_name);
         }
         return ret;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #status}.
-     *
-     * @return value of instance variable {@link #status}
-     */
-    public boolean getStatus()
-    {
-        return this.status;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #status}.
-     *
-     * @param _status the status to set
-     */
-    public void setStatus(final boolean _status)
-    {
-        this.status = _status;
-    }
-
-    /**
-     * Method to set the status of a UserObject in the eFaps Database.
-     *
-     * @param _status status to set
-     * @throws EFapsException on error
-     */
-    protected void setStatusInDB(final boolean _status)
-        throws EFapsException
-    {
-        ConnectionResource rsrc = null;
-        try {
-            final Context context = Context.getThreadContext();
-            rsrc = context.getConnectionResource();
-
-            PreparedStatement stmt = null;
-            final StringBuilder cmd = new StringBuilder();
-            try {
-
-                cmd.append(" update T_USERABSTRACT set STATUS=? where ID=").append(getId());
-                stmt = rsrc.getConnection().prepareStatement(cmd.toString());
-                stmt.setBoolean(1, _status);
-                final int rows = stmt.executeUpdate();
-                if (rows == 0) {
-                    AbstractUserObject.LOG.error("could not execute '" + cmd.toString()
-                            + "' to update status information for person '" + toString() + "'");
-                    throw new EFapsException(getClass(), "setStatusInDB.NotUpdated", cmd.toString(), getName());
-                }
-            } catch (final SQLException e) {
-                AbstractUserObject.LOG.error("could not execute '" + cmd.toString()
-                        + "' to update status information for person '" + toString() + "'", e);
-                throw new EFapsException(getClass(), "setStatusInDB.SQLException", e, cmd.toString(), getName());
-            } finally {
-                try {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                } catch (final SQLException e) {
-                    throw new EFapsException(getClass(), "setStatusInDB.SQLException", e, cmd.toString(), getName());
-                }
-            }
-            rsrc.commit();
-        } finally {
-            if ((rsrc != null) && rsrc.isOpened()) {
-                rsrc.abort();
-            }
-        }
     }
 }
