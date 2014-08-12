@@ -31,6 +31,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -205,8 +207,16 @@ public class ESJPCompiler
 
             // logging of compiling classes
             if (ESJPCompiler.LOG.isInfoEnabled()) {
-                for (final SourceObject obj : this.name2Source.values()) {
-                    ESJPCompiler.LOG.info("    Compiling ESJP '" + obj.javaName + "'");
+                final List<SourceObject> ls = new ArrayList<SourceObject>(this.name2Source.values());
+                Collections.sort(ls, new Comparator<SourceObject>() {
+                    @Override
+                    public int compare(final SourceObject _arg0,
+                                       final SourceObject _arg1)
+                    {
+                        return _arg0.getJavaName().compareTo(_arg1.getJavaName());
+                    }});
+                for (final SourceObject obj : ls) {
+                    ESJPCompiler.LOG.info("    Compiling ESJP '{}'", obj.getJavaName());
                 }
             }
 
@@ -231,7 +241,7 @@ public class ESJPCompiler
             // delete not needed compiled ESJP classes
             for (final Long id : this.class2id.values()) {
                 try {
-                    (new Delete(this.classType, id)).executeWithoutAccessCheck();
+                    new Delete(this.classType, id).executeWithoutAccessCheck();
                 } catch (final EFapsException e)  {
                     throw new InstallationException("Could not delete ESJP class with id " + id, e);
                 }
@@ -485,7 +495,7 @@ public class ESJPCompiler
                         : ESJPCompiler.this.name2Source.entrySet())  {
 
                     if (entry.getKey().startsWith(_packageName)
-                            && (entry.getKey().substring(pckLength + 1).indexOf('.') < 0))  {
+                            && entry.getKey().substring(pckLength + 1).indexOf('.') < 0)  {
 
                         pckObjs.add(entry.getValue());
                     }
@@ -555,6 +565,16 @@ public class ESJPCompiler
                 throw new IOException("could not checkout class '" + this.javaName + "'", e);
             }
             return ret;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #javaName}.
+         *
+         * @return value of instance variable {@link #javaName}
+         */
+        public String getJavaName()
+        {
+            return this.javaName;
         }
     }
 
