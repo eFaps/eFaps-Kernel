@@ -180,6 +180,10 @@ public class LinkFromSelect
     {
         final Attribute attr = this.type.getAttribute(this.attrName);
 
+        if (attr == null) {
+            LOG.error("Could not find Attribute '{}' in Type '{}'", this.attrName, this.type.getName());
+        }
+
         final SQLSelect select = new SQLSelect()
                 .column(0, "ID")
                 .column(0, attr.getSqlColNames().get(0))
