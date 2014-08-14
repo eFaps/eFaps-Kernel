@@ -576,7 +576,6 @@ public abstract class AbstractPrintQuery
         return this.enforceSorted;
     }
 
-
     /**
      * Setter method for instance variable {@link #enforceSorted}.
      *
@@ -588,6 +587,18 @@ public abstract class AbstractPrintQuery
         this.enforceSorted = _enforceSorted;
     }
 
+    /**
+     * Dryrun the Print. "Analyze the selects etc. without
+     * running against the database".
+     *
+     * @throws EFapsException on error
+     */
+    public void dryRun()
+        throws EFapsException
+    {
+        final String sql = createSQLStatement();
+        LOG.debug("DryRun SQL", sql);
+    }
 
     /**
      * The instance method executes the query.
@@ -595,7 +606,8 @@ public abstract class AbstractPrintQuery
      * @return true if the query contains values, else false
      * @throws EFapsException on error
      */
-    public boolean execute() throws EFapsException
+    public boolean execute()
+        throws EFapsException
     {
         return executeWithoutAccessCheck();
     }
@@ -743,7 +755,7 @@ public abstract class AbstractPrintQuery
             for (final Object[] row : rows) {
                 final Instance instance;
                 if (getMainType().getMainTable().getSqlColType() != null) {
-                    instance = Instance.get(Type.get((Long) (row[this.typeColumnIndex - 1])), (Long) row[0]);
+                    instance = Instance.get(Type.get((Long) row[this.typeColumnIndex - 1]), (Long) row[0]);
                 } else {
                     instance = Instance.get(getMainType(), (Long) row[0]);
                 }
