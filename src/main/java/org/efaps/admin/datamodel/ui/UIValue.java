@@ -91,6 +91,16 @@ public final class UIValue
     private Object classObject;
 
     /**
+     * Object that will be passed to the event as CLASS.
+     */
+    private Instance callInstance;
+
+    /**
+     * Object that will be passed to the event as CLASS.
+     */
+    private Object requestInstances;
+
+    /**
      * @param _field        Field
      * @param _attribute    attribute
      * @param _value        value
@@ -264,7 +274,7 @@ public final class UIValue
         throws EFapsException
     {
         Object ret = null;
-        if ((this.fieldId > 0) && getField().hasEvents(_eventType)) {
+        if (this.fieldId > 0 && getField().hasEvents(_eventType)) {
 
             final List<EventDefinition> events = getField().getEvents(_eventType);
 
@@ -275,8 +285,8 @@ public final class UIValue
                 parameter.put(ParameterValues.INSTANCE, this.instance);
                 parameter.put(ParameterValues.CLASS, this.classObject);
                 parameter.put(ParameterValues.UIOBJECT, this);
-                parameter.put(ParameterValues.CALL_INSTANCE, null);
-                parameter.put(ParameterValues.REQUEST_INSTANCES, null);
+                parameter.put(ParameterValues.CALL_INSTANCE, getCallInstance());
+                parameter.put(ParameterValues.REQUEST_INSTANCES, getRequestInstances());
                 if (parameter.get(ParameterValues.PARAMETERS) == null) {
                     parameter.put(ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
                 }
@@ -330,6 +340,28 @@ public final class UIValue
     }
 
     /**
+     * Setter method for instance variable {@link #instance}.
+     *
+     * @param _instance value for instance variable {@link #instance}
+     * @return this, for chaining
+     */
+    public UIValue setCallInstance(final Instance _instance)
+    {
+        this.callInstance = _instance;
+        return this;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #callInstance}.
+     *
+     * @return value of instance variable {@link #callInstance}
+     */
+    public Instance getCallInstance()
+    {
+        return this.callInstance;
+    }
+
+    /**
      * Getter method for the instance variable {@link #classObject}.
      *
      * @return value of instance variable {@link #classObject}
@@ -348,6 +380,28 @@ public final class UIValue
     public UIValue setClassObject(final Object _classObject)
     {
         this.classObject = _classObject;
+        return this;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #requestInstances}.
+     *
+     * @return value of instance variable {@link #requestInstances}
+     */
+    public Object getRequestInstances()
+    {
+        return this.requestInstances;
+    }
+
+    /**
+     * Setter method for instance variable {@link #requestInstances}.
+     *
+     * @param _requestInstances value for instance variable {@link #requestInstances}
+     * @return this, for chaining
+     */
+    public UIValue setRequestInstances(final Object _requestInstances)
+    {
+        this.requestInstances = _requestInstances;
         return this;
     }
 }
