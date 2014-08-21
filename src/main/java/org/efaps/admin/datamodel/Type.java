@@ -54,6 +54,7 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.ci.CIAdminAccess;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.ci.CIAdminUserInterface;
+import org.efaps.ci.CIType;
 import org.efaps.db.AttributeQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -606,13 +607,36 @@ public class Type
     {
         boolean ret = false;
         Type type = this;
-        while ((type != null) && (type.getId() != _type.getId())) {
+        while (type != null && type.getId() != _type.getId()) {
             type = type.getParentType();
         }
-        if ((type != null) && (type.getId() == _type.getId())) {
+        if (type != null && type.getId() == _type.getId()) {
             ret = true;
         }
         return ret;
+    }
+
+    /**
+     * Tests, if this type is kind of the type in the parameter (question is, is
+     * this type a child of the parameter type).
+     *
+     * @param _ciType CIType to test for parent
+     * @return true if this type is a child, otherwise false
+     */
+    public boolean isKindOf(final CIType _ciType)
+    {
+        return isKindOf(_ciType.getType());
+    }
+
+    /**
+     * Tests, if this type is the given CIType.
+     *
+     * @param _ciType CIType to test for parent
+     * @return true if this type is a child, otherwise false
+     */
+    public boolean isCIType(final CIType _ciType)
+    {
+        return equals(_ciType.getType());
     }
 
     /**
@@ -628,7 +652,7 @@ public class Type
     public String getProperty(final String _name)
     {
         String value = super.getProperty(_name);
-        if ((value == null) && (getParentType() != null)) {
+        if (value == null && getParentType() != null) {
             value = getParentType().getProperty(_name);
         }
         return value;
@@ -1354,7 +1378,7 @@ public class Type
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read child type ids", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
@@ -1457,7 +1481,7 @@ public class Type
         } catch (final SQLException e) {
             Type.LOG.error("initialiseCache()", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {
@@ -1511,7 +1535,7 @@ public class Type
             } catch (final EFapsException e) {
                 throw new CacheReloadException("could not read child type ids", e);
             } finally {
-                if ((con != null) && con.isOpened()) {
+                if (con != null && con.isOpened()) {
                     try {
                         con.abort();
                     } catch (final EFapsException e) {
@@ -1561,7 +1585,7 @@ public class Type
             } catch (final EFapsException e) {
                 throw new CacheReloadException("could not read child type ids", e);
             } finally {
-                if ((con != null) && con.isOpened()) {
+                if (con != null && con.isOpened()) {
                     try {
                         con.abort();
                     } catch (final EFapsException e) {
@@ -1610,7 +1634,7 @@ public class Type
             } catch (final EFapsException e) {
                 throw new CacheReloadException("could not read child type ids", e);
             } finally {
-                if ((con != null) && con.isOpened()) {
+                if (con != null && con.isOpened()) {
                     try {
                         con.abort();
                     } catch (final EFapsException e) {

@@ -85,4 +85,27 @@ public abstract class CIType
         }
         return ret;
     }
+
+    /**
+     * Tests, if this type is kind of the type in the parameter (question is, is
+     * this type a child of the parameter type).
+     *
+     * @param _type type to test for parent
+     * @return true if this type is a child, otherwise false
+     */
+    public boolean isKindOf(final org.efaps.admin.datamodel.Type _type)
+    {
+        return getType().isKindOf(_type);
+    }
+
+    /**
+     * Tests, if this type the type in the parameter .
+     *
+     * @param _type type to test
+     * @return true if this type otherwise false
+     */
+    public boolean isType(final org.efaps.admin.datamodel.Type _type)
+    {
+        return getType().equals(_type);
+    }
 }
