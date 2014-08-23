@@ -204,7 +204,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-digester3</artifactId>
-            <version>3.2</version>
+            <version>${digester3.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
