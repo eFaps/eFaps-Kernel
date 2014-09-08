@@ -226,10 +226,9 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
 
         <!-- For interpreting expressions (e.g. of xml definitions) -->
         <dependency>
-            <groupId>commons-jexl</groupId>
+            <groupId>org.apache.commons</groupId>
             <artifactId>commons-jexl</artifactId>
-            <version>1.1</version>
-            <scope>compile</scope>
+            <version>${commons.jexl.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>

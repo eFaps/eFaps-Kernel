@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.jexl.JexlContext;
+import org.apache.commons.jexl2.JexlContext;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.xml.sax.SAXException;

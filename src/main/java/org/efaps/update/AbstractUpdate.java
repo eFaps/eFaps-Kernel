@@ -35,9 +35,9 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.jexl.Expression;
-import org.apache.commons.jexl.ExpressionFactory;
-import org.apache.commons.jexl.JexlContext;
+import org.apache.commons.jexl2.Expression;
+import org.apache.commons.jexl2.JexlContext;
+import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdmin;
@@ -81,6 +81,11 @@ public abstract class AbstractUpdate
      * Logging instance used to give logging information of this class.
      */
     public static final Logger LOG = LoggerFactory.getLogger(AbstractUpdate.class);
+
+    /**
+     * JexlEngine for expression evaluation.
+     */
+    private static final JexlEngine JEXL = new JexlEngine();
 
     /**
      * The URL of the xml file is stored in this instance variable.
@@ -245,7 +250,7 @@ public abstract class AbstractUpdate
                             && (def.getProfiles().isEmpty()
                                             || CollectionUtils.containsAny(_profiles, def.getProfiles())
                                             || def.isApplyDefault(_profiles, this.definitions))) {
-                if ((this.url != null) && AbstractUpdate.LOG.isDebugEnabled()) {
+                if (this.url != null && AbstractUpdate.LOG.isDebugEnabled()) {
                     AbstractUpdate.LOG.debug("Executing '" + this.url.toString() + "'");
                 }
                 def.updateInDB(_step, this.allLinkTypes);
@@ -596,6 +601,7 @@ public abstract class AbstractUpdate
      */
     public abstract class AbstractDefinition
     {
+
         /**
          * Expression of this definition if this definition must be installed.
          *
@@ -732,10 +738,10 @@ public abstract class AbstractUpdate
             boolean exec;
             try {
                 if (this.expression == null) {
-                    final Expression jexlExpr = ExpressionFactory.createExpression("version==latest");
+                    final Expression jexlExpr = JEXL.createExpression("version==latest");
                     exec = Boolean.parseBoolean(jexlExpr.evaluate(_jexlContext).toString());
                 } else {
-                    final Expression jexlExpr = ExpressionFactory.createExpression(this.expression);
+                    final Expression jexlExpr = JEXL.createExpression(this.expression);
                     exec = Boolean.parseBoolean(jexlExpr.evaluate(_jexlContext).toString());
                 }
                 //CHECKSTYLE:OFF
@@ -760,7 +766,7 @@ public abstract class AbstractUpdate
                 ret = false;
                 for (final Entry<AppDependency, Boolean> entry : this.appDependencies.entrySet()) {
                     final boolean met = entry.getKey().isMet();
-                    if ((met && !entry.getValue()) || (!met && entry.getValue())) {
+                    if (met && !entry.getValue() || !met && entry.getValue()) {
                         ret = true;
                         break;
                     }
@@ -843,7 +849,7 @@ public abstract class AbstractUpdate
                     for (final Map.Entry<String, String> entry : this.values.entrySet()) {
                         update.add(entry.getKey(), entry.getValue());
                     }
-                    if (AbstractUpdate.LOG.isInfoEnabled() && (name != null)) {
+                    if (AbstractUpdate.LOG.isInfoEnabled() && name != null) {
                         AbstractUpdate.LOG.info("    Update " + this.instance.getType().getName() + " '" + name + "'");
                     }
                     update.executeWithoutAccessCheck();
@@ -924,7 +930,7 @@ public abstract class AbstractUpdate
                     }
                 } catch (final EFapsException e) {
                     throw new InstallationException("Search for '" + getDataModelTypeName() + "' for '"
-                                    + ((this.searchAttrName == null)
+                                    + (this.searchAttrName == null
                                                     ? AbstractUpdate.this.uuid
                                                     : this.values.get(this.searchAttrName))
                                     + "' failed", e);
@@ -947,7 +953,7 @@ public abstract class AbstractUpdate
                     _insert.add("Revision", AbstractUpdate.this.fileRevision);
                 }
                 final String name = this.values.get("Name");
-                _insert.add("Name", (name == null) ? "-" : name);
+                _insert.add("Name", name == null ? "-" : name);
                 if (AbstractUpdate.LOG.isInfoEnabled()) {
                     AbstractUpdate.LOG.info("    Insert " + _insert.getInstance().getType().getName()
                                     + " '" + name + "'");

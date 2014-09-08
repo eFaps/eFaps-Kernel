@@ -33,7 +33,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.jexl.JexlContext;
+import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.lang3.BooleanUtils;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdmin;

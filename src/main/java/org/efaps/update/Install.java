@@ -35,8 +35,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.jexl.JexlContext;
-import org.apache.commons.jexl.JexlHelper;
+import org.apache.commons.jexl2.JexlContext;
+import org.apache.commons.jexl2.MapContext;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
@@ -126,7 +126,6 @@ public class Install
      * @throws InstallationException on error
      * @see org.efaps.db.databases.AbstractDatabase#supportsBigTransactions()
      */
-    @SuppressWarnings("unchecked")
     public void install(final Long _number,
                         final Long _latestNumber,
                         final Set<Profile> _profiles,
@@ -136,7 +135,7 @@ public class Install
         final boolean bigTrans = Context.getDbType().supportsBigTransactions();
         final String user;
         try  {
-            user = (Context.getThreadContext().getPerson() != null)
+            user = Context.getThreadContext().getPerson() != null
                    ? Context.getThreadContext().getPerson().getName()
                    : null;
         } catch (final EFapsException e)  {
@@ -147,12 +146,12 @@ public class Install
         initialise();
 
         // initialize JexlContext (used to evaluate version)
-        final JexlContext jexlContext = JexlHelper.createContext();
+        final JexlContext jexlContext = new MapContext();
         if (_number != null) {
-            jexlContext.getVars().put("version", _number);
+            jexlContext.set("version", _number);
         }
         if (_latestNumber != null) {
-            jexlContext.getVars().put("latest", _latestNumber);
+            jexlContext.set("latest", _latestNumber);
         }
 
         // loop through all life cycle steps
@@ -204,6 +203,7 @@ public class Install
         }
         Collections.sort(ret, new Comparator<UpdateLifecycle>() {
 
+            @Override
             public int compare(final UpdateLifecycle _cycle1,
                                final UpdateLifecycle _cycle2)
             {
@@ -222,14 +222,13 @@ public class Install
      * @param _profiles set of profiles to be used
      * @throws InstallationException if update failed
      */
-    @SuppressWarnings("unchecked")
     public void updateLatest(final Set<Profile> _profiles)
         throws InstallationException
     {
         final boolean bigTrans = Context.getDbType().supportsBigTransactions();
         final String user;
         try  {
-            user = (Context.getThreadContext().getPerson() != null)
+            user = Context.getThreadContext().getPerson() != null
                    ? Context.getThreadContext().getPerson().getName()
                    : null;
         } catch (final EFapsException e)  {
@@ -251,10 +250,10 @@ public class Install
                 for (final IUpdate update : entry.getValue()) {
                     final Integer latestVersion = versions.get(update.getFileApplication());
                     // initialize JexlContext (used to evaluate version)
-                    final JexlContext jexlContext = JexlHelper.createContext();
+                    final JexlContext jexlContext = new MapContext();
                     if (latestVersion != null) {
-                        jexlContext.getVars().put("version", latestVersion);
-                        jexlContext.getVars().put("latest", latestVersion);
+                        jexlContext.set("version", latestVersion);
+                        jexlContext.set("latest", latestVersion);
                     }
                     try {
                         // and create
@@ -293,7 +292,7 @@ public class Install
                 while (multi.next()) {
                     final String name = multi.<String>getAttribute(CIAdminCommon.Version.Name);
                     final Integer revision = multi.<Integer>getAttribute(CIAdminCommon.Version.Revision);
-                    if (!versions.containsKey(name) || (versions.get(name) < revision)) {
+                    if (!versions.containsKey(name) || versions.get(name) < revision) {
                         versions.put(name, revision);
                     }
                 }
