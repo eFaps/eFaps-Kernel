@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Set;
 
+import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.db.Checkin;
 import org.efaps.update.AbstractUpdate;
@@ -140,7 +141,7 @@ public abstract class AbstractSourceUpdate
             }
             super.updateInDB(_step, _allLinkTypes);
 
-            if ((_step == UpdateLifecycle.EFAPS_UPDATE) && (getValue("Name") != null))  {
+            if (_step == UpdateLifecycle.EFAPS_UPDATE && getValue("Name") != null)  {
                 final Checkin checkin = new Checkin(getInstance());
                 try {
                     final InputStream in = this.fileUrl.openStream();
@@ -154,6 +155,13 @@ public abstract class AbstractSourceUpdate
                     throw new InstallationException("EFapsException", e);
                 }
             }
+        }
+
+        @Override
+        public boolean isValidVersion(final JexlContext _jexlContext)
+            throws InstallationException
+        {
+            return true;
         }
 
         /**
