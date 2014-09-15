@@ -45,7 +45,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  */
 public final class UIValue
-    implements Serializable
+    implements Serializable, IUIValue
 {
 
     /**

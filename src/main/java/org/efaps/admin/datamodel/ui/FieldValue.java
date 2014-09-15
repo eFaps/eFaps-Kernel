@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  */
 public class FieldValue
-    implements Comparable<Object>
+    implements Comparable<Object>, IUIValue
 {
     /**
      * Logger for this class.
@@ -230,9 +230,9 @@ public class FieldValue
         this.callInstance = _callInstance;
         this.requestInstances = _requestInstances;
         this.classObject = _classObject;
-        this.ui = (_attr == null)
-            ? (this.field.getClassUI() == null ? new StringUI()
-            : this.field.getClassUI()) : _attr.getAttributeType().getUI();
+        this.ui = _attr == null
+            ? this.field.getClassUI() == null ? new StringUI()
+            : this.field.getClassUI() : _attr.getAttributeType().getUI();
         this.cmd = _cmd;
     }
 
@@ -367,7 +367,7 @@ public class FieldValue
         throws EFapsException
     {
         String ret = null;
-        if ((this.field != null) && this.field.hasEvents(_eventType)) {
+        if (this.field != null && this.field.hasEvents(_eventType)) {
 
             final List<EventDefinition> events = this.field.getEvents(_eventType);
 
@@ -434,6 +434,7 @@ public class FieldValue
      * @param _target field value to compare to
      * @return 0 if smaller, else -1
      */
+    @Override
     public int compareTo(final Object _target)
     {
         final FieldValue target = (FieldValue) _target;
@@ -559,6 +560,7 @@ public class FieldValue
      *
      * @return value of instance variable {@link #display}
      */
+    @Override
     public Display getDisplay()
     {
         return this.display;
