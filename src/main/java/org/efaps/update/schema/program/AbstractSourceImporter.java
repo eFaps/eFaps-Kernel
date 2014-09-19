@@ -195,12 +195,15 @@ public abstract class AbstractSourceImporter
     {
         Instance instance = null;
         try {
-            final QueryBuilder queryBldr = new QueryBuilder(this.ciType);
-            queryBldr.addWhereAttrEqValue(CIAdminProgram.Abstract.Name, this.programName);
-            final InstanceQuery query = queryBldr.getQuery();
-            query.executeWithoutAccessCheck();
-            if (query.next()) {
-                instance = query.getCurrentValue();
+            // check if type exists. Necessary for first time installations
+            if (this.ciType.getType() != null) {
+                final QueryBuilder queryBldr = new QueryBuilder(this.ciType);
+                queryBldr.addWhereAttrEqValue(CIAdminProgram.Abstract.Name, this.programName);
+                final InstanceQuery query = queryBldr.getQuery();
+                query.executeWithoutAccessCheck();
+                if (query.next()) {
+                    instance = query.getCurrentValue();
+                }
             }
         } catch (final EFapsException e)  {
             throw new InstallationException("Could not found '" + this.ciType + "' '" + this.programName + "'", e);
