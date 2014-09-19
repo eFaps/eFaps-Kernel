@@ -1646,4 +1646,15 @@ public class Type
         return ret;
     }
 
+    /**
+     * @return
+     */
+    public static boolean isInitialized()
+    {
+        final Cache<Long, Type> cache1 = InfinispanCache.get().<Long, Type>getCache(Type.IDCACHE);
+        final Cache<String, Type> cache2 = InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE);
+        final Cache<UUID, Type> cache3 = InfinispanCache.get().<UUID, Type>getCache(Type.UUIDCACHE);
+        return !cache1.isEmpty() || !cache2.isEmpty() || !cache3.isEmpty();
+    }
+
 }

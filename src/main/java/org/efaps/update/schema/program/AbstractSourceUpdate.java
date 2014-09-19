@@ -27,7 +27,9 @@ import java.util.Set;
 
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
+import org.efaps.db.Context;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.util.InstallationException;
@@ -161,7 +163,17 @@ public abstract class AbstractSourceUpdate
         public boolean isValidVersion(final JexlContext _jexlContext)
             throws InstallationException
         {
-            return true;
+            boolean ret =false;
+            try {
+                 ret = getDataModelTypeName() != null
+                                 && Type.isInitialized() && Type.get(getDataModelTypeName()) != null
+                                 && !Type.get(getDataModelTypeName()).getAttributes().isEmpty()
+                                 && Type.get(getDataModelTypeName()).getStoreId() > 0
+                                 && Context.getThreadContext().getPerson() != null;
+            } catch (final EFapsException e) {
+                throw new InstallationException("Could not validate the version.", e);
+            }
+            return ret;
         }
 
         /**

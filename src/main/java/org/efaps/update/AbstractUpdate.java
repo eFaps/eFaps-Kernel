@@ -839,7 +839,8 @@ public abstract class AbstractUpdate
                     createInDB(insert);
                 }
 
-            } else if (_step == UpdateLifecycle.EFAPS_UPDATE) {
+            } else if (_step == UpdateLifecycle.EFAPS_UPDATE
+                            && this.instance != null && this.instance.isValid()) {
                 try {
                     final String name = this.values.get("Name");
                     final Update update = new Update(this.instance);
