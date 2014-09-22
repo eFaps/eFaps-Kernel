@@ -139,6 +139,7 @@ public final class UIValue
     /**
      * @return the field belonging to this UIValue
      */
+    @Override
     public Field getField()
     {
         return Field.get(this.fieldId);
@@ -175,6 +176,33 @@ public final class UIValue
         }
         return ret;
     }
+
+    /**
+     * Method to get a plain string for this FieldValue .
+     *
+     * @see #executeEvents
+     * @param _mode target mode
+     * @throws EFapsException on error
+     * @return plain string
+     * @throws EFapsException
+     */
+    public Object getHiddenValue(final TargetMode _mode)
+        throws EFapsException
+    {
+        this.display = Display.HIDDEN;
+        this.targetMode = _mode;
+        Object ret = executeEvents(EventType.UI_FIELD_VALUE, _mode);
+        if (ret == null) {
+            ret = executeEvents(EventType.UI_FIELD_FORMAT, _mode);
+            if (ret == null && getUIProvider() != null) {
+                ret = getUIProvider().getValue(this);
+            }
+        } else if (getUIProvider() != null) {
+            ret = getUIProvider().transformObject(this, ret);
+        }
+        return ret;
+    }
+
 
     /**
      * Method to get a plain string for this FieldValue .
@@ -224,6 +252,7 @@ public final class UIValue
      *
      * @return value of instance variable {@link #display}
      */
+    @Override
     public Display getDisplay()
     {
         return this.display;
@@ -322,6 +351,7 @@ public final class UIValue
      *
      * @return value of instance variable {@link #instance}
      */
+    @Override
     public Instance getInstance()
     {
         return this.instance;
