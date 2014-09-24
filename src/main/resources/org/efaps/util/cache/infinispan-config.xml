@@ -212,6 +212,10 @@
         <eviction maxEntries="5000" strategy="LIRS" />
     </namedCache>
 
+    <namedCache name="org.efaps.admin.datamodel.attributetype.EnumType.Object">
+        <eviction maxEntries="500" strategy="LIRS" />
+    </namedCache>
+
     <namedCache name="org.efaps.admin.access.AccessSet.UUID">
         <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>

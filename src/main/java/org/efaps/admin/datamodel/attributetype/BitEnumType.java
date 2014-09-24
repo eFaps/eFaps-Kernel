@@ -29,6 +29,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.IBitEnum;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.AdvancedCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -46,6 +50,11 @@ public class BitEnumType
     private static final long serialVersionUID = 1L;
 
     /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(BitEnumType.class);
+
+    /**
      * @param _attribute Attribute the enum class is defined for
      * @param _num       number from eFapsDatabase thta defines the enum
      * @return enum
@@ -54,22 +63,26 @@ public class BitEnumType
     protected Object getEnum4Int(final Attribute _attribute,
                                  final Integer _num)
     {
-        final List<IBitEnum> ret = new ArrayList<IBitEnum>();
-        try {
-            final Class<?> clazz = Class.forName(_attribute.getClassName(), false, EFapsClassLoader.getInstance());
-            final Object[] consts = clazz.getEnumConstants();
-            if (consts != null) {
-                for (final Object cons : consts) {
-                    if (BitEnumType.isSelected(_num, (IBitEnum) cons)) {
-                        ret.add((IBitEnum) cons);
+        final AdvancedCache<String, Object> cache = InfinispanCache.get().<String, Object>getIgnReCache(EnumType.CACHE);
+        final String key = _attribute.getClassName() + "-" + _num;
+        if (!cache.containsKey(key)) {
+            final List<IBitEnum> ret = new ArrayList<IBitEnum>();
+            try {
+                final Class<?> clazz = Class.forName(_attribute.getClassName(), false, EFapsClassLoader.getInstance());
+                final Object[] consts = clazz.getEnumConstants();
+                if (consts != null) {
+                    for (final Object cons : consts) {
+                        if (BitEnumType.isSelected(_num, (IBitEnum) cons)) {
+                            ret.add((IBitEnum) cons);
+                        }
                     }
                 }
+            } catch (final ClassNotFoundException e) {
+                LOG.error("Could not read clazz.", e);
             }
-        } catch (final ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            cache.put(key, ret);
         }
-        return ret;
+        return cache.get(key);
     }
 
     @Override
@@ -82,7 +95,7 @@ public class BitEnumType
         } else {
             Integer tmp = null;
             for (final Object obj : _value) {
-                if ((obj instanceof String) && (((String) obj).length() > 0)) {
+                if (obj instanceof String && ((String) obj).length() > 0) {
                     tmp = tmp == null ? Integer.parseInt((String) obj) : tmp + Integer.parseInt((String) obj);
                 } else if (obj instanceof Integer) {
                     tmp = tmp == null ? (Integer) obj : tmp + (Integer) obj;
@@ -147,7 +160,7 @@ public class BitEnumType
         bitSet.set(_bitIndex);
         int ret = 0;
         for (int i = 0; i < bitSet.length(); ++i) {
-            ret += bitSet.get(i) ? (1 << i) : 0;
+            ret += bitSet.get(i) ? 1 << i : 0;
         }
         return ret;
     }

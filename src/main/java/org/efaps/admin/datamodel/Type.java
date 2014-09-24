@@ -38,6 +38,7 @@ import org.efaps.admin.access.AccessType;
 import org.efaps.admin.datamodel.attributetype.BitEnumType;
 import org.efaps.admin.datamodel.attributetype.CompanyLinkType;
 import org.efaps.admin.datamodel.attributetype.ConsortiumLinkType;
+import org.efaps.admin.datamodel.attributetype.EnumType;
 import org.efaps.admin.datamodel.attributetype.GroupLinkType;
 import org.efaps.admin.datamodel.attributetype.StatusType;
 import org.efaps.admin.datamodel.attributetype.TypeType;
@@ -1199,6 +1200,9 @@ public class Type
             InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE).clear();
         } else {
             InfinispanCache.get().<String, Type>getCache(Type.NAMECACHE).addListener(new CacheLogListener(Type.LOG));
+        }
+        if (InfinispanCache.get().exists(EnumType.CACHE)) {
+            InfinispanCache.get().getCache(EnumType.CACHE).clear();
         }
         QueryCache.initialize();
     }

@@ -31,6 +31,10 @@ import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.wrapper.SQLInsert;
 import org.efaps.db.wrapper.SQLUpdate;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.InfinispanCache;
+import org.infinispan.AdvancedCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -43,9 +47,19 @@ public class EnumType
     extends AbstractType
 {
     /**
+     * Name of the Cache for Instances.
+     */
+    public static final String CACHE = EnumType.class.getName() + ".Object";
+
+    /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(EnumType.class);
 
     @Override
     public Object readValue(final Attribute _attribute,
@@ -68,7 +82,7 @@ public class EnumType
                     list.add(getEnum4Int(_attribute, num));
                 }
             }
-            ret = list.isEmpty() ? null : (list.size() > 1 ? list : list.get(0));
+            ret = list.isEmpty() ? null : list.size() > 1 ? list : list.get(0);
         }
         return ret;
     }
@@ -81,23 +95,27 @@ public class EnumType
     protected Object getEnum4Int(final Attribute _attribute,
                                  final Integer _num)
     {
-        Object ret = null;
-        try {
-            final Class<?> clazz = Class.forName(_attribute.getClassName(), false, EFapsClassLoader.getInstance());
-            final Object[] consts = clazz.getEnumConstants();
-            if (consts != null) {
-                for (final Object cons : consts) {
-                    if (_num == ((IEnum) cons).getInt()) {
-                        ret = cons;
-                        break;
+        final AdvancedCache<String, Object> cache = InfinispanCache.get().<String, Object>getIgnReCache(EnumType.CACHE);
+        final String key = _attribute.getClassName() + "-" + _num;
+        if (!cache.containsKey(key)) {
+            Object ret = null;
+            try {
+                final Class<?> clazz = Class.forName(_attribute.getClassName(), false, EFapsClassLoader.getInstance());
+                final Object[] consts = clazz.getEnumConstants();
+                if (consts != null) {
+                    for (final Object cons : consts) {
+                        if (_num == ((IEnum) cons).getInt()) {
+                            ret = cons;
+                            break;
+                        }
                     }
                 }
+            } catch (final ClassNotFoundException e) {
+                LOG.error("Could not read clazz.", e);
             }
-        } catch (final ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            cache.put(key, ret);
         }
-        return ret;
+        return cache.get(key);
     }
 
     /**
@@ -137,7 +155,7 @@ public class EnumType
         final Integer ret;
         if (_value == null) {
             ret = null;
-        } else  if ((_value[0] instanceof String) && (((String) _value[0]).length() > 0)) {
+        } else  if (_value[0] instanceof String && ((String) _value[0]).length() > 0) {
             ret = Integer.parseInt((String) _value[0]);
         } else if (_value[0] instanceof Integer) {
             ret = (Integer) _value[0];
