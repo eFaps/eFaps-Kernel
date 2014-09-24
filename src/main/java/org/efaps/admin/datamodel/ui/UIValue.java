@@ -101,6 +101,21 @@ public final class UIValue
     private Object requestInstances;
 
     /**
+     *  Value in case of readonly.
+     */
+    private Object readOnlyValue;
+
+    /**
+     *  Value in case of edit.
+     */
+    private Object editValue;
+
+    /**
+     * Value in case of hidden.
+     */
+    private Object hiddenValue;
+
+    /**
      * @param _field        Field
      * @param _attribute    attribute
      * @param _value        value
@@ -163,18 +178,21 @@ public final class UIValue
     public Object getEditValue(final TargetMode _mode)
         throws EFapsException
     {
-
         this.display = Display.EDITABLE;
-        Object ret = executeEvents(EventType.UI_FIELD_VALUE, _mode);
-        if (ret == null) {
-            ret = executeEvents(EventType.UI_FIELD_FORMAT, _mode);
-            if (ret == null && getUIProvider() != null) {
-                ret = getUIProvider().getValue(this);
+        this.targetMode = _mode;
+        if (this.editValue == null) {
+            Object obj = executeEvents(EventType.UI_FIELD_VALUE, _mode);
+            if (obj == null) {
+                obj = executeEvents(EventType.UI_FIELD_FORMAT, _mode);
+                if (obj == null && getUIProvider() != null) {
+                    obj = getUIProvider().getValue(this);
+                }
+            } else if (getUIProvider() != null) {
+                obj = getUIProvider().transformObject(this, obj);
             }
-        } else if (getUIProvider() != null) {
-            ret = getUIProvider().transformObject(this, ret);
+            this.editValue = obj;
         }
-        return ret;
+        return this.editValue;
     }
 
     /**
@@ -191,18 +209,20 @@ public final class UIValue
     {
         this.display = Display.HIDDEN;
         this.targetMode = _mode;
-        Object ret = executeEvents(EventType.UI_FIELD_VALUE, _mode);
-        if (ret == null) {
-            ret = executeEvents(EventType.UI_FIELD_FORMAT, _mode);
-            if (ret == null && getUIProvider() != null) {
-                ret = getUIProvider().getValue(this);
+        if (this.hiddenValue == null) {
+            Object obj = executeEvents(EventType.UI_FIELD_VALUE, _mode);
+            if (obj == null) {
+                obj = executeEvents(EventType.UI_FIELD_FORMAT, _mode);
+                if (obj == null && getUIProvider() != null) {
+                    obj = getUIProvider().getValue(this);
+                }
+            } else if (getUIProvider() != null) {
+                obj = getUIProvider().transformObject(this, obj);
             }
-        } else if (getUIProvider() != null) {
-            ret = getUIProvider().transformObject(this, ret);
+            this.hiddenValue = obj;
         }
-        return ret;
+        return this.hiddenValue;
     }
-
 
     /**
      * Method to get a plain string for this FieldValue .
@@ -216,19 +236,21 @@ public final class UIValue
     public Object getReadOnlyValue(final TargetMode _mode)
         throws EFapsException
     {
-
         this.display = Display.READONLY;
         this.targetMode = _mode;
-        Object ret = executeEvents(EventType.UI_FIELD_VALUE, _mode);
-        if (ret == null) {
-            ret = executeEvents(EventType.UI_FIELD_FORMAT, _mode);
-            if (ret == null && getUIProvider() != null) {
-                ret = getUIProvider().getValue(this);
+        if (this.readOnlyValue == null) {
+            Object obj = executeEvents(EventType.UI_FIELD_VALUE, _mode);
+            if (obj == null) {
+                obj = executeEvents(EventType.UI_FIELD_FORMAT, _mode);
+                if (obj == null && getUIProvider() != null) {
+                    obj = getUIProvider().getValue(this);
+                }
+            } else if (getUIProvider() != null) {
+                obj = getUIProvider().transformObject(this, obj);
             }
-        } else if (getUIProvider() != null) {
-            ret = getUIProvider().transformObject(this, ret);
+            this.readOnlyValue = obj;
         }
-        return ret;
+        return this.readOnlyValue;
     }
 
     /**
@@ -432,6 +454,19 @@ public final class UIValue
     public UIValue setRequestInstances(final Object _requestInstances)
     {
         this.requestInstances = _requestInstances;
+        return this;
+    }
+
+    /**
+     * Reset the UIValue, meaning that the values will be evaluated again.
+     *
+     * @return this, for chaining
+     */
+    public UIValue reset()
+    {
+        this.editValue = null;
+        this.hiddenValue = null;
+        this.readOnlyValue = null;
         return this;
     }
 }
