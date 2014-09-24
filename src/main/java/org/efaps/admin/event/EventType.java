@@ -105,7 +105,7 @@ public enum EventType
     /**
      * EventType for getting the instance behind a field.
      */
-    UI_FIELD_INSTANCE     ("Admin_UI_FieldInstanceEvent"),
+    UI_FIELD_ALTINST      ("Admin_UI_FieldAlternateInstanceEvent"),
     /** EventType for a FieldCommand. */
     UI_FIELD_CMD          ("Admin_UI_FieldCommandEvent"),
     /** EventType for the search ESJP of a auto complete field. */
