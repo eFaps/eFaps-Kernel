@@ -1,0 +1,67 @@
+/*
+ * Copyright 2003 - 2014 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */options{  JDK_VERSION = "1.7";  STATIC = false;  ERROR_REPORTING = true;  USER_TOKEN_MANAGER = false;}PARSER_BEGIN(EQLParser)package org.efaps.eql;import org.efaps.eql.IStatement;public class EQLParser{}PARSER_END(EQLParser)SKIP :{  " "| "\r"| "\t"| "\n"}TOKEN :{  < QUERY : "query" > : QUERY_STATE
+| < SELECT : "select" > : SELECT_STATE}/************ query */< QUERY_STATE >SKIP :{  " "| "\r"| "\t"| "\n"}< QUERY_STATE >TOKEN :{  < TYPE : "type" > : TYPE_STATE}/************ type */< TYPE_STATE >SKIP :{  " "
+| "\r"| "\t"| "\n"}< TYPE_STATE >TOKEN :{    < ENDTYPE : "select" > : SELECT_STATE
+|   < NAME : ([ "a"-"z", "A"-"Z" ])+ >
+|   < SEPTYPE : "," >
+}
+
+/************ select */
+< SELECT_STATE >
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+< SELECT_STATE >
+TOKEN :
+{
+    < ONESEL : ([ "a"-"z", "A"-"Z","[","]","." ])+ >
+|   < SEPSELECT : "," >
+}
+
+/**
+ *
+ */void createStatement(final IStatement _statement) :{  Token name, onesel;}{
+  (
+    < QUERY >
+    (
+      < TYPE >
+      (
+        name = < NAME >
+        {
+          _statement.addType(name.image);
+        }
+      | < ENDTYPE >
+      | < SEPTYPE >
+      | onesel = < ONESEL >
+        {
+            _statement.addSelect(onesel.image);
+        }
+      | < SEPSELECT >
+      )*
+    )
+  | < SELECT >
+    (
+      onesel = < ONESEL >
+      {        _statement.addSelect(onesel.image);
+      }    )*  )
+}
+
