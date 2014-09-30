@@ -16,7 +16,7 @@
  */options{  JDK_VERSION = "1.7";  STATIC = false;  ERROR_REPORTING = true;  USER_TOKEN_MANAGER = false;}PARSER_BEGIN(EQLParser)package org.efaps.eql;import org.efaps.eql.IStatement;public class EQLParser{}PARSER_END(EQLParser)SKIP :{  " "| "\r"| "\t"| "\n"}TOKEN :{  < QUERY : "query" > : QUERY_STATE
 | < SELECT : "select" > : SELECT_STATE}/************ query */< QUERY_STATE >SKIP :{  " "| "\r"| "\t"| "\n"}< QUERY_STATE >TOKEN :{  < TYPE : "type" > : TYPE_STATE}/************ type */< TYPE_STATE >SKIP :{  " "
 | "\r"| "\t"| "\n"}< TYPE_STATE >TOKEN :{    < ENDTYPE : "select" > : SELECT_STATE
-|   < NAME : ([ "a"-"z", "A"-"Z" ])+ >
+|   < NAME : ([ "a"-"z", "A"-"Z", "_" ])+ >
 |   < SEPTYPE : "," >
 }
 
@@ -33,7 +33,7 @@ SKIP :
 < SELECT_STATE >
 TOKEN :
 {
-    < ONESEL : ([ "a"-"z", "A"-"Z","[","]","." ])+ >
+    < ONESEL : ([ "a"-"z", "A"-"Z","[","]",".", "_" ])+ >
 |   < SEPSELECT : "," >
 }
 
