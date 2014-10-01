@@ -24,6 +24,7 @@ import org.efaps.ci.CIAdminProgram;
 import org.efaps.ci.CIType;
 import org.efaps.db.Checkout;
 import org.efaps.db.Instance;
+import org.efaps.update.schema.program.staticsource.WikiCompiler.OneWiki;
 import org.efaps.util.EFapsException;
 import org.efaps.wikiutil.export.html.WEMHtml;
 import org.efaps.wikiutil.parser.gwiki.GWikiParser;
@@ -36,7 +37,7 @@ import org.efaps.wikiutil.parser.gwiki.javacc.ParseException;
  * @version $Id$
  */
 public class WikiCompiler
-    extends AbstractStaticSourceCompiler
+    extends AbstractStaticSourceCompiler<OneWiki>
 {
 
     /**
@@ -87,7 +88,7 @@ public class WikiCompiler
       * {@inheritDoc}
       */
     @Override
-    protected AbstractSource getNewSource(final String _name,
+    protected OneWiki getNewSource(final String _name,
                                           final Instance _instance)
     {
         return new OneWiki(_name, _instance);
@@ -97,10 +98,9 @@ public class WikiCompiler
      * Class representing one wiki file in the eFaps DataBase.
      *
      */
-    protected class OneWiki
-        extends AbstractSource
+    public static class OneWiki
+        extends AbstractStaticSourceCompiler.AbstractSource
     {
-
         /**
          * Constructor.
          * @param _name name

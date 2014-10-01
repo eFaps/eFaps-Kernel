@@ -39,6 +39,7 @@ import org.efaps.db.Checkin;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.Update;
+import org.efaps.update.schema.program.jasperreport.JasperReportCompiler.OneJasperReport;
 import org.efaps.update.schema.program.jasperreport.JasperReportImporter.FakeQueryExecuterFactory;
 import org.efaps.update.schema.program.staticsource.AbstractStaticSourceCompiler;
 import org.efaps.util.EFapsException;
@@ -51,7 +52,7 @@ import org.efaps.util.EFapsException;
  *          $
  */
 public class JasperReportCompiler
-    extends AbstractStaticSourceCompiler
+    extends AbstractStaticSourceCompiler<OneJasperReport>
 {
 
     /**
@@ -76,12 +77,20 @@ public class JasperReportCompiler
     public void compile()
         throws EFapsException
     {
+        final List<OneJasperReport> sources = readSources();
+        compile(sources.toArray(new OneJasperReport[sources.size()]));
+    }
 
+    /**
+     * @param _sources source to be compiled
+     * @throws EFapsException on error
+     */
+    public void compile(final OneJasperReport... _sources)
+        throws EFapsException
+    {
         final Map<String, String> compiled = readCompiledSources();
 
-        final List<AbstractSource> allsource = readSources();
-
-        for (final AbstractSource onesource : allsource) {
+        for (final OneJasperReport onesource : _sources) {
 
             if (AbstractStaticSourceCompiler.LOG.isInfoEnabled()) {
                 AbstractStaticSourceCompiler.LOG.info("compiling " + onesource.getName());
@@ -182,7 +191,7 @@ public class JasperReportCompiler
      * {@inheritDoc}
      */
     @Override
-    public AbstractSource getNewSource(final String _name,
+    public OneJasperReport getNewSource(final String _name,
                                        final Instance _instance)
     {
         return new OneJasperReport(_name, _instance);
@@ -190,10 +199,9 @@ public class JasperReportCompiler
 
     /**
      */
-    protected class OneJasperReport
-        extends AbstractSource
+    public static class OneJasperReport
+        extends AbstractStaticSourceCompiler.AbstractSource
     {
-
         /**
          * @param _name name
          * @param _instance Instance

@@ -34,6 +34,7 @@ import org.efaps.ci.CIAdminProgram;
 import org.efaps.ci.CIType;
 import org.efaps.db.Checkout;
 import org.efaps.db.Instance;
+import org.efaps.update.schema.program.staticsource.JavaScriptCompiler.OneJavaScript;
 import org.efaps.util.EFapsException;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
@@ -53,7 +54,7 @@ import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
  * @version $Id$
  */
 public class JavaScriptCompiler
-    extends AbstractStaticSourceCompiler
+    extends AbstractStaticSourceCompiler<OneJavaScript>
 {
     /**
      * Logger for this class.
@@ -100,6 +101,7 @@ public class JavaScriptCompiler
                      * @param _arg3 not used
                      * @param _arg4 not used
                      */
+                    @Override
                     public void error(final String _error,
                                       final String _arg1,
                                       final int _arg2,
@@ -119,6 +121,7 @@ public class JavaScriptCompiler
                      * @param _arg4 not used
                      * @return null not used
                      */
+                    @Override
                     public EvaluatorException runtimeError(final String _arg0,
                                                            final String _arg1,
                                                            final int _arg2,
@@ -137,6 +140,7 @@ public class JavaScriptCompiler
                      * @param _arg3     arg3 not used
                      * @param _arg4     arg4 not used
                      */
+                    @Override
                     public void warning(final String _warning,
                                         final String _arg1,
                                         final int _arg2,
@@ -185,8 +189,8 @@ public class JavaScriptCompiler
      * {@inheritDoc}
      */
     @Override
-    public AbstractSource getNewSource(final String _name,
-                                       final Instance _instance)
+    public OneJavaScript getNewSource(final String _name,
+                                      final Instance _instance)
     {
         return new OneJavaScript(_name, _instance);
     }
@@ -221,8 +225,8 @@ public class JavaScriptCompiler
     /**
      * Class to store a javascript during compelation.
      */
-    protected class OneJavaScript
-        extends AbstractSource
+    public static class OneJavaScript
+        extends AbstractStaticSourceCompiler.AbstractSource
     {
         /**
          * @param _name     Name of the JavaScript

@@ -93,10 +93,10 @@ public class Compile
     }
 
     /**
-     * @return lsit of classpath elements
+     * @return list of classpath elements
      * @throws EFapsException on error
      */
-    private List<String> getClassPathElements()
+    public static List<String> getClassPathElements()
         throws EFapsException
     {
         final List<String> ret = new ArrayList<String>();

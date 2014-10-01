@@ -36,6 +36,7 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.schema.program.jasperreport.JasperReportCompiler;
+import org.efaps.update.schema.program.staticsource.AbstractStaticSourceCompiler.AbstractSource;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +46,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author The eFaps Team
  * @version $Id$
+ * @param <T> sourcetype
  */
-public abstract class AbstractStaticSourceCompiler
+public abstract class AbstractStaticSourceCompiler<T extends AbstractSource>
 {
 
     /**
@@ -63,10 +65,10 @@ public abstract class AbstractStaticSourceCompiler
     public static void compileAll(final List<String> _classPathElements)
         throws EFapsException
     {
-        (new JasperReportCompiler(_classPathElements)).compile();
-        (new CSSCompiler()).compile();
-        (new JavaScriptCompiler()).compile();
-        (new WikiCompiler()).compile();
+        new JasperReportCompiler(_classPathElements).compile();
+        new CSSCompiler().compile();
+        new JavaScriptCompiler().compile();
+        new WikiCompiler().compile();
     }
 
     /**
@@ -82,9 +84,9 @@ public abstract class AbstractStaticSourceCompiler
     {
         final Map<String, String> compiled = readCompiledSources();
 
-        final List<AbstractSource> allsource = readSources();
+        final List<T> allsource = readSources();
 
-        for (final AbstractSource onesource : allsource) {
+        for (final T onesource : allsource) {
 
             if (AbstractStaticSourceCompiler.LOG.isInfoEnabled()) {
                 AbstractStaticSourceCompiler.LOG.info("compiling " + onesource.getName());
@@ -156,8 +158,8 @@ public abstract class AbstractStaticSourceCompiler
      * @param _instance Instance of the source
      * @return AbstractSource
      */
-    protected abstract AbstractSource getNewSource(final String _name,
-                                                   final Instance _instance);
+    protected abstract T getNewSource(final String _name,
+                                      final Instance _instance);
 
     /**
      * Get the compiled String for the Instance with OID _oid.
@@ -198,10 +200,10 @@ public abstract class AbstractStaticSourceCompiler
      * @return List with AbstractSources
      * @throws EFapsException on error
      */
-    protected List<AbstractSource> readSources()
+    protected List<T> readSources()
         throws EFapsException
     {
-        final List<AbstractSource> ret = new ArrayList<AbstractSource>();
+        final List<T> ret = new ArrayList<>();
         final QueryBuilder queryBldr = new QueryBuilder(getClassName4Type());
         final MultiPrintQuery multi = queryBldr.getPrint();
         multi.addAttribute(CIAdminProgram.Abstract.Name);
@@ -242,7 +244,7 @@ public abstract class AbstractStaticSourceCompiler
     /**
      * Class to access one source.
      */
-    protected abstract class AbstractSource
+    public static abstract class AbstractSource
     {
         /**
          * Stores the name of this source.

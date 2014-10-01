@@ -30,6 +30,7 @@ import org.efaps.ci.CIAdminProgram;
 import org.efaps.ci.CIType;
 import org.efaps.db.Checkout;
 import org.efaps.db.Instance;
+import org.efaps.update.schema.program.staticsource.CSSCompiler.OneCSS;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,7 @@ import com.yahoo.platform.yui.compressor.CssCompressor;
  * @version $Id$
  */
 public class CSSCompiler
-    extends AbstractStaticSourceCompiler
+    extends AbstractStaticSourceCompiler<OneCSS>
 {
 
     /**
@@ -111,7 +112,7 @@ public class CSSCompiler
      * {@inheritDoc}
      */
     @Override
-    public AbstractSource getNewSource(final String _name,
+    public OneCSS getNewSource(final String _name,
                                        final Instance _instance)
     {
         return new OneCSS(_name, _instance);
@@ -120,10 +121,9 @@ public class CSSCompiler
     /**
      * Class represents on stylesheet.
      */
-    protected class OneCSS
-        extends AbstractSource
+    public static class OneCSS
+        extends AbstractStaticSourceCompiler.AbstractSource
     {
-
         /**
          * @param _name     Name
          * @param _instance Instance
