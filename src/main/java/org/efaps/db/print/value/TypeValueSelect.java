@@ -98,6 +98,8 @@ public class TypeValueSelect
                                 tempType.getId()).toString();
             } else if ("UUID".equals(getChildValueSelect().getValueType())) {
                 ret = tempType.getUUID();
+            } else if ("Name".equals(getChildValueSelect().getValueType())) {
+                ret = tempType.getName();
             }
         } else {
             ret = tempType;

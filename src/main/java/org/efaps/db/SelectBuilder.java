@@ -253,6 +253,18 @@ public class SelectBuilder
     }
 
     /**
+     * Add name select part.
+     *
+     * @return this
+     */
+    public SelectBuilder name()
+    {
+        addPoint();
+        this.bldr.append("name");
+        return this;
+    }
+
+    /**
      * Add file select part.
      *
      * @return this

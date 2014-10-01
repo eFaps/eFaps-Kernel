@@ -43,6 +43,7 @@ import org.efaps.db.print.value.IDValueSelect;
 import org.efaps.db.print.value.InstanceValueSelect;
 import org.efaps.db.print.value.LabelValueSelect;
 import org.efaps.db.print.value.LengthValueSelect;
+import org.efaps.db.print.value.NameValueSelect;
 import org.efaps.db.print.value.OIDValueSelect;
 import org.efaps.db.print.value.TypeValueSelect;
 import org.efaps.db.print.value.UUIDValueSelect;
@@ -369,7 +370,7 @@ public class OneSelect
         throws EFapsException
     {
         // for attributes it must be evaluated if the attribute is inside a child table
-        if ((this.valueSelect != null) && "attribute".equals(this.valueSelect.getValueType())) {
+        if (this.valueSelect != null && "attribute".equals(this.valueSelect.getValueType())) {
             Type type;
             if (this.selectParts.size() > 0) {
                 type = this.selectParts.get(this.selectParts.size() - 1).getType();
@@ -501,6 +502,8 @@ public class OneSelect
                 currentSelect.addValueSelect(new IDValueSelect(currentSelect));
             } else if (part.equalsIgnoreCase("uuid")) {
                 currentSelect.addValueSelect(new UUIDValueSelect(currentSelect));
+            } else if (part.equalsIgnoreCase("name")) {
+                currentSelect.addValueSelect(new NameValueSelect(currentSelect));
             } else if (part.equalsIgnoreCase("class")) {
                 currentSelect.addValueSelect(new ClassificationValueSelect(currentSelect));
             } else if (part.equalsIgnoreCase("value")) {
