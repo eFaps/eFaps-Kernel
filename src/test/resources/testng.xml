@@ -43,4 +43,9 @@
         </classes>
     </test>
  -->
+    <test name="EQLParserTest">
+        <packages>
+            <package name="org.efaps.test.eql.*"></package>
+        </packages>
+    </test>
 </suite>

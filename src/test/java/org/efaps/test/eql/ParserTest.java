@@ -28,6 +28,8 @@ import java.util.Map;
 
 import org.efaps.eql.EQLParser;
 import org.efaps.eql.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -41,15 +43,26 @@ import org.testng.annotations.Test;
 public class ParserTest
 {
 
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ParserTest.class);
+
+    private TestStatement testStatement(final String _stmtStr)
+        throws ParseException
+    {
+        LOG.info("Validating: '{}'", _stmtStr);
+        final EQLParser parser = new EQLParser(new StringReader(_stmtStr));
+        final TestStatement ret = new TestStatement();
+        parser.parseStatement(ret);
+        return ret;
+    }
+
     @Test
     public void oneType()
         throws ParseException
     {
-        final String stmtStr = "query type CompanyType";
-        System.out.println(stmtStr);
-        final EQLParser parser = new EQLParser(new StringReader(stmtStr));
-        final TestStatement stmt = new TestStatement();
-        parser.parseStatement(stmt);
+        final TestStatement stmt = testStatement("query type CompanyType");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(types, stmt.getTypes(), "No");
@@ -59,11 +72,7 @@ public class ParserTest
     public void multipleTypes()
         throws ParseException
     {
-        final String stmtStr = "query type CompanyType, OtroType";
-        System.out.println(stmtStr);
-        final EQLParser parser = new EQLParser(new StringReader(stmtStr));
-        final TestStatement stmt = new TestStatement();
-        parser.parseStatement(stmt);
+        final TestStatement stmt = testStatement("query type CompanyType, OtroType");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         types.add("OtroType");
@@ -74,15 +83,11 @@ public class ParserTest
     public void multipleTypesWithSelect()
         throws ParseException
     {
-        final String stmtStr = "query type CompanyType, OtroType select attribute[Name]";
-        System.out.println(stmtStr);
-        final EQLParser parser = new EQLParser(new StringReader(stmtStr));
-        final TestStatement stmt = new TestStatement();
-        parser.parseStatement(stmt);
+        final TestStatement stmt = testStatement("query type CompanyType, OtroType select attribute[Name]");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         types.add("OtroType");
-        final List<String> selects =new ArrayList<>();
+        final List<String> selects = new ArrayList<>();
         selects.add("attribute[Name]");
 
         Assert.assertEquals(types, stmt.getTypes(), "No");
@@ -93,15 +98,11 @@ public class ParserTest
     public void multipleTypesWithMultipleSelect()
         throws ParseException
     {
-        final String stmtStr = "query type CompanyType, OtroType select attribute[Name], linkto[Otro].instance";
-        System.out.println(stmtStr);
-        final EQLParser parser = new EQLParser(new StringReader(stmtStr));
-        final TestStatement stmt = new TestStatement();
-        parser.parseStatement(stmt);
+        final TestStatement stmt = testStatement("query type CompanyType, OtroType select attribute[Name], linkto[Otro].instance");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         types.add("OtroType");
-        final List<String> selects =new ArrayList<>();
+        final List<String> selects = new ArrayList<>();
         selects.add("attribute[Name]");
         selects.add("linkto[Otro].instance");
 
@@ -113,16 +114,12 @@ public class ParserTest
     public void selectWithMapping()
         throws ParseException
     {
-        final String stmtStr = "query type CompanyType select attribute[Name] as Name";
-        System.out.println(stmtStr);
-        final EQLParser parser = new EQLParser(new StringReader(stmtStr));
-        final TestStatement stmt = new TestStatement();
-        parser.parseStatement(stmt);
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name] as Name");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(types, stmt.getTypes(), "No");
 
-        final Map<String, String> mapping =new HashMap<>();
+        final Map<String, String> mapping = new HashMap<>();
         mapping.put("attribute[Name]", "Name");
         Assert.assertEquals(mapping, stmt.getSelects2alias(), "No");
     }
@@ -131,16 +128,12 @@ public class ParserTest
     public void selectWithMultipleMapping()
         throws ParseException
     {
-        final String stmtStr = "query type CompanyType select attribute[Name] as Name, linkto[Otro].instance as instance";
-        System.out.println(stmtStr);
-        final EQLParser parser = new EQLParser(new StringReader(stmtStr));
-        final TestStatement stmt = new TestStatement();
-        parser.parseStatement(stmt);
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name] as Name, linkto[Otro].instance as instance");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(types, stmt.getTypes(), "No");
 
-        final Map<String, String> mapping =new HashMap<>();
+        final Map<String, String> mapping = new HashMap<>();
         mapping.put("attribute[Name]", "Name");
         mapping.put("linkto[Otro].instance", "instance");
 
@@ -151,20 +144,16 @@ public class ParserTest
     public void selectWithMixedMapping()
         throws ParseException
     {
-        final String stmtStr = "query type CompanyType select attribute[Name], linkto[Otro].instance as instance";
-        System.out.println(stmtStr);
-        final EQLParser parser = new EQLParser(new StringReader(stmtStr));
-        final TestStatement stmt = new TestStatement();
-        parser.parseStatement(stmt);
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name], linkto[Otro].instance as instance");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(types, stmt.getTypes(), "No");
 
-        final Map<String, String> mapping =new HashMap<>();
+        final Map<String, String> mapping = new HashMap<>();
         mapping.put("linkto[Otro].instance", "instance");
         Assert.assertEquals(mapping, stmt.getSelects2alias(), "No");
 
-        final List<String> selects =new ArrayList<>();
+        final List<String> selects = new ArrayList<>();
         selects.add("attribute[Name]");
         Assert.assertEquals(selects, stmt.getSelects(), "No");
 
