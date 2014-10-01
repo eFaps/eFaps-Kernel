@@ -69,6 +69,33 @@ public class ParserTest
     }
 
     @Test
+    public void oneTypeWhere()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\"");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(types, stmt.getTypes(), "No");
+
+        final Map<String, String> wheremap = new HashMap<>();
+        wheremap.put("name", "demo");
+        Assert.assertEquals(stmt.getAttr2where(), wheremap, "No");
+    }
+
+    @Test
+    public void oneTypeWhereWithSpace()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo de algo\"");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(types, stmt.getTypes(), "No");
+
+        final Map<String, String> wheremap = new HashMap<>();
+        wheremap.put("name", "demo de algo");
+        Assert.assertEquals(stmt.getAttr2where(), wheremap, "No");
+    }
+    @Test
     public void multipleTypes()
         throws ParseException
     {

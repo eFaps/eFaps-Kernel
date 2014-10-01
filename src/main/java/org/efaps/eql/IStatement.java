@@ -47,4 +47,11 @@ public interface IStatement
     public void addSelect(final String _select,
                           final String _alias);
 
+    /**
+     * @param _select Select to be added to the Statement
+     * @param _alias  alias for the related select
+     */
+    public void addWhereAttrEq(final String _attr,
+                               final String _value);
+
 }

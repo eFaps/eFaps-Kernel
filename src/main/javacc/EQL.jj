@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- */options{  JDK_VERSION = "1.7";  STATIC = false;  ERROR_REPORTING = true;  USER_TOKEN_MANAGER = false;}PARSER_BEGIN(EQLParser)package org.efaps.eql;import org.efaps.eql.IStatement;public class EQLParser{}PARSER_END(EQLParser)SKIP :{  " "| "\r"| "\t"| "\n"}TOKEN :{  < QUERY : "query" > : QUERY_STATE
-| < SELECT : "select" > : SELECT_STATE}/************ query */< QUERY_STATE >SKIP :{  " "| "\r"| "\t"| "\n"}< QUERY_STATE >TOKEN :{  < TYPE : "type" > : TYPE_STATE}/************ type */< TYPE_STATE >SKIP :{  " "
-| "\r"| "\t"| "\n"}< TYPE_STATE >TOKEN :{    < ENDTYPE : "select" > : SELECT_STATE
-|   < NAME : ([ "a"-"z", "A"-"Z", "_" ])+ >
-|   < SEPTYPE : "," >
+ */options{  JDK_VERSION = "1.7";  STATIC = false;  ERROR_REPORTING = true;  USER_TOKEN_MANAGER = false;}PARSER_BEGIN(EQLParser)package org.efaps.eql;import org.efaps.eql.IStatement;public class EQLParser{
+    private String getString(final String _token)
+    {
+        return _token.replaceAll("\"", "");
+    }}PARSER_END(EQLParser)SKIP :{  " "| "\r"| "\t"| "\n"}TOKEN :{    < QUERY : "query" > : QUERY_STATE
+|   < WHERE : "where" > : WHERE_STATE
+|   < SELECT : "select" > : SELECT_STATE}/************ query */< QUERY_STATE >SKIP :{  " "| "\r"| "\t"| "\n"}< QUERY_STATE >TOKEN :{  < TYPE : "type" > : TYPE_STATE}/************ type */< TYPE_STATE >SKIP :{  " "
+| "\r"| "\t"| "\n"}< TYPE_STATE >TOKEN :{        < ENDTYPE : "select" > : SELECT_STATE
+    |   < ENDTYPE2 : "where" > : WHERE_STATE
+    |   < NAME : ([ "a"-"z", "A"-"Z", "_" ])+ >
+    |   < SEPTYPE : "," >
 }
 
 /************ select */
@@ -39,6 +45,25 @@ TOKEN :
     |   < SEPSELECT : "," >
 }
 
+< WHERE_STATE >
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+< WHERE_STATE >
+TOKEN :
+{
+        < ATTR : ([ "a"-"z", "A"-"Z", "_" ])+ >
+    |   < EQUAL : "=" >
+    |   < STRING: (< APOSTROPHE > (< CHAR > | " ")+ < APOSTROPHE >)>
+    |   < ENDWHERE : "select" > : SELECT_STATE
+    |   < #APOSTROPHE: "\"">
+    |   < #CHAR: ~["\u0000" - "\u0020", "\""]>
+}
 /**
  *
  */void parseStatement(final IStatement _statement) :{  Token name, onesel, alias;}{
@@ -52,7 +77,9 @@ TOKEN :
             _statement.addType(name.image);
           }
           | < ENDTYPE >
+          | < ENDTYPE2 >
           | < SEPTYPE >
+          | whereRule(_statement)
           | selectRule(_statement)
       )*
     )
@@ -61,6 +88,26 @@ TOKEN :
       onesel = < ONESEL >
       {        _statement.addSelect(onesel.image);
       }    )*  )
+}
+
+private void whereRule(final IStatement _statement) :
+{
+    Token attr;
+}
+{
+    attr = <ATTR> (whereEqRule(_statement, attr))
+}
+
+private void whereEqRule(final IStatement _statement,
+                         final Token _attr) :
+{
+    Token value;
+}
+{
+    <EQUAL > value = <STRING >
+    {
+      _statement.addWhereAttrEq(_attr.image, getString(value.image));
+    }
 }
 
 private void selectRule(final IStatement _statement) :
@@ -111,3 +158,7 @@ private void lastSelectRule(final IStatement _statement,
         _statement.addSelect(_onesel.image);
     }
 }
+
+
+
+

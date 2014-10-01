@@ -43,6 +43,8 @@ public class TestStatement
 
     private final Map<String, String> selects2alias = new HashMap<>();
 
+    private final Map<String, String> attr2where = new HashMap<>();
+
     @Override
     public void addType(final String _type)
     {
@@ -91,5 +93,23 @@ public class TestStatement
     public Map<String, String> getSelects2alias()
     {
         return this.selects2alias;
+    }
+
+    @Override
+    public void addWhereAttrEq(final String _attr,
+                               final String _value)
+    {
+        this.attr2where.put(_attr, _value);
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #attr2where}.
+     *
+     * @return value of instance variable {@link #attr2where}
+     */
+    public Map<String, String> getAttr2where()
+    {
+        return this.attr2where;
     }
 }

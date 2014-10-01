@@ -130,4 +130,15 @@ public final class Statement
     {
         return this.alias2select;
     }
+
+    /* (non-Javadoc)
+     * @see org.efaps.eql.IStatement#addWhereAttrEq(java.lang.String, java.lang.String)
+     */
+    @Override
+    public void addWhereAttrEq(final String _attr,
+                               final String _value)
+    {
+        // TODO Auto-generated method stub
+
+    }
 }
