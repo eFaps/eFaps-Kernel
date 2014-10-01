@@ -184,6 +184,25 @@ public class ParserTest
     }
 
     @Test
+    public void multipleTypesWhereWithSelect()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType, OtroType where name = \"demo\" select attribute[Name]");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        types.add("OtroType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final List<String> selects = new ArrayList<>();
+        selects.add("attribute[Name]");
+        Assert.assertEquals(stmt.getSelects(), selects, "No");
+
+        final Map<String, String> wheremap = new HashMap<>();
+        wheremap.put("name", "demo");
+        Assert.assertEquals(stmt.getAttr2where(), wheremap, "No");
+    }
+
+    @Test
     public void multipleTypesWithMultipleSelect()
         throws ParseException
     {
