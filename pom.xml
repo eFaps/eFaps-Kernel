@@ -134,6 +134,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
                 <version>2.6</version>
+                <configuration>
+                    <debugParser>false</debugParser>
+                    <debugLookAhead>false</debugLookAhead>
+                    <debugTokenManager>false</debugTokenManager>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
