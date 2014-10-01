@@ -22,8 +22,8 @@ package org.efaps.db.print.value;
 
 import java.math.BigDecimal;
 
+import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.ci.CIAdminDataModel;
 import org.efaps.db.print.OneSelect;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -34,18 +34,13 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  * @version $Id$
  */
-public class TypeValueSelect
+public class StatusValueSelect
     extends AbstractValueSelect
 {
     /**
-     * Type this TypeValueSelect belongs to.
-     */
-    private Type type;
-
-    /**
      * @param _oneSelect OneSelect
      */
-    public TypeValueSelect(final OneSelect _oneSelect)
+    public StatusValueSelect(final OneSelect _oneSelect)
     {
         super(_oneSelect);
     }
@@ -60,12 +55,13 @@ public class TypeValueSelect
                                 final int _colIndex)
     {
         int ret = 0;
-        if (_type.getMainTable().getSqlColType() != null) {
-            _select.column(_tableIndex, _type.getMainTable().getSqlColType());
-            getColIndexs().add(_colIndex + ret);
-            ret++;
+        if (_type.isCheckStatus()) {
+            for (final String colName : _type.getStatusAttribute().getSqlColNames()) {
+                _select.column(_tableIndex, colName);
+                getColIndexs().add(_colIndex + ret);
+                ret++;
+            }
         }
-        this.type = _type;
         return ret;
     }
 
@@ -76,20 +72,42 @@ public class TypeValueSelect
     public Object getValue(final Object _currentObject)
         throws EFapsException
     {
-        Type tempType;
-        if (this.type.getMainTable().getSqlColType() == null) {
-            tempType = this.type;
-        } else if (_currentObject != null) {
+        Object ret = null;
+        Status tempStatus;
+        if (_currentObject != null) {
             // check is necessary because Oracle JDBC returns for getObject always a BigDecimal
             if (_currentObject instanceof BigDecimal) {
-                tempType = Type.get(((BigDecimal) _currentObject).longValue());
+                tempStatus = Status.get(((BigDecimal) _currentObject).longValue());
             } else {
-                tempType = Type.get((Long) _currentObject);
+                tempStatus = Status.get((Long) _currentObject);
             }
         } else {
-            tempType = null;
+            tempStatus = null;
         }
-        return analyzeChildValue(this, tempType);
+        if (tempStatus != null && getChildValueSelect() != null) {
+            switch (getChildValueSelect().getValueType()) {
+                case "label":
+                    ret = tempStatus.getLabel();
+                    break;
+                case "oid":
+                    ret = new StringBuilder().append(Type.get(tempStatus.getStatusGroup().getUUID()).getId())
+                        .append(".").append(tempStatus.getId()).toString();
+                    break;
+                case "key":
+                    ret = tempStatus.getKey();
+                    break;
+                case "type":
+                    ret = ((TypeValueSelect) getChildValueSelect()).analyzeChildValue(getChildValueSelect(),
+                                    Type.get(tempStatus.getStatusGroup().getUUID()));
+                    break;
+                default:
+                    ret = tempStatus;
+                    break;
+            }
+        } else {
+            ret = tempStatus;
+        }
+        return ret;
     }
 
     /**
@@ -98,40 +116,6 @@ public class TypeValueSelect
     @Override
     public String getValueType()
     {
-        return "type";
-    }
-
-    /**
-     * @param _currentSelect select to be analyzed
-     * @param _tempType current type
-     * @return the object
-     */
-    protected Object analyzeChildValue(final AbstractValueSelect _currentSelect,
-                                       final Type _tempType)
-    {
-        Object ret;
-        if (_tempType != null && _currentSelect.getChildValueSelect() != null) {
-            switch (_currentSelect.getChildValueSelect().getValueType()) {
-                case "label":
-                    ret = _tempType.getLabel();
-                    break;
-                case "oid":
-                    ret = new StringBuilder().append(CIAdminDataModel.Type.getType().getId()).append(".").append(
-                                    _tempType.getId()).toString();
-                    break;
-                case "UUID":
-                    ret = _tempType.getUUID();
-                    break;
-                case "name":
-                    ret = _tempType.getName();
-                    break;
-                default:
-                    ret = _tempType;
-                    break;
-            }
-        } else {
-            ret = null;
-        }
-        return ret;
+        return "status";
     }
 }

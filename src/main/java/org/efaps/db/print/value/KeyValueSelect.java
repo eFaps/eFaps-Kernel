@@ -28,14 +28,14 @@ import org.efaps.db.print.OneSelect;
  * @author The eFaps Team
  * @version $Id$
  */
-public class NameValueSelect
+public class KeyValueSelect
     extends AbstractValueSelect
 {
 
     /**
      * @param _oneSelect OneSelect
      */
-    public NameValueSelect(final OneSelect _oneSelect)
+    public KeyValueSelect(final OneSelect _oneSelect)
     {
         super(_oneSelect);
     }
@@ -46,6 +46,6 @@ public class NameValueSelect
     @Override
     public String getValueType()
     {
-        return "name";
+        return "key";
     }
 }

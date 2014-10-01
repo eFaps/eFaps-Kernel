@@ -41,10 +41,12 @@ import org.efaps.db.print.value.ClassificationValueSelect;
 import org.efaps.db.print.value.FormatValueSelect;
 import org.efaps.db.print.value.IDValueSelect;
 import org.efaps.db.print.value.InstanceValueSelect;
+import org.efaps.db.print.value.KeyValueSelect;
 import org.efaps.db.print.value.LabelValueSelect;
 import org.efaps.db.print.value.LengthValueSelect;
 import org.efaps.db.print.value.NameValueSelect;
 import org.efaps.db.print.value.OIDValueSelect;
+import org.efaps.db.print.value.StatusValueSelect;
 import org.efaps.db.print.value.TypeValueSelect;
 import org.efaps.db.print.value.UUIDValueSelect;
 import org.efaps.db.print.value.UoMValueSelect;
@@ -490,38 +492,61 @@ public class OneSelect
                     currentSelect.addLinkFromSelectPart(matcher.group());
                     currentSelect = currentSelect.fromSelect.getMainOneSelect();
                 }
-            } else if (part.equalsIgnoreCase("oid")) {
-                currentSelect.addValueSelect(new OIDValueSelect(currentSelect));
-            } else if (part.equalsIgnoreCase("type")) {
-                currentSelect.addValueSelect(new TypeValueSelect(currentSelect));
-            } else if (part.equalsIgnoreCase("instance")) {
-                currentSelect.addValueSelect(new InstanceValueSelect(currentSelect));
-            } else if (part.equalsIgnoreCase("label")) {
-                currentSelect.addValueSelect(new LabelValueSelect(currentSelect));
-            } else if (part.equalsIgnoreCase("id")) {
-                currentSelect.addValueSelect(new IDValueSelect(currentSelect));
-            } else if (part.equalsIgnoreCase("uuid")) {
-                currentSelect.addValueSelect(new UUIDValueSelect(currentSelect));
-            } else if (part.equalsIgnoreCase("name")) {
-                currentSelect.addValueSelect(new NameValueSelect(currentSelect));
-            } else if (part.equalsIgnoreCase("class")) {
-                currentSelect.addValueSelect(new ClassificationValueSelect(currentSelect));
-            } else if (part.equalsIgnoreCase("value")) {
-                currentSelect.addValueSelect(new ValueValueSelect(currentSelect));
-            } else if (part.equalsIgnoreCase("base")) {
-                currentSelect.addValueSelect(new BaseValueSelect(currentSelect));
-            } else if (part.equalsIgnoreCase("uom")) {
-                currentSelect.addValueSelect(new UoMValueSelect(currentSelect));
-            } else if (part.equalsIgnoreCase("file")) {
-                currentSelect.addFileSelectPart();
-            } else if (part.equalsIgnoreCase("length")) {
-                currentSelect.addValueSelect(new LengthValueSelect(currentSelect));
             } else if (part.startsWith("format")) {
                 final Matcher matcher = formatPat.matcher(part);
                 if (matcher.find()) {
                     currentSelect.addValueSelect(new FormatValueSelect(currentSelect, matcher.group()));
                 }
-            }
+            } else
+                switch (part) {
+                    case "oid":
+                        currentSelect.addValueSelect(new OIDValueSelect(currentSelect));
+                        break;
+                    case "type":
+                        currentSelect.addValueSelect(new TypeValueSelect(currentSelect));
+                        break;
+                    case "instance":
+                        currentSelect.addValueSelect(new InstanceValueSelect(currentSelect));
+                        break;
+                    case "label":
+                        currentSelect.addValueSelect(new LabelValueSelect(currentSelect));
+                        break;
+                    case "id":
+                        currentSelect.addValueSelect(new IDValueSelect(currentSelect));
+                        break;
+                    case "uuid":
+                        currentSelect.addValueSelect(new UUIDValueSelect(currentSelect));
+                        break;
+                    case "name":
+                        currentSelect.addValueSelect(new NameValueSelect(currentSelect));
+                        break;
+                    case "class":
+                        currentSelect.addValueSelect(new ClassificationValueSelect(currentSelect));
+                        break;
+                    case "value":
+                        currentSelect.addValueSelect(new ValueValueSelect(currentSelect));
+                        break;
+                    case "base":
+                        currentSelect.addValueSelect(new BaseValueSelect(currentSelect));
+                        break;
+                    case "uom":
+                        currentSelect.addValueSelect(new UoMValueSelect(currentSelect));
+                        break;
+                    case "file":
+                        currentSelect.addFileSelectPart();
+                        break;
+                    case "length":
+                        currentSelect.addValueSelect(new LengthValueSelect(currentSelect));
+                        break;
+                    case "status":
+                        currentSelect.addValueSelect(new StatusValueSelect(currentSelect));
+                        break;
+                    case "key":
+                        currentSelect.addValueSelect(new KeyValueSelect(currentSelect));
+                        break;
+                    default:
+                        break;
+                }
         }
     }
 
