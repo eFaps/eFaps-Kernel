@@ -22,7 +22,9 @@ package org.efaps.test.eql;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.efaps.eql.EQLParser;
 import org.efaps.eql.ParseException;
@@ -47,7 +49,7 @@ public class ParserTest
         System.out.println(stmtStr);
         final EQLParser parser = new EQLParser(new StringReader(stmtStr));
         final TestStatement stmt = new TestStatement();
-        parser.createStatement(stmt);
+        parser.parseStatement(stmt);
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(types, stmt.getTypes(), "No");
@@ -61,7 +63,7 @@ public class ParserTest
         System.out.println(stmtStr);
         final EQLParser parser = new EQLParser(new StringReader(stmtStr));
         final TestStatement stmt = new TestStatement();
-        parser.createStatement(stmt);
+        parser.parseStatement(stmt);
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         types.add("OtroType");
@@ -76,7 +78,7 @@ public class ParserTest
         System.out.println(stmtStr);
         final EQLParser parser = new EQLParser(new StringReader(stmtStr));
         final TestStatement stmt = new TestStatement();
-        parser.createStatement(stmt);
+        parser.parseStatement(stmt);
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         types.add("OtroType");
@@ -95,7 +97,7 @@ public class ParserTest
         System.out.println(stmtStr);
         final EQLParser parser = new EQLParser(new StringReader(stmtStr));
         final TestStatement stmt = new TestStatement();
-        parser.createStatement(stmt);
+        parser.parseStatement(stmt);
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         types.add("OtroType");
@@ -106,4 +108,66 @@ public class ParserTest
         Assert.assertEquals(types, stmt.getTypes(), "No");
         Assert.assertEquals(selects, stmt.getSelects(), "No");
     }
+
+    @Test
+    public void selectWithMapping()
+        throws ParseException
+    {
+        final String stmtStr = "query type CompanyType select attribute[Name] as Name";
+        System.out.println(stmtStr);
+        final EQLParser parser = new EQLParser(new StringReader(stmtStr));
+        final TestStatement stmt = new TestStatement();
+        parser.parseStatement(stmt);
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(types, stmt.getTypes(), "No");
+
+        final Map<String, String> mapping =new HashMap<>();
+        mapping.put("attribute[Name]", "Name");
+        Assert.assertEquals(mapping, stmt.getSelects2alias(), "No");
+    }
+
+    @Test
+    public void selectWithMultipleMapping()
+        throws ParseException
+    {
+        final String stmtStr = "query type CompanyType select attribute[Name] as Name, linkto[Otro].instance as instance";
+        System.out.println(stmtStr);
+        final EQLParser parser = new EQLParser(new StringReader(stmtStr));
+        final TestStatement stmt = new TestStatement();
+        parser.parseStatement(stmt);
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(types, stmt.getTypes(), "No");
+
+        final Map<String, String> mapping =new HashMap<>();
+        mapping.put("attribute[Name]", "Name");
+        mapping.put("linkto[Otro].instance", "instance");
+
+        Assert.assertEquals(mapping, stmt.getSelects2alias(), "No");
+    }
+
+    @Test
+    public void selectWithMixedMapping()
+        throws ParseException
+    {
+        final String stmtStr = "query type CompanyType select attribute[Name], linkto[Otro].instance as instance";
+        System.out.println(stmtStr);
+        final EQLParser parser = new EQLParser(new StringReader(stmtStr));
+        final TestStatement stmt = new TestStatement();
+        parser.parseStatement(stmt);
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(types, stmt.getTypes(), "No");
+
+        final Map<String, String> mapping =new HashMap<>();
+        mapping.put("linkto[Otro].instance", "instance");
+        Assert.assertEquals(mapping, stmt.getSelects2alias(), "No");
+
+        final List<String> selects =new ArrayList<>();
+        selects.add("attribute[Name]");
+        Assert.assertEquals(selects, stmt.getSelects(), "No");
+
+    }
+
 }

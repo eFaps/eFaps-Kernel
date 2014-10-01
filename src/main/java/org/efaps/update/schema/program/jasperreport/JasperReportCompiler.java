@@ -39,6 +39,7 @@ import org.efaps.db.Checkin;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.Update;
+import org.efaps.update.schema.program.jasperreport.JasperReportImporter.FakeQueryExecuterFactory;
 import org.efaps.update.schema.program.staticsource.AbstractStaticSourceCompiler;
 import org.efaps.util.EFapsException;
 
@@ -121,7 +122,8 @@ public class JasperReportCompiler
         final DefaultJasperReportsContext reportContext = DefaultJasperReportsContext.getInstance();
         reportContext.setProperty(JRCompiler.COMPILER_CLASSPATH, classPath.toString());
         reportContext.setProperty("net.sf.jasperreports.compiler.groovy", JasperGroovyCompiler.class.getName());
-
+        reportContext.setProperty("net.sf.jasperreports.query.executer.factory.eFaps",
+                        FakeQueryExecuterFactory.class.getName());
         try {
             final JasperDesign jasperDesign = JasperUtil.getJasperDesign(_instSource);
 

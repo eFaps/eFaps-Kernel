@@ -33,29 +33,27 @@ SKIP :
 < SELECT_STATE >
 TOKEN :
 {
-    < ONESEL : ([ "a"-"z", "A"-"Z","[","]",".", "_" ])+ >
-|   < SEPSELECT : "," >
+        < AS : "as" >
+    |   < ALIAS : ([ "a"-"z", "A"-"Z"])+ >
+    |   < ONESEL : ([ "a"-"z", "A"-"Z","[","]",".", "_" ])+ >
+    |   < SEPSELECT : "," >
 }
 
 /**
  *
- */void createStatement(final IStatement _statement) :{  Token name, onesel;}{
+ */void parseStatement(final IStatement _statement) :{  Token name, onesel, alias;}{
   (
     < QUERY >
     (
       < TYPE >
       (
-        name = < NAME >
-        {
-          _statement.addType(name.image);
-        }
-      | < ENDTYPE >
-      | < SEPTYPE >
-      | onesel = < ONESEL >
-        {
-            _statement.addSelect(onesel.image);
-        }
-      | < SEPSELECT >
+          name = < NAME >
+          {
+            _statement.addType(name.image);
+          }
+          | < ENDTYPE >
+          | < SEPTYPE >
+          | selectRule(_statement)
       )*
     )
   | < SELECT >
@@ -65,3 +63,51 @@ TOKEN :
       }    )*  )
 }
 
+private void selectRule(final IStatement _statement) :
+{
+    Token onesel;
+}
+{
+    onesel = <ONESEL> (
+            selectWithAliasRule(_statement, onesel)
+      |     selectsRule(_statement, onesel)
+      |     lastSelectRule(_statement, onesel))
+}
+
+private void selectWithAliasRule(final IStatement _statement,
+                                 final Token _onesel) :
+{
+    Token alias;
+}
+{
+    LOOKAHEAD(3)
+    < AS > alias = <ALIAS > < SEPSELECT >
+    {
+        _statement.addSelect(_onesel.image, alias.image);
+    }
+  |  < AS > alias = <ALIAS >
+    {
+        _statement.addSelect(_onesel.image, alias.image);
+    }
+}
+
+private void selectsRule(final IStatement _statement,
+                         final Token _onesel) :
+{
+}
+{
+    < SEPSELECT >
+    {        _statement.addSelect(_onesel.image);
+    }
+}
+
+private void lastSelectRule(final IStatement _statement,
+                            final Token _onesel) :
+{
+}
+{
+    < EOF >
+    {
+        _statement.addSelect(_onesel.image);
+    }
+}

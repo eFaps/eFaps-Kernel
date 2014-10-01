@@ -21,7 +21,9 @@
 package org.efaps.test.eql;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.efaps.eql.IStatement;
 
@@ -38,6 +40,8 @@ public class TestStatement
     private final List<String> types = new ArrayList<>();
 
     private final List<String> selects = new ArrayList<>();
+
+    private final Map<String, String> selects2alias = new HashMap<>();
 
     @Override
     public void addType(final String _type)
@@ -69,5 +73,23 @@ public class TestStatement
     public List<String> getSelects()
     {
         return this.selects;
+    }
+
+    @Override
+    public void addSelect(final String _select,
+                          final String _alias)
+    {
+        this.selects2alias.put(_select, _alias);
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #selects2alias}.
+     *
+     * @return value of instance variable {@link #selects2alias}
+     */
+    public Map<String, String> getSelects2alias()
+    {
+        return this.selects2alias;
     }
 }

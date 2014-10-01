@@ -22,13 +22,19 @@ package org.efaps.update.schema.program.jasperreport;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.query.JRQueryExecuter;
+import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
@@ -77,6 +83,9 @@ public class JasperReportImporter
     {
         super.readCode();
         try {
+            DefaultJasperReportsContext.getInstance().setProperty("net.sf.jasperreports.query.executer.factory.eFaps",
+                            FakeQueryExecuterFactory.class.getName());
+
             this.jasperDesign = new JRXmlLoader(DefaultJasperReportsContext.getInstance(),
                             JRXmlDigesterFactory.createDigester()).loadXML(newCodeInputStream());
         } catch (final ParserConfigurationException e) {
@@ -117,5 +126,42 @@ public class JasperReportImporter
     protected UUID evalUUID()
     {
         return this.jasperDesign.getUUID();
+    }
+
+    /**
+     * Internal FakeExecuterFactory to be able to set them from esjp.
+     */
+    public static class FakeQueryExecuterFactory
+        implements QueryExecuterFactory
+    {
+
+        @Override
+        public JRQueryExecuter createQueryExecuter(final JRDataset _dataset,
+                                                   final Map<String, ? extends JRValueParameter> _parameters)
+            throws JRException
+        {
+            return null;
+        }
+
+        @Override
+        public Object[] getBuiltinParameters()
+        {
+            return null;
+        }
+
+        @Override
+        public JRQueryExecuter createQueryExecuter(final JasperReportsContext _jasperReportsContext,
+                                                   final JRDataset _dataset,
+                                                   final Map<String, ? extends JRValueParameter> _parameters)
+            throws JRException
+        {
+            return null;
+        }
+
+        @Override
+        public boolean supportsQueryParameterType(final String _className)
+        {
+            return false;
+        }
     }
 }
