@@ -21,10 +21,13 @@
 package org.efaps.eql;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
@@ -52,6 +55,11 @@ public final class Statement
     private final Map<String, String> alias2select = new LinkedHashMap<>();
 
     /**
+     * Statementtype.
+     */
+    private StmtType stmtType;
+
+    /**
      * QueryBuilder.
      */
     private QueryBuilder queryBdr;
@@ -60,6 +68,11 @@ public final class Statement
      * MultiPrint.
      */
     private MultiPrintQuery multiPrint;
+
+    /**
+     * Instance for the statement.
+     */
+    private Instance instance;
 
     /**
      * No public constructor is wanted.
@@ -103,7 +116,18 @@ public final class Statement
     {
         try {
             if (this.multiPrint == null) {
-                this.multiPrint = this.queryBdr.getPrint();
+                switch (getStmtType()) {
+                    case QUERY:
+                        this.multiPrint = this.queryBdr.getPrint();
+                        break;
+                    case PRINT:
+                        final List<Instance> list = new ArrayList<Instance>();
+                        list.add(getInstance());
+                        this.multiPrint = new MultiPrintQuery(list);
+                        break;
+                    default:
+                        break;
+                }
             }
             this.multiPrint.addSelect(_select);
             this.alias2select.put(_alias, _select);
@@ -160,5 +184,43 @@ public final class Statement
             LOG.error("Catched error", e);
         }
         return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setObject(final String _oid)
+    {
+        this.instance = Instance.get(_oid);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setStmtType(final StmtType _stmtType)
+    {
+        this.stmtType = _stmtType;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #stmtType}.
+     *
+     * @return value of instance variable {@link #stmtType}
+     */
+    protected StmtType getStmtType()
+    {
+        return this.stmtType;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #instance}.
+     *
+     * @return value of instance variable {@link #instance}
+     */
+    protected Instance getInstance()
+    {
+        return this.instance;
     }
 }

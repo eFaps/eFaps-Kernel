@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.efaps.eql.EQLParser;
+import org.efaps.eql.IStatement.StmtType;
 import org.efaps.eql.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,8 @@ public class ParserTest
         throws ParseException
     {
         final TestStatement stmt = testStatement("query type CompanyType");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.QUERY, "No");
+
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(stmt.getTypes(), types, "No");
@@ -264,7 +267,41 @@ public class ParserTest
         final List<String> selects = new ArrayList<>();
         selects.add("attribute[Name]");
         Assert.assertEquals(selects, stmt.getSelects(), "No");
-
     }
 
+    @Test
+    public void print()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("print 123.456");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.PRINT, "No");
+        Assert.assertEquals(stmt.getObject(), "123.456", "No");
+    }
+
+    @Test
+    public void printWithSelect()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("print 123.456 select attribute[Name]");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.PRINT, "No");
+        Assert.assertEquals(stmt.getObject(), "123.456", "No");
+
+        final List<String> selects = new ArrayList<>();
+        selects.add("attribute[Name]");
+        Assert.assertEquals(stmt.getSelects(), selects, "No");
+    }
+
+    @Test
+    public void printWithMultipleSelects()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("print 123.456 select attribute[Name], linkto[Otro].instance");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.PRINT, "No");
+        Assert.assertEquals(stmt.getObject(), "123.456", "No");
+
+        final List<String> selects = new ArrayList<>();
+        selects.add("attribute[Name]");
+        selects.add("linkto[Otro].instance");
+        Assert.assertEquals(stmt.getSelects(), selects, "No");
+    }
 }

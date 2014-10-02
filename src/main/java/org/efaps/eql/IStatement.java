@@ -31,6 +31,20 @@ package org.efaps.eql;
 public interface IStatement
 {
     /**
+     * StatementType.
+     */
+    public enum StmtType {
+        /**
+         * Query is executed.
+         */
+        QUERY,
+        /**
+         * Print is executed.
+         */
+        PRINT;
+    }
+
+    /**
      * @param _type Type to be added to the Statement
      */
     public void addType(final String _type);
@@ -53,5 +67,15 @@ public interface IStatement
      */
     public void addWhereAttrEq(final String _attr,
                                final String _value);
+
+    /**
+     * @param _oid set the object the Statement will be executed for
+     */
+    public void setObject(final String _oid);
+
+    /**
+     * @param _stmtType set the type of Statement will be executed for
+     */
+    public void setStmtType(final StmtType _stmtType);
 
 }

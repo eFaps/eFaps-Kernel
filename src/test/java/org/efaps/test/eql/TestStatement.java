@@ -45,6 +45,10 @@ public class TestStatement
 
     private final Map<String, String> attr2where = new HashMap<>();
 
+    private String object;
+
+    private StmtType stmtType;
+
     @Override
     public void addType(final String _type)
     {
@@ -111,5 +115,38 @@ public class TestStatement
     public Map<String, String> getAttr2where()
     {
         return this.attr2where;
+    }
+
+    @Override
+    public void setObject(final String _oid)
+    {
+       this.object = _oid;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #object}.
+     *
+     * @return value of instance variable {@link #object}
+     */
+    public String getObject()
+    {
+        return this.object;
+    }
+
+    @Override
+    public void setStmtType(final StmtType _stmtType)
+    {
+        this.stmtType = _stmtType;
+
+    }
+
+    /**
+     * Getter method for the instance variable {@link #stmtType}.
+     *
+     * @return value of instance variable {@link #stmtType}
+     */
+    public StmtType getStmtType()
+    {
+        return this.stmtType;
     }
 }
