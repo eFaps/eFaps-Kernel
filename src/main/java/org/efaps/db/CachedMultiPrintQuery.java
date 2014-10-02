@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2014 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -176,4 +176,15 @@ public class CachedMultiPrintQuery
         return this;
     }
 
+    /**
+     * Get a CachedMultiPrintQuery that will only cache during a request.
+     * @param _instances instance to be updated.
+     * @throws EFapsException on error
+     */
+    public static CachedMultiPrintQuery get4Request(final List<Instance> _instances)
+        throws EFapsException
+    {
+        return new CachedMultiPrintQuery(_instances, Context.getThreadContext().getRequestId()).setLifespan(5)
+                        .setLifespanUnit(TimeUnit.MINUTES);
+    }
 }

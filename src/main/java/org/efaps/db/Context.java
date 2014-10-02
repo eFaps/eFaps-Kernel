@@ -43,6 +43,7 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.efaps.admin.user.Company;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
@@ -283,6 +284,12 @@ public final class Context
     private final boolean inherit;
 
     /**
+     * Id of the request (means normally this instance of the context).
+     * Used for cacheing during a request.
+     */
+    private final String requestId;
+
+    /**
      * Private Constructor.
      *
      * @see #begin(String, Locale, Map, Map, Map)
@@ -305,7 +312,7 @@ public final class Context
     {
         this.inherit = _inherit;
         this.transaction = _transaction;
-
+        this.requestId = RandomStringUtils.randomAlphanumeric(8);
         this.parameters = _parameters == null ? new HashMap<String, String[]>() : _parameters;
         this.fileParameters = _fileParameters == null ? new HashMap<String, FileParameter>() : _fileParameters;
         this.sessionAttributes = _sessionAttributes == null ? new HashMap<String, Object>() : _sessionAttributes;
@@ -392,6 +399,7 @@ public final class Context
             Context.LOG.debug("close context for " + this.person);
             Context.LOG.debug("connection is " + getConnection());
         }
+        QueryCache.cleanByKey(getRequestId());
         if (this.connection != null) {
             try {
                 //this.connection.commit();
@@ -546,6 +554,16 @@ public final class Context
     public void setPath(final String _path)
     {
         this.path = _path;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #requestId}.
+     *
+     * @return value of instance variable {@link #requestId}
+     */
+    public String getRequestId()
+    {
+        return this.requestId;
     }
 
     /**

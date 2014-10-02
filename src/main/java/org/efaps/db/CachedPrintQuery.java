@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2014 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -186,5 +186,17 @@ public class CachedPrintQuery
     {
         this.maxIdleTimeUnit = _maxIdleTimeUnit;
         return this;
+    }
+
+    /**
+     * Get a CachedPrintQuery that will only cache during a request.
+     * @param _instance instance to be updated.
+     * @throws EFapsException on error
+     */
+    public static CachedPrintQuery get4Request(final Instance _instance)
+        throws EFapsException
+    {
+        return new CachedPrintQuery(_instance, Context.getThreadContext().getRequestId()).setLifespan(5)
+                        .setLifespanUnit(TimeUnit.MINUTES);
     }
 }

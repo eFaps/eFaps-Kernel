@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2014 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -249,5 +249,29 @@ public class CachedInstanceQuery
     {
         this.maxIdleTimeUnit = _maxIdleTimeUnit;
         return this;
+    }
+
+    /**
+     * Get a CachedInstanceQuery that will only cache during a request.
+     * @param _type Type the query is based on
+     * @throws CacheReloadException on error
+     */
+    public static CachedInstanceQuery get4Request(final Type _type)
+        throws EFapsException
+    {
+        return new CachedInstanceQuery(Context.getThreadContext().getRequestId(), _type).setLifespan(5)
+                        .setLifespanUnit(TimeUnit.MINUTES);
+    }
+
+    /**
+     * Get a CachedInstanceQuery that will only cache during a request.
+     * @param _typeUUID uuid of the Type the query is based on
+     * @throws CacheReloadException on error
+     */
+    public static CachedInstanceQuery get4Request(final UUID _typeUUID)
+        throws EFapsException
+    {
+        return new CachedInstanceQuery(Context.getThreadContext().getRequestId(), _typeUUID).setLifespan(5)
+                        .setLifespanUnit(TimeUnit.MINUTES);
     }
 }
