@@ -28,6 +28,8 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -39,10 +41,24 @@ public final class Statement
     implements IStatement
 {
 
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(Statement.class);
+
+    /**
+     * Mapping between alias and select.
+     */
     private final Map<String, String> alias2select = new LinkedHashMap<>();
 
+    /**
+     * QueryBuilder.
+     */
     private QueryBuilder queryBdr;
 
+    /**
+     * MultiPrint.
+     */
     private MultiPrintQuery multiPrint;
 
     /**
@@ -65,8 +81,7 @@ public final class Statement
                 this.queryBdr.addType(Type.get(_type));
             }
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Catched error", e);
         }
     }
 
@@ -93,8 +108,21 @@ public final class Statement
             this.multiPrint.addSelect(_select);
             this.alias2select.put(_alias, _select);
         } catch (final EFapsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Catched error", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWhereAttrEq(final String _attr,
+                               final String _value)
+    {
+        try {
+            this.queryBdr.addWhereAttrEqValue(_attr, _value);
+        } catch (final EFapsException e) {
+            LOG.error("Catched error", e);
         }
     }
 
@@ -108,19 +136,6 @@ public final class Statement
         return this.multiPrint;
     }
 
-    public static final Statement getStatement(final String _stmtStr)
-    {
-        final Statement ret = new Statement();
-        final EQLParser parser = new EQLParser(new StringReader(_stmtStr));
-        try {
-            parser.parseStatement(ret);
-        } catch (final ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return ret;
-    }
-
     /**
      * Getter method for the instance variable {@link #alias2select}.
      *
@@ -131,14 +146,19 @@ public final class Statement
         return this.alias2select;
     }
 
-    /* (non-Javadoc)
-     * @see org.efaps.eql.IStatement#addWhereAttrEq(java.lang.String, java.lang.String)
+    /**
+     * @param _stmtStr Statement
+     * @return StatementObject
      */
-    @Override
-    public void addWhereAttrEq(final String _attr,
-                               final String _value)
+    public static Statement getStatement(final String _stmtStr)
     {
-        // TODO Auto-generated method stub
-
+        final Statement ret = new Statement();
+        final EQLParser parser = new EQLParser(new StringReader(_stmtStr));
+        try {
+            parser.parseStatement(ret);
+        } catch (final ParseException e) {
+            LOG.error("Catched error", e);
+        }
+        return ret;
     }
 }

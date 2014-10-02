@@ -130,7 +130,7 @@ public class TypeValueSelect
                     break;
             }
         } else {
-            ret = null;
+            ret = _tempType;
         }
         return ret;
     }
