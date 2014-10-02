@@ -55,8 +55,13 @@ public class StatusValueSelect
                                 final int _colIndex)
     {
         int ret = 0;
-        if (_type.isCheckStatus()) {
-            for (final String colName : _type.getStatusAttribute().getSqlColNames()) {
+        Type tmpType = _type;
+        // not all types inside a hierarchy have the typattribute assigned so it must be searched for
+        while (!tmpType.isCheckStatus() && tmpType.getParentType() != null) {
+            tmpType = tmpType.getParentType();
+        }
+        if (tmpType.isCheckStatus()) {
+            for (final String colName : tmpType.getStatusAttribute().getSqlColNames()) {
                 _select.column(_tableIndex, colName);
                 getColIndexs().add(_colIndex + ret);
                 ret++;
