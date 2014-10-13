@@ -223,4 +223,9 @@ public final class Statement
     {
         return this.instance;
     }
+
+    public boolean isQuery()
+    {
+        return IStatement.StmtType.QUERY.equals(getStmtType());
+    }
 }
