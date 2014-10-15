@@ -27,11 +27,13 @@ import java.util.Map.Entry;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.json.data.AbstractValue;
 import org.efaps.json.data.DataList;
+import org.efaps.json.data.DateTimeValue;
 import org.efaps.json.data.DecimalValue;
 import org.efaps.json.data.LongValue;
 import org.efaps.json.data.ObjectData;
 import org.efaps.json.data.StringValue;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateTime;
 
 /**
  * TODO comment!
@@ -70,6 +72,8 @@ public class JSONData
             ret = new DecimalValue().setValue((BigDecimal) _object);
         } else if (_object instanceof Long) {
             ret = new LongValue().setValue((Long) _object);
+        } else if (_object instanceof DateTime) {
+            ret = new DateTimeValue().setValue((DateTime) _object);
         }
 
         if (ret != null) {
