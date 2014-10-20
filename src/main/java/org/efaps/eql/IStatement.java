@@ -69,6 +69,20 @@ public interface IStatement
                                final String _value);
 
     /**
+     * @param _select Select to be added to the Statement
+     * @param _alias  alias for the related select
+     */
+    public void addWhereAttrGreater(final String _attr,
+                                    final String _value);
+
+    /**
+     * @param _select Select to be added to the Statement
+     * @param _alias  alias for the related select
+     */
+    public void addWhereAttrLess(final String _attr,
+                                 final String _value);
+
+    /**
      * @param _oid set the object the Statement will be executed for
      */
     public void setObject(final String _oid);

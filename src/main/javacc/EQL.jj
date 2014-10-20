@@ -107,6 +107,8 @@ TOKEN :
         < ENDWHERE : "select" > : SELECT_STATE
     |   < ATTR : ([ "a"-"z", "A"-"Z", "_" ])+ >
     |   < EQUAL : "=" >
+    |   < GREATER : ">" >
+    |   < LESS : "<" >
     |   < NUMBER: (< DIGIT >)+ >
     |   < STRING: (< APOSTROPHE > (< CHAR > | " ")+ < APOSTROPHE >)>
     |   < #APOSTROPHE: "\"">
@@ -166,8 +168,47 @@ private void whereRule(final IStatement _statement) :
     Token attr;
 }
 {
-    attr = <ATTR> (whereEqRule(_statement, attr))
+    attr = <ATTR> (
+                    whereEqRule(_statement, attr)
+                |   whereGreaterRule(_statement, attr)
+                |   whereLessRule(_statement, attr))
 }
+
+private void whereGreaterRule(final IStatement _statement,
+                              final Token _attr) :
+{
+    Token value;
+}
+{
+    LOOKAHEAD(2)
+    < GREATER > value = <STRING >
+    {
+      _statement.addWhereAttrGreater(_attr.image, getString(value.image));
+    }
+  | < GREATER > value = <NUMBER >
+    {
+      _statement.addWhereAttrGreater(_attr.image, value.image);
+    }
+}
+
+private void whereLessRule(final IStatement _statement,
+                           final Token _attr) :
+{
+    Token value;
+}
+{
+    LOOKAHEAD(2)
+    < LESS > value = <STRING >
+    {
+      _statement.addWhereAttrLess(_attr.image, getString(value.image));
+    }
+  | < LESS > value = <NUMBER >
+    {
+      _statement.addWhereAttrLess(_attr.image, value.image);
+    }
+}
+
+
 
 private void whereEqRule(final IStatement _statement,
                          final Token _attr) :

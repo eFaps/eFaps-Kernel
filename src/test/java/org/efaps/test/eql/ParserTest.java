@@ -86,7 +86,7 @@ public class ParserTest
     }
 
     @Test
-    public void oneTypeWhere()
+    public void oneTypeWhereEq()
         throws ParseException
     {
         final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\"");
@@ -96,11 +96,39 @@ public class ParserTest
 
         final Map<String, String> wheremap = new HashMap<>();
         wheremap.put("name", "demo");
-        Assert.assertEquals(stmt.getAttr2where(), wheremap, "No");
+        Assert.assertEquals(stmt.getAttr2whereEq(), wheremap, "No");
     }
 
     @Test
-    public void oneTypeWhereWithSelect()
+    public void oneTypeWhereGreater()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType where name > \"demo\"");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, String> wheremap = new HashMap<>();
+        wheremap.put("name", "demo");
+        Assert.assertEquals(stmt.getAttr2whereGreater(), wheremap, "No");
+    }
+
+    @Test
+    public void oneTypeWhereLess()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType where name < \"demo\"");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, String> wheremap = new HashMap<>();
+        wheremap.put("name", "demo");
+        Assert.assertEquals(stmt.getAttr2whereLess(), wheremap, "No");
+    }
+
+    @Test
+    public void oneTypeWhereEqWithSelect()
         throws ParseException
     {
         final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\" select attribute[Name]");
@@ -110,7 +138,7 @@ public class ParserTest
 
         final Map<String, String> wheremap = new HashMap<>();
         wheremap.put("name", "demo");
-        Assert.assertEquals(stmt.getAttr2where(), wheremap, "No");
+        Assert.assertEquals(stmt.getAttr2whereEq(), wheremap, "No");
 
         final List<String> selects = new ArrayList<>();
         selects.add("attribute[Name]");
@@ -118,7 +146,7 @@ public class ParserTest
     }
 
     @Test
-    public void oneTypeWhereWithSpace()
+    public void oneTypeWhereEqWithSpace()
         throws ParseException
     {
         final TestStatement stmt = testStatement("query type CompanyType where name = \"demo de algo\"");
@@ -128,11 +156,11 @@ public class ParserTest
 
         final Map<String, String> wheremap = new HashMap<>();
         wheremap.put("name", "demo de algo");
-        Assert.assertEquals(stmt.getAttr2where(), wheremap, "No");
+        Assert.assertEquals(stmt.getAttr2whereEq(), wheremap, "No");
     }
 
     @Test
-    public void oneTypeWhereNumber()
+    public void oneTypeWhereEqNumber()
         throws ParseException
     {
         final TestStatement stmt = testStatement("query type CompanyType where id = 345");
@@ -142,7 +170,7 @@ public class ParserTest
 
         final Map<String, String> wheremap = new HashMap<>();
         wheremap.put("id", "345");
-        Assert.assertEquals(stmt.getAttr2where(), wheremap, "No");
+        Assert.assertEquals(stmt.getAttr2whereEq(), wheremap, "No");
     }
 
     @Test
@@ -157,7 +185,7 @@ public class ParserTest
     }
 
     @Test
-    public void multipleTypesWhere()
+    public void multipleTypesWhereEq()
         throws ParseException
     {
         final TestStatement stmt = testStatement("query type CompanyType, OtroType where name = \"demo\"");
@@ -168,7 +196,7 @@ public class ParserTest
 
         final Map<String, String> wheremap = new HashMap<>();
         wheremap.put("name", "demo");
-        Assert.assertEquals(stmt.getAttr2where(), wheremap, "No");
+        Assert.assertEquals(stmt.getAttr2whereEq(), wheremap, "No");
     }
 
     @Test
@@ -187,7 +215,7 @@ public class ParserTest
     }
 
     @Test
-    public void multipleTypesWhereWithSelect()
+    public void multipleTypesWhereEqWithSelect()
         throws ParseException
     {
         final TestStatement stmt = testStatement("query type CompanyType, OtroType where name = \"demo\" select attribute[Name]");
@@ -202,7 +230,7 @@ public class ParserTest
 
         final Map<String, String> wheremap = new HashMap<>();
         wheremap.put("name", "demo");
-        Assert.assertEquals(stmt.getAttr2where(), wheremap, "No");
+        Assert.assertEquals(stmt.getAttr2whereEq(), wheremap, "No");
     }
 
     @Test

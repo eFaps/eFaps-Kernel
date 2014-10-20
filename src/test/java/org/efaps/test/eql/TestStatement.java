@@ -43,7 +43,11 @@ public class TestStatement
 
     private final Map<String, String> selects2alias = new HashMap<>();
 
-    private final Map<String, String> attr2where = new HashMap<>();
+    private final Map<String, String> attr2whereEq = new HashMap<>();
+
+    private final Map<String, String> attr2whereGreater = new HashMap<>();
+
+    private final Map<String, String> attr2whereLess = new HashMap<>();
 
     private String object;
 
@@ -105,18 +109,17 @@ public class TestStatement
     public void addWhereAttrEq(final String _attr,
                                final String _value)
     {
-        this.attr2where.put(_attr, _value);
+        this.attr2whereEq.put(_attr, _value);
     }
-
 
     /**
      * Getter method for the instance variable {@link #attr2where}.
      *
      * @return value of instance variable {@link #attr2where}
      */
-    public Map<String, String> getAttr2where()
+    public Map<String, String> getAttr2whereEq()
     {
-        return this.attr2where;
+        return this.attr2whereEq;
     }
 
     @Override
@@ -170,5 +173,47 @@ public class TestStatement
     public String getEsjp()
     {
         return this.esjp;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWhereAttrGreater(final String _attr,
+                                    final String _value)
+    {
+        this.attr2whereGreater.put(_attr, _value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWhereAttrLess(final String _attr,
+                                 final String _value)
+    {
+        this.attr2whereLess.put(_attr, _value);
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #attr2whereGreater}.
+     *
+     * @return value of instance variable {@link #attr2whereGreater}
+     */
+    public Map<String, String> getAttr2whereGreater()
+    {
+        return this.attr2whereGreater;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #attr2whereLess}.
+     *
+     * @return value of instance variable {@link #attr2whereLess}
+     */
+    public Map<String, String> getAttr2whereLess()
+    {
+        return this.attr2whereLess;
     }
 }

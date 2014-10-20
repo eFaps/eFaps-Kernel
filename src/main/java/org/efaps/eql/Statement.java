@@ -183,6 +183,26 @@ public final class Statement
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWhereAttrGreater(final String _attr,
+                                    final String _value)
+    {
+        // TODO Auto-generated method stub
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWhereAttrLess(final String _attr,
+                                 final String _value)
+    {
+        // TODO Auto-generated method stub
+    }
+
+    /**
      * Getter method for the instance variable {@link #multiPrint}.
      *
      * @return value of instance variable {@link #multiPrint}
