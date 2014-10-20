@@ -159,6 +159,34 @@ public final class Statement
      * {@inheritDoc}
      */
     @Override
+    public void addWhereAttrGreater(final String _attr,
+                                    final String _value)
+    {
+        try {
+            this.queryBdr.addWhereAttrGreaterValue(_attr, _value);
+        } catch (final EFapsException e) {
+            LOG.error("Catched error", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWhereAttrLess(final String _attr,
+                                 final String _value)
+    {
+        try {
+            this.queryBdr.addWhereAttrLessValue(_attr, _value);
+        } catch (final EFapsException e) {
+            LOG.error("Catched error", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setObject(final String _oid)
     {
         this.instance = Instance.get(_oid);
@@ -180,26 +208,6 @@ public final class Statement
     public void setEsjp(final String _className)
     {
        this.esjpClassName = _className;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addWhereAttrGreater(final String _attr,
-                                    final String _value)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addWhereAttrLess(final String _attr,
-                                 final String _value)
-    {
-        // TODO Auto-generated method stub
     }
 
     /**
