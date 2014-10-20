@@ -59,7 +59,7 @@ public class ParserTest
         return ret;
     }
 
-    @Test
+    @Test(description = "Query with a Type")
     public void oneType()
         throws ParseException
     {
@@ -71,7 +71,7 @@ public class ParserTest
         Assert.assertEquals(stmt.getTypes(), types, "No");
     }
 
-    @Test
+    @Test(description = "Query with a Type and one attribute")
     public void oneTypeWithSelect()
         throws ParseException
     {
