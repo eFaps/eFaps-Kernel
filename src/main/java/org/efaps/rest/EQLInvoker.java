@@ -63,6 +63,7 @@ public class EQLInvoker
     {
         String ret = null;
         final Statement stmt = Statement.getStatement(_stmt);
+        // only permit queries on this url
         if (stmt.isQuery()) {
             try {
                 final DataList datalist = JSONData.getDataList(stmt);

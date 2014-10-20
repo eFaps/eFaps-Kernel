@@ -47,6 +47,8 @@ public class TestStatement
 
     private String object;
 
+    private String esjp;
+
     private StmtType stmtType;
 
     @Override
@@ -148,5 +150,25 @@ public class TestStatement
     public StmtType getStmtType()
     {
         return this.stmtType;
+    }
+
+    /* (non-Javadoc)
+     * @see org.efaps.eql.IStatement#setEsjp(java.lang.String)
+     */
+    @Override
+    public void setEsjp(final String _className)
+    {
+        this.esjp = _className;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #esjp}.
+     *
+     * @return value of instance variable {@link #esjp}
+     */
+    public String getEsjp()
+    {
+        return this.esjp;
     }
 }

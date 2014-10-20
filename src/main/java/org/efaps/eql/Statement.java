@@ -75,6 +75,11 @@ public final class Statement
     private Instance instance;
 
     /**
+     * Class Name of the esjp to be executed as query.
+     */
+    private String esjpClassName;
+
+    /**
      * No public constructor is wanted.
      */
     private Statement()
@@ -151,6 +156,33 @@ public final class Statement
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setObject(final String _oid)
+    {
+        this.instance = Instance.get(_oid);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setStmtType(final StmtType _stmtType)
+    {
+        this.stmtType = _stmtType;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setEsjp(final String _className)
+    {
+       this.esjpClassName = _className;
+    }
+
+    /**
      * Getter method for the instance variable {@link #multiPrint}.
      *
      * @return value of instance variable {@link #multiPrint}
@@ -168,40 +200,6 @@ public final class Statement
     public Map<String, String> getAlias2Selects()
     {
         return this.alias2select;
-    }
-
-    /**
-     * @param _stmtStr Statement
-     * @return StatementObject
-     */
-    public static Statement getStatement(final String _stmtStr)
-    {
-        final Statement ret = new Statement();
-        final EQLParser parser = new EQLParser(new StringReader(_stmtStr));
-        try {
-            parser.parseStatement(ret);
-        } catch (final ParseException e) {
-            LOG.error("Catched error", e);
-        }
-        return ret;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setObject(final String _oid)
-    {
-        this.instance = Instance.get(_oid);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setStmtType(final StmtType _stmtType)
-    {
-        this.stmtType = _stmtType;
     }
 
     /**
@@ -224,8 +222,43 @@ public final class Statement
         return this.instance;
     }
 
+    /**
+     * @return true if it is a query
+     */
     public boolean isQuery()
     {
         return IStatement.StmtType.QUERY.equals(getStmtType());
+    }
+
+    /**
+     * @return true if it is a query
+     */
+    public boolean isEsjp()
+    {
+        return this.esjpClassName != null;
+    }
+
+    /**
+     * Get the name of the esjp class.
+     */
+    public String getEsjp()
+    {
+       return this.esjpClassName;
+    }
+
+    /**
+     * @param _stmtStr Statement
+     * @return StatementObject
+     */
+    public static Statement getStatement(final String _stmtStr)
+    {
+        final Statement ret = new Statement();
+        final EQLParser parser = new EQLParser(new StringReader(_stmtStr));
+        try {
+            parser.parseStatement(ret);
+        } catch (final ParseException e) {
+            LOG.error("Catched error", e);
+        }
+        return ret;
     }
 }

@@ -78,4 +78,9 @@ public interface IStatement
      */
     public void setStmtType(final StmtType _stmtType);
 
+    /**
+     * @param _className set the esjp to be executed
+     */
+    public void setEsjp(final String _className);
+
 }

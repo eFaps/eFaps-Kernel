@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.json.data.AbstractValue;
 import org.efaps.json.data.DataList;
@@ -44,24 +45,44 @@ import org.joda.time.DateTime;
 public class JSONData
 {
 
+    /**
+     * @param _statement Statement the datalist will be created for
+     * @return a DataList
+     * @throws EFapsException on error
+     */
     public static DataList getDataList(final Statement _statement)
         throws EFapsException
     {
-        final DataList ret = new DataList();
-        final Map<String, String> mapping = _statement.getAlias2Selects();
-        final MultiPrintQuery multi = _statement.getMultiPrint();
-        multi.execute();
-        while (multi.next()) {
-            final ObjectData data = new ObjectData();
-            for (final Entry<String, String> entry : mapping.entrySet()) {
-                final Object obj = multi.getSelect(entry.getValue());
-                data.getValues().add(getValue(entry.getKey(), obj));
+        DataList ret = new DataList();;
+        if (_statement.isEsjp()) {
+            try {
+                  final Class<?> clazz = Class.forName(_statement.getEsjp(), false, EFapsClassLoader.getInstance());
+                  final IEsjpQuery query = (IEsjpQuery) clazz.newInstance();
+                  ret = query.getDataList();
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                throw new EFapsException("Could not invoke IEsjpQuery.", e);
             }
-            ret.add(data);
+        } else {
+            final Map<String, String> mapping = _statement.getAlias2Selects();
+            final MultiPrintQuery multi = _statement.getMultiPrint();
+            multi.execute();
+            while (multi.next()) {
+                final ObjectData data = new ObjectData();
+                for (final Entry<String, String> entry : mapping.entrySet()) {
+                    final Object obj = multi.getSelect(entry.getValue());
+                    data.getValues().add(getValue(entry.getKey(), obj));
+                }
+                ret.add(data);
+            }
         }
         return ret;
     }
 
+    /**
+     * @param _key  key the value is wanted for
+     * @param _object oebjct to be converted
+     * @return AbstractValue for the key
+     */
     private static AbstractValue<?> getValue(final String _key,
                                              final Object _object)
     {

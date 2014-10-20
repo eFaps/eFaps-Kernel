@@ -23,12 +23,30 @@ public class EQLParser{
     }}PARSER_END(EQLParser)SKIP :{  " "| "\r"| "\t"| "\n"}TOKEN :{    < QUERY : "query" > : QUERY_STATE
 |   < PRINT : "print" > : PRINT_STATE
 |   < WHERE : "where" > : WHERE_STATE
-|   < SELECT : "select" > : SELECT_STATE}/************ query */< QUERY_STATE >SKIP :{  " "| "\r"| "\t"| "\n"}< QUERY_STATE >TOKEN :{  < TYPE : "type" > : TYPE_STATE}/************ type */< TYPE_STATE >SKIP :{  " "
+|   < SELECT : "select" > : SELECT_STATE}/************ query */< QUERY_STATE >SKIP :{  " "| "\r"| "\t"| "\n"}< QUERY_STATE >TOKEN :{        < TYPE : "type" > : TYPE_STATE
+    |   < ESJP : "esjp" > : ESJP_STATE}/************ type */< TYPE_STATE >SKIP :{  " "
 | "\r"| "\t"| "\n"}< TYPE_STATE >TOKEN :{        < ENDTYPE : "select" > : SELECT_STATE
     |   < ENDTYPE2 : "where" > : WHERE_STATE
     |   < NAME : ([ "a"-"z", "A"-"Z", "_" ])+ >
     |   < SEPTYPE : "," >
 }
+
+/************ esjp for query */
+< ESJP_STATE >
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+< ESJP_STATE >
+TOKEN :
+{
+        < CLASS :([ "a"-"z", "A"-"Z", "." ])+ >
+}
+
 
 /************ print */
 < PRINT_STATE >
@@ -103,26 +121,30 @@ TOKEN :
 }
 /**
  *
- */void parseStatement(final IStatement _statement) :{  Token name, alias, oid;}{
+ */void parseStatement(final IStatement _statement) :{  Token name, alias, oid, esjp;}{
   (
     < QUERY >
     {
           _statement.setStmtType(StmtType.QUERY);    }
     (
-      < TYPE >
-      (
-          name = < NAME >
-          {
-            _statement.addType(name.image);
-          }
-          | < ENDTYPE >
-          | < ENDTYPE2 >
-          | < SEPTYPE >
-          | < ENDWHERE >
-          | whereRule(_statement)
-          | selectRule(_statement)
-      )*
-    )
+            < TYPE >
+        (
+            name = < NAME >
+            {
+                _statement.addType(name.image);
+            }
+            |   < ENDTYPE >
+            |   < ENDTYPE2 >
+            |   < SEPTYPE >
+            |   < ENDWHERE >
+            |   whereRule(_statement)
+            |   selectRule(_statement)
+        )*
+        |   < ESJP >
+            esjp = < CLASS >
+            {
+                _statement.setEsjp(esjp.image);            }
+        )
   | < PRINT >
     {
           _statement.setStmtType(StmtType.PRINT);

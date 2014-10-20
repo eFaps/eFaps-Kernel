@@ -304,4 +304,13 @@ public class ParserTest
         selects.add("linkto[Otro].instance");
         Assert.assertEquals(stmt.getSelects(), selects, "No");
     }
+
+    @Test
+    public void queryEsjp()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query esjp org.efaps.demo.Test");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.QUERY, "No");
+        Assert.assertEquals(stmt.getEsjp(), "org.efaps.demo.Test", "No");
+    }
 }
