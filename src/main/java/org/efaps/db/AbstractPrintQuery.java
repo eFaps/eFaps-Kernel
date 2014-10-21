@@ -58,7 +58,7 @@ public abstract class AbstractPrintQuery
     /**
      * Logging instance used in this class.
      */
-    protected static final Logger LOG = LoggerFactory.getLogger(PrintQuery.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PrintQuery.class);
 
     /**
      * Mapping of Select statements to OneSelect.
@@ -315,7 +315,9 @@ public abstract class AbstractPrintQuery
     {
         final OneSelect oneselect = this.attr2OneSelect.get(_setName);
         Map<String, Object> ret = null;
-        if (oneselect.getFromSelect().hasResult()) {
+        if (oneselect == null || oneselect.getFromSelect() == null) {
+            LOG.error("Could not get an AttributeSet for the name: '{}' in PrintQuery '{]'", _setName, this);
+        } else if (oneselect.getFromSelect().hasResult()) {
             ret = new HashMap<String, Object>();
             // in an attributset the first one is fake
             boolean first = true;

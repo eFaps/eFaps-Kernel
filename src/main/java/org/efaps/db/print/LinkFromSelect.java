@@ -277,9 +277,7 @@ public class LinkFromSelect
         boolean ret = false;
         ConnectionResource con = null;
         try {
-
-            AbstractPrintQuery.LOG.debug("Executing SQLL: {}", _complStmt);
-
+            LOG.debug("Executing SQLL: {}", _complStmt);
             List<Object[]> rows = null;
             boolean cached = false;
             if (isCacheEnabled()) {
