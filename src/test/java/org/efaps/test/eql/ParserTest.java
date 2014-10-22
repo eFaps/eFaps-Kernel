@@ -35,7 +35,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * TODO comment!
+ * Generic basic tests fro the eql language.
  *
  * @author The eFaps Team
  * @version $Id$
@@ -49,7 +49,7 @@ public class ParserTest
      */
     private static final Logger LOG = LoggerFactory.getLogger(ParserTest.class);
 
-    private TestStatement testStatement(final String _stmtStr)
+    protected TestStatement testStatement(final String _stmtStr)
         throws ParseException
     {
         LOG.info("Validating: '{}'", _stmtStr);
