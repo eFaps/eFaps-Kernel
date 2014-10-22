@@ -15,7 +15,9 @@
  *
  */options{  JDK_VERSION = "1.7";  STATIC = false;  ERROR_REPORTING = true;  USER_TOKEN_MANAGER = false;
   UNICODE_INPUT = true;}PARSER_BEGIN(EQLParser)package org.efaps.eql;
-import org.efaps.eql.IStatement;import org.efaps.eql.IStatement.StmtType;
+import java.util.List;
+import java.util.ArrayList;import org.efaps.eql.IStatement.StmtType;
+import org.efaps.eql.IStatement;
 public class EQLParser{
     private String getString(final String _token)
     {
@@ -106,10 +108,14 @@ TOKEN :
 {
         < ENDWHERE : "select" > : SELECT_STATE
     |   < AND : "and" >
+    |   < IN : "in" >
     |   < ATTR : ([ "a"-"z", "A"-"Z", "_" ])+ >
     |   < EQUAL : "=" >
     |   < GREATER : ">" >
     |   < LESS : "<" >
+    |   < LPAREN : "(" >
+    |   < RPAREN : ")" >
+    |   < COMMA: "," >
     |   < NUMBER: (< DIGIT >)+ >
     |   < STRING: (< APOSTROPHE > (< CHAR > | " ")+ < APOSTROPHE >)>
     |   < #APOSTROPHE: "\"">
@@ -173,8 +179,38 @@ private void whereRule(final IStatement _statement) :
     attr = <ATTR> (
                     whereEqRule(_statement, attr)
                 |   whereGreaterRule(_statement, attr)
-                |   whereLessRule(_statement, attr))
+                |   whereLessRule(_statement, attr)
+                |   whereInRule(_statement, attr))
 }
+
+private void whereInRule(final IStatement _statement,
+                         final Token _attr) :
+{
+    List<String> values;
+}
+{
+    < IN > <LPAREN> values = valueList(_statement)    {
+        _statement.addWhereAttrIn(_attr.image, values);    }
+    <RPAREN>
+}
+
+
+private List<String> valueList(final IStatement _statement) :
+{
+    List<String> ret = new ArrayList<String>();
+    Token aVal;}
+{  (        aVal = < NUMBER >        {
+            ret.add(aVal.image);        }
+    |   aVal = < STRING >
+        {
+            ret.add(getString(aVal.image));        }
+    |   < COMMA >
+  )*
+  {
+      return ret;
+  }
+}
+
 
 private void whereGreaterRule(final IStatement _statement,
                               final Token _attr) :

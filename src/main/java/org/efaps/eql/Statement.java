@@ -22,6 +22,7 @@ package org.efaps.eql;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,6 +151,20 @@ public final class Statement
     {
         try {
             this.queryBdr.addWhereAttrEqValue(_attr, _value);
+        } catch (final EFapsException e) {
+            LOG.error("Catched error", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWhereAttrIn(final String _attr,
+                               final Collection<String> _values)
+    {
+        try {
+            this.queryBdr.addWhereAttrEqValue(_attr, _values.toArray());
         } catch (final EFapsException e) {
             LOG.error("Catched error", e);
         }

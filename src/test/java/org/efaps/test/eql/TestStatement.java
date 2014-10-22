@@ -21,6 +21,7 @@
 package org.efaps.test.eql;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,8 @@ public class TestStatement
 
     private final Map<String, String> attr2whereEq = new HashMap<>();
 
+    private final Map<String, Collection<String>> attr2whereIn = new HashMap<>();
+
     private final Map<String, String> attr2whereGreater = new HashMap<>();
 
     private final Map<String, String> attr2whereLess = new HashMap<>();
@@ -55,6 +58,9 @@ public class TestStatement
 
     private StmtType stmtType;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addType(final String _type)
     {
@@ -71,6 +77,9 @@ public class TestStatement
         return this.types;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addSelect(final String _select)
     {
@@ -87,13 +96,15 @@ public class TestStatement
         return this.selects;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addSelect(final String _select,
                           final String _alias)
     {
         this.selects2alias.put(_select, _alias);
     }
-
 
     /**
      * Getter method for the instance variable {@link #selects2alias}.
@@ -105,11 +116,24 @@ public class TestStatement
         return this.selects2alias;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addWhereAttrEq(final String _attr,
                                final String _value)
     {
         this.attr2whereEq.put(_attr, _value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWhereAttrIn(final String _attr,
+                               final Collection<String> _values)
+    {
+        this.attr2whereIn.put(_attr, _values);
     }
 
     /**
@@ -122,10 +146,13 @@ public class TestStatement
         return this.attr2whereEq;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setObject(final String _oid)
     {
-       this.object = _oid;
+        this.object = _oid;
     }
 
     /**
@@ -138,6 +165,9 @@ public class TestStatement
         return this.object;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setStmtType(final StmtType _stmtType)
     {
@@ -155,15 +185,14 @@ public class TestStatement
         return this.stmtType;
     }
 
-    /* (non-Javadoc)
-     * @see org.efaps.eql.IStatement#setEsjp(java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public void setEsjp(final String _className)
     {
         this.esjp = _className;
     }
-
 
     /**
      * Getter method for the instance variable {@link #esjp}.
@@ -195,7 +224,6 @@ public class TestStatement
         this.attr2whereLess.put(_attr, _value);
     }
 
-
     /**
      * Getter method for the instance variable {@link #attr2whereGreater}.
      *
@@ -206,7 +234,6 @@ public class TestStatement
         return this.attr2whereGreater;
     }
 
-
     /**
      * Getter method for the instance variable {@link #attr2whereLess}.
      *
@@ -215,5 +242,15 @@ public class TestStatement
     public Map<String, String> getAttr2whereLess()
     {
         return this.attr2whereLess;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #attr2whereIn}.
+     *
+     * @return value of instance variable {@link #attr2whereIn}
+     */
+    public Map<String, Collection<String>> getAttr2whereIn()
+    {
+        return this.attr2whereIn;
     }
 }

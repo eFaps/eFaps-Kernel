@@ -22,6 +22,7 @@ package org.efaps.test.eql;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -356,6 +357,58 @@ public class ParserTest
         wheremap.put("num", "4");
         Assert.assertEquals(stmt.getAttr2whereEq(), wheremap, "No");
     }
+
+    @Test
+    public void whereInNum()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType where num in (4,8)");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, Collection<String>> wheremap = new HashMap<>();
+        final List<String> inner = new ArrayList<>();
+        inner.add("4");
+        inner.add("8");
+        wheremap.put("num", inner);
+        Assert.assertEquals(stmt.getAttr2whereIn(), wheremap, "No");
+    }
+
+    @Test
+    public void whereInStr()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType where name in (\"test\",\"test2\")");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, Collection<String>> wheremap = new HashMap<>();
+        final List<String> inner = new ArrayList<>();
+        inner.add("test");
+        inner.add("test2");
+        wheremap.put("name", inner);
+        Assert.assertEquals(stmt.getAttr2whereIn(), wheremap, "No");
+    }
+
+    @Test
+    public void whereInNumStr()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType where numname in (124,\"test2\")");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, Collection<String>> wheremap = new HashMap<>();
+        final List<String> inner = new ArrayList<>();
+        inner.add("124");
+        inner.add("test2");
+        wheremap.put("numname", inner);
+        Assert.assertEquals(stmt.getAttr2whereIn(), wheremap, "No");
+    }
+
 
     @Test
     public void whereEqAndGreater()

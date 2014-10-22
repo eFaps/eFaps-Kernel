@@ -21,6 +21,8 @@
 
 package org.efaps.eql;
 
+import java.util.Collection;
+
 
 /**
  * TODO comment!
@@ -62,11 +64,18 @@ public interface IStatement
                           final String _alias);
 
     /**
-     * @param _select Select to be added to the Statement
-     * @param _alias  alias for the related select
+     * @param _attr Select to be added to the Statement
+     * @param _value  alias for the related select
      */
     public void addWhereAttrEq(final String _attr,
                                final String _value);
+
+    /**
+     * @param _attr     Name of the Attribute
+     * @param _values   list of values
+     */
+    public void addWhereAttrIn(final String _attr,
+                               final Collection<String> _values);
 
     /**
      * @param _select Select to be added to the Statement
