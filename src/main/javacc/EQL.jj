@@ -105,6 +105,7 @@ SKIP :
 TOKEN :
 {
         < ENDWHERE : "select" > : SELECT_STATE
+    |   < AND : "and" >
     |   < ATTR : ([ "a"-"z", "A"-"Z", "_" ])+ >
     |   < EQUAL : "=" >
     |   < GREATER : ">" >
@@ -140,6 +141,7 @@ TOKEN :
             |   < SEPTYPE >
             |   < ENDWHERE >
             |   whereRule(_statement)
+            |   < AND >
             |   selectRule(_statement)
         )*
         |   < ESJP >

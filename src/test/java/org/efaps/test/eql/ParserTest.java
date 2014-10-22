@@ -341,4 +341,98 @@ public class ParserTest
         Assert.assertEquals(stmt.getStmtType(), StmtType.QUERY, "No");
         Assert.assertEquals(stmt.getEsjp(), "org.efaps.demo.Test", "No");
     }
+
+    @Test
+    public void whereEqAndEq()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\" and num = 4");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, String> wheremap = new HashMap<>();
+        wheremap.put("name", "demo");
+        wheremap.put("num", "4");
+        Assert.assertEquals(stmt.getAttr2whereEq(), wheremap, "No");
+    }
+
+    @Test
+    public void whereEqAndGreater()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\" and num > 4");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, String> whereEqMap = new HashMap<>();
+        whereEqMap.put("name", "demo");
+        Assert.assertEquals(stmt.getAttr2whereEq(), whereEqMap, "No");
+
+        final Map<String, String> whereGreaterMap = new HashMap<>();
+        whereGreaterMap.put("num", "4");
+        Assert.assertEquals(stmt.getAttr2whereGreater(), whereGreaterMap, "No");
+    }
+
+    @Test
+    public void whereEqAndLess()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\" and num < 4");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, String> whereEqMap = new HashMap<>();
+        whereEqMap.put("name", "demo");
+        Assert.assertEquals(stmt.getAttr2whereEq(), whereEqMap, "No");
+
+        final Map<String, String> whereLessMap = new HashMap<>();
+        whereLessMap.put("num", "4");
+        Assert.assertEquals(stmt.getAttr2whereLess(), whereLessMap, "No");
+    }
+
+    @Test
+    public void whereEqAndLessAndEq()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\" and num < 4 and was = \"irgendwas\"");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, String> whereEqMap = new HashMap<>();
+        whereEqMap.put("name", "demo");
+        whereEqMap.put("was", "irgendwas");
+        Assert.assertEquals(stmt.getAttr2whereEq(), whereEqMap, "No");
+
+        final Map<String, String> whereLessMap = new HashMap<>();
+        whereLessMap.put("num", "4");
+        Assert.assertEquals(stmt.getAttr2whereLess(), whereLessMap, "No");
+    }
+
+    @Test
+    public void whereMultiWithSelect()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\" and num < 4 and was = \"irgendwas\" select attribute[Name], linkto[Otro].instance");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, String> whereEqMap = new HashMap<>();
+        whereEqMap.put("name", "demo");
+        whereEqMap.put("was", "irgendwas");
+        Assert.assertEquals(stmt.getAttr2whereEq(), whereEqMap, "No");
+
+        final Map<String, String> whereLessMap = new HashMap<>();
+        whereLessMap.put("num", "4");
+        Assert.assertEquals(stmt.getAttr2whereLess(), whereLessMap, "No");
+
+        final List<String> selects = new ArrayList<>();
+        selects.add("attribute[Name]");
+        selects.add("linkto[Otro].instance");
+        Assert.assertEquals(stmt.getSelects(), selects, "No");
+    }
 }
