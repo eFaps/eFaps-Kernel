@@ -86,6 +86,118 @@ public class ParserTest
         Assert.assertEquals(stmt.getSelects(), selects, "No");
     }
 
+    @Test(description = "Query with a esjp select")
+    public void selectEsjp()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select esjp org.efaps.demo.Test");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final List<String> selects = new ArrayList<>();
+        selects.add("org.efaps.demo.Test");
+        Assert.assertEquals(stmt.getSelectEsjps(), selects, "No");
+    }
+
+    @Test(description = "Query with a esjp select")
+    public void selectMultipleEsjp()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select esjp org.efaps.demo.Test, esjp org.efaps.demo.TestA");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final List<String> selects = new ArrayList<>();
+        selects.add("org.efaps.demo.Test");
+        selects.add("org.efaps.demo.TestA");
+        Assert.assertEquals(stmt.getSelectEsjps(), selects, "No");
+    }
+
+    @Test(description = "Query with a esjp select")
+    public void selectMultipleEsjpWithMapping()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select esjp org.efaps.demo.Test as erster, esjp org.efaps.demo.TestA as zweiter");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, String> selects = new HashMap<>();
+        selects.put("org.efaps.demo.Test", "erster");
+        selects.put("org.efaps.demo.TestA", "zweiter");
+        Assert.assertEquals(stmt.getSelectEsjps2alias(), selects, "No");
+    }
+
+
+    @Test(description = "Query with a esjp select")
+    public void selectMultipleEsjpMixed()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select esjp org.efaps.demo.Test, esjp org.efaps.demo.TestA as zweiter");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final List<String> selects = new ArrayList<>();
+        selects.add("org.efaps.demo.Test");
+        Assert.assertEquals(stmt.getSelectEsjps(), selects, "No");
+
+        final Map<String, String> mapping = new HashMap<>();
+        mapping.put("org.efaps.demo.TestA", "zweiter");
+        Assert.assertEquals(stmt.getSelectEsjps2alias(), mapping, "No");
+    }
+
+    @Test(description = "Query with a esjp select")
+    public void selectMixed()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name], linkto[teer].oid, esjp org.efaps.demo.Test, esjp org.efaps.demo.TestA as zweiter");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final List<String> selects = new ArrayList<>();
+        selects.add("attribute[Name]");
+        selects.add("linkto[teer].oid");
+        Assert.assertEquals(stmt.getSelects(), selects, "No");
+
+        final List<String> esjps = new ArrayList<>();
+        esjps.add("org.efaps.demo.Test");
+        Assert.assertEquals(stmt.getSelectEsjps(), esjps, "No");
+
+        final Map<String, String> mapping = new HashMap<>();
+        mapping.put("org.efaps.demo.TestA", "zweiter");
+        Assert.assertEquals(stmt.getSelectEsjps2alias(), mapping, "No");
+    }
+
+    @Test(description = "Query with a esjp select")
+    public void selectMixed2()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name], linkto[teer].oid as Aliass, esjp org.efaps.demo.Test, esjp org.efaps.demo.TestA as zweiter");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final List<String> selects = new ArrayList<>();
+        selects.add("attribute[Name]");
+        Assert.assertEquals(stmt.getSelects(), selects, "No");
+
+        final Map<String, String> mapping = new HashMap<>();
+        mapping.put("linkto[teer].oid", "Aliass");
+        Assert.assertEquals(stmt.getSelects2alias(), mapping, "No");
+
+        final List<String> esjps = new ArrayList<>();
+        esjps.add("org.efaps.demo.Test");
+        Assert.assertEquals(stmt.getSelectEsjps(), esjps, "No");
+
+        final Map<String, String> esjpmapping = new HashMap<>();
+        esjpmapping.put("org.efaps.demo.TestA", "zweiter");
+        Assert.assertEquals(stmt.getSelectEsjps2alias(), esjpmapping, "No");
+    }
+
     @Test
     public void oneTypeWhereEq()
         throws ParseException

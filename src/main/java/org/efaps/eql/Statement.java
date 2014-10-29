@@ -226,6 +226,25 @@ public final class Statement
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addEsjpSelect(final String _className)
+    {
+        // TODO Auto-generated method stub
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addEsjpSelect(final String _className,
+                              final String _alias)
+    {
+        // TODO Auto-generated method stub
+    }
+
+    /**
      * Getter method for the instance variable {@link #multiPrint}.
      *
      * @return value of instance variable {@link #multiPrint}
