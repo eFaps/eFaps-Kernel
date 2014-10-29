@@ -64,4 +64,38 @@ public class QueryTests
         selects2alias.put("status.type.name", "StatusGroup");
         Assert.assertEquals(stmt.getSelects2alias(), selects2alias, "No");
     }
+
+
+    @Test(description = "Statement from a jasperreport for a client project")
+    public void query2()
+        throws ParseException
+    {
+        final String stmtStr = "query type Sales_InvoicePosition select linkto[Product].attribute[Name] as prodName,"
+                        + "linkto[Product].attribute[Description] as prodDescr,linkto[Invoice].linkto[Contact].attribute[Name] as contactName,"
+                        + "attribute[RateCrossPrice] as total, linkto[Invoice].linkto[Employee].attribute[FirstName] as employeeFirstName,"
+                        + "linkto[Invoice].linkto[Employee].attribute[LastName] as employeeLastName,"
+                        + "linkto[Invoice].linkto[Contact].class[Client_Contacts_ClassClassification].attributeset[SpecializationSet].linkto[Specialization].attribute[Value] as specialization,"
+                        + "esjp org.efaps.esjp.common.eql.ClassSelect as classification";
+
+        final TestStatement stmt = new ParserTest().testStatement(stmtStr);
+        Assert.assertEquals(stmt.getStmtType(), StmtType.QUERY, "No");
+
+        final List<String> types = new ArrayList<>();
+        types.add("Sales_InvoicePosition");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, String> selects2alias = new HashMap<>();
+        selects2alias.put("linkto[Product].attribute[Name]", "prodName");
+        selects2alias.put("linkto[Product].attribute[Description]", "prodDescr");
+        selects2alias.put("linkto[Invoice].linkto[Contact].attribute[Name]", "contactName");
+        selects2alias.put("attribute[RateCrossPrice]", "total");
+        selects2alias.put("linkto[Invoice].linkto[Employee].attribute[FirstName]", "employeeFirstName");
+        selects2alias.put("linkto[Invoice].linkto[Employee].attribute[LastName]", "employeeLastName");
+        selects2alias.put("linkto[Invoice].linkto[Contact].class[Client_Contacts_ClassClassification].attributeset[SpecializationSet].linkto[Specialization].attribute[Value]", "specialization");
+        Assert.assertEquals(stmt.getSelects2alias(), selects2alias, "No");
+
+        final Map<String, String> esjp2alias = new HashMap<>();
+        esjp2alias.put("org.efaps.esjp.common.eql.ClassSelect", "classification");
+        Assert.assertEquals(stmt.getSelectEsjps2alias(), esjp2alias, "No");
+    }
 }
