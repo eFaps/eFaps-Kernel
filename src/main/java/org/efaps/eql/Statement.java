@@ -56,6 +56,11 @@ public final class Statement
     private final Map<String, String> alias2select = new LinkedHashMap<>();
 
     /**
+     * Mapping between alias and esjp className.
+     */
+    private final Map<String, String> alias2esjp = new LinkedHashMap<>();
+
+    /**
      * Statementtype.
      */
     private StmtType stmtType;
@@ -110,7 +115,7 @@ public final class Statement
     @Override
     public void addSelect(final String _select)
     {
-        addSelect(_select, new Integer(this.alias2select.size() + 1).toString());
+        addSelect(_select, new Integer(this.alias2select.size() + this.alias2esjp.size() + 1).toString());
     }
 
     /**
@@ -222,7 +227,7 @@ public final class Statement
     @Override
     public void setEsjp(final String _className)
     {
-       this.esjpClassName = _className;
+        this.esjpClassName = _className;
     }
 
     /**
@@ -231,7 +236,7 @@ public final class Statement
     @Override
     public void addEsjpSelect(final String _className)
     {
-        // TODO Auto-generated method stub
+        addEsjpSelect(_className, new Integer(this.alias2select.size() + this.alias2esjp.size() + 1).toString());
     }
 
     /**
@@ -241,7 +246,7 @@ public final class Statement
     public void addEsjpSelect(final String _className,
                               final String _alias)
     {
-        // TODO Auto-generated method stub
+        this.alias2esjp.put(_alias, _className);
     }
 
     /**
@@ -262,6 +267,16 @@ public final class Statement
     public Map<String, String> getAlias2Selects()
     {
         return this.alias2select;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #alias2esjp}.
+     *
+     * @return value of instance variable {@link #alias2esjp}
+     */
+    public Map<String, String> getAlias2Esjp()
+    {
+        return this.alias2esjp;
     }
 
     /**

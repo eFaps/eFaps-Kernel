@@ -21,6 +21,8 @@
 package org.efaps.eql;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -63,14 +65,33 @@ public class JSONData
                 throw new EFapsException("Could not invoke IEsjpQuery.", e);
             }
         } else {
+            final List<IEsjpSelect> esjps = new ArrayList<>();
+            for (final Entry<String, String> entry : _statement.getAlias2Esjp().entrySet()) {
+                try {
+                    final Class<?> clazz = Class.forName(entry.getValue(), false, EFapsClassLoader.getInstance());
+                    final IEsjpSelect esjp = (IEsjpSelect) clazz.newInstance();
+                    esjp.setKey(entry.getKey());
+                    esjps.add(esjp);
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                    throw new EFapsException("Could not invoke IEsjpSelect.", e);
+                }
+            }
+
             final Map<String, String> mapping = _statement.getAlias2Selects();
             final MultiPrintQuery multi = _statement.getMultiPrint();
+            for (final IEsjpSelect esjp : esjps) {
+                esjp.initialize(multi.getInstanceList());
+            }
             multi.execute();
             while (multi.next()) {
                 final ObjectData data = new ObjectData();
                 for (final Entry<String, String> entry : mapping.entrySet()) {
                     final Object obj = multi.getSelect(entry.getValue());
                     data.getValues().add(getValue(entry.getKey(), obj));
+                }
+                for (final IEsjpSelect esjp : esjps) {
+                    final Object obj = esjp.getValue(multi.getCurrentInstance());
+                    data.getValues().add(getValue(esjp.getKey(), obj));
                 }
                 ret.add(data);
             }
