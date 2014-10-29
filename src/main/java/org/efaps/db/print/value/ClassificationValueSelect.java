@@ -86,7 +86,7 @@ public class ClassificationValueSelect
     public Object getValue(final Object _object)
         throws EFapsException
     {
-        final ArrayList<Classification> ret = new ArrayList<Classification>();
+        final ArrayList<Object> ret = new ArrayList<>();
         final String oid = (String) super.getValue(_object);
         // TODO the execution of getting the value should be done on the execute
         // of the query!
@@ -101,7 +101,12 @@ public class ClassificationValueSelect
             if (oid != null) {
                 if ("type".equals(getChildValueSelect().getValueType())) {
                     final Instance instance = Instance.get(oid);
-                    ret.addAll(getClassification(this.instances2classId.get(instance)));
+                    final Set<Classification> clazzes = getClassification(this.instances2classId.get(instance));
+                    for (final Classification clazz : clazzes) {
+                        final Object tmp = ((TypeValueSelect) getChildValueSelect())
+                                        .analyzeChildValue(getChildValueSelect(), clazz);
+                        ret.add(tmp);
+                    }
                 }
             }
         }
@@ -119,7 +124,7 @@ public class ClassificationValueSelect
         for (final Object object : _objectList) {
             ret.add(getValue(object));
         }
-        return _objectList.size() > 0 ? (ret.size() > 1 ? ret : ret.get(0)) : null;
+        return _objectList.size() > 0 ? ret.size() > 1 ? ret : ret.get(0) : null;
     }
 
     /**
@@ -140,7 +145,7 @@ public class ClassificationValueSelect
                 if (!noadd.contains(clazz)) {
                     add.add(clazz);
                     while (clazz.getParentClassification() != null) {
-                        clazz = (Classification) clazz.getParentClassification();
+                        clazz = clazz.getParentClassification();
                         if (add.contains(clazz)) {
                             add.remove(clazz);
                         }

@@ -34,6 +34,7 @@ import org.efaps.json.data.DateTimeValue;
 import org.efaps.json.data.DecimalValue;
 import org.efaps.json.data.LongValue;
 import org.efaps.json.data.ObjectData;
+import org.efaps.json.data.StringListValue;
 import org.efaps.json.data.StringValue;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
@@ -104,6 +105,7 @@ public class JSONData
      * @param _object oebjct to be converted
      * @return AbstractValue for the key
      */
+    @SuppressWarnings("unchecked")
     private static AbstractValue<?> getValue(final String _key,
                                              final Object _object)
     {
@@ -116,8 +118,15 @@ public class JSONData
             ret = new LongValue().setValue((Long) _object);
         } else if (_object instanceof DateTime) {
             ret = new DateTimeValue().setValue((DateTime) _object);
+        } else if (_object instanceof List) {
+            final List<?> list = (List<?>) _object;
+            if (!list.isEmpty()) {
+                final Object inner = list.get(0);
+                if (inner instanceof String) {
+                    ret = new StringListValue().setValue((List<String>) list);
+                }
+            }
         }
-
         if (ret != null) {
             ret.setKey(_key);
         }

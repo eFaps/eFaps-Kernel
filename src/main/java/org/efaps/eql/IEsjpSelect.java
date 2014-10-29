@@ -18,13 +18,12 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.eql;
 
 import java.util.List;
 
 import org.efaps.db.Instance;
-
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -47,14 +46,19 @@ public interface IEsjpSelect
 
     /**
      * Initialize this IEsjpSelect.
-     * @param _instanceList list of instances
+     *
+     * @param _instances list of instances
+     * @throws EFapsException on error
      */
-    void initialize(final List<Instance> _instanceList);
+    void initialize(final List<Instance> _instances)
+        throws EFapsException;
 
     /**
      * @param _instance Instance of the current object
      * @return the value for the given instance
+     * @throws EFapsException on error
      */
-    Object getValue(final Instance _instance);
+    Object getValue(final Instance _instance)
+        throws EFapsException;
 
 }
