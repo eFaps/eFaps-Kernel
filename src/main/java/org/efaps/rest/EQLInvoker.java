@@ -77,6 +77,7 @@ public class EQLInvoker
                 mapper.registerModule(new JodaModule());
 
                 ret = mapper.writeValueAsString(datalist);
+                LOG.debug("JSON: '{}'", ret);
             } catch (final JsonProcessingException | EFapsException e) {
                 LOG.error("Error processing data.", e);
             }

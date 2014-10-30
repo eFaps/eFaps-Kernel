@@ -104,6 +104,7 @@ public final class Statement
             } else {
                 this.queryBdr.addType(Type.get(_type));
             }
+            LOG.debug("adding Type: '{}'", _type);
         } catch (final EFapsException e) {
             LOG.error("Catched error", e);
         }
@@ -142,6 +143,7 @@ public final class Statement
             }
             this.multiPrint.addSelect(_select);
             this.alias2select.put(_alias, _select);
+            LOG.debug("adding Select: '{}' alias '{}'", _select, _alias);
         } catch (final EFapsException e) {
             LOG.error("Catched error", e);
         }
@@ -156,6 +158,7 @@ public final class Statement
     {
         try {
             this.queryBdr.addWhereAttrEqValue(_attr, _value);
+            LOG.debug("adding WhereAttrEq: '{}' '{}'", _attr, _value);
         } catch (final EFapsException e) {
             LOG.error("Catched error", e);
         }
@@ -170,6 +173,7 @@ public final class Statement
     {
         try {
             this.queryBdr.addWhereAttrEqValue(_attr, _values.toArray());
+            LOG.debug("adding WhereAttrIn: '{}' '{}'", _attr, _values);
         } catch (final EFapsException e) {
             LOG.error("Catched error", e);
         }
@@ -184,6 +188,7 @@ public final class Statement
     {
         try {
             this.queryBdr.addWhereAttrGreaterValue(_attr, _value);
+            LOG.debug("adding WhereAttrGreater: '{}' '{}'", _attr, _value);
         } catch (final EFapsException e) {
             LOG.error("Catched error", e);
         }
@@ -198,6 +203,7 @@ public final class Statement
     {
         try {
             this.queryBdr.addWhereAttrLessValue(_attr, _value);
+            LOG.debug("adding WhereAttrLess: '{}' '{}'", _attr, _value);
         } catch (final EFapsException e) {
             LOG.error("Catched error", e);
         }
@@ -210,6 +216,7 @@ public final class Statement
     public void setObject(final String _oid)
     {
         this.instance = Instance.get(_oid);
+        LOG.debug("setting Object: '{}'", _oid);
     }
 
     /**
@@ -219,6 +226,7 @@ public final class Statement
     public void setStmtType(final StmtType _stmtType)
     {
         this.stmtType = _stmtType;
+        LOG.debug("setting StmtType: '{}'", _stmtType);
     }
 
     /**
@@ -228,6 +236,7 @@ public final class Statement
     public void setEsjp(final String _className)
     {
         this.esjpClassName = _className;
+        LOG.debug("setting Esjp: '{}'", _className);
     }
 
     /**
@@ -247,6 +256,7 @@ public final class Statement
                               final String _alias)
     {
         this.alias2esjp.put(_alias, _className);
+        LOG.debug("setting Esjp Select: '{}' '{}'", _className, _alias);
     }
 
     /**
@@ -317,10 +327,12 @@ public final class Statement
 
     /**
      * Get the name of the esjp class.
+     *
+     * @return name of the esjp class
      */
     public String getEsjp()
     {
-       return this.esjpClassName;
+        return this.esjpClassName;
     }
 
     /**
@@ -330,6 +342,7 @@ public final class Statement
     public static Statement getStatement(final String _stmtStr)
     {
         final Statement ret = new Statement();
+        LOG.debug("parsing Statement: '{}'", _stmtStr);
         final EQLParser parser = new EQLParser(new StringReader(_stmtStr));
         try {
             parser.parseStatement(ret);

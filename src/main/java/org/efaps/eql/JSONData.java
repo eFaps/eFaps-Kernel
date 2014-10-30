@@ -38,6 +38,8 @@ import org.efaps.json.data.StringListValue;
 import org.efaps.json.data.StringValue;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -47,6 +49,10 @@ import org.joda.time.DateTime;
  */
 public class JSONData
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(JSONData.class);
 
     /**
      * @param _statement Statement the datalist will be created for
@@ -61,8 +67,10 @@ public class JSONData
             try {
                   final Class<?> clazz = Class.forName(_statement.getEsjp(), false, EFapsClassLoader.getInstance());
                   final IEsjpQuery query = (IEsjpQuery) clazz.newInstance();
+                  LOG.debug("Instantiated class: {}", query);
                   ret = query.getDataList();
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                LOG.error("Could not invoke IEsjpQuery.", e);
                 throw new EFapsException("Could not invoke IEsjpQuery.", e);
             }
         } else {
@@ -73,7 +81,9 @@ public class JSONData
                     final IEsjpSelect esjp = (IEsjpSelect) clazz.newInstance();
                     esjp.setKey(entry.getKey());
                     esjps.add(esjp);
+                    LOG.debug("Instantiated select class: {}", esjp);
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                    LOG.error("Could not invoke IEsjpSelect.", e);
                     throw new EFapsException("Could not invoke IEsjpSelect.", e);
                 }
             }
@@ -81,6 +91,7 @@ public class JSONData
             final Map<String, String> mapping = _statement.getAlias2Selects();
             final MultiPrintQuery multi = _statement.getMultiPrint();
             for (final IEsjpSelect esjp : esjps) {
+                LOG.debug("Initializing select class: {}", esjp);
                 esjp.initialize(multi.getInstanceList());
             }
             multi.execute();
