@@ -75,7 +75,7 @@ public class QueryTests
                         + "attribute[RateCrossPrice] as total, linkto[Invoice].linkto[Employee].attribute[FirstName] as employeeFirstName,"
                         + "linkto[Invoice].linkto[Employee].attribute[LastName] as employeeLastName,"
                         + "linkto[Invoice].linkto[Contact].class[Client_Contacts_ClassClassification].attributeset[SpecializationSet].linkto[Specialization].attribute[Value] as specialization,"
-                        + "esjp org.efaps.esjp.common.eql.ClassSelect as classification";
+                        + "esjp[org.efaps.esjp.common.eql.ClassSelect] as classification";
 
         final TestStatement stmt = new ParserTest().testStatement(stmtStr);
         Assert.assertEquals(stmt.getStmtType(), StmtType.QUERY, "No");
@@ -92,10 +92,7 @@ public class QueryTests
         selects2alias.put("linkto[Invoice].linkto[Employee].attribute[FirstName]", "employeeFirstName");
         selects2alias.put("linkto[Invoice].linkto[Employee].attribute[LastName]", "employeeLastName");
         selects2alias.put("linkto[Invoice].linkto[Contact].class[Client_Contacts_ClassClassification].attributeset[SpecializationSet].linkto[Specialization].attribute[Value]", "specialization");
+        selects2alias.put("esjp[org.efaps.esjp.common.eql.ClassSelect]", "classification");
         Assert.assertEquals(stmt.getSelects2alias(), selects2alias, "No");
-
-        final Map<String, String> esjp2alias = new HashMap<>();
-        esjp2alias.put("org.efaps.esjp.common.eql.ClassSelect", "classification");
-        Assert.assertEquals(stmt.getSelectEsjps2alias(), esjp2alias, "No");
     }
 }

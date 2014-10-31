@@ -56,11 +56,6 @@ public final class Statement
     private final Map<String, String> alias2select = new LinkedHashMap<>();
 
     /**
-     * Mapping between alias and esjp className.
-     */
-    private final Map<String, String> alias2esjp = new LinkedHashMap<>();
-
-    /**
      * Statementtype.
      */
     private StmtType stmtType;
@@ -116,7 +111,7 @@ public final class Statement
     @Override
     public void addSelect(final String _select)
     {
-        addSelect(_select, new Integer(this.alias2select.size() + this.alias2esjp.size() + 1).toString());
+        addSelect(_select, new Integer(this.alias2select.size() + 1).toString());
     }
 
     /**
@@ -239,24 +234,16 @@ public final class Statement
         LOG.debug("setting Esjp: '{}'", _className);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addEsjpSelect(final String _className)
-    {
-        addEsjpSelect(_className, new Integer(this.alias2select.size() + this.alias2esjp.size() + 1).toString());
-    }
 
-    /**
-     * {@inheritDoc}
+
+    /* (non-Javadoc)
+     * @see org.efaps.eql.IStatement#addParameter(java.lang.String)
      */
     @Override
-    public void addEsjpSelect(final String _className,
-                              final String _alias)
+    public void addParameter(final String _parameter)
     {
-        this.alias2esjp.put(_alias, _className);
-        LOG.debug("setting Esjp Select: '{}' '{}'", _className, _alias);
+        // TODO Auto-generated method stub
+    
     }
 
     /**
@@ -277,16 +264,6 @@ public final class Statement
     public Map<String, String> getAlias2Selects()
     {
         return this.alias2select;
-    }
-
-    /**
-     * Getter method for the instance variable {@link #alias2esjp}.
-     *
-     * @return value of instance variable {@link #alias2esjp}
-     */
-    public Map<String, String> getAlias2Esjp()
-    {
-        return this.alias2esjp;
     }
 
     /**
@@ -333,16 +310,6 @@ public final class Statement
     public String getEsjp()
     {
         return this.esjpClassName;
-    }
-
-    /* (non-Javadoc)
-     * @see org.efaps.eql.IStatement#addParameter(java.lang.String)
-     */
-    @Override
-    public void addParameter(final String _parameter)
-    {
-        // TODO Auto-generated method stub
-
     }
 
     /**

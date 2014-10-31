@@ -111,21 +111,7 @@ public interface IStatement
     public void setEsjp(final String _className);
 
     /**
-     * @param _className esjp Select to be added to the Statement
-     */
-    public void addEsjpSelect(final String _className);
-
-    /**
-     * @param _className esjp Select to be added to the Statement
-     * @param _alias  alias for the related select
-     */
-    public void addEsjpSelect(final String _className,
-                              final String _alias);
-
-    /**
      * @param _parameter parameter to be added to the Statement
      */
     public void addParameter(final String _parameter);
-
-
 }

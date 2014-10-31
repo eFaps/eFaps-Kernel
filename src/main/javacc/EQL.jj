@@ -78,20 +78,6 @@ TOKEN :
             "\uff10"-"\uff19"] >
 }
 
-
-
-
-/************ esjp for query */
-< ESJP_STATE >
-SKIP :{    " "|   "\r"|   "\t"|   "\n"}
-
-< ESJP_STATE >
-TOKEN :
-{
-        < CLASS :([ "a"-"z", "A"-"Z", ".", "0"-"9" ])+ > : SELECT_STATE
-}
-
-
 /************ print */
 < PRINT_STATE >
 SKIP :{    " "|   "\r"|   "\t"|   "\n"}
@@ -114,7 +100,26 @@ TOKEN :
 /************ select */
 < SELECT_STATE >SKIP :{    " "|   "\r"|   "\t"|   "\n"}
 
-< SELECT_STATE >TOKEN :{    < AS : "as" >|   < SEPSELECT : "," >|   < SELESJP : "esjp" > : ESJP_STATE|   < ALIAS : ([ "a"-"z", "A"-"Z" ])+ >|   < ONESEL : ([ "a"-"z", "A"-"Z", "[", "]", ".", "_", "#" ])+ >}
+< SELECT_STATE >TOKEN :{    < AS : "as" >|   < SEPSELECT : "," >|   < ALIAS : ([ "a"-"z", "A"-"Z" ])+ >|   < ONESEL : ([ "a"-"z", "A"-"Z", "[", "]", ".", "_", "#" ])+ >}
+
+
+/************ esjp for query */
+< ESJP_STATE >
+SKIP :
+{
+    " "
+|   "\r"
+|   "\t"
+|   "\n"
+}
+
+< ESJP_STATE >
+TOKEN :
+{
+        < CLASS :([ "a"-"z", "A"-"Z", ".", "0"-"9" ])+ > : SELECT_STATE
+}
+
+
 
 < WHERE_STATE >
 SKIP :{    " "|   "\r"|   "\t"|   "\n"}
@@ -154,15 +159,9 @@ private void whereLessRule(final IStatement _statement, final Token _attr) :{ 
 
 private void whereEqRule(final IStatement _statement, final Token _attr) :{    Token value;}{    LOOKAHEAD(2)    < EQUAL > value = < STRING >    {        _statement.addWhereAttrEq(_attr.image, getString(value.image));    }|   < EQUAL > value = < NUMBER >    {        _statement.addWhereAttrEq(_attr.image, value.image);    }}
 
-private void selectRule(final IStatement _statement) :{    Token onesel, clazz;}{    (        < SELESJP > clazz =  < CLASS >        (            selectEsjpWithAliasRule(_statement, clazz)        |   selectEsjpRule(_statement, clazz)        |   lastSelectEsjpRule(_statement, clazz)        )    |   onesel = < ONESEL >        (            selectWithAliasRule(_statement, onesel)        |   selectsRule(_statement, onesel)        |   lastSelectRule(_statement, onesel)        )    )}
+private void selectRule(final IStatement _statement) :{    Token onesel, clazz;}{    onesel = < ONESEL >    (        selectWithAliasRule(_statement, onesel)    |   selectsRule(_statement, onesel)    |   lastSelectRule(_statement, onesel)    )}
 
-private void selectEsjpWithAliasRule(final IStatement _statement, final Token _clazz) :{    Token alias;}{    LOOKAHEAD(3)    < AS > alias = < ALIAS > < SEPSELECT >    {
-        _statement.addEsjpSelect(_clazz.image, alias.image);    }|   < AS > alias = < ALIAS >    {
-        _statement.addEsjpSelect(_clazz.image, alias.image);    }}
 
-private void selectEsjpRule(final IStatement _statement, final Token _clazz) :{}{    < SEPSELECT >    {        _statement.addEsjpSelect(_clazz.image);    }}
-
-private void lastSelectEsjpRule(final IStatement _statement, final Token _clazz) :{}{    < EOF >    {         _statement.addEsjpSelect(_clazz.image);    }}
 
 
 private void selectWithAliasRule(final IStatement _statement, final Token _onesel) :{    Token alias;}{    LOOKAHEAD(3)    < AS > alias = < ALIAS > < SEPSELECT >    {        _statement.addSelect(_onesel.image, alias.image);    }|   < AS > alias = < ALIAS >    {        _statement.addSelect(_onesel.image, alias.image);    }}private void selectsRule(final IStatement _statement, final Token _onesel) :{}{    < SEPSELECT >    {        _statement.addSelect(_onesel.image);    }}private void lastSelectRule(final IStatement _statement, final Token _onesel) :{}{    < EOF >    {        _statement.addSelect(_onesel.image);    }}

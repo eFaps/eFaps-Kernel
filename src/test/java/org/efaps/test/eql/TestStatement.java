@@ -46,10 +46,6 @@ public class TestStatement
 
     private final Map<String, String> selects2alias = new HashMap<>();
 
-    private final List<String> selectEsjps = new ArrayList<>();
-
-    private final Map<String, String> selectEsjps2alias = new HashMap<>();
-
     private final Map<String, String> attr2whereEq = new HashMap<>();
 
     private final Map<String, Collection<String>> attr2whereIn = new HashMap<>();
@@ -260,47 +256,6 @@ public class TestStatement
         return this.attr2whereIn;
     }
 
-
-    /**
-     * Getter method for the instance variable {@link #selectEsjps}.
-     *
-     * @return value of instance variable {@link #selectEsjps}
-     */
-    public List<String> getSelectEsjps()
-    {
-        return this.selectEsjps;
-    }
-
-
-    /**
-     * Getter method for the instance variable {@link #selectEsjps2alias}.
-     *
-     * @return value of instance variable {@link #selectEsjps2alias}
-     */
-    public Map<String, String> getSelectEsjps2alias()
-    {
-        return this.selectEsjps2alias;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addEsjpSelect(final String _className)
-    {
-        this.selectEsjps.add(_className);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addEsjpSelect(final String _className,
-                              final String _alias)
-    {
-        this.selectEsjps2alias.put(_className, _alias);
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -309,7 +264,6 @@ public class TestStatement
     {
         this.parameters.add(_parameter);
     }
-
 
     /**
      * Getter method for the instance variable {@link #parameters}.
