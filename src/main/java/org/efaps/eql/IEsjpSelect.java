@@ -33,17 +33,6 @@ import org.efaps.util.EFapsException;
  */
 public interface IEsjpSelect
 {
-
-    /**
-     * @param _key key for this IEsjpSelect
-     */
-    void setKey(final String _key);
-
-    /**
-     * @return the key for this IEsjpSelect
-     */
-    String getKey();
-
     /**
      * Initialize this IEsjpSelect.
      *
