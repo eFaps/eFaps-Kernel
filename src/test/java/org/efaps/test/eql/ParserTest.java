@@ -101,6 +101,48 @@ public class ParserTest
     }
 
     @Test(description = "Query with a esjp select")
+    public void selectEsjpParameter()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select esjp[org.efaps.demo.Test,12]");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final List<String> selects = new ArrayList<>();
+        selects.add("esjp[org.efaps.demo.Test,12]");
+        Assert.assertEquals(stmt.getSelects(), selects, "No");
+    }
+
+    @Test(description = "Query with a esjp select")
+    public void selectEsjpParameter2()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select esjp[org.efaps.demo.Test,12,14]");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final List<String> selects = new ArrayList<>();
+        selects.add("esjp[org.efaps.demo.Test,12,14]");
+        Assert.assertEquals(stmt.getSelects(), selects, "No");
+    }
+
+    @Test(description = "Query with a esjp select")
+    public void selectEsjpParameter3()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select esjp[org.efaps.demo.Test,\"das it ein text\",14]");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final List<String> selects = new ArrayList<>();
+        selects.add("esjp[org.efaps.demo.Test,\"das it ein text\",14]");
+        Assert.assertEquals(stmt.getSelects(), selects, "No");
+    }
+
+    @Test(description = "Query with a esjp select")
     public void selectMultipleEsjp()
         throws ParseException
     {

@@ -38,6 +38,7 @@ import org.efaps.db.print.value.AbstractValueSelect;
 import org.efaps.db.print.value.AttributeValueSelect;
 import org.efaps.db.print.value.BaseValueSelect;
 import org.efaps.db.print.value.ClassificationValueSelect;
+import org.efaps.db.print.value.EsjpValueSelect;
 import org.efaps.db.print.value.FormatValueSelect;
 import org.efaps.db.print.value.IDValueSelect;
 import org.efaps.db.print.value.InstanceValueSelect;
@@ -455,6 +456,7 @@ public class OneSelect
     {
         final Pattern mainPattern = Pattern.compile("[a-z]+\\[.+?\\]|[a-z]+");
         final Pattern attrPattern = Pattern.compile("(?<=\\[)[0-9a-zA-Z_]*(?=\\])");
+        final Pattern esjpPattern = Pattern.compile("(?<=\\[)[\\w\\d\\s,.\"]*(?=\\])");
         final Pattern linkfomPat = Pattern.compile("(?<=\\[)[0-9a-zA-Z_#:]*(?=\\])");
         final Pattern formatPat = Pattern.compile("(?<=\\[).*(?=\\])");
 
@@ -496,6 +498,11 @@ public class OneSelect
                 final Matcher matcher = formatPat.matcher(part);
                 if (matcher.find()) {
                     currentSelect.addValueSelect(new FormatValueSelect(currentSelect, matcher.group()));
+                }
+            } else if (part.startsWith("esjp[")) {
+                final Matcher matcher = esjpPattern.matcher(part);
+                if (matcher.find()) {
+                    currentSelect.addValueSelect(new EsjpValueSelect(currentSelect, matcher.group()));
                 }
             } else
                 switch (part) {

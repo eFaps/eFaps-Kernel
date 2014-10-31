@@ -48,9 +48,11 @@ public interface IEsjpSelect
      * Initialize this IEsjpSelect.
      *
      * @param _instances list of instances
+     * @param _parameters array of parameters
      * @throws EFapsException on error
      */
-    void initialize(final List<Instance> _instances)
+    void initialize(final List<Instance> _instances,
+                    final String... _parameters)
         throws EFapsException;
 
     /**
