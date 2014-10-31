@@ -30,10 +30,10 @@ import org.efaps.json.data.DataList;
  * @author The eFaps Team
  * @version $Id$
  */
-public interface IEsjpQuery
+public interface IEsjpExecute
 {
     /**
      * @return  a data list as result
      */
-    DataList getDataList();
+    DataList execute(final String... _parameters);
 }

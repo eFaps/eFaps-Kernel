@@ -56,6 +56,11 @@ public final class Statement
     private final Map<String, String> alias2select = new LinkedHashMap<>();
 
     /**
+     * List of parameters.
+     */
+    private final List<String> parameters = new ArrayList<>();
+
+    /**
      * Statementtype.
      */
     private StmtType stmtType;
@@ -234,16 +239,14 @@ public final class Statement
         LOG.debug("setting Esjp: '{}'", _className);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see org.efaps.eql.IStatement#addParameter(java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public void addParameter(final String _parameter)
     {
-        // TODO Auto-generated method stub
-    
+        this.parameters.add(_parameter);
+        LOG.debug("adding Parameter: '{}'", _parameter);
     }
 
     /**
@@ -310,6 +313,16 @@ public final class Statement
     public String getEsjp()
     {
         return this.esjpClassName;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #parameters}.
+     *
+     * @return value of instance variable {@link #parameters}
+     */
+    public List<String> getParameters()
+    {
+        return this.parameters;
     }
 
     /**

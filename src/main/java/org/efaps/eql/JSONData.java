@@ -65,9 +65,14 @@ public class JSONData
         if (_statement.isEsjp()) {
             try {
                   final Class<?> clazz = Class.forName(_statement.getEsjp(), false, EFapsClassLoader.getInstance());
-                  final IEsjpQuery query = (IEsjpQuery) clazz.newInstance();
-                  LOG.debug("Instantiated class: {}", query);
-                  ret = query.getDataList();
+                  final IEsjpExecute esjp = (IEsjpExecute) clazz.newInstance();
+                  LOG.debug("Instantiated class: {}", esjp);
+                  final List<String> parameters = _statement.getParameters();
+                  if (parameters.isEmpty()) {
+                      ret = esjp.execute();
+                  } else {
+                      ret = esjp.execute(parameters.toArray(new String[parameters.size()]));
+                  }
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 LOG.error("Could not invoke IEsjpQuery.", e);
                 throw new EFapsException("Could not invoke IEsjpQuery.", e);
