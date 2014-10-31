@@ -37,6 +37,10 @@ public interface IStatement
      */
     public enum StmtType {
         /**
+         * ESJP is executed.
+         */
+        ESJP,
+        /**
          * Query is executed.
          */
         QUERY,
@@ -117,5 +121,11 @@ public interface IStatement
      */
     public void addEsjpSelect(final String _className,
                               final String _alias);
+
+    /**
+     * @param _parameter parameter to be added to the Statement
+     */
+    public void addParameter(final String _parameter);
+
 
 }

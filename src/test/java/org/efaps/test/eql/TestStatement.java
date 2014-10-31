@@ -42,6 +42,8 @@ public class TestStatement
 
     private final List<String> selects = new ArrayList<>();
 
+    private final List<String> parameters = new ArrayList<>();
+
     private final Map<String, String> selects2alias = new HashMap<>();
 
     private final List<String> selectEsjps = new ArrayList<>();
@@ -297,5 +299,25 @@ public class TestStatement
                               final String _alias)
     {
         this.selectEsjps2alias.put(_className, _alias);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addParameter(final String _parameter)
+    {
+        this.parameters.add(_parameter);
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #parameters}.
+     *
+     * @return value of instance variable {@link #parameters}
+     */
+    public List<String> getParameters()
+    {
+        return this.parameters;
     }
 }

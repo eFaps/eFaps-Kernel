@@ -335,6 +335,16 @@ public final class Statement
         return this.esjpClassName;
     }
 
+    /* (non-Javadoc)
+     * @see org.efaps.eql.IStatement#addParameter(java.lang.String)
+     */
+    @Override
+    public void addParameter(final String _parameter)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
     /**
      * @param _stmtStr Statement
      * @return StatementObject

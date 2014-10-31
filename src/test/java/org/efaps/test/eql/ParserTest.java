@@ -447,12 +447,137 @@ public class ParserTest
     }
 
     @Test
-    public void queryEsjp()
+    public void execEsjp()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query esjp org.efaps.demo.Test");
-        Assert.assertEquals(stmt.getStmtType(), StmtType.QUERY, "No");
+        final TestStatement stmt = testStatement("exec org.efaps.demo.Test");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.ESJP, "No");
         Assert.assertEquals(stmt.getEsjp(), "org.efaps.demo.Test", "No");
+    }
+
+    @Test
+    public void executeEsjp()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("execute org.efaps.demo.Test");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.ESJP, "No");
+        Assert.assertEquals(stmt.getEsjp(), "org.efaps.demo.Test", "No");
+    }
+
+    @Test
+    public void execEsjpParameter()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("exec org.efaps.demo.Test 2");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.ESJP, "No");
+        Assert.assertEquals(stmt.getEsjp(), "org.efaps.demo.Test", "No");
+
+        final List<String> parameters = new ArrayList<>();
+        parameters.add("2");
+        Assert.assertEquals(stmt.getParameters(), parameters, "No");
+    }
+
+    @Test
+    public void execEsjpParameters()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("exec org.efaps.demo.Test 2, 44");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.ESJP, "No");
+        Assert.assertEquals(stmt.getEsjp(), "org.efaps.demo.Test", "No");
+        final List<String> parameters = new ArrayList<>();
+        parameters.add("2");
+        parameters.add("44");
+        Assert.assertEquals(stmt.getParameters(), parameters, "No");
+    }
+
+    @Test
+    public void execEsjpParameters2()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("exec org.efaps.demo.Test \"Param1 with space\", 24");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.ESJP, "No");
+        Assert.assertEquals(stmt.getEsjp(), "org.efaps.demo.Test", "No");
+        final List<String> parameters = new ArrayList<>();
+        parameters.add("Param1 with space");
+        parameters.add("24");
+        Assert.assertEquals(stmt.getParameters(), parameters, "No");
+    }
+
+    @Test
+    public void execEsjpParameters3()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("exec org.efaps.demo.Test \"Param1 with space\", \"ABCDE\"");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.ESJP, "No");
+        Assert.assertEquals(stmt.getEsjp(), "org.efaps.demo.Test", "No");
+        final List<String> parameters = new ArrayList<>();
+        parameters.add("Param1 with space");
+        parameters.add("ABCDE");
+        Assert.assertEquals(stmt.getParameters(), parameters, "No");
+    }
+
+    @Test
+    public void execEsjpMapping()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("exec org.efaps.demo.Test select 1 as Key");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.ESJP, "No");
+        Assert.assertEquals(stmt.getEsjp(), "org.efaps.demo.Test", "No");
+
+        final Map<String, String> mapping = new HashMap<>();
+        mapping.put("1", "Key");
+        Assert.assertEquals(mapping, stmt.getSelects2alias(), "No");
+    }
+
+    @Test
+    public void execEsjpMapping1()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("exec org.efaps.demo.Test select 1 as Key, 5 as Demo");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.ESJP, "No");
+        Assert.assertEquals(stmt.getEsjp(), "org.efaps.demo.Test", "No");
+
+        final Map<String, String> mapping = new HashMap<>();
+        mapping.put("1", "Key");
+        mapping.put("5", "Demo");
+        Assert.assertEquals(stmt.getSelects2alias(), mapping, "No");
+    }
+
+    @Test
+    public void execEsjpParametersMapping()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("exec org.efaps.demo.Test \"Param1 with space\", \"ABCDE\" select 1 as Key");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.ESJP, "No");
+        Assert.assertEquals(stmt.getEsjp(), "org.efaps.demo.Test", "No");
+        final List<String> parameters = new ArrayList<>();
+        parameters.add("Param1 with space");
+        parameters.add("ABCDE");
+        Assert.assertEquals(stmt.getParameters(), parameters, "No");
+
+        final Map<String, String> mapping = new HashMap<>();
+        mapping.put("1", "Key");
+        Assert.assertEquals(mapping, stmt.getSelects2alias(), "No");
+    }
+
+    @Test
+    public void execEsjpParametersMapping2()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("exec org.efaps.demo.Test \"Param1 with space\", \"ABCDE\" select 1 as Key, 2 as Demo");
+        Assert.assertEquals(stmt.getStmtType(), StmtType.ESJP, "No");
+        Assert.assertEquals(stmt.getEsjp(), "org.efaps.demo.Test", "No");
+
+        final List<String> parameters = new ArrayList<>();
+        parameters.add("Param1 with space");
+        parameters.add("ABCDE");
+        Assert.assertEquals(stmt.getParameters(), parameters, "No");
+
+        final Map<String, String> mapping = new HashMap<>();
+        mapping.put("1", "Key");
+        mapping.put("2", "Demo");
+        Assert.assertEquals(stmt.getSelects2alias(),mapping, "No");
+
     }
 
     @Test
