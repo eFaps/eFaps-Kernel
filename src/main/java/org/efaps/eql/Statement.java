@@ -141,7 +141,9 @@ public final class Statement
                         break;
                 }
             }
-            this.multiPrint.addSelect(_select);
+            if (!StmtType.ESJP.equals(getStmtType())) {
+                this.multiPrint.addSelect(_select);
+            }
             this.alias2select.put(_alias, _select);
             LOG.debug("adding Select: '{}' alias '{}'", _select, _alias);
         } catch (final EFapsException e) {

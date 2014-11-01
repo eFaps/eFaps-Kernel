@@ -61,7 +61,8 @@ public class JSONData
     public static DataList getDataList(final Statement _statement)
         throws EFapsException
     {
-        DataList ret = new DataList();;
+        DataList ret = new DataList();
+        final Map<String, String> mapping = _statement.getAlias2Selects();
         if (_statement.isEsjp()) {
             try {
                   final Class<?> clazz = Class.forName(_statement.getEsjp(), false, EFapsClassLoader.getInstance());
@@ -69,16 +70,15 @@ public class JSONData
                   LOG.debug("Instantiated class: {}", esjp);
                   final List<String> parameters = _statement.getParameters();
                   if (parameters.isEmpty()) {
-                      ret = esjp.execute();
+                      ret = esjp.execute(mapping);
                   } else {
-                      ret = esjp.execute(parameters.toArray(new String[parameters.size()]));
+                      ret = esjp.execute(mapping, parameters.toArray(new String[parameters.size()]));
                   }
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 LOG.error("Could not invoke IEsjpQuery.", e);
                 throw new EFapsException("Could not invoke IEsjpQuery.", e);
             }
         } else {
-            final Map<String, String> mapping = _statement.getAlias2Selects();
             final MultiPrintQuery multi = _statement.getMultiPrint();
             multi.execute();
             while (multi.next()) {
@@ -99,8 +99,8 @@ public class JSONData
      * @return AbstractValue for the key
      */
     @SuppressWarnings("unchecked")
-    private static AbstractValue<?> getValue(final String _key,
-                                             final Object _object)
+    public static AbstractValue<?> getValue(final String _key,
+                                            final Object _object)
     {
         AbstractValue<? extends Object> ret = null;
         if (_object instanceof String) {
@@ -125,5 +125,4 @@ public class JSONData
         }
         return ret;
     }
-
 }

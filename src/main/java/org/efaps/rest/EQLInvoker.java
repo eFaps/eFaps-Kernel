@@ -64,23 +64,21 @@ public class EQLInvoker
         String ret = null;
         final Statement stmt = Statement.getStatement(_stmt);
         // only permit queries on this url
-        if (stmt.isQuery()) {
-            try {
-                final DataList datalist = JSONData.getDataList(stmt);
-                final ObjectMapper mapper = new ObjectMapper();
-                if (LOG.isDebugEnabled()) {
-                    mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                }
-                mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-                mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
-
-                mapper.registerModule(new JodaModule());
-
-                ret = mapper.writeValueAsString(datalist);
-                LOG.debug("JSON: '{}'", ret);
-            } catch (final JsonProcessingException | EFapsException e) {
-                LOG.error("Error processing data.", e);
+        try {
+            final DataList datalist = JSONData.getDataList(stmt);
+            final ObjectMapper mapper = new ObjectMapper();
+            if (LOG.isDebugEnabled()) {
+                mapper.enable(SerializationFeature.INDENT_OUTPUT);
             }
+            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
+
+            mapper.registerModule(new JodaModule());
+
+            ret = mapper.writeValueAsString(datalist);
+            LOG.debug("JSON: '{}'", ret);
+        } catch (final JsonProcessingException | EFapsException e) {
+            LOG.error("Error processing data.", e);
         }
         return ret;
     }

@@ -18,11 +18,12 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.eql;
 
-import org.efaps.json.data.DataList;
+import java.util.Map;
 
+import org.efaps.json.data.DataList;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -33,7 +34,12 @@ import org.efaps.json.data.DataList;
 public interface IEsjpExecute
 {
     /**
-     * @return  a data list as result
+     * @param _mapping mapping for the selects, null in case of execute
+     * @param _parameters list of parameters to be passed
+     * @return a data list as result
+     * @throws EFapsException on error
      */
-    DataList execute(final String... _parameters);
+    DataList execute(final Map<String, String> _mapping,
+                     final String... _parameters)
+        throws EFapsException;
 }
