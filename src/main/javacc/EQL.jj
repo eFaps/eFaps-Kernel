@@ -29,7 +29,7 @@ public class EQLParser{
 |   < SELECT : "select" > : SELECT_STATE}/************ query */< QUERY_STATE >SKIP :{    " "|   "\r"|   "\t"|   "\n"}< QUERY_STATE >TOKEN :{        < TYPE : "type" > : TYPE_STATE
 }/************ type */< TYPE_STATE >SKIP :{    " "|   "\r"|   "\t"|   "\n"}< TYPE_STATE >TOKEN :{        < ENDTYPE : "select" > : SELECT_STATE
     |   < ENDTYPE2 : "where" > : WHERE_STATE
-    |   < NAME : ([ "a"-"z", "A"-"Z", "_" ])+ >
+    |   < NAME : ([ "a"-"z", "A"-"Z", "_", "0"-"9" ])+ >
     |   < SEPTYPE : "," >
 }
 
@@ -136,7 +136,8 @@ TOKEN :
 SKIP :{    " "|   "\r"|   "\t"|   "\n"}
 
 < WHERE_STATE >
-TOKEN :{    < ENDWHERE : "select" > : SELECT_STATE|   < AND : "and" >|   < IN : "in" >|   < ATTR : ([ "a"-"z", "A"-"Z", "_" ])+ >|   < EQUAL : "=" >|   < GREATER : ">" >|   < LESS : "<" >|   < LPAREN : "(" >|   < RPAREN : ")" >|   < COMMA : "," >|   < NUMBER : (< DIGIT >)+ >|   < STRING :        (            < APOSTROPHE >            (                < CHAR >            |   " "            )+            < APOSTROPHE >        ) >|   < #APOSTROPHE : "\"" >|   < #CHAR : (~["\""])+ >
+TOKEN :{    < ENDWHERE : "select" > : SELECT_STATE|   < AND : "and" >|   < IN : "in" >|   < ATTR : ([ "a"-"z", "A"-"Z", "_" ])+ >|   < EQUAL : "=" >|   < GREATER : ">" >|   < LESS : "<" >|   < LPAREN : "(" >|   < RPAREN : ")" >|   < COMMA : "," >|   < NUMBER : (< DIGIT >)+ >
+|   < WOID : (< DIGITS >)+ "." (< DIGITS >)+ >|   < STRING :        (            < APOSTROPHE >            (                < CHAR >            |   " "            )+            < APOSTROPHE >        ) >|   < #APOSTROPHE : "\"" >|   < #CHAR : (~["\""])+ >
 |   < #DIGIT : [
             "\u0030"-"\u0039", "\u0660"-"\u0669", "\u06f0"-"\u06f9", "\u0966"-"\u096f", "\u09e6"-"\u09ef",
             "\u0a66"-"\u0a6f", "\u0ae6"-"\u0aef", "\u0b66"-"\u0b6f", "\u0be7"-"\u0bef", "\u0c66"-"\u0c6f",
@@ -163,12 +164,12 @@ private void parameterRule(final IStatement _statement) :{    Token para;}{
 private void whereRule(final IStatement _statement) :{    Token attr;}{    attr = < ATTR >    (        whereEqRule(_statement, attr)    |   whereGreaterRule(_statement, attr)    |   whereLessRule(_statement, attr)    |   whereInRule(_statement, attr)    )}private void whereInRule(final IStatement _statement, final Token _attr) :{    List < String > values;}{    < IN > < LPAREN > values = valueList(_statement)    {        _statement.addWhereAttrIn(_attr.image, values);    }    < RPAREN >}
 
 
-private List < String > valueList(final IStatement _statement) :{    List < String > ret = new ArrayList < String > ();    Token aVal;}{    (        aVal = < NUMBER >        {            ret.add(aVal.image);        }    |   aVal = < STRING >        {            ret.add(getString(aVal.image));        }    |   < COMMA >    )*    {        return ret;    }}private void whereGreaterRule(final IStatement _statement, final Token _attr) :{    Token value;}{    LOOKAHEAD(2)    < GREATER > value = < STRING >    {        _statement.addWhereAttrGreater(_attr.image, getString(value.image));    }|   < GREATER > value = < NUMBER >    {        _statement.addWhereAttrGreater(_attr.image, value.image);    }}
+private List < String > valueList(final IStatement _statement) :{    List < String > ret = new ArrayList < String > ();    Token aVal;}{    (        (            aVal = < NUMBER >        |   aVal = < WOID >        )        {            ret.add(aVal.image);        }    |   aVal = < STRING >        {            ret.add(getString(aVal.image));        }    |   < COMMA >    )*    {        return ret;    }}private void whereGreaterRule(final IStatement _statement, final Token _attr) :{    Token value;}{    LOOKAHEAD(2)    < GREATER > value = < STRING >    {        _statement.addWhereAttrGreater(_attr.image, getString(value.image));    }|   < GREATER > value = < NUMBER >    {        _statement.addWhereAttrGreater(_attr.image, value.image);    }}
 
 private void whereLessRule(final IStatement _statement, final Token _attr) :{    Token value;}{    LOOKAHEAD(2)    < LESS > value = < STRING >    {        _statement.addWhereAttrLess(_attr.image, getString(value.image));    }|   < LESS > value = < NUMBER >    {        _statement.addWhereAttrLess(_attr.image, value.image);    }}
 
 
-private void whereEqRule(final IStatement _statement, final Token _attr) :{    Token value;}{    LOOKAHEAD(2)    < EQUAL > value = < STRING >    {        _statement.addWhereAttrEq(_attr.image, getString(value.image));    }|   < EQUAL > value = < NUMBER >    {        _statement.addWhereAttrEq(_attr.image, value.image);    }}
+private void whereEqRule(final IStatement _statement, final Token _attr) :{    Token value;}{    LOOKAHEAD(2)    < EQUAL > value = < STRING >    {        _statement.addWhereAttrEq(_attr.image, getString(value.image));    }|   < EQUAL >    (        value = < NUMBER >    |   value = < WOID >    )    {        _statement.addWhereAttrEq(_attr.image, value.image);    }}
 
 private void selectRule(final IStatement _statement) :{    Token onesel, clazz;}{    onesel = < ONESEL >    (        selectWithAliasRule(_statement, onesel)    |   selectsRule(_statement, onesel)    |   lastSelectRule(_statement, onesel)    )}
 

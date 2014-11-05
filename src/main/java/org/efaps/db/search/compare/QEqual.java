@@ -23,6 +23,7 @@ package org.efaps.db.search.compare;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.search.AbstractQPart;
 import org.efaps.db.search.QAttribute;
@@ -103,7 +104,7 @@ public class QEqual
     {
         getAttribute().appendSQL(_sql);
         if (this.values.size() > 1
-                        || (this.values.size() > 0 && this.values.get(0) instanceof QBitValue)) {
+                        || this.values.size() > 0 && this.values.get(0) instanceof QBitValue) {
             _sql.addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
             boolean first = true;
             for (final AbstractQValue value : this.values) {
@@ -135,5 +136,11 @@ public class QEqual
             value.prepare(_query, this);
         }
         return this;
+    }
+
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this).append("values", this.values).toString();
     }
 }

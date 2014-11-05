@@ -23,8 +23,10 @@ package org.efaps.db.search.value;
 
 import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.db.search.AbstractQPart;
 import org.efaps.db.search.compare.AbstractQAttrCompare;
+import org.efaps.db.search.compare.QEqual;
 import org.efaps.db.search.compare.QMatch;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -38,6 +40,11 @@ import org.efaps.util.EFapsException;
 public class QStringValue
     extends AbstractQValue
 {
+    /**
+     * Activate / deactivate the escape for the given string.
+     */
+    private boolean noEscape = false;
+
     /**
      * Value for this StringValue.
      */
@@ -65,7 +72,16 @@ public class QStringValue
                 this.value = this.value.toUpperCase(Context.getThreadContext().getLocale());
             }
             if (_part instanceof QMatch) {
-                this.value =  Context.getDbType().prepare4Match(this.value);
+                this.value = Context.getDbType().prepare4Match(this.value);
+            }
+            // check if the string is an oid and must be converted in a long
+            if (_part instanceof QEqual && ((QEqual) _part).getAttribute().getAttribute() != null
+                            && ((QEqual) _part).getAttribute().getAttribute().hasLink()) {
+                final Instance insTmp = Instance.get(this.value);
+                if (insTmp.isValid()) {
+                    this.value = Long.valueOf(insTmp.getId()).toString();
+                    this.noEscape = true;
+                }
             }
         }
         return this;
@@ -77,7 +93,11 @@ public class QStringValue
     @Override
     public QStringValue appendSQL(final SQLSelect _sql)
     {
-        _sql.addEscapedValuePart(this.value);
+        if (this.noEscape) {
+            _sql.addValuePart(this.value);
+        } else {
+            _sql.addEscapedValuePart(this.value);
+        }
         return this;
     }
 }

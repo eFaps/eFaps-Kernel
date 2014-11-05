@@ -18,9 +18,9 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.db.search;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.search.compare.AbstractQAttrCompare;
@@ -29,7 +29,6 @@ import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * Represents the Attribute in the Query.
@@ -121,5 +120,23 @@ public class QAttribute
             _sql.addPart(SQLPart.PARENTHESIS_CLOSE);
         }
         return this;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #attribute}.
+     *
+     * @return value of instance variable {@link #attribute}
+     */
+    public Attribute getAttribute()
+    {
+        return this.attribute;
+    }
+
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this)
+                        .append("attributeName", this.attributeName)
+                        .append("attribute", this.attribute).toString();
     }
 }

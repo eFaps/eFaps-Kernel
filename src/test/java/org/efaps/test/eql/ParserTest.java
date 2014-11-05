@@ -172,7 +172,6 @@ public class ParserTest
         Assert.assertEquals(stmt.getSelects2alias(), selects, "No");
     }
 
-
     @Test(description = "Query with a esjp select")
     public void selectMultipleEsjpMixed()
         throws ParseException
@@ -324,10 +323,10 @@ public class ParserTest
     public void multipleTypes()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType, OtroType");
+        final TestStatement stmt = testStatement("query type CompanyType, Accounting_Transaction2PaymentDocument");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
-        types.add("OtroType");
+        types.add("Accounting_Transaction2PaymentDocument");
         Assert.assertEquals(types, stmt.getTypes(), "No");
     }
 
@@ -610,7 +609,7 @@ public class ParserTest
         final Map<String, String> mapping = new HashMap<>();
         mapping.put("1", "Key");
         mapping.put("2", "Demo");
-        Assert.assertEquals(stmt.getSelects2alias(),mapping, "No");
+        Assert.assertEquals(stmt.getSelects2alias(), mapping, "No");
 
     }
 
@@ -628,6 +627,38 @@ public class ParserTest
         wheremap.put("num", "4");
         Assert.assertEquals(stmt.getAttr2whereEq(), wheremap, "No");
     }
+
+    @Test
+    public void whereOID()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType where link = 5905.636");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, String> wheremap = new HashMap<>();
+        wheremap.put("link", "5905.636");
+        Assert.assertEquals(stmt.getAttr2whereEq(), wheremap, "No");
+    }
+
+    @Test
+    public void whereInOID()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType where link in (5905.636,1234.6464)");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, Collection<String>> wheremap = new HashMap<>();
+        final List<String> inner = new ArrayList<>();
+        inner.add("5905.636");
+        inner.add("1234.6464");
+        wheremap.put("link", inner);
+        Assert.assertEquals(stmt.getAttr2whereIn(), wheremap, "No");
+    }
+
 
     @Test
     public void whereInNum()
@@ -679,7 +710,6 @@ public class ParserTest
         wheremap.put("numname", inner);
         Assert.assertEquals(stmt.getAttr2whereIn(), wheremap, "No");
     }
-
 
     @Test
     public void whereEqAndGreater()
