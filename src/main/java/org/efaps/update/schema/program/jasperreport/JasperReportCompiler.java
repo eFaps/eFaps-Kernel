@@ -28,6 +28,7 @@ import java.util.Map;
 
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.design.JRCompiler;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -135,6 +136,12 @@ public class JasperReportCompiler
                         FakeQueryExecuterFactory.class.getName());
         try {
             final JasperDesign jasperDesign = JasperUtil.getJasperDesign(_instSource);
+
+            // the fault value for the language is no information but the used compiler needs a value,
+            // therefore it must be set explicitly
+            if (jasperDesign.getLanguage() == null) {
+                jasperDesign.setLanguage(JRReport.LANGUAGE_JAVA);
+            }
 
             final ByteArrayOutputStream out = new ByteArrayOutputStream();
             JasperCompileManager.compileReportToStream(jasperDesign, out);
