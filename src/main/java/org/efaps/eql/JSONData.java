@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.MultiPrintQuery;
@@ -35,6 +36,7 @@ import org.efaps.json.data.LongValue;
 import org.efaps.json.data.ObjectData;
 import org.efaps.json.data.StringListValue;
 import org.efaps.json.data.StringValue;
+import org.efaps.json.data.UUIDValue;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -104,13 +106,16 @@ public class JSONData
     {
         AbstractValue<? extends Object> ret = null;
         if (_object instanceof String) {
-            ret = new StringValue().setValue((String) _object);;
+            ret = new StringValue().setValue((String) _object);
+            ;
         } else if (_object instanceof BigDecimal) {
             ret = new DecimalValue().setValue((BigDecimal) _object);
         } else if (_object instanceof Long) {
             ret = new LongValue().setValue((Long) _object);
         } else if (_object instanceof DateTime) {
             ret = new DateTimeValue().setValue((DateTime) _object);
+        } else if (_object instanceof UUID) {
+            ret = new UUIDValue().setValue((UUID) _object);
         } else if (_object instanceof List) {
             final List<?> list = (List<?>) _object;
             if (!list.isEmpty()) {
