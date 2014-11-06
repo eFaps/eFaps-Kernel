@@ -23,10 +23,12 @@ package org.efaps.db.search.compare;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.search.AbstractQPart;
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.value.AbstractQValue;
+import org.efaps.db.search.value.QBitValue;
 import org.efaps.db.wrapper.SQLPart;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
@@ -100,7 +102,7 @@ public class QNotEqual
         throws EFapsException
     {
         getAttribute().appendSQL(_sql);
-        if (this.values.size() > 1) {
+        if (this.values.size() > 1 || this.values.size() > 0 && this.values.get(0) instanceof QBitValue) {
             _sql.addPart(SQLPart.NOT).addPart(SQLPart.IN).addPart(SQLPart.PARENTHESIS_OPEN);
             boolean first = true;
             for (final AbstractQValue value : this.values) {
@@ -132,5 +134,11 @@ public class QNotEqual
             value.prepare(_query, this);
         }
         return this;
+    }
+
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this).append("values", this.values).toString();
     }
 }
