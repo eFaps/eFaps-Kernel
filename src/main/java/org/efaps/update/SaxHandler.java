@@ -30,6 +30,7 @@ import java.util.Stack;
 
 import org.efaps.update.schema.access.AccessSetUpdate;
 import org.efaps.update.schema.access.AccessTypeUpdate;
+import org.efaps.update.schema.common.MsgPhraseUpdate;
 import org.efaps.update.schema.common.NumberGeneratorUpdate;
 import org.efaps.update.schema.common.SystemConfigurationUpdate;
 import org.efaps.update.schema.datamodel.DimensionUpdate;
@@ -69,6 +70,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class SaxHandler
     extends DefaultHandler
 {
+
     /**
      * Tags used in this Handler.
      */
@@ -137,9 +139,9 @@ public class SaxHandler
 
     /**
      * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
-     * @param _ch       char
-     * @param _start    start index
-     * @param _length   length
+     * @param _ch char
+     * @param _start start index
+     * @param _length length
      * @throws SAXException on error
      */
     @Override
@@ -161,10 +163,11 @@ public class SaxHandler
     }
 
     /**
-     * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
-     * @param _uri          uri
-     * @param _localName    local name
-     * @param _qName        qualified name
+     * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String,
+     *      java.lang.String, java.lang.String)
+     * @param _uri uri
+     * @param _localName local name
+     * @param _qName qualified name
      * @throws SAXException on error
      */
     @Override
@@ -175,7 +178,7 @@ public class SaxHandler
     {
         if (!this.called) {
             try {
-                this.update.readXML(this.tag, this.attributes, (this.content != null)
+                this.update.readXML(this.tag, this.attributes, this.content != null
                                 ? this.content.toString().trim()
                                 : null);
             } catch (final EFapsException e) {
@@ -191,12 +194,12 @@ public class SaxHandler
     }
 
     /**
-     * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String,
-     * org.xml.sax.Attributes)
-     * @param _uri          uri
-     * @param _localName    local name
-     * @param _qName        qualified Name
-     * @param _attributes   Attributes
+     * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String,
+     *      java.lang.String, java.lang.String, org.xml.sax.Attributes)
+     * @param _uri uri
+     * @param _localName local name
+     * @param _qName qualified Name
+     * @param _attributes Attributes
      * @throws SAXException on error
      */
     @Override
@@ -209,7 +212,7 @@ public class SaxHandler
         if (this.update != null) {
             if (!this.called && !this.tag.isEmpty()) {
                 try {
-                    this.update.readXML(this.tag, this.attributes, (this.content != null)
+                    this.update.readXML(this.tag, this.attributes, this.content != null
                                     ? this.content.toString().trim()
                                     : null);
                 } catch (final EFapsException e) {
@@ -223,60 +226,93 @@ public class SaxHandler
             for (int i = 0; i < _attributes.getLength(); i++) {
                 this.attributes.put(_attributes.getQName(i), _attributes.getValue(i));
             }
-        } else if ("access-set".equals(_qName)) {
-            this.update = new AccessSetUpdate(this.url);
-        } else if ("access-type".equals(_qName)) {
-            this.update = new AccessTypeUpdate(this.url);
-        } else if ("bpm-image".equals(_qName)) {
-            this.update = new BPMImageUpdate(this.url);
-        } else if ("common-systemconfiguration".equals(_qName)) {
-            this.update = new SystemConfigurationUpdate(this.url);
-        } else if ("datamodel-sqltable".equals(_qName)) {
-            this.update = new SQLTableUpdate(this.url);
-        } else if ("datamodel-type".equals(_qName)) {
-            this.update = new TypeUpdate(this.url);
-        } else if ("datamodel-dimension".equals(_qName)) {
-            this.update = new DimensionUpdate(this.url);
-        } else if ("datamodel-statusgroup".equals(_qName)) {
-            this.update = new StatusGroupUpdate(this.url);
-        } else if ("db-store".equals(_qName)) {
-            this.update = new StoreUpdate(this.url);
-        } else if ("integration-webdav".equals(_qName)) {
-            this.update = new WebDAVUpdate(this.url);
-        } else if ("jasperReport".equals(_qName)) {
-            this.update = new JasperReportUpdate(this.url);
-        } else if ("jasper-image".equals(_qName)) {
-            this.update = new JasperImageUpdate(this.url);
-        } else if ("numbergenerator".equals(_qName)) {
-            this.update = new NumberGeneratorUpdate(this.url);
-        } else if ("ui-command".equals(_qName)) {
-            this.update = new CommandUpdate(this.url);
-        } else if ("ui-form".equals(_qName)) {
-            this.update = new FormUpdate(this.url);
-        } else if ("ui-image".equals(_qName)) {
-            this.update = new ImageUpdate(this.url);
-        } else if ("ui-menu".equals(_qName)) {
-            this.update = new MenuUpdate(this.url);
-        } else if ("ui-search".equals(_qName)) {
-            this.update = new SearchUpdate(this.url);
-        } else if ("ui-table".equals(_qName)) {
-            this.update = new TableUpdate(this.url);
-        } else if ("user-company".equals(_qName)) {
-            this.update = new CompanyUpdate(this.url);
-        } else if ("user-jaassystem".equals(_qName)) {
-            this.update = new JAASSystemUpdate(this.url);
-        } else if ("user-role".equals(_qName)) {
-            this.update = new RoleUpdate(this.url);
-        } else if ("user-group".equals(_qName)) {
-            this.update = new GroupUpdate(this.url);
-        } else if ("dbproperties".equals(_qName)) {
-            this.update = new DBPropertiesUpdate(this.url);
-        } else if ("help-menu".equals(_qName)) {
-            this.update = new HelpMenuUpdate(this.url);
-        } else if ("wiki-image".equals(_qName)) {
-            this.update = new WikiImageUpdate(this.url);
         } else {
-            this.update = new DefaultEmptyUpdate(this.url);
+            switch (_qName) {
+                case "access-set":
+                    this.update = new AccessSetUpdate(this.url);
+                    break;
+                case "access-type":
+                    this.update = new AccessTypeUpdate(this.url);
+                    break;
+                case "bpm-image":
+                    this.update = new BPMImageUpdate(this.url);
+                    break;
+                case "common-msgphrase":
+                    this.update = new MsgPhraseUpdate(this.url);
+                    break;
+                case "common-systemconfiguration":
+                    this.update = new SystemConfigurationUpdate(this.url);
+                    break;
+                case "datamodel-sqltable":
+                    this.update = new SQLTableUpdate(this.url);
+                    break;
+                case "datamodel-type":
+                    this.update = new TypeUpdate(this.url);
+                    break;
+                case "datamodel-dimension":
+                    this.update = new DimensionUpdate(this.url);
+                    break;
+                case "datamodel-statusgroup":
+                    this.update = new StatusGroupUpdate(this.url);
+                    break;
+                case "db-store":
+                    this.update = new StoreUpdate(this.url);
+                    break;
+                case "integration-webdav":
+                    this.update = new WebDAVUpdate(this.url);
+                    break;
+                case "jasperReport":
+                    this.update = new JasperReportUpdate(this.url);
+                    break;
+                case "jasper-image":
+                    this.update = new JasperImageUpdate(this.url);
+                    break;
+                case "numbergenerator":
+                    this.update = new NumberGeneratorUpdate(this.url);
+                    break;
+                case "ui-command":
+                    this.update = new CommandUpdate(this.url);
+                    break;
+                case "ui-form":
+                    this.update = new FormUpdate(this.url);
+                    break;
+                case "ui-image":
+                    this.update = new ImageUpdate(this.url);
+                    break;
+                case "ui-menu":
+                    this.update = new MenuUpdate(this.url);
+                    break;
+                case "ui-search":
+                    this.update = new SearchUpdate(this.url);
+                    break;
+                case "ui-table":
+                    this.update = new TableUpdate(this.url);
+                    break;
+                case "user-company":
+                    this.update = new CompanyUpdate(this.url);
+                    break;
+                case "user-jaassystem":
+                    this.update = new JAASSystemUpdate(this.url);
+                    break;
+                case "user-role":
+                    this.update = new RoleUpdate(this.url);
+                    break;
+                case "user-group":
+                    this.update = new GroupUpdate(this.url);
+                    break;
+                case "dbproperties":
+                    this.update = new DBPropertiesUpdate(this.url);
+                    break;
+                case "help-menu":
+                    this.update = new HelpMenuUpdate(this.url);
+                    break;
+                case "wiki-image":
+                    this.update = new WikiImageUpdate(this.url);
+                    break;
+                default:
+                    this.update = new DefaultEmptyUpdate(this.url);
+                    break;
+            }
         }
     }
 }
