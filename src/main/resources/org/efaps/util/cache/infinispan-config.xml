@@ -225,6 +225,22 @@
     <namedCache name="org.efaps.admin.access.AccessSet.Name">
         <eviction maxEntries="500" strategy="LIRS" />
     </namedCache>
+    <namedCache name="org.efaps.admin.common.MsgPhrase.UUID">
+        <eviction maxEntries="500" strategy="LIRS" />
+    </namedCache>
+    <namedCache name="org.efaps.admin.common.MsgPhrase.ID">
+        <eviction maxEntries="500" strategy="LIRS" />
+    </namedCache>
+    <namedCache name="org.efaps.admin.common.MsgPhrase.Name">
+        <eviction maxEntries="500" strategy="LIRS" />
+    </namedCache>
+    <namedCache name="org.efaps.admin.common.MsgPhrase.Argument">
+        <eviction maxEntries="5000" strategy="LIRS" />
+    </namedCache>
+    <namedCache name="org.efaps.admin.common.MsgPhrase.Label">
+        <eviction maxEntries="5000" strategy="LIRS" />
+    </namedCache>
+
 
     <!-- User Caches This Caches are accessed in the given sequence during
         the search for a UserObject. That means that for e.g. RoleCache null-Values

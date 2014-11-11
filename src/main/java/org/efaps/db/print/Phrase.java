@@ -31,14 +31,14 @@ import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
- * Class is used as a wraper for a series of OneSelects as part of one
- * phrase.
+ * Class is used as a wraper for a series of OneSelects as part of one phrase.
  *
  * @author The eFaps Team
  * @version $Id$
  */
 public class Phrase
 {
+
     /**
      * Key for this Phrase.
      */
@@ -60,11 +60,13 @@ public class Phrase
     private final ValueList valueList;
 
     /**
-     * @param _key          Key for this Phrase
-     * @param _phraseStmt   Phrase statement for this Phrase
-     * @param _valueList    ValueList to access the parser.
+     * @param _key Key for this Phrase
+     * @param _phraseStmt Phrase statement for this Phrase
+     * @param _valueList ValueList to access the parser.
      */
-    public Phrase(final String _key, final String _phraseStmt, final ValueList _valueList)
+    public Phrase(final String _key,
+                  final String _phraseStmt,
+                  final ValueList _valueList)
     {
         this.key = _key;
         this.phraseStmt = _phraseStmt;
@@ -73,8 +75,9 @@ public class Phrase
 
     /**
      * Method to get the parsed value for this phrase.
+     *
      * @param _instance Instance the phrase is build on
-     * @return  parsed value
+     * @return parsed value
      * @throws EFapsException on error
      */
     public String getPhraseValue(final Instance _instance)
@@ -88,8 +91,8 @@ public class Phrase
                     final OneSelect oneselect = this.selectStmt2OneSelect.get(token.getValue());
                     final Object value = oneselect.getObject();
                     if (oneselect.getAttribute() != null) {
-                        buf.append((new FieldValue(null, oneselect.getAttribute(), value, _instance, null))
-                                    .getStringValue(TargetMode.VIEW));
+                        buf.append(new FieldValue(null, oneselect.getAttribute(), value, _instance, null)
+                                        .getStringValue(TargetMode.VIEW));
                     } else if (value != null) {
                         buf.append(value);
                     }
@@ -106,7 +109,8 @@ public class Phrase
 
     /**
      * Add a oneselect to this Phrase.
-     * @param _oneselect    OneSelect to add
+     *
+     * @param _oneselect OneSelect to add
      */
     public void addSelect(final OneSelect _oneselect)
     {

@@ -64,6 +64,68 @@ public class CIAdminCommon
         public final CIAttribute Modified = new CIAttribute(this, "Modified");
     }
 
+    public static final _MsgPhrase MsgPhrase = new _MsgPhrase("0d01e261-f33d-4bd1-9857-d04299b8aee3");
+
+    public static class _MsgPhrase
+        extends CIAdmin._Abstract
+    {
+
+        protected _MsgPhrase(final String _uuid)
+        {
+            super(_uuid);
+        }
+    }
+
+    public static final _MsgPhraseConfigAbstract MsgPhraseConfigAbstract = new _MsgPhraseConfigAbstract("f62e7691-a4e5-496c-ba90-b8cf98d42c6c");
+
+    public static class _MsgPhraseConfigAbstract
+        extends CIType
+    {
+
+        protected _MsgPhraseConfigAbstract(final String _uuid)
+        {
+            super(_uuid);
+        }
+
+        public final CIAttribute AbstractLink = new CIAttribute(this, "AbstractLink");
+        public final CIAttribute Value = new CIAttribute(this, "Value");
+        public final CIAttribute Description = new CIAttribute(this, "Description");
+        public final CIAttribute Int1 = new CIAttribute(this, "Int1");
+        public final CIAttribute LanguageLink = new CIAttribute(this, "LanguageLink");
+        public final CIAttribute CompanyLink = new CIAttribute(this, "CompanyLink");
+        public final CIAttribute Creator = new CIAttribute(this, "Creator");
+        public final CIAttribute Created = new CIAttribute(this, "Created");
+        public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
+        public final CIAttribute Modified = new CIAttribute(this, "Modified");
+    }
+
+
+    public static final _MsgPhraseLabel MsgPhraseLabel = new _MsgPhraseLabel("7a520b5b-9bd5-4331-8721-460e18e2c5ac");
+
+    public static class _MsgPhraseLabel
+        extends _MsgPhraseConfigAbstract
+    {
+
+        protected _MsgPhraseLabel(final String _uuid)
+        {
+            super(_uuid);
+        }
+        public final CIAttribute MsgPhraseLink = new CIAttribute(this, "MsgPhraseLink");
+    }
+
+    public static final _MsgPhraseArgument MsgPhraseArgument = new _MsgPhraseArgument("bd2c6b2f-c768-4594-837c-a03fcc3bded3");
+
+    public static class _MsgPhraseArgument
+        extends _MsgPhraseConfigAbstract
+    {
+        protected _MsgPhraseArgument(final String _uuid)
+        {
+            super(_uuid);
+        }
+        public final CIAttribute MsgPhraseLink = new CIAttribute(this, "MsgPhraseLink");
+        public final CIAttribute Index = new CIAttribute(this, "Index");
+    }
+
     public static final _SystemConfiguration SystemConfiguration = new _SystemConfiguration("5fecab1b-f4a8-447d-ad64-cf5965fe5d3b");
 
     public static class _SystemConfiguration
