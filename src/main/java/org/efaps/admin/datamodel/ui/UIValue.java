@@ -347,6 +347,12 @@ public final class UIValue
                         html.append(retu.get(ReturnValues.SNIPLETT));
                     } else if (retu.get(ReturnValues.VALUES) != null) {
                         ret = retu.get(ReturnValues.VALUES);
+                        if (retu.get(ReturnValues.INSTANCE) != null) {
+                           final Instance inst = (Instance) retu.get(ReturnValues.INSTANCE);
+                           if (inst != null && inst.isValid()) {
+                               setInstance(inst);
+                           }
+                        }
                     }
                 }
             }
@@ -366,7 +372,6 @@ public final class UIValue
     {
         this.dbValue = _dbValue;
     }
-
 
     /**
      * Getter method for the instance variable {@link #instance}.
