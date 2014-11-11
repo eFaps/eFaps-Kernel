@@ -118,6 +118,8 @@ public final class MsgPhrase
 
     private final Set<Argument> arguments = new HashSet<>();
 
+    private final Long parentId;
+
     /**
      * Constructor setting instance variables.
      *
@@ -127,11 +129,13 @@ public final class MsgPhrase
      */
     private MsgPhrase(final long _id,
                       final String _name,
-                      final String _uuid)
+                      final String _uuid,
+                      final Long _parentId)
     {
         this.id = _id;
         this.uuid = UUID.fromString(_uuid);
         this.name = _name;
+        this.parentId = _parentId;
     }
 
     /**
@@ -212,7 +216,6 @@ public final class MsgPhrase
         if (cache.containsKey(key)) {
             ret = cache.get(key);
         } else {
-
             long languageid = 0;
             final QueryBuilder queryBldr = new QueryBuilder(CIAdmin.Language);
             queryBldr.addWhereAttrEqValue(CIAdmin.Language.Language, _language);
@@ -222,16 +225,19 @@ public final class MsgPhrase
                 languageid = query.getCurrentValue().getId();
             }
             Label current = null;
-            for (final Label label : this.labels) {
-                if (current == null) {
-                    current = label;
-                } else {
-
-                    if (label.getPriority(languageid, _company.getId()) > current.getPriority(languageid,
-                                    _company.getId())) {
+            MsgPhrase phrase = this;
+            while (phrase != null) {
+                for (final Label label : this.labels) {
+                    if (current == null) {
                         current = label;
+                    } else {
+                        if (label.getPriority(languageid, _company.getId()) > current.getPriority(languageid,
+                                        _company.getId())) {
+                            current = label;
+                        }
                     }
                 }
+                phrase = phrase.getParent();
             }
             ret = current.getValue();
             cache.put(key, ret);
@@ -272,22 +278,62 @@ public final class MsgPhrase
             }
             final Map<Integer, Argument> orderMap = new TreeMap<>();
 
-            for (final Argument argument : this.arguments) {
-                if (orderMap.containsKey(argument.getIndex())) {
-                    final Argument current = orderMap.get(argument.getIndex());
-                    if (argument.getPriority(languageid, _company.getId()) > current.getPriority(languageid,
-                                    _company.getId())) {
+            MsgPhrase phrase = this;
+            while (phrase != null) {
+                for (final Argument argument : phrase.arguments) {
+                    if (orderMap.containsKey(argument.getIndex())) {
+                        final Argument current = orderMap.get(argument.getIndex());
+                        if (argument.getPriority(languageid, _company.getId()) > current.getPriority(languageid,
+                                        _company.getId())) {
+                            orderMap.put(argument.getIndex(), argument);
+                        }
+                    } else {
                         orderMap.put(argument.getIndex(), argument);
                     }
-                } else {
-                    orderMap.put(argument.getIndex(), argument);
                 }
+                phrase = phrase.getParent();
             }
-
             for (final Argument argument : orderMap.values()) {
                 ret.add(argument.getValue());
             }
             cache.put(key, ret);
+        }
+        return ret;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #parentId}.
+     *
+     * @return value of instance variable {@link #parentId}
+     */
+    public Long getParentId()
+    {
+        return this.parentId;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #parentId}.
+     *
+     * @return value of instance variable {@link #parentId}
+     */
+    public boolean hasParent()
+    {
+        return getParentId() != null;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #parentId}.
+     *
+     * @return value of instance variable {@link #parentId}
+     */
+    public MsgPhrase getParent()
+        throws EFapsException
+    {
+        MsgPhrase ret;
+        if (hasParent()) {
+            ret = MsgPhrase.get(getParentId());
+        } else {
+            ret = null;
         }
         return ret;
     }
@@ -460,12 +506,14 @@ public final class MsgPhrase
             queryBldr.addWhereAttrEqValue(CIAdminCommon.MsgPhrase.Name, _criteria);
         }
         final MultiPrintQuery multi = queryBldr.getPrint();
-        multi.addAttribute(CIAdminCommon.MsgPhrase.ID, CIAdminCommon.MsgPhrase.UUID, CIAdminCommon.MsgPhrase.Name);
+        multi.addAttribute(CIAdminCommon.MsgPhrase.ID, CIAdminCommon.MsgPhrase.UUID, CIAdminCommon.MsgPhrase.Name,
+                        CIAdminCommon.MsgPhrase.ParentLink);
         multi.executeWithoutAccessCheck();
         if (multi.next()) {
             final MsgPhrase phrase = new MsgPhrase(multi.<Long>getAttribute(CIAdminCommon.MsgPhrase.ID),
                             multi.<String>getAttribute(CIAdminCommon.MsgPhrase.Name),
-                            multi.<String>getAttribute(CIAdminCommon.MsgPhrase.UUID));
+                            multi.<String>getAttribute(CIAdminCommon.MsgPhrase.UUID),
+                            multi.<Long>getAttribute(CIAdminCommon.MsgPhrase.ParentLink));
             phrase.load();
             cacheMsgPhrase(phrase);
         }

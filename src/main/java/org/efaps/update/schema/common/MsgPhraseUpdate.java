@@ -35,6 +35,7 @@ import org.efaps.ci.CIAdmin;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
+import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.update.AbstractUpdate;
@@ -50,7 +51,8 @@ import org.slf4j.LoggerFactory;
  * XML configuration item file.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: MsgPhraseUpdate.java 14409 2014-11-11 03:50:45Z jan@moxter.net
+ *          $
  */
 public class MsgPhraseUpdate
     extends AbstractUpdate
@@ -92,6 +94,8 @@ public class MsgPhraseUpdate
         extends AbstractDefinition
     {
 
+        private String parent = null;
+
         private final Set<MsgPhrase.Label> labels = new HashSet<>();
 
         private final Set<MsgPhrase.Argument> arguments = new HashSet<>();
@@ -110,6 +114,9 @@ public class MsgPhraseUpdate
         {
             final String value = _tags.get(0);
             switch (value) {
+                case "parent":
+                    this.parent = _text;
+                    break;
                 case "label":
                     addLabel(_text, _attributes.get("language"), _attributes.get("company"));
                     break;
@@ -206,8 +213,27 @@ public class MsgPhraseUpdate
                                final Set<Link> _allLinkTypes)
             throws InstallationException
         {
-            super.updateInDB(_step, _allLinkTypes);
             try {
+                if (_step == UpdateLifecycle.EFAPS_UPDATE) {
+                    // set the id of the parent (if defined)
+                    if (this.parent != null && this.parent.length() > 0) {
+                        final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.MsgPhrase);
+                        queryBldr.addWhereAttrEqValue(CIAdminCommon.MsgPhrase.Name, this.parent);
+                        final InstanceQuery query = queryBldr.getQuery();
+                        query.executeWithoutAccessCheck();
+                        if (query.next()) {
+                            final Instance instance = query.getCurrentValue();
+                            addValue(CIAdminCommon.MsgPhrase.ParentLink.name, "" + instance.getId());
+                        } else {
+                            addValue(CIAdminCommon.MsgPhrase.ParentLink.name, null);
+                        }
+                    } else {
+                        addValue(CIAdminCommon.MsgPhrase.ParentLink.name, null);
+                    }
+                }
+
+                super.updateInDB(_step, _allLinkTypes);
+
                 if (_step == UpdateLifecycle.EFAPS_UPDATE && getInstance() != null && getInstance().isValid()) {
                     final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.MsgPhraseConfigAbstract);
                     queryBldr.addWhereAttrEqValue(CIAdminCommon.MsgPhraseConfigAbstract.AbstractLink, getInstance());

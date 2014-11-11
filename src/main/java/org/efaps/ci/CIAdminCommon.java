@@ -74,6 +74,7 @@ public class CIAdminCommon
         {
             super(_uuid);
         }
+        public final CIAttribute ParentLink = new CIAttribute(this, "ParentLink");
     }
 
     public static final _MsgPhraseConfigAbstract MsgPhraseConfigAbstract = new _MsgPhraseConfigAbstract("f62e7691-a4e5-496c-ba90-b8cf98d42c6c");
