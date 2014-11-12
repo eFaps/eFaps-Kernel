@@ -107,7 +107,6 @@ public class JSONData
         AbstractValue<? extends Object> ret = null;
         if (_object instanceof String) {
             ret = new StringValue().setValue((String) _object);
-            ;
         } else if (_object instanceof BigDecimal) {
             ret = new DecimalValue().setValue((BigDecimal) _object);
         } else if (_object instanceof Long) {
@@ -124,6 +123,8 @@ public class JSONData
                     ret = new StringListValue().setValue((List<String>) list);
                 }
             }
+        } else if (_object != null) {
+            ret = new StringValue().setValue(_object.toString());
         }
         if (ret != null) {
             ret.setKey(_key);
