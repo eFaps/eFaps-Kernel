@@ -227,7 +227,7 @@ public final class MsgPhrase
             Label current = null;
             MsgPhrase phrase = this;
             while (phrase != null) {
-                for (final Label label : this.labels) {
+                for (final Label label : phrase.labels) {
                     if (current == null) {
                         current = label;
                     } else {
@@ -239,8 +239,10 @@ public final class MsgPhrase
                 }
                 phrase = phrase.getParent();
             }
-            ret = current.getValue();
-            cache.put(key, ret);
+            if (current != null) {
+                ret = current.getValue();
+                cache.put(key, ret);
+            }
         }
         return ret;
     }
