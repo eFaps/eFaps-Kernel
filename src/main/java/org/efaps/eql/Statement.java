@@ -170,12 +170,42 @@ public final class Statement
      * {@inheritDoc}
      */
     @Override
+    public void addWhereSelectEq(final String _select,
+                                 final String _value)
+    {
+        try {
+            this.queryBdr.addWhereSelectEqValue(_select, _value);
+            LOG.debug("adding WhereSelectEq: '{}' '{}'", _select, _value);
+        } catch (final EFapsException e) {
+            LOG.error("Catched error", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void addWhereAttrIn(final String _attr,
                                final Collection<String> _values)
     {
         try {
             this.queryBdr.addWhereAttrEqValue(_attr, _values.toArray());
             LOG.debug("adding WhereAttrIn: '{}' '{}'", _attr, _values);
+        } catch (final EFapsException e) {
+            LOG.error("Catched error", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWhereSelectIn(final String _select,
+                                 final Collection<String> _values)
+    {
+        try {
+            this.queryBdr.addWhereSelectEqValue(_select, _values.toArray());
+            LOG.debug("adding WhereSelectIn: '{}' '{}'", _select, _values);
         } catch (final EFapsException e) {
             LOG.error("Catched error", e);
         }
@@ -200,6 +230,21 @@ public final class Statement
      * {@inheritDoc}
      */
     @Override
+    public void addWhereSelectGreater(final String _select,
+                                      final String _value)
+    {
+        try {
+            this.queryBdr.addWhereSelectGreaterValue(_select, _value);
+            LOG.debug("adding WhereSelectGreater: '{}' '{}'", _select, _value);
+        } catch (final EFapsException e) {
+            LOG.error("Catched error", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void addWhereAttrLess(final String _attr,
                                  final String _value)
     {
@@ -209,6 +254,22 @@ public final class Statement
         } catch (final EFapsException e) {
             LOG.error("Catched error", e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWhereSelectLess(final String _select,
+                                   final String _value)
+    {
+        try {
+            this.queryBdr.addWhereSelectLessValue(_select, _value);
+            LOG.debug("adding addWhereSelectLessValue: '{}' '{}'", _select, _value);
+        } catch (final EFapsException e) {
+            LOG.error("Catched error", e);
+        }
+
     }
 
     /**

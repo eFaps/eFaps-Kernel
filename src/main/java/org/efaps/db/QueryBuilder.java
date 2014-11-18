@@ -23,12 +23,16 @@ package org.efaps.db;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
@@ -88,14 +92,29 @@ public class QueryBuilder
     private static final Logger LOG = LoggerFactory.getLogger(QueryBuilder.class);
 
     /**
+     * Pattern to get the attribute from a select.
+     */
+    private static final Pattern ATTRPATTERN = Pattern.compile("(?<=attribute\\[)([A-Z, a-z])*(?=\\])");
+
+    /**
+     * Pattern to get the attribute from a select.
+     */
+    private static final Pattern LINKTOPATTERN = Pattern.compile("(?<=linkto\\[)([A-Z, a-z])*(?=\\])");
+
+    /**
      * List of compares that will be included in this query.
      */
-    private final List<AbstractQAttrCompare> compares = new ArrayList<AbstractQAttrCompare>();
+    private final List<AbstractQAttrCompare> compares = new ArrayList<>();
 
     /**
      * List of parts that will be included in this order of this query.
      */
-    private final List<AbstractQPart> orders = new ArrayList<AbstractQPart>();
+    private final List<AbstractQPart> orders = new ArrayList<>();
+
+    /**
+     * QueryBuilders that will make a AttrQuery.
+     */
+    private final Map<List<String>, QueryBuilder> attrQueryBldrs = new HashMap<>();
 
     /**
      * UUID of the type used for generated instance query.
@@ -122,11 +141,15 @@ public class QueryBuilder
      */
     private int limit = -1;
 
-
     /**
      * Should the child types be also be included in this search?
      */
     private boolean includeChildTypes = true;
+
+    /**
+     * Name of the Attribute that links to this AttributeQuery.
+     */
+    private String linkAttributeName;
 
     /**
      * @param _typeUUID     uuid of the type this query is based on
@@ -250,7 +273,6 @@ public class QueryBuilder
         return addWhereAttrEqValue(_ciAttr.name, _values);
     }
 
-
     /**
      * @param _attrName Name of the attribute
      * @param _values    value to be included in the where
@@ -263,6 +285,26 @@ public class QueryBuilder
     {
         final QEqual equal = new QEqual(new QAttribute(_attrName));
         this.compares.add(equal);
+        for (final Object value : _values) {
+            equal.addValue(getValue(value));
+        }
+        return equal;
+    }
+
+    /**
+     * @param _select   Select statement
+     * @param _values   value to be included in the where
+     * @return QEqual
+     * @throws EFapsException on error
+     */
+    public QEqual addWhereSelectEqValue(final String _select,
+                                        final Object... _values)
+        throws EFapsException
+    {
+        final String attribute = getAttr4Select(_select);
+        final QueryBuilder queryBldr = getAttrQueryBuilder(_select);
+        final QEqual equal = new QEqual(new QAttribute(attribute));
+        queryBldr.getCompares().add(equal);
         for (final Object value : _values) {
             equal.addValue(getValue(value));
         }
@@ -349,7 +391,6 @@ public class QueryBuilder
         return addWhereAttrLessValue(_ciAttr.name, _value);
     }
 
-
     /**
      * @param _attrName name of the attribute
      * @param _value    value to be included in the where
@@ -380,6 +421,22 @@ public class QueryBuilder
         return ret;
     }
 
+    /**
+     * @param _select   Select statement
+     * @param _value    value to be included in the where
+     * @return QGreater
+     * @throws EFapsException on error
+     */
+    public QLess addWhereSelectLessValue(final String _select,
+                                         final Object _value)
+        throws EFapsException
+    {
+        final String attribute = getAttr4Select(_select);
+        final QueryBuilder queryBldr = getAttrQueryBuilder(_select);
+        final QLess ret = new QLess(new QAttribute(attribute), getValue(_value));
+        queryBldr.getCompares().add(ret);
+        return ret;
+    }
 
     /**
      * @param _ciAttr   CIAttribute of the attribute
@@ -393,7 +450,6 @@ public class QueryBuilder
     {
         return addWhereAttrGreaterValue(_ciAttr.name, _value);
     }
-
 
     /**
      * @param _attrName name of the attribute
@@ -426,13 +482,30 @@ public class QueryBuilder
     }
 
     /**
+     * @param _select   Select statement
+     * @param _value    value to be included in the where
+     * @return QGreater
+     * @throws EFapsException on error
+     */
+    public QGreater addWhereSelectGreaterValue(final String _select,
+                                               final Object _value)
+        throws EFapsException
+    {
+        final String attribute = getAttr4Select(_select);
+        final QueryBuilder queryBldr = getAttrQueryBuilder(_select);
+        final QGreater ret = new QGreater(new QAttribute(attribute), getValue(_value));
+        queryBldr.getCompares().add(ret);
+        return ret;
+    }
+
+    /**
      * @param _ciAttr   CIAttribute of the attribute
      * @param _value    value to be included in the where
      * @return QLess
      * @throws EFapsException on error
      */
     public QMatch addWhereAttrMatchValue(final CIAttribute _ciAttr,
-                                             final Object _value)
+                                         final Object _value)
         throws EFapsException
     {
         return addWhereAttrMatchValue(_ciAttr.name, _value);
@@ -539,7 +612,6 @@ public class QueryBuilder
     {
         return addWhereAttrNotInQuery(_ciAttr.name, _query);
     }
-
 
     /**
      * @param _attrName Name of the attribute
@@ -708,9 +780,6 @@ public class QueryBuilder
         return desc;
     }
 
-
-
-
     /**
      * Get the QAbstractValue for a value.
      * @param _value    value the QAbstractValue is wanted for
@@ -829,7 +898,7 @@ public class QueryBuilder
                 this.query = new InstanceQuery(this.typeUUID);
                 this.query.setIncludeChildTypes(isIncludeChildTypes());
                 prepareQuery();
-            } catch (final CacheReloadException e) {
+            } catch (final EFapsException e) {
                 QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
             }
         }
@@ -848,7 +917,7 @@ public class QueryBuilder
                 this.query = new CachedInstanceQuery(_key, this.typeUUID);
                 this.query.setIncludeChildTypes(isIncludeChildTypes());
                 prepareQuery();
-            } catch (final CacheReloadException e) {
+            } catch (final EFapsException e) {
                 QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
             }
         }
@@ -878,7 +947,7 @@ public class QueryBuilder
             try {
                 this.query = new AttributeQuery(this.typeUUID, _attributeName);
                 prepareQuery();
-            } catch (final CacheReloadException e) {
+            } catch (final EFapsException e) {
                 QueryBuilder.LOG.error("Could not open AttributeQuery for uuid: {}", this.typeUUID);
             }
         }
@@ -886,12 +955,36 @@ public class QueryBuilder
     }
 
     /**
+     * Method to get an Attribute Query in case of a Select where criteria.
+     *
+     * @return Attribute Query
+     * @throws EFapsException on error
+     */
+    protected AttributeQuery getAttributeQuery()
+        throws EFapsException
+    {
+        AttributeQuery ret = this.getAttributeQuery((String) null);
+        // check if in the linkto chain is one before this one
+        if (!this.attrQueryBldrs.isEmpty()) {
+            final QueryBuilder queryBldr = this.attrQueryBldrs.values().iterator().next();
+            queryBldr.addWhereAttrInQuery(queryBldr.getLinkAttributeName(), ret);
+            ret = queryBldr.getAttributeQuery();
+        }
+        return ret;
+    }
+
+    /**
      * Prepare the Query.
-     * @throws CacheReloadException on error
+     * @throws EFapsException on error
      */
     private void prepareQuery()
-        throws CacheReloadException
+        throws EFapsException
     {
+        for (final QueryBuilder queryBldr : this.attrQueryBldrs.values()) {
+            final AttributeQuery attrQuery = queryBldr.getAttributeQuery();
+            this.addWhereAttrInQuery(queryBldr.getLinkAttributeName(), attrQuery);
+        }
+
         if (!this.types.isEmpty()) {
             // force the include
             this.query.setIncludeChildTypes(true);
@@ -962,5 +1055,88 @@ public class QueryBuilder
     public void setIncludeChildTypes(final boolean _includeChildTypes)
     {
         this.includeChildTypes = _includeChildTypes;
+    }
+
+    /**
+     * @param _select select the attribute is wanted for
+     * @return name of the attribute
+     */
+    protected String getAttr4Select(final String _select)
+    {
+        final Matcher matcher = ATTRPATTERN.matcher(_select);
+        String ret = "";
+        if (matcher.find()) {
+            ret = matcher.group();
+        }
+        return ret;
+    }
+
+    /**
+     * @param _select   select the QueryBuilder is wanted for
+     * @return QueryBuilder
+     * @throws CacheReloadException on error
+     */
+    protected QueryBuilder getAttrQueryBuilder(final String _select)
+        throws CacheReloadException
+    {
+        final Matcher matcher = LINKTOPATTERN.matcher(_select);
+        final List<String> linktos = new ArrayList<>();
+        while (matcher.find()) {
+            linktos.add(matcher.group());
+        }
+
+        if (!this.attrQueryBldrs.containsKey(linktos)) {
+            Type currentType = Type.get(this.typeUUID);
+            QueryBuilder queryBldr = this;
+            for (final Iterator<String> iterator = linktos.iterator(); iterator.hasNext();) {
+                final String string = iterator.next();
+                currentType = currentType.getAttribute(string).getLink();
+                final QueryBuilder queryBldrTmp = new QueryBuilder(currentType);
+                queryBldrTmp.setLinkAttributeName(string);
+                queryBldr.getAttrQueryBldrs().put(linktos, queryBldrTmp);
+                queryBldr = queryBldrTmp;
+            }
+        }
+        return this.attrQueryBldrs.get(linktos);
+    }
+
+    /**
+     * Getter method for the instance variable {@link #compares}.
+     *
+     * @return value of instance variable {@link #compares}
+     */
+    protected List<AbstractQAttrCompare> getCompares()
+    {
+        return this.compares;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #attrQueryBldrs}.
+     *
+     * @return value of instance variable {@link #attrQueryBldrs}
+     */
+    protected Map<List<String>, QueryBuilder> getAttrQueryBldrs()
+    {
+        return this.attrQueryBldrs;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #linkAttributeName}.
+     *
+     * @return value of instance variable {@link #linkAttributeName}
+     */
+    protected String getLinkAttributeName()
+    {
+        return this.linkAttributeName;
+    }
+
+    /**
+     * Setter method for instance variable {@link #linkAttributeName}.
+     *
+     * @param _linkAttributeName value for instance variable {@link #linkAttributeName}
+     */
+    protected void setLinkAttributeName(final String _linkAttributeName)
+    {
+        this.linkAttributeName = _linkAttributeName;
     }
 }

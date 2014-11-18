@@ -48,11 +48,19 @@ public class TestStatement
 
     private final Map<String, String> attr2whereEq = new HashMap<>();
 
+    private final Map<String, String> select2whereEq = new HashMap<>();
+
     private final Map<String, Collection<String>> attr2whereIn = new HashMap<>();
+
+    private final Map<String, Collection<String>> select2whereIn = new HashMap<>();
 
     private final Map<String, String> attr2whereGreater = new HashMap<>();
 
+    private final Map<String, String> select2whereGreater = new HashMap<>();
+
     private final Map<String, String> attr2whereLess = new HashMap<>();
+
+    private final Map<String, String> select2whereLess = new HashMap<>();
 
     private String object;
 
@@ -126,6 +134,16 @@ public class TestStatement
                                final String _value)
     {
         this.attr2whereEq.put(_attr, _value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWhereSelectEq(final String _select,
+                                 final String _value)
+    {
+        this.select2whereEq.put(_select, _value);
     }
 
     /**
@@ -273,5 +291,78 @@ public class TestStatement
     public List<String> getParameters()
     {
         return this.parameters;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #select2whereEq}.
+     *
+     * @return value of instance variable {@link #select2whereEq}
+     */
+    public Map<String, String> getSelect2whereEq()
+    {
+        return this.select2whereEq;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWhereSelectIn(final String _select,
+                                 final Collection<String> _values)
+    {
+        this.select2whereIn.put(_select, _values);
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWhereSelectGreater(final String _select,
+                                       final String _value)
+    {
+        this.select2whereGreater.put(_select, _value);
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWhereSelectLess(final String _select,
+                                   final String _value)
+    {
+        this.select2whereLess.put(_select, _value);
+
+    }
+
+    /**
+     * Getter method for the instance variable {@link #select2whereIn}.
+     *
+     * @return value of instance variable {@link #select2whereIn}
+     */
+    public Map<String, Collection<String>> getSelect2whereIn()
+    {
+        return this.select2whereIn;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #select2whereGreater}.
+     *
+     * @return value of instance variable {@link #select2whereGreater}
+     */
+    public Map<String, String> getSelect2whereGreater()
+    {
+        return this.select2whereGreater;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #select2whereLess}.
+     *
+     * @return value of instance variable {@link #select2whereLess}
+     */
+    public Map<String, String> getSelect2whereLess()
+    {
+        return this.select2whereLess;
     }
 }
