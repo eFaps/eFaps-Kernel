@@ -235,7 +235,7 @@ public class ParserTest
     public void oneTypeWhereEq()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\"");
+        final TestStatement stmt = testStatement("query type CompanyType where name == \"demo\"");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(stmt.getTypes(), types, "No");
@@ -277,7 +277,7 @@ public class ParserTest
     public void oneTypeWhereEqWithSelect()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\" select attribute[Name]");
+        final TestStatement stmt = testStatement("query type CompanyType where name == \"demo\" select attribute[Name]");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(stmt.getTypes(), types, "No");
@@ -295,7 +295,7 @@ public class ParserTest
     public void oneTypeWhereEqWithSpace()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo de algo\"");
+        final TestStatement stmt = testStatement("query type CompanyType where name == \"demo de algo\"");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(types, stmt.getTypes(), "No");
@@ -309,7 +309,7 @@ public class ParserTest
     public void oneTypeWhereEqNumber()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType where id = 345");
+        final TestStatement stmt = testStatement("query type CompanyType where id == 345");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(types, stmt.getTypes(), "No");
@@ -334,7 +334,7 @@ public class ParserTest
     public void multipleTypesWhereEq()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType, OtroType where name = \"demo\"");
+        final TestStatement stmt = testStatement("query type CompanyType, OtroType where name == \"demo\"");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         types.add("OtroType");
@@ -364,7 +364,7 @@ public class ParserTest
     public void multipleTypesWhereEqWithSelect()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType, OtroType where name = \"demo\" select attribute[Name]");
+        final TestStatement stmt = testStatement("query type CompanyType, OtroType where name == \"demo\" select attribute[Name]");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         types.add("OtroType");
@@ -617,7 +617,7 @@ public class ParserTest
     public void whereEqAndEq()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\" and num = 4");
+        final TestStatement stmt = testStatement("query type CompanyType where name == \"demo\" and num == 4");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(stmt.getTypes(), types, "No");
@@ -632,7 +632,7 @@ public class ParserTest
     public void whereOID()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType where link = 5905.636");
+        final TestStatement stmt = testStatement("query type CompanyType where link == 5905.636");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(stmt.getTypes(), types, "No");
@@ -646,7 +646,7 @@ public class ParserTest
     public void whereSelectEq()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType where linkto[ContactLink].attribute[Num] = 15");
+        final TestStatement stmt = testStatement("query type CompanyType where linkto[ContactLink].attribute[Num] == 15");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(stmt.getTypes(), types, "No");
@@ -764,7 +764,7 @@ public class ParserTest
     public void whereEqAndGreater()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\" and num > 4");
+        final TestStatement stmt = testStatement("query type CompanyType where name == \"demo\" and num > 4");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(stmt.getTypes(), types, "No");
@@ -782,7 +782,7 @@ public class ParserTest
     public void whereSelectEqAndGreater()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType where linkto[ContactLink].attribute[name] = \"demo\" and linkto[ContactLink].attribute[num] > 4");
+        final TestStatement stmt = testStatement("query type CompanyType where linkto[ContactLink].attribute[name] == \"demo\" and linkto[ContactLink].attribute[num] > 4");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(stmt.getTypes(), types, "No");
@@ -800,7 +800,7 @@ public class ParserTest
     public void whereEqAndLess()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\" and num < 4");
+        final TestStatement stmt = testStatement("query type CompanyType where name == \"demo\" and num < 4");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(stmt.getTypes(), types, "No");
@@ -818,7 +818,7 @@ public class ParserTest
     public void whereSelectEqAndLess()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType where linkto[ContactLink].attribute[name] = \"demo\" and linkto[ContactLink].attribute[num] < 4");
+        final TestStatement stmt = testStatement("query type CompanyType where linkto[ContactLink].attribute[name] == \"demo\" and linkto[ContactLink].attribute[num] < 4");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(stmt.getTypes(), types, "No");
@@ -837,7 +837,7 @@ public class ParserTest
     public void whereEqAndLessAndEq()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\" and num < 4 and was = \"irgendwas\"");
+        final TestStatement stmt = testStatement("query type CompanyType where name == \"demo\" and num < 4 and was == \"irgendwas\"");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(stmt.getTypes(), types, "No");
@@ -856,7 +856,7 @@ public class ParserTest
     public void whereMultiWithSelect()
         throws ParseException
     {
-        final TestStatement stmt = testStatement("query type CompanyType where name = \"demo\" and num < 4 and was = \"irgendwas\" select attribute[Name], linkto[Otro].instance");
+        final TestStatement stmt = testStatement("query type CompanyType where name == \"demo\" and num < 4 and was == \"irgendwas\" select attribute[Name], linkto[Otro].instance");
         final List<String> types = new ArrayList<>();
         types.add("CompanyType");
         Assert.assertEquals(stmt.getTypes(), types, "No");
