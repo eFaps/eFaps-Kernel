@@ -518,7 +518,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
-            <version>2.1.6</version>
+            <version>2.2.11</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -637,12 +637,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         </dependency>
         <!-- connection Pooling, used as J2EE resource -->
         <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <version>1.4</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>2.0.1</version>
             <scope>test</scope>
         </dependency>
-
    </dependencies>
 </project>
 
