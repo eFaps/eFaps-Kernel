@@ -22,17 +22,23 @@ package org.efaps.util.cache;
 
 import java.util.AbstractMap;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.infinispan.AdvancedCache;
 import org.infinispan.Cache;
+import org.infinispan.commons.util.CloseableIterator;
+import org.infinispan.commons.util.CloseableIteratorCollection;
+import org.infinispan.commons.util.CloseableIteratorSet;
+import org.infinispan.commons.util.concurrent.NotifyingFuture;
 import org.infinispan.configuration.cache.Configuration;
+import org.infinispan.filter.KeyFilter;
 import org.infinispan.lifecycle.ComponentStatus;
 import org.infinispan.manager.EmbeddedCacheManager;
-import org.infinispan.notifications.KeyFilter;
-import org.infinispan.util.concurrent.NotifyingFuture;
+import org.infinispan.notifications.cachelistener.filter.CacheEventConverter;
+import org.infinispan.notifications.cachelistener.filter.CacheEventFilter;
 
 /**
  * A Cache that looks like a normal Cache but is not Operational at all.
@@ -43,7 +49,6 @@ import org.infinispan.util.concurrent.NotifyingFuture;
  * @param <K> Key
  * @param <V> Value
  */
-@SuppressWarnings("deprecation")
 public class NoOpCache<K, V>
     extends AbstractMap<K, V>
     implements Cache<K, V>
@@ -383,7 +388,7 @@ public class NoOpCache<K, V>
 
     @Override
     public void addListener(final Object _listener,
-                            final KeyFilter _filter)
+                            final KeyFilter<? super K> _filter)
     {
 
     }
@@ -444,8 +449,92 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public Set<java.util.Map.Entry<K, V>> entrySet()
+    public <C> void addListener(final Object _listener,
+                                final CacheEventFilter<? super K, ? super V> _filter,
+                                final CacheEventConverter<? super K, ? super V, C> _converter)
     {
-        return Collections.<java.util.Map.Entry<K, V>>emptySet();
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void putForExternalRead(final K _key,
+                                   final V _value,
+                                   final long _lifespan,
+                                   final TimeUnit _unit)
+    {
+    }
+
+    @Override
+    public void putForExternalRead(final K _key,
+                                   final V _value,
+                                   final long _lifespan,
+                                   final TimeUnit _lifespanUnit,
+                                   final long _maxIdle,
+                                   final TimeUnit _maxIdleUnit)
+    {
+    }
+
+    @Override
+    public CloseableIteratorSet<K> keySet()
+    {
+        return new DummySet<K>();
+    }
+
+    @Override
+    public CloseableIteratorCollection<V> values()
+    {
+        return new DummySet<V>();
+    }
+
+    @Override
+    public CloseableIteratorSet<java.util.Map.Entry<K, V>> entrySet()
+    {
+        return new DummySet<java.util.Map.Entry<K, V>>();
+    }
+
+    public static class DummySet<E>
+        extends HashSet<E>
+        implements CloseableIteratorSet<E>
+    {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public CloseableIterator<E> iterator()
+        {
+            return new DummyIterator<E>();
+        }
+    }
+
+    public static class DummyIterator<E>
+        implements CloseableIterator<E>
+    {
+
+        @Override
+        public boolean hasNext()
+        {
+            return false;
+        }
+
+        @Override
+        public E next()
+        {
+            return null;
+        }
+
+        @Override
+        public void remove()
+        {
+        }
+
+        @Override
+        public void close()
+        {
+        }
+
     }
 }
