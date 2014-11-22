@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2014 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ package org.efaps.bpm.transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
-import org.hibernate.service.jta.platform.internal.AbstractJtaPlatform;
-
+import org.hibernate.engine.transaction.jta.platform.internal.AbstractJtaPlatform;
 
 /**
  * Hibernate implementation for using JTA.

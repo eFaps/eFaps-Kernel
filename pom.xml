@@ -470,6 +470,12 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-query</artifactId>
             <version>7.0.2.Final</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hibernate-jpa-2.0-api</artifactId>
+                    <groupId>org.hibernate.javax.persistence</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- Used by infinispan to search
         <dependency>
@@ -484,21 +490,45 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-runtime-manager</artifactId>
             <version>6.2.0.CR2</version>
-        </dependency>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hibernate-jpa-2.0-api</artifactId>
+                    <groupId>org.hibernate.javax.persistence</groupId>
+                </exclusion>
+            </exclusions>
+       </dependency>
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-persistence-jpa</artifactId>
             <version>6.2.0.CR2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hibernate-jpa-2.0-api</artifactId>
+                    <groupId>org.hibernate.javax.persistence</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-kie-services</artifactId>
             <version>6.2.0.CR2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hibernate-jpa-2.0-api</artifactId>
+                    <groupId>org.hibernate.javax.persistence</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-human-task-jpa</artifactId>
             <version>6.2.0.CR2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hibernate-jpa-2.0-api</artifactId>
+                    <groupId>org.hibernate.javax.persistence</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jbpm</groupId>
@@ -528,19 +558,27 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.1.1.Final</version>
+            <version>4.3.7.Final</version>
         </dependency>
-        <dependency>
+          <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>4.3.2.Final</version>
+        </dependency>
+
+
+        <!--
+         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>4.1.1.Final</version>
         </dependency>
-        <dependency>
+          <dependency>
             <groupId>org.hibernate.common</groupId>
             <artifactId>hibernate-commons-annotations</artifactId>
             <version>4.0.5.Final</version>
         </dependency>
-        <!--
+
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-search-engine</artifactId>
@@ -558,11 +596,6 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <version>4.5.1.Final</version>
         </dependency>
         -->
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>4.3.1.Final</version>
-        </dependency>
 
         <!-- janino cannot be used due to compile errors with jBPM
         <dependency>

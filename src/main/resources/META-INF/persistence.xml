@@ -10,7 +10,7 @@
 
     <persistence-unit name="org.jbpm.persistence.jpa" transaction-type="JTA">
 
-        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <non-jta-data-source>java:/comp/env/eFaps/jdbc</non-jta-data-source>
 
         <mapping-file>META-INF/Taskorm.xml</mapping-file>
