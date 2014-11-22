@@ -23,8 +23,8 @@ package org.efaps.bpm.compiler;
 
 import java.util.Properties;
 
+import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
-import org.drools.compiler.compiler.PackageBuilder;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.kie.api.KieBaseConfiguration;
 import org.kie.internal.KnowledgeBase;
@@ -52,12 +52,11 @@ public class KnowledgeBuilder
     /**
      * @param _pkgBuilder package builder
      */
-    public KnowledgeBuilder(final PackageBuilder _pkgBuilder)
+    public KnowledgeBuilder(final KnowledgeBuilderConfigurationImpl _pkgBuilder)
     {
         super(_pkgBuilder);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public KnowledgeBase newKnowledgeBase()
     {

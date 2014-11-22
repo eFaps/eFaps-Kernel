@@ -62,8 +62,8 @@ public class LocalTaskServiceFactoryImpl
             ret = HumanTaskServiceFactory.newTaskServiceConfigurator()
                         .environment(this.runtimeEnvironment.getEnvironment())
                         .entityManagerFactory(emf)
-                        .listener(new JPATaskLifeCycleEventListener())
-                        .listener(new BAMTaskEventListener())
+                        .listener(new JPATaskLifeCycleEventListener(true))
+                        .listener(new BAMTaskEventListener(true))
                         .userGroupCallback(this.runtimeEnvironment.getUserGroupCallback())
                         .getTaskService();
         }

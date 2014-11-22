@@ -20,10 +20,14 @@
         <mapping-file>META-INF/TaskAuditorm.xml</mapping-file>
 
         <!-- Persistence for the Process Engine -->
-        <!--BAM for task service -->
-        <class>org.jbpm.services.task.impl.model.BAMTaskSummaryImpl</class>
         <!-- Event Classes -->
-        <class>org.jbpm.services.task.audit.TaskEventImpl</class>
+        <class>org.jbpm.services.task.audit.impl.model.TaskEventImpl</class>
+
+        <!-- Task Audit Classes -->
+        <class>org.jbpm.services.task.audit.impl.model.AuditTaskImpl</class>
+
+        <!--BAM for task service -->
+        <class>org.jbpm.services.task.audit.impl.model.BAMTaskSummaryImpl</class>
 
         <class>org.drools.persistence.info.SessionInfo</class>
         <class>org.jbpm.persistence.processinstance.ProcessInstanceInfo</class>
