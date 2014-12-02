@@ -423,22 +423,34 @@ public abstract class AbstractPrintQuery
     }
 
     /**
-     * Add a Phrase to this PrintQuery. A Phrase is something like:
-     * <code>"$&lt;attribute[LastName]&gt; - $&lt;attribute[FirstName]&gt;"</code>
-     * This would return " John - Doe". One Phrase can contain various selects
-     * as defined for {@link #addSelect(String...)} and string to connect them.
-     *
-     * @param _key key the phrase can be accessed
-     * @param _phraseStmt phrase to add
+     * @param _msgPhrase phrase to add
      * @throws EFapsException on error
      * @return this PrintQuery
      */
     public AbstractPrintQuery addMsgPhrase(final MsgPhrase... _msgPhrase)
         throws EFapsException
     {
+        return addMsgPhrase(null, _msgPhrase);
+    }
+
+    /**
+     * @param _msgPhrase phrase to add
+     * @throws EFapsException on error
+     * @return this PrintQuery
+     */
+    public AbstractPrintQuery addMsgPhrase(final SelectBuilder _selectBldr,
+                                           final MsgPhrase... _msgPhrase)
+        throws EFapsException
+    {
+        String baseSel;
+        if (_selectBldr == null) {
+            baseSel = "";
+        } else {
+            baseSel = _selectBldr.toString() + ".";
+        }
         for (final MsgPhrase phrase : _msgPhrase) {
             for (final String selectStmt : phrase.getArguments()) {
-               addSelect(selectStmt);
+                addSelect(baseSel + selectStmt);
             }
         }
         return this;
@@ -457,11 +469,18 @@ public abstract class AbstractPrintQuery
     public AbstractPrintQuery addMsgPhrase(final UUID... _msgPhrase)
         throws EFapsException
     {
+        return addMsgPhrase(null, _msgPhrase);
+    }
+
+    public AbstractPrintQuery addMsgPhrase(final SelectBuilder _selectBldr,
+                                           final UUID... _msgPhrase)
+        throws EFapsException
+    {
         final List<MsgPhrase> msgphrases = new ArrayList<>();
         for (final UUID phraseUUID : _msgPhrase) {
             msgphrases.add(MsgPhrase.get(phraseUUID));
         }
-        return addMsgPhrase(msgphrases.toArray(new MsgPhrase[msgphrases.size()]));
+        return addMsgPhrase(_selectBldr, msgphrases.toArray(new MsgPhrase[msgphrases.size()]));
     }
 
     /**
@@ -487,7 +506,21 @@ public abstract class AbstractPrintQuery
     public String getMsgPhrase(final UUID _msgPhrase)
         throws EFapsException
     {
-        return getMsgPhrase(MsgPhrase.get(_msgPhrase));
+        return getMsgPhrase(null, MsgPhrase.get(_msgPhrase));
+    }
+
+    /**
+     * Get the String representation of a phrase.
+     *
+     * @param _key key to the phrase
+     * @return String representation of the phrase
+     * @throws EFapsException on error
+     */
+    public String getMsgPhrase(final SelectBuilder _selectBldr,
+                               final UUID _msgPhrase)
+        throws EFapsException
+    {
+        return getMsgPhrase(_selectBldr, MsgPhrase.get(_msgPhrase));
     }
 
     /**
@@ -500,9 +533,29 @@ public abstract class AbstractPrintQuery
     public String getMsgPhrase(final MsgPhrase _msgPhrase)
         throws EFapsException
     {
+        return getMsgPhrase(null, _msgPhrase);
+    }
+
+    /**
+     * Get the String representation of a phrase.
+     *
+     * @param _key key to the phrase
+     * @return String representation of the phrase
+     * @throws EFapsException on error
+     */
+    public String getMsgPhrase(final SelectBuilder _selectBldr,
+                               final MsgPhrase _msgPhrase)
+        throws EFapsException
+    {
         final List<Object> objects = new ArrayList<>();
+        String baseSel;
+        if (_selectBldr == null) {
+            baseSel = "";
+        } else {
+            baseSel = _selectBldr.toString() + ".";
+        }
         for (final String select : _msgPhrase.getArguments()) {
-            objects.add(getSelect(select));
+            objects.add(getSelect(baseSel + select));
         }
         return _msgPhrase.format(objects.toArray());
     }

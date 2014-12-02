@@ -42,7 +42,6 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.MsgFormat;
 import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.CacheObjectInterface;
-import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.InfinispanCache;
 import org.infinispan.Cache;
 import org.slf4j.Logger;
@@ -114,10 +113,19 @@ public final class MsgPhrase
      */
     private final String name;
 
+    /**
+     * Labels.
+     */
     private final Set<Label> labels = new HashSet<>();
 
+    /**
+     * Arguments.
+     */
     private final Set<Argument> arguments = new HashSet<>();
 
+    /**
+     * Id fo the parent.
+     */
     private final Long parentId;
 
     /**
@@ -126,6 +134,7 @@ public final class MsgPhrase
      * @param _id id of the MsgPhrase
      * @param _uuid uuid of the MsgPhrase
      * @param _name name of the MsgPhrase
+     * @param _parentId if ot the parent
      */
     private MsgPhrase(final long _id,
                       final String _name,
@@ -166,7 +175,8 @@ public final class MsgPhrase
     }
 
     /**
-     *
+     * load the phrase.
+     * @throws EFapsException on error
      */
     private void load()
         throws EFapsException
@@ -199,12 +209,22 @@ public final class MsgPhrase
         }
     }
 
+    /**
+     * @return the label
+     * @throws EFapsException on error
+     */
     public String getLabel()
-        throws CacheReloadException, EFapsException
+        throws EFapsException
     {
         return getLabel(Context.getThreadContext().getLanguage(), Context.getThreadContext().getCompany());
     }
 
+    /**
+     * @param _language language
+     * @param _company  Comany
+     * @return the label
+     * @throws EFapsException on error
+     */
     public String getLabel(final String _language,
                            final Company _company)
         throws EFapsException
@@ -248,7 +268,8 @@ public final class MsgPhrase
     }
 
     /**
-     * @return
+     * @return list of arguments
+     * @throws EFapsException on error
      */
     public List<String> getArguments()
         throws EFapsException
@@ -256,8 +277,11 @@ public final class MsgPhrase
         return getArguments(Context.getThreadContext().getLanguage(), Context.getThreadContext().getCompany());
     }
 
-    /**
-     * @return
+     /**
+     * @param _language Language
+     * @param _company  Company
+     * @return list of arguments
+     * @throws EFapsException on error
      */
     public List<String> getArguments(final String _language,
                                      final Company _company)
@@ -327,6 +351,7 @@ public final class MsgPhrase
      * Getter method for the instance variable {@link #parentId}.
      *
      * @return value of instance variable {@link #parentId}
+     * @throws EFapsException on error
      */
     public MsgPhrase getParent()
         throws EFapsException
@@ -340,12 +365,24 @@ public final class MsgPhrase
         return ret;
     }
 
+    /**
+     * @param _object objects to be passed on to the Messageformatter
+     * @return formatted String
+     * @throws EFapsException on error
+     */
     public String format(final Object... _object)
-        throws CacheReloadException, EFapsException
+        throws EFapsException
     {
         return format(Context.getThreadContext().getLanguage(), Context.getThreadContext().getCompany(), _object);
     }
 
+    /**
+     * @param _language Language
+     * @param _company  Company
+     * @param _object objects to be passed on to the Messageformatter
+     * @return formatted String
+     * @throws EFapsException on error
+     */
     public String format(final String _language,
                          final Company _company,
                          final Object... _object)
@@ -472,7 +509,7 @@ public final class MsgPhrase
     }
 
     /**
-     * @param _sysConfig MsgPhrase to be cached
+     * @param _phrase MsgPhrase to be cached
      */
     private static void cacheMsgPhrase(final MsgPhrase _phrase)
     {
@@ -489,11 +526,11 @@ public final class MsgPhrase
         idCache.putIfAbsent(_phrase.getId(), _phrase);
     }
 
+
     /**
-     * @param _sql sql statement to be executed
-     * @param _criteria filter criteria
-     * @throws CacheReloadException on error
-     * @return false
+     * @param _criteria criteria to use
+     * @return true
+     * @throws EFapsException on error
      */
     private static boolean loadMsgPhrase(final Object _criteria)
         throws EFapsException
@@ -503,7 +540,7 @@ public final class MsgPhrase
         if (_criteria instanceof Long) {
             queryBldr.addWhereAttrEqValue(CIAdminCommon.MsgPhrase.ID, _criteria);
         } else if (_criteria instanceof UUID) {
-            queryBldr.addWhereAttrEqValue(CIAdminCommon.MsgPhrase.UUID, _criteria);
+            queryBldr.addWhereAttrEqValue(CIAdminCommon.MsgPhrase.UUID, _criteria.toString());
         } else {
             queryBldr.addWhereAttrEqValue(CIAdminCommon.MsgPhrase.Name, _criteria);
         }
@@ -525,13 +562,25 @@ public final class MsgPhrase
         return ret;
     }
 
+    /**
+     * Object class.
+     */
     public abstract static class AbstractConfig
     {
 
+        /**
+         * Id of the language.
+         */
         private long languageId = 0;
 
+        /**
+         * Id of the company.
+         */
         private long companyId = 0;
 
+        /**
+         * value.
+         */
         private String value;
 
         /**
@@ -598,6 +647,11 @@ public final class MsgPhrase
             this.value = _value;
         }
 
+        /**
+         * @param _languageId id of the language
+         * @param _companyId id for the company
+         * @return priority
+         */
         public int getPriority(final Long _languageId,
                                final Long _companyId)
         {
@@ -612,16 +666,25 @@ public final class MsgPhrase
         }
     }
 
+    /**
+     * Label object.
+     */
     public static class Label
         extends AbstractConfig
     {
 
     }
 
+    /**
+     * Argument Object.
+     */
     public static class Argument
         extends AbstractConfig
     {
 
+        /**
+         * Index.
+         */
         private int index = 0;
 
         /**
