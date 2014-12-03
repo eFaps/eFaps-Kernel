@@ -279,7 +279,7 @@ public final class BPM
     {
         final ProcessInstanceIdContext context = ProcessInstanceIdContext.get(_processInstanceId);
         final Mapper mapper = ((PerProcessInstanceRuntimeManager) BPM.PMANAGER).getMapper();
-        return mapper.findMapping(context) != null;
+        return mapper.findMapping(context, null) != null;
     }
 
     /**
@@ -686,8 +686,7 @@ public final class BPM
             final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext
                             .get(_processInstanceId));
             final InternalTaskService taskService = (InternalTaskService) runtimeEngine.getTaskService();
-            ret.addAll(taskService.getTasksByStatusByProcessInstanceIdByTaskName(_processInstanceId, _status, _taskName,
-                            "en-UK"));
+            ret.addAll(taskService.getTasksByStatusByProcessInstanceIdByTaskName(_processInstanceId, _status, _taskName));
         }
         return ret;
     }
@@ -829,6 +828,7 @@ public final class BPM
          *
          * @see     java.lang.Thread#run()
          */
+        @Override
         public void run()
         {
             try {

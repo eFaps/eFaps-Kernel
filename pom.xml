@@ -684,4 +684,3 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         </dependency>
    </dependencies>
 </project>
-

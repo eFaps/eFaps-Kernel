@@ -21,15 +21,13 @@
 
 package org.efaps.bpm.task;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.kie.api.task.model.Status;
 import org.kie.api.task.model.TaskSummary;
+import org.kie.internal.query.ParametrizedQuery;
 import org.kie.internal.task.api.InternalTaskService;
-import org.kie.internal.task.api.TaskQueryService;
+import org.kie.internal.task.query.TaskQueryBuilder;
 
 
 /**
@@ -59,9 +57,10 @@ public class TaskAdminstration
      */
     public List<TaskSummary> getReadyTasks()
     {
-        final Map<String, List<?>> params = new HashMap<String, List<?>>();
-        params.put(TaskQueryService.STATUS_LIST, Arrays.asList(Status.Ready));
-        return this.taskService.getTasksByVariousFields(params, true);
+        final TaskQueryBuilder queryBldr = this.taskService.taskQuery("Administrator");
+        queryBldr.status(Status.Ready);
+        final ParametrizedQuery<TaskSummary> paraQuery = queryBldr.buildQuery();
+        return paraQuery.getResultList() ;
     }
 
     /**
@@ -69,9 +68,10 @@ public class TaskAdminstration
      */
     public List<TaskSummary> getReservedTasks()
     {
-        final Map<String, List<?>> params = new HashMap<String, List<?>>();
-        params.put(TaskQueryService.STATUS_LIST, Arrays.asList(Status.Reserved));
-        return this.taskService.getTasksByVariousFields(params, true);
+        final TaskQueryBuilder queryBldr = this.taskService.taskQuery("Administrator");
+        queryBldr.status(Status.Reserved);
+        final ParametrizedQuery<TaskSummary> paraQuery = queryBldr.buildQuery();
+        return paraQuery.getResultList() ;
     }
 
     /**
@@ -79,9 +79,10 @@ public class TaskAdminstration
      */
     public List<TaskSummary> getErrorTasks()
     {
-        final Map<String, List<?>> params = new HashMap<String, List<?>>();
-        params.put(TaskQueryService.STATUS_LIST, Arrays.asList(Status.Error));
-        return this.taskService.getTasksByVariousFields(params, true);
+        final TaskQueryBuilder queryBldr = this.taskService.taskQuery("Administrator");
+        queryBldr.status(Status.Error);
+        final ParametrizedQuery<TaskSummary> paraQuery = queryBldr.buildQuery();
+        return paraQuery.getResultList() ;
     }
 
     /**
@@ -89,9 +90,10 @@ public class TaskAdminstration
      */
     public List<TaskSummary> getExitedTasks()
     {
-        final Map<String, List<?>> params = new HashMap<String, List<?>>();
-        params.put(TaskQueryService.STATUS_LIST, Arrays.asList(Status.Exited));
-        return this.taskService.getTasksByVariousFields(params, true);
+        final TaskQueryBuilder queryBldr = this.taskService.taskQuery("Administrator");
+        queryBldr.status(Status.Exited);
+        final ParametrizedQuery<TaskSummary> paraQuery = queryBldr.buildQuery();
+        return paraQuery.getResultList() ;
     }
 
     /**
@@ -99,7 +101,10 @@ public class TaskAdminstration
      */
     public List<TaskSummary> getActiveTasks()
     {
-        return this.taskService.getActiveTasks();
+        final TaskQueryBuilder queryBldr = this.taskService.taskQuery("Administrator");
+        queryBldr.status(Status.InProgress);
+        final ParametrizedQuery<TaskSummary> paraQuery = queryBldr.buildQuery();
+        return paraQuery.getResultList() ;
     }
 
     /**
@@ -107,6 +112,9 @@ public class TaskAdminstration
      */
     public List<TaskSummary> getCompletedTasks()
     {
-        return this.taskService.getCompletedTasks();
+        final TaskQueryBuilder queryBldr = this.taskService.taskQuery("Administrator");
+        queryBldr.status(Status.Completed);
+        final ParametrizedQuery<TaskSummary> paraQuery = queryBldr.buildQuery();
+        return paraQuery.getResultList() ;
     }
 }
