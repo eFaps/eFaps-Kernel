@@ -198,7 +198,7 @@ public final class BPM
             properties.put(AvailableSettings.FORMAT_SQL, "true");
             properties.put(AvailableSettings.RELEASE_CONNECTIONS, "after_transaction");
             properties.put(AvailableSettings.CONNECTION_PROVIDER, ConnectionProvider.class.getName());
-            properties.put(org.hibernate.ejb.AvailableSettings.NAMING_STRATEGY, NamingStrategy.class.getName());
+            properties.put(org.hibernate.jpa.AvailableSettings.NAMING_STRATEGY, NamingStrategy.class.getName());
 
             final EntityManagerFactory emf = Persistence
                             .createEntityManagerFactory("org.jbpm.persistence.jpa", properties);
