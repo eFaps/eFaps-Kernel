@@ -20,16 +20,20 @@
 
 package org.efaps.admin.program.esjp;
 
-import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
+import org.apache.commons.io.FileUtils;
+import org.efaps.admin.AppConfigHandler;
 import org.efaps.ci.CIAdminProgram;
 import org.efaps.ci.CIType;
 import org.efaps.db.Checkout;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +57,11 @@ public final class EFapsClassLoader
      * Logger for this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(EFapsClassLoader.class);
+
+    /**
+     * Temporary folder.
+     */
+    private static File TMPFOLDER;
 
     /**
      * Type instance of compile EJSP program.
@@ -105,16 +114,27 @@ public final class EFapsClassLoader
     /**
      * In case of jbpm this is necessary for compiling,
      * because they search the classes with URL.
-     * @see java.lang.ClassLoader#getResourceAsStream(java.lang.String)
      * @param _name filename as url
-     * @return inputstream with resource if found
+     * @return URL if found
      */
     @Override
-    public InputStream getResourceAsStream(final String _name)
+    public URL findResource(final String _name)
     {
+        URL ret = null;
         final String name = _name.replaceAll(System.getProperty("file.separator"), ".").replaceAll(".class", "");
         final byte[] data = loadClassData(name);
-        return data == null ? null : new ByteArrayInputStream(data);
+        if (data != null && data.length > 0) {
+            final File file = FileUtils.getFile(EFapsClassLoader.getTempFolder(), name);
+            try {
+                if (!file.exists() || FileUtils.isFileOlder(file, new DateTime().minusHours(1).toDate())) {
+                    FileUtils.writeByteArrayToFile(file, data);
+                }
+                ret = file.toURI().toURL();
+            } catch (final IOException e) {
+                LOG.error("Could not geneate File for reading from URL: {}", name);
+            }
+        }
+        return ret;
     }
 
     /**
@@ -162,6 +182,34 @@ public final class EFapsClassLoader
             EFapsClassLoader.LOG.error("could not read the Javaclass '{}'", e, _resourceName);
         }
         return ret;
+    }
+
+    /**
+     * @return the tmpfolder
+     */
+    private static File getTempFolder()
+    {
+        if (EFapsClassLoader.TMPFOLDER == null || !EFapsClassLoader.TMPFOLDER.exists()) {
+            File tmpfld = AppConfigHandler.get().getTempFolder();
+            if (tmpfld == null) {
+                File temp;
+                try {
+                    temp = File.createTempFile("eFaps", ".tmp");
+                    tmpfld = temp.getParentFile();
+                    temp.delete();
+                } catch (final IOException e) {
+                    LOG.error("Cannot create temp file", e);
+                }
+            }
+            EFapsClassLoader.TMPFOLDER = new File(tmpfld, "eFaps-ClassFiles");
+            if (!EFapsClassLoader.TMPFOLDER.exists()) {
+                final boolean mkdir = EFapsClassLoader.TMPFOLDER.mkdir();
+                if (!mkdir) {
+                    LOG.error("Temp folder was not created");
+                }
+            }
+        }
+        return EFapsClassLoader.TMPFOLDER;
     }
 
     /**
