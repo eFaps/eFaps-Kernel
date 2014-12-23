@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
@@ -143,8 +144,8 @@ public abstract class AbstractAdminObject
                                   final String _name)
     {
         this.id = _id;
-        this.uuid = (_uuid == null || _uuid.trim().isEmpty()) ? null : UUID.fromString(_uuid.trim());
-        this.name = (_name == null) ? null : _name.trim();
+        this.uuid = _uuid == null || _uuid.trim().isEmpty() ? null : UUID.fromString(_uuid.trim());
+        this.name = _name == null ? null : _name.trim();
     }
 
     /**
@@ -192,6 +193,14 @@ public abstract class AbstractAdminObject
     public String getProperty(final String _name)
     {
         return getProperties().get(_name);
+    }
+
+    /**
+     * @return unmodifiable map of properties
+     */
+    public Map<String, String> getPropertyMap()
+    {
+        return MapUtils.unmodifiableMap(getProperties());
     }
 
     /**
@@ -289,7 +298,7 @@ public abstract class AbstractAdminObject
             if (_args != null) {
                 // add all parameters
                 for (int i = 0; i < _args.length; i += 2) {
-                    if (((i + 1) < _args.length) && (_args[i] instanceof ParameterValues)) {
+                    if (i + 1 < _args.length && _args[i] instanceof ParameterValues) {
                         param.put((ParameterValues) _args[i], _args[i + 1]);
                     }
                 }
@@ -447,6 +456,7 @@ public abstract class AbstractAdminObject
      * @return value of instance variable {@id}
      * @see #id
      */
+    @Override
     public long getId()
     {
         return this.id;
@@ -458,6 +468,7 @@ public abstract class AbstractAdminObject
      * @return value of instance variable {@uuid}
      * @see #uuid
      */
+    @Override
     public UUID getUUID()
     {
         return this.uuid;
@@ -470,6 +481,7 @@ public abstract class AbstractAdminObject
      * @see #name
      * @see #setName
      */
+    @Override
     public String getName()
     {
         return this.name;
