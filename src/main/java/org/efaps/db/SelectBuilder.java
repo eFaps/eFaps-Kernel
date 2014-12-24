@@ -66,6 +66,14 @@ public class SelectBuilder
         this.bldr.append(_selectBuilder.toString());
     }
 
+    /**
+     * Constructor setting a string as bases for this SelectBuilder.
+     * @param _selectBuilder SelectBuilder to be used
+     */
+    public SelectBuilder(final String _select)
+    {
+        this.bldr.append(_select);
+    }
 
     /**
      * @param _attribute attribute to linkto

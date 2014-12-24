@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.ui.AbstractCollection;
@@ -251,11 +252,15 @@ public class Field
      */
     private UUID collectionUUID;
 
-
     /**
      * Stores the classification for this field.
      */
     private String classificationName;
+
+    /**
+     * MessagePhrase String.
+     */
+    private String msgPhrase;
 
     /**
      * This is the constructor of the field class.
@@ -578,6 +583,25 @@ public class Field
     }
 
     /**
+     * @return the messagephrase for this field
+     * @throws EFapsException on error
+     */
+    public MsgPhrase getMsgPhrase()
+        throws EFapsException
+    {
+        MsgPhrase ret;
+        if (this.msgPhrase == null) {
+            ret = null;
+        } else if (this.msgPhrase
+                        .matches("[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}")) {
+            ret = MsgPhrase.get(UUID.fromString(this.msgPhrase));
+        } else {
+            ret = MsgPhrase.get(this.msgPhrase);
+        }
+        return ret;
+    }
+
+    /**
      * Getter method for the instance variable {@link #filter}.
      *
      * @return value of instance variable {@link #filter}
@@ -883,6 +907,8 @@ public class Field
             this.attribute = _value;
         } else if ("Phrase".equals(_name)) {
             this.phrase = _value;
+        } else if ("MsgPhrase".equals(_name)) {
+            this.msgPhrase = _value;
         } else if ("Width".equals(_name)) {
             setWidth(_value);
         } else if ("SortAble".equals(_name)) {
