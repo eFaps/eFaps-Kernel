@@ -554,10 +554,13 @@ public abstract class AbstractPrintQuery
         } else {
             baseSel = _selectBldr.toString() + ".";
         }
+        boolean isNotNull = true;
         for (final String select : _msgPhrase.getArguments()) {
-            objects.add(getSelect(baseSel + select));
+            final Object tmpObj = getSelect(baseSel + select);
+            isNotNull = isNotNull && tmpObj != null;
+            objects.add(tmpObj);
         }
-        return _msgPhrase.format(objects.toArray());
+        return isNotNull ? _msgPhrase.format(objects.toArray()) : null;
     }
 
     /**
