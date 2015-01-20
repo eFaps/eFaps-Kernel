@@ -272,16 +272,6 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         </dependency>
 
         <!--
-            Commons codec is used to decode/encode the passwords in the
-            database
-        -->
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.10</version>
-        </dependency>
-
-        <!--
             File system used for checkin / checkout on external resources. The
             commons logging must be excluded because eFaps uses slf4j logger.
             http://commons.apache.org/vfs/
@@ -378,7 +368,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.10.1</version>
+            <version>3.11</version>
         </dependency>
         <!-- used to read the jrxml definitions used by jasper -->
         <dependency>
@@ -489,7 +479,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
        <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-runtime-manager</artifactId>
-            <version>6.2.0.CR2</version>
+            <version>6.2.0.CR4</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hibernate-jpa-2.0-api</artifactId>
@@ -500,7 +490,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-persistence-jpa</artifactId>
-            <version>6.2.0.CR2</version>
+            <version>6.2.0.CR4</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hibernate-jpa-2.0-api</artifactId>
@@ -511,7 +501,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-kie-services</artifactId>
-            <version>6.2.0.CR2</version>
+            <version>6.2.0.CR4</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hibernate-jpa-2.0-api</artifactId>
@@ -522,7 +512,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-human-task-jpa</artifactId>
-            <version>6.2.0.CR2</version>
+            <version>6.2.0.CR4</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hibernate-jpa-2.0-api</artifactId>
@@ -533,7 +523,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-executor</artifactId>
-            <version>6.2.0.CR2</version>
+            <version>6.2.0.CR4</version>
              <exclusions>
                 <!-- use the lucene wich comes with infinispan-->
                 <exclusion>
@@ -558,7 +548,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.3.7.Final</version>
+            <version>4.3.8.Final</version>
         </dependency>
           <dependency>
             <groupId>org.hibernate</groupId>
