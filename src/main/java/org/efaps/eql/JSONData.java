@@ -21,14 +21,17 @@
 package org.efaps.eql;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.efaps.admin.datamodel.IBitEnum;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.json.data.AbstractValue;
+import org.efaps.json.data.BooleanValue;
 import org.efaps.json.data.DataList;
 import org.efaps.json.data.DateTimeValue;
 import org.efaps.json.data.DecimalValue;
@@ -115,12 +118,20 @@ public class JSONData
             ret = new DateTimeValue().setValue((DateTime) _object);
         } else if (_object instanceof UUID) {
             ret = new UUIDValue().setValue((UUID) _object);
+        } else if (_object instanceof Boolean) {
+            ret = new BooleanValue().setValue((Boolean) _object);
         } else if (_object instanceof List) {
             final List<?> list = (List<?>) _object;
             if (!list.isEmpty()) {
                 final Object inner = list.get(0);
                 if (inner instanceof String) {
                     ret = new StringListValue().setValue((List<String>) list);
+                } else if (inner instanceof IBitEnum) {
+                    final List<String> tmpList = new ArrayList<>();
+                    for (final Object obj  : list) {
+                        tmpList.add(obj.toString());
+                    }
+                    ret = new StringListValue().setValue(tmpList);
                 }
             }
         } else if (_object != null) {
