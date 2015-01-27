@@ -157,11 +157,13 @@ public final class BPM
                         ? config.getAttributeValueAsBoolean(KernelSettings.ACTIVATE_BPM) : false;
         if (active) {
 
-            if (BPM.SMANAGER != null) {
-                BPM.SMANAGER.close();
-            }
             if (BPM.PMANAGER != null) {
                 BPM.PMANAGER.close();
+                BPM.PMANAGER = null;
+            }
+            if (BPM.SMANAGER != null) {
+                BPM.SMANAGER.close();
+                BPM.SMANAGER = null;
             }
 
             UserTransaction userTrans = null;
@@ -208,7 +210,8 @@ public final class BPM
                             .userGroupCallback(new UserGroupCallbackImpl())
                             .entityManagerFactory(emf)
                             .registerableItemsFactory(itemsFactory)
-                            .persistence(true);
+                            .persistence(true)
+                            .addEnvironmentEntry("TRANSACTION_LOCK_ENABLED", "false");
 
             BPM.add2EnvironmentBuilder(builder);
 
