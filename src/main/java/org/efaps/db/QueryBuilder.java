@@ -925,6 +925,24 @@ public class QueryBuilder
     }
 
     /**
+     * Get the constructed query.
+     * @return the query
+     */
+    public CachedInstanceQuery getCachedQuery4Request()
+    {
+        if (this.query == null) {
+            try {
+                this.query = CachedInstanceQuery.get4Request(this.typeUUID);
+                this.query.setIncludeChildTypes(isIncludeChildTypes());
+                prepareQuery();
+            } catch (final EFapsException e) {
+                QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
+            }
+        }
+        return (CachedInstanceQuery) this.query;
+    }
+
+    /**
      * Method to get an Attribute Query.
      * @param _attribute attribute the value is wanted for,
      *        if null the id attribute will be used automatically
@@ -1035,6 +1053,17 @@ public class QueryBuilder
         throws EFapsException
     {
         return new CachedMultiPrintQuery(getCachedQuery(_key).execute(), _key);
+    }
+
+    /**
+     * Method to get a CachedMultiPrintQuery.
+     * @return MultiPrintQuery based on the InstanceQuery
+     * @throws EFapsException on error
+     */
+    public CachedMultiPrintQuery getCachedPrint4Request()
+        throws EFapsException
+    {
+        return CachedMultiPrintQuery.get4Request(getCachedQuery4Request().execute());
     }
 
     /**
