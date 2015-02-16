@@ -53,7 +53,7 @@ public abstract class AbstractWithUoMType
         for (final Object object : _objectList) {
             final Object[] temp = (Object[]) object;
             final Object value = readValue(temp[0]);
-            final UoM uom = Dimension.getUoM((Long) temp[1]);
+            final UoM uom = temp[1] == null ? _attribute.getDimension().getBaseUoM() : Dimension.getUoM((Long) temp[1]);
             if (temp.length > 2) {
                 final Object obj = temp[2];
                 double dbl = 0;
@@ -68,7 +68,7 @@ public abstract class AbstractWithUoMType
             }
 
         }
-        return _objectList.size() > 0 ? (ret.size() > 1 ? ret : ret.get(0)) : null;
+        return _objectList.size() > 0 ? ret.size() > 1 ? ret : ret.get(0) : null;
     }
 
     /**
