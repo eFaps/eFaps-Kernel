@@ -63,10 +63,10 @@ public class DecimalWithUoMType
         }
 
         final DecimalWithUoM value = eval(_values);
-        _insertUpdate.column(_attribute.getSqlColNames().get(0), value.getValue());
-        _insertUpdate.column(_attribute.getSqlColNames().get(1), value.getUoM().getId());
+        _insertUpdate.column(_attribute.getSqlColNames().get(0), value == null ? null : value.getValue());
+        _insertUpdate.column(_attribute.getSqlColNames().get(1), value == null ? null : value.getUoM().getId());
         if (_attribute.getSqlColNames().size() == 3) {
-            _insertUpdate.column(_attribute.getSqlColNames().get(2), value.getBaseDouble());
+            _insertUpdate.column(_attribute.getSqlColNames().get(2), value == null ? null : value.getBaseDouble());
         }
     }
 
@@ -83,11 +83,11 @@ public class DecimalWithUoMType
     {
         final DecimalWithUoM ret;
 
-        if ((_values == null) || (_values.length < 2))  {
+        if (_values == null || _values.length < 2)  {
             ret = null;
         } else  {
             final BigDecimal value;
-            if ((_values[0] instanceof String) && (((String) _values[0]).length() > 0)) {
+            if (_values[0] instanceof String && ((String) _values[0]).length() > 0) {
                 try {
                     value = DecimalType.parseLocalized((String) _values[0]);
                 } catch (final EFapsException e) {
@@ -104,7 +104,7 @@ public class DecimalWithUoMType
             final UoM uom;
             if (_values[1] instanceof UoM) {
                 uom = (UoM) _values[1];
-            } else if ((_values[1] instanceof String) && (((String) _values[1]).length() > 0)) {
+            } else if (_values[1] instanceof String && ((String) _values[1]).length() > 0) {
                 uom = Dimension.getUoM(Long.parseLong((String) _values[1]));
             } else if (_values[1] instanceof Number) {
                 uom = Dimension.getUoM(((Number) _values[1]).longValue());
