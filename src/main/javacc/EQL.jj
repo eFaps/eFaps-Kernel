@@ -26,7 +26,8 @@ public class EQLParser{
 |   < PRINT : "print" > : PRINT_STATE
 |   < EXEC  : "exec" ("ute")? > : EXEC_STATE
 |   < WHERE : "where" > : WHERE_STATE
-|   < SELECT : "select" > : SELECT_STATE}/************ query */< QUERY_STATE >SKIP :{    " "|   "\r"|   "\t"|   "\n"}< QUERY_STATE >TOKEN :{        < TYPE : "type" > : TYPE_STATE
+|   < SELECT : "select" > : SELECT_STATE
+|   < ORDER : "order" > : ORDER_STATE}/************ query */< QUERY_STATE >SKIP :{    " "|   "\r"|   "\t"|   "\n"}< QUERY_STATE >TOKEN :{        < TYPE : "type" > : TYPE_STATE
 }/************ type */< TYPE_STATE >SKIP :{    " "|   "\r"|   "\t"|   "\n"}< TYPE_STATE >TOKEN :{        < ENDTYPE : "select" > : SELECT_STATE
     |   < ENDTYPE2 : "where" > : WHERE_STATE
     |   < NAME : ([ "a"-"z", "A"-"Z", "_", "0"-"9" ])+ >
@@ -100,7 +101,10 @@ TOKEN :
 /************ select */
 < SELECT_STATE >SKIP :{    " "|   "\r"|   "\t"|   "\n"}
 
-< SELECT_STATE >TOKEN :{    < AS : "as" >|   < SEPSELECT : "," >|   < ALIAS : ([ "a"-"z", "A"-"Z" ])+ >|   < ONESEL :        (            (< SELSTMT >)+            (                < SELKARETOPEN >                (                    < SELSTRING >                |   < SELSTMT >                |   < SELDIGIT >                |   ","                )+                < SELKARETCLOSE >            )*            (< SELSTMT >)*        )* >
+< SELECT_STATE >TOKEN :{
+    < ENDSELECT : "order" > : ORDER_STATE|   < AS : "as" >|   < SEPSELECT : "," >|   < ALIAS : ([ "a"-"z", "A"-"Z" ])+ >|   < ONESEL :        (            (< SELSTMT >)+            (                < SELKARETOPEN >                (                    < SELSTRING >                |   < SELSTMT >                |   < SELDIGIT >                |   ","                )+                < SELKARETCLOSE >            )*
+            (< SELSTMT >)*
+        )* >
 |   < #SELSTRING :        (            < SELAPOSTROPHE >            (                < SELCHAR >            |   " "            )+            < SELAPOSTROPHE >        ) >|   < #SELAPOSTROPHE : "\"" >
 |   < #SELKARETOPEN: "[" >
 |   < #SELKARETCLOSE: "]" >|   < #SELCHAR : (~[ "\"" ])+ >
@@ -112,6 +116,29 @@ TOKEN :
             "\u1040"-"\u1049", "\u1369"-"\u1371", "\u17e0"-"\u17e9", "\u1810"-"\u1819", "\u1946"-"\u194f",
             "\uff10"-"\uff19"] >
 }
+
+/************ order by */
+< ORDER_STATE >
+SKIP :
+{
+    " "
+|   "\r"
+|   "\t"
+|   "\n"
+|   "by"
+}
+
+< ORDER_STATE >
+TOKEN :
+{
+    < ASC : "asc">
+|   < DESC : "desc" >
+|   < SEPORDER : "," >
+|   < NUM : (["0"-"9" ])+ >
+|   < OKEY : ([ "a"-"z", "A"-"Z" ])+ >
+}
+
+
 
 
 /************ esjp for query */
@@ -146,7 +173,14 @@ TOKEN :{    < ENDWHERE : "select" > : SELECT_STATE|   < AND : "and" >|   < I
 }
 /**
  *
- */void parseStatement(final IStatement _statement) :{    Token name, alias, oid, esjp;}{    (        < QUERY >        {            _statement.setStmtType(StmtType.QUERY);        }        (            < TYPE >            (                name = < NAME >                {                    _statement.addType(name.image);                }            |   < ENDTYPE >            |   < ENDTYPE2 >            |   < SEPTYPE >            |   < ENDWHERE >            |   whereRule(_statement)            |   < AND >            |   selectRule(_statement)            )*        )    |   < PRINT >        {            _statement.setStmtType(StmtType.PRINT);        }        (            oid = < OID >            {                _statement.setObject(oid.image);            }        |   < ENDPRINT >        |   selectRule(_statement)        )*    |   < SELECT >        (            selectRule(_statement)        )*    |   < EXEC >        {            _statement.setStmtType(StmtType.ESJP);        }        (            execRule(_statement)        )    )}
+ */void parseStatement(final IStatement _statement) :{    Token name, alias, oid, esjp;}{    (        < QUERY >        {            _statement.setStmtType(StmtType.QUERY);        }        (            < TYPE >            (                name = < NAME >                {                    _statement.addType(name.image);                }            |   < ENDTYPE >            |   < ENDTYPE2 >            |   < SEPTYPE >            |   < ENDWHERE >            |   whereRule(_statement)            |   < AND >            |   selectRule(_statement)            )*        )    |   < PRINT >        {            _statement.setStmtType(StmtType.PRINT);        }        (            oid = < OID >            {                _statement.setObject(oid.image);            }        |   < ENDPRINT >        |   selectRule(_statement)        )*    |   < SELECT >        (            selectRule(_statement)
+        |   orderRule(_statement)
+        )*
+    |   < ORDER >
+        (
+            orderRule(_statement)
+        )*
+    |   < EXEC >        {            _statement.setStmtType(StmtType.ESJP);        }        (            execRule(_statement)        )    )}
 
 
 private void execRule(final IStatement _statement) :{    Token esjp;}{    LOOKAHEAD(2)    esjp = < CLASSNAME > < EOF >    {        _statement.setEsjp(esjp.image);    }|    esjp = < CLASSNAME >    {        _statement.setEsjp(esjp.image);    }    (        parameterRule(_statement)    |   < ENDEXEC >        (            mappingRule(_statement)        )*
@@ -233,10 +267,27 @@ private void whereSelEqRule(final IStatement _statement, final Token _select) :
 }
 
 
-private void selectRule(final IStatement _statement) :{    Token onesel, clazz;}{    onesel = < ONESEL >    (        selectWithAliasRule(_statement, onesel)    |   selectsRule(_statement, onesel)    |   lastSelectRule(_statement, onesel)    )}
+private void selectRule(final IStatement _statement) :{    Token onesel, clazz;}{    onesel = < ONESEL >    (        selectWithAliasRule(_statement, onesel)    |   selectsRule(_statement, onesel)    |   lastSelectRule(_statement, onesel)
+    )
+|  < ENDSELECT>
+    (
+        orderRule(_statement)
+    )
+}
 
 
 
 
-private void selectWithAliasRule(final IStatement _statement, final Token _onesel) :{    Token alias;}{    LOOKAHEAD(3)    < AS > alias = < ALIAS > < SEPSELECT >    {        _statement.addSelect(_onesel.image, alias.image);    }|   < AS > alias = < ALIAS >    {        _statement.addSelect(_onesel.image, alias.image);    }}private void selectsRule(final IStatement _statement, final Token _onesel) :{}{    < SEPSELECT >    {        _statement.addSelect(_onesel.image);    }}private void lastSelectRule(final IStatement _statement, final Token _onesel) :{}{    < EOF >    {        _statement.addSelect(_onesel.image);    }}
+private void selectWithAliasRule(final IStatement _statement, final Token _onesel) :{    Token alias;}{    LOOKAHEAD(3)    < AS > alias = < ALIAS > < SEPSELECT >    {        _statement.addSelect(_onesel.image, alias.image);    }|   < AS > alias = < ALIAS >    {        _statement.addSelect(_onesel.image, alias.image);    }}private void selectsRule(final IStatement _statement, final Token _onesel) :{}{    < SEPSELECT >    {        _statement.addSelect(_onesel.image);    }}private void lastSelectRule(final IStatement _statement, final Token _onesel) :{}{    < EOF >    {        _statement.addSelect(_onesel.image);    }
+|   < ENDSELECT >
+    (
+        orderRule(_statement)    )
+    {
+        _statement.addSelect(_onesel.image);
+    }
+}
 
+private void orderRule(final IStatement _statement) :{    Token key;}{    key = < NUM >    (
+        orderSubRule(_statement, key)    )|   key = < OKEY >    (        orderSubRule(_statement, key)    )}
+
+private void orderSubRule(final IStatement _statement, final Token _key) :{}{    (        LOOKAHEAD(2)        < ASC > < SEPORDER >        {            _statement.addOrderBy(_key.image, true);        }        orderRule(_statement)    |   < ASC >        {            _statement.addOrderBy(_key.image, true);        }    )|    (        LOOKAHEAD(2)        < DESC > < SEPORDER >        {            _statement.addOrderBy(_key.image, false);        }    |   < DESC >        {            _statement.addOrderBy(_key.image, false);        }    )|   < EOF >    {        _statement.addOrderBy(_key.image, true);    }|   < SEPORDER >    {        _statement.addOrderBy(_key.image, true);    }    orderRule(_statement)}

@@ -141,4 +141,10 @@ public interface IStatement
      * @param _parameter parameter to be added to the Statement
      */
     public void addParameter(final String _parameter);
+
+    /**
+     * @param _parameter parameter to be added to the Statement
+     */
+    public void addOrderBy(final String _para, boolean _asc);
+
 }

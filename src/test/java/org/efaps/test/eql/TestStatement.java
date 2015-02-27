@@ -62,6 +62,8 @@ public class TestStatement
 
     private final Map<String, String> select2whereLess = new HashMap<>();
 
+    private final Map<String, Boolean> order2ascdesc = new HashMap<>();
+
     private String object;
 
     private String esjp;
@@ -364,5 +366,22 @@ public class TestStatement
     public Map<String, String> getSelect2whereLess()
     {
         return this.select2whereLess;
+    }
+
+    @Override
+    public void addOrderBy(final String _para,
+                           final boolean _asc)
+    {
+        this.order2ascdesc.put(_para, _asc);
+    }
+
+    /**
+     * Getter method for the instance variable {@link #order2ascdesc}.
+     *
+     * @return value of instance variable {@link #order2ascdesc}
+     */
+    public Map<String, Boolean> getOrder2ascdesc()
+    {
+        return this.order2ascdesc;
     }
 }

@@ -22,11 +22,16 @@ package org.efaps.eql;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.apache.commons.collections4.comparators.ComparatorChain;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.IBitEnum;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.MultiPrintQuery;
@@ -36,6 +41,7 @@ import org.efaps.json.data.DataList;
 import org.efaps.json.data.DateTimeValue;
 import org.efaps.json.data.DecimalValue;
 import org.efaps.json.data.LongValue;
+import org.efaps.json.data.NullValue;
 import org.efaps.json.data.ObjectData;
 import org.efaps.json.data.StringListValue;
 import org.efaps.json.data.StringValue;
@@ -95,6 +101,26 @@ public class JSONData
                 ret.add(data);
             }
         }
+        final Map<String, Boolean> sortMap = _statement.getSortKey2ascDesc();
+        if (!sortMap.isEmpty()) {
+            final ComparatorChain<ObjectData> comparator = new ComparatorChain<>();
+            for (final Entry<String, Boolean> entry : sortMap.entrySet()) {
+                AbstractValue<?> sortVal = null;
+                if (StringUtils.isNumeric(entry.getKey())) {
+                    final int idx = Integer.parseInt(entry.getKey());
+                    sortVal = ret.get(0).getValues().get(idx -1);
+                } else {
+                    for (final AbstractValue<?> val : ret.get(0).getValues()) {
+                        if (val.getKey().equals(entry.getKey())) {
+                            sortVal = val;
+                            break;
+                        }
+                    }
+                }
+                comparator.addComparator(new ObjectDataComparator(sortVal, entry.getValue()));
+            }
+            Collections.sort(ret, comparator);
+        }
         return ret;
     }
 
@@ -136,10 +162,80 @@ public class JSONData
             }
         } else if (_object != null) {
             ret = new StringValue().setValue(_object.toString());
+        } else {
+            ret = new NullValue();
         }
         if (ret != null) {
             ret.setKey(_key);
         }
         return ret;
+    }
+
+
+    public static class ObjectDataComparator
+        implements Comparator<ObjectData>
+    {
+
+        private final AbstractValue<?> sortVal;
+        private final boolean asc;
+
+        /**
+         * @param _sortVal
+         */
+        public ObjectDataComparator(final AbstractValue<?> _sortVal,
+                                    final boolean _asc)
+        {
+            this.sortVal = _sortVal;
+            this.asc = _asc;
+        }
+
+        @Override
+        public int compare(final ObjectData _o1,
+                           final ObjectData _o2)
+        {
+            int ret = 0;
+            final Object data1 = isAsc() ? getValue(_o1) : getValue(_o2);
+            final Object data2 = isAsc() ? getValue(_o2) : getValue(_o1);
+            if (data1 == null && data2 != null && data2 instanceof Comparable
+                            || data2 == null && data1 != null && data1 instanceof Comparable
+                            || data1 != null && data1 instanceof Comparable && data2 != null
+                            && data2 instanceof Comparable) {
+                ret = ObjectUtils.compare((Comparable) data1, (Comparable) data2);
+            }
+            return ret;
+        }
+
+        protected Object getValue(final ObjectData _data)
+        {
+            Object ret = null;
+            for (final AbstractValue<?> val : _data.getValues()) {
+                if (val.getKey().equals(getSortVal().getKey())) {
+                    ret = val.getValue();
+                    break;
+                }
+            }
+            return ret;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #sortVal}.
+         *
+         * @return value of instance variable {@link #sortVal}
+         */
+        public AbstractValue<?> getSortVal()
+        {
+            return this.sortVal;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #asc}.
+         *
+         * @return value of instance variable {@link #asc}
+         */
+        public Boolean isAsc()
+        {
+            return this.asc;
+        }
+
     }
 }

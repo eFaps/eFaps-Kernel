@@ -56,6 +56,11 @@ public final class Statement
     private final Map<String, String> alias2select = new LinkedHashMap<>();
 
     /**
+     * Mapping between the sort key and ascending descending.
+     */
+    private final Map<String, Boolean> sortKey2ascDesc = new LinkedHashMap<>();
+
+    /**
      * List of parameters.
      */
     private final List<String> parameters = new ArrayList<>();
@@ -386,6 +391,24 @@ public final class Statement
     public List<String> getParameters()
     {
         return this.parameters;
+    }
+
+    @Override
+    public void addOrderBy(final String _key,
+                           final boolean _asc)
+    {
+        this.sortKey2ascDesc.put(_key, _asc);
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #sortKey2ascDesc}.
+     *
+     * @return value of instance variable {@link #sortKey2ascDesc}
+     */
+    public Map<String, Boolean> getSortKey2ascDesc()
+    {
+        return this.sortKey2ascDesc;
     }
 
     /**

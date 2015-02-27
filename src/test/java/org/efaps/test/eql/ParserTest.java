@@ -875,4 +875,149 @@ public class ParserTest
         selects.add("linkto[Otro].instance");
         Assert.assertEquals(stmt.getSelects(), selects, "No");
     }
+
+    @Test
+    public void orderByNum()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name] order by 1");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, Boolean> orderMap = new HashMap<>();
+        orderMap.put("1", true);
+        Assert.assertEquals(stmt.getOrder2ascdesc(), orderMap, "No");
+    }
+
+    @Test
+    public void orderByNumAsc()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name] order by 1 asc");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, Boolean> orderMap = new HashMap<>();
+        orderMap.put("1", true);
+        Assert.assertEquals(stmt.getOrder2ascdesc(), orderMap, "No");
+    }
+
+    @Test
+    public void orderByNumDesc()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name] order by 1 desc");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, Boolean> orderMap = new HashMap<>();
+        orderMap.put("1", false);
+        Assert.assertEquals(stmt.getOrder2ascdesc(), orderMap, "No");
+    }
+
+    @Test
+    public void orderByAlias()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name] order by alias ");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, Boolean> orderMap = new HashMap<>();
+        orderMap.put("alias", true);
+        Assert.assertEquals(stmt.getOrder2ascdesc(), orderMap, "No");
+    }
+
+    @Test
+    public void orderByAliasAsc()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name] order by alias asc");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, Boolean> orderMap = new HashMap<>();
+        orderMap.put("alias", true);
+        Assert.assertEquals(stmt.getOrder2ascdesc(), orderMap, "No");
+    }
+
+    @Test
+    public void orderByAliasDesc()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name] order by alias desc");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, Boolean> orderMap = new HashMap<>();
+        orderMap.put("alias", false);
+        Assert.assertEquals(stmt.getOrder2ascdesc(), orderMap, "No");
+    }
+
+    @Test
+    public void orderByNumMultiple()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name] order by 1 , 3");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, Boolean> orderMap = new HashMap<>();
+        orderMap.put("1", true);
+        orderMap.put("3", true);
+        Assert.assertEquals(stmt.getOrder2ascdesc(), orderMap, "No");
+    }
+
+    @Test
+    public void orderByNumMultipleAscDesc()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name] order by 1 asc, 3 desc");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, Boolean> orderMap = new HashMap<>();
+        orderMap.put("1", true);
+        orderMap.put("3", false);
+        Assert.assertEquals(stmt.getOrder2ascdesc(), orderMap, "No");
+    }
+
+    @Test
+    public void orderByAliasMultiple()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name] order by blabla , wewe");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, Boolean> orderMap = new HashMap<>();
+        orderMap.put("blabla", true);
+        orderMap.put("wewe", true);
+        Assert.assertEquals(stmt.getOrder2ascdesc(), orderMap, "No");
+    }
+
+    @Test
+    public void orderByAliasMultipleAscDesc()
+        throws ParseException
+    {
+        final TestStatement stmt = testStatement("query type CompanyType select attribute[Name] order by blabla asc, wewe desc");
+        final List<String> types = new ArrayList<>();
+        types.add("CompanyType");
+        Assert.assertEquals(stmt.getTypes(), types, "No");
+
+        final Map<String, Boolean> orderMap = new HashMap<>();
+        orderMap.put("blabla", true);
+        orderMap.put("wewe", false);
+        Assert.assertEquals(stmt.getOrder2ascdesc(), orderMap, "No");
+    }
+
 }
