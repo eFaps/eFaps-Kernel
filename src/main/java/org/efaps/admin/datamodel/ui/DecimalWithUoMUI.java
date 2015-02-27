@@ -65,8 +65,8 @@ public class DecimalWithUoMUI
             final Object[] values =  (Object[]) value;
             final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
                             .getLocale());
-            final String strValue = values[0] != null ? (values[0] instanceof Number
-                                                ? formatter.format(values[0]) : values[0].toString()) : "";
+            final String strValue = values[0] != null ? values[0] instanceof Number
+                                                ? formatter.format(values[0]) : values[0].toString() : "";
             final UoM uom = (UoM) values[1];
             ret.append("<span><span name=\"").append(field.getName()).append("\" ")
                 .append(UIInterface.EFAPSTMPTAG).append(">")
@@ -93,8 +93,8 @@ public class DecimalWithUoMUI
             final Object[] values =  (Object[]) value;
             final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
                             .getLocale());
-            final String strValue = values[0] != null ? (values[0] instanceof Number
-                                                ? formatter.format(values[0]) : values[0].toString()) : "";
+            final String strValue = values[0] != null ? values[0] instanceof Number
+                                                ? formatter.format(values[0]) : values[0].toString() : "";
             final UoM uom = (UoM) values[1];
             ret.append(strValue).append(" ");
             if (strValue.length() > 0 && uom != null) {
@@ -121,7 +121,7 @@ public class DecimalWithUoMUI
             final DecimalFormat formatter
                 = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext().getLocale());
             strValue =  values[0] != null
-                ? (values[0] instanceof Number ? formatter.format(values[0]) : values[0].toString()) : "";
+                ? values[0] instanceof Number ? formatter.format(values[0]) : values[0].toString() : "";
             uomValue = (UoM) values[1];
         }
 
@@ -139,7 +139,7 @@ public class DecimalWithUoMUI
             final Dimension dim = _fieldValue.getAttribute().getDimension();
             for (final UoM uom : dim.getUoMs()) {
                 ret.append("<option value=\"").append(uom.getId());
-                if ((uomValue == null && uom.equals(dim.getBaseUoM())) || (uomValue != null && uomValue.equals(uom))) {
+                if (uomValue == null && uom.equals(dim.getBaseUoM()) || uomValue != null && uomValue.equals(uom)) {
                     ret.append("\" selected=\"selected");
                 }
                 ret.append("\">").append(uom.getName()).append("</option>");
@@ -192,6 +192,7 @@ public class DecimalWithUoMUI
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public int compare(final FieldValue _fieldValue,
                        final FieldValue _fieldValue2)
@@ -217,6 +218,8 @@ public class DecimalWithUoMUI
                                 .divide(new BigDecimal(uom2.getDenominator()), BigDecimal.ROUND_HALF_UP));
                 ret = tmpVal.compareTo(tmpVal2);
             }
+        } else if (_fieldValue.getValue() instanceof Comparable && _fieldValue2.getValue() instanceof Comparable) {
+            ret = ((Comparable<Object>)_fieldValue.getValue()).compareTo(_fieldValue2.getValue());
         } else {
             ret = super.compare(_fieldValue, _fieldValue2);
         }
@@ -230,6 +233,15 @@ public class DecimalWithUoMUI
     public Object getObject4Compare(final FieldValue _fieldValue)
         throws EFapsException
     {
-        return _fieldValue.getValue();
+        Object ret = null;
+        if (_fieldValue.getValue() != null && _fieldValue.getValue() instanceof Object[]) {
+            final Object[] values =  (Object[]) _fieldValue.getValue();
+            if (values.length == 3) {
+                ret = values[2];
+            } else {
+                ret = values[0];
+            }
+        }
+        return ret;
     }
 }
