@@ -351,6 +351,8 @@ public final class UIValue
                            final Instance inst = (Instance) retu.get(ReturnValues.INSTANCE);
                            if (inst != null && inst.isValid()) {
                                setInstance(inst);
+                           } else {
+                               setInstance(null);
                            }
                         }
                     }
