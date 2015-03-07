@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,14 @@
 package org.efaps.update.schema.user;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.efaps.db.Instance;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.LinkInstance;
 import org.efaps.util.EFapsException;
 
 /**
@@ -35,6 +39,23 @@ import org.efaps.util.EFapsException;
 public class RoleUpdate
     extends AbstractUpdate
 {
+    /**
+     * Set of all links used by commands.
+     */
+    private static final Set<Link> ALLLINKS = new HashSet<>();
+
+    /** Link from UI object to role. */
+    private static final Link LINK2ACCESSCMD = new Link("Admin_UI_Access", "UserLink",
+                    "Admin_UI_Command", "UILink").setIncludeChildTypes(true);
+
+    /** Link from AccessSet to roles. */
+    private static final Link LINK2ACCESSSET = new Link("Admin_Access_AccessSet2UserAbstract", "UserAbstractLink",
+                                                   "Admin_Access_AccessSet", "AccessSetLink");
+
+    static {
+        RoleUpdate.ALLLINKS.add(RoleUpdate.LINK2ACCESSCMD);
+        RoleUpdate.ALLLINKS.add(RoleUpdate.LINK2ACCESSSET);
+    }
 
     /**
      * Global type or local.
@@ -47,7 +68,7 @@ public class RoleUpdate
      */
     public RoleUpdate(final URL _url)
     {
-        super(_url, "temp");
+        super(_url, "temp", RoleUpdate.ALLLINKS);
     }
 
     @Override
@@ -74,6 +95,12 @@ public class RoleUpdate
     public class RoleDefinition
         extends AbstractDefinition
     {
+
+        /**
+         * Will the access be set or not.
+         */
+        private boolean setAccess = false;
+
         @Override
         protected void readXML(final List<String> _tags,
                                final Map<String, String> _attributes,
@@ -85,8 +112,39 @@ public class RoleUpdate
                 addValue("Status", _text);
             } else if ("global".equals(value)) {
                 RoleUpdate.this.global = Boolean.valueOf(_text);
+            } else if ("access".equals(value)) {
+                this.setAccess = true;
+                if (_tags.size() > 2) {
+                    final String subValue1 = _tags.get(1);
+                    if ("userinterface".equals(subValue1)) {
+                        final String subValue2 = _tags.get(2);
+                        if ("cmd".equals(subValue2)) {
+                            addLink(RoleUpdate.LINK2ACCESSCMD, new LinkInstance(_text));
+                        } else {
+                            super.readXML(_tags, _attributes, _text);
+                        }
+                    } else if ("datamodel".equals(subValue1)) {
+                        final String subValue2 = _tags.get(2);
+                        if ("accessset".equals(subValue2)) {
+                            addLink(RoleUpdate.LINK2ACCESSSET, new LinkInstance(_text));
+                        }
+                    } else {
+                        super.readXML(_tags, _attributes, _text);
+                    }
+                }
             } else {
                 super.readXML(_tags, _attributes, _text);
+            }
+        }
+
+        @Override
+        protected void setLinksInDB(final Instance _instance,
+                                    final Link _linktype,
+                                    final Set<LinkInstance> _links)
+            throws EFapsException
+        {
+            if (this.setAccess) {
+                super.setLinksInDB(_instance, _linktype, _links);
             }
         }
     }
