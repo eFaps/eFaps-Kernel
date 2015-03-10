@@ -158,7 +158,7 @@ public class PrintQuery
     {
         boolean ret = false;
         if (isMarked4execute()) {
-            if (getMainType().hasAccess(this.instance, AccessTypeEnums.SHOW.getAccessType())) {
+            if (getMainType().hasAccess(this.instance, AccessTypeEnums.READ.getAccessType())) {
                 ret = executeWithoutAccessCheck();
             }
         }

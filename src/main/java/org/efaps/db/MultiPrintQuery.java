@@ -169,7 +169,7 @@ public class MultiPrintQuery
             // check the access for the given instances
             final Map<Instance, Boolean> accessmap = new HashMap<Instance, Boolean>();
             for (final Entry<Type, List<Instance>> entry : types.entrySet()) {
-                accessmap.putAll(entry.getKey().checkAccess(entry.getValue(), AccessTypeEnums.SHOW.getAccessType()));
+                accessmap.putAll(entry.getKey().checkAccess(entry.getValue(), AccessTypeEnums.READ.getAccessType()));
             }
 
             final Iterator<Instance> tempIter = this.instances.iterator();
