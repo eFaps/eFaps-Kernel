@@ -669,7 +669,9 @@ public class OneSelect
                     idTmp = this.idList;
                 }
                 for (final Long id : idTmp) {
-                    ret.add(Instance.get(this.valueSelect.getAttribute().getParent(), id.toString()));
+                    if (id != null) {
+                        ret.add(Instance.get(this.valueSelect.getAttribute().getParent(), String.valueOf(id)));
+                    }
                 }
             }
         }
