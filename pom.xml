@@ -460,12 +460,12 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-core</artifactId>
-            <version>7.0.2.Final</version>
+            <version>7.1.1.Final</version>
         </dependency>
         <dependency>
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-query</artifactId>
-            <version>7.0.2.Final</version>
+            <version>7.1.1.Final</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hibernate-jpa-2.0-api</artifactId>
@@ -561,7 +561,6 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
             <artifactId>hibernate-validator</artifactId>
             <version>4.3.2.Final</version>
         </dependency>
-
 
         <!--
          <dependency>

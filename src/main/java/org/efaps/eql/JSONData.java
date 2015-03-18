@@ -93,7 +93,7 @@ public class JSONData
                 for (final Map<String, Object> map : _selectStmt.getData()) {
                     final ObjectData data = new ObjectData();
                     for (final Entry<String, String> entry : mapping.entrySet()) {
-                        final Object obj = map.get(entry.getValue());
+                        final Object obj = map.get(entry.getKey());
                         data.getValues().add(getValue(entry.getKey(), obj));
                     }
                     ret.add(data);

@@ -29,7 +29,6 @@ import org.efaps.util.cache.InfinispanCache;
 import org.infinispan.Cache;
 import org.infinispan.commands.read.GetKeyValueCommand;
 import org.infinispan.commands.write.PutKeyValueCommand;
-import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.context.InvocationContext;
 import org.infinispan.interceptors.base.BaseCustomInterceptor;
 import org.infinispan.notifications.Listener;
@@ -214,22 +213,16 @@ public final class AccessCache
                                               final GetKeyValueCommand _command)
             throws Throwable
         {
-            // change the command so that it returns the entry
-            final Object[] parameters = _command.getParameters();
-            parameters[2] = Boolean.TRUE;
-            _command.setParameters(GetKeyValueCommand.COMMAND_ID, parameters);
-
             final Object tmp = invokeNextInterceptor(_ctx, _command);
             final Object ret;
             if (tmp == null) {
                 ret = null;
             } else {
-                final CacheEntry entry = ((CacheEntry) tmp);
-                final AccessKey key = (AccessKey) entry.getKey();
+                final AccessKey key = (AccessKey) _command.getKey();
                 if (key.isOneTime()) {
                     AccessCache.getKeyCache().remove(key);
                 }
-                ret = entry.getValue();
+                ret = tmp;
             }
             return ret;
         }
