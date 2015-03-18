@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.efaps.eql.ISelectStmt;
+import org.efaps.eql.InvokerUtil;
 import org.efaps.eql.JSONData;
-import org.efaps.eql.Statement;
 import org.efaps.json.data.DataList;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -45,13 +46,13 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
  * @version $Id$
  */
 @Path("/eql")
-public class EQLInvoker
+public class RestEQLInvoker
 {
 
     /**
      * Logging instance used in this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(EQLInvoker.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RestEQLInvoker.class);
 
     /**
      * @return not implemented.
@@ -62,9 +63,10 @@ public class EQLInvoker
     public String query(@FormParam("stmt") final String _stmt)
     {
         String ret = null;
-        final Statement stmt = Statement.getStatement(_stmt);
         // only permit queries on this url
         try {
+            final ISelectStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
+
             final DataList datalist = JSONData.getDataList(stmt);
             final ObjectMapper mapper = new ObjectMapper();
             if (LOG.isDebugEnabled()) {
@@ -78,6 +80,8 @@ public class EQLInvoker
             ret = mapper.writeValueAsString(datalist);
             LOG.debug("JSON: '{}'", ret);
         } catch (final JsonProcessingException | EFapsException e) {
+            LOG.error("Error processing data.", e);
+        } catch (final Exception e) {
             LOG.error("Error processing data.", e);
         }
         return ret;
