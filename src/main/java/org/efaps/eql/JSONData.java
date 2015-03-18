@@ -98,8 +98,8 @@ public class JSONData
                     }
                     ret.add(data);
                 }
-
-            final Map<String, Boolean> sortMap = _selectStmt.getSortKey2ascDesc();
+                if (_selectStmt instanceof IQueryStmt) {
+            final Map<String, Boolean> sortMap = ((IQueryStmt)_selectStmt).getSortKey2ascDesc();
             if (!sortMap.isEmpty()) {
                 final ComparatorChain<ObjectData> comparator = new ComparatorChain<>();
                 for (final Entry<String, Boolean> entry : sortMap.entrySet()) {
@@ -119,6 +119,7 @@ public class JSONData
                 }
                 Collections.sort(ret, comparator);
             }
+                }
         } catch (final Exception e) {
            if (e instanceof EFapsException) {
                throw (EFapsException) e;
