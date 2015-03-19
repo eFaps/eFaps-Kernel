@@ -35,8 +35,7 @@ import org.efaps.db.PrintQuery;
  * @version $Id: $
  */
 public class PrintStmt
-    extends AbstractSelectStmt
-    implements IPrintStmt
+    extends AbstractPrintStmt
 {
 
     private PrintQuery print;
@@ -47,6 +46,7 @@ public class PrintStmt
     public void setInstance(final String _oid)
         throws Exception
     {
+        super.setInstance(_oid);
         this.print = new PrintQuery(_oid);
     }
 

@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class JSONData
 {
+
     /**
      * Logging instance used in this class.
      */
@@ -73,65 +74,48 @@ public class JSONData
         final DataList ret = new DataList();
         try {
             final Map<String, String> mapping = _selectStmt.getAlias2Selects();
-//        if (_statement.isEsjp()) {
-//            try {
-//                  final Class<?> clazz = Class.forName(_statement.getEsjp(), false, EFapsClassLoader.getInstance());
-//                  final IEsjpExecute esjp = (IEsjpExecute) clazz.newInstance();
-//                  LOG.debug("Instantiated class: {}", esjp);
-//                  final List<String> parameters = _statement.getParameters();
-//                  if (parameters.isEmpty()) {
-//                      ret = esjp.execute(mapping);
-//                  } else {
-//                      ret = esjp.execute(mapping, parameters.toArray(new String[parameters.size()]));
-//                  }
-//            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-//                LOG.error("Could not invoke IEsjpQuery.", e);
-//                throw new EFapsException("Could not invoke IEsjpQuery.", e);
-//            }
-//        } else {
-
-                for (final Map<String, Object> map : _selectStmt.getData()) {
-                    final ObjectData data = new ObjectData();
-                    for (final Entry<String, String> entry : mapping.entrySet()) {
-                        final Object obj = map.get(entry.getKey());
-                        data.getValues().add(getValue(entry.getKey(), obj));
-                    }
-                    ret.add(data);
+            for (final Map<String, Object> map : _selectStmt.getData()) {
+                final ObjectData data = new ObjectData();
+                for (final Entry<String, String> entry : mapping.entrySet()) {
+                    final Object obj = map.get(entry.getKey());
+                    data.getValues().add(getValue(entry.getKey(), obj));
                 }
-                if (_selectStmt instanceof IQueryStmt) {
-            final Map<String, Boolean> sortMap = ((IQueryStmt)_selectStmt).getSortKey2desc();
-            if (!sortMap.isEmpty()) {
-                final ComparatorChain<ObjectData> comparator = new ComparatorChain<>();
-                for (final Entry<String, Boolean> entry : sortMap.entrySet()) {
-                    AbstractValue<?> sortVal = null;
-                    if (StringUtils.isNumeric(entry.getKey())) {
-                        final int idx = Integer.parseInt(entry.getKey());
-                        sortVal = ret.get(0).getValues().get(idx -1);
-                    } else {
-                        for (final AbstractValue<?> val : ret.get(0).getValues()) {
-                            if (val.getKey().equals(entry.getKey())) {
-                                sortVal = val;
-                                break;
+                ret.add(data);
+            }
+            if (_selectStmt instanceof IQueryStmt) {
+                final Map<String, Boolean> sortMap = ((IQueryStmt) _selectStmt).getSortKey2desc();
+                if (!sortMap.isEmpty()) {
+                    final ComparatorChain<ObjectData> comparator = new ComparatorChain<>();
+                    for (final Entry<String, Boolean> entry : sortMap.entrySet()) {
+                        AbstractValue<?> sortVal = null;
+                        if (StringUtils.isNumeric(entry.getKey())) {
+                            final int idx = Integer.parseInt(entry.getKey());
+                            sortVal = ret.get(0).getValues().get(idx - 1);
+                        } else {
+                            for (final AbstractValue<?> val : ret.get(0).getValues()) {
+                                if (val.getKey().equals(entry.getKey())) {
+                                    sortVal = val;
+                                    break;
+                                }
                             }
                         }
+                        comparator.addComparator(new ObjectDataComparator(sortVal, !entry.getValue()));
                     }
-                    comparator.addComparator(new ObjectDataComparator(sortVal, !entry.getValue()));
+                    Collections.sort(ret, comparator);
                 }
-                Collections.sort(ret, comparator);
             }
-                }
         } catch (final Exception e) {
-           if (e instanceof EFapsException) {
-               throw (EFapsException) e;
-           } else {
-               throw new EFapsException("Could not create JSONData", e);
-           }
+            if (e instanceof EFapsException) {
+                throw (EFapsException) e;
+            } else {
+                throw new EFapsException("Could not create JSONData", e);
+            }
         }
         return ret;
     }
 
     /**
-     * @param _key  key the value is wanted for
+     * @param _key key the value is wanted for
      * @param _object oebjct to be converted
      * @return AbstractValue for the key
      */
@@ -160,7 +144,7 @@ public class JSONData
                     ret = new StringListValue().setValue((List<String>) list);
                 } else if (inner instanceof IBitEnum) {
                     final List<String> tmpList = new ArrayList<>();
-                    for (final Object obj  : list) {
+                    for (final Object obj : list) {
                         tmpList.add(obj.toString());
                     }
                     ret = new StringListValue().setValue(tmpList);
@@ -176,7 +160,6 @@ public class JSONData
         }
         return ret;
     }
-
 
     public static class ObjectDataComparator
         implements Comparator<ObjectData>

@@ -44,6 +44,12 @@ public class InvokerUtil
             {
                 return new QueryStmt();
             }
+
+            @Override
+            protected IExecStmt getIExec()
+            {
+                return new ExecStmt();
+            }
         };
     }
 }

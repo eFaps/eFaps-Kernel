@@ -20,9 +20,9 @@
 
 package org.efaps.eql;
 
+import java.util.List;
 import java.util.Map;
 
-import org.efaps.json.data.DataList;
 import org.efaps.util.EFapsException;
 
 /**
@@ -33,13 +33,14 @@ import org.efaps.util.EFapsException;
  */
 public interface IEsjpExecute
 {
+
     /**
      * @param _mapping mapping for the selects, null in case of execute
      * @param _parameters list of parameters to be passed
      * @return a data list as result
      * @throws EFapsException on error
      */
-    DataList execute(final Map<String, String> _mapping,
-                     final String... _parameters)
+    List<Map<String, Object>> execute(final Map<String, String> _mapping,
+                                      final String... _parameters)
         throws EFapsException;
 }
