@@ -59,41 +59,71 @@ public class QueryStmt
     @Override
     public void addWhereAttrEq(final String _attr,
                                final String _value)
+        throws EFapsException
     {
+        this.queryBdr.addWhereAttrEqValue(_attr, _value);
     }
 
     @Override
     public void addWhereAttrNotEq(final String _attr,
                                   final String _value)
+        throws EFapsException
+
     {
+        this.queryBdr.addWhereAttrNotEqValue(_attr, _value);
     }
 
     @Override
     public void addWhereAttrGreater(final String _attr,
                                     final String _value)
+        throws EFapsException
     {
-
+        this.queryBdr.addWhereAttrGreaterValue(_attr, _value);
     }
 
     @Override
     public void addWhereAttrLess(final String _attr,
                                  final String _value)
+        throws EFapsException
     {
-
+        this.queryBdr.addWhereAttrLessValue(_attr, _value);
     }
 
     @Override
     public void addWhereAttrLike(final String _attr,
                                  final String _value)
+        throws EFapsException
     {
-
+        this.queryBdr.addWhereAttrMatchValue(_attr, _value);
     }
 
     @Override
     public void addWhereAttrIn(final String _attr,
                                final Collection<String> _values)
+        throws EFapsException
     {
+        this.queryBdr.addWhereAttrEqValue(_attr, _values.toArray());
+    }
 
+    public void addWhereSelectEq(final String _select,
+                                 final String _value)
+        throws EFapsException
+    {
+        this.queryBdr.addWhereSelectEqValue(_select, _value);
+    }
+
+    public void addWhereSelectGreater(final String _select,
+                                      final String _value)
+        throws EFapsException
+    {
+        this.queryBdr.addWhereSelectGreaterValue(_select, _value);
+    }
+
+    public void addWhereSelectLess(final String _select,
+                                   final String _value)
+        throws EFapsException
+    {
+        this.queryBdr.addWhereSelectLessValue(_select, _value);
     }
 
     @Override
@@ -117,5 +147,4 @@ public class QueryStmt
         }
         return this.data;
     }
-
 }
