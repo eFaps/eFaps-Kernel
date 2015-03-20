@@ -22,6 +22,11 @@ package org.efaps.admin.access;
 
 import java.util.List;
 
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.NumericRangeQuery;
+import org.apache.lucene.search.TermQuery;
 import org.efaps.admin.AppConfigHandler;
 import org.efaps.db.Instance;
 import org.efaps.util.cache.CacheLogListener;
@@ -34,10 +39,9 @@ import org.infinispan.interceptors.base.BaseCustomInterceptor;
 import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
 import org.infinispan.notifications.cachelistener.event.CacheEntryCreatedEvent;
+import org.infinispan.query.CacheQuery;
 import org.infinispan.query.Search;
 import org.infinispan.query.SearchManager;
-import org.infinispan.query.dsl.Query;
-import org.infinispan.query.dsl.QueryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,8 +86,10 @@ public final class AccessCache
                         .<String, AccessKey>getIgnReCache(AccessCache.INDEXCACHE);
         if (!indexCache.isEmpty()) {
             final SearchManager searchManager = Search.getSearchManager(indexCache);
-            final QueryFactory<?> qf = searchManager.getQueryFactory();
-            final Query query = qf.from(AccessKey.class).having("personId").eq(_personId).toBuilder().build();
+
+            final CacheQuery query = searchManager.getQuery(
+                            NumericRangeQuery.newLongRange("personId", _personId, _personId, true,
+                                            true), AccessKey.class);
             final List<?> result = query.list();
             if (result != null) {
                 for (final Object key : result) {
@@ -107,12 +113,14 @@ public final class AccessCache
                             .<String, AccessKey>getIgnReCache(AccessCache.INDEXCACHE);
             if (!indexCache.isEmpty()) {
                 final SearchManager searchManager = Search.getSearchManager(indexCache);
-                final QueryFactory<?> qf = searchManager.getQueryFactory();
-                final Query query = qf.from(AccessKey.class)
-                                .having("instanceTypeUUID").like(_instance.getTypeUUID().toString())
-                                .and()
-                                .having("instanceId").eq(_instance.getId())
-                                .toBuilder().build();
+                final Term typeUUIDTerm = new Term("instanceTypeUUID", _instance.getTypeUUID().toString());
+
+                final BooleanQuery andQuery = new BooleanQuery();
+                andQuery.add(new TermQuery(typeUUIDTerm), Occur.MUST);
+                andQuery.add(NumericRangeQuery.newLongRange("instanceId", _instance.getId(), _instance.getId(), true,
+                                true), Occur.MUST);
+                final CacheQuery query = searchManager.getQuery(andQuery, AccessKey.class);
+
                 final List<?> result = query.list();
                 if (result != null) {
                     for (final Object key : result) {
