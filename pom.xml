@@ -87,33 +87,11 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
 
     <!-- SubVersion Repository -->
     <scm>
-        <connection>scm:svn:http://efaps.googlecode.com/svn/eFaps-kernel/trunk</connection>
-        <developerConnection>scm:svn:https://efaps.googlecode.com/svn/eFaps-kernel/trunk</developerConnection>
-        <url>http://efaps.googlecode.com/svn/eFaps-kernel/</url>
+        <connection>scm:git:git://github.com/eFaps/eFaps-Kernel.git</connection>
+        <developerConnection>scm:git:git@github.com:eFaps/eFaps-Kernel.git</developerConnection>
+        <url>https://github.com/eFaps/eFaps-Kernel/</url>
     </scm>
 
-    <!-- Distribution Repository -->
-    <distributionManagement>
-        <site>
-            <id>efaps.googlecode.com</id>
-            <name>eFaps-Kernel WebPage</name>
-            <url>scm:svn:https://efaps.googlecode.com/svn/site/eFaps-Kernel</url>
-        </site>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Nexus Release Repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
-
-    <!-- ************************************************************************
-    * Project itself
-    ************************************************************************* -->
     <build>
         <plugins>
             <!--
@@ -153,7 +131,6 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
              <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven.surefire.version}</version>
                 <configuration>
                     <suiteXmlFiles>
                         <suiteXmlFile>${basedir}/src/test/resources/testng.xml</suiteXmlFile>
