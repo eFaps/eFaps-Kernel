@@ -20,42 +20,29 @@
 
 package org.efaps.eql;
 
+import java.util.Map.Entry;
+
+import org.efaps.db.Update;
+
+
+
 /**
  * TODO comment!
  *
  * @author The eFaps Team
  * @version $Id: $
  */
-public class InvokerUtil
+public class UpdateStmt
+    extends AbstractUpdateStmt
 {
-
-    public static EQLInvoker getInvoker()
+    @Override
+    public void execute()
+        throws Exception
     {
-        return new EQLInvoker()
-        {
-            @Override
-            protected IPrintStmt getIPrint()
-            {
-                return new PrintStmt();
-            }
-
-            @Override
-            protected IQueryStmt getIQuery()
-            {
-                return new QueryStmt();
-            }
-
-            @Override
-            protected IExecStmt getIExec()
-            {
-                return new ExecStmt();
-            }
-
-            @Override
-            protected IUpdateStmt getIUpdate()
-            {
-                return new UpdateStmt();
-            }
-        };
+       final Update update = new Update(getInstance());
+       for (final Entry<String, String> entry : getAttr2Value().entrySet()) {
+           update.add(entry.getKey(), entry.getValue());
+       }
+       update.execute();
     }
 }

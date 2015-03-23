@@ -26,6 +26,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.efaps.eql.IEQLStmt;
 import org.efaps.eql.ISelectStmt;
 import org.efaps.eql.InvokerUtil;
 import org.efaps.eql.JSONData;
@@ -65,19 +66,20 @@ public class RestEQLInvoker
         String ret = null;
         // only permit queries on this url
         try {
-            final ISelectStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
+            final IEQLStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
+            if (stmt instanceof ISelectStmt) {
+                final DataList datalist = JSONData.getDataList((ISelectStmt) stmt);
+                final ObjectMapper mapper = new ObjectMapper();
+                if (LOG.isDebugEnabled()) {
+                    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                }
+                mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+                mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
 
-            final DataList datalist = JSONData.getDataList(stmt);
-            final ObjectMapper mapper = new ObjectMapper();
-            if (LOG.isDebugEnabled()) {
-                mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                mapper.registerModule(new JodaModule());
+
+                ret = mapper.writeValueAsString(datalist);
             }
-            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
-
-            mapper.registerModule(new JodaModule());
-
-            ret = mapper.writeValueAsString(datalist);
             LOG.debug("JSON: '{}'", ret);
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
