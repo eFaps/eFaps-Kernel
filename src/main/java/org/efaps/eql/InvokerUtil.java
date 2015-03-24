@@ -31,7 +31,7 @@ public class InvokerUtil
 
     public static EQLInvoker getInvoker()
     {
-        return new EQLInvoker()
+        final EQLInvoker ret = new EQLInvoker()
         {
             @Override
             protected IPrintStmt getIPrint()
@@ -57,5 +57,8 @@ public class InvokerUtil
                 return new UpdateStmt();
             }
         };
+        ret.getValidator().setDiagnosticClazz(EFapsDiagnostic.class);
+        ret.getValidator().addValidation("EQLJavaValidator.type", new TypeValidation());
+        return ret;
     }
 }
