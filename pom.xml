@@ -93,11 +93,6 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
 
     <!-- Distribution Repository -->
     <distributionManagement>
-        <site>
-            <id>efaps.googlecode.com</id>
-            <name>eFaps-Kernel WebPage</name>
-            <url>scm:svn:https://efaps.googlecode.com/svn/site/eFaps-Kernel</url>
-        </site>
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
             <name>Sonatype Nexus Snapshots</name>
