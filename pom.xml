@@ -22,14 +22,12 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.efaps</groupId>
         <artifactId>efaps-parent</artifactId>
-        <version>3.2.0-SNAPSHOT</version>
+        <version>3.2.0</version>
     </parent>
 
     <!-- ************************************************************************
@@ -90,7 +88,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <connection>scm:git:git://github.com/eFaps/eFaps-Kernel.git</connection>
         <developerConnection>scm:git:git@github.com:eFaps/eFaps-Kernel.git</developerConnection>
         <url>https://github.com/eFaps/eFaps-Kernel/</url>
-        <tag>HEAD</tag>
+        <tag>V3.2.0</tag>
     </scm>
 
     <!-- Distribution Repository -->
@@ -206,7 +204,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
              <groupId>org.efaps</groupId>
             <artifactId>efaps-json</artifactId>
-            <version>${project.version}</version>
+            <version>3.2.0</version>
         </dependency>
 
         <!-- easy XML reader
