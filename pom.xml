@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.efaps</groupId>
         <artifactId>efaps-parent</artifactId>
-        <version>3.2.0</version>
+        <version>3.2.1-SNAPSHOT</version>
     </parent>
 
     <!-- ************************************************************************
@@ -88,7 +88,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <connection>scm:git:git://github.com/eFaps/eFaps-Kernel.git</connection>
         <developerConnection>scm:git:git@github.com:eFaps/eFaps-Kernel.git</developerConnection>
         <url>https://github.com/eFaps/eFaps-Kernel/</url>
-        <tag>V3.2.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <!-- Distribution Repository -->
@@ -204,7 +204,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
              <groupId>org.efaps</groupId>
             <artifactId>efaps-json</artifactId>
-            <version>3.2.0</version>
+            <version>3.2.1-SNAPSHOT</version>
         </dependency>
 
         <!-- easy XML reader
