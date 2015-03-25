@@ -21,6 +21,7 @@
 
 package org.efaps.db.search.value;
 
+import org.efaps.admin.datamodel.Status;
 import org.efaps.db.AbstractObjectQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -74,13 +75,25 @@ public class QStringValue
             if (_part instanceof QMatch) {
                 this.value = Context.getDbType().prepare4Match(this.value);
             }
-            // check if the string is an oid and must be converted in a long
-            if (_part instanceof QEqual && ((QEqual) _part).getAttribute().getAttribute() != null
-                            && ((QEqual) _part).getAttribute().getAttribute().hasLink()) {
-                final Instance insTmp = Instance.get(this.value);
-                if (insTmp.isValid()) {
-                    this.value = Long.valueOf(insTmp.getId()).toString();
-                    this.noEscape = true;
+            if (_part instanceof QEqual && ((QEqual) _part).getAttribute().getAttribute() != null) {
+                // check if the string is an status key and must be converted in
+                // a long
+                if (((QEqual) _part).getAttribute().getAttribute().getParent().isCheckStatus()
+                                && ((QEqual) _part).getAttribute().getAttribute().equals(
+                                   ((QEqual) _part).getAttribute().getAttribute().getParent().getStatusAttribute())) {
+                    final Status status = Status.find(
+                                    ((QEqual) _part).getAttribute().getAttribute().getLink().getUUID(), this.value);
+                    if (status != null) {
+                        this.value = Long.valueOf(status.getId()).toString();
+                        this.noEscape = true;
+                    }
+                 // check if the string is an oid and must be converted in a long
+                } else if (((QEqual) _part).getAttribute().getAttribute().hasLink()) {
+                    final Instance insTmp = Instance.get(this.value);
+                    if (insTmp.isValid()) {
+                        this.value = Long.valueOf(insTmp.getId()).toString();
+                        this.noEscape = true;
+                    }
                 }
             }
         }

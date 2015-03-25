@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,27 +20,29 @@
 
 package org.efaps.eql;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 
-import org.efaps.util.EFapsException;
+import org.efaps.db.Update;
+
+
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: $
  */
-public interface IEsjpExecute
+public class UpdateStmt
+    extends AbstractUpdateStmt
 {
-
-    /**
-     * @param _mapping mapping for the selects, null in case of execute
-     * @param _parameters list of parameters to be passed
-     * @return a data list as result
-     * @throws EFapsException on error
-     */
-    List<Map<String, Object>> execute(final Map<String, String> _mapping,
-                                      final String... _parameters)
-        throws EFapsException;
+    @Override
+    public void execute()
+        throws Exception
+    {
+       final Update update = new Update(getInstance());
+       for (final Entry<String, String> entry : getAttr2Value().entrySet()) {
+           update.add(entry.getKey(), entry.getValue());
+       }
+       update.execute();
+    }
 }

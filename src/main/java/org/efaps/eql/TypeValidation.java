@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,27 +20,31 @@
 
 package org.efaps.eql;
 
-import java.util.List;
-import java.util.Map;
-
-import org.efaps.util.EFapsException;
+import org.efaps.admin.datamodel.Type;
+import org.efaps.eql.validation.IValidation;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: $
  */
-public interface IEsjpExecute
+public class TypeValidation
+    implements IValidation
 {
 
-    /**
-     * @param _mapping mapping for the selects, null in case of execute
-     * @param _parameters list of parameters to be passed
-     * @return a data list as result
-     * @throws EFapsException on error
-     */
-    List<Map<String, Object>> execute(final Map<String, String> _mapping,
-                                      final String... _parameters)
-        throws EFapsException;
+    @Override
+    public boolean validate(final String... _type)
+    {
+        boolean ret = false;
+        try {
+            ret = Type.get(_type[0]) != null;
+        } catch (final CacheReloadException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
 }

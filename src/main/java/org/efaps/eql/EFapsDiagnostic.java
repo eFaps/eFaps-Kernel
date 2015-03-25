@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,29 +18,40 @@
  * Last Changed By: $Author$
  */
 
+
 package org.efaps.eql;
 
-import java.util.List;
-import java.util.Map;
+import org.eclipse.xtext.diagnostics.Severity;
+import org.efaps.admin.dbproperty.DBProperties;
 
-import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: $
  */
-public interface IEsjpExecute
+public class EFapsDiagnostic
+    extends org.efaps.eql.validation.EFapsDiagnostic
 {
 
     /**
-     * @param _mapping mapping for the selects, null in case of execute
-     * @param _parameters list of parameters to be passed
-     * @return a data list as result
-     * @throws EFapsException on error
+     * @param _severity
+     * @param _code
      */
-    List<Map<String, Object>> execute(final Map<String, String> _mapping,
-                                      final String... _parameters)
-        throws EFapsException;
+    public EFapsDiagnostic(final Severity _severity,
+                           final String _message,
+                           final String _code,
+                           final String... _issueData)
+    {
+        super(_severity, _message, _code, _issueData);
+    }
+
+
+    @Override
+    public String getMessage()
+    {
+        DBProperties.getFormatedDBProperty(super.getMessage(), getData().toArray());
+        return super.getMessage();
+    }
 }

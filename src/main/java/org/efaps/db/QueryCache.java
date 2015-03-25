@@ -22,6 +22,8 @@ package org.efaps.db;
 
 import java.util.List;
 
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.TermQuery;
 import org.efaps.admin.AppConfigHandler;
 import org.efaps.util.cache.CacheLogListener;
 import org.efaps.util.cache.InfinispanCache;
@@ -31,10 +33,9 @@ import org.infinispan.context.Flag;
 import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
 import org.infinispan.notifications.cachelistener.event.CacheEntryCreatedEvent;
+import org.infinispan.query.CacheQuery;
 import org.infinispan.query.Search;
 import org.infinispan.query.SearchManager;
-import org.infinispan.query.dsl.Query;
-import org.infinispan.query.dsl.QueryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,8 +117,10 @@ public final class QueryCache
                             QueryCache.INDEXCACHE);
             if (!indexCache.isEmpty()) {
                 final SearchManager searchManager = Search.getSearchManager(indexCache);
-                final QueryFactory<?> qf = searchManager.getQueryFactory();
-                final Query query = qf.from(QueryKey.class).having("key").eq(_key).toBuilder().build();
+                final Term term = new Term("key", _key);
+                final org.apache.lucene.search.Query termQuery =  new TermQuery(term);
+
+                final CacheQuery query = searchManager.getQuery(termQuery, QueryKey.class);
                 final List<?> result = query.list();
                 if (result != null) {
                     for (final Object key : result) {
