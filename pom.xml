@@ -478,7 +478,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
        <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-runtime-manager</artifactId>
-            <version>6.2.0.CR4</version>
+            <version>6.2.0.Final</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hibernate-jpa-2.0-api</artifactId>
@@ -489,7 +489,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-persistence-jpa</artifactId>
-            <version>6.2.0.CR4</version>
+            <version>6.2.0.Final</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hibernate-jpa-2.0-api</artifactId>
@@ -500,7 +500,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-kie-services</artifactId>
-            <version>6.2.0.CR4</version>
+            <version>6.2.0.Final</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hibernate-jpa-2.0-api</artifactId>
@@ -511,7 +511,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-human-task-jpa</artifactId>
-            <version>6.2.0.CR4</version>
+            <version>6.2.0.Final</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hibernate-jpa-2.0-api</artifactId>
@@ -522,7 +522,7 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-executor</artifactId>
-            <version>6.2.0.CR4</version>
+            <version>6.2.0.Final</version>
              <exclusions>
                 <!-- use the lucene wich comes with infinispan-->
                 <exclusion>
