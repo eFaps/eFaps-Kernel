@@ -79,6 +79,7 @@ public final class MsgFormat
      * scanner.
      *
      * @throws EFapsException on error
+     * @return MsgFormat instance
      */
     private MsgFormat init()
         throws EFapsException
@@ -131,18 +132,34 @@ public final class MsgFormat
         return MapUtils.unmodifiableMap(this.registry);
     }
 
+    /**
+     * Get the MsgFormat.
+     * @return MesgFormat
+     * @throws EFapsException
+     */
     public static MsgFormat get()
         throws EFapsException
     {
         return MsgFormat.MSGFORMAT.init();
     }
 
+    /**
+     * @param _pattern pattern to apply
+     * @return ExtendedMessageFormat
+     * @throws EFapsException on error
+     */
     public static ExtendedMessageFormat getFormat(final String _pattern)
         throws EFapsException
     {
         return getFormat(_pattern, Context.getThreadContext().getLocale());
     }
 
+    /**
+     * @param _pattern pattern to apply
+     * @param _locale Locale
+     * @return ExtendedMessageFormat
+     * @throws EFapsException on error
+     */
     public static ExtendedMessageFormat getFormat(final String _pattern,
                                                   final Locale _locale)
         throws EFapsException
