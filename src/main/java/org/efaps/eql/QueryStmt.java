@@ -105,6 +105,7 @@ public class QueryStmt
         this.queryBdr.addWhereAttrEqValue(_attr, _values.toArray());
     }
 
+    @Override
     public void addWhereSelectEq(final String _select,
                                  final String _value)
         throws EFapsException
@@ -112,6 +113,7 @@ public class QueryStmt
         this.queryBdr.addWhereSelectEqValue(_select, _value);
     }
 
+    @Override
     public void addWhereSelectGreater(final String _select,
                                       final String _value)
         throws EFapsException
@@ -119,11 +121,20 @@ public class QueryStmt
         this.queryBdr.addWhereSelectGreaterValue(_select, _value);
     }
 
+    @Override
     public void addWhereSelectLess(final String _select,
                                    final String _value)
         throws EFapsException
     {
         this.queryBdr.addWhereSelectLessValue(_select, _value);
+    }
+
+    @Override
+    public void addWhereSelectLike(final String _select,
+                                   final String _value)
+        throws Exception
+    {
+        this.queryBdr.addWhereSelectMatchValue(_select, _value);
     }
 
     @Override

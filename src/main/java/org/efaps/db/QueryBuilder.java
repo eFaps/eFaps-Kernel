@@ -439,6 +439,24 @@ public class QueryBuilder
     }
 
     /**
+     * @param _select   Select statement
+     * @param _value    value to be included in the where
+     * @return QGreater
+     * @throws EFapsException on error
+     */
+    public QMatch addWhereSelectMatchValue(final String _select,
+                                           final Object _value)
+        throws EFapsException
+    {
+        final String attribute = getAttr4Select(_select);
+        final QueryBuilder queryBldr = getAttrQueryBuilder(_select);
+        final QMatch ret = new QMatch(new QAttribute(attribute), getValue(_value));
+        queryBldr.getCompares().add(ret);
+        return ret;
+    }
+
+
+    /**
      * @param _ciAttr   CIAttribute of the attribute
      * @param _value    value to be included in the where
      * @return QLess
