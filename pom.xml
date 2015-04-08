@@ -408,12 +408,12 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-multipart</artifactId>
-            <version>2.7</version>
+            <version>${jersey.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-server</artifactId>
-            <version>2.7</version>
+            <version>${jersey.version}</version>
         </dependency>
 
         <!-- timer for background prozesses -->
