@@ -246,7 +246,8 @@ public abstract class AbstractUpdate
                     AbstractUpdate.LOG.debug("Executing '" + this.installFile.getUrl().toString() + "'");
                 }
                 def.updateInDB(_step, this.allLinkTypes);
-                if (def.getInstance() != null && def.getInstance().isValid()) {
+                if (def.getInstance() != null && def.getInstance().isValid()
+                                && UpdateLifecycle.EFAPS_UPDATE.equals(_step)) {
                     registerRevision(getFileApplication(), getInstallFile(), def.getInstance());
                 }
             }
@@ -259,7 +260,8 @@ public abstract class AbstractUpdate
         throws InstallationException
     {
         try {
-            if (CIAdminCommon.Application.getType() != null) {
+            if (CIAdminCommon.Application.getType() != null
+                            && CIAdminCommon.Application.getType().getAttributes().size() > 4) {
                 final QueryBuilder appQueryBldr = new QueryBuilder(CIAdminCommon.Application);
                 appQueryBldr.addWhereAttrEqValue(CIAdminCommon.Application.Name, _application);
                 final CachedInstanceQuery appQuery = appQueryBldr.getCachedQuery4Request();

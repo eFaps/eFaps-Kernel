@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -665,8 +666,13 @@ public final class Application
         throws InstallationException
     {
         try {
-            Context.begin(_userName);
-            if (CIAdminCommon.ApplicationVersion.getType() != null) {
+            Context.begin();
+            if (Context.getDbType().existsView(Context.getThreadContext().getConnection(), "V_ADMINTYPE")
+                            && CIAdminCommon.ApplicationVersion.getType() != null
+                            && CIAdminCommon.Application.getType() != null
+                            && CIAdminCommon.Application.getType().getAttributes().size() > 4) {
+                Context.commit();
+                Context.begin(_userName);
                 // store cached versions
                 for (final Long version : this.notStoredVersions) {
                     final QueryBuilder appQueryBldr = new QueryBuilder(CIAdminCommon.Application);
@@ -721,6 +727,8 @@ public final class Application
             }
             Context.commit();
         } catch (final EFapsException e) {
+            throw new InstallationException("Update of the version information failed", e);
+        } catch (final SQLException e) {
             throw new InstallationException("Update of the version information failed", e);
         }
     }
