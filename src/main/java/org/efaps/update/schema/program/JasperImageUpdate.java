@@ -20,8 +20,7 @@
 
 package org.efaps.update.schema.program;
 
-import java.net.URL;
-
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.schema.AbstractFileUpdate;
 
 /**
@@ -42,9 +41,9 @@ public class JasperImageUpdate
      *
      * @param _url URL of the file
      */
-    public JasperImageUpdate(final URL _url)
+    public JasperImageUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_Program_JasperImage");
+        super(_installFile, "Admin_Program_JasperImage");
     }
 
     /**

@@ -43,6 +43,7 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.IUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.Profile;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.util.InstallationException;
@@ -133,15 +134,15 @@ public class DBPropertiesUpdate
     /**
      * The URL of the underlying file.
      */
-    private final URL url;
+    private final InstallFile installFile;
 
     /**
      * @param _url url for the file
      */
-    public DBPropertiesUpdate(final URL _url)
+    public DBPropertiesUpdate(final InstallFile _installFile)
     {
-        this.url = _url;
-        final String urlStr = _url.toString();
+        this.installFile = _installFile;
+        final String urlStr = getInstallFile().getUrl().toString();
         this.root = urlStr.substring(0, urlStr.lastIndexOf(File.separator) + 1);
     }
 
@@ -519,9 +520,9 @@ public class DBPropertiesUpdate
      * {@inheritDoc}
      */
     @Override
-    public URL getURL()
+    public InstallFile getInstallFile()
     {
-        return this.url;
+        return this.installFile;
     }
 
     /**

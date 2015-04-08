@@ -20,7 +20,6 @@
 
 package org.efaps.update.schema.datamodel;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +32,7 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
@@ -53,9 +53,9 @@ public class DimensionUpdate
      *
      * @param _url URL of the file
      */
-    public DimensionUpdate(final URL _url)
+    public DimensionUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_DataModel_Dimension");
+        super(_installFile, "Admin_DataModel_Dimension");
     }
 
     /**
@@ -223,7 +223,7 @@ public class DimensionUpdate
         {
             final String name = super.getValue("Name");
             try {
-                _insert.add(CIAdminDataModel.Dimension.Name, (name == null) ? "-" : name);
+                _insert.add(CIAdminDataModel.Dimension.Name, name == null ? "-" : name);
             } catch (final EFapsException e) {
                 throw new InstallationException("Name attribute could not be defined", e);
             }

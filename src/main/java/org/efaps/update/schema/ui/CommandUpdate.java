@@ -20,7 +20,6 @@
 
 package org.efaps.update.schema.ui;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,7 @@ import java.util.Set;
 
 import org.efaps.admin.event.EventType;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.event.Event;
 import org.efaps.util.EFapsException;
@@ -107,7 +107,7 @@ public class CommandUpdate
      *
      * @param _url URL of the file
      */
-    public CommandUpdate(final URL _url)
+    public CommandUpdate(final InstallFile _url)
     {
         super(_url, "Admin_UI_Command", CommandUpdate.ALLLINKS);
     }
@@ -117,7 +117,7 @@ public class CommandUpdate
      * @param _typeName name of the type
      * @param _allLinks all links
      */
-    protected CommandUpdate(final URL _url,
+    protected CommandUpdate(final InstallFile _url,
                             final String _typeName,
                             final Set<Link> _allLinks)
     {
@@ -187,7 +187,7 @@ public class CommandUpdate
                     final String name = (_attributes.get("name") == null
                                     ? getValue("Name") + "." + subValue : _attributes.get("name"))
                                                     + (_attributes.get("index") == null
-                                                    ? "" : ("." + _attributes.get("index")));
+                                                    ? "" : "." + _attributes.get("index"));
                     if ("evaluate".equals(subValue)) {
                         addEvent(new Event(name, EventType.UI_TABLE_EVALUATE,
                                         _attributes.get("program"), _attributes.get("method"),

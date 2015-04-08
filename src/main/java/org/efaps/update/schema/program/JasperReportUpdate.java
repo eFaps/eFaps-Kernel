@@ -19,10 +19,10 @@
  */
 
 package org.efaps.update.schema.program;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.schema.program.jasperreport.JasperReportImporter;
 import org.efaps.update.util.InstallationException;
 
@@ -54,9 +54,9 @@ public class JasperReportUpdate extends AbstractSourceUpdate
      * @param _url URL of the file
      *
      */
-    public JasperReportUpdate(final URL _url)
+    public JasperReportUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_Program_JasperReport", JasperReportUpdate.ALLLINKS);
+        super(_installFile, "Admin_Program_JasperReport", JasperReportUpdate.ALLLINKS);
     }
 
     /**
@@ -65,10 +65,10 @@ public class JasperReportUpdate extends AbstractSourceUpdate
      * @param _url URL to the file
      * @return JavaScriptUpdate
      */
-    public static JasperReportUpdate readFile(final URL _url)
+    public static JasperReportUpdate readFile(final InstallFile _installFile)
     {
-        final JasperReportUpdate ret = new JasperReportUpdate(_url);
-        final JasperReportDefinition definition = ret.new JasperReportDefinition(_url);
+        final JasperReportUpdate ret = new JasperReportUpdate(_installFile);
+        final JasperReportDefinition definition = ret.new JasperReportDefinition(_installFile);
         ret.addDefinition(definition);
         return ret;
     }
@@ -91,9 +91,9 @@ public class JasperReportUpdate extends AbstractSourceUpdate
          * @param _url URL to the JasperReport file
          *
          */
-        public JasperReportDefinition(final URL _url)
+        public JasperReportDefinition(final InstallFile _installFile)
         {
-            super(_url);
+            super(_installFile);
         }
 
         /**
@@ -109,7 +109,7 @@ public class JasperReportUpdate extends AbstractSourceUpdate
             throws InstallationException
         {
             if (this.jrxml == null) {
-                this.jrxml = new JasperReportImporter(getUrl());
+                this.jrxml = new JasperReportImporter(getInstallFile());
             }
             setName(this.jrxml.getProgramName());
 
@@ -124,19 +124,6 @@ public class JasperReportUpdate extends AbstractSourceUpdate
             if (getInstance() == null) {
                 setInstance(this.jrxml.searchInstance());
             }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected String getRevision()
-            throws InstallationException
-        {
-            if (this.jrxml == null) {
-                this.jrxml = new JasperReportImporter(getUrl());
-            }
-            return this.jrxml.getRevision();
         }
     }
 

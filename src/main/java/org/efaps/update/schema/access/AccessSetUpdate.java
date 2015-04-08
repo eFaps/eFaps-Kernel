@@ -21,7 +21,6 @@
 package org.efaps.update.schema.access;
 
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +29,7 @@ import java.util.Set;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.LinkInstance;
 import org.efaps.util.EFapsException;
 
@@ -82,7 +82,7 @@ public class AccessSetUpdate
      *
      * @param _url URL of the file
      */
-    public AccessSetUpdate(final URL _url)
+    public AccessSetUpdate(final InstallFile _url)
     {
         super(_url, "Admin_Access_AccessSet", AccessSetUpdate.ALLLINKS);
     }
@@ -133,7 +133,7 @@ public class AccessSetUpdate
             } else if ("status".equals(value)) {
                 if (_tags.size() == 1) {
                     this.currentGroupName = _attributes.get("group");
-                } else if ((_tags.size() == 2) && "key".equals(_tags.get(1))) {
+                } else if (_tags.size() == 2 && "key".equals(_tags.get(1))) {
                     final LinkInstance linkinstance = new LinkInstance();
                     linkinstance.getKeyAttr2Value().put("Key", _text);
                     linkinstance.getKeyAttr2Value().put("Type", this.currentGroupName);

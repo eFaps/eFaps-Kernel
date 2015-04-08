@@ -20,9 +20,8 @@
 
 package org.efaps.update.schema.program.staticsource;
 
-import java.net.URL;
-
 import org.efaps.ci.CIAdminProgram;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.util.InstallationException;
 
 /**
@@ -42,9 +41,9 @@ public class XSLImporter
      *                               because file from <code>_url</code> could
      *                               not be read
      */
-    public XSLImporter(final URL _url)
+    public XSLImporter(final InstallFile _installFile)
         throws InstallationException
     {
-        super(CIAdminProgram.XSL, _url);
+        super(CIAdminProgram.XSL, _installFile);
     }
 }

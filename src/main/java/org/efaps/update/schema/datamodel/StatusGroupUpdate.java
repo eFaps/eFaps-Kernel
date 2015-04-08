@@ -20,7 +20,6 @@
 
 package org.efaps.update.schema.datamodel;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,7 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
@@ -59,9 +59,9 @@ public class StatusGroupUpdate
      *
      * @param _url url to the file
      */
-    public StatusGroupUpdate(final URL _url)
+    public StatusGroupUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_DataModel_Type");
+        super(_installFile, "Admin_DataModel_Type");
     }
 
     /**
@@ -202,7 +202,7 @@ public class StatusGroupUpdate
 
                 if (_step == UpdateLifecycle.STATUSGROUP_UPDATE) {
                     // set the id of the parent type (if defined)
-                    if ((this.parentType != null) && (this.parentType.length() > 0)) {
+                    if (this.parentType != null && this.parentType.length() > 0) {
                         final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.Type);
                         queryBldr.addWhereAttrEqValue(CIAdminDataModel.Type.Name, this.parentType);
                         final InstanceQuery query = queryBldr.getQuery();

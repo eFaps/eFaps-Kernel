@@ -20,7 +20,6 @@
 
 package org.efaps.update.schema.common;
 
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +28,7 @@ import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
@@ -45,9 +45,9 @@ public class NumberGeneratorUpdate
     /**
      * @param _url URL to the xml file
      */
-    public NumberGeneratorUpdate(final URL _url)
+    public NumberGeneratorUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_Common_NumGen");
+        super(_installFile, "Admin_Common_NumGen");
     }
 
     /**

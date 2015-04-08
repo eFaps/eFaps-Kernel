@@ -20,13 +20,13 @@
 
 package org.efaps.update.schema.help;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.LinkInstance;
 import org.efaps.util.EFapsException;
 
@@ -62,9 +62,9 @@ public class HelpMenuUpdate
      * Constructor calling the super constructor.
      * @param _url URL to the xml definition file.
      */
-    public HelpMenuUpdate(final URL _url)
+    public HelpMenuUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_Help_Menu", HelpMenuUpdate.ALLLINKS);
+        super(_installFile, "Admin_Help_Menu", HelpMenuUpdate.ALLLINKS);
     }
 
     /**

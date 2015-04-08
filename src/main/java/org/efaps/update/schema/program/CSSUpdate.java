@@ -20,11 +20,11 @@
 
 package org.efaps.update.schema.program;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.efaps.ci.CIAdminProgram;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.schema.program.staticsource.CSSImporter;
 import org.efaps.update.util.InstallationException;
@@ -61,9 +61,9 @@ public class CSSUpdate
      *
      * @param _url URL of the file
      */
-    protected CSSUpdate(final URL _url)
+    protected CSSUpdate(final InstallFile _installFile)
     {
-        super(_url, CIAdminProgram.CSS.getType().getName(), CSSUpdate.ALLLINKS);
+        super(_installFile, CIAdminProgram.CSS.getType().getName(), CSSUpdate.ALLLINKS);
     }
 
     /**
@@ -72,11 +72,11 @@ public class CSSUpdate
      * @param _url URL to the file
      * @return CSSUpdate
      */
-    public static CSSUpdate readFile(final URL _url)
+    public static CSSUpdate readFile(final InstallFile _installFile)
     {
 
-        final CSSUpdate ret = new CSSUpdate(_url);
-        final CSSDefinition definition = ret.new CSSDefinition(_url);
+        final CSSUpdate ret = new CSSUpdate(_installFile);
+        final CSSDefinition definition = ret.new CSSDefinition(_installFile);
         ret.addDefinition(definition);
         return ret;
     }
@@ -99,9 +99,9 @@ public class CSSUpdate
          * @param _url URL to the css file
          *
          */
-        public CSSDefinition(final URL _url)
+        public CSSDefinition(final InstallFile _installFile)
         {
-            super(_url);
+            super(_installFile);
         }
 
         /**
@@ -115,7 +115,7 @@ public class CSSUpdate
             throws InstallationException
         {
             if (this.sourceCode == null) {
-                this.sourceCode = new CSSImporter(getUrl());
+                this.sourceCode = new CSSImporter(getInstallFile());
             }
             setName(this.sourceCode.getProgramName());
 
@@ -131,19 +131,6 @@ public class CSSUpdate
             if (getInstance() == null) {
                 setInstance(this.sourceCode.searchInstance());
             }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected String getRevision()
-            throws InstallationException
-        {
-            if (this.sourceCode == null) {
-                this.sourceCode = new CSSImporter(getUrl());
-            }
-            return this.sourceCode.getRevision();
         }
     }
 }

@@ -128,7 +128,6 @@ public enum FileType {
         } else if ("bpmn".equals(_type)) {
             this.clazzes.add(BPMUpdate.class);
         }
-
     }
 
     /**

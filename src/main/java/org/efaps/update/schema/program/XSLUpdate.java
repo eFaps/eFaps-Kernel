@@ -22,9 +22,8 @@ package org.efaps.update.schema.program;
 
 
 
-import java.net.URL;
-
 import org.efaps.ci.CIAdminProgram;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.schema.program.staticsource.XSLImporter;
 import org.efaps.update.util.InstallationException;
 
@@ -43,9 +42,9 @@ public class XSLUpdate
      *
      * @param _url URL of the file
      */
-    protected XSLUpdate(final URL _url)
+    protected XSLUpdate(final InstallFile _installFile)
     {
-        super(_url, CIAdminProgram.XSL.getType().getName());
+        super(_installFile, CIAdminProgram.XSL.getType().getName());
     }
 
     /**
@@ -54,10 +53,10 @@ public class XSLUpdate
      * @param _url URL to the file
      * @return XSLUpdate
      */
-    public static XSLUpdate readFile(final URL _url)
+    public static XSLUpdate readFile(final InstallFile _installFile)
     {
-        final XSLUpdate ret = new XSLUpdate(_url);
-        final XSLDefinition definition = ret.new XSLDefinition(_url);
+        final XSLUpdate ret = new XSLUpdate(_installFile);
+        final XSLDefinition definition = ret.new XSLDefinition(_installFile);
         ret.addDefinition(definition);
         return ret;
     }
@@ -79,9 +78,9 @@ public class XSLUpdate
          *
          * @param _url URL of the file
          */
-        public XSLDefinition(final URL _url)
+        public XSLDefinition(final InstallFile _installFile)
         {
-            super(_url);
+            super(_installFile);
         }
 
         /**
@@ -96,7 +95,7 @@ public class XSLUpdate
             throws InstallationException
         {
             if (this.sourceCode == null) {
-                this.sourceCode = new XSLImporter(getUrl());
+                this.sourceCode = new XSLImporter(getInstallFile());
             }
             setName(this.sourceCode.getProgramName());
 
@@ -107,19 +106,6 @@ public class XSLUpdate
             if (getInstance() == null) {
                 setInstance(this.sourceCode.searchInstance());
             }
-        }
-
-        /**
-         * {@inheritDoc}
-         *
-         */
-        @Override
-        protected String getRevision() throws InstallationException
-        {
-            if (this.sourceCode == null) {
-                this.sourceCode = new XSLImporter(getUrl());
-            }
-            return this.sourceCode.getRevision();
         }
     }
 }

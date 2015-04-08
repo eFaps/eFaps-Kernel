@@ -20,13 +20,13 @@
 
 package org.efaps.update.schema.ui;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.efaps.admin.event.EventType;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.event.Event;
 import org.efaps.util.EFapsException;
@@ -55,7 +55,7 @@ public class FormUpdate
      *
      * @param _url URL of the file
      */
-    public FormUpdate(final URL _url)
+    public FormUpdate(final InstallFile _url)
     {
         super(_url, "Admin_UI_Form", FormUpdate.ALLLINKS);
     }
@@ -97,7 +97,7 @@ public class FormUpdate
                 if (_tags.size() == 1) {
                     addEvent(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
                                     _attributes.get("program"), _attributes.get("method"), _attributes.get("index")));
-                } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
+                } else if (_tags.size() == 2 && "property".equals(_tags.get(1))) {
                     getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);
                 } else {
                     super.readXML(_tags, _attributes, _text);

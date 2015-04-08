@@ -20,13 +20,13 @@
 
 package org.efaps.update.schema.integration;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.util.EFapsException;
 
 /**
@@ -52,9 +52,9 @@ public class WebDAVUpdate
      *
      * @param _url        URL of the file
      */
-    public WebDAVUpdate(final URL _url)
+    public WebDAVUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_Integration_WebDAV", WebDAVUpdate.ALLLINKS);
+        super(_installFile, "Admin_Integration_WebDAV", WebDAVUpdate.ALLLINKS);
     }
 
     /**

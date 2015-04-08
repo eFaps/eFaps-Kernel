@@ -20,7 +20,6 @@
 
 package org.efaps.update;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,6 +49,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.event.Event;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
@@ -90,7 +90,7 @@ public abstract class AbstractUpdate
     /**
      * The URL of the xml file is stored in this instance variable.
      */
-    private final URL url;
+    private final InstallFile installFile;
 
     /**
      * The name of the data model type is store in this instance variable.
@@ -136,10 +136,10 @@ public abstract class AbstractUpdate
      * @param _url URL of the update file
      * @param _dataModelTypeName name of the data model type to update
      */
-    protected AbstractUpdate(final URL _url,
+    protected AbstractUpdate(final InstallFile _installFile,
                              final String _dataModelTypeName)
     {
-        this(_url, _dataModelTypeName, null);
+        this(_installFile, _dataModelTypeName, null);
     }
 
     /**
@@ -150,11 +150,11 @@ public abstract class AbstractUpdate
      * @param _dataModelTypeName name of the data model type to update
      * @param _allLinkTypes all possible type link
      */
-    protected AbstractUpdate(final URL _url,
+    protected AbstractUpdate(final InstallFile _installFile,
                              final String _dataModelTypeName,
                              final Set<Link> _allLinkTypes)
     {
-        this.url = _url;
+        this.installFile = _installFile;
         this.dataModelTypeName = _dataModelTypeName;
         this.allLinkTypes = _allLinkTypes;
     }
@@ -190,7 +190,7 @@ public abstract class AbstractUpdate
             final AbstractDefinition curDef = this.definitions.get(this.definitions.size() - 1);
             curDef.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
         } else {
-            throw new SAXException("Unknown XML Tag: " + _tags + " for: " + this.url);
+            throw new SAXException("Unknown XML Tag: " + _tags + " for: " + this.installFile);
         }
     }
 
@@ -250,8 +250,8 @@ public abstract class AbstractUpdate
                             && (def.getProfiles().isEmpty()
                                             || CollectionUtils.containsAny(_profiles, def.getProfiles())
                                             || def.isApplyDefault(_profiles, this.definitions))) {
-                if (this.url != null && AbstractUpdate.LOG.isDebugEnabled()) {
-                    AbstractUpdate.LOG.debug("Executing '" + this.url.toString() + "'");
+                if (this.installFile != null && AbstractUpdate.LOG.isDebugEnabled()) {
+                    AbstractUpdate.LOG.debug("Executing '" + this.installFile.getUrl().toString() + "'");
                 }
                 def.updateInDB(_step, this.allLinkTypes);
             }
@@ -264,9 +264,9 @@ public abstract class AbstractUpdate
      * @return value of instance variable {@link #url}
      */
     @Override
-    public URL getURL()
+    public InstallFile getInstallFile()
     {
-        return this.url;
+        return this.installFile;
     }
 
     /**
@@ -717,7 +717,7 @@ public abstract class AbstractUpdate
                     }
                 }
             } else {
-                throw new Error("Unknown Tag '" + _tags + "' (file " + AbstractUpdate.this.url + ")");
+                throw new Error("Unknown Tag '" + _tags + "' (file " + AbstractUpdate.this.installFile + ")");
             }
         }
 

@@ -21,7 +21,6 @@
 package org.efaps.update.schema.program.jasperreport;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.util.Map;
 import java.util.UUID;
 
@@ -39,6 +38,7 @@ import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 import org.efaps.ci.CIAdminProgram;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.schema.program.AbstractSourceImporter;
 import org.efaps.update.util.InstallationException;
 import org.slf4j.Logger;
@@ -68,10 +68,10 @@ public class JasperReportImporter
      * @param _url  url to the file to be imported
      * @throws InstallationException on error
      */
-    public JasperReportImporter(final URL _url)
+    public JasperReportImporter(final InstallFile _installFile)
         throws InstallationException
     {
-        super(CIAdminProgram.JasperReport, _url);
+        super(CIAdminProgram.JasperReport, _installFile);
     }
 
     /**

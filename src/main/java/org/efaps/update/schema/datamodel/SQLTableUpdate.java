@@ -20,7 +20,6 @@
 
 package org.efaps.update.schema.datamodel;
 
-import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -42,6 +41,7 @@ import org.efaps.db.databases.information.TableInformation;
 import org.efaps.db.databases.information.UniqueKeyInformation;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
@@ -80,9 +80,9 @@ public class SQLTableUpdate
      *
      * @param _url        URL of the file
      */
-    public SQLTableUpdate(final URL _url)
+    public SQLTableUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_DataModel_SQLTable");
+        super(_installFile, "Admin_DataModel_SQLTable");
     }
 
     /**
@@ -392,10 +392,10 @@ public class SQLTableUpdate
                     } else if ("column".equals(subValue))  {
                         final String lengthStr = _attributes.get("length");
                         final String scaleStr = _attributes.get("scale");
-                        final int length = (lengthStr != null)
+                        final int length = lengthStr != null
                                            ? Integer.parseInt(lengthStr)
                                            : 0;
-                        final int scale = (scaleStr != null)
+                        final int scale = scaleStr != null
                                           ? Integer.parseInt(scaleStr)
                                           : 0;
                         this.columns.add(new Column(_attributes.get("name"),
@@ -426,7 +426,7 @@ public class SQLTableUpdate
                     }
                 }
             } else if ("parent".equals(value))  {
-                if ((_text != null) && !"".equals(_text)) {
+                if (_text != null && !"".equals(_text)) {
                     this.parent = _text;
                 }
             } else if ("typeid-column".equals(value))  {
@@ -703,7 +703,7 @@ public class SQLTableUpdate
                         }
                         // the scale must never be made smaller, because it would lead to data loss
                         if (column.length > 0
-                                        && (colInfo.getSize() < column.length && colInfo.getScale() <= column.scale)) {
+                                        && colInfo.getSize() < column.length && colInfo.getScale() <= column.scale) {
                             try {
                                 Context.getDbType().updateColumn(con.getConnection(), tableName, column.name,
                                                 column.type, column.length, column.scale);

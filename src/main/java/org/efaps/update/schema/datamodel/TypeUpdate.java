@@ -20,7 +20,6 @@
 
 package org.efaps.update.schema.datamodel;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -43,6 +42,7 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.event.Event;
@@ -114,9 +114,9 @@ public class TypeUpdate
      *
      * @param _url URL of the file
      */
-    public TypeUpdate(final URL _url)
+    public TypeUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_DataModel_Type", TypeUpdate.ALLLINKS);
+        super(_installFile, "Admin_DataModel_Type", TypeUpdate.ALLLINKS);
     }
 
     /**
@@ -202,7 +202,7 @@ public class TypeUpdate
                 if (_tags.size() == 1) {
                     this.events.add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
                                     _attributes.get("program"), _attributes.get("method"), _attributes.get("index")));
-                } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
+                } else if (_tags.size() == 2 && "property".equals(_tags.get(1))) {
                     this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"), _text);
                 } else {
                     super.readXML(_tags, _attributes, _text);
@@ -215,7 +215,7 @@ public class TypeUpdate
                 if (_tags.size() == 1) {
                     this.events.add(new Event(_attributes.get("name"), EventType.VALIDATE, _attributes.get("program"),
                                     _attributes.get("method"), _attributes.get("index")));
-                } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
+                } else if (_tags.size() == 2 && "property".equals(_tags.get(1))) {
                     this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"), _text);
                 } else {
                     super.readXML(_tags, _attributes, _text);
@@ -448,7 +448,7 @@ public class TypeUpdate
             throws EFapsException
         {
             long typeLinkId = 0;
-            if ((this.typeLink != null) && (this.typeLink.length() > 0)) {
+            if (this.typeLink != null && this.typeLink.length() > 0) {
                 final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.Type);
                 queryBldr.addWhereAttrEqValue(CIAdminDataModel.Type.Name, this.typeLink);
                 final InstanceQuery query = queryBldr.getQuery();
@@ -740,7 +740,7 @@ public class TypeUpdate
                                     _attributes.get(Classification.Keys.RELLINKATTR.getValue()));
                     getProperties().put(Classification.Keys.MULTI.getValue(),
                                     _attributes.get(Classification.Keys.MULTI.getValue()));
-                } else if ((_tags.size() == 2) && "company".equals(_tags.get(1))) {
+                } else if (_tags.size() == 2 && "company".equals(_tags.get(1))) {
                     addLink(TypeUpdate.LINK2CLASSIFYCOMPANY, new LinkInstance(_text));
                 } else {
                     super.readXML(_tags, _attributes, _text);
@@ -753,7 +753,7 @@ public class TypeUpdate
                 if (_tags.size() == 1) {
                     addEvent(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
                                     _attributes.get("program"), _attributes.get("method"), _attributes.get("index")));
-                } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
+                } else if (_tags.size() == 2 && "property".equals(_tags.get(1))) {
                     getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);
                 } else {
                     super.readXML(_tags, _attributes, _text);
@@ -785,7 +785,7 @@ public class TypeUpdate
             try {
                 if (_step == UpdateLifecycle.EFAPS_UPDATE) {
                     // set the id of the parent type (if defined)
-                    if ((this.parentType != null) && (this.parentType.length() > 0)) {
+                    if (this.parentType != null && this.parentType.length() > 0) {
                         final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.Type);
                         queryBldr.addWhereAttrEqValue(CIAdminDataModel.Type.Name, this.parentType);
                         final InstanceQuery query = queryBldr.getQuery();
@@ -799,7 +799,7 @@ public class TypeUpdate
                     } else {
                         addValue(CIAdminDataModel.Type.ParentType.name, null);
                     }
-                    if ((this.parentClassType != null) && (this.parentClassType.length() > 0)) {
+                    if (this.parentClassType != null && this.parentClassType.length() > 0) {
                         final QueryBuilder queryBldr = new QueryBuilder(CIAdminDataModel.Type);
                         queryBldr.addWhereAttrEqValue(CIAdminDataModel.Type.Name, this.parentClassType);
                         final InstanceQuery query = queryBldr.getQuery();

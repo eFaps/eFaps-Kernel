@@ -20,10 +20,10 @@
 
 package org.efaps.update.schema.program;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.schema.program.staticsource.JavaScriptImporter;
 import org.efaps.update.util.InstallationException;
@@ -56,9 +56,9 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
      *
      * @param _url URL of the file
      */
-    protected JavaScriptUpdate(final URL _url)
+    protected JavaScriptUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_Program_JavaScript", JavaScriptUpdate.ALLLINKS);
+        super(_installFile, "Admin_Program_JavaScript", JavaScriptUpdate.ALLLINKS);
     }
 
     /**
@@ -67,10 +67,10 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
      * @param _url URL to the file
      * @return JavaScriptUpdate
      */
-    public static JavaScriptUpdate readFile(final URL _url)
+    public static JavaScriptUpdate readFile(final InstallFile _installFile)
     {
-        final JavaScriptUpdate ret = new JavaScriptUpdate(_url);
-        final JavaScriptDefinition definition = ret.new JavaScriptDefinition(_url);
+        final JavaScriptUpdate ret = new JavaScriptUpdate(_installFile);
+        final JavaScriptDefinition definition = ret.new JavaScriptDefinition(_installFile);
         ret.addDefinition(definition);
 
         return ret;
@@ -94,9 +94,9 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
          * @param _url URL to the css file
          *
          */
-        public JavaScriptDefinition(final URL _url)
+        public JavaScriptDefinition(final InstallFile _installFile)
         {
-            super(_url);
+            super(_installFile);
         }
 
         /**
@@ -111,7 +111,7 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
             throws InstallationException
         {
             if (this.sourceCode == null) {
-                this.sourceCode = new JavaScriptImporter(getUrl());
+                this.sourceCode = new JavaScriptImporter(getInstallFile());
             }
             setName(this.sourceCode.getProgramName());
 
@@ -126,19 +126,6 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
             if (getInstance() == null) {
                 setInstance(this.sourceCode.searchInstance());
             }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected String getRevision()
-            throws InstallationException
-        {
-            if (this.sourceCode == null) {
-                this.sourceCode = new JavaScriptImporter(getUrl());
-            }
-            return this.sourceCode.getRevision();
         }
     }
 }

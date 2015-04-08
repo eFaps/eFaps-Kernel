@@ -22,7 +22,6 @@ package org.efaps.update.schema.program;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Set;
 
 import org.apache.commons.jexl2.JexlContext;
@@ -31,6 +30,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
 import org.efaps.db.Context;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
@@ -50,10 +50,10 @@ public abstract class AbstractSourceUpdate
      * @param _url URL to the file
      * @param _modelTypeName name of the type
      */
-    protected AbstractSourceUpdate(final URL _url,
+    protected AbstractSourceUpdate(final InstallFile _installFile,
                                    final String _modelTypeName)
     {
-        this(_url, _modelTypeName, null);
+        this(_installFile, _modelTypeName, null);
     }
 
     /**
@@ -63,11 +63,11 @@ public abstract class AbstractSourceUpdate
      * @param _modelTypeName name of the type
      * @param _linkTypes set of links
      */
-    protected AbstractSourceUpdate(final URL _url,
+    protected AbstractSourceUpdate(final InstallFile _installFile,
                                    final String _modelTypeName,
                                    final Set<Link> _linkTypes)
     {
-        super(_url, _modelTypeName, _linkTypes);
+        super(_installFile, _modelTypeName, _linkTypes);
     }
 
     /**
@@ -100,7 +100,7 @@ public abstract class AbstractSourceUpdate
         /**
          * Instance variable holding the URL to the file to be imported.
          */
-        private URL fileUrl;
+        private InstallFile installFile;
 
         /**
          * Constructor to defined the URL in {@link #fileUrl} to the file and
@@ -109,11 +109,11 @@ public abstract class AbstractSourceUpdate
          *
          * @param _fileUrl  URL to the file (incl. root).
          */
-        protected AbstractSourceDefinition(final URL _fileUrl)
+        protected AbstractSourceDefinition(final InstallFile _installFile)
         {
             // searched by attribute Name
             super("Name");
-            this.fileUrl = _fileUrl;
+            this.installFile = _installFile;
         }
 
         /**
@@ -121,8 +121,11 @@ public abstract class AbstractSourceUpdate
          * @return revision
          * @throws InstallationException on error
          */
-        protected abstract String getRevision() throws InstallationException;
-
+        protected String getRevision()
+            throws InstallationException
+        {
+            return getInstallFile().getRevision();
+        }
         /**
          * Updates / creates the instance in the database. If a file
          * name is given, this file is checked in
@@ -146,7 +149,7 @@ public abstract class AbstractSourceUpdate
             if (_step == UpdateLifecycle.EFAPS_UPDATE && getValue("Name") != null)  {
                 final Checkin checkin = new Checkin(getInstance());
                 try {
-                    final InputStream in = this.fileUrl.openStream();
+                    final InputStream in = getInstallFile().getUrl().openStream();
                     checkin.executeWithoutAccessCheck(getValue("Name"),
                                                       in,
                                                       in.available());
@@ -176,27 +179,7 @@ public abstract class AbstractSourceUpdate
             return ret;
         }
 
-        /**
-         * This is the getter method for the instance variable
-         * {@link #fileUrl}.
-         *
-         * @return value of instance variable {@link #fileUrl}
-         */
-        public URL getUrl()
-        {
-            return this.fileUrl;
-        }
 
-        /**
-         * This is the setter method for the instance variable
-         * {@link #fileUrl}.
-         *
-         * @param _url  the url to set
-         */
-        public void setUrl(final URL _url)
-        {
-            this.fileUrl = _url;
-        }
 
         /**
          * Method returns a String representation of this class.
@@ -207,8 +190,30 @@ public abstract class AbstractSourceUpdate
         {
             return new ToStringBuilder(this)
                 .appendSuper(super.toString())
-                .append("url", this.fileUrl)
+                .append("installFile", this.installFile)
                 .toString();
+        }
+
+
+        /**
+         * Getter method for the instance variable {@link #installFile}.
+         *
+         * @return value of instance variable {@link #installFile}
+         */
+        public InstallFile getInstallFile()
+        {
+            return this.installFile;
+        }
+
+
+        /**
+         * Setter method for instance variable {@link #installFile}.
+         *
+         * @param _installFile value for instance variable {@link #installFile}
+         */
+        public void setInstallFile(final InstallFile _installFile)
+        {
+            this.installFile = _installFile;
         }
     }
 }

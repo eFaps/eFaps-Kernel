@@ -20,7 +20,6 @@
 
 package org.efaps.update.schema.user;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,7 @@ import java.util.Set;
 
 import org.efaps.db.Instance;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.LinkInstance;
 import org.efaps.util.EFapsException;
 
@@ -66,9 +66,9 @@ public class RoleUpdate
      *
      * @param _url        URL of the file
      */
-    public RoleUpdate(final URL _url)
+    public RoleUpdate(final InstallFile _installFile)
     {
-        super(_url, "temp", RoleUpdate.ALLLINKS);
+        super(_installFile, "temp", RoleUpdate.ALLLINKS);
     }
 
     @Override

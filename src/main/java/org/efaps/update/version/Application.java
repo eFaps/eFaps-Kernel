@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -58,11 +57,13 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.update.FileType;
 import org.efaps.update.Install;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.Profile;
 import org.efaps.update.schema.program.esjp.ESJPCompiler;
 import org.efaps.update.schema.program.staticsource.AbstractStaticSourceCompiler;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -189,7 +190,7 @@ public final class Application
     /**
      * Used in combination with the digester.
      */
-    private Map<String, String> tmpElements = new HashMap<String, String>();
+    private Set<InstallFile> tmpElements = new HashSet<>();
 
     /**
      * Initializes the {@link #rootUrl root URL} of this application.
@@ -242,8 +243,8 @@ public final class Application
             appl = (Application) digester.parse(_versionUrl);
             appl.rootUrl = _rootUrl;
             appl.classpathElements = _classpathElements;
-            for (final Entry<String, String> entry : appl.tmpElements.entrySet()) {
-                appl.addURL(new URL(_rootUrl, entry.getKey()), entry.getValue());
+            for (final InstallFile installFile : appl.tmpElements) {
+                appl.install.addFile(installFile.setURL(new URL(_rootUrl, installFile.getName())));
             }
             appl.tmpElements = null;
             Collections.sort(appl.dependencies, new Comparator<Dependency>()
@@ -307,24 +308,26 @@ public final class Application
         final Application appl;
         try {
             appl = Application.getApplication(_versionFile.toURI().toURL(),
-                                _eFapsDir.toURI().toURL(),
-                                _classpathElements);
+                            _eFapsDir.toURI().toURL(),
+                            _classpathElements);
 
             for (final String fileName : Application.getFiles(_eFapsDir, _includes, _excludes)) {
                 final String type = file2typeMapping.get(fileName.substring(fileName.lastIndexOf(".") + 1));
-                appl.addURL(new File(_eFapsDir, fileName).toURI().toURL(), type);
+                appl.install.addFile(new InstallFile().setType(type).setURL(
+                                new File(_eFapsDir, fileName).toURI().toURL()));
             }
             if (_outputDir.exists()) {
                 for (final String fileName : Application.getFiles(_outputDir, _includes, _excludes)) {
                     final String type = file2typeMapping.get(fileName.substring(fileName.lastIndexOf(".") + 1));
-                    appl.addURL(new File(_outputDir, fileName).toURI().toURL(), type);
+                    appl.install.addFile(new InstallFile().setType(type).setURL(
+                                    new File(_outputDir, fileName).toURI().toURL()));
                 }
             }
         } catch (final IOException e) {
             throw new InstallationException("Could not open / read version file " + "'" + _versionFile + "'", e);
-          //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception e) {
-          //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             throw new InstallationException("Read version file '" + _versionFile + "' failed", e);
         }
         return appl;
@@ -786,37 +789,29 @@ public final class Application
         this.application = _application;
     }
 
-
-    /**
-     * Adds a new URL with the XML definition file.
-     *
-     * @param _url url of XML definition files used to install
-     * @param _type type of the URL
-     * @see #install(String, String)
-     */
-    public void addURL(final URL _url,
-                       final String _type)
-    {
-        this.install.addFile(_url, _type);
-    }
-
     /**
      * Searches for the given file name (parameter _classPathFile) in the class
      * path and adds them as URL to the list of XML installation / update /
      * definition files ({@link #install}).
      *
-     * @param _classPathFile file name from the class path to add
+     * @param _classPathFile    file name from the class path to add
      * @param _type             type of the file to be added
+     * @param _revision         revision of the file to be added
+     * @param _date             date of the file to be added
      * @throws MalformedURLException on error with the URL
      * @see #addURL(URL, String)
      */
     @CallMethod(pattern = "install/files/file")
     public void addClassPathFile(
                         @CallParam(pattern = "install/files/file", attributeName = "name") final String _classPathFile,
-                        @CallParam(pattern = "install/files/file", attributeName = "type") final String _type)
+                        @CallParam(pattern = "install/files/file", attributeName = "type") final String _type,
+                        @CallParam(pattern = "install/files/file", attributeName = "revision") final String _revision,
+                        @CallParam(pattern = "install/files/file", attributeName = "date") final String _date)
         throws MalformedURLException
     {
-        this.tmpElements.put(_classPathFile, _type);
+        this.tmpElements.add(new InstallFile().setName(_classPathFile)
+                                        .setType(_type).setRevision(_revision)
+                                        .setDate(_date != null ? new DateTime(_date) : new DateTime()));
     }
 
     /**

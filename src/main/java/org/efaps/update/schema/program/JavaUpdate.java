@@ -20,11 +20,11 @@
 
 package org.efaps.update.schema.program;
 
-import java.net.URL;
 import java.util.Set;
 
 import org.efaps.db.Instance;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.schema.program.esjp.ESJPImporter;
 import org.efaps.update.util.InstallationException;
@@ -45,9 +45,9 @@ public class JavaUpdate
      *
      * @param _url  url to the file
      */
-    public JavaUpdate(final URL _url)
+    public JavaUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_Program_Java");
+        super(_installFile, "Admin_Program_Java");
     }
 
     /**
@@ -58,10 +58,10 @@ public class JavaUpdate
      * @param _url      URL of the file depending of the root URL
      * @return Java update definition read by digester
      */
-    public static JavaUpdate readFile(final URL _url)
+    public static JavaUpdate readFile(final InstallFile _installFile)
     {
-        final JavaUpdate ret = new JavaUpdate(_url);
-        final JavaDefinition definition = ret.new JavaDefinition(_url);
+        final JavaUpdate ret = new JavaUpdate(_installFile);
+        final JavaDefinition definition = ret.new JavaDefinition(_installFile);
         ret.addDefinition(definition);
         return ret;
     }
@@ -85,9 +85,9 @@ public class JavaUpdate
         /**
          * @param _url URL to the java file
          */
-        protected JavaDefinition(final URL _url)
+        protected JavaDefinition(final InstallFile _installFile)
         {
-            super(_url);
+            super(_installFile);
         }
 
         /**
@@ -102,7 +102,7 @@ public class JavaUpdate
             throws InstallationException
         {
             if (this.importer == null) {
-                this.importer = new ESJPImporter(getUrl());
+                this.importer = new ESJPImporter(getInstallFile());
             }
             setName(this.importer.getProgramName());
 
@@ -149,19 +149,6 @@ public class JavaUpdate
             } else  {
                 super.updateInDB(_step, _allLinkTypes);
             }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected String getRevision()
-            throws InstallationException
-        {
-            if (this.importer == null) {
-                this.importer = new ESJPImporter(getUrl());
-            }
-            return this.importer.getRevision();
         }
     }
 }

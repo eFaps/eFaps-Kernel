@@ -20,12 +20,12 @@
 
 package org.efaps.update.schema.ui;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.LinkInstance;
 import org.efaps.util.EFapsException;
 
@@ -59,9 +59,9 @@ public class MenuUpdate
     /**
      * @param _url URL to the Configuration Item.
      */
-    public MenuUpdate(final URL _url)
+    public MenuUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_UI_Menu", MenuUpdate.ALLLINKS);
+        super(_installFile, "Admin_UI_Menu", MenuUpdate.ALLLINKS);
     }
 
     /**
@@ -70,11 +70,11 @@ public class MenuUpdate
      * @param _typeName     Name of the type
      * @param _allLinks     link definitions
      */
-    protected MenuUpdate(final URL _url,
+    protected MenuUpdate(final InstallFile _installFile,
                          final String _typeName,
                          final Set<Link> _allLinks)
     {
-        super(_url, _typeName, _allLinks);
+        super(_installFile, _typeName, _allLinks);
     }
 
     /**

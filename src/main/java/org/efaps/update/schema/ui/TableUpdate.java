@@ -20,7 +20,7 @@
 
 package org.efaps.update.schema.ui;
 
-import java.net.URL;
+import org.efaps.update.Install.InstallFile;
 
 /**
  * @author The eFaps Team
@@ -34,8 +34,8 @@ public class TableUpdate
      *
      * @param _url        URL of the file
      */
-    public TableUpdate(final URL _url)
+    public TableUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_UI_Table");
+        super(_installFile, "Admin_UI_Table");
     }
 }

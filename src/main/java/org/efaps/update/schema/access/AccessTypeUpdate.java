@@ -20,9 +20,8 @@
 
 package org.efaps.update.schema.access;
 
-import java.net.URL;
-
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 
 /**
  * @author The eFaps Team
@@ -36,9 +35,9 @@ public class AccessTypeUpdate
      *
      * @param _url        URL of the file
      */
-    public AccessTypeUpdate(final URL _url)
+    public AccessTypeUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_Access_AccessType");
+        super(_installFile, "Admin_Access_AccessType");
     }
 
     /**

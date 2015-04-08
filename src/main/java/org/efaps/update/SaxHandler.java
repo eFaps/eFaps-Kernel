@@ -22,12 +22,12 @@ package org.efaps.update;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.schema.access.AccessSetUpdate;
 import org.efaps.update.schema.access.AccessTypeUpdate;
 import org.efaps.update.schema.common.MsgPhraseUpdate;
@@ -97,20 +97,20 @@ public class SaxHandler
     private StringBuilder content = null;
 
     /**
-     * Url of the file that is parsed.
+     * installFile of the file that is parsed.
      */
-    private URL url = null;
+    private InstallFile installFile = null;
 
     /**
-     * @param _url Url of the file to be parsed
+     * @param _installFile installFile of the file to be parsed
      * @return AbstractUpdate for the file
      * @throws SAXException on parse exception
      * @throws IOException on file access error
      */
-    public IUpdate parse(final URL _url)
+    public IUpdate parse(final InstallFile _installFile)
         throws SAXException, IOException
     {
-        this.url = _url;
+        this.installFile = _installFile;
 
         // einen XML Reader erzeugen
         final XMLReader reader = XMLReaderFactory.createXMLReader();
@@ -118,7 +118,7 @@ public class SaxHandler
         reader.setContentHandler(this);
         // unsere Beispiel XML Datei parsen
 
-        final URLConnection connection = this.url.openConnection();
+        final URLConnection connection = this.installFile.getUrl().openConnection();
         connection.setUseCaches(false);
         final InputStream stream = connection.getInputStream();
         reader.parse(new InputSource(stream));
@@ -229,88 +229,88 @@ public class SaxHandler
         } else {
             switch (_qName) {
                 case "access-set":
-                    this.update = new AccessSetUpdate(this.url);
+                    this.update = new AccessSetUpdate(this.installFile);
                     break;
                 case "access-type":
-                    this.update = new AccessTypeUpdate(this.url);
+                    this.update = new AccessTypeUpdate(this.installFile);
                     break;
                 case "bpm-image":
-                    this.update = new BPMImageUpdate(this.url);
+                    this.update = new BPMImageUpdate(this.installFile);
                     break;
                 case "common-msgphrase":
-                    this.update = new MsgPhraseUpdate(this.url);
+                    this.update = new MsgPhraseUpdate(this.installFile);
                     break;
                 case "common-systemconfiguration":
-                    this.update = new SystemConfigurationUpdate(this.url);
+                    this.update = new SystemConfigurationUpdate(this.installFile);
                     break;
                 case "datamodel-sqltable":
-                    this.update = new SQLTableUpdate(this.url);
+                    this.update = new SQLTableUpdate(this.installFile);
                     break;
                 case "datamodel-type":
-                    this.update = new TypeUpdate(this.url);
+                    this.update = new TypeUpdate(this.installFile);
                     break;
                 case "datamodel-dimension":
-                    this.update = new DimensionUpdate(this.url);
+                    this.update = new DimensionUpdate(this.installFile);
                     break;
                 case "datamodel-statusgroup":
-                    this.update = new StatusGroupUpdate(this.url);
+                    this.update = new StatusGroupUpdate(this.installFile);
                     break;
                 case "db-store":
-                    this.update = new StoreUpdate(this.url);
+                    this.update = new StoreUpdate(this.installFile);
                     break;
                 case "integration-webdav":
-                    this.update = new WebDAVUpdate(this.url);
+                    this.update = new WebDAVUpdate(this.installFile);
                     break;
                 case "jasperReport":
-                    this.update = new JasperReportUpdate(this.url);
+                    this.update = new JasperReportUpdate(this.installFile);
                     break;
                 case "jasper-image":
-                    this.update = new JasperImageUpdate(this.url);
+                    this.update = new JasperImageUpdate(this.installFile);
                     break;
                 case "numbergenerator":
-                    this.update = new NumberGeneratorUpdate(this.url);
+                    this.update = new NumberGeneratorUpdate(this.installFile);
                     break;
                 case "ui-command":
-                    this.update = new CommandUpdate(this.url);
+                    this.update = new CommandUpdate(this.installFile);
                     break;
                 case "ui-form":
-                    this.update = new FormUpdate(this.url);
+                    this.update = new FormUpdate(this.installFile);
                     break;
                 case "ui-image":
-                    this.update = new ImageUpdate(this.url);
+                    this.update = new ImageUpdate(this.installFile);
                     break;
                 case "ui-menu":
-                    this.update = new MenuUpdate(this.url);
+                    this.update = new MenuUpdate(this.installFile);
                     break;
                 case "ui-search":
-                    this.update = new SearchUpdate(this.url);
+                    this.update = new SearchUpdate(this.installFile);
                     break;
                 case "ui-table":
-                    this.update = new TableUpdate(this.url);
+                    this.update = new TableUpdate(this.installFile);
                     break;
                 case "user-company":
-                    this.update = new CompanyUpdate(this.url);
+                    this.update = new CompanyUpdate(this.installFile);
                     break;
                 case "user-jaassystem":
-                    this.update = new JAASSystemUpdate(this.url);
+                    this.update = new JAASSystemUpdate(this.installFile);
                     break;
                 case "user-role":
-                    this.update = new RoleUpdate(this.url);
+                    this.update = new RoleUpdate(this.installFile);
                     break;
                 case "user-group":
-                    this.update = new GroupUpdate(this.url);
+                    this.update = new GroupUpdate(this.installFile);
                     break;
                 case "dbproperties":
-                    this.update = new DBPropertiesUpdate(this.url);
+                    this.update = new DBPropertiesUpdate(this.installFile);
                     break;
                 case "help-menu":
-                    this.update = new HelpMenuUpdate(this.url);
+                    this.update = new HelpMenuUpdate(this.installFile);
                     break;
                 case "wiki-image":
-                    this.update = new WikiImageUpdate(this.url);
+                    this.update = new WikiImageUpdate(this.installFile);
                     break;
                 default:
-                    this.update = new DefaultEmptyUpdate(this.url);
+                    this.update = new DefaultEmptyUpdate(this.installFile);
                     break;
             }
         }

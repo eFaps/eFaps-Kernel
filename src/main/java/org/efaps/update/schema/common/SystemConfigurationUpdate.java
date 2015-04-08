@@ -20,7 +20,6 @@
 
 package org.efaps.update.schema.common;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,7 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
@@ -55,9 +55,9 @@ public class SystemConfigurationUpdate
      *
      * @param _url        URL of the file
      */
-    public SystemConfigurationUpdate(final URL _url)
+    public SystemConfigurationUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_Common_SystemConfiguration");
+        super(_installFile, "Admin_Common_SystemConfiguration");
     }
 
     /**

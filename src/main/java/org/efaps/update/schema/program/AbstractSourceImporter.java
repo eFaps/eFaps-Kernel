@@ -36,6 +36,7 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
@@ -100,11 +101,11 @@ public abstract class AbstractSourceImporter
      * @see #evalRevision()
      */
     public AbstractSourceImporter(final CIType _type,
-                                  final URL _url)
+                                  final InstallFile _installFile)
         throws InstallationException
     {
         this.ciType = _type;
-        this.url = _url;
+        this.url = _installFile.getUrl();
         readCode();
         this.programName = evalProgramName();
         this.eFapsUUID = evalUUID();

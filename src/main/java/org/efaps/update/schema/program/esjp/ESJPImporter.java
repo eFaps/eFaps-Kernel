@@ -20,12 +20,12 @@
 
 package org.efaps.update.schema.program.esjp;
 
-import java.net.URL;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.efaps.ci.CIAdminProgram;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.schema.program.AbstractSourceImporter;
 import org.efaps.update.util.InstallationException;
 
@@ -47,10 +47,10 @@ public class ESJPImporter
      * @param _url    url to the ESJP source code
      * @throws InstallationException on error
      */
-    public ESJPImporter(final URL _url)
+    public ESJPImporter(final InstallFile _installFile)
         throws InstallationException
     {
-        super(CIAdminProgram.Java, _url);
+        super(CIAdminProgram.Java, _installFile);
     }
 
     /**

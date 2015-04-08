@@ -47,6 +47,7 @@ import org.efaps.db.QueryBuilder;
 import org.efaps.db.SelectBuilder;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -169,7 +170,8 @@ public class Install
                         public int compare(final IUpdate _update0,
                                            final IUpdate _update1)
                         {
-                            return String.valueOf(_update0.getURL()).compareTo(String.valueOf(_update1.getURL()));
+                            return String.valueOf(_update0.getInstallFile().getUrl()).compareTo(
+                                            String.valueOf(_update1.getInstallFile().getUrl()));
                         }
                     });
                     for (final IUpdate update : updates) {
@@ -330,7 +332,7 @@ public class Install
                         if (file.getType() == fileType) {
                             final SaxHandler handler = new SaxHandler();
                             try {
-                                final IUpdate elem = handler.parse(file.getUrl());
+                                final IUpdate elem = handler.parse(file);
                                 List<IUpdate> list = this.cache.get(elem.getClass());
                                 if (list == null) {
                                     list = new ArrayList<IUpdate>();
@@ -352,7 +354,7 @@ public class Install
 
                         Method method = null;
                         try {
-                            method = updateClass.getMethod("readFile", URL.class);
+                            method = updateClass.getMethod("readFile", InstallFile.class);
                         } catch (final SecurityException e) {
                             throw new InstallationException("initialise()", e);
                         } catch (final NoSuchMethodException e) {
@@ -362,7 +364,7 @@ public class Install
                             if (file.getType() == fileType) {
                                 Object obj = null;
                                 try {
-                                    obj = method.invoke(null, file.getUrl());
+                                    obj = method.invoke(null, file);
                                 } catch (final IllegalArgumentException e) {
                                     throw new InstallationException("initialise()", e);
                                 } catch (final IllegalAccessException e) {
@@ -382,34 +384,11 @@ public class Install
     }
 
     /**
-     * Appends a new file defined through an URL and the string representation
-     * of the file type.
-     *
-     * @param _url URL of the file to append
-     * @param _type type of the file
-     * @see #files
-     * @see #initialised
-     * @see #addFile(URL, FileType) method called to add the URL after convert
-     *      the string representation of the type to a file type instance
+     * @param _installFile InstallFile to add
      */
-    public void addFile(final URL _url,
-                        final String _type)
+    public void addFile(final InstallFile _installFile)
     {
-        addFile(_url, FileType.getFileTypeByType(_type));
-    }
-
-    /**
-     * Appends a new file defined through an URL. The initialized flag
-     * {@link #initialized} is automatically reseted.
-     *
-     * @param _url URL of the file to add
-     * @param _fileType file type of the file to add
-     */
-    public void addFile(final URL _url,
-                        final FileType _fileType)
-    {
-        this.files.add(new InstallFile(_url, _fileType));
-        this.initialised = false;
+        this.files.add(_installFile);
     }
 
     /**
@@ -484,23 +463,18 @@ public class Install
         /**
          * URL to the file.
          */
-        private final URL url;
+        private URL url;
 
         /**
          * Type of the file.
          */
-        private final FileType type;
+        private FileType type;
 
-        /**
-         * @param _url      Url to the file
-         * @param _type     Type of the file.
-         */
-        public InstallFile(final URL _url,
-                           final FileType _type)
-        {
-            this.url = _url;
-            this.type = _type;
-        }
+        private String revision;
+
+        private String name;
+
+        private DateTime date;
 
         /**
          * This is the getter method for the instance variable {@link #url}.
@@ -513,6 +487,17 @@ public class Install
         }
 
         /**
+         * Setter method for instance variable {@link #url}.
+         *
+         * @param _revision value for instance variable {@link #url}
+         */
+        public InstallFile setURL(final URL _url)
+        {
+            this.url = _url;
+            return this;
+        }
+
+        /**
          * This is the getter method for the instance variable {@link #type}.
          *
          * @return value of instance variable {@link #type}
@@ -520,6 +505,80 @@ public class Install
         public FileType getType()
         {
             return this.type;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #revision}.
+         *
+         * @return value of instance variable {@link #revision}
+         */
+        public String getRevision()
+        {
+            return this.revision;
+        }
+
+        /**
+         * Setter method for instance variable {@link #revision}.
+         *
+         * @param _revision value for instance variable {@link #revision}
+         */
+        public InstallFile setRevision(final String _revision)
+        {
+            this.revision = _revision;
+            return this;
+        }
+
+        /**
+         * Setter method for instance variable {@link #type}.
+         *
+         * @param _type value for instance variable {@link #type}
+         */
+        public InstallFile setType(final String _type)
+        {
+            this.type = FileType.getFileTypeByType(_type);
+            return this;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #name}.
+         *
+         * @return value of instance variable {@link #name}
+         */
+        public String getName()
+        {
+            return this.name;
+        }
+
+        /**
+         * Setter method for instance variable {@link #name}.
+         *
+         * @param _name value for instance variable {@link #name}
+         */
+        public InstallFile setName(final String _name)
+        {
+            this.name = _name;
+            return this;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #date}.
+         *
+         * @return value of instance variable {@link #date}
+         */
+        public DateTime getDate()
+        {
+            return this.date;
+        }
+
+        /**
+         * Setter method for instance variable {@link #date}.
+         *
+         * @param _date value for instance variable {@link #date}
+         */
+        public InstallFile setDate(final DateTime _date)
+        {
+            this.date = _date;
+            return this;
         }
 
         @Override

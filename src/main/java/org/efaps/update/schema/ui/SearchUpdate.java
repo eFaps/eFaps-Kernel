@@ -20,12 +20,12 @@
 
 package org.efaps.update.schema.ui;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.LinkInstance;
 import org.efaps.util.EFapsException;
 
@@ -54,9 +54,9 @@ public class SearchUpdate
      *
      * @param _url        URL of the file
      */
-    public SearchUpdate(final URL _url)
+    public SearchUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_UI_Search", SearchUpdate.ALLLINKS);
+        super(_installFile, "Admin_UI_Search", SearchUpdate.ALLLINKS);
     }
 
     /**

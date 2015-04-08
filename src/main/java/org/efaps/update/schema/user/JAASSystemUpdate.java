@@ -20,12 +20,12 @@
 
 package org.efaps.update.schema.user;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
 import org.efaps.db.Insert;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
@@ -41,9 +41,9 @@ public class JAASSystemUpdate
      *
      * @param _url        URL of the file
      */
-    public JAASSystemUpdate(final URL _url)
+    public JAASSystemUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_User_JAASSystem");
+        super(_installFile, "Admin_User_JAASSystem");
     }
 
     /**

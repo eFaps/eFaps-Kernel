@@ -20,10 +20,10 @@
 
 package org.efaps.update.schema.program;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.schema.program.staticsource.WikiImporter;
 import org.efaps.update.util.InstallationException;
 
@@ -53,9 +53,9 @@ public class WikiUpdate extends AbstractSourceUpdate
      * @param _url URL of the file
      *
      */
-    public WikiUpdate(final URL _url)
+    public WikiUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_Program_Wiki", WikiUpdate.ALLLINKS);
+        super(_installFile, "Admin_Program_Wiki", WikiUpdate.ALLLINKS);
     }
 
     /**
@@ -64,10 +64,10 @@ public class WikiUpdate extends AbstractSourceUpdate
      * @param _url URL to the file
      * @return JavaScriptUpdate
      */
-    public static WikiUpdate readFile(final URL _url)
+    public static WikiUpdate readFile(final InstallFile _installFile)
     {
-        final WikiUpdate ret = new WikiUpdate(_url);
-        final WikiDefinition definition = ret.new WikiDefinition(_url);
+        final WikiUpdate ret = new WikiUpdate(_installFile);
+        final WikiDefinition definition = ret.new WikiDefinition(_installFile);
         ret.addDefinition(definition);
         return ret;
     }
@@ -90,9 +90,9 @@ public class WikiUpdate extends AbstractSourceUpdate
          * @param _url URL to the JasperReport file
          *
          */
-        public WikiDefinition(final URL _url)
+        public WikiDefinition(final InstallFile _installFile)
         {
-            super(_url);
+            super(_installFile);
         }
 
         /**
@@ -108,7 +108,7 @@ public class WikiUpdate extends AbstractSourceUpdate
             throws InstallationException
         {
             if (this.wiki == null) {
-                this.wiki = new WikiImporter(getUrl());
+                this.wiki = new WikiImporter(getInstallFile());
             }
             setName(this.wiki.getProgramName());
 
@@ -119,19 +119,6 @@ public class WikiUpdate extends AbstractSourceUpdate
             if (getInstance() == null) {
                 setInstance(this.wiki.searchInstance());
             }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected String getRevision()
-            throws InstallationException
-        {
-            if (this.wiki == null) {
-                this.wiki = new WikiImporter(getUrl());
-            }
-            return this.wiki.getRevision();
         }
     }
 }

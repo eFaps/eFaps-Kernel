@@ -20,11 +20,11 @@
 
 package org.efaps.update.schema.user;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.util.EFapsException;
 
 /**
@@ -38,9 +38,9 @@ public class GroupUpdate
      *
      * @param _url URL of the file
      */
-    public GroupUpdate(final URL _url)
+    public GroupUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_User_Group");
+        super(_installFile, "Admin_User_Group");
     }
 
     /**

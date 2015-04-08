@@ -20,12 +20,12 @@
 
 package org.efaps.update.schema.program.staticsource;
 
-import java.net.URL;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.efaps.ci.CIType;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.schema.program.AbstractSourceImporter;
 import org.efaps.update.util.InstallationException;
 
@@ -52,10 +52,10 @@ public abstract class AbstractStaticSourceImporter
      * @throws InstallationException on error
      */
     public AbstractStaticSourceImporter(final CIType _type,
-                                        final URL _url)
+                                        final InstallFile _installFile)
         throws InstallationException
     {
-        super(_type, _url);
+        super(_type, _installFile);
         this.extendSource = evalExtends();
     }
 

@@ -31,6 +31,7 @@ import java.util.Set;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.db.Checkin;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
@@ -54,10 +55,10 @@ public abstract class AbstractFileUpdate
      * @param _url                  URL to the import definition file
      * @param _dataModelTypeName    name of the datamodel type
      */
-    protected AbstractFileUpdate(final URL _url,
+    protected AbstractFileUpdate(final InstallFile _installFile,
                                   final String _dataModelTypeName)
     {
-        this(_url, _dataModelTypeName, null);
+        this(_installFile, _dataModelTypeName, null);
     }
 
     /**
@@ -65,12 +66,12 @@ public abstract class AbstractFileUpdate
      * @param _dataModelTypeName    name of the datamodel type
      * @param _links                set of links
      */
-    protected AbstractFileUpdate(final URL _url,
+    protected AbstractFileUpdate(final InstallFile _installFile,
                                   final String _dataModelTypeName,
                                   final Set <Link> _links)
     {
-        super(_url, _dataModelTypeName, _links);
-        final String urlStr = _url.toString();
+        super(_installFile, _dataModelTypeName, _links);
+        final String urlStr = _installFile.getUrl().toString();
         final int i = urlStr.lastIndexOf("/");
         this.root = urlStr.substring(0, i + 1);
     }
@@ -128,7 +129,7 @@ public abstract class AbstractFileUpdate
         {
             super.updateInDB(_step, _allLinkTypes);
 
-            if ((_step == UpdateLifecycle.EFAPS_UPDATE) && (this.file != null))  {
+            if (_step == UpdateLifecycle.EFAPS_UPDATE && this.file != null)  {
                 try  {
                     final InputStream in = new URL(AbstractFileUpdate.this.root + this.file).openStream();
                     try  {

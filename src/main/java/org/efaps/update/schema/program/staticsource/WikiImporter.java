@@ -20,9 +20,8 @@
 
 package org.efaps.update.schema.program.staticsource;
 
-import java.net.URL;
-
 import org.efaps.ci.CIAdminProgram;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.util.InstallationException;
 
 /**
@@ -38,9 +37,9 @@ public class WikiImporter
      * @param _url  url to the file to be imported
      * @throws InstallationException on error
      */
-    public WikiImporter(final URL _url)
+    public WikiImporter(final InstallFile _installFile)
         throws InstallationException
     {
-        super(CIAdminProgram.Wiki, _url);
+        super(CIAdminProgram.Wiki, _installFile);
     }
 }

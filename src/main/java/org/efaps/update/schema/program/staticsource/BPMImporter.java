@@ -22,7 +22,6 @@
 package org.efaps.update.schema.program.staticsource;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -30,6 +29,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.efaps.ci.CIAdminProgram;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.schema.program.AbstractSourceImporter;
 import org.efaps.update.util.InstallationException;
 import org.w3c.dom.Document;
@@ -60,10 +60,10 @@ public class BPMImporter
      *                               because file from <code>_url</code> could
      *                               not be read
      */
-    public BPMImporter(final URL _url)
+    public BPMImporter(final InstallFile _installFile)
         throws InstallationException
     {
-        super(CIAdminProgram.BPM, _url);
+        super(CIAdminProgram.BPM, _installFile);
     }
 
     /**

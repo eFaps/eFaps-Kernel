@@ -20,9 +20,8 @@
 
 package org.efaps.update.schema.program.staticsource;
 
-import java.net.URL;
-
 import org.efaps.ci.CIAdminProgram;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.util.InstallationException;
 
 /**
@@ -38,9 +37,9 @@ public class CSSImporter
      * @param _url URL of the CSS file
      * @throws InstallationException on error
      */
-    public CSSImporter(final URL _url)
+    public CSSImporter(final InstallFile _installFile)
         throws InstallationException
     {
-        super(CIAdminProgram.CSS, _url);
+        super(CIAdminProgram.CSS, _installFile);
     }
 }

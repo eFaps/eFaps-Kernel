@@ -37,6 +37,7 @@ import javax.ws.rs.Path;
 import org.efaps.admin.AppConfigHandler;
 import org.efaps.update.FileType;
 import org.efaps.update.Install;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -114,7 +115,8 @@ public class Update
                     final Install install = new Install(true);
                     for (final Entry<File, FileType> entry : files.entrySet()) {
                         AbstractRest.LOG.info("...Adding to Update: '{}' ", entry.getKey().getName());
-                        install.addFile(entry.getKey().toURI().toURL(), entry.getValue().getType());
+                        install.addFile(new InstallFile().setURL(entry.getKey().toURI().toURL())
+                                        .setType(entry.getValue().getType()));
                     }
                     install.updateLatest(null);
                 }

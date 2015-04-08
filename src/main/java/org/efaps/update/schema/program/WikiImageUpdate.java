@@ -20,8 +20,7 @@
 
 package org.efaps.update.schema.program;
 
-import java.net.URL;
-
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.schema.AbstractFileUpdate;
 
 /**
@@ -41,9 +40,9 @@ public class WikiImageUpdate
      *
      * @param _url URL of the file
      */
-    public WikiImageUpdate(final URL _url)
+    public WikiImageUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_Program_WikiImage");
+        super(_installFile, "Admin_Program_WikiImage");
     }
 
     /**

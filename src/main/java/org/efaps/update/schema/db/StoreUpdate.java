@@ -20,7 +20,6 @@
 
 package org.efaps.update.schema.db;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +33,7 @@ import org.efaps.db.SelectBuilder;
 import org.efaps.db.Update;
 import org.efaps.db.store.Store;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
@@ -52,9 +52,9 @@ public class StoreUpdate
     /**
      * @param _url url to the XML file
      */
-    public StoreUpdate(final URL _url)
+    public StoreUpdate(final InstallFile _installFile)
     {
-        super(_url, "DB_Store");
+        super(_installFile, "DB_Store");
     }
 
     /**

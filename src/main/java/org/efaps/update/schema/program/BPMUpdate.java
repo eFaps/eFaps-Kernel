@@ -20,9 +20,8 @@
 
 package org.efaps.update.schema.program;
 
-import java.net.URL;
-
 import org.efaps.ci.CIAdminProgram;
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.schema.program.staticsource.BPMImporter;
 import org.efaps.update.util.InstallationException;
 
@@ -39,9 +38,9 @@ public class BPMUpdate
     /**
      * @param _url URL to the file
      */
-    protected BPMUpdate(final URL _url)
+    protected BPMUpdate(final InstallFile _installFile)
     {
-        super(_url, CIAdminProgram.BPM.getType().getName());
+        super(_installFile, CIAdminProgram.BPM.getType().getName());
     }
 
     /**
@@ -50,10 +49,10 @@ public class BPMUpdate
      * @param _url URL to the file
      * @return CSSUpdate
      */
-    public static BPMUpdate readFile(final URL _url)
+    public static BPMUpdate readFile(final InstallFile _installFile)
     {
-        final BPMUpdate ret = new BPMUpdate(_url);
-        final BPMDefinition definition = ret.new BPMDefinition(_url);
+        final BPMUpdate ret = new BPMUpdate(_installFile);
+        final BPMDefinition definition = ret.new BPMDefinition(_installFile);
         ret.addDefinition(definition);
         return ret;
     }
@@ -75,9 +74,9 @@ public class BPMUpdate
          *
          * @param _url URL of the file
          */
-        public BPMDefinition(final URL _url)
+        public BPMDefinition(final InstallFile _installFile)
         {
-            super(_url);
+            super(_installFile);
         }
 
         /**
@@ -92,7 +91,7 @@ public class BPMUpdate
             throws InstallationException
         {
             if (this.bpmn2 == null) {
-                this.bpmn2 = new BPMImporter(getUrl());
+                this.bpmn2 = new BPMImporter(getInstallFile());
             }
             setName(this.bpmn2.getProgramName());
 
@@ -103,20 +102,6 @@ public class BPMUpdate
             if (getInstance() == null) {
                 setInstance(this.bpmn2.searchInstance());
             }
-        }
-
-        /**
-         * {@inheritDoc}
-         *
-         */
-        @Override
-        protected String getRevision()
-            throws InstallationException
-        {
-            if (this.bpmn2 == null) {
-                this.bpmn2 = new BPMImporter(getUrl());
-            }
-            return this.bpmn2.getRevision();
         }
     }
 

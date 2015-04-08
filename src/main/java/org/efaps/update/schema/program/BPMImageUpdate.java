@@ -20,12 +20,12 @@
 
 package org.efaps.update.schema.program;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.schema.AbstractFileUpdate;
 import org.efaps.util.EFapsException;
@@ -63,9 +63,9 @@ public class BPMImageUpdate
      *
      * @param _url URL of the file
      */
-    public BPMImageUpdate(final URL _url)
+    public BPMImageUpdate(final InstallFile _installFile)
     {
-        super(_url, "Admin_Program_BPMImage", BPMImageUpdate.ALLLINKS);
+        super(_installFile, "Admin_Program_BPMImage", BPMImageUpdate.ALLLINKS);
     }
 
     /**

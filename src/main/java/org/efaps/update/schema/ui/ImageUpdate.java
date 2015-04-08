@@ -20,12 +20,12 @@
 
 package org.efaps.update.schema.ui;
 
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.efaps.update.Install.InstallFile;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.schema.AbstractFileUpdate;
 import org.efaps.util.EFapsException;
@@ -61,7 +61,7 @@ public class ImageUpdate
      *
      * @param _url        URL of the file
      */
-    public ImageUpdate(final URL _url)
+    public ImageUpdate(final InstallFile _url)
     {
         super(_url, "Admin_UI_Image", ImageUpdate.ALLLINKS);
     }
