@@ -117,16 +117,6 @@ public abstract class AbstractSourceUpdate
         }
 
         /**
-         * Method to get the Revision from the importer.
-         * @return revision
-         * @throws InstallationException on error
-         */
-        protected String getRevision()
-            throws InstallationException
-        {
-            return getInstallFile().getRevision();
-        }
-        /**
          * Updates / creates the instance in the database. If a file
          * name is given, this file is checked in
          *
@@ -140,12 +130,7 @@ public abstract class AbstractSourceUpdate
                                final Set<Link> _allLinkTypes)
             throws InstallationException
         {
-            // on update the revision must be set before the super method is called
-            if (_step == UpdateLifecycle.EFAPS_UPDATE)  {
-                setFileRevision(getRevision());
-            }
             super.updateInDB(_step, _allLinkTypes);
-
             if (_step == UpdateLifecycle.EFAPS_UPDATE && getValue("Name") != null)  {
                 final Checkin checkin = new Checkin(getInstance());
                 try {

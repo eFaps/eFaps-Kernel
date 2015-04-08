@@ -514,7 +514,7 @@ public class Install
          */
         public String getRevision()
         {
-            return this.revision;
+            return this.revision == null ? "UNKNOWN" : this.revision;
         }
 
         /**
@@ -567,7 +567,7 @@ public class Install
          */
         public DateTime getDate()
         {
-            return this.date;
+            return this.date == null ? new DateTime() : this.date;
         }
 
         /**

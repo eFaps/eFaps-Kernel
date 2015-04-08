@@ -43,6 +43,7 @@ import org.efaps.ci.CIAdmin;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.ci.CIAdminEvent;
 import org.efaps.db.AttributeQuery;
+import org.efaps.db.CachedInstanceQuery;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -118,13 +119,6 @@ public abstract class AbstractUpdate
     private String fileApplication = null;
 
     /**
-     * Revision of the XML file.
-     *
-     * @see #setFileRevision
-     */
-    private String fileRevision = null;
-
-    /**
      * All definitions of versions are added to this list.
      */
     private final List<AbstractDefinition> definitions = new ArrayList<AbstractDefinition>();
@@ -181,8 +175,6 @@ public abstract class AbstractUpdate
                 this.uuid = _text;
             } else if ("file-application".equals(value)) {
                 this.fileApplication = _text;
-            } else if ("file-revision".equals(value)) {
-                this.fileRevision = _text;
             } else if ("definition".equals(value)) {
                 this.definitions.add(newDefinition());
             }
@@ -254,7 +246,52 @@ public abstract class AbstractUpdate
                     AbstractUpdate.LOG.debug("Executing '" + this.installFile.getUrl().toString() + "'");
                 }
                 def.updateInDB(_step, this.allLinkTypes);
+                if (def.getInstance() != null && def.getInstance().isValid()) {
+                    registerRevision(getFileApplication(), getInstallFile(), def.getInstance());
+                }
             }
+        }
+    }
+
+    protected void registerRevision(final String _application,
+                                    final InstallFile _installFile,
+                                    final Instance _objInst)
+        throws InstallationException
+    {
+        try {
+            if (CIAdminCommon.Application.getType() != null) {
+                final QueryBuilder appQueryBldr = new QueryBuilder(CIAdminCommon.Application);
+                appQueryBldr.addWhereAttrEqValue(CIAdminCommon.Application.Name, _application);
+                final CachedInstanceQuery appQuery = appQueryBldr.getCachedQuery4Request();
+                appQuery.execute();
+                if (appQuery.next()) {
+                    final Instance appInst = appQuery.getCurrentValue();
+                    final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.ApplicationRevision);
+                    queryBldr.addWhereAttrEqValue(CIAdminCommon.ApplicationRevision.ApplicationLink, appInst);
+                    queryBldr.addWhereAttrEqValue(CIAdminCommon.ApplicationRevision.Revision,
+                                    _installFile.getRevision());
+                    final InstanceQuery query = queryBldr.getQuery();
+                    query.execute();
+                    Instance appRevInst;
+                    if (query.next()) {
+                        appRevInst = query.getCurrentValue();
+                    } else {
+                        final Insert insert = new Insert(CIAdminCommon.ApplicationRevision);
+                        insert.add(CIAdminCommon.ApplicationRevision.ApplicationLink, appInst);
+                        insert.add(CIAdminCommon.ApplicationRevision.Revision, _installFile.getRevision());
+                        insert.add(CIAdminCommon.ApplicationRevision.Date, _installFile.getDate());
+                        insert.execute();
+                        appRevInst = insert.getInstance();
+                    }
+                    if (_objInst.getType().getAttribute(CIAdmin.Abstract.RevisionLink.name) != null) {
+                        final Update update = new Update(_objInst);
+                        update.add(CIAdmin.Abstract.RevisionLink.name, appRevInst);
+                        update.executeWithoutTrigger();
+                    }
+                }
+            }
+        } catch (final EFapsException e) {
+            throw new InstallationException("Exception", e);
         }
     }
 
@@ -319,31 +356,6 @@ public abstract class AbstractUpdate
     }
 
     /**
-     * This is the setter method for instance variable {@link #fileRevision}.
-     *
-     * @param _fileRevision new value for instance variable
-     *            {@link #fileRevision}
-     * @see #fileRevision
-     * @see #getFileRevision
-     */
-    public void setFileRevision(final String _fileRevision)
-    {
-        this.fileRevision = _fileRevision;
-    }
-
-    /**
-     * This is the getter method for instance variable {@link #fileRevision}.
-     *
-     * @return value of instance variable {@link #fileRevision}
-     * @see #fileRevision
-     * @see #setFileRevision
-     */
-    public String getFileRevision()
-    {
-        return this.fileRevision;
-    }
-
-    /**
      * This is the getter method for instance variable {@link #definitions}.
      *
      * @return value of instance variable {@link #definitions}
@@ -385,7 +397,7 @@ public abstract class AbstractUpdate
     public String toString()
     {
         return new ToStringBuilder(this).append("uuid", this.uuid).append("fileApplication", this.fileApplication)
-                        .append("fileRevision", this.fileRevision).append("definitions", this.definitions).toString();
+                        .append("installFile", this.installFile).append("definitions", this.definitions).toString();
     }
 
     /**
@@ -844,9 +856,6 @@ public abstract class AbstractUpdate
                 try {
                     final String name = this.values.get("Name");
                     final Update update = new Update(this.instance);
-                    if (this.instance.getType().getAttribute("Revision") != null) {
-                        update.add("Revision", AbstractUpdate.this.fileRevision);
-                    }
                     for (final Map.Entry<String, String> entry : this.values.entrySet()) {
                         update.add(entry.getKey(), entry.getValue());
                     }
@@ -950,9 +959,6 @@ public abstract class AbstractUpdate
             throws InstallationException
         {
             try {
-                if (_insert.getInstance().getType().getAttribute("Revision") != null) {
-                    _insert.add("Revision", AbstractUpdate.this.fileRevision);
-                }
                 final String name = this.values.get("Name");
                 _insert.add("Name", name == null ? "-" : name);
                 if (AbstractUpdate.LOG.isInfoEnabled()) {
@@ -1260,7 +1266,7 @@ public abstract class AbstractUpdate
          *
          * @return value of instance variable {@link #instance}
          */
-        protected Instance getInstance()
+        public Instance getInstance()
         {
             return this.instance;
         }

@@ -595,6 +595,7 @@ public final class Application
                         Application.LOG.info(desc);
                     }
                 }
+                storeVersion(_userName, version.getNumber());
                 try {
                     version.install(this.install, getLastVersion().getNumber(), _profiles, _userName, _password);
                   //CHECKSTYLE:OFF
@@ -602,8 +603,6 @@ public final class Application
                   //CHECKSTYLE:ON
                     throw new InstallationException("Installation failed", e);
                 }
-                storeVersion(_userName, version.getNumber());
-
                 if (Application.LOG.isInfoEnabled()) {
                     Application.LOG.info("Finished installation of version " + version.getNumber());
                 }

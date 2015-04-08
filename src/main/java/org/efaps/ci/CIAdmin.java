@@ -43,7 +43,7 @@ public class CIAdmin
 
         public final CIAttribute Name = new CIAttribute(this, "Name");
         public final CIAttribute UUID = new CIAttribute(this, "UUID");
-        public final CIAttribute Revision = new CIAttribute(this, "Revision");
+        public final CIAttribute RevisionLink = new CIAttribute(this, "RevisionLink");
         public final CIAttribute Purpose = new CIAttribute(this, "Purpose");
         public final CIAttribute Creator = new CIAttribute(this, "Creator");
         public final CIAttribute Created = new CIAttribute(this, "Created");
