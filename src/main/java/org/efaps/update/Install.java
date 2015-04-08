@@ -44,6 +44,7 @@ import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Context;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.db.SelectBuilder;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -265,7 +266,6 @@ public class Install
                     } catch (final EFapsException e) {
                         throw new InstallationException("Transaction start failed", e);
                     }
-
                 }
             }
         }
@@ -284,14 +284,18 @@ public class Install
         final Map<String, Integer> versions = new HashMap<String, Integer>();
         try {
             if (Context.getDbType().existsView(Context.getThreadContext().getConnection(), "V_ADMINTYPE")
-                            && CIAdminCommon.Version.getType() != null) {
-                final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.Version);
+                            && CIAdminCommon.Application.getType() != null) {
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.ApplicationVersion);
                 final MultiPrintQuery multi = queryBldr.getPrint();
-                multi.addAttribute(CIAdminCommon.Version.Name, CIAdminCommon.Version.Revision);
+                final SelectBuilder selName = SelectBuilder.get()
+                                .linkto(CIAdminCommon.ApplicationVersion.ApplicationLink)
+                                .attribute(CIAdminCommon.Application.Name);
+                multi.addSelect(selName);
+                multi.addAttribute(CIAdminCommon.ApplicationVersion.Revision);
                 multi.executeWithoutAccessCheck();
                 while (multi.next()) {
-                    final String name = multi.<String>getAttribute(CIAdminCommon.Version.Name);
-                    final Integer revision = multi.<Integer>getAttribute(CIAdminCommon.Version.Revision);
+                    final String name = multi.<String>getSelect(selName);
+                    final Integer revision = multi.<Integer>getAttribute(CIAdminCommon.ApplicationVersion.Revision);
                     if (!versions.containsKey(name) || versions.get(name) < revision) {
                         versions.put(name, revision);
                     }

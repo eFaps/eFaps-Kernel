@@ -75,9 +75,9 @@ public final class AppDependency
         if (this.met == null) {
             try {
                 if (Context.getDbType().existsView(Context.getThreadContext().getConnection(), "V_ADMINTYPE")
-                                && CIAdminCommon.Version.getType() != null) {
-                    final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.Version);
-                    queryBldr.addWhereAttrEqValue(CIAdminCommon.Version.Name, this.name);
+                                && CIAdminCommon.ApplicationVersion.getType() != null) {
+                    final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.Application);
+                    queryBldr.addWhereAttrEqValue(CIAdminCommon.Application.Name, this.name);
                     final InstanceQuery query = queryBldr.getQuery();
                     this.met = query.executeWithoutAccessCheck().size() > 0;
                 } else {

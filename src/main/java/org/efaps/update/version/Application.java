@@ -48,12 +48,12 @@ import org.apache.commons.digester3.annotations.rules.SetProperty;
 import org.apache.commons.digester3.binder.DigesterLoader;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.tools.ant.DirectoryScanner;
-import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
+import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.update.FileType;
@@ -664,27 +664,53 @@ public final class Application
     {
         try {
             Context.begin(_userName);
-            final Type versionType = CIAdminCommon.Version.getType();
-            if (versionType != null) {
+            if (CIAdminCommon.ApplicationVersion.getType() != null) {
                 // store cached versions
                 for (final Long version : this.notStoredVersions) {
-                    final Insert insert = new Insert(versionType);
-                    insert.add(CIAdminCommon.Version.Name, this.application);
-                    insert.add(CIAdminCommon.Version.Revision, version);
+                    final QueryBuilder appQueryBldr = new QueryBuilder(CIAdminCommon.Application);
+                    appQueryBldr.addWhereAttrEqValue(CIAdminCommon.Application.Name, this.application);
+                    final InstanceQuery appQuery = appQueryBldr.getQuery();
+                    appQuery.execute();
+                    Instance appInst;
+                    if (appQuery.next()) {
+                        appInst = appQuery.getCurrentValue();
+                    } else {
+                        final Insert insert = new Insert(CIAdminCommon.Application);
+                        insert.add(CIAdminCommon.Application.Name, this.application);
+                        insert.execute();
+                        appInst = insert.getInstance();
+                    }
+                    final Insert insert = new Insert(CIAdminCommon.ApplicationVersion);
+                    insert.add(CIAdminCommon.ApplicationVersion.ApplicationLink, appInst);
+                    insert.add(CIAdminCommon.ApplicationVersion.Revision, version);
                     insert.execute();
                 }
                 this.notStoredVersions.clear();
 
-                final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.Version);
-                queryBldr.addWhereAttrEqValue(CIAdminCommon.Version.Name, this.application);
-                queryBldr.addWhereAttrEqValue(CIAdminCommon.Version.Revision, _version);
+                final QueryBuilder appQueryBldr = new QueryBuilder(CIAdminCommon.Application);
+                appQueryBldr.addWhereAttrEqValue(CIAdminCommon.Application.Name, this.application);
+                final InstanceQuery appQuery = appQueryBldr.getQuery();
+                appQuery.execute();
+                Instance appInst;
+                if (appQuery.next()) {
+                    appInst = appQuery.getCurrentValue();
+                } else {
+                    final Insert insert = new Insert(CIAdminCommon.Application);
+                    insert.add(CIAdminCommon.Application.Name, this.application);
+                    insert.execute();
+                    appInst = insert.getInstance();
+                }
+
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.ApplicationVersion);
+                queryBldr.addWhereAttrEqValue(CIAdminCommon.ApplicationVersion.ApplicationLink, appInst);
+                queryBldr.addWhereAttrEqValue(CIAdminCommon.ApplicationVersion.Revision, _version);
                 final InstanceQuery query = queryBldr.getQuery();
                 query.execute();
                 if (!query.next()) {
                     // store current version
-                    final Insert insert = new Insert(CIAdminCommon.Version);
-                    insert.add(CIAdminCommon.Version.Name, this.application);
-                    insert.add(CIAdminCommon.Version.Revision, _version);
+                    final Insert insert = new Insert(CIAdminCommon.ApplicationVersion);
+                    insert.add(CIAdminCommon.ApplicationVersion.ApplicationLink, appInst);
+                    insert.add(CIAdminCommon.ApplicationVersion.Revision, _version);
                     insert.execute();
                 }
             } else {

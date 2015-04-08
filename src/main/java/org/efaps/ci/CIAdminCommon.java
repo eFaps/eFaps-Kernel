@@ -214,25 +214,66 @@ public class CIAdminCommon
 
     }
 
-    public static final _Version Version = new _Version("1bb051f3-b664-43db-b409-c0c4009f5972");
+    public static final _Application Application = new _Application("a50c9f3f-2987-4196-b74a-bb5861259c67");
 
-    public static class _Version
+    public static class _Application
         extends CIType
 
     {
 
-        protected _Version(final String _uuid)
+        protected _Application(final String _uuid)
         {
             super(_uuid);
         }
 
         public final CIAttribute Name = new CIAttribute(this, "Name");
+        public final CIAttribute Creator = new CIAttribute(this, "Creator");
+        public final CIAttribute Created = new CIAttribute(this, "Created");
+        public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
+        public final CIAttribute Modified = new CIAttribute(this, "Modified");
+    }
+
+    public static final _ApplicationVersion ApplicationVersion = new _ApplicationVersion("1bb051f3-b664-43db-b409-c0c4009f5972");
+
+    public static class _ApplicationVersion
+        extends CIType
+
+    {
+
+        protected _ApplicationVersion(final String _uuid)
+        {
+            super(_uuid);
+        }
+
+        public final CIAttribute ApplicationLink = new CIAttribute(this, "ApplicationLink");
         public final CIAttribute Revision = new CIAttribute(this, "Revision");
         public final CIAttribute Creator = new CIAttribute(this, "Creator");
         public final CIAttribute Created = new CIAttribute(this, "Created");
         public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
         public final CIAttribute Modified = new CIAttribute(this, "Modified");
     }
+
+    public static final _ApplicationRevision ApplicationRevision = new _ApplicationRevision("8c9e34f2-34f0-42f3-a76e-cece7c1b9c3f");
+
+    public static class _ApplicationRevision
+        extends CIType
+
+    {
+
+        protected _ApplicationRevision(final String _uuid)
+        {
+            super(_uuid);
+        }
+
+        public final CIAttribute ApplicationLink = new CIAttribute(this, "ApplicationLink");
+        public final CIAttribute Revision = new CIAttribute(this, "Revision");
+        public final CIAttribute Date = new CIAttribute(this, "Date");
+        public final CIAttribute Creator = new CIAttribute(this, "Creator");
+        public final CIAttribute Created = new CIAttribute(this, "Created");
+        public final CIAttribute Modifier = new CIAttribute(this, "Modifier");
+        public final CIAttribute Modified = new CIAttribute(this, "Modified");
+    }
+
 
     public static final _QuartzTriggerAbstract QuartzTriggerAbstract = new _QuartzTriggerAbstract("b1267287-1532-4a33-9197-144f06f4944c");
 
