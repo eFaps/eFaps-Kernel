@@ -110,9 +110,6 @@ public class JavaUpdate
                 addValue("UUID", this.importer.getEFapsUUID().toString());
             }
 
-            if (this.importer.getRevision() != null) {
-                addValue("Revision", this.importer.getRevision());
-            }
             if (getInstance() == null) {
                 final Instance instTmp = this.importer.searchInstance();
                 setInstance(instTmp);
@@ -121,6 +118,9 @@ public class JavaUpdate
                 } else {
                     this.updateAllowed = this.importer.isUpdate();
                 }
+            }
+            if (getFileApplication() == null && this.importer.getApplication() != null) {
+                setFileApplication(this.importer.getApplication());
             }
         }
 

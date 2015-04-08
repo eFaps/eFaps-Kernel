@@ -38,8 +38,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target(TYPE)
 @Inherited
-@Deprecated
-public @interface EFapsRevision
+public @interface EFapsApplication
 {
 
     /**

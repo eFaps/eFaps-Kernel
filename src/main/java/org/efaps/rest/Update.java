@@ -104,7 +104,7 @@ public class Update
 
                     final String ending = file.getName().substring(file.getName().lastIndexOf(".") + 1);
 
-                    final FileType filetype = FileType.getFileTypeByExensione(ending);
+                    final FileType filetype = FileType.getFileTypeByExtension(ending);
 
                     AbstractRest.LOG.info("= Receieved: '{}'", file.getName());
                     if (filetype != null) {

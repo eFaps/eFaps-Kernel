@@ -86,13 +86,13 @@ public abstract class AbstractStaticSourceImporter
      * @return Revision of the program
      */
     @Override
-    protected String evalRevision()
+    protected String evalApplication()
     {
         String ret = null;
-        final Pattern revisionPattern = Pattern.compile("@eFapsRevision[\\s].*");
+        final Pattern revisionPattern = Pattern.compile("@eFapsApplication[\\s].*");
         final Matcher revisionMatcher = revisionPattern.matcher(getCode());
         if (revisionMatcher.find()) {
-            ret = revisionMatcher.group().replaceFirst("^@eFapsRevision", "");
+            ret = revisionMatcher.group().replaceFirst("^@eFapsApplication", "");
         }
         return ret == null ? null : ret.trim();
     }

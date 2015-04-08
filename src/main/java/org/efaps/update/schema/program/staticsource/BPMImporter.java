@@ -114,7 +114,7 @@ public class BPMImporter
      * {@inheritDoc}
      */
     @Override
-    protected String evalRevision()
+    protected String evalApplication()
         throws InstallationException
     {
         String ret = "";
@@ -130,7 +130,7 @@ public class BPMImporter
                     final Node processNode = processNodeList.item(0);
                     if (processNode.getNodeType() == Node.ELEMENT_NODE) {
                         final Element eElement = (Element) processNode;
-                        ret = eElement.getAttribute("tns:version");
+                        ret = eElement.getAttribute("tns:application");
                     }
                     break;
                 }

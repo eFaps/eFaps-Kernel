@@ -72,11 +72,6 @@ public abstract class AbstractSourceImporter
     private final UUID eFapsUUID;
 
     /**
-     * eFaps revision of the program.
-     */
-    private final String revision;
-
-    /**
      * Name of the program in eFaps.
      *
      * @see #getClassName
@@ -87,6 +82,11 @@ public abstract class AbstractSourceImporter
      * CIType.
      */
     private final CIType ciType;
+
+    /**
+     * Application name.
+     */
+    private final String application;
 
     /**
      * Constructor used to read the source code from given URL and extract the
@@ -109,7 +109,7 @@ public abstract class AbstractSourceImporter
         readCode();
         this.programName = evalProgramName();
         this.eFapsUUID = evalUUID();
-        this.revision = evalRevision();
+        this.application = evalApplication();
     }
 
     /**
@@ -158,13 +158,13 @@ public abstract class AbstractSourceImporter
         throws InstallationException;;
 
     /**
-     * This Method extracts the Revision from the program.
+     * This Method extracts the file Application from the program.
      *
-     * @return Revision of the program
+     * @return UUID of the program
      * @throws InstallationException on error
      */
-    protected abstract String evalRevision()
-         throws InstallationException;;
+    protected abstract String evalApplication()
+        throws InstallationException;;
 
     /**
      * Import related source code into the eFaps DataBase. If the source code
@@ -307,16 +307,6 @@ public abstract class AbstractSourceImporter
     }
 
     /**
-     * Getter Method for instance variable {@link #revision}.
-     *
-     * @return value for instance variable {@link #revision}
-     */
-    public String getRevision()
-    {
-        return this.revision;
-    }
-
-    /**
      * Getter method for instance variable {@link #programName}.
      *
      * @return value of instance variable className
@@ -325,5 +315,16 @@ public abstract class AbstractSourceImporter
     public final String getProgramName()
     {
         return this.programName;
+    }
+
+
+    /**
+     * Getter method for the instance variable {@link #application}.
+     *
+     * @return value of instance variable {@link #application}
+     */
+    public String getApplication()
+    {
+        return this.application;
     }
 }

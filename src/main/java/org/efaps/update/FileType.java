@@ -156,7 +156,7 @@ public enum FileType {
      * @param _extension extension for which the file type is searched
      * @return file type instance for given extension
      */
-    public static FileType getFileTypeByExensione(final String _extension)
+    public static FileType getFileTypeByExtension(final String _extension)
     {
         return FileType.Mapper.EXT2FILETYPE.get(_extension);
     }

@@ -113,14 +113,14 @@ public class ESJPImporter
      * @return revision of the ESJP
      */
     @Override
-    protected String evalRevision()
+    protected String evalApplication()
     {
         String ret = null;
-        final Pattern revisionPattern = Pattern.compile("@EFapsRevision ?\\( ?\\\".*\\\" ?\\)");
+        final Pattern revisionPattern = Pattern.compile("@EFapsApplication ?\\( ?\\\".*\\\" ?\\)");
         final Matcher revisionMatcher = revisionPattern.matcher(getCode());
         if (revisionMatcher.find()) {
             ret = revisionMatcher.group()
-                                 .replaceFirst("^@EFapsRevision ?\\( ?\\\"", "")
+                                 .replaceFirst("^@EFapsApplication ?\\( ?\\\"", "")
                                  .replaceFirst("\\\" ?\\)", "");
         }
         return ret;

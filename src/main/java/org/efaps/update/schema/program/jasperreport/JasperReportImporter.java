@@ -114,9 +114,9 @@ public class JasperReportImporter
      * {@inheritDoc}
      */
     @Override
-    protected String evalRevision()
+    protected String evalApplication()
     {
-        return "1";
+        return null;
     }
 
     /**
