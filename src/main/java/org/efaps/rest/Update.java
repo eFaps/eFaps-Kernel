@@ -121,15 +121,17 @@ public class Update
 
                     AbstractRest.LOG.info("= Receieved: '{}'", file.getName());
 
-                    final InstallFile installFile = new InstallFile().setName(file.getName())
-                                    .setURL(file.toURI().toURL()).setType(filetype.getType());
-                    if (revPart.getValue() != null && !revPart.getValue().isEmpty()) {
-                        installFile.setRevision(revPart.getValue());
+                    if (filetype != null) {
+                        final InstallFile installFile = new InstallFile().setName(file.getName())
+                                        .setURL(file.toURI().toURL()).setType(filetype.getType());
+                        if (revPart.getValue() != null && !revPart.getValue().isEmpty()) {
+                            installFile.setRevision(revPart.getValue());
+                        }
+                        if (datePart.getValue() != null && !datePart.getValue().isEmpty()) {
+                            installFile.setDate(new DateTime(datePart.getValue()));
+                        }
+                        installFiles.add(installFile);
                     }
-                    if (datePart.getValue() != null && !datePart.getValue().isEmpty()) {
-                        installFile.setDate(new DateTime(datePart.getValue()));
-                    }
-                    installFiles.add(installFile);
                 }
                 Collections.sort(installFiles, new Comparator<InstallFile>()
                 {
