@@ -39,4 +39,6 @@ public interface IUIValue
     public Field getField();
 
     public Instance getInstance();
+
+    public Object getObject();
 }

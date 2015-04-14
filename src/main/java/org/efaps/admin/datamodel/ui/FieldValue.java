@@ -467,6 +467,7 @@ public class FieldValue
      * @return value of instance variable {@link #instance}
      * @see #instance
      */
+    @Override
     public Instance getInstance()
     {
         return this.instance;
@@ -529,6 +530,7 @@ public class FieldValue
      *
      * @return value of instance variable {@link #field}
      */
+    @Override
     public Field getField()
     {
         return this.field;
@@ -574,5 +576,11 @@ public class FieldValue
     public List<Instance> getRequestInstances()
     {
         return this.requestInstances;
+    }
+
+    @Override
+    public Object getObject()
+    {
+        return getValue();
     }
 }

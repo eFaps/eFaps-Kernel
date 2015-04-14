@@ -476,4 +476,10 @@ public final class UIValue
         this.readOnlyValue = null;
         return this;
     }
+
+    @Override
+    public Object getObject()
+    {
+        return getDbValue();
+    }
 }
