@@ -26,10 +26,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.efaps.eql.IEQLStmt;
-import org.efaps.eql.ISelectStmt;
 import org.efaps.eql.InvokerUtil;
 import org.efaps.eql.JSONData;
+import org.efaps.eql.stmt.IEQLStmt;
+import org.efaps.eql.stmt.IPrintStmt;
 import org.efaps.json.data.DataList;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -67,8 +67,8 @@ public class RestEQLInvoker
         // only permit queries on this url
         try {
             final IEQLStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
-            if (stmt instanceof ISelectStmt) {
-                final DataList datalist = JSONData.getDataList((ISelectStmt) stmt);
+            if (stmt instanceof IPrintStmt) {
+                final DataList datalist = JSONData.getDataList((IPrintStmt) stmt);
                 final ObjectMapper mapper = new ObjectMapper();
                 if (LOG.isDebugEnabled()) {
                     mapper.enable(SerializationFeature.INDENT_OUTPUT);

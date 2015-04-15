@@ -20,13 +20,10 @@
 
 package org.efaps.eql;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map.Entry;
 
-import org.efaps.db.Instance;
-import org.efaps.db.Update;
-import org.efaps.eql.stmt.AbstractUpdateStmt;
+import org.efaps.db.Insert;
+import org.efaps.eql.stmt.AbstractInsertStmt;
 
 /**
  * TODO comment!
@@ -34,29 +31,18 @@ import org.efaps.eql.stmt.AbstractUpdateStmt;
  * @author The eFaps Team
  * @version $Id: $
  */
-public class UpdateStmt
-    extends AbstractUpdateStmt
+public class InsertStmt
+    extends AbstractInsertStmt
 {
 
     @Override
     public void execute()
         throws Exception
     {
-        final List<Instance> instances;
-        if (getInstances().isEmpty()) {
-            instances = QueryBldrUtil.getInstances(this);
-        } else {
-            instances = new ArrayList<>();
-            for (final String oid : getInstances()) {
-                instances.add(Instance.get(oid));
-            }
+        final Insert insert = new Insert(getType());
+        for (final Entry<String, String> entry : getAttr2Value().entrySet()) {
+            insert.add(entry.getKey(), entry.getValue());
         }
-        for (final Instance inst : instances) {
-            final Update update = new Update(inst);
-            for (final Entry<String, String> entry : getAttr2Value().entrySet()) {
-                update.add(entry.getKey(), entry.getValue());
-            }
-            update.execute();
-        }
+        insert.execute();
     }
 }

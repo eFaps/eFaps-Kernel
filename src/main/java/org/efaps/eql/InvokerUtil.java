@@ -20,6 +20,12 @@
 
 package org.efaps.eql;
 
+import org.efaps.eql.stmt.AbstractDeleteStmt;
+import org.efaps.eql.stmt.AbstractExecStmt;
+import org.efaps.eql.stmt.AbstractInsertStmt;
+import org.efaps.eql.stmt.AbstractPrintStmt;
+import org.efaps.eql.stmt.AbstractUpdateStmt;
+
 /**
  * TODO comment!
  *
@@ -34,27 +40,33 @@ public class InvokerUtil
         final EQLInvoker ret = new EQLInvoker()
         {
             @Override
-            protected IPrintStmt getIPrint()
+            protected AbstractPrintStmt getPrint()
             {
                 return new PrintStmt();
             }
 
             @Override
-            protected IQueryStmt getIQuery()
+            protected AbstractInsertStmt getInsert()
             {
-                return new QueryStmt();
+                return new InsertStmt();
             }
 
             @Override
-            protected IExecStmt getIExec()
+            protected AbstractExecStmt getExec()
             {
                 return new ExecStmt();
             }
 
             @Override
-            protected IUpdateStmt getIUpdate()
+            protected AbstractUpdateStmt getUpdate()
             {
                 return new UpdateStmt();
+            }
+
+            @Override
+            protected AbstractDeleteStmt getDelete()
+            {
+                return new DeleteStmt();
             }
         };
         ret.getValidator().setDiagnosticClazz(EFapsDiagnostic.class);

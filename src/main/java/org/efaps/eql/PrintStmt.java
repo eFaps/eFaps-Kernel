@@ -26,7 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.efaps.db.PrintQuery;
+import org.efaps.db.Instance;
+import org.efaps.db.MultiPrintQuery;
+import org.efaps.eql.stmt.AbstractPrintStmt;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO comment!
@@ -38,26 +41,7 @@ public class PrintStmt
     extends AbstractPrintStmt
 {
 
-    private PrintQuery print;
-
     private List<Map<String, Object>> data;
-
-    @Override
-    public void setInstance(final String _oid)
-        throws Exception
-    {
-        super.setInstance(_oid);
-        this.print = new PrintQuery(_oid);
-    }
-
-    @Override
-    public void addSelect(final String _select,
-                          final String _alias)
-        throws Exception
-    {
-        super.addSelect(_select, _alias);
-        this.print.addSelect(_select);
-    }
 
     @Override
     public List<Map<String, Object>> getData()
@@ -65,13 +49,36 @@ public class PrintStmt
     {
         if (this.data == null) {
             this.data = new ArrayList<>();
-            final Map<String,Object> map = new HashMap<>();
-            this.data.add(map);
-            this.print.execute();
+
+            final MultiPrintQuery multi = getMultiPrint();
             for (final Entry<String, String> entry : getAlias2Selects().entrySet()) {
-                map.put(entry.getKey(), this.print.getSelect(entry.getValue()));
+                multi.addSelect(entry.getValue());
+            }
+            multi.execute();
+            while (multi.next()) {
+                final Map<String, Object> map = new HashMap<>();
+                this.data.add(map);
+                for (final Entry<String, String> entry : getAlias2Selects().entrySet()) {
+                    map.put(entry.getKey(), multi.getSelect(entry.getValue()));
+                }
             }
         }
         return this.data;
+    }
+
+    private MultiPrintQuery getMultiPrint()
+        throws EFapsException
+    {
+        MultiPrintQuery ret;
+        if (getInstances().isEmpty()) {
+            ret = new MultiPrintQuery(QueryBldrUtil.getInstances(this));
+        } else {
+            final List<Instance> instances = new ArrayList<>();
+            for (final String oid : getInstances()) {
+                instances.add(Instance.get(oid));
+            }
+            ret = new MultiPrintQuery(instances);
+        }
+        return ret;
     }
 }

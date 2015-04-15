@@ -22,11 +22,10 @@ package org.efaps.eql;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
+import org.efaps.db.Delete;
 import org.efaps.db.Instance;
-import org.efaps.db.Update;
-import org.efaps.eql.stmt.AbstractUpdateStmt;
+import org.efaps.eql.stmt.AbstractDeleteStmt;
 
 /**
  * TODO comment!
@@ -34,8 +33,8 @@ import org.efaps.eql.stmt.AbstractUpdateStmt;
  * @author The eFaps Team
  * @version $Id: $
  */
-public class UpdateStmt
-    extends AbstractUpdateStmt
+public class DeleteStmt
+    extends AbstractDeleteStmt
 {
 
     @Override
@@ -52,11 +51,8 @@ public class UpdateStmt
             }
         }
         for (final Instance inst : instances) {
-            final Update update = new Update(inst);
-            for (final Entry<String, String> entry : getAttr2Value().entrySet()) {
-                update.add(entry.getKey(), entry.getValue());
-            }
-            update.execute();
+            final Delete delete = new Delete(inst);
+            delete.execute();
         }
     }
 }

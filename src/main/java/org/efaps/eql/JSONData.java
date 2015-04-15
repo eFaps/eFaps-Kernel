@@ -33,6 +33,7 @@ import org.apache.commons.collections4.comparators.ComparatorChain;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.IBitEnum;
+import org.efaps.eql.stmt.IPrintStmt;
 import org.efaps.json.data.AbstractValue;
 import org.efaps.json.data.BooleanValue;
 import org.efaps.json.data.DataList;
@@ -64,26 +65,28 @@ public class JSONData
     private static final Logger LOG = LoggerFactory.getLogger(JSONData.class);
 
     /**
-     * @param _statement Statement the datalist will be created for
+     * @param _printStmt Statement the datalist will be created for
      * @return a DataList
      * @throws EFapsException on error
      */
-    public static DataList getDataList(final ISelectStmt _selectStmt)
+    public static DataList getDataList(final IPrintStmt _printStmt)
         throws EFapsException
     {
         final DataList ret = new DataList();
-        try {
-            final Map<String, String> mapping = _selectStmt.getAlias2Selects();
-            for (final Map<String, Object> map : _selectStmt.getData()) {
-                final ObjectData data = new ObjectData();
-                for (final Entry<String, String> entry : mapping.entrySet()) {
-                    final Object obj = map.get(entry.getKey());
-                    data.getValues().add(getValue(entry.getKey(), obj));
+        if (_printStmt instanceof PrintStmt) {
+            try {
+                final PrintStmt printStmt = (PrintStmt) _printStmt;
+                final Map<String, String> mapping = printStmt.getAlias2Selects();
+                for (final Map<String, Object> map : printStmt.getData()) {
+                    final ObjectData data = new ObjectData();
+                    for (final Entry<String, String> entry : mapping.entrySet()) {
+                        final Object obj = map.get(entry.getKey());
+                        data.getValues().add(getValue(entry.getKey(), obj));
+                    }
+                    ret.add(data);
                 }
-                ret.add(data);
-            }
-            if (_selectStmt instanceof IQueryStmt) {
-                final Map<String, Boolean> sortMap = ((IQueryStmt) _selectStmt).getSortKey2desc();
+
+                final Map<String, Boolean> sortMap = printStmt.getSortKey2desc();
                 if (!sortMap.isEmpty()) {
                     final ComparatorChain<ObjectData> comparator = new ComparatorChain<>();
                     for (final Entry<String, Boolean> entry : sortMap.entrySet()) {
@@ -103,12 +106,12 @@ public class JSONData
                     }
                     Collections.sort(ret, comparator);
                 }
-            }
-        } catch (final Exception e) {
-            if (e instanceof EFapsException) {
-                throw (EFapsException) e;
-            } else {
-                throw new EFapsException("Could not create JSONData", e);
+            } catch (final Exception e) {
+                if (e instanceof EFapsException) {
+                    throw (EFapsException) e;
+                } else {
+                    throw new EFapsException("Could not create JSONData", e);
+                }
             }
         }
         return ret;
