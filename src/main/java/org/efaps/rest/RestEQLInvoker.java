@@ -22,9 +22,7 @@ package org.efaps.rest;
 
 import java.util.UUID;
 
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -68,10 +66,10 @@ public class RestEQLInvoker
      * @return not implemented.
      */
     @Path("print")
-    @POST
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String print(@FormParam("origin") final String _origin,
-                        @FormParam("stmt") final String _stmt)
+    public String print(@QueryParam("origin") final String _origin,
+                        @QueryParam("stmt") final String _stmt)
     {
         String ret = null;
         // only permit queries on this url

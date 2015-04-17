@@ -20,7 +20,6 @@
 
 package org.efaps.eql;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,7 +45,6 @@ public class QueryBldrUtil
     public static List<Instance> getInstances(final AbstractQueryPart _queryPart)
         throws EFapsException
     {
-        final List<Instance> ret = new ArrayList<>();
         final Iterator<String> typeIter = _queryPart.getTypes().iterator();
         final QueryBuilder queryBldr = new QueryBuilder(Type.get(typeIter.next()));
         while (typeIter.hasNext()) {
@@ -97,6 +95,6 @@ public class QueryBldrUtil
                 }
             }
         }
-        return ret;
+        return queryBldr.getQuery().execute();
     }
 }
