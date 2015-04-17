@@ -735,6 +735,10 @@ public final class Context
         boolean ret = false;
         if (containsSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)) {
             ret = ((UserAttributesSet) getSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)).containsKey(_key);
+        } else {
+            final UserAttributesSet userAttribute = new UserAttributesSet(getPersonId());
+            setSessionAttribute(UserAttributesSet.CONTEXTMAPKEY, userAttribute);
+            ret = userAttribute.containsKey(_key);
         }
         return ret;
     }
