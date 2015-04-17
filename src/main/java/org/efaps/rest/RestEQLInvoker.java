@@ -21,15 +21,18 @@
 package org.efaps.rest;
 
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.efaps.eql.InvokerUtil;
 import org.efaps.eql.JSONData;
 import org.efaps.eql.stmt.IEQLStmt;
 import org.efaps.eql.stmt.IPrintStmt;
+import org.efaps.eql.stmt.IUpdateStmt;
 import org.efaps.json.data.DataList;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -58,10 +61,10 @@ public class RestEQLInvoker
     /**
      * @return not implemented.
      */
-    @Path("query")
+    @Path("print")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public String query(@FormParam("stmt") final String _stmt)
+    public String print(@FormParam("stmt") final String _stmt)
     {
         String ret = null;
         // only permit queries on this url
@@ -88,4 +91,28 @@ public class RestEQLInvoker
         }
         return ret;
     }
+
+    /**
+     * @return not implemented.
+     */
+    @Path("update")
+    @GET
+    public String update(@QueryParam("stmt") final String _stmt)
+    {
+        final String ret = null;
+        // only permit queries on this url
+        try {
+            final IEQLStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
+            if (stmt instanceof IUpdateStmt) {
+                ((IUpdateStmt) stmt).execute();
+            }
+            LOG.debug("JSON: '{}'", ret);
+        } catch (final JsonProcessingException | EFapsException e) {
+            LOG.error("Error processing data.", e);
+        } catch (final Exception e) {
+            LOG.error("Error processing data.", e);
+        }
+        return ret;
+    }
+
 }
