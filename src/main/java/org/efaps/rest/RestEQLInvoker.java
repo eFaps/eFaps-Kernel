@@ -20,6 +20,8 @@
 
 package org.efaps.rest;
 
+import java.util.UUID;
+
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -28,6 +30,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.efaps.db.Insert;
 import org.efaps.eql.InvokerUtil;
 import org.efaps.eql.JSONData;
 import org.efaps.eql.stmt.IEQLStmt;
@@ -64,13 +67,15 @@ public class RestEQLInvoker
     @Path("print")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public String print(@FormParam("stmt") final String _stmt)
+    public String print(@FormParam("origin") final String _origin,
+                        @FormParam("stmt") final String _stmt)
     {
         String ret = null;
         // only permit queries on this url
         try {
             final IEQLStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
             if (stmt instanceof IPrintStmt) {
+                registerEQLStmt(_origin, _stmt);
                 final DataList datalist = JSONData.getDataList((IPrintStmt) stmt);
                 final ObjectMapper mapper = new ObjectMapper();
                 if (LOG.isDebugEnabled()) {
@@ -97,13 +102,15 @@ public class RestEQLInvoker
      */
     @Path("update")
     @GET
-    public String update(@QueryParam("stmt") final String _stmt)
+    public String update(@QueryParam("origin") final String _origin,
+                         @QueryParam("stmt") final String _stmt)
     {
         final String ret = null;
         // only permit queries on this url
         try {
             final IEQLStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
             if (stmt instanceof IUpdateStmt) {
+                registerEQLStmt(_origin, _stmt);
                 ((IUpdateStmt) stmt).execute();
             }
             LOG.debug("JSON: '{}'", ret);
@@ -115,4 +122,14 @@ public class RestEQLInvoker
         return ret;
     }
 
+    protected void registerEQLStmt(final String _origin,
+                                   final String _stmt)
+        throws EFapsException
+    {
+        // Common_HistoryEQL
+        final Insert insert = new Insert(UUID.fromString("c96c63b5-2d4c-4bf9-9627-f335fd9c7a84"));
+        insert.add("Origin", "REST: " + (_origin == null ? "" : _origin));
+        insert.add("EQLStatement", _stmt);
+        insert.execute();
+    }
 }
