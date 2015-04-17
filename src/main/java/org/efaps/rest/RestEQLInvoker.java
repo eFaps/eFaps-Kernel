@@ -33,7 +33,10 @@ import javax.ws.rs.core.MediaType;
 import org.efaps.db.Insert;
 import org.efaps.eql.InvokerUtil;
 import org.efaps.eql.JSONData;
+import org.efaps.eql.stmt.IDeleteStmt;
 import org.efaps.eql.stmt.IEQLStmt;
+import org.efaps.eql.stmt.IExecStmt;
+import org.efaps.eql.stmt.IInsertStmt;
 import org.efaps.eql.stmt.IPrintStmt;
 import org.efaps.eql.stmt.IUpdateStmt;
 import org.efaps.json.data.DataList;
@@ -112,6 +115,81 @@ public class RestEQLInvoker
             if (stmt instanceof IUpdateStmt) {
                 registerEQLStmt(_origin, _stmt);
                 ((IUpdateStmt) stmt).execute();
+            }
+            LOG.debug("JSON: '{}'", ret);
+        } catch (final JsonProcessingException | EFapsException e) {
+            LOG.error("Error processing data.", e);
+        } catch (final Exception e) {
+            LOG.error("Error processing data.", e);
+        }
+        return ret;
+    }
+
+    /**
+     * @return not implemented.
+     */
+    @Path("insert")
+    @GET
+    public String insert(@QueryParam("origin") final String _origin,
+                         @QueryParam("stmt") final String _stmt)
+    {
+        final String ret = null;
+        // only permit queries on this url
+        try {
+            final IEQLStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
+            if (stmt instanceof IInsertStmt) {
+                registerEQLStmt(_origin, _stmt);
+                ((IInsertStmt) stmt).execute();
+            }
+            LOG.debug("JSON: '{}'", ret);
+        } catch (final JsonProcessingException | EFapsException e) {
+            LOG.error("Error processing data.", e);
+        } catch (final Exception e) {
+            LOG.error("Error processing data.", e);
+        }
+        return ret;
+    }
+
+    /**
+     * @return not implemented.
+     */
+    @Path("delete")
+    @GET
+    public String delete(@QueryParam("origin") final String _origin,
+                         @QueryParam("stmt") final String _stmt)
+    {
+        final String ret = null;
+        // only permit queries on this url
+        try {
+            final IEQLStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
+            if (stmt instanceof IDeleteStmt) {
+                registerEQLStmt(_origin, _stmt);
+                ((IDeleteStmt) stmt).execute();
+            }
+            LOG.debug("JSON: '{}'", ret);
+        } catch (final JsonProcessingException | EFapsException e) {
+            LOG.error("Error processing data.", e);
+        } catch (final Exception e) {
+            LOG.error("Error processing data.", e);
+        }
+        return ret;
+    }
+
+    /**
+     * @return not implemented.
+     */
+    @Path("execute")
+    @GET
+    public String execute(@QueryParam("origin") final String _origin,
+                         @QueryParam("stmt") final String _stmt)
+    {
+        final String ret = null;
+        // only permit queries on this url
+        try {
+            final IEQLStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
+            if (stmt instanceof IExecStmt) {
+                registerEQLStmt(_origin, _stmt);
+               //TODO
             }
             LOG.debug("JSON: '{}'", ret);
         } catch (final JsonProcessingException | EFapsException e) {
