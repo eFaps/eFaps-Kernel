@@ -58,13 +58,13 @@ public class QueryBldrUtil
                         queryBldr.addWhereAttrEqValue(where.getAttribute(), where.getValues().toArray());
                         break;
                     case GREATER:
-                        queryBldr.addWhereAttrGreaterValue(where.getAttribute(), where.getValues().toArray());
+                        queryBldr.addWhereAttrGreaterValue(where.getAttribute(), where.getValues().get(0));
                         break;
                     case LESS:
-                        queryBldr.addWhereAttrLessValue(where.getAttribute(), where.getValues().toArray());
+                        queryBldr.addWhereAttrLessValue(where.getAttribute(), where.getValues().get(0));
                         break;
                     case LIKE:
-                        queryBldr.addWhereAttrMatchValue(where.getAttribute(), where.getValues().toArray());
+                        queryBldr.addWhereAttrMatchValue(where.getAttribute(), where.getValues().get(0));
                         break;
                     case UNEQUAL:
                         queryBldr.addWhereAttrNotEqValue(where.getAttribute(), where.getValues().toArray());
@@ -79,13 +79,13 @@ public class QueryBldrUtil
                         queryBldr.addWhereSelectEqValue(where.getSelect(), where.getValues().toArray());
                         break;
                     case GREATER:
-                        queryBldr.addWhereSelectGreaterValue(where.getSelect(), where.getValues().toArray());
+                        queryBldr.addWhereSelectGreaterValue(where.getSelect(), where.getValues().get(0));
                         break;
                     case LESS:
-                        queryBldr.addWhereSelectLessValue(where.getSelect(), where.getValues().toArray());
+                        queryBldr.addWhereSelectLessValue(where.getSelect(), where.getValues().get(0));
                         break;
                     case LIKE:
-                        queryBldr.addWhereSelectMatchValue(where.getSelect(), where.getValues().toArray());
+                        queryBldr.addWhereSelectMatchValue(where.getSelect(), where.getValues().get(0));
                         break;
                     case UNEQUAL:
                     case IN:
