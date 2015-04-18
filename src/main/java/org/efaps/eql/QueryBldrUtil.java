@@ -95,6 +95,7 @@ public class QueryBldrUtil
                 }
             }
         }
+        queryBldr.setLimit(_queryPart.getLimit());
         return queryBldr.getQuery().execute();
     }
 }
