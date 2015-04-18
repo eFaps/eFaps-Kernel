@@ -30,7 +30,6 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
-import org.apache.commons.digester.Digester;
 import org.efaps.db.Checkout;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
@@ -75,9 +74,8 @@ public final class JasperUtil
         JasperDesign jasperDesign = null;
         try {
             JasperUtil.LOG.debug("Loading JasperDesign for :{}", _instance);
-            final Digester digester = new Digester();
-            JRXmlDigesterFactory.configureDigester(digester);
-            final JRXmlLoader loader = new JRXmlLoader(DefaultJasperReportsContext.getInstance(), digester);
+            final JRXmlLoader loader = new JRXmlLoader(DefaultJasperReportsContext.getInstance(),
+                            JRXmlDigesterFactory.createDigester());
             jasperDesign = loader.loadXML(source);
         } catch (final ParserConfigurationException e) {
             throw new EFapsException(JasperUtil.class, "getJasperDesign", e);
