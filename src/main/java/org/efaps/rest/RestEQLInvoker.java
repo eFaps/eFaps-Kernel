@@ -29,6 +29,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.efaps.db.Insert;
+import org.efaps.eql.EQLInvoker;
 import org.efaps.eql.InvokerUtil;
 import org.efaps.eql.JSONData;
 import org.efaps.eql.stmt.IDeleteStmt;
@@ -74,8 +75,9 @@ public class RestEQLInvoker
         String ret = null;
         // only permit queries on this url
         try {
-            final IEQLStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
-            if (stmt instanceof IPrintStmt) {
+            final EQLInvoker invoker = InvokerUtil.getInvoker();
+            final IEQLStmt stmt = invoker.invoke(_stmt);
+            if (invoker.getSyntaxErrors().isEmpty() && stmt instanceof IPrintStmt) {
                 registerEQLStmt(_origin, _stmt);
                 final DataList datalist = JSONData.getDataList((IPrintStmt) stmt);
                 final ObjectMapper mapper = new ObjectMapper();
@@ -89,7 +91,9 @@ public class RestEQLInvoker
 
                 ret = mapper.writeValueAsString(datalist);
             }
-            LOG.debug("JSON: '{}'", ret);
+            for (final String sytaxError : invoker.getSyntaxErrors()) {
+                LOG.warn(sytaxError);
+            }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
         } catch (final Exception e) {
@@ -109,12 +113,15 @@ public class RestEQLInvoker
         final String ret = null;
         // only permit queries on this url
         try {
-            final IEQLStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
-            if (stmt instanceof IUpdateStmt) {
+            final EQLInvoker invoker = InvokerUtil.getInvoker();
+            final IEQLStmt stmt = invoker.invoke(_stmt);
+            if (invoker.getSyntaxErrors().isEmpty() && stmt instanceof IUpdateStmt) {
                 registerEQLStmt(_origin, _stmt);
                 ((IUpdateStmt) stmt).execute();
             }
-            LOG.debug("JSON: '{}'", ret);
+            for (final String sytaxError : invoker.getSyntaxErrors()) {
+                LOG.warn(sytaxError);
+            }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
         } catch (final Exception e) {
@@ -134,12 +141,15 @@ public class RestEQLInvoker
         final String ret = null;
         // only permit queries on this url
         try {
-            final IEQLStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
-            if (stmt instanceof IInsertStmt) {
+            final EQLInvoker invoker = InvokerUtil.getInvoker();
+            final IEQLStmt stmt = invoker.invoke(_stmt);
+            if (invoker.getSyntaxErrors().isEmpty() && stmt instanceof IInsertStmt) {
                 registerEQLStmt(_origin, _stmt);
                 ((IInsertStmt) stmt).execute();
             }
-            LOG.debug("JSON: '{}'", ret);
+            for (final String sytaxError : invoker.getSyntaxErrors()) {
+                LOG.warn(sytaxError);
+            }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
         } catch (final Exception e) {
@@ -159,12 +169,15 @@ public class RestEQLInvoker
         final String ret = null;
         // only permit queries on this url
         try {
-            final IEQLStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
-            if (stmt instanceof IDeleteStmt) {
+            final EQLInvoker invoker = InvokerUtil.getInvoker();
+            final IEQLStmt stmt = invoker.invoke(_stmt);
+            if (invoker.getSyntaxErrors().isEmpty() && stmt instanceof IDeleteStmt) {
                 registerEQLStmt(_origin, _stmt);
                 ((IDeleteStmt) stmt).execute();
             }
-            LOG.debug("JSON: '{}'", ret);
+            for (final String sytaxError : invoker.getSyntaxErrors()) {
+                LOG.warn(sytaxError);
+            }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
         } catch (final Exception e) {
@@ -184,12 +197,15 @@ public class RestEQLInvoker
         final String ret = null;
         // only permit queries on this url
         try {
-            final IEQLStmt stmt = InvokerUtil.getInvoker().invoke(_stmt);
+            final EQLInvoker invoker = InvokerUtil.getInvoker();
+            final IEQLStmt stmt = invoker.invoke(_stmt);
             if (stmt instanceof IExecStmt) {
                 registerEQLStmt(_origin, _stmt);
                //TODO
             }
-            LOG.debug("JSON: '{}'", ret);
+            for (final String sytaxError : invoker.getSyntaxErrors()) {
+                LOG.warn(sytaxError);
+            }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
         } catch (final Exception e) {
