@@ -23,6 +23,7 @@ package org.efaps.admin.ui.field;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.efaps.api.ui.FilterBase;
 import org.efaps.api.ui.FilterType;
 import org.slf4j.Logger;
@@ -93,13 +94,9 @@ public class Filter
      */
     protected void evalBase(final String _baseName)
     {
-        try {
-            final FilterBase baseTmp = FilterBase.valueOf(_baseName.toUpperCase());
-            if (baseTmp != null) {
-                this.base = baseTmp;
-            }
-        } catch (final IllegalArgumentException e) {
-            Filter.LOG.error("Invalid value '{}' for FilterBase", _baseName);
+        final FilterBase baseTmp = EnumUtils.getEnum(FilterBase.class, _baseName.toUpperCase());
+        if (baseTmp != null) {
+            this.base = baseTmp;
         }
         activate();
     }
@@ -121,13 +118,9 @@ public class Filter
      */
     protected void evalType(final String _typeName)
     {
-        try {
-            final FilterType typTmp = FilterType.valueOf(_typeName.toUpperCase());
-            if (typTmp != null) {
-                this.type = typTmp;
-            }
-        } catch (final IllegalArgumentException e) {
-            Filter.LOG.error("Invalid value '{}' for FilterType", _typeName);
+        final FilterType typTmp = EnumUtils.getEnum(FilterType.class, _typeName.toUpperCase());
+        if (typTmp != null) {
+            this.type = typTmp;
         }
     }
 
