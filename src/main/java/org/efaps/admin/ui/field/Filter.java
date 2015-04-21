@@ -23,6 +23,8 @@ package org.efaps.admin.ui.field;
 
 import java.io.Serializable;
 
+import org.efaps.api.ui.FilterBase;
+import org.efaps.api.ui.FilterType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,34 +38,6 @@ import org.slf4j.LoggerFactory;
 public class Filter
     implements Serializable
 {
-
-    /**
-     * filtertype.
-     */
-    public enum Type
-    {
-        /** Filter for classification. */
-        CLASSIFICATION,
-        /** Filter for freetext. */
-        FREETEXT,
-        /** No filter. */
-        NONE,
-        /** Filter presenting a picker list. */
-        PICKLIST,
-        /** Filter for Status Attributes. */
-        STATUS;
-    }
-
-    /**
-     * Filterbase.
-     */
-    public enum Base
-    {
-        /** Filter work on memory base. */
-        MEMORY,
-        /** Filter work against the data base. */
-        DATABASE;
-    }
 
     /**
      * Needed for serialization.
@@ -95,19 +69,19 @@ public class Filter
     /**
      * Type of this filter (NONE is the default value).
      */
-    private Type type = Type.NONE;
+    private FilterType type = FilterType.NONE;
 
     /**
      * Base of this filter (Memorbased is the default value).
      */
-    private Base base = Base.MEMORY;
+    private FilterBase base = FilterBase.MEMORY;
 
         /**
      * Getter method for the instance variable {@link #base}.
      *
      * @return value of instance variable {@link #base}
      */
-    public Base getBase()
+    public FilterBase getBase()
     {
         return this.base;
     }
@@ -120,7 +94,7 @@ public class Filter
     protected void evalBase(final String _baseName)
     {
         try {
-            final Base baseTmp = Base.valueOf(_baseName.toUpperCase());
+            final FilterBase baseTmp = FilterBase.valueOf(_baseName.toUpperCase());
             if (baseTmp != null) {
                 this.base = baseTmp;
             }
@@ -135,7 +109,7 @@ public class Filter
      *
      * @return value of instance variable {@link #type}
      */
-    public Type getType()
+    public FilterType getType()
     {
         return this.type;
     }
@@ -148,7 +122,7 @@ public class Filter
     protected void evalType(final String _typeName)
     {
         try {
-            final Type typTmp = Type.valueOf(_typeName.toUpperCase());
+            final FilterType typTmp = FilterType.valueOf(_typeName.toUpperCase());
             if (typTmp != null) {
                 this.type = typTmp;
             }
@@ -225,8 +199,8 @@ public class Filter
      */
     private void activate()
     {
-        if (this.type.equals(Type.NONE)) {
-            this.type = Type.PICKLIST;
+        if (this.type.equals(FilterType.NONE)) {
+            this.type = FilterType.PICKLIST;
         }
     }
 }

@@ -195,8 +195,14 @@ The framework includes integrations (e.g. webdav, full text search) and a web ap
 
         <dependency>
              <groupId>org.efaps</groupId>
+            <artifactId>efaps-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+             <groupId>org.efaps</groupId>
             <artifactId>efaps-json</artifactId>
-            <version>5.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
          <dependency>

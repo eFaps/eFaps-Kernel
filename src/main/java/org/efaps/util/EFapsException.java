@@ -38,7 +38,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * @version $Id$
  */
 public class EFapsException
-    extends Exception
+    extends EFapsBaseException
 {
     /**
      * Unique identifier used to serialize this class.
@@ -117,7 +117,7 @@ public class EFapsException
     {
         _stream.append(makeInfo());
         super.printStackTrace(_stream);
-        if ((getCause() != null) && (getCause() instanceof SQLException))  {
+        if (getCause() != null && getCause() instanceof SQLException)  {
             SQLException ex = (SQLException) getCause();
             ex = ex.getNextException();
             while (ex != null)  {
@@ -144,7 +144,7 @@ public class EFapsException
             _writer.append("Thrown within class ").append(this.className.getName()).append('\n');
         }
         super.printStackTrace(_writer);
-        if ((getCause() != null) && (getCause() instanceof SQLException))  {
+        if (getCause() != null && getCause() instanceof SQLException)  {
             SQLException ex = (SQLException) getCause();
             ex = ex.getNextException();
             while (ex != null)  {
@@ -171,10 +171,10 @@ public class EFapsException
         if (this.id != null)  {
             str.append("Id of Exception is ").append(this.id).append('\n');
         }
-        if ((this.args != null) && (this.args.length > 0))  {
+        if (this.args != null && this.args.length > 0)  {
             str.append("Arguments are:\n");
             for (Integer index = 0; index < this.args.length; index++)  {
-                final String arg = (this.args[index] == null)
+                final String arg = this.args[index] == null
                                    ? "null"
                                    : this.args[index].toString();
                 str.append("\targs[").append(index.toString()).append("] = '").append(arg).append("'\n");
