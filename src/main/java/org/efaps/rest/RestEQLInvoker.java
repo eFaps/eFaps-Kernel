@@ -27,6 +27,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.efaps.db.Insert;
 import org.efaps.eql.EQLInvoker;
@@ -68,11 +69,11 @@ public class RestEQLInvoker
      */
     @Path("print")
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String print(@QueryParam("origin") final String _origin,
-                        @QueryParam("stmt") final String _stmt)
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
+    public Response print(@QueryParam("origin") final String _origin,
+                          @QueryParam("stmt") final String _stmt)
     {
-        String ret = null;
+        Response ret = null;
         // only permit queries on this url
         try {
             final EQLInvoker invoker = InvokerUtil.getInvoker();
@@ -88,11 +89,15 @@ public class RestEQLInvoker
                 mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
 
                 mapper.registerModule(new JodaModule());
-
-                ret = mapper.writeValueAsString(datalist);
-            }
-            for (final String sytaxError : invoker.getSyntaxErrors()) {
-                LOG.warn(sytaxError);
+                ret = Response.ok().type(MediaType.APPLICATION_JSON).entity(mapper.writeValueAsString(datalist))
+                                .build();
+            } else {
+                final StringBuilder error = new StringBuilder();
+                for (final String syntaxError : invoker.getSyntaxErrors()) {
+                    LOG.warn(syntaxError);
+                    error.append(syntaxError).append("\n");
+                }
+                ret = Response.serverError().entity(error.toString()).build();
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
@@ -107,10 +112,11 @@ public class RestEQLInvoker
      */
     @Path("update")
     @GET
+    @Produces(MediaType.TEXT_PLAIN)
     public String update(@QueryParam("origin") final String _origin,
                          @QueryParam("stmt") final String _stmt)
     {
-        final String ret = null;
+        String ret = null;
         // only permit queries on this url
         try {
             final EQLInvoker invoker = InvokerUtil.getInvoker();
@@ -118,9 +124,12 @@ public class RestEQLInvoker
             if (invoker.getSyntaxErrors().isEmpty() && stmt instanceof IUpdateStmt) {
                 registerEQLStmt(_origin, _stmt);
                 ((IUpdateStmt) stmt).execute();
+            } else {
+                ret = "";
             }
-            for (final String sytaxError : invoker.getSyntaxErrors()) {
-                LOG.warn(sytaxError);
+            for (final String syntaxError : invoker.getSyntaxErrors()) {
+                LOG.warn(syntaxError);
+                ret = ret + syntaxError + "\n";
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
@@ -135,10 +144,11 @@ public class RestEQLInvoker
      */
     @Path("insert")
     @GET
+    @Produces(MediaType.TEXT_PLAIN)
     public String insert(@QueryParam("origin") final String _origin,
                          @QueryParam("stmt") final String _stmt)
     {
-        final String ret = null;
+        String ret = null;
         // only permit queries on this url
         try {
             final EQLInvoker invoker = InvokerUtil.getInvoker();
@@ -146,9 +156,12 @@ public class RestEQLInvoker
             if (invoker.getSyntaxErrors().isEmpty() && stmt instanceof IInsertStmt) {
                 registerEQLStmt(_origin, _stmt);
                 ((IInsertStmt) stmt).execute();
+            } else {
+                ret = "";
             }
-            for (final String sytaxError : invoker.getSyntaxErrors()) {
-                LOG.warn(sytaxError);
+            for (final String syntaxError : invoker.getSyntaxErrors()) {
+                LOG.warn(syntaxError);
+                ret = ret + syntaxError + "\n";
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
@@ -163,10 +176,11 @@ public class RestEQLInvoker
      */
     @Path("delete")
     @GET
+    @Produces(MediaType.TEXT_PLAIN)
     public String delete(@QueryParam("origin") final String _origin,
                          @QueryParam("stmt") final String _stmt)
     {
-        final String ret = null;
+        String ret = null;
         // only permit queries on this url
         try {
             final EQLInvoker invoker = InvokerUtil.getInvoker();
@@ -174,9 +188,12 @@ public class RestEQLInvoker
             if (invoker.getSyntaxErrors().isEmpty() && stmt instanceof IDeleteStmt) {
                 registerEQLStmt(_origin, _stmt);
                 ((IDeleteStmt) stmt).execute();
+            } else {
+                ret = "";
             }
-            for (final String sytaxError : invoker.getSyntaxErrors()) {
-                LOG.warn(sytaxError);
+            for (final String syntaxError : invoker.getSyntaxErrors()) {
+                LOG.warn(syntaxError);
+                ret = ret + syntaxError + "\n";
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
@@ -191,20 +208,24 @@ public class RestEQLInvoker
      */
     @Path("execute")
     @GET
+    @Produces(MediaType.TEXT_PLAIN)
     public String execute(@QueryParam("origin") final String _origin,
-                         @QueryParam("stmt") final String _stmt)
+                          @QueryParam("stmt") final String _stmt)
     {
-        final String ret = null;
+        String ret = null;
         // only permit queries on this url
         try {
             final EQLInvoker invoker = InvokerUtil.getInvoker();
             final IEQLStmt stmt = invoker.invoke(_stmt);
             if (stmt instanceof IExecStmt) {
                 registerEQLStmt(_origin, _stmt);
-               //TODO
+                // TODO
+            } else {
+                ret = "";
             }
-            for (final String sytaxError : invoker.getSyntaxErrors()) {
-                LOG.warn(sytaxError);
+            for (final String syntaxError : invoker.getSyntaxErrors()) {
+                LOG.warn(syntaxError);
+                ret = ret + syntaxError + "\n";
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
