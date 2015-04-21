@@ -126,10 +126,10 @@ public class RestEQLInvoker
                 ((IUpdateStmt) stmt).execute();
             } else {
                 ret = "";
-            }
-            for (final String syntaxError : invoker.getSyntaxErrors()) {
-                LOG.warn(syntaxError);
-                ret = ret + syntaxError + "\n";
+                for (final String syntaxError : invoker.getSyntaxErrors()) {
+                    LOG.warn(syntaxError);
+                    ret = ret + syntaxError + "\n";
+                }
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
@@ -156,12 +156,13 @@ public class RestEQLInvoker
             if (invoker.getSyntaxErrors().isEmpty() && stmt instanceof IInsertStmt) {
                 registerEQLStmt(_origin, _stmt);
                 ((IInsertStmt) stmt).execute();
+                ret = ((IInsertStmt) stmt).getInstance();
             } else {
                 ret = "";
-            }
-            for (final String syntaxError : invoker.getSyntaxErrors()) {
-                LOG.warn(syntaxError);
-                ret = ret + syntaxError + "\n";
+                for (final String syntaxError : invoker.getSyntaxErrors()) {
+                    LOG.warn(syntaxError);
+                    ret = ret + syntaxError + "\n";
+                }
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
@@ -190,10 +191,10 @@ public class RestEQLInvoker
                 ((IDeleteStmt) stmt).execute();
             } else {
                 ret = "";
-            }
-            for (final String syntaxError : invoker.getSyntaxErrors()) {
-                LOG.warn(syntaxError);
-                ret = ret + syntaxError + "\n";
+                for (final String syntaxError : invoker.getSyntaxErrors()) {
+                    LOG.warn(syntaxError);
+                    ret = ret + syntaxError + "\n";
+                }
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);

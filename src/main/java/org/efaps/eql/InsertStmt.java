@@ -44,5 +44,6 @@ public class InsertStmt
             insert.add(entry.getKey(), entry.getValue());
         }
         insert.execute();
+        setInstance(insert.getInstance().getOid());
     }
 }
