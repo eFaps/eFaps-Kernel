@@ -99,7 +99,9 @@ public class Type
         /** GeneralInstane. */
         GENERALINSTANCE,
         /** No GeneralInstane. */
-        NOGENERALINSTANCE;
+        NOGENERALINSTANCE,
+        /** Has history and therfor cannot be deleted.*/
+        HISTORY;
 
         /**
          * {@inheritDoc}
@@ -301,6 +303,11 @@ public class Type
     private boolean abstractBool;
 
     /**
+     * Is the type abstract.
+     */
+    private boolean history;
+
+    /**
      * Are the instance of this type general also. Used as a TRISTATE
      * <ol>
      * <li>null = Inherit the value from the parent.</li>
@@ -430,6 +437,26 @@ public class Type
     private void setGeneralInstance(final boolean _generalInstance)
     {
         this.generalInstance = _generalInstance;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #history}.
+     *
+     * @return value of instance variable {@link #history}
+     */
+    public boolean isHistory()
+    {
+        return this.history;
+    }
+
+    /**
+     * Setter method for instance variable {@link #history}.
+     *
+     * @param _history value for instance variable {@link #history}
+     */
+    private void setHistory(final boolean _history)
+    {
+        this.history = _history;
     }
 
     /**
@@ -1437,7 +1464,7 @@ public class Type
                     ret.setParentTypeID(parentTypeId);
                 }
                 ret.setAbstract(BitEnumType.isSelected(purpose, Type.Purpose.ABSTRACT));
-
+                ret.setHistory(BitEnumType.isSelected(purpose, Type.Purpose.HISTORY));
                 if (BitEnumType.isSelected(purpose, Type.Purpose.GENERALINSTANCE)) {
                     ret.setGeneralInstance(true);
                 }

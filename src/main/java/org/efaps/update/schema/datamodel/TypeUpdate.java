@@ -703,6 +703,9 @@ public class TypeUpdate
                     if ("false".equalsIgnoreCase(_attributes.get("GeneralInstance"))) {
                         valueTmp = valueTmp + Type.Purpose.NOGENERALINSTANCE.getInt();
                     }
+                    if ("true".equalsIgnoreCase(_attributes.get("history"))) {
+                        valueTmp = valueTmp + Type.Purpose.HISTORY.getInt();
+                    }
                     addValue("Purpose", valueTmp.toString());
                 } else if (_tags.size() == 2) {
                     if ("LinkColumn".equals(_tags.get(1))) {

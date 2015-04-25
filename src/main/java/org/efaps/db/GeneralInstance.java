@@ -211,7 +211,7 @@ public final class GeneralInstance
         throws EFapsException
     {
         final List<DeleteDefintion> ret = new ArrayList<DeleteDefintion>();
-        if (_instance.isValid() && _instance.getType().isGeneralInstance()) {
+        if (_instance.isValid() && _instance.getType().isGeneralInstance() && !_instance.getType().isHistory()) {
             GeneralInstance.generaliseInstance(_instance, _con);
             final long id = _instance.getGeneralId();
             if (id > 0) {
