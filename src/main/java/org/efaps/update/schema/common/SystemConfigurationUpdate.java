@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.efaps.admin.user.Company;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.db.Insert;
@@ -100,6 +101,11 @@ public class SystemConfigurationUpdate
         private String companyUUID;
 
         /**
+         * Update defintion.
+         */
+        private AttributeUpdate attributeUpdate = AttributeUpdate.DEFAULT;
+
+        /**
          *
          * @param _tags         current path as list of single tags
          * @param _attributes   attributes for current path
@@ -147,22 +153,48 @@ public class SystemConfigurationUpdate
             }
             final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
+            final boolean attrExists = query.next();
+
             Update update = null;
-            if (query.next()) {
+            if (attrExists && AttributeUpdate.FORCE.equals(getAttributeUpdate())) {
                 update = new Update(query.getCurrentValue());
-            } else {
+            } else if (!attrExists) {
                 update = new Insert(CIAdminCommon.SystemConfigurationAttribute);
                 update.add(CIAdminCommon.SystemConfigurationAttribute.AbstractLink, _instance.getId());
                 update.add(CIAdminCommon.SystemConfigurationAttribute.Key, this.key);
             }
-            if (company != null) {
-                update.add(CIAdminCommon.SystemConfigurationAttribute.CompanyLink, company.getId());
-            } else {
-                update.add(CIAdminCommon.SystemConfigurationAttribute.CompanyLink, 0);
+            if (update != null) {
+                if (company != null) {
+                    update.add(CIAdminCommon.SystemConfigurationAttribute.CompanyLink, company.getId());
+                } else {
+                    update.add(CIAdminCommon.SystemConfigurationAttribute.CompanyLink, 0);
+                }
+                update.add(CIAdminCommon.SystemConfigurationAttribute.Value, this.value);
+                update.add(CIAdminCommon.SystemConfigurationAttribute.Description, this.description);
+                update.executeWithoutAccessCheck();
             }
-            update.add(CIAdminCommon.SystemConfigurationAttribute.Value, this.value);
-            update.add(CIAdminCommon.SystemConfigurationAttribute.Description, this.description);
-            update.executeWithoutAccessCheck();
+        }
+
+
+        /**
+         * Getter method for the instance variable {@link #attributeUpdate}.
+         *
+         * @return value of instance variable {@link #attributeUpdate}
+         */
+        public AttributeUpdate getAttributeUpdate()
+        {
+            return this.attributeUpdate;
+        }
+
+
+        /**
+         * Setter method for instance variable {@link #attributeUpdate}.
+         *
+         * @param _attributeUpdate value for instance variable {@link #attributeUpdate}
+         */
+        public void setAttributeUpdate(final AttributeUpdate _attributeUpdate)
+        {
+            this.attributeUpdate = _attributeUpdate;
         }
     }
 
@@ -205,6 +237,10 @@ public class SystemConfigurationUpdate
             if ("attribute".equals(value)) {
                 if (_tags.size() == 1) {
                     this.curAttr = new AttributeDefinition();
+                    if (_attributes.containsKey("update")) {
+                        this.curAttr.setAttributeUpdate(EnumUtils.getEnum(AttributeUpdate.class,
+                                        _attributes.get("update").toUpperCase()));
+                    }
                     this.attributes.add(this.curAttr);
                 } else {
                     this.curAttr.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
@@ -240,5 +276,10 @@ public class SystemConfigurationUpdate
                 throw new InstallationException(" Type can not be updated", e);
             }
         }
+    }
+
+    public static enum AttributeUpdate
+    {
+        DEFAULT, FORCE;
     }
 }
