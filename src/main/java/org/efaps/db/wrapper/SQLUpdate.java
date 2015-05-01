@@ -20,11 +20,13 @@
 
 package org.efaps.db.wrapper;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -207,6 +209,26 @@ public class SQLUpdate
                         }
                     } else if (newValue instanceof Integer) {
                         if (dbValue.equals(new Long((Integer) newValue))) {
+                            colIter.remove();
+                        }
+                    }
+                } else if (dbValue instanceof BigDecimal) {
+                    if (newValue instanceof BigDecimal) {
+                        if (((BigDecimal) dbValue).compareTo((BigDecimal) newValue) == 0) {
+                            colIter.remove();
+                        }
+                    } else if (newValue instanceof Long) {
+                        if (((BigDecimal) dbValue).compareTo(BigDecimal.valueOf((Long) newValue)) == 0) {
+                            colIter.remove();
+                        }
+                    } else if (newValue instanceof Integer) {
+                        if (((BigDecimal) dbValue).compareTo(BigDecimal.valueOf(new Long((Integer) newValue))) == 0) {
+                            colIter.remove();
+                        }
+                    }
+                } else if (dbValue instanceof Timestamp) {
+                    if (newValue instanceof Timestamp) {
+                        if (((Timestamp) dbValue).equals((Timestamp) newValue)) {
                             colIter.remove();
                         }
                     }
