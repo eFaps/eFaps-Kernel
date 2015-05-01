@@ -426,7 +426,7 @@ public class Update
                 for (final Entry<SQLTable, List<Value>> entry : this.table2values.entrySet()) {
                     final SQLUpdate update = Context.getDbType().newUpdate(entry.getKey().getSqlTable(),
                                     entry.getKey().getSqlColId(),
-                                    this.instance.getId());
+                                    getInstance().getId());
                     // iterate in reverse order and only execute the ones that are not added yet, permitting
                     // to overwrite the value for attributes by adding them later
                     final ReverseListIterator<Value> iterator = new ReverseListIterator<Value>(entry.getValue());
@@ -439,16 +439,32 @@ public class Update
                             value.getAttribute().prepareDBUpdate(update, value.getValues());
                             added.add(colKey);
                         }
-
                     }
-                    update.execute(con.getConnection());
+                    final Set<String> updatedColumns = update.execute(con.getConnection());
+                    final Iterator<Entry<Attribute, Value>> attrIter = this.trigRelevantAttr2values.entrySet()
+                                    .iterator();
+                    while (attrIter.hasNext()) {
+                        final Entry<Attribute, Value> trigRelEntry = attrIter.next();
+                        if (trigRelEntry.getKey().getTable().equals(entry.getKey())) {
+                            boolean updated = false;
+                            for (final String colName : trigRelEntry.getKey().getSqlColNames()) {
+                                if (updatedColumns.contains(colName)) {
+                                    updated = true;
+                                    break;
+                                }
+                            }
+                            if (!updated) {
+                                attrIter.remove();
+                            }
+                        }
+                    }
                 }
                 con.commit();
             } catch (final SQLException e) {
                 Update.LOG.error("Update of '" + this.instance + "' not possible", e);
                 throw new EFapsException(getClass(), "executeWithoutTrigger.SQLException", e, this.instance);
             } finally {
-                if ((con != null) && con.isOpened()) {
+                if (con != null && con.isOpened()) {
                     con.abort();
                 }
             }
@@ -467,8 +483,6 @@ public class Update
     {
         return getInstance().getType();
     }
-
-
 
     /**
      * The instance method returns the id of {@link #instance}.
