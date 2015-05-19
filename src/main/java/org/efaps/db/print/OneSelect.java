@@ -233,6 +233,10 @@ public class OneSelect
             final int column = "id".equals(this.valueSelect.getValueType())
                             ? this.valueSelect.getColIndexs().get(0) : 2;
             this.relIdList.add((Long) _row[column - 1]);
+            // this means that it is a chained LinkFromSelect
+            if (!getSelectParts().isEmpty() && getSelectParts().get(0) instanceof LinkFromSelect.LinkFromSelectPart) {
+                this.idList.set(this.idList.size() - 1, (Long) _row[1]);
+            }
         }
         Object object = null;
         AbstractValueSelect tmpValueSelect;
@@ -589,7 +593,13 @@ public class OneSelect
         if (this.fromSelect != null && _object instanceof Number) {
             final List<Object> tmpList = new ArrayList<Object>();
             final Long id = ((Number) _object).longValue();
-            final Iterator<Long> relIter = this.relIdList.iterator();
+            Iterator<Long> relIter = this.relIdList.iterator();
+            // chained linkfroms
+            if (!getSelectParts().isEmpty() && getSelectParts().get(0) instanceof LinkFromSelect.LinkFromSelectPart) {
+                relIter = this.idList.iterator();
+            } else {
+                relIter = this.relIdList.iterator();
+            }
             final Iterator<Object> objIter = this.objectList.iterator();
             while (relIter.hasNext()) {
                 final Long rel = relIter.next();
@@ -598,7 +608,15 @@ public class OneSelect
                     tmpList.add(obj);
                 }
             }
-            ret = this.valueSelect.getValue(tmpList);
+            if (this.valueSelect == null) {
+                final List<Object> retTmp = new ArrayList<>();
+                for (final Object obj : tmpList) {
+                    retTmp.add(this.fromSelect.getMainOneSelect().getObject(obj));
+                }
+                ret = retTmp.size() > 0 ? retTmp.size() > 1 ? retTmp : retTmp.get(0) : null;
+            } else {
+                ret = this.valueSelect.getValue(tmpList);
+            }
         } else {
             ret = this.getObject();
         }

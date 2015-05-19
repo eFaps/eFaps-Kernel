@@ -99,50 +99,7 @@ public class LinkFromSelect
         final OneSelect onsel = new OneSelect(this, _linkFrom);
         addOneSelect(onsel);
         onsel.setFromSelect(this);
-        onsel.getSelectParts().add(new ISelectPart() {
-
-            @Override
-            public Type getType()
-            {
-                return LinkFromSelect.this.type;
-            }
-
-            @Override
-            public int join(final OneSelect _oneselect,
-                            final SQLSelect _select,
-                            final int _relIndex)
-            {
-                // nothing to join here
-                return 0;
-            }
-
-            @Override
-            public void addObject(final Object[] _rs)
-                throws SQLException
-            {
-                // no objects must be added
-            }
-
-            @Override
-            public Object getObject()
-            {
-                return null;
-            }
-
-            @Override
-            public void add2Where(final OneSelect _oneselect,
-                                  final SQLSelect _select)
-            {
-                // no clause must be added
-            }
-
-            @Override
-            public void next()
-                throws EFapsException
-            {
-                // no clause must be added
-            }
-        });
+        onsel.getSelectParts().add(new LinkFromSelectPart(this.type));
     }
 
     /**
@@ -165,6 +122,13 @@ public class LinkFromSelect
         throws EFapsException
     {
         this.hasResult = executeOneCompleteStmt(createSQLStatement(_onesel), getAllSelects());
+        if (this.hasResult) {
+            for (final OneSelect onesel :  getAllSelects()) {
+                if (onesel.getFromSelect() != null && !onesel.getFromSelect().equals(this)) {
+                    onesel.getFromSelect().execute(onesel);
+                }
+            }
+        }
         return this.hasResult;
     }
 
@@ -386,5 +350,63 @@ public class LinkFromSelect
     public boolean isCacheEnabled()
     {
         return this.key != null;
+    }
+
+
+    public static class LinkFromSelectPart
+        implements ISelectPart
+    {
+
+        private final Type type;
+
+        /**
+         * @param _type
+         */
+        public LinkFromSelectPart(final Type _type)
+        {
+            this.type = _type;
+        }
+
+        @Override
+        public Type getType()
+        {
+            return this.type;
+        }
+
+        @Override
+        public int join(final OneSelect _oneselect,
+                        final SQLSelect _select,
+                        final int _relIndex)
+        {
+            // nothing to join here
+            return 0;
+        }
+
+        @Override
+        public void addObject(final Object[] _rs)
+            throws SQLException
+        {
+            // no objects must be added
+        }
+
+        @Override
+        public Object getObject()
+        {
+            return null;
+        }
+
+        @Override
+        public void add2Where(final OneSelect _oneselect,
+                              final SQLSelect _select)
+        {
+            // no clause must be added
+        }
+
+        @Override
+        public void next()
+            throws EFapsException
+        {
+            // no clause must be added
+        }
     }
 }
