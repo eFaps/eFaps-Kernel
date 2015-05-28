@@ -233,8 +233,11 @@ public class OneSelect
             final int column = "id".equals(this.valueSelect.getValueType())
                             ? this.valueSelect.getColIndexs().get(0) : 2;
             this.relIdList.add((Long) _row[column - 1]);
-            // this means that it is a chained LinkFromSelect
-            if (!getSelectParts().isEmpty() && getSelectParts().get(0) instanceof LinkFromSelect.LinkFromSelectPart) {
+            // this means that it is a chained LinkFromSelect, but exclude
+            // AttributeSets
+            if (!getSelectParts().isEmpty() && getSelectParts().get(0) instanceof LinkFromSelect.LinkFromSelectPart
+                            && !(((LinkFromSelect.LinkFromSelectPart) getSelectParts().get(0)).getType()
+                                            instanceof AttributeSet)) {
                 this.idList.set(this.idList.size() - 1, (Long) _row[1]);
             }
         }
