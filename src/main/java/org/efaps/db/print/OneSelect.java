@@ -598,7 +598,9 @@ public class OneSelect
             final Long id = ((Number) _object).longValue();
             Iterator<Long> relIter = this.relIdList.iterator();
             // chained linkfroms
-            if (!getSelectParts().isEmpty() && getSelectParts().get(0) instanceof LinkFromSelect.LinkFromSelectPart) {
+            if (!getSelectParts().isEmpty() && getSelectParts().get(0) instanceof LinkFromSelect.LinkFromSelectPart
+                            && !(((LinkFromSelect.LinkFromSelectPart) getSelectParts().get(0)).getType()
+                                            instanceof AttributeSet)) {
                 relIter = this.idList.iterator();
             } else {
                 relIter = this.relIdList.iterator();
