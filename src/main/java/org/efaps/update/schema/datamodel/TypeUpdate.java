@@ -153,9 +153,6 @@ public class TypeUpdate
         /** Name of the Linked Type (used for links to another type). */
         private String typeLink = null;
 
-        /** Events for this Attribute. */
-        private final List<Event> events = new ArrayList<Event>();
-
         /** default value for this Attribute. */
         private String defaultValue = null;
 
@@ -200,10 +197,10 @@ public class TypeUpdate
                 this.sqlTable = _text;
             } else if ("trigger".equals(value)) {
                 if (_tags.size() == 1) {
-                    this.events.add(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
+                    addEvent(new Event(_attributes.get("name"), EventType.valueOf(_attributes.get("event")),
                                     _attributes.get("program"), _attributes.get("method"), _attributes.get("index")));
                 } else if (_tags.size() == 2 && "property".equals(_tags.get(1))) {
-                    this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"), _text);
+                    getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);
                 } else {
                     super.readXML(_tags, _attributes, _text);
                 }
@@ -213,26 +210,16 @@ public class TypeUpdate
                 this.typeLink = _text;
             } else if ("validate".equals(value)) {
                 if (_tags.size() == 1) {
-                    this.events.add(new Event(_attributes.get("name"), EventType.VALIDATE, _attributes.get("program"),
+                    addEvent(new Event(_attributes.get("name"), EventType.VALIDATE, _attributes.get("program"),
                                     _attributes.get("method"), _attributes.get("index")));
                 } else if (_tags.size() == 2 && "property".equals(_tags.get(1))) {
-                    this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"), _text);
+                    getEvents().get(getEvents().size() - 1).addProperty(_attributes.get("name"), _text);
                 } else {
                     super.readXML(_tags, _attributes, _text);
                 }
             } else {
                 super.readXML(_tags, _attributes, _text);
             }
-        }
-
-        /**
-         * @see org.efaps.update.AbstractUpdate.AbstractDefinition#addEvent(org.efaps.update.event.Event)
-         * @param _event Event to add
-         */
-        @Override
-        public void addEvent(final Event _event)
-        {
-            this.events.add(_event);
         }
 
         /**
@@ -383,7 +370,7 @@ public class TypeUpdate
 
             setPropertiesInDb(update.getInstance(), getProperties());
 
-            for (final Event event : this.events) {
+            for (final Event event : getEvents()) {
                 final Instance newInstance = event.updateInDB(update.getInstance(), this.name);
                 setPropertiesInDb(newInstance, event.getProperties());
             }
@@ -616,6 +603,12 @@ public class TypeUpdate
             for (final AttributeDefinition attr : this.attributes) {
                 attr.updateInDB(_instance, name, setId);
             }
+
+            for (final Event event : getEvents()) {
+                final Instance newInstance = event.updateInDB(update.getInstance(), name);
+                setPropertiesInDb(newInstance, event.getProperties());
+            }
+
         }
     }
 
