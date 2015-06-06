@@ -232,6 +232,12 @@ public class SQLUpdate
                             colIter.remove();
                         }
                     }
+                } else if (dbValue instanceof Boolean) {
+                    if (newValue instanceof Boolean) {
+                        if (((Boolean) dbValue).equals(newValue)) {
+                            colIter.remove();
+                        }
+                    }
                 } else if (dbValue instanceof String) {
                     if (newValue instanceof String) {
                         if (((String) dbValue).trim().equals(((String) newValue).trim())) {
