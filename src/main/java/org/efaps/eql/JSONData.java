@@ -106,6 +106,7 @@ public class JSONData
                     }
                     Collections.sort(ret, comparator);
                 }
+                LOG.debug("Generated DataList: {}", ret);
             } catch (final Exception e) {
                 if (e instanceof EFapsException) {
                     throw (EFapsException) e;
@@ -181,6 +182,7 @@ public class JSONData
             this.asc = _asc;
         }
 
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         public int compare(final ObjectData _o1,
                            final ObjectData _o2)
@@ -228,6 +230,5 @@ public class JSONData
         {
             return this.asc;
         }
-
     }
 }
