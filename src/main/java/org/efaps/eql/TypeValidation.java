@@ -20,9 +20,14 @@
 
 package org.efaps.eql;
 
+import java.util.UUID;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.eql.validation.IValidation;
+import org.efaps.util.UUIDUtil;
 import org.efaps.util.cache.CacheReloadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -33,18 +38,24 @@ import org.efaps.util.cache.CacheReloadException;
 public class TypeValidation
     implements IValidation
 {
+    /**
+     * Logging instance for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(TypeValidation.class);
 
     @Override
     public boolean validate(final String... _type)
     {
         boolean ret = false;
         try {
-            ret = Type.get(_type[0]) != null;
+            if (UUIDUtil.isUUID(_type[0])) {
+                ret = Type.get(UUID.fromString(_type[0])) != null;
+            } else {
+                ret = Type.get(_type[0]) != null;
+            }
         } catch (final CacheReloadException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Catched", e);
         }
         return ret;
     }
-
 }

@@ -22,6 +22,7 @@ package org.efaps.eql;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
@@ -29,6 +30,7 @@ import org.efaps.db.QueryBuilder;
 import org.efaps.eql.stmt.parts.AbstractQueryPart;
 import org.efaps.eql.stmt.parts.AbstractQueryPart.Where;
 import org.efaps.util.EFapsException;
+import org.efaps.util.UUIDUtil;
 
 /**
  * TODO comment!
@@ -46,9 +48,12 @@ public class QueryBldrUtil
         throws EFapsException
     {
         final Iterator<String> typeIter = _queryPart.getTypes().iterator();
-        final QueryBuilder queryBldr = new QueryBuilder(Type.get(typeIter.next()));
+        String typeStr = typeIter.next();
+        final QueryBuilder queryBldr = new QueryBuilder(UUIDUtil.isUUID(typeStr) ? Type.get(UUID.fromString(typeStr))
+                        : Type.get(typeStr));
         while (typeIter.hasNext()) {
-            queryBldr.addType(Type.get(typeIter.next()));
+            typeStr = typeIter.next();
+            queryBldr.addType(UUIDUtil.isUUID(typeStr) ? Type.get(UUID.fromString(typeStr)) : Type.get(typeStr));
         }
         for (final Where where : _queryPart.getWheres()) {
             if (where.getAttribute() != null) {
