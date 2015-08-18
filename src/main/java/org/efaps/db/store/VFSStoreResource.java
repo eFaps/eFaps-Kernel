@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.db.store;
@@ -40,6 +37,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.provider.FileProvider;
 import org.efaps.db.Instance;
+import org.efaps.db.store.Resource.Compress;
 import org.efaps.db.wrapper.SQLSelect;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -61,7 +59,6 @@ import org.slf4j.LoggerFactory;
  * For each file id a new VFS store resource must be created.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class VFSStoreResource
     extends AbstractStoreResource
@@ -261,6 +258,7 @@ public class VFSStoreResource
      * @return size of the created temporary file object
      * @throws EFapsException on error
      */
+    @Override
     public long write(final InputStream _in,
                       final long _size,
                       final String _fileName)
@@ -318,6 +316,7 @@ public class VFSStoreResource
     /**
      * Deletes the file defined in {@link #fileId}.
      */
+    @Override
     public void delete()
     {
         //Deletion is done on commit
@@ -329,6 +328,7 @@ public class VFSStoreResource
      * @return input stream of the file with the content
      * @throws EFapsException on error
      */
+    @Override
     public InputStream read()
         throws EFapsException
     {
@@ -357,6 +357,7 @@ public class VFSStoreResource
      * @param _xid Xid
      * @return always 0
      */
+    @Override
     public int prepare(final Xid _xid)
     {
         if (VFSStoreResource.LOG.isDebugEnabled())  {
@@ -410,6 +411,7 @@ public class VFSStoreResource
      * @throws XAException if any exception occurs (catch on
      *         {@link java.lang.Throwable})
      */
+    @Override
     public void commit(final Xid _xid,
                        final boolean _onePhase)
         throws XAException
@@ -481,6 +483,7 @@ public class VFSStoreResource
      * @throws XAException if any exception occurs (catch on
      *         {@link java.lang.Throwable})
      */
+    @Override
     public void rollback(final Xid _xid)
         throws XAException
     {
@@ -508,6 +511,7 @@ public class VFSStoreResource
      * @param _xid  global transaction identifier (not used, because each file
      *              with the file id gets a new VFS store resource instance)
      */
+    @Override
     public void forget(final Xid _xid)
     {
         if (VFSStoreResource.LOG.isDebugEnabled()) {
@@ -521,6 +525,7 @@ public class VFSStoreResource
      *
      * @return always 0
      */
+    @Override
     public int getTransactionTimeout()
     {
         if (VFSStoreResource.LOG.isDebugEnabled()) {
@@ -535,6 +540,7 @@ public class VFSStoreResource
      * @param _flag flag
      * @return always <code>null</code>
      */
+    @Override
     public Xid[] recover(final int _flag)
     {
         if (VFSStoreResource.LOG.isDebugEnabled()) {
@@ -549,6 +555,7 @@ public class VFSStoreResource
      * @param _seconds number of seconds
      * @return always <i>true</i>
      */
+    @Override
     public boolean setTransactionTimeout(final int _seconds)
     {
         if (VFSStoreResource.LOG.isDebugEnabled()) {

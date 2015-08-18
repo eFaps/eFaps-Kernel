@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.db.store;
@@ -65,7 +62,6 @@ import org.slf4j.LoggerFactory;
  * Store Resource that uses the Content Repository for Java Technology API (JCR).
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class JCRStoreResource
     extends AbstractStoreResource
@@ -401,6 +397,7 @@ public class JCRStoreResource
      *
      * @return always 0
      */
+    @Override
     public int getTransactionTimeout()
     {
         if (JCRStoreResource.LOG.isDebugEnabled()) {
@@ -416,6 +413,7 @@ public class JCRStoreResource
      * @param _xid Xid
      * @return always 0, because not 2 phase commit
      */
+    @Override
     public int prepare(final Xid _xid)
     {
         if (JCRStoreResource.LOG.isDebugEnabled())  {
@@ -430,6 +428,7 @@ public class JCRStoreResource
      * @param _flag flag
      * @return always <code>null</code>
      */
+    @Override
     public Xid[] recover(final int _flag)
     {
         if (JCRStoreResource.LOG.isDebugEnabled()) {
@@ -460,6 +459,7 @@ public class JCRStoreResource
      * @param _seconds number of seconds
      * @return always <i>true</i>
      */
+    @Override
     public boolean setTransactionTimeout(final int _seconds)
     {
         if (JCRStoreResource.LOG.isDebugEnabled()) {
@@ -478,7 +478,7 @@ public class JCRStoreResource
         /**
          * The InpuStrema this Binary belongs to.
          */
-        private InputStream stream;
+        private final InputStream stream;
 
         /**
          * @param _in InputStream

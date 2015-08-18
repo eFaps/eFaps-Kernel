@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.db.store;
@@ -32,7 +29,6 @@ import org.efaps.util.EFapsException;
  * Interface for the StoreResource used to archive files in eFaps.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public interface Resource
     extends XAResource
@@ -141,7 +137,6 @@ public interface Resource
      */
     void read(final OutputStream _out) throws EFapsException;
 
-
     /**
      * Get the name of the file.
      * @return filename
@@ -168,4 +163,14 @@ public interface Resource
     void initialize(final Instance _instance,
                     final Store _store)
         throws EFapsException;
+
+    /**
+     * Check if the Resource exists. Gives the possibility to check before
+     * reading. deleting etc.
+     *
+     * @return true, if successful
+     * @throws EFapsException on error
+     */
+    boolean exists()
+        throws EFapsException;;
 }

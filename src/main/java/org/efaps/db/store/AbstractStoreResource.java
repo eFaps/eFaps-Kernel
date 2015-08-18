@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.db.store;
@@ -48,7 +45,6 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public abstract class AbstractStoreResource
     extends AbstractResource
@@ -145,7 +141,13 @@ public abstract class AbstractStoreResource
                         .addColumnPart(0, "INSTID").addPart(SQLPart.EQUAL).addValuePart(_instance.getId());
         this.exist = new boolean[1 + add2Select(select)];
         getGeneralID(select.getSQL());
+    }
 
+   @Override
+    public boolean exists()
+        throws EFapsException
+    {
+        return getExist()[0];
     }
 
     /**
@@ -170,6 +172,7 @@ public abstract class AbstractStoreResource
      * @throws EFapsException if an error occurs
      * @see #read()
      */
+    @Override
     public void read(final OutputStream _out)
         throws EFapsException
     {
