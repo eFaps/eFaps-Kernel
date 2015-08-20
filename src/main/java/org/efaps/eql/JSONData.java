@@ -39,6 +39,7 @@ import org.efaps.json.data.BooleanValue;
 import org.efaps.json.data.DataList;
 import org.efaps.json.data.DateTimeValue;
 import org.efaps.json.data.DecimalValue;
+import org.efaps.json.data.IntegerValue;
 import org.efaps.json.data.LongValue;
 import org.efaps.json.data.NullValue;
 import org.efaps.json.data.ObjectData;
@@ -63,6 +64,14 @@ public class JSONData
      * Logging instance used in this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(JSONData.class);
+
+    /**
+     * Singelton Constructor.
+     */
+    private JSONData()
+    {
+
+    }
 
     /**
      * @param _printStmt Statement the datalist will be created for
@@ -134,6 +143,8 @@ public class JSONData
             ret = new DecimalValue().setValue((BigDecimal) _object);
         } else if (_object instanceof Long) {
             ret = new LongValue().setValue((Long) _object);
+        } else if (_object instanceof Integer) {
+            ret = new IntegerValue().setValue((Integer) _object);
         } else if (_object instanceof DateTime) {
             ret = new DateTimeValue().setValue((DateTime) _object);
         } else if (_object instanceof UUID) {
@@ -165,11 +176,18 @@ public class JSONData
         return ret;
     }
 
+    /**
+     * The Class ObjectDataComparator.
+     *
+     */
     public static class ObjectDataComparator
         implements Comparator<ObjectData>
     {
 
+        /** The sort val. */
         private final AbstractValue<?> sortVal;
+
+        /** The asc. */
         private final boolean asc;
 
         /**
@@ -199,6 +217,12 @@ public class JSONData
             return ret;
         }
 
+        /**
+         * Gets the value.
+         *
+         * @param _data the _data
+         * @return the value
+         */
         protected Object getValue(final ObjectData _data)
         {
             Object ret = null;
