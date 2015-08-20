@@ -598,7 +598,9 @@ public class QueryBuilder
                                    final AttributeQuery _query)
         throws EFapsException
     {
-        final QIn in = new QIn(new QAttribute(_attrName), new QSQLValue(_query.getSQLStatement()));
+        final String attr = getAttr4Select(_attrName);
+        final QIn in = new QIn(new QAttribute(attr.isEmpty() ? _attrName : attr),
+                        new QSQLValue(_query.getSQLStatement()));
         this.compares.add(in);
         return in;
     }
@@ -641,7 +643,9 @@ public class QueryBuilder
                                       final AttributeQuery _query)
         throws EFapsException
     {
-        final QNotIn in = new QNotIn(new QAttribute(_attrName), new QSQLValue(_query.getSQLStatement()));
+        final String attr = getAttr4Select(_attrName);
+        final QNotIn in = new QNotIn(new QAttribute(attr.isEmpty() ? _attrName : attr),
+                        new QSQLValue(_query.getSQLStatement()));
         this.compares.add(in);
         return in;
     }
@@ -981,7 +985,8 @@ public class QueryBuilder
     {
         if (this.query == null) {
             try {
-                this.query = new AttributeQuery(this.typeUUID, _attributeName);
+                final String attribute = getAttr4Select(_attributeName);
+                this.query = new AttributeQuery(this.typeUUID, attribute.isEmpty() ? _attributeName : attribute);
                 prepareQuery();
             } catch (final EFapsException e) {
                 QueryBuilder.LOG.error("Could not open AttributeQuery for uuid: {}", this.typeUUID);

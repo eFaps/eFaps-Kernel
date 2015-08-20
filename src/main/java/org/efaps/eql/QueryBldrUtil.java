@@ -27,8 +27,15 @@ import java.util.UUID;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
 import org.efaps.db.QueryBuilder;
+import org.efaps.eql.stmt.parts.AbstractNestedQueryStmtPart;
 import org.efaps.eql.stmt.parts.AbstractQueryPart;
-import org.efaps.eql.stmt.parts.AbstractQueryPart.Where;
+import org.efaps.eql.stmt.parts.AbstractQueryStmtPart;
+import org.efaps.eql.stmt.parts.IQueryPart;
+import org.efaps.eql.stmt.parts.where.AbstractWhere;
+import org.efaps.eql.stmt.parts.where.AttrQueryWhere;
+import org.efaps.eql.stmt.parts.where.AttributeWhere;
+import org.efaps.eql.stmt.parts.where.SelectQueryWhere;
+import org.efaps.eql.stmt.parts.where.SelectWhere;
 import org.efaps.util.EFapsException;
 import org.efaps.util.UUIDUtil;
 
@@ -38,69 +45,148 @@ import org.efaps.util.UUIDUtil;
  * @author The eFaps Team
  * @version $Id: $
  */
-public class QueryBldrUtil
+public final class QueryBldrUtil
 {
 
     /**
-     * @param _printStmt
+     * Singelton instance.
+     */
+    private QueryBldrUtil()
+    {
+    }
+
+    /**
+     * Gets the instances.
+     *
+     * @param _queryPart the _query part
+     * @return the instances
+     * @throws EFapsException on error
      */
     public static List<Instance> getInstances(final AbstractQueryPart _queryPart)
         throws EFapsException
     {
-        final Iterator<String> typeIter = _queryPart.getTypes().iterator();
+        return getQueryBldr(_queryPart).getQuery().execute();
+    }
+
+
+    /**
+     * Recursive method to get a QueryBuilder.
+     *
+     * @param _queryPart the _query part
+     * @return the query bldr
+     * @throws EFapsException on error
+     */
+    private static QueryBuilder getQueryBldr(final IQueryPart _queryPart)
+        throws EFapsException
+    {
+        final Iterator<String> typeIter = ((AbstractQueryPart) _queryPart).getTypes().iterator();
         String typeStr = typeIter.next();
-        final QueryBuilder queryBldr = new QueryBuilder(UUIDUtil.isUUID(typeStr) ? Type.get(UUID.fromString(typeStr))
+        final QueryBuilder ret = new QueryBuilder(UUIDUtil.isUUID(typeStr) ? Type.get(UUID.fromString(typeStr))
                         : Type.get(typeStr));
         while (typeIter.hasNext()) {
             typeStr = typeIter.next();
-            queryBldr.addType(UUIDUtil.isUUID(typeStr) ? Type.get(UUID.fromString(typeStr)) : Type.get(typeStr));
+            ret.addType(UUIDUtil.isUUID(typeStr) ? Type.get(UUID.fromString(typeStr)) : Type.get(typeStr));
         }
-        for (final Where where : _queryPart.getWheres()) {
-            if (where.getAttribute() != null) {
+        for (final AbstractWhere where : ((AbstractQueryPart) _queryPart).getWheres()) {
+            if (where instanceof AttributeWhere) {
+                final AttributeWhere attrWhere = (AttributeWhere) where;
                 switch (where.getComparison()) {
                     case IN:
                     case EQUAL:
-                        queryBldr.addWhereAttrEqValue(where.getAttribute(), where.getValues().toArray());
+                        ret.addWhereAttrEqValue(attrWhere.getAttribute(), attrWhere.getValues().toArray());
                         break;
                     case GREATER:
-                        queryBldr.addWhereAttrGreaterValue(where.getAttribute(), where.getValues().get(0));
+                        ret.addWhereAttrGreaterValue(attrWhere.getAttribute(), attrWhere.getValues().get(0));
                         break;
                     case LESS:
-                        queryBldr.addWhereAttrLessValue(where.getAttribute(), where.getValues().get(0));
+                        ret.addWhereAttrLessValue(attrWhere.getAttribute(), attrWhere.getValues().get(0));
                         break;
                     case LIKE:
-                        queryBldr.addWhereAttrMatchValue(where.getAttribute(), where.getValues().get(0));
+                        ret.addWhereAttrMatchValue(attrWhere.getAttribute(), attrWhere.getValues().get(0));
                         break;
                     case UNEQUAL:
-                        queryBldr.addWhereAttrNotEqValue(where.getAttribute(), where.getValues().toArray());
+                    case NOTIN:
+                        ret.addWhereAttrNotEqValue(attrWhere.getAttribute(), attrWhere.getValues().toArray());
                         break;
                     default:
-                        queryBldr.addWhereAttrEqValue("ID", 0);
+                        ret.addWhereAttrEqValue("ID", 0);
                         break;
                 }
-            } else {
+            } else if (where instanceof SelectWhere) {
+                final SelectWhere selWhere = (SelectWhere) where;
                 switch (where.getComparison()) {
                     case EQUAL:
-                        queryBldr.addWhereSelectEqValue(where.getSelect(), where.getValues().toArray());
+                        ret.addWhereSelectEqValue(selWhere.getSelect(), selWhere.getValues().toArray());
                         break;
                     case GREATER:
-                        queryBldr.addWhereSelectGreaterValue(where.getSelect(), where.getValues().get(0));
+                        ret.addWhereSelectGreaterValue(selWhere.getSelect(), selWhere.getValues().get(0));
                         break;
                     case LESS:
-                        queryBldr.addWhereSelectLessValue(where.getSelect(), where.getValues().get(0));
+                        ret.addWhereSelectLessValue(selWhere.getSelect(), selWhere.getValues().get(0));
                         break;
                     case LIKE:
-                        queryBldr.addWhereSelectMatchValue(where.getSelect(), where.getValues().get(0));
+                        ret.addWhereSelectMatchValue(selWhere.getSelect(), selWhere.getValues().get(0));
                         break;
                     case UNEQUAL:
                     case IN:
+                    case NOTIN:
                     default:
-                        queryBldr.addWhereAttrEqValue("ID", 0);
+                        ret.addWhereAttrEqValue("ID", 0);
+                        break;
+                }
+            } else if (where instanceof AttrQueryWhere) {
+                final AttrQueryWhere attrQueryWhere = (AttrQueryWhere) where;
+                switch (where.getComparison()) {
+                    case IN:
+                        ret.addWhereAttrInQuery(attrQueryWhere.getAttribute(),
+                                        getQueryBldr(attrQueryWhere.getQuery()).getAttributeQuery(
+                                                        ((AbstractNestedQueryStmtPart) attrQueryWhere.getQuery())
+                                                                        .getSelect()));
+                        break;
+                    case NOTIN:
+                        ret.addWhereAttrNotInQuery(attrQueryWhere.getAttribute(),
+                                        getQueryBldr(attrQueryWhere.getQuery()).getAttributeQuery(
+                                                        ((AbstractNestedQueryStmtPart) attrQueryWhere.getQuery())
+                                                                        .getSelect()));
+                        break;
+                    case EQUAL:
+                    case GREATER:
+                    case LESS:
+                    case LIKE:
+                    case UNEQUAL:
+                    default:
+                        ret.addWhereAttrEqValue("ID", 0);
+                        break;
+                }
+            } else if (where instanceof SelectQueryWhere) {
+                final SelectQueryWhere selQueryWhere = (SelectQueryWhere) where;
+                switch (where.getComparison()) {
+                    case IN:
+                        ret.addWhereAttrInQuery(selQueryWhere.getSelect(),
+                                        getQueryBldr(selQueryWhere.getQuery()).getAttributeQuery(
+                                                        ((AbstractNestedQueryStmtPart) selQueryWhere.getQuery())
+                                                                        .getSelect()));
+                        break;
+                    case NOTIN:
+                        ret.addWhereAttrNotInQuery(selQueryWhere.getSelect(),
+                                        getQueryBldr(selQueryWhere.getQuery()).getAttributeQuery(
+                                                        ((AbstractNestedQueryStmtPart) selQueryWhere.getQuery())
+                                                                        .getSelect()));
+                        break;
+                    case EQUAL:
+                    case GREATER:
+                    case LESS:
+                    case LIKE:
+                    case UNEQUAL:
+                    default:
+                        ret.addWhereAttrEqValue("ID", 0);
                         break;
                 }
             }
         }
-        queryBldr.setLimit(_queryPart.getLimit());
-        return queryBldr.getQuery().execute();
+        if (_queryPart instanceof AbstractQueryStmtPart) {
+            ret.setLimit(((AbstractQueryStmtPart) _queryPart).getLimit());
+        }
+        return ret;
     }
 }

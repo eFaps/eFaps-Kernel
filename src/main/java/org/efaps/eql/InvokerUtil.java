@@ -25,6 +25,7 @@ import org.efaps.eql.stmt.AbstractExecStmt;
 import org.efaps.eql.stmt.AbstractInsertStmt;
 import org.efaps.eql.stmt.AbstractPrintStmt;
 import org.efaps.eql.stmt.AbstractUpdateStmt;
+import org.efaps.eql.stmt.parts.INestedQueryStmtPart;
 
 /**
  * TODO comment!
@@ -32,9 +33,14 @@ import org.efaps.eql.stmt.AbstractUpdateStmt;
  * @author The eFaps Team
  * @version $Id: $
  */
-public class InvokerUtil
+public final class InvokerUtil
 {
 
+    /**
+     * Gets the invoker.
+     *
+     * @return the invoker
+     */
     public static EQLInvoker getInvoker()
     {
         final EQLInvoker ret = new EQLInvoker()
@@ -67,6 +73,13 @@ public class InvokerUtil
             protected AbstractDeleteStmt getDelete()
             {
                 return new DeleteStmt();
+            }
+
+            @Override
+            protected INestedQueryStmtPart getNestedQuery()
+            {
+                // TODO Auto-generated method stub
+                return super.getNestedQuery();
             }
         };
         ret.getValidator().setDiagnosticClazz(EFapsDiagnostic.class);

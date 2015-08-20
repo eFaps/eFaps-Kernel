@@ -41,6 +41,7 @@ public class PrintStmt
     extends AbstractPrintStmt
 {
 
+    /** The data. */
     private List<Map<String, Object>> data;
 
     @Override
@@ -66,6 +67,12 @@ public class PrintStmt
         return this.data;
     }
 
+    /**
+     * Gets the multi print.
+     *
+     * @return the multi print
+     * @throws EFapsException on error
+     */
     private MultiPrintQuery getMultiPrint()
         throws EFapsException
     {
