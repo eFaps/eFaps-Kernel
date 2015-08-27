@@ -88,6 +88,11 @@ public class CommandUpdate
     private static final Link LINK2TARGETHELP = new UniqueLink("Admin_UI_LinkTargetHelp", "FromMenuLink",
                                                          "Admin_Program_Wiki", "ToWikiLink");
 
+    /** Link from menu to child command / menu. */
+    private static final Link LINK2PARENT = new OrderedLink("Admin_UI_Menu2Command",
+                                                           "ToCommand",
+                                                           "Admin_UI_Command", "FromMenu").setIncludeChildTypes(true);
+
     static {
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2ACCESSROLE);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2ACCESSPERSON);
@@ -100,6 +105,7 @@ public class CommandUpdate
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETMENU);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETSEARCH);
         CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2TARGETHELP);
+        CommandUpdate.ALLLINKS.add(CommandUpdate.LINK2PARENT);
     }
 
     /**
@@ -240,6 +246,14 @@ public class CommandUpdate
                 } else if (_tags.size() > 2) {
                     // if size == 1, the target tag could be ignored
                     super.readXML(_tags, _attributes, _text);
+                }
+            } else if ("parents".equals(value)) {
+                if (_tags.size() == 2) {
+                    final String subValue = _tags.get(1);
+                    if ("parent".equals(subValue)) {
+                        final LinkInstance parent = new LinkInstance(_text);
+                        addLink(CommandUpdate.LINK2PARENT, parent);
+                    }
                 }
             } else {
                 super.readXML(_tags, _attributes, _text);
