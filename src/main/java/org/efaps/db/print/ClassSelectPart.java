@@ -97,9 +97,15 @@ public class ClassSelectPart
     {
         if (this.classification.getMainTable().getSqlColType() != null) {
             _select.addPart(SQLPart.AND)
+                    .addPart(SQLPart.PARENTHESIS_OPEN)
                     .addColumnPart(this.tableIdx, this.classification.getMainTable().getSqlColType())
                     .addPart(SQLPart.EQUAL)
-                    .addValuePart(this.classification.getId());
+                    .addValuePart(this.classification.getId())
+                    .addPart(SQLPart.OR)
+                    .addColumnPart(this.tableIdx, this.classification.getMainTable().getSqlColType())
+                    .addPart(SQLPart.IS)
+                    .addPart(SQLPart.NULL)
+                    .addPart(SQLPart.PARENTHESIS_CLOSE);
         }
     }
 
