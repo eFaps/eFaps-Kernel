@@ -1004,7 +1004,7 @@ public class QueryBuilder
     protected AttributeQuery getAttributeQuery()
         throws EFapsException
     {
-        AttributeQuery ret = this.getAttributeQuery((String) null);
+        AttributeQuery ret = this.getAttributeQuery("attribute[ID]");
         // check if in the linkto chain is one before this one
         if (!this.attrQueryBldrs.isEmpty()) {
             final QueryBuilder queryBldr = this.attrQueryBldrs.values().iterator().next();
