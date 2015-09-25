@@ -138,7 +138,15 @@ public class AttributeValueSelect
                     this.attribute = linkInstance.getType().getAttribute(this.attribute.getName());
                 }
             }
+        } else if (this.attribute.getParent().isAbstract()
+                        && getOneSelect().getQuery().getCurrentInstance().isValid()) {
+            final Attribute attrTmp = getOneSelect().getQuery().getCurrentInstance().getType().getAttribute(
+                            this.attribute.getName());
+            if (attrTmp != null) {
+                this.attribute = attrTmp;
+            }
         }
+
         Object ret = this.attribute.readDBValue(_objectList);
         int i = this.attribute.getSqlColNames().size();
         for (final Attribute attr : this.attribute.getDependencies().values()) {
