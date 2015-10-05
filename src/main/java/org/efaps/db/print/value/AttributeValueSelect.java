@@ -138,7 +138,7 @@ public class AttributeValueSelect
                     this.attribute = linkInstance.getType().getAttribute(this.attribute.getName());
                 }
             }
-        } else if (this.attribute.getParent().isAbstract()
+        } else if (this.attribute.getParent().isAbstract() && getOneSelect().getQuery().getCurrentInstance() != null
                         && getOneSelect().getQuery().getCurrentInstance().isValid()) {
             final Attribute attrTmp = getOneSelect().getQuery().getCurrentInstance().getType().getAttribute(
                             this.attribute.getName());
