@@ -34,6 +34,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.IBitEnum;
 import org.efaps.eql.stmt.IPrintStmt;
+import org.efaps.eql.stmt.parts.select.AbstractSelect;
 import org.efaps.json.data.AbstractValue;
 import org.efaps.json.data.BooleanValue;
 import org.efaps.json.data.DataList;
@@ -57,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * @author The eFaps Team
  * @version $Id$
  */
-public class JSONData
+public final class JSONData
 {
 
     /**
@@ -70,7 +71,6 @@ public class JSONData
      */
     private JSONData()
     {
-
     }
 
     /**
@@ -85,10 +85,10 @@ public class JSONData
         if (_printStmt instanceof PrintStmt) {
             try {
                 final PrintStmt printStmt = (PrintStmt) _printStmt;
-                final Map<String, String> mapping = printStmt.getAlias2Selects();
+                final Map<String, AbstractSelect> mapping = printStmt.getAlias2Selects();
                 for (final Map<String, Object> map : printStmt.getData()) {
                     final ObjectData data = new ObjectData();
-                    for (final Entry<String, String> entry : mapping.entrySet()) {
+                    for (final Entry<String, AbstractSelect> entry : mapping.entrySet()) {
                         final Object obj = map.get(entry.getKey());
                         data.getValues().add(getValue(entry.getKey(), obj));
                     }
@@ -191,7 +191,10 @@ public class JSONData
         private final boolean asc;
 
         /**
-         * @param _sortVal
+         * Instantiates a new object data comparator.
+         *
+         * @param _sortVal the _sort val
+         * @param _asc the _asc
          */
         public ObjectDataComparator(final AbstractValue<?> _sortVal,
                                     final boolean _asc)

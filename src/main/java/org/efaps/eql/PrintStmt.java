@@ -26,9 +26,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.eql.stmt.AbstractPrintStmt;
+import org.efaps.eql.stmt.parts.select.AbstractSelect;
+import org.efaps.eql.stmt.parts.select.ExecSelect;
+import org.efaps.eql.stmt.parts.select.SimpleSelect;
 import org.efaps.util.EFapsException;
 
 /**
@@ -50,21 +54,60 @@ public class PrintStmt
     {
         if (this.data == null) {
             this.data = new ArrayList<>();
-
             final MultiPrintQuery multi = getMultiPrint();
-            for (final Entry<String, String> entry : getAlias2Selects().entrySet()) {
-                multi.addSelect(entry.getValue());
+            for (final Entry<String, AbstractSelect> entry : getAlias2Selects().entrySet()) {
+                if (entry.getValue() instanceof SimpleSelect) {
+                    multi.addSelect(entry.getValue().getSelect());
+                }
             }
             multi.execute();
+            final Map<String, IEsjpSelect> esjpSelects = getEsjpSelect(multi.getInstanceList());
             while (multi.next()) {
                 final Map<String, Object> map = new HashMap<>();
                 this.data.add(map);
-                for (final Entry<String, String> entry : getAlias2Selects().entrySet()) {
-                    map.put(entry.getKey(), multi.getSelect(entry.getValue()));
+                for (final Entry<String, AbstractSelect> entry : getAlias2Selects().entrySet()) {
+                    if (entry.getValue() instanceof SimpleSelect) {
+                        map.put(entry.getKey(), multi.getSelect(entry.getValue().getSelect()));
+                    } else if (entry.getValue() instanceof ExecSelect) {
+                        if (esjpSelects.containsKey(entry.getKey())) {
+                            map.put(entry.getKey(),
+                                            esjpSelects.get(entry.getKey()).getValue(multi.getCurrentInstance()));
+                        }
+                    }
                 }
             }
         }
         return this.data;
+    }
+
+    /**
+     * Gets the esjp select.
+     *
+     * @param _instances the _instances
+     * @return the esjp select
+     * @throws Exception the exception
+     */
+    private Map<String, IEsjpSelect> getEsjpSelect(final List<Instance> _instances)
+        throws Exception
+    {
+        final Map<String, IEsjpSelect> ret = new HashMap<>();
+        if (!_instances.isEmpty()) {
+            for (final Entry<String, AbstractSelect> entry : getAlias2Selects().entrySet()) {
+                if (entry.getValue() instanceof ExecSelect) {
+                    final Class<?> clazz = Class.forName(entry.getValue().getSelect(), false, EFapsClassLoader
+                                    .getInstance());
+                    final IEsjpSelect esjp = (IEsjpSelect) clazz.newInstance();
+                    final List<String> parameters = ((ExecSelect) entry.getValue()).getParameters();
+                    if (parameters.isEmpty()) {
+                        esjp.initialize(_instances);
+                    } else {
+                        esjp.initialize(_instances, parameters.toArray(new String[parameters.size()]));
+                    }
+                    ret.put(entry.getKey(), esjp);
+                }
+            }
+        }
+        return ret;
     }
 
     /**

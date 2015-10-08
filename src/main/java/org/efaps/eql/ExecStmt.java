@@ -20,11 +20,14 @@
 
 package org.efaps.eql;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.eql.stmt.AbstractExecStmt;
+import org.efaps.eql.stmt.parts.select.AbstractSelect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,18 +50,22 @@ public class ExecStmt
     public List<Map<String, Object>> getData()
         throws Exception
     {
-        final Map<String, String> mapping = getAlias2Selects();
+        final Map<String, AbstractSelect> mapping = getAlias2Selects();
+        final Map<String, String> map = new LinkedHashMap<>();
+        for (final Entry<String, AbstractSelect> entry : mapping.entrySet()) {
+            map.put(entry.getKey(), entry.getValue().getSelect());
+        }
+
         final Class<?> clazz = Class.forName(getESJPName(), false, EFapsClassLoader.getInstance());
         final IEsjpExecute esjp = (IEsjpExecute) clazz.newInstance();
         LOG.debug("Instantiated class: {}", esjp);
         final List<String> parameters = getParameters();
         List<Map<String, Object>> ret;
         if (parameters.isEmpty()) {
-            ret = esjp.execute(mapping);
+            ret = esjp.execute(map);
         } else {
-            ret = esjp.execute(mapping, parameters.toArray(new String[parameters.size()]));
+            ret = esjp.execute(map, parameters.toArray(new String[parameters.size()]));
         }
         return ret;
     }
-
 }
