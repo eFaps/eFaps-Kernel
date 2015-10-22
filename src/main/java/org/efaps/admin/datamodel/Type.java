@@ -544,7 +544,7 @@ public class Type
      *
      * @return true if {@link #companyAttribute} !=null , else false
      */
-    public boolean isCompanyDepended()
+    public boolean isCompanyDependent()
     {
         return this.companyAttributeName != null;
     }
@@ -554,7 +554,7 @@ public class Type
      *
      * @return true if {@link #groupAttributeName} !=null , else false
      */
-    public boolean isGroupDepended()
+    public boolean isGroupDependent()
     {
         return this.groupAttributeName != null;
     }
@@ -1176,8 +1176,8 @@ public class Type
                         .append("children", this.childTypes.size())
                         .append("abstract", this.abstractBool)
                         .append("accessSets", this.accessSets.size())
-                        .append("companyDependend", isCompanyDepended())
-                        .append("groupDependend", isGroupDepended())
+                        .append("companyDependend", isCompanyDependent())
+                        .append("groupDependend", isGroupDependent())
                         .append("statusDependend", isCheckStatus())
                         .append("checked4AccessSet", this.checked4AccessSet)
                         .append("checked4Children", this.checked4Children)

@@ -147,6 +147,12 @@ public class QueryBuilder
     private boolean includeChildTypes = true;
 
     /**
+     * Must this query be executed company dependent.
+     * (if the type is company dependent)
+     */
+    private boolean companyDependent = true;
+
+    /**
      * Name of the Attribute that links to this AttributeQuery.
      */
     private String linkAttributeName;
@@ -881,10 +887,12 @@ public class QueryBuilder
      * Setter method for instance variable {@link #limit}.
      *
      * @param _limit value for instance variable {@link #limit}
+     * @return the query builder
      */
-    public void setLimit(final int _limit)
+    public QueryBuilder setLimit(final int _limit)
     {
         this.limit = _limit;
+        return this;
     }
 
     /**
@@ -917,8 +925,9 @@ public class QueryBuilder
     {
         if (this.query == null) {
             try {
-                this.query = new InstanceQuery(this.typeUUID);
-                this.query.setIncludeChildTypes(isIncludeChildTypes());
+                this.query = new InstanceQuery(this.typeUUID)
+                                .setIncludeChildTypes(isIncludeChildTypes())
+                                .setCompanyDependent(isCompanyDependent());
                 prepareQuery();
             } catch (final EFapsException e) {
                 QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
@@ -936,8 +945,9 @@ public class QueryBuilder
     {
         if (this.query == null) {
             try {
-                this.query = new CachedInstanceQuery(_key, this.typeUUID);
-                this.query.setIncludeChildTypes(isIncludeChildTypes());
+                this.query = new CachedInstanceQuery(_key, this.typeUUID)
+                                .setIncludeChildTypes(isIncludeChildTypes())
+                                .setCompanyDependent(isCompanyDependent());
                 prepareQuery();
             } catch (final EFapsException e) {
                 QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
@@ -954,8 +964,9 @@ public class QueryBuilder
     {
         if (this.query == null) {
             try {
-                this.query = CachedInstanceQuery.get4Request(this.typeUUID);
-                this.query.setIncludeChildTypes(isIncludeChildTypes());
+                this.query = CachedInstanceQuery.get4Request(this.typeUUID)
+                                .setIncludeChildTypes(isIncludeChildTypes())
+                                .setCompanyDependent(isCompanyDependent());
                 prepareQuery();
             } catch (final EFapsException e) {
                 QueryBuilder.LOG.error("Could not open InstanceQuery for uuid: {}", this.typeUUID);
@@ -986,7 +997,8 @@ public class QueryBuilder
         if (this.query == null) {
             try {
                 final String attribute = getAttr4Select(_attributeName);
-                this.query = new AttributeQuery(this.typeUUID, attribute.isEmpty() ? _attributeName : attribute);
+                this.query = new AttributeQuery(this.typeUUID, attribute.isEmpty() ? _attributeName : attribute)
+                                    .setCompanyDependent(isCompanyDependent());
                 prepareQuery();
             } catch (final EFapsException e) {
                 QueryBuilder.LOG.error("Could not open AttributeQuery for uuid: {}", this.typeUUID);
@@ -1103,10 +1115,34 @@ public class QueryBuilder
      * Setter method for instance variable {@link #includeChildTypes}.
      *
      * @param _includeChildTypes value for instance variable {@link #includeChildTypes}
+     * @return the query builder
      */
-    public void setIncludeChildTypes(final boolean _includeChildTypes)
+    public QueryBuilder setIncludeChildTypes(final boolean _includeChildTypes)
     {
         this.includeChildTypes = _includeChildTypes;
+        return this;
+    }
+
+    /**
+     * Checks if is company dependent.
+     *
+     * @return true, if is company dependent
+     */
+    public boolean isCompanyDependent()
+    {
+        return this.companyDependent;
+    }
+
+    /**
+     * Sets the company dependent.
+     *
+     * @param _companyDependent the new company dependent
+     * @return the query builder
+     */
+    public QueryBuilder setCompanyDependent(final boolean _companyDependent)
+    {
+        this.companyDependent = _companyDependent;
+        return this;
     }
 
     /**

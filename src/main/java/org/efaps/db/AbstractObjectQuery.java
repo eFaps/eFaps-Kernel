@@ -30,6 +30,7 @@ import java.util.Map;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.ConsortiumLinkType;
+import org.efaps.admin.user.Company;
 import org.efaps.db.search.QAnd;
 import org.efaps.db.search.QAttribute;
 import org.efaps.db.search.compare.QEqual;
@@ -57,10 +58,10 @@ public abstract class AbstractObjectQuery<T>
     protected static final Logger LOG = LoggerFactory.getLogger(AbstractObjectQuery.class);
 
     /**
-     * Must this query be executed company depended.
-     * (if the type is company dependend)
+     * Must this query be executed company dependent.
+     * (if the type is company dependent)
      */
-    private boolean companyDepended = true;
+    private boolean companyDependent = true;
 
     /**
      * Base type this query is searching on.
@@ -131,25 +132,25 @@ public abstract class AbstractObjectQuery<T>
         throws EFapsException;
 
     /**
-     * Getter method for the instance variable {@link #companyDepended}.
+     * Getter method for the instance variable {@link #companyDependent}.
      *
-     * @return value of instance variable {@link #companyDepended}
+     * @return value of instance variable {@link #companyDependent}
      */
-    public boolean isCompanyDepended()
+    public boolean isCompanyDependent()
     {
-        return this.companyDepended;
+        return this.companyDependent;
     }
 
     /**
-     * Setter method for instance variable {@link #companyDepended}.
+     * Setter method for instance variable {@link #companyDependent}.
      *
-     * @param _companyDepended value for instance variable {@link #companyDepended}
+     * @param _companyDependent the companyDependent
      * @return this
      */
 
-    public AbstractObjectQuery<T> setCompanyDepended(final boolean _companyDepended)
+    public AbstractObjectQuery<T> setCompanyDependent(final boolean _companyDependent)
     {
-        this.companyDepended = _companyDepended;
+        this.companyDependent = _companyDependent;
         return this;
     }
 
@@ -162,7 +163,6 @@ public abstract class AbstractObjectQuery<T>
     {
         return this.includeChildTypes;
     }
-
 
     /**
      * Setter method for instance variable {@link #includeChildTypes}.
@@ -353,21 +353,32 @@ public abstract class AbstractObjectQuery<T>
                 this.where.setPart(new QAnd(this.where.getPart(), eqPart));
             }
         }
-        if (this.companyDepended && this.baseType.isCompanyDepended()) {
-            if (Context.getThreadContext().getCompany() == null) {
-                throw new EFapsException(InstanceQuery.class, "noCompany");
-            }
+        if (this.baseType.isCompanyDependent()) {
             final QEqual eqPart = new QEqual(new QAttribute(this.baseType.getCompanyAttribute()));
-
-            if (this.baseType.getCompanyAttribute().getAttributeType().getClassRepr().equals(
-                            ConsortiumLinkType.class)) {
-                for (final Long consortium : Context.getThreadContext().getCompany().getConsortiums()) {
-                    eqPart.addValue(new QNumberValue(consortium));
+            if (this.isCompanyDependent()) {
+                if (Context.getThreadContext().getCompany() == null) {
+                    throw new EFapsException(InstanceQuery.class, "noCompany");
+                }
+                if (this.baseType.getCompanyAttribute().getAttributeType().getClassRepr().equals(
+                                ConsortiumLinkType.class)) {
+                    for (final Long consortium : Context.getThreadContext().getCompany().getConsortiums()) {
+                        eqPart.addValue(new QNumberValue(consortium));
+                    }
+                } else {
+                    eqPart.addValue(new QNumberValue(Context.getThreadContext().getCompany().getId()));
                 }
             } else {
-                eqPart.addValue(new QNumberValue(Context.getThreadContext().getCompany().getId()));
+                for (final Long compId : Context.getThreadContext().getPerson().getCompanies()) {
+                    if (this.baseType.getCompanyAttribute().getAttributeType().getClassRepr().equals(
+                                    ConsortiumLinkType.class)) {
+                        for (final Long consortium : Company.get(compId).getConsortiums()) {
+                            eqPart.addValue(new QNumberValue(consortium));
+                        }
+                    } else {
+                        eqPart.addValue(new QNumberValue(compId));
+                    }
+                }
             }
-
             if (this.where == null) {
                 this.where = new QWhereSection(eqPart);
             } else {
