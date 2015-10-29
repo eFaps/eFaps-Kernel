@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
@@ -42,7 +39,6 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public final class JmsSession
 {
@@ -143,11 +139,11 @@ public final class JmsSession
         if (isLogedIn()) {
             if (!Context.isTMActive()) {
                 if (!this.sessionAttributes.containsKey(UserAttributesSet.CONTEXTMAPKEY)) {
-                    Context.begin(null, false);
+                    Context.begin(null, Context.Inheritance.Local);
                     this.sessionAttributes.put(UserAttributesSet.CONTEXTMAPKEY, new UserAttributesSet(this.userName));
                     Context.rollback();
                 }
-                Context.begin(this.userName, null, this.sessionAttributes, null, null, false);
+                Context.begin(this.userName, null, this.sessionAttributes, null, null, Context.Inheritance.Local);
                 this.timeStamp = new Date();
             }
         }
@@ -245,7 +241,7 @@ public final class JmsSession
             if (Context.isTMActive()) {
                 context = Context.getThreadContext();
             } else {
-                context = Context.begin(null, false);
+                context = Context.begin(null, Context.Inheritance.Local);
             }
             boolean ok = false;
 

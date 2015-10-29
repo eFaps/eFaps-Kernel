@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.db;
@@ -65,7 +62,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author The eFaps Team
- * @version $Id$
  */
 public final class Context
     implements INamingBinds
@@ -991,7 +987,7 @@ public final class Context
     public static Context begin()
         throws EFapsException
     {
-        return Context.begin(null, null, null, null, null, true);
+        return Context.begin(null);
     }
 
     /**
@@ -1006,24 +1002,23 @@ public final class Context
     public static Context begin(final String _userName)
         throws EFapsException
     {
-        return Context.begin(_userName, null, null, null, null, true);
+        return Context.begin(_userName, Inheritance.Inheritable);
     }
 
     /**
      * Method to get a new Context.
      *
-     * @see #begin(String, Locale, Map, Map, Map)
      * @param _userName Naem of the user the Context must be created for
-     * @param _inherit              must the context be inherited to child threads
-     * @throws EFapsException on error
+     * @param _inheritance the inheritance
      * @return new Context
-     *
+     * @throws EFapsException on error
+     * @see #begin(String, Locale, Map, Map, Map)
      */
     public static Context begin(final String _userName,
-                                final boolean _inherit)
+                                final Inheritance _inheritance)
         throws EFapsException
     {
-        return Context.begin(_userName, null, null, null, null, _inherit);
+        return Context.begin(_userName, null, null, null, null, _inheritance);
     }
 
     /**
@@ -1034,7 +1029,7 @@ public final class Context
      * @param _sessionAttributes    attributes for this session
      * @param _parameters           map with parameters for this thread context
      * @param _fileParameters       map with file parameters
-     * @param _inherit              must the context be inherited to child threads
+     * @param _inheritance the inheritance
      * @return new context of thread
      * @throws EFapsException if a new transaction could not be started or if
      *             current thread context is already set
@@ -1045,14 +1040,13 @@ public final class Context
                                 final Map<String, Object> _sessionAttributes,
                                 final Map<String, String[]> _parameters,
                                 final Map<String, FileParameter> _fileParameters,
-                                final boolean _inherit)
+                                final Inheritance _inheritance)
         throws EFapsException
     {
-        if (_inherit && Context.INHERITTHREADCONTEXT.get() != null
-                        || !_inherit  && Context.THREADCONTEXT.get() != null) {
+        if (Inheritance.Inheritable.equals(_inheritance)  && Context.INHERITTHREADCONTEXT.get() != null
+                        || Inheritance.Local.equals(_inheritance)  && Context.THREADCONTEXT.get() != null) {
             throw new EFapsException(Context.class, "begin.Context4ThreadAlreadSet");
         }
-
         try {
             // the timeout set is reseted on creation of a new Current object in
             // the transaction manager,
@@ -1074,11 +1068,20 @@ public final class Context
             throw new EFapsException(Context.class, "begin.getTransactionSystemException", e);
         }
         final Context context = new Context(transaction, _locale == null ? Locale.ENGLISH : _locale,
-                        _sessionAttributes, _parameters, _fileParameters, _inherit);
-        if (_inherit) {
-            Context.INHERITTHREADCONTEXT.set(context);
-        } else {
-            Context.THREADCONTEXT.set(context);
+                        _sessionAttributes, _parameters, _fileParameters, Inheritance.Inheritable.equals(_inheritance));
+        switch (_inheritance) {
+            case Inheritable:
+                Context.INHERITTHREADCONTEXT.set(context);
+                break;
+            case Local:
+                Context.THREADCONTEXT.set(context);
+                break;
+            case Standalone:
+                Context.THREADCONTEXT.set(context);
+                Context.INHERITTHREADCONTEXT.set(context);
+                break;
+            default:
+                break;
         }
 
         if (_userName != null) {
@@ -1358,5 +1361,20 @@ public final class Context
          * @return parameter name
          */
         String getParameterName();
+    }
+
+    /**
+     * The Enum Inheritance.
+     *
+     * @author The eFaps Team
+     */
+    public enum Inheritance
+    {
+        /** The Inheritable. */
+        Inheritable,
+        /** The Local. */
+        Local,
+        /** The New. */
+        Standalone,
     }
 }

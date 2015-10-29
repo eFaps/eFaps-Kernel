@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 9284 $
- * Last Changed:    $Date: 2013-04-26 10:40:07 -0500 (Fri, 26 Apr 2013) $
- * Last Changed By: $Author: jan@moxter.net $
  */
 
 package org.efaps.bpm;
@@ -104,11 +101,11 @@ import org.kie.internal.task.api.model.InternalTask;
 import org.kie.internal.utils.ServiceRegistryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: BPM.java 9284 2013-04-26 15:40:07Z jan@moxter.net $
  */
 public final class BPM
 {
@@ -689,7 +686,8 @@ public final class BPM
             final RuntimeEngine runtimeEngine = BPM.PMANAGER.getRuntimeEngine(ProcessInstanceIdContext
                             .get(_processInstanceId));
             final InternalTaskService taskService = (InternalTaskService) runtimeEngine.getTaskService();
-            ret.addAll(taskService.getTasksByStatusByProcessInstanceIdByTaskName(_processInstanceId, _status, _taskName));
+            ret.addAll(taskService.getTasksByStatusByProcessInstanceIdByTaskName(_processInstanceId, _status,
+                            _taskName));
         }
         return ret;
     }
@@ -836,7 +834,7 @@ public final class BPM
         {
             try {
                 if (!Context.isTMActive()) {
-                    Context.begin(this.userName, false);
+                    Context.begin(this.userName, Context.Inheritance.Local);
                 }
             } catch (final EFapsException e) {
                 BPM.LOG.error("Context problem", e);

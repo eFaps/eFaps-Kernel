@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.db.transaction;
@@ -35,7 +32,6 @@ import org.efaps.util.EFapsException;
  * Delegate a UserTransaction to the TransactionManager used by the Context.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class DelegatingUserTransaction
     implements UserTransaction
@@ -70,7 +66,7 @@ public class DelegatingUserTransaction
         throws NotSupportedException, SystemException
     {
         try {
-            Context.begin(getUserName(), false);
+            Context.begin(getUserName(), Context.Inheritance.Local);
         } catch (final EFapsException e) {
             try {
                 if (Context.isTMActive()) {
