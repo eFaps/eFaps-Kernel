@@ -34,6 +34,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Dimension.UoM;
@@ -72,6 +73,7 @@ import org.efaps.db.search.value.QNumberValue;
 import org.efaps.db.search.value.QSQLValue;
 import org.efaps.db.search.value.QStringValue;
 import org.efaps.util.EFapsException;
+import org.efaps.util.UUIDUtil;
 import org.efaps.util.cache.CacheReloadException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -94,12 +96,17 @@ public class QueryBuilder
     /**
      * Pattern to get the attribute from a select.
      */
-    private static final Pattern ATTRPATTERN = Pattern.compile("(?<=attribute\\[)([A-Z, a-z])*(?=\\])");
+    private static final Pattern ATTRPATTERN = Pattern.compile("(?<=attribute\\[)([A-Za-z])*(?=\\])");
 
     /**
      * Pattern to get the attribute from a select.
      */
-    private static final Pattern LINKTOPATTERN = Pattern.compile("(?<=linkto\\[)([A-Z, a-z])*(?=\\])");
+    private static final Pattern LINKTOPATTERN = Pattern.compile("(?<=linkto\\[)([A-Za-z])*(?=\\])");
+
+    /**
+     * Pattern to get the attribute from a select.
+     */
+    private static final Pattern CLASSPATTERN = Pattern.compile("(?<=class\\[)([A-Za-z_0-9-])*(?=\\])");
 
     /**
      * List of compares that will be included in this query.
@@ -114,7 +121,7 @@ public class QueryBuilder
     /**
      * QueryBuilders that will make a AttrQuery.
      */
-    private final Map<List<String>, QueryBuilder> attrQueryBldrs = new HashMap<>();
+    private final Map<String, QueryBuilder> attrQueryBldrs = new HashMap<>();
 
     /**
      * UUID of the type used for generated instance query.
@@ -156,6 +163,11 @@ public class QueryBuilder
      * Name of the Attribute that links to this AttributeQuery.
      */
     private String linkAttributeName;
+
+    /**
+     * Name of the Attribute that select to this AttributeQuery.
+     */
+    private String selectAttributeName;
 
     /**
      * @param _typeUUID     uuid of the type this query is based on
@@ -1016,7 +1028,7 @@ public class QueryBuilder
     protected AttributeQuery getAttributeQuery()
         throws EFapsException
     {
-        AttributeQuery ret = this.getAttributeQuery("attribute[ID]");
+        AttributeQuery ret = this.getAttributeQuery(getSelectAttributeName());
         // check if in the linkto chain is one before this one
         if (!this.attrQueryBldrs.isEmpty()) {
             final QueryBuilder queryBldr = this.attrQueryBldrs.values().iterator().next();
@@ -1167,25 +1179,49 @@ public class QueryBuilder
     protected QueryBuilder getAttrQueryBuilder(final String _select)
         throws CacheReloadException
     {
+        boolean linkto = true;
         final Matcher matcher = LINKTOPATTERN.matcher(_select);
         final List<String> linktos = new ArrayList<>();
         while (matcher.find()) {
             linktos.add(matcher.group());
         }
+        String key = StringUtils.join(linktos, ',');
+        if (linktos.isEmpty()) {
+            final Matcher classMatcher = CLASSPATTERN.matcher(_select);
+            while (classMatcher.find()) {
+                linktos.add(classMatcher.group());
+            }
+            key = StringUtils.join(linktos, '|');
+            linkto = false;
+        }
 
-        if (!this.attrQueryBldrs.containsKey(linktos)) {
-            Type currentType = Type.get(this.typeUUID);
-            QueryBuilder queryBldr = this;
-            for (final Iterator<String> iterator = linktos.iterator(); iterator.hasNext();) {
-                final String string = iterator.next();
-                currentType = currentType.getAttribute(string).getLink();
-                final QueryBuilder queryBldrTmp = new QueryBuilder(currentType);
-                queryBldrTmp.setLinkAttributeName(string);
-                queryBldr.getAttrQueryBldrs().put(linktos, queryBldrTmp);
-                queryBldr = queryBldrTmp;
+        if (!this.attrQueryBldrs.containsKey(key)) {
+            if (linkto) {
+                Type currentType = Type.get(this.typeUUID);
+                QueryBuilder queryBldr = this;
+                for (final Iterator<String> iterator = linktos.iterator(); iterator.hasNext();) {
+                    final String string = iterator.next();
+                    currentType = currentType.getAttribute(string).getLink();
+                    final QueryBuilder queryBldrTmp = new QueryBuilder(currentType);
+                    queryBldrTmp.setLinkAttributeName(string);
+                    queryBldr.getAttrQueryBldrs().put(key, queryBldrTmp);
+                    queryBldr = queryBldrTmp;
+                }
+            } else {
+                final String typeStr = linktos.get(0);
+                Classification clazz;
+                if (UUIDUtil.isUUID(typeStr)) {
+                    clazz = Classification.get(UUID.fromString(typeStr));
+                } else {
+                    clazz = Classification.get(typeStr);
+                }
+                final QueryBuilder queryBldrTmp = new QueryBuilder(clazz);
+                queryBldrTmp.setSelectAttributeName(clazz.getLinkAttributeName());
+                queryBldrTmp.setLinkAttributeName("ID");
+                getAttrQueryBldrs().put(key, queryBldrTmp);
             }
         }
-        return this.attrQueryBldrs.get(linktos);
+        return this.attrQueryBldrs.get(key);
     }
 
     /**
@@ -1203,7 +1239,7 @@ public class QueryBuilder
      *
      * @return value of instance variable {@link #attrQueryBldrs}
      */
-    protected Map<List<String>, QueryBuilder> getAttrQueryBldrs()
+    protected Map<String, QueryBuilder> getAttrQueryBldrs()
     {
         return this.attrQueryBldrs;
     }
@@ -1226,5 +1262,25 @@ public class QueryBuilder
     protected void setLinkAttributeName(final String _linkAttributeName)
     {
         this.linkAttributeName = _linkAttributeName;
+    }
+
+    /**
+     * Gets the name of the Attribute that select to this AttributeQuery.
+     *
+     * @return the name of the Attribute that select to this AttributeQuery
+     */
+    protected String getSelectAttributeName()
+    {
+        return this.selectAttributeName == null ?  "attribute[ID]" : this.selectAttributeName;
+    }
+
+    /**
+     * Sets the name of the Attribute that select to this AttributeQuery.
+     *
+     * @param _selectAttributeName the new name of the Attribute that select to this AttributeQuery
+     */
+    protected void setSelectAttributeName(final String _selectAttributeName)
+    {
+        this.selectAttributeName = _selectAttributeName;
     }
 }
