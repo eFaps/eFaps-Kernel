@@ -434,9 +434,12 @@ public abstract class AbstractPrintQuery
     }
 
     /**
+     * Adds the msg phrase.
+     *
+     * @param _selectBldr the select bldr
      * @param _msgPhrase phrase to add
-     * @throws EFapsException on error
      * @return this PrintQuery
+     * @throws EFapsException on error
      */
     public AbstractPrintQuery addMsgPhrase(final SelectBuilder _selectBldr,
                                            final MsgPhrase... _msgPhrase)
@@ -456,6 +459,13 @@ public abstract class AbstractPrintQuery
         return this;
     }
 
+    /**
+     * Adds the msg phrase.
+     *
+     * @param _msgPhrase the msg phrase
+     * @return the abstract print query
+     * @throws EFapsException on error
+     */
     public AbstractPrintQuery addMsgPhrase(final String... _msgPhrase)
         throws EFapsException
     {
@@ -466,12 +476,27 @@ public abstract class AbstractPrintQuery
         return addMsgPhrase(msgphrases.toArray(new MsgPhrase[msgphrases.size()]));
     }
 
+    /**
+     * Adds the msg phrase.
+     *
+     * @param _msgPhrase the msg phrase
+     * @return the abstract print query
+     * @throws EFapsException on error
+     */
     public AbstractPrintQuery addMsgPhrase(final UUID... _msgPhrase)
         throws EFapsException
     {
         return addMsgPhrase(null, _msgPhrase);
     }
 
+    /**
+     * Adds the msg phrase.
+     *
+     * @param _selectBldr the select bldr
+     * @param _msgPhrase the msg phrase
+     * @return the abstract print query
+     * @throws EFapsException on error
+     */
     public AbstractPrintQuery addMsgPhrase(final SelectBuilder _selectBldr,
                                            final UUID... _msgPhrase)
         throws EFapsException
@@ -486,7 +511,7 @@ public abstract class AbstractPrintQuery
     /**
      * Get the String representation of a phrase.
      *
-     * @param _key key to the phrase
+     * @param _msgPhrase the msg phrase
      * @return String representation of the phrase
      * @throws EFapsException on error
      */
@@ -499,7 +524,7 @@ public abstract class AbstractPrintQuery
     /**
      * Get the String representation of a phrase.
      *
-     * @param _key key to the phrase
+     * @param _msgPhrase the msg phrase
      * @return String representation of the phrase
      * @throws EFapsException on error
      */
@@ -512,7 +537,8 @@ public abstract class AbstractPrintQuery
     /**
      * Get the String representation of a phrase.
      *
-     * @param _key key to the phrase
+     * @param _selectBldr the select bldr
+     * @param _msgPhrase the msg phrase
      * @return String representation of the phrase
      * @throws EFapsException on error
      */
@@ -526,7 +552,7 @@ public abstract class AbstractPrintQuery
     /**
      * Get the String representation of a phrase.
      *
-     * @param _key key to the phrase
+     * @param _msgPhrase the msg phrase
      * @return String representation of the phrase
      * @throws EFapsException on error
      */
@@ -539,7 +565,8 @@ public abstract class AbstractPrintQuery
     /**
      * Get the String representation of a phrase.
      *
-     * @param _key key to the phrase
+     * @param _selectBldr the select bldr
+     * @param _msgPhrase the msg phrase
      * @return String representation of the phrase
      * @throws EFapsException on error
      */
