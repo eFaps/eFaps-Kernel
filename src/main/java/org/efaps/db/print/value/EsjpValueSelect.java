@@ -62,7 +62,10 @@ public class EsjpValueSelect
     private final List<String> parameters = new ArrayList<>();
 
     /**
-     * @param _oneSelect
+     * Instantiates a new esjp value select.
+     *
+     * @param _oneSelect the one select
+     * @param _esjp the esjp
      */
     public EsjpValueSelect(final OneSelect _oneSelect,
                            final String _esjp)
@@ -81,7 +84,7 @@ public class EsjpValueSelect
                 } else {
                     this.parameters.add(string);
                 }
-            };
+            }
         }
     }
 
@@ -110,9 +113,8 @@ public class EsjpValueSelect
                 } else {
                     this.esjp.initialize(instances, this.parameters.toArray(new String[this.parameters.size()]));
                 }
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                LOG.error("Catched error", e);
             }
         }
         return this.esjp.getValue(inst);
