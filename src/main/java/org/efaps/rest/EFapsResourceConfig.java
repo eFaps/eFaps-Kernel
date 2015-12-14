@@ -293,5 +293,11 @@ public class EFapsResourceConfig
         {
             // nothing to do here
         }
+
+        @Override
+        public void close()
+        {
+            // nothing to do here
+        }
     }
 }
