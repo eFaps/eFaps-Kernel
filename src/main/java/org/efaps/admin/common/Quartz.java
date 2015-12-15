@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.admin.common;
@@ -43,6 +40,7 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.simpl.SimpleJobFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +48,6 @@ import org.slf4j.LoggerFactory;
  * Quartz for eFaps.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public final class Quartz
 {
@@ -121,13 +118,13 @@ public final class Quartz
                 // QuartzTrigger
                 trans.setUserName(Person.get(UUID.fromString("df2f02a7-c556-49ad-b019-e13db66e1cbf")).getName());
             } catch (final NamingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Quartz.LOG.info("Catched NamingException on evaluation for Quartz");
             }
 
             props.put(StdSchedulerFactory.PROP_SCHED_USER_TX_URL, lookup + "/" + INamingBinds.RESOURCE_USERTRANSACTION);
             props.put(StdSchedulerFactory.PROP_SCHED_WRAP_JOB_IN_USER_TX, "true");
             props.put(StdSchedulerFactory.PROP_THREAD_POOL_CLASS, "org.quartz.simpl.SimpleThreadPool");
+            props.put(StdSchedulerFactory.PROP_SCHED_JOB_FACTORY_CLASS, SimpleJobFactory.class.getName());
             props.put("org.quartz.plugin.jobInitializer.class", "org.efaps.admin.common.QuartzSchedulerPlugin");
 
             if (!props.containsKey(StdSchedulerFactory.PROP_SCHED_MAKE_SCHEDULER_THREAD_DAEMON)) {
@@ -196,7 +193,6 @@ public final class Quartz
         return Quartz.QUARTZ;
     }
 
-
     /**
      * ShutDown Quartz.
      */
@@ -210,5 +206,4 @@ public final class Quartz
             }
         }
     }
-
 }
