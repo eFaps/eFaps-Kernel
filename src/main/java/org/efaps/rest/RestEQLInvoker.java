@@ -266,9 +266,8 @@ public class RestEQLInvoker
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
-        //CHECKSTYLE:OFF
+
         } catch (final Exception e) {
-        //CHECKSTYLE:ON
             LOG.error("Error processing data.", e);
         }
         return ret;

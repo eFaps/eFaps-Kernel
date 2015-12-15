@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,14 +29,15 @@ import org.efaps.update.util.InstallationException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class BPMUpdate
     extends AbstractSourceUpdate
 {
 
     /**
-     * @param _url URL to the file
+     * Instantiates a new BPM update.
+     *
+     * @param _installFile the install file
      */
     protected BPMUpdate(final InstallFile _installFile)
     {
@@ -46,7 +47,7 @@ public class BPMUpdate
     /**
      * Read the file.
      *
-     * @param _url URL to the file
+     * @param _installFile the install file
      * @return CSSUpdate
      */
     public static BPMUpdate readFile(final InstallFile _installFile)
@@ -72,7 +73,7 @@ public class BPMUpdate
         /**
          * Constructor.
          *
-         * @param _url URL of the file
+         * @param _installFile the install file
          */
         public BPMDefinition(final InstallFile _installFile)
         {
@@ -104,5 +105,4 @@ public class BPMUpdate
             }
         }
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program;
@@ -32,7 +29,6 @@ import org.efaps.update.util.InstallationException;
  * Class to update a javascript into eFaps.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class JavaScriptUpdate extends AbstractSourceUpdate
 {
@@ -54,7 +50,7 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
     /**
      * Constructor.
      *
-     * @param _url URL of the file
+     * @param _installFile the install file
      */
     protected JavaScriptUpdate(final InstallFile _installFile)
     {
@@ -64,7 +60,7 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
     /**
      * Read the file.
      *
-     * @param _url URL to the file
+     * @param _installFile the install file
      * @return JavaScriptUpdate
      */
     public static JavaScriptUpdate readFile(final InstallFile _installFile)
@@ -91,8 +87,7 @@ public class JavaScriptUpdate extends AbstractSourceUpdate
         /**
          * Construtor.
          *
-         * @param _url URL to the css file
-         *
+         * @param _installFile the install file
          */
         public JavaScriptDefinition(final InstallFile _installFile)
         {

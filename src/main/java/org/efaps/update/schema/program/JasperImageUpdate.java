@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program;
@@ -29,7 +26,6 @@ import org.efaps.update.schema.AbstractFileUpdate;
  * file.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class JasperImageUpdate
     extends AbstractFileUpdate
@@ -39,7 +35,7 @@ public class JasperImageUpdate
      * Default constructor to initialize this Jasper report image update
      * instance for given <code>_url</code>.
      *
-     * @param _url URL of the file
+     * @param _installFile the install file
      */
     public JasperImageUpdate(final InstallFile _installFile)
     {

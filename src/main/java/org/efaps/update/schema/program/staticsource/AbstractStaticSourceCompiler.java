@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program.staticsource;
@@ -45,7 +42,6 @@ import org.slf4j.LoggerFactory;
  * Class used to compile JavaScript and style sheets.
  *
  * @author The eFaps Team
- * @version $Id$
  * @param <T> sourcetype
  */
 public abstract class AbstractStaticSourceCompiler<T extends AbstractSource>
@@ -125,7 +121,6 @@ public abstract class AbstractStaticSourceCompiler<T extends AbstractSource>
             final Checkin checkin = new Checkin(instance);
             checkin.executeWithoutAccessCheck(name, str, mybytes.length);
         }
-
     }
 
     /**
@@ -244,7 +239,7 @@ public abstract class AbstractStaticSourceCompiler<T extends AbstractSource>
     /**
      * Class to access one source.
      */
-    public static abstract class AbstractSource
+    public abstract static class AbstractSource
     {
         /**
          * Stores the name of this source.

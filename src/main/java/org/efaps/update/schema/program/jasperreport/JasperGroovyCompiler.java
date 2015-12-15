@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program.jasperreport;
-
-import groovy.lang.GroovyClassLoader;
-import groovyjarjarasm.asm.ClassVisitor;
-import groovyjarjarasm.asm.ClassWriter;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -31,12 +24,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.jasperreports.compilers.JRGroovyCompiler;
-import net.sf.jasperreports.engine.DefaultJasperReportsContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.design.JRCompilationUnit;
-
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilationUnit;
@@ -44,13 +31,21 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.Phases;
 import org.efaps.admin.program.esjp.EFapsClassLoader;
 
+import groovy.lang.GroovyClassLoader;
+import groovyjarjarasm.asm.ClassVisitor;
+import groovyjarjarasm.asm.ClassWriter;
+import net.sf.jasperreports.compilers.JRGroovyCompiler;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.design.JRCompilationUnit;
+
 /**
  * Calculator compiler that uses groovy to compile expressions. It is used due
  * to the reason that the Classloader inside groovy must be set to use the
  * classpath from the maven targets.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class JasperGroovyCompiler
     extends JRGroovyCompiler

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program;
@@ -28,10 +25,9 @@ import org.efaps.update.schema.program.staticsource.XSLImporter;
 import org.efaps.update.util.InstallationException;
 
 /**
- * TODO description!
+ * TODO description!.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class XSLUpdate
     extends AbstractSourceUpdate
@@ -40,7 +36,7 @@ public class XSLUpdate
     /**
      * Constructor.
      *
-     * @param _url URL of the file
+     * @param _installFile the install file
      */
     protected XSLUpdate(final InstallFile _installFile)
     {
@@ -50,7 +46,7 @@ public class XSLUpdate
     /**
      * Read the file.
      *
-     * @param _url URL to the file
+     * @param _installFile the install file
      * @return XSLUpdate
      */
     public static XSLUpdate readFile(final InstallFile _installFile)
@@ -62,7 +58,9 @@ public class XSLUpdate
     }
 
     /**
+     * The Class XSLDefinition.
      *
+     * @author The eFaps Team
      */
     public class XSLDefinition
         extends AbstractSourceDefinition
@@ -76,7 +74,7 @@ public class XSLUpdate
         /**
          * Constructor.
          *
-         * @param _url URL of the file
+         * @param _installFile the install file
          */
         public XSLDefinition(final InstallFile _installFile)
         {

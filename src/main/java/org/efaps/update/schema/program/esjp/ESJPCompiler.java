@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program.esjp;
@@ -69,7 +66,6 @@ import org.slf4j.LoggerFactory;
  * compiled.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class ESJPCompiler
 {
@@ -208,13 +204,16 @@ public class ESJPCompiler
             // logging of compiling classes
             if (ESJPCompiler.LOG.isInfoEnabled()) {
                 final List<SourceObject> ls = new ArrayList<SourceObject>(this.name2Source.values());
-                Collections.sort(ls, new Comparator<SourceObject>() {
+                Collections.sort(ls, new Comparator<SourceObject>()
+                {
+
                     @Override
                     public int compare(final SourceObject _arg0,
                                        final SourceObject _arg1)
                     {
                         return _arg0.getJavaName().compareTo(_arg1.getJavaName());
-                    }});
+                    }
+                });
                 for (final SourceObject obj : ls) {
                     ESJPCompiler.LOG.info("    Compiling ESJP '{}'", obj.getJavaName());
                 }
@@ -367,7 +366,7 @@ public class ESJPCompiler
          *
          * @param _sfm      original Java file manager to forward
          */
-        public FileManager(final StandardJavaFileManager _sfm)
+        FileManager(final StandardJavaFileManager _sfm)
         {
             super(_sfm);
         }

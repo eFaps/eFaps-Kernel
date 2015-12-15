@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program;
@@ -26,12 +23,10 @@ import org.efaps.update.Install.InstallFile;
 import org.efaps.update.schema.program.jasperreport.JasperReportImporter;
 import org.efaps.update.util.InstallationException;
 
-
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class JasperReportUpdate extends AbstractSourceUpdate
 {
@@ -51,8 +46,9 @@ public class JasperReportUpdate extends AbstractSourceUpdate
     }
 
     /**
-     * @param _url URL of the file
+     * Instantiates a new jasper report update.
      *
+     * @param _installFile the install file
      */
     public JasperReportUpdate(final InstallFile _installFile)
     {
@@ -62,7 +58,7 @@ public class JasperReportUpdate extends AbstractSourceUpdate
     /**
      * Read the file.
      *
-     * @param _url URL to the file
+     * @param _installFile the install file
      * @return JavaScriptUpdate
      */
     public static JasperReportUpdate readFile(final InstallFile _installFile)
@@ -88,8 +84,7 @@ public class JasperReportUpdate extends AbstractSourceUpdate
         /**
          * Construtor.
          *
-         * @param _url URL to the JasperReport file
-         *
+         * @param _installFile the install file
          */
         public JasperReportDefinition(final InstallFile _installFile)
         {
@@ -116,10 +111,6 @@ public class JasperReportUpdate extends AbstractSourceUpdate
             if (this.jrxml.getEFapsUUID() != null) {
                 addValue("UUID", this.jrxml.getEFapsUUID().toString());
             }
-
-//            if (this.jrxml.getExtendSource() != null) {
-//                addLink(JasperReportUpdate.LINK2SUPER, new LinkInstance(this.jrxml.getExtendSource()));
-//            }
 
             if (getInstance() == null) {
                 setInstance(this.jrxml.searchInstance());

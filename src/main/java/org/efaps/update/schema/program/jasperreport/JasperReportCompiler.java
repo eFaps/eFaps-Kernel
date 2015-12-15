@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program.jasperreport;
@@ -25,13 +22,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
-import net.sf.jasperreports.engine.DefaultJasperReportsContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRReport;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.design.JRCompiler;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.efaps.admin.program.jasper.JasperUtil;
 import org.efaps.ci.CIAdminProgram;
@@ -45,12 +35,17 @@ import org.efaps.update.schema.program.jasperreport.JasperReportImporter.FakeQue
 import org.efaps.update.schema.program.staticsource.AbstractStaticSourceCompiler;
 import org.efaps.util.EFapsException;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRReport;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.design.JRCompiler;
+import net.sf.jasperreports.engine.design.JasperDesign;
+
 /**
  * Class serves as the compiler for JasperReports.
  *
  * @author The eFaps Team
- * @version $Id: JasperReportCompiler.java 3932 2011-03-31 20:40:50Z jan.moxter
- *          $
  */
 public class JasperReportCompiler
     extends AbstractStaticSourceCompiler<OneJasperReport>

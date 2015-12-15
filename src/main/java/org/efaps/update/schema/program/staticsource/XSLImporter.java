@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program.staticsource;
@@ -28,15 +25,15 @@ import org.efaps.update.util.InstallationException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class XSLImporter
     extends AbstractStaticSourceImporter
 {
+
     /**
      * Default constructor.
      *
-     * @param _url      URL to the XSLT file
+     * @param _installFile the install file
      * @throws InstallationException if XSLT importer could not be initialized
      *                               because file from <code>_url</code> could
      *                               not be read

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program.jasperreport;
@@ -25,6 +22,14 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.xml.parsers.ParserConfigurationException;
+
+import org.efaps.ci.CIAdminProgram;
+import org.efaps.update.Install.InstallFile;
+import org.efaps.update.schema.program.AbstractSourceImporter;
+import org.efaps.update.util.InstallationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataset;
@@ -37,19 +42,10 @@ import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlDigesterFactory;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
-import org.efaps.ci.CIAdminProgram;
-import org.efaps.update.Install.InstallFile;
-import org.efaps.update.schema.program.AbstractSourceImporter;
-import org.efaps.update.util.InstallationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
 /**
  * Class is used to import a JasperReport into the eFaps DataBase.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class JasperReportImporter
     extends AbstractSourceImporter
@@ -65,7 +61,9 @@ public class JasperReportImporter
     private JasperDesign jasperDesign;
 
     /**
-     * @param _url  url to the file to be imported
+     * Instantiates a new jasper report importer.
+     *
+     * @param _installFile the install file
      * @throws InstallationException on error
      */
     public JasperReportImporter(final InstallFile _installFile)
@@ -86,8 +84,8 @@ public class JasperReportImporter
             DefaultJasperReportsContext.getInstance().setProperty("net.sf.jasperreports.query.executer.factory.eFaps",
                             FakeQueryExecuterFactory.class.getName());
 
-            this.jasperDesign = new JRXmlLoader(DefaultJasperReportsContext.getInstance(),
-                            JRXmlDigesterFactory.createDigester()).loadXML(newCodeInputStream());
+            this.jasperDesign = new JRXmlLoader(DefaultJasperReportsContext.getInstance(), JRXmlDigesterFactory
+                            .createDigester(DefaultJasperReportsContext.getInstance())).loadXML(newCodeInputStream());
         } catch (final ParserConfigurationException e) {
             throw new InstallationException("source code for " + getUrl() + "could not be parsed", e);
         } catch (final SAXException e) {
@@ -131,6 +129,7 @@ public class JasperReportImporter
     /**
      * Internal FakeExecuterFactory to be able to set them from esjp.
      */
+    @SuppressWarnings("checkstyle:abstractclassname")
     public static class FakeQueryExecuterFactory
         implements QueryExecuterFactory
     {

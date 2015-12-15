@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ import org.efaps.update.util.InstallationException;
  * The class updates programs from type <code>Admin_Program_CSS</code> inside
  * the eFaps database.
  *
- * @author jmox
- * @version $Id$
+ * @author The eFasp Team
  */
 public class CSSUpdate
     extends AbstractSourceUpdate
@@ -59,7 +58,7 @@ public class CSSUpdate
     /**
      * Constructor.
      *
-     * @param _url URL of the file
+     * @param _installFile the install file
      */
     protected CSSUpdate(final InstallFile _installFile)
     {
@@ -69,7 +68,7 @@ public class CSSUpdate
     /**
      * Read the file.
      *
-     * @param _url URL to the file
+     * @param _installFile the install file
      * @return CSSUpdate
      */
     public static CSSUpdate readFile(final InstallFile _installFile)
@@ -96,8 +95,7 @@ public class CSSUpdate
         /**
          * Construtor.
          *
-         * @param _url URL to the css file
-         *
+         * @param _installFile the install file
          */
         public CSSDefinition(final InstallFile _installFile)
         {

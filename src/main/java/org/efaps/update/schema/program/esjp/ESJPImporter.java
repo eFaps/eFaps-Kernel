@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program.esjp;
@@ -34,17 +31,17 @@ import org.efaps.update.util.InstallationException;
  * class does not need any XML update files and could be called directly.
  *
  * @author The eFaps Team
- * @version $Id$
  * TODO:  encoding from java files!
  */
 public class ESJPImporter
     extends AbstractSourceImporter
 {
+
     /**
      * Constructor used to read the source code from given URL and extract the
      * class name.
      *
-     * @param _url    url to the ESJP source code
+     * @param _installFile the install file
      * @throws InstallationException on error
      */
     public ESJPImporter(final InstallFile _installFile)

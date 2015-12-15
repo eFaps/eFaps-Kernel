@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.Set;
 import org.efaps.update.Install.InstallFile;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.schema.AbstractFileUpdate;
+import org.efaps.update.schema.ui.ImageUpdate;
 import org.efaps.util.EFapsException;
 
 /**
@@ -36,7 +37,6 @@ import org.efaps.util.EFapsException;
  * file.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class BPMImageUpdate
     extends AbstractFileUpdate
@@ -61,7 +61,7 @@ public class BPMImageUpdate
      * Default constructor to initialize this BPM report image update
      * instance for given <code>_url</code>.
      *
-     * @param _url URL of the file
+     * @param _installFile the install file
      */
     public BPMImageUpdate(final InstallFile _installFile)
     {
@@ -115,6 +115,5 @@ public class BPMImageUpdate
                 super.readXML(_tags, _attributes, _text);
             }
         }
-
     }
 }

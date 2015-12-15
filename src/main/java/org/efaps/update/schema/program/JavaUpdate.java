@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program;
@@ -34,16 +31,16 @@ import org.efaps.update.util.InstallationException;
  * read from a plain Java source code file.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class JavaUpdate
     extends AbstractSourceUpdate
 {
+
     /**
      * Default constructor to initialize this ESJP update instance for given
      * <code>_url</code>.
      *
-     * @param _url  url to the file
+     * @param _installFile the install file
      */
     public JavaUpdate(final InstallFile _installFile)
     {
@@ -55,7 +52,7 @@ public class JavaUpdate
      * an instance of this class. The instance of this class owns one definition
      * instance where the code and the name is defined.
      *
-     * @param _url      URL of the file depending of the root URL
+     * @param _installFile the install file
      * @return Java update definition read by digester
      */
     public static JavaUpdate readFile(final InstallFile _installFile)
@@ -83,7 +80,9 @@ public class JavaUpdate
         private boolean updateAllowed = true;
 
         /**
-         * @param _url URL to the java file
+         * Instantiates a new java definition.
+         *
+         * @param _installFile the install file
          */
         protected JavaDefinition(final InstallFile _installFile)
         {

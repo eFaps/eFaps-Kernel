@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program;
@@ -39,15 +36,15 @@ import org.efaps.util.EFapsException;
  * ABstract class for all kind of sources. eg. java, css, js.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public abstract class AbstractSourceUpdate
     extends AbstractUpdate
 {
+
     /**
      * Constructor setting the Name of the Type to be imported/updated.
      *
-     * @param _url URL to the file
+     * @param _installFile the install file
      * @param _modelTypeName name of the type
      */
     protected AbstractSourceUpdate(final InstallFile _installFile,
@@ -59,7 +56,7 @@ public abstract class AbstractSourceUpdate
     /**
      * Constructor setting the Name of the Type to be imported/updated.
      *
-     * @param _url URL to the file
+     * @param _installFile the install file
      * @param _modelTypeName name of the type
      * @param _linkTypes set of links
      */
@@ -107,7 +104,7 @@ public abstract class AbstractSourceUpdate
          * calculating the name of the source object (file url minus root url).
          * The path separators are replaces by points.
          *
-         * @param _fileUrl  URL to the file (incl. root).
+         * @param _installFile the install file
          */
         protected AbstractSourceDefinition(final InstallFile _installFile)
         {
@@ -151,20 +148,18 @@ public abstract class AbstractSourceUpdate
         public boolean isValidVersion(final JexlContext _jexlContext)
             throws InstallationException
         {
-            boolean ret =false;
+            boolean ret = false;
             try {
-                 ret = getDataModelTypeName() != null
-                                 && Type.isInitialized() && Type.get(getDataModelTypeName()) != null
-                                 && !Type.get(getDataModelTypeName()).getAttributes().isEmpty()
-                                 && Type.get(getDataModelTypeName()).getStoreId() > 0
-                                 && Context.getThreadContext().getPerson() != null;
+                ret = getDataModelTypeName() != null && Type.isInitialized()
+                                && Type.get(getDataModelTypeName()) != null
+                                && !Type.get(getDataModelTypeName()).getAttributes().isEmpty()
+                                && Type.get(getDataModelTypeName()).getStoreId() > 0
+                                && Context.getThreadContext().getPerson() != null;
             } catch (final EFapsException e) {
                 throw new InstallationException("Could not validate the version.", e);
             }
             return ret;
         }
-
-
 
         /**
          * Method returns a String representation of this class.
@@ -179,7 +174,6 @@ public abstract class AbstractSourceUpdate
                 .toString();
         }
 
-
         /**
          * Getter method for the instance variable {@link #installFile}.
          *
@@ -189,7 +183,6 @@ public abstract class AbstractSourceUpdate
         {
             return this.installFile;
         }
-
 
         /**
          * Setter method for instance variable {@link #installFile}.

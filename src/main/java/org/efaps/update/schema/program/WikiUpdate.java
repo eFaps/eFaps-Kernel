@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.program;
@@ -31,27 +28,29 @@ import org.efaps.update.util.InstallationException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
-public class WikiUpdate extends AbstractSourceUpdate
+public class WikiUpdate
+    extends AbstractSourceUpdate
 {
+
     /**
      * Link from Wiki to other Wiki.
      */
-    private static final Link LINK2WIKI = new Link("Admin_Program_Wiki2Wiki", "From",
-                                                    "Admin_Program_Wiki", "To");
+    private static final Link LINK2WIKI = new Link("Admin_Program_Wiki2Wiki", "From", "Admin_Program_Wiki", "To");
 
     /**
      * Set off all links for this JasperReportUpdate.
      */
     private static final Set<Link> ALLLINKS = new HashSet<Link>();
+
     static {
         WikiUpdate.ALLLINKS.add(WikiUpdate.LINK2WIKI);
     }
 
     /**
-     * @param _url URL of the file
+     * Instantiates a new wiki update.
      *
+     * @param _installFile the install file
      */
     public WikiUpdate(final InstallFile _installFile)
     {
@@ -61,7 +60,7 @@ public class WikiUpdate extends AbstractSourceUpdate
     /**
      * Read the file.
      *
-     * @param _url URL to the file
+     * @param _installFile the install file
      * @return JavaScriptUpdate
      */
     public static WikiUpdate readFile(final InstallFile _installFile)
@@ -76,7 +75,8 @@ public class WikiUpdate extends AbstractSourceUpdate
      * Definition for the JasperReport.
      *
      */
-    public class WikiDefinition extends AbstractSourceDefinition
+    public class WikiDefinition
+        extends AbstractSourceDefinition
     {
 
         /**
@@ -87,8 +87,7 @@ public class WikiUpdate extends AbstractSourceUpdate
         /**
          * Construtor.
          *
-         * @param _url URL to the JasperReport file
-         *
+         * @param _installFile the install file
          */
         public WikiDefinition(final InstallFile _installFile)
         {
@@ -99,9 +98,8 @@ public class WikiUpdate extends AbstractSourceUpdate
          * Search the instance.
          *
          * @throws InstallationException if the source code for the Jasper
-         *                               Report could not be read or file could
-         *                               not be accessed because of the wrong
-         *                               URL
+         *             Report could not be read or file could not be accessed
+         *             because of the wrong URL
          */
         @Override
         protected void searchInstance()
