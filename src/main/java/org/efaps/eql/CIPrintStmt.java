@@ -14,37 +14,17 @@
  * limitations under the License.
  *
  */
+package org.efaps.eql;
 
-
-package org.efaps.util;
+import org.efaps.eql.stmt.AbstractCIPrintStmt;
 
 /**
- * TODO comment!
+ * The Class CIPrintStmt.
  *
  * @author The eFaps Team
  */
-public final class UUIDUtil
+public class CIPrintStmt
+    extends AbstractCIPrintStmt
 {
-    /**
-     * Regex for testing a UUID for valid.
-     */
-    //CHECKSTYLE:OFF
-    public static final String UUID_REGEX = "[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}";
-    //CHECKSTYLE:ON
 
-    /**
-     * Singelton.
-     */
-    private UUIDUtil()
-    {
-    }
-
-    /**
-     * @param _string string to validate
-     * @return true if valid UUID else false.
-     */
-    public static boolean isUUID(final String _string)
-    {
-        return _string.matches(UUID_REGEX);
-    }
 }

@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.rest;
@@ -32,13 +29,16 @@ import javax.ws.rs.core.Response;
 import org.efaps.db.Insert;
 import org.efaps.eql.EQLInvoker;
 import org.efaps.eql.InvokerUtil;
+import org.efaps.eql.JSONCI;
 import org.efaps.eql.JSONData;
+import org.efaps.eql.stmt.ICIPrintStmt;
 import org.efaps.eql.stmt.IDeleteStmt;
 import org.efaps.eql.stmt.IEQLStmt;
 import org.efaps.eql.stmt.IExecStmt;
 import org.efaps.eql.stmt.IInsertStmt;
 import org.efaps.eql.stmt.IPrintStmt;
 import org.efaps.eql.stmt.IUpdateStmt;
+import org.efaps.json.ci.AbstractCI;
 import org.efaps.json.data.DataList;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -53,7 +53,6 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 @Path("/eql")
 public class RestEQLInvoker
@@ -65,6 +64,10 @@ public class RestEQLInvoker
     private static final Logger LOG = LoggerFactory.getLogger(RestEQLInvoker.class);
 
     /**
+     * Prints the.
+     *
+     * @param _origin the origin
+     * @param _stmt the stmt
      * @return not implemented.
      */
     @Path("print")
@@ -74,7 +77,7 @@ public class RestEQLInvoker
                           @QueryParam("stmt") final String _stmt)
     {
         Response ret = null;
-        // only permit queries on this url
+        // only permit print on this url
         try {
             final EQLInvoker invoker = InvokerUtil.getInvoker();
             final IEQLStmt stmt = invoker.invoke(_stmt);
@@ -86,10 +89,19 @@ public class RestEQLInvoker
                     mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 }
                 mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-                mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
-
                 mapper.registerModule(new JodaModule());
                 ret = Response.ok().type(MediaType.APPLICATION_JSON).entity(mapper.writeValueAsString(datalist))
+                                .build();
+            } else if (invoker.getSyntaxErrors().isEmpty() && stmt instanceof ICIPrintStmt) {
+                registerEQLStmt(_origin, _stmt);
+                final AbstractCI<?> ci = JSONCI.getCI((ICIPrintStmt) stmt);
+                final ObjectMapper mapper = new ObjectMapper();
+                if (LOG.isDebugEnabled()) {
+                    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                }
+                mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+                mapper.registerModule(new JodaModule());
+                ret = Response.ok().type(MediaType.APPLICATION_JSON).entity(mapper.writeValueAsString(ci))
                                 .build();
             } else {
                 final StringBuilder error = new StringBuilder();
@@ -101,13 +113,19 @@ public class RestEQLInvoker
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
+        //CHECKSTYLE:OFF
         } catch (final Exception e) {
+        //CHECKSTYLE:ON
             LOG.error("Error processing data.", e);
         }
         return ret;
     }
 
     /**
+     * Update.
+     *
+     * @param _origin the origin
+     * @param _stmt the stmt
      * @return not implemented.
      */
     @Path("update")
@@ -117,7 +135,7 @@ public class RestEQLInvoker
                          @QueryParam("stmt") final String _stmt)
     {
         String ret = null;
-        // only permit queries on this url
+        // only permit updates on this url
         try {
             final EQLInvoker invoker = InvokerUtil.getInvoker();
             final IEQLStmt stmt = invoker.invoke(_stmt);
@@ -133,13 +151,19 @@ public class RestEQLInvoker
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
+        //CHECKSTYLE:OFF
         } catch (final Exception e) {
+        //CHECKSTYLE:ON
             LOG.error("Error processing data.", e);
         }
         return ret;
     }
 
     /**
+     * Insert.
+     *
+     * @param _origin the origin
+     * @param _stmt the stmt
      * @return not implemented.
      */
     @Path("insert")
@@ -149,7 +173,7 @@ public class RestEQLInvoker
                          @QueryParam("stmt") final String _stmt)
     {
         String ret = null;
-        // only permit queries on this url
+        // only permit insert on this url
         try {
             final EQLInvoker invoker = InvokerUtil.getInvoker();
             final IEQLStmt stmt = invoker.invoke(_stmt);
@@ -166,13 +190,19 @@ public class RestEQLInvoker
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
+        //CHECKSTYLE:OFF
         } catch (final Exception e) {
+        //CHECKSTYLE:ON
             LOG.error("Error processing data.", e);
         }
         return ret;
     }
 
     /**
+     * Delete.
+     *
+     * @param _origin the origin
+     * @param _stmt the stmt
      * @return not implemented.
      */
     @Path("delete")
@@ -182,7 +212,7 @@ public class RestEQLInvoker
                          @QueryParam("stmt") final String _stmt)
     {
         String ret = null;
-        // only permit queries on this url
+        // only permit delete on this url
         try {
             final EQLInvoker invoker = InvokerUtil.getInvoker();
             final IEQLStmt stmt = invoker.invoke(_stmt);
@@ -198,13 +228,19 @@ public class RestEQLInvoker
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
+        //CHECKSTYLE:OFF
         } catch (final Exception e) {
+        //CHECKSTYLE:ON
             LOG.error("Error processing data.", e);
         }
         return ret;
     }
 
     /**
+     * Execute.
+     *
+     * @param _origin the origin
+     * @param _stmt the stmt
      * @return not implemented.
      */
     @Path("execute")
@@ -214,7 +250,7 @@ public class RestEQLInvoker
                           @QueryParam("stmt") final String _stmt)
     {
         String ret = null;
-        // only permit queries on this url
+        // only permit execute on this url
         try {
             final EQLInvoker invoker = InvokerUtil.getInvoker();
             final IEQLStmt stmt = invoker.invoke(_stmt);
@@ -230,12 +266,21 @@ public class RestEQLInvoker
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
+        //CHECKSTYLE:OFF
         } catch (final Exception e) {
+        //CHECKSTYLE:ON
             LOG.error("Error processing data.", e);
         }
         return ret;
     }
 
+    /**
+     * Register eql stmt.
+     *
+     * @param _origin the origin
+     * @param _stmt the stmt
+     * @throws EFapsException on error
+     */
     protected void registerEQLStmt(final String _origin,
                                    final String _stmt)
         throws EFapsException

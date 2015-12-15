@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.eql;
 
+import org.efaps.eql.stmt.AbstractCIPrintStmt;
 import org.efaps.eql.stmt.AbstractDeleteStmt;
 import org.efaps.eql.stmt.AbstractExecStmt;
 import org.efaps.eql.stmt.AbstractInsertStmt;
@@ -31,10 +29,16 @@ import org.efaps.eql.stmt.parts.INestedQueryStmtPart;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: $
  */
 public final class InvokerUtil
 {
+
+    /**
+     * Singelton.
+     */
+    private InvokerUtil()
+    {
+    }
 
     /**
      * Gets the invoker.
@@ -78,8 +82,13 @@ public final class InvokerUtil
             @Override
             protected INestedQueryStmtPart getNestedQuery()
             {
-                // TODO Auto-generated method stub
                 return super.getNestedQuery();
+            }
+
+            @Override
+            protected AbstractCIPrintStmt getCIPrint()
+            {
+                return new CIPrintStmt();
             }
         };
         ret.getValidator().setDiagnosticClazz(EFapsDiagnostic.class);
