@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update;
@@ -48,7 +45,9 @@ import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
+import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.db.SelectBuilder;
 import org.efaps.db.Update;
 import org.efaps.update.Install.InstallFile;
 import org.efaps.update.event.Event;
@@ -72,7 +71,6 @@ import org.xml.sax.SAXException;
  * </p>
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public abstract class AbstractUpdate
     implements IUpdate
@@ -127,7 +125,7 @@ public abstract class AbstractUpdate
      * Default constructor with no defined possible links for given
      * <code>_dataModelTypeName</code>.
      *
-     * @param _url URL of the update file
+     * @param _installFile the install file
      * @param _dataModelTypeName name of the data model type to update
      */
     protected AbstractUpdate(final InstallFile _installFile,
@@ -140,7 +138,7 @@ public abstract class AbstractUpdate
      * Default constructor with defined possible links
      * <code>_allLinkTypes</code> for given <code>_dataModelTypeName</code>.
      *
-     * @param _url URL of the update file
+     * @param _installFile the install file
      * @param _dataModelTypeName name of the data model type to update
      * @param _allLinkTypes all possible type link
      */
@@ -254,6 +252,14 @@ public abstract class AbstractUpdate
         }
     }
 
+    /**
+     * Register revision.
+     *
+     * @param _application the application
+     * @param _installFile the install file
+     * @param _objInst the obj inst
+     * @throws InstallationException the installation exception
+     */
     protected void registerRevision(final String _application,
                                     final InstallFile _installFile,
                                     final Instance _objInst)
@@ -439,6 +445,9 @@ public abstract class AbstractUpdate
          */
         private boolean includeChildTypes = false;
 
+        /** The log delete. */
+        private boolean logDelete = true;
+
         /**
          * Constructor used to initialize the instance variables.
          *
@@ -525,6 +534,28 @@ public abstract class AbstractUpdate
         public Link setIncludeChildTypes(final boolean _includeChildTypes)
         {
             this.includeChildTypes = _includeChildTypes;
+            return this;
+        }
+
+        /**
+         * Checks if is log delete.
+         *
+         * @return the log delete
+         */
+        public boolean isLogDelete()
+        {
+            return this.logDelete;
+        }
+
+        /**
+         * Sets the log delete.
+         *
+         * @param _logDelete the new log delete
+         * @return the link
+         */
+        public Link setLogDelete(final boolean _logDelete)
+        {
+            this.logDelete = _logDelete;
             return this;
         }
 
@@ -1059,7 +1090,7 @@ public abstract class AbstractUpdate
                 final InstanceQuery query = queryBldr.getQuery();
                 query.executeWithoutAccessCheck();
                 while (query.next()) {
-                    new Delete(query.getCurrentValue()).executeWithoutTrigger();
+                    removeRelation(_linktype, query.getCurrentValue());
                 }
 
                 // 4. check if the link must be unique and remove existing links
@@ -1075,7 +1106,7 @@ public abstract class AbstractUpdate
                         final InstanceQuery unGrpQuery = unGrpQueryBldr.getQuery();
                         unGrpQuery.executeWithoutAccessCheck();
                         while (unGrpQuery.next()) {
-                            new Delete(unGrpQuery.getCurrentValue()).executeWithoutTrigger();
+                            removeRelation(checkLink, unGrpQuery.getCurrentValue());
                         }
                     }
                 }
@@ -1134,6 +1165,52 @@ public abstract class AbstractUpdate
                 }
             }
         }
+
+        /**
+         * Removes the relation.
+         *
+         * @param _linktype the linktype
+         * @param _relInst the rel inst
+         * @throws EFapsException on error
+         */
+        protected void removeRelation(final Link _linktype,
+                                      final Instance _relInst)
+            throws EFapsException
+        {
+            if (_linktype.isLogDelete()) {
+                final PrintQuery print = new PrintQuery(getInstance());
+                if (getInstance().getType().getAttributes().containsKey("UUID")) {
+                    print.addAttribute("UUID");
+                    print.executeWithoutAccessCheck();
+                }
+
+                final PrintQuery print2 = new PrintQuery(_relInst);
+                final SelectBuilder selInst = SelectBuilder.get().linkto(_linktype.childAttrName).instance();
+
+                final SelectBuilder selUUID = SelectBuilder.get().linkto(_linktype.childAttrName).attribute("UUID");
+                final SelectBuilder selName = SelectBuilder.get().linkto(_linktype.childAttrName).attribute("Name");
+                if (_linktype.getChildType().getAttributes().containsKey("UUID")) {
+                    print2.addSelect(selUUID, selName);
+                }
+                if (_linktype.getChildType().getAttributes().containsKey("Name")) {
+                    print2.addSelect(selName);
+                }
+
+                print2.addSelect(selInst);
+                print2.executeWithoutAccessCheck();
+
+                final Instance childInst = print2.getSelect(selInst);
+                LOG.info("Deleting '{} 'relation between '{}' '{}' '{}' and '{}' '{}' '{}'",
+                                _linktype.getLinkType().getName(),
+                                getInstance().getType().getName(),
+                                print.getAttribute("UUID"), getValue("Name"),
+                                childInst.getType().getName(),
+                                print2.getSelect(selUUID),
+                                print2.getSelect(selName));
+            }
+            new Delete(_relInst).executeWithoutTrigger();
+        }
+
 
         /**
          * The properties are only set if the object to update could own

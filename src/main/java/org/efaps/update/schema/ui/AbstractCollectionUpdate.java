@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.ui;
@@ -50,7 +47,6 @@ import org.efaps.util.EFapsException;
  * execute methods.
  *
  * @author The eFaps Team
- * @version $Id$
  *
  */
 public abstract class AbstractCollectionUpdate
@@ -58,14 +54,16 @@ public abstract class AbstractCollectionUpdate
 {
 
     /** Link from field to icon. */
-    private static final Link LINKFIELD2ICON = new Link("Admin_UI_LinkIcon", "From", "Admin_UI_Image", "To");
+    private static final Link LINKFIELD2ICON = new Link("Admin_UI_LinkIcon", "From", "Admin_UI_Image", "To")
+                    .setLogDelete(false);
 
     /** Link from field to table as target. */
-    private static final Link LINK2TARGETTABLE = new Link("Admin_UI_LinkTargetTable", "From", "Admin_UI_Table", "To");
+    private static final Link LINK2TARGETTABLE = new Link("Admin_UI_LinkTargetTable", "From", "Admin_UI_Table", "To")
+                    .setLogDelete(false);
 
     /** Link from field to command as picker. */
     private static final Link LINK2PICKER = new Link("Admin_UI_LinkField2Command", "FromLink",
-                    "Admin_UI_Command", "ToLink");
+                    "Admin_UI_Command", "ToLink") .setLogDelete(false);
 
     /**
      * @param _url URL of the file
