@@ -42,6 +42,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.ui.AbstractUserInterfaceObject;
+import org.efaps.api.IEnumValue;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
@@ -193,6 +194,42 @@ public abstract class AbstractAdminObject
     public String getProperty(final String _name)
     {
         return getProperties().get(_name);
+    }
+
+    /**
+     * The value of the given property is returned.
+     *
+     * @param _enum the enum
+     * @return value of the property with the given name / key.
+     * @see #properties
+     */
+    public String getProperty(final IEnumValue _enum)
+    {
+        return getProperty(_enum.value());
+    }
+
+    /**
+     * The value of the given property is returned.
+     *
+     * @param _name name of the property (key)
+     * @return value of the property with the given name / key.
+     * @see #properties
+     */
+    public boolean containsProperty(final String _name)
+    {
+        return getProperties().containsKey(_name);
+    }
+
+    /**
+     * The value of the given property is returned.
+     *
+     * @param _enum the enum
+     * @return value of the property with the given name / key.
+     * @see #properties
+     */
+    public boolean containsProperty(final IEnumValue _enum)
+    {
+        return containsProperty(_enum.value());
     }
 
     /**
