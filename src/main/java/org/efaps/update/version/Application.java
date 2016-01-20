@@ -488,7 +488,11 @@ public final class Application
             } catch (final InstallationException e) {
                 Application.LOG.error(" error during compilation of ESJP.");
             }
-            AbstractStaticSourceCompiler.compileAll(this.classpathElements);
+            try {
+                AbstractStaticSourceCompiler.compileAll(this.classpathElements);
+            } catch (final EFapsException e) {
+                Application.LOG.error(" error during compilation of static sources.");
+            }
             Context.commit();
         } catch (final EFapsException e) {
             throw new InstallationException("Compile failed", e);
