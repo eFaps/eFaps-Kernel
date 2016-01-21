@@ -415,6 +415,19 @@ public final class SystemConfiguration
     }
 
     /**
+     * Contains attribute value.
+     *
+     * @param _key the key
+     * @return true, if successful
+     * @throws EFapsException on error
+     */
+    public boolean containsAttributeValue(final String _key)
+        throws EFapsException
+    {
+        return getValue(_key, this.attributes) != null;
+    }
+
+    /**
      * Returns for given <code>_key</code> the related attribute value. If no
      * attribute value is found <code>null</code> is returned.
      *
