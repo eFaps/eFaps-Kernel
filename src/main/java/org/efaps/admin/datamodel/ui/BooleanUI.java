@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel.ui;
@@ -211,6 +208,7 @@ public class BooleanUI
      * @param _uiValue  UIValue the String representation is wanted for
      * @param _key      key the String representation is wanted for
      * @return String representation
+     * @throws CacheReloadException the cache reload exception
      */
     private String getLabel(final UIValue _uiValue,
                             final Boolean _key)

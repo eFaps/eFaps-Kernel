@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.db;
@@ -33,7 +30,6 @@ import org.infinispan.Cache;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class CachedInstanceQuery
     extends InstanceQuery
@@ -253,8 +249,10 @@ public class CachedInstanceQuery
 
     /**
      * Get a CachedInstanceQuery that will only cache during a request.
+     *
      * @param _type Type the query is based on
-     * @throws CacheReloadException on error
+     * @return the 4 request
+     * @throws EFapsException on error
      */
     public static CachedInstanceQuery get4Request(final Type _type)
         throws EFapsException
@@ -265,8 +263,10 @@ public class CachedInstanceQuery
 
     /**
      * Get a CachedInstanceQuery that will only cache during a request.
+     *
      * @param _typeUUID uuid of the Type the query is based on
-     * @throws CacheReloadException on error
+     * @return the 4 request
+     * @throws EFapsException on error
      */
     public static CachedInstanceQuery get4Request(final UUID _typeUUID)
         throws EFapsException

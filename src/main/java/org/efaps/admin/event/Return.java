@@ -65,9 +65,11 @@ public class Return
     }
 
     /**
+     * Put.
      *
      * @param _key      key to set
      * @param _value    value to set
+     * @return the return
      */
     public Return put(final Return.ReturnValues _key,
                       final Object _value)

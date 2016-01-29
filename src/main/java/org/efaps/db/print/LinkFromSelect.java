@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.db.print;
@@ -49,7 +46,6 @@ import org.slf4j.LoggerFactory;
  * Select Part for <code>linkfrom[TYPERNAME#ATTRIBUTENAME]</code>.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class LinkFromSelect
     extends AbstractPrintQuery
@@ -80,6 +76,8 @@ public class LinkFromSelect
     private final String key;
 
     /**
+     * Instantiates a new link from select.
+     *
      * @param _linkFrom linkfrom element of the query
      * @param _key used to cache the result
      * @throws CacheReloadException on error
@@ -114,9 +112,10 @@ public class LinkFromSelect
 
     /**
      * Execute the from select for the given instance.
+     *
      * @param _onesel instance
-     * @throws EFapsException on error
      * @return true if statement didi return values, else false
+     * @throws EFapsException on error
      */
     public boolean execute(final OneSelect _onesel)
         throws EFapsException
@@ -337,6 +336,9 @@ public class LinkFromSelect
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {
@@ -352,15 +354,21 @@ public class LinkFromSelect
         return this.key != null;
     }
 
-
+    /**
+     * The Class LinkFromSelectPart.
+     *
+     */
     public static class LinkFromSelectPart
         implements ISelectPart
     {
 
+        /** The type. */
         private final Type type;
 
         /**
-         * @param _type
+         * Instantiates a new link from select part.
+         *
+         * @param _type the type
          */
         public LinkFromSelectPart(final Type _type)
         {

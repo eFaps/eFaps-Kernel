@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.common;
@@ -51,8 +48,6 @@ import org.slf4j.LoggerFactory;
  * XML configuration item file.
  *
  * @author The eFaps Team
- * @version $Id: MsgPhraseUpdate.java 14409 2014-11-11 03:50:45Z jan@moxter.net
- *          $
  */
 public class MsgPhraseUpdate
     extends AbstractUpdate
@@ -67,7 +62,7 @@ public class MsgPhraseUpdate
      * Default constructor to initialize this system configuration update
      * instance for given <code>_url</code>.
      *
-     * @param _url URL of the file
+     * @param _installFile the install file
      */
     public MsgPhraseUpdate(final InstallFile _installFile)
     {
@@ -94,10 +89,13 @@ public class MsgPhraseUpdate
         extends AbstractDefinition
     {
 
+        /** The parent. */
         private String parent = null;
 
+        /** The labels. */
         private final Set<MsgPhrase.Label> labels = new HashSet<>();
 
+        /** The arguments. */
         private final Set<MsgPhrase.Argument> arguments = new HashSet<>();
 
         /**
@@ -131,10 +129,13 @@ public class MsgPhraseUpdate
         }
 
         /**
-         * @param _text
-         * @param _string
-         * @param _string2
-         * @param _string3
+         * Adds the argument.
+         *
+         * @param _value the value
+         * @param _index the index
+         * @param _language the language
+         * @param _company the company
+         * @throws CacheReloadException the cache reload exception
          */
         private void addArgument(final String _value,
                                  final String _index,
@@ -157,6 +158,12 @@ public class MsgPhraseUpdate
             this.arguments.add(argument);
         }
 
+        /**
+         * Gets the language id.
+         *
+         * @param _language the language
+         * @return the language id
+         */
         private Long getLanguageId(final String _language)
         {
             Long ret = null;
@@ -175,9 +182,12 @@ public class MsgPhraseUpdate
         }
 
         /**
-         * @param _text
-         * @param _string
-         * @param _string2
+         * Adds the label.
+         *
+         * @param _value the value
+         * @param _language the language
+         * @param _company the company
+         * @throws CacheReloadException the cache reload exception
          */
         private void addLabel(final String _value,
                               final String _language,

@@ -390,13 +390,13 @@ public final class DBProperties
                 final String propKey = resultset.getString(1).trim();
                 final String defaultValue = resultset.getString(2);
                 if (defaultValue != null) {
-                     final String value = defaultValue.trim();
-                     for (final String lang : languages) {
-                         final String cachKey = lang + ":" + propKey;
-                         if (!cache.containsKey(cachKey)) {
-                             cache.put(cachKey, value);
-                         }
-                     }
+                    final String value = defaultValue.trim();
+                    for (final String lang : languages) {
+                        final String cachKey = lang + ":" + propKey;
+                        if (!cache.containsKey(cachKey)) {
+                            cache.put(cachKey, value);
+                        }
+                    }
                 }
                 final String value = resultset.getString(3);
                 final String lang = resultset.getString(4);

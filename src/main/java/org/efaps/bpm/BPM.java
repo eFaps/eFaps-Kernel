@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -799,17 +799,19 @@ public final class BPM
         private final String userName;
 
         /**
+         * Instantiates a new listener thread.
+         *
          * @param _userName userName
          * @param _listener listener
          * @param _call     call
          * @param _values   values
          * @param _taskData taskdata
          */
-        public ListenerThread(final String _userName,
-                              final IAsyncListener _listener,
-                              final AsyncCalls _call,
-                              final Map<String, Object> _values,
-                              final Object _taskData)
+        ListenerThread(final String _userName,
+                       final IAsyncListener _listener,
+                       final AsyncCalls _call,
+                       final Map<String, Object> _values,
+                       final Object _taskData)
         {
             this.userName = _userName;
             this.listener = _listener;

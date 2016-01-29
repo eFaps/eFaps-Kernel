@@ -1,5 +1,5 @@
 /*
-0 * Copyright 2003 - 2013 The eFaps Team
+0 * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel.ui;
@@ -38,7 +35,6 @@ import org.efaps.util.EFapsException;
  * Class to represent a String for the user interface.
  *
  * @author The eFaps Team
- * @version $Id$
  *
  */
 public class DecimalWithUoMUI
@@ -219,7 +215,7 @@ public class DecimalWithUoMUI
                 ret = tmpVal.compareTo(tmpVal2);
             }
         } else if (_fieldValue.getValue() instanceof Comparable && _fieldValue2.getValue() instanceof Comparable) {
-            ret = ((Comparable<Object>)_fieldValue.getValue()).compareTo(_fieldValue2.getValue());
+            ret = ((Comparable<Object>) _fieldValue.getValue()).compareTo(_fieldValue2.getValue());
         } else {
             ret = super.compare(_fieldValue, _fieldValue2);
         }

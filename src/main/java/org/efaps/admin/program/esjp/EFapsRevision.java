@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.admin.program.esjp;
@@ -32,7 +29,7 @@ import java.lang.annotation.Target;
  * Annotation for the Revision of an esjp.
  *
  * @author The eFaps Team
- * @version $Id$
+ * @deprecated is not used any more due to the use of git
  */
 @Documented
 @Retention(RUNTIME)
@@ -44,6 +41,8 @@ public @interface EFapsRevision
 
     /**
      * Value.
+     *
+     * @return the string
      */
     String value();
 }

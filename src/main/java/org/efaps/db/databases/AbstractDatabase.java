@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.db.databases;
@@ -60,7 +57,6 @@ import org.slf4j.LoggerFactory;
  * of table columns.
  *
  * @author The eFaps Team
- * @version $Id$
  * @param <T> derived DB class
  */
 public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
@@ -376,8 +372,10 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<?>>
     /**
      * Method is used to generate the "dateString" used by the
      * vendor specific Timestamp cast implementation.
-     * @see AbstractDatabase#getTimestampValue(String)
+     *
      * @param _value    ReadableDateTime to be converted in a String
+     * @return the str4 date time
+     * @see AbstractDatabase#getTimestampValue(String)
      */
     public String getStr4DateTime(final ReadableDateTime _value)
     {

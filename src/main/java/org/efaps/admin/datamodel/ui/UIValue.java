@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel.ui;
@@ -42,7 +39,6 @@ import org.efaps.util.cache.CacheReloadException;
  * Wrapper Class to get a value for a UserInterface.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public final class UIValue
     implements Serializable, IUIValue
@@ -348,12 +344,12 @@ public final class UIValue
                     } else if (retu.get(ReturnValues.VALUES) != null) {
                         ret = retu.get(ReturnValues.VALUES);
                         if (retu.get(ReturnValues.INSTANCE) != null) {
-                           final Instance inst = (Instance) retu.get(ReturnValues.INSTANCE);
-                           if (inst != null && inst.isValid()) {
-                               setInstance(inst);
-                           } else {
-                               setInstance(null);
-                           }
+                            final Instance inst = (Instance) retu.get(ReturnValues.INSTANCE);
+                            if (inst != null && inst.isValid()) {
+                                setInstance(inst);
+                            } else {
+                                setInstance(null);
+                            }
                         }
                     }
                 }

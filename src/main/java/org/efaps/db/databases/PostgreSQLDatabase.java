@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.db.databases;
@@ -43,7 +40,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * Database class for the PostgreSQL database.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class PostgreSQLDatabase
     extends AbstractDatabase<PostgreSQLDatabase>
@@ -201,7 +197,8 @@ public class PostgreSQLDatabase
     }
 
     /**
-     * {@inheritDoc} <br/>
+     * {@inheritDoc}.
+     * <br/>
      * Postgres does not work with the year "ZERO" therefore the year
      * is translated like a Gregorian/Julian Calendar (ZERO = -1)
      */
