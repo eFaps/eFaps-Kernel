@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.db.search.compare;
@@ -31,20 +28,19 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class QMatch
-    extends AbstractQAttrCompare
+    extends QEqual
 {
     /**
      * Constructor setting attribute and value.
      * @param _attribute Attribute to be checked for greater
-     * @param _value     value as criteria
+     * @param _values    values as criteria
      */
     public QMatch(final QAttribute _attribute,
-                  final AbstractQValue _value)
+                  final AbstractQValue... _values)
     {
-        super(_attribute, _value);
+        super(_attribute, _values);
     }
 
     /**
@@ -54,13 +50,33 @@ public class QMatch
     public QMatch appendSQL(final SQLSelect _sql)
         throws EFapsException
     {
-        getAttribute().appendSQL(_sql);
-        if (getValue() instanceof QStringValue) {
-            _sql.addPart(SQLPart.LIKE);
+        if (getValues().size() > 1) {
+            boolean first = true;
+            _sql.addPart(SQLPart.PARENTHESIS_OPEN);
+            for (final AbstractQValue value :getValues()) {
+                if (first) {
+                    first = false;
+                } else {
+                    _sql.addPart(SQLPart.OR);
+                }
+                getAttribute().appendSQL(_sql);
+                if (getValue() instanceof QStringValue) {
+                    _sql.addPart(SQLPart.LIKE);
+                } else {
+                    _sql.addPart(SQLPart.EQUAL);
+                }
+                value.appendSQL(_sql);
+            }
+            _sql.addPart(SQLPart.PARENTHESIS_CLOSE);
         } else {
-            _sql.addPart(SQLPart.EQUAL);
+            getAttribute().appendSQL(_sql);
+            if (getValue() instanceof QStringValue) {
+                _sql.addPart(SQLPart.LIKE);
+            } else {
+                _sql.addPart(SQLPart.EQUAL);
+            }
+            getValue().appendSQL(_sql);
         }
-        getValue().appendSQL(_sql);
         return this;
     }
 }

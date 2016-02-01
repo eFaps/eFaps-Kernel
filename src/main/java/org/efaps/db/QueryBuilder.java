@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
-
 
 package org.efaps.db;
 
@@ -84,7 +80,6 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class QueryBuilder
 {
@@ -458,18 +453,21 @@ public class QueryBuilder
 
     /**
      * @param _select   Select statement
-     * @param _value    value to be included in the where
+     * @param _values   values to be included in the where
      * @return QGreater
      * @throws EFapsException on error
      */
     public QMatch addWhereSelectMatchValue(final String _select,
-                                           final Object _value)
+                                           final Object... _values)
         throws EFapsException
     {
         final String attribute = getAttr4Select(_select);
         final QueryBuilder queryBldr = getAttrQueryBuilder(_select);
-        final QMatch ret = new QMatch(new QAttribute(attribute), getValue(_value));
+        final QMatch ret = new QMatch(new QAttribute(attribute));
         queryBldr.getCompares().add(ret);
+        for (final Object value : _values) {
+            ret.addValue(getValue(value));
+        }
         return ret;
     }
 
@@ -536,44 +534,50 @@ public class QueryBuilder
 
     /**
      * @param _ciAttr   CIAttribute of the attribute
-     * @param _value    value to be included in the where
+     * @param _values    value to be included in the where
      * @return QLess
      * @throws EFapsException on error
      */
     public QMatch addWhereAttrMatchValue(final CIAttribute _ciAttr,
-                                         final Object _value)
+                                         final Object... _values)
         throws EFapsException
     {
-        return addWhereAttrMatchValue(_ciAttr.name, _value);
+        return addWhereAttrMatchValue(_ciAttr.name, _values);
     }
 
     /**
      * @param _attr     attribute
-     * @param _value    value to be included in the where
+     * @param _values    value to be included in the where
      * @return QMatch
      * @throws EFapsException on error
      */
     public QMatch addWhereAttrMatchValue(final Attribute _attr,
-                                         final Object _value)
+                                         final Object... _values)
         throws EFapsException
     {
-        final QMatch ret = new QMatch(new QAttribute(_attr), getValue(_value));
+        final QMatch ret = new QMatch(new QAttribute(_attr));
         this.compares.add(ret);
+        for (final Object value : _values) {
+            ret.addValue(getValue(value));
+        }
         return ret;
     }
 
     /**
      * @param _attrName name of the attribute
-     * @param _value    value to be included in the where
+     * @param _values    value to be included in the where
      * @return QMatch
      * @throws EFapsException on error
      */
     public QMatch addWhereAttrMatchValue(final String _attrName,
-                                         final Object _value)
+                                         final Object... _values)
         throws EFapsException
     {
-        final QMatch ret = new QMatch(new QAttribute(_attrName), getValue(_value));
+        final QMatch ret = new QMatch(new QAttribute(_attrName));
         this.compares.add(ret);
+        for (final Object value : _values) {
+            ret.addValue(getValue(value));
+        }
         return ret;
     }
 
