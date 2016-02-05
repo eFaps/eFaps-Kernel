@@ -29,8 +29,8 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.DecimalType;
 import org.efaps.admin.event.EventType;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
@@ -97,7 +97,6 @@ public class RateUI
         if (attribute != null && attribute.hasEvents(EventType.RATE_VALUE)) {
             final List<Return> returns = attribute.executeEvents(EventType.RATE_VALUE,
                                                 ParameterValues.UIOBJECT, _fieldValue,
-                                                ParameterValues.ACCESSMODE, _fieldValue.getTargetMode(),
                                                 ParameterValues.ACCESSMODE, _fieldValue.getTargetMode(),
                                                 ParameterValues.CALL_INSTANCE, _fieldValue.getCallInstance(),
                                                 ParameterValues.INSTANCE, _fieldValue.getInstance(),
