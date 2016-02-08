@@ -147,20 +147,22 @@ public class AttributeQuery
     public List<Object> executeWithoutAccessCheck()
         throws EFapsException
     {
-        executeOneCompleteStmt(getSQLStatement());
+        executeOneCompleteStmt(getSQLStatement(0));
         return getValues();
     }
 
     /**
      * Create the SQL statement.
+     *
+     * @param _idx the _idx
      * @return StringBuilder containing the statement
      * @throws EFapsException on error
      */
-    public String getSQLStatement()
+    public String getSQLStatement(final Integer _idx)
         throws EFapsException
     {
         prepareQuery();
-        final SQLSelect select = new SQLSelect()
+        final SQLSelect select = new SQLSelect("S" + _idx + "T")
             .column(getSqlTable2Index().get(this.attribute.getTable()), this.attribute.getSqlColNames().get(0))
             .from(getBaseType().getMainTable().getSqlTable(), 0);
 

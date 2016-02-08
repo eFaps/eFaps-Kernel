@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.db.wrapper;
@@ -31,7 +28,6 @@ import org.efaps.util.EFapsException;
  * An easy wrapper for a SQL select statement.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public class SQLSelect
 {
@@ -60,6 +56,27 @@ public class SQLSelect
      */
     private boolean distinct = false;
 
+    /** The table prefix. */
+    private final String tablePrefix;
+
+    /**
+     * Instantiates a new SQL select.
+     */
+    public SQLSelect()
+    {
+        this("T");
+    }
+
+    /**
+     * Instantiates a new SQL select.
+     *
+     * @param _prefix the _prefix
+     */
+    public SQLSelect(final String _prefix)
+    {
+        this.tablePrefix = _prefix;
+    }
+
     /**
      * Appends a selected column.
      *
@@ -69,7 +86,7 @@ public class SQLSelect
      */
     public SQLSelect column(final String _name)
     {
-        this.columns.add(new Column(null, _name));
+        this.columns.add(new Column(this.tablePrefix, null, _name));
         return this;
     }
 
@@ -85,7 +102,7 @@ public class SQLSelect
     public SQLSelect column(final int _tableIndex,
                             final String _columnName)
     {
-        this.columns.add(new Column(_tableIndex, _columnName));
+        this.columns.add(new Column(this.tablePrefix, _tableIndex, _columnName));
         return this;
     }
 
@@ -108,7 +125,7 @@ public class SQLSelect
      */
     public SQLSelect from(final String _name)
     {
-        this.fromTables.add(new FromTable(_name, null));
+        this.fromTables.add(new FromTable(this.tablePrefix, _name, null));
         return this;
     }
 
@@ -123,7 +140,7 @@ public class SQLSelect
     public SQLSelect from(final String _tableName,
                           final int _tableIndex)
     {
-        this.fromTables.add(new FromTable(_tableName, _tableIndex));
+        this.fromTables.add(new FromTable(this.tablePrefix, _tableName, _tableIndex));
         return this;
     }
 
@@ -155,7 +172,7 @@ public class SQLSelect
                               final int _joinTableIndex,
                               final String _joinColumnName)
     {
-        this.fromTables.add(new FromTableLeftJoin(_tableName, _tableIndex, _columnName,
+        this.fromTables.add(new FromTableLeftJoin(this.tablePrefix, _tableName, _tableIndex, _columnName,
                                                   _joinTableIndex, _joinColumnName));
         return this;
     }
@@ -178,7 +195,7 @@ public class SQLSelect
                               final int _joinTableIndex,
                               final String[] _joinColumnNames)
     {
-        this.fromTables.add(new FromTableLeftJoin(_tableName, _tableIndex, _columnNames,
+        this.fromTables.add(new FromTableLeftJoin(this.tablePrefix, _tableName, _tableIndex, _columnNames,
                                                  _joinTableIndex, _joinColumnNames));
         return this;
     }
@@ -201,7 +218,7 @@ public class SQLSelect
                               final int _joinTableIndex,
                               final String _joinColumnName)
     {
-        this.fromTables.add(new FromTableInnerJoin(_tableName, _tableIndex, _columnName,
+        this.fromTables.add(new FromTableInnerJoin(this.tablePrefix, _tableName, _tableIndex, _columnName,
                                                  _joinTableIndex, _joinColumnName));
         return this;
     }
@@ -224,7 +241,7 @@ public class SQLSelect
                               final int _joinTableIndex,
                               final String[] _joinColumnNames)
     {
-        this.fromTables.add(new FromTableInnerJoin(_tableName, _tableIndex, _columnNames,
+        this.fromTables.add(new FromTableInnerJoin(this.tablePrefix, _tableName, _tableIndex, _columnNames,
                                                  _joinTableIndex, _joinColumnNames));
         return this;
     }
@@ -311,7 +328,7 @@ public class SQLSelect
     public SQLSelect addColumnPart(final Integer _tableIndex,
                                    final String _columnName)
     {
-        this.parts.add(new Column(_tableIndex, _columnName));
+        this.parts.add(new Column(this.tablePrefix, _tableIndex, _columnName));
         return this;
     }
 
@@ -324,7 +341,7 @@ public class SQLSelect
     public SQLSelect addTablePart(final String _tableName,
                                   final Integer _tableIndex)
     {
-        this.parts.add(new FromTable(_tableName, _tableIndex));
+        this.parts.add(new FromTable(this.tablePrefix, _tableName, _tableIndex));
         return this;
     }
 
@@ -412,15 +429,21 @@ public class SQLSelect
         /** Index of the table within the SQL select statement. */
         private final Integer tableIndex;
 
+        /** The table prefix. */
+        private final String tablePrefix;
+
         /**
          * Default constructor.
          *
+         * @param _tablePrefix the _table prefix
          * @param _tableName name of the SQL table
          * @param _tableIndex index of the table
          */
-        protected FromTable(final String _tableName,
+        protected FromTable(final String _tablePrefix,
+                            final String _tableName,
                             final Integer _tableIndex)
         {
+            this.tablePrefix = _tablePrefix;
             this.tableName = _tableName;
             this.tableIndex = _tableIndex;
         }
@@ -476,8 +499,19 @@ public class SQLSelect
                 .append(this.tableName)
                 .append(Context.getDbType().getTableQuote());
             if (this.tableIndex != null) {
-                _cmd.append(" T").append(this.tableIndex);
+                _cmd.append(" ").append(this.tablePrefix).append(this.tableIndex);
             }
+        }
+
+
+        /**
+         * Getter method for the instance variable {@link #tablePrefix}.
+         *
+         * @return value of instance variable {@link #tablePrefix}
+         */
+        public String getTablePrefix()
+        {
+            return this.tablePrefix;
         }
     }
 
@@ -504,7 +538,9 @@ public class SQLSelect
         private final String[] joinColumnNames;
 
         /**
+         * Instantiates a new from table left join.
          *
+         * @param _tablePrefix the _table prefix
          * @param _tableName name of the SQL table
          * @param _tableIndex index of the table used within the SQL select
          *            statement
@@ -514,13 +550,14 @@ public class SQLSelect
          * @param _joinColumnName name of the column of the table from which is
          *            joined
          */
-        protected FromTableLeftJoin(final String _tableName,
+        protected FromTableLeftJoin(final String _tablePrefix,
+                                    final String _tableName,
                                     final Integer _tableIndex,
                                     final String _columnName,
                                     final int _joinTableIndex,
                                     final String _joinColumnName)
         {
-            super(_tableName, _tableIndex);
+            super(_tablePrefix, _tableName, _tableIndex);
             this.columnNames = new String[] {_columnName};
             this.joinTableIndex = _joinTableIndex;
             this.joinColumnNames = new String[] {_joinColumnName};
@@ -529,6 +566,7 @@ public class SQLSelect
         /**
          * Constructor used to join on more than one column.
          *
+         * @param _tablePrefix the _table prefix
          * @param _tableName        name of the SQL table
          * @param _tableIndex       index of the table used within the
          *                          SQL select statement
@@ -538,13 +576,14 @@ public class SQLSelect
          * @param _joinColumnNames  names of the columns of the table from
          *                          which is joined
          */
-        private FromTableLeftJoin(final String _tableName,
+        private FromTableLeftJoin(final String _tablePrefix,
+                                  final String _tableName,
                                   final Integer _tableIndex,
                                   final String[] _columnNames,
                                   final int _joinTableIndex,
                                   final String[] _joinColumnNames)
         {
-            super(_tableName, _tableIndex);
+            super(_tablePrefix, _tableName, _tableIndex);
             this.columnNames = _columnNames;
             this.joinTableIndex = _joinTableIndex;
             this.joinColumnNames = _joinColumnNames;
@@ -573,17 +612,17 @@ public class SQLSelect
                         .append(Context.getDbType().getTableQuote())
                         .append(getTableName())
                         .append(Context.getDbType().getTableQuote())
-                        .append(" T").append(getTableIndex()).append(" ")
+                        .append(" ").append(getTablePrefix()).append(getTableIndex()).append(" ")
                         .append(Context.getDbType().getSQLPart(SQLPart.ON));
                 } else {
                     _cmd.append(" ").append(Context.getDbType().getSQLPart(SQLPart.AND)).append(" ");
                 }
-                _cmd.append(" T").append(this.joinTableIndex).append('.')
+                _cmd.append(" ").append(getTablePrefix()).append(this.joinTableIndex).append('.')
                     .append(Context.getDbType().getColumnQuote())
                     .append(this.joinColumnNames[i])
                     .append(Context.getDbType().getColumnQuote())
                     .append(Context.getDbType().getSQLPart(SQLPart.EQUAL))
-                    .append("T").append(getTableIndex()).append('.')
+                    .append(getTablePrefix()).append(getTableIndex()).append('.')
                     .append(Context.getDbType().getColumnQuote())
                     .append(this.columnNames[i])
                     .append(Context.getDbType().getColumnQuote());
@@ -605,8 +644,11 @@ public class SQLSelect
     protected static class FromTableInnerJoin
         extends SQLSelect.FromTableLeftJoin
     {
+
         /**
+         * Instantiates a new from table inner join.
          *
+         * @param _tablePrefix the _table prefix
          * @param _tableName name of the SQL table
          * @param _tableIndex index of the table used within the SQL select
          *            statement
@@ -616,30 +658,34 @@ public class SQLSelect
          * @param _joinColumnName name of the column of the table from which is
          *            joined
          */
-        protected FromTableInnerJoin(final String _tableName,
+        protected FromTableInnerJoin(final String _tablePrefix,
+                                     final String _tableName,
                                      final Integer _tableIndex,
                                      final String _columnName,
                                      final int _joinTableIndex,
                                      final String _joinColumnName)
         {
-            super(_tableName, _tableIndex, _columnName, _joinTableIndex, _joinColumnName);
+            super(_tablePrefix, _tableName, _tableIndex, _columnName, _joinTableIndex, _joinColumnName);
         }
 
         /**
+         * Instantiates a new from table inner join.
          *
+         * @param _tablePrefix the _table prefix
          * @param _tableName        name of the SQL table
          * @param _tableIndex       index of the table used within the SQL select statement
          * @param _columnNames      name of the column of table <code>_tableName</code> used for &quot;left join&quot;
          * @param _joinTableIndex   index of the table from which is joined
          * @param _joinColumnNames  name of the column of the table from which is joined
          */
-        private FromTableInnerJoin(final String _tableName,
+        private FromTableInnerJoin(final String _tablePrefix,
+                                   final String _tableName,
                                    final Integer _tableIndex,
                                    final String[] _columnNames,
                                    final int _joinTableIndex,
                                    final String[] _joinColumnNames)
         {
-            super(_tableName, _tableIndex, _columnNames, _joinTableIndex, _joinColumnNames);
+            super(_tablePrefix, _tableName, _tableIndex, _columnNames, _joinTableIndex, _joinColumnNames);
         }
 
         /**
@@ -835,15 +881,21 @@ public class SQLSelect
         /** SQL name of the column. */
         private final String columnName;
 
+        /** The table prefix. */
+        private final String tablePrefix;
+
         /**
          * Default constructor.
          *
+         * @param _tablePrefix the _table prefix
          * @param _tableIndex related index of the table
          * @param _columnName SQL name of the column
          */
-        protected Column(final Integer _tableIndex,
+        protected Column(final String _tablePrefix,
+                         final Integer _tableIndex,
                          final String _columnName)
         {
+            this.tablePrefix = _tablePrefix;
             this.tableIndex = _tableIndex;
             this.columnName = _columnName;
         }
@@ -857,7 +909,7 @@ public class SQLSelect
         public void appendSQL(final StringBuilder _cmd)
         {
             if (this.tableIndex != null) {
-                _cmd.append("T").append(this.tableIndex).append(".");
+                _cmd.append(this.tablePrefix).append(this.tableIndex).append(".");
             }
             _cmd.append(Context.getDbType().getColumnQuote())
                             .append(this.columnName)

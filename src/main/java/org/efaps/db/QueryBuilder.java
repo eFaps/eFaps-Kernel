@@ -164,6 +164,9 @@ public class QueryBuilder
      */
     private String selectAttributeName;
 
+    /** The sub query idx. */
+    private int subQueryIdx = 0;
+
     /**
      * @param _typeUUID     uuid of the type this query is based on
      */
@@ -622,7 +625,7 @@ public class QueryBuilder
     {
         final String attr = getAttr4Select(_attrName);
         final QIn in = new QIn(new QAttribute(attr.isEmpty() ? _attrName : attr),
-                        new QSQLValue(_query.getSQLStatement()));
+                        new QSQLValue(_query.getSQLStatement(this.subQueryIdx++)));
         this.compares.add(in);
         return in;
     }
@@ -634,10 +637,10 @@ public class QueryBuilder
      * @throws EFapsException on error
      */
     public QIn addWhereAttrEqValue(final Attribute _attr,
-                                      final AttributeQuery _query)
+                                   final AttributeQuery _query)
         throws EFapsException
     {
-        final QIn in = new QIn(new QAttribute(_attr), new QSQLValue(_query.getSQLStatement()));
+        final QIn in = new QIn(new QAttribute(_attr), new QSQLValue(_query.getSQLStatement(this.subQueryIdx++)));
         this.compares.add(in);
         return in;
     }
@@ -662,12 +665,12 @@ public class QueryBuilder
      * @throws EFapsException on error
      */
     public QNotIn addWhereAttrNotInQuery(final String _attrName,
-                                      final AttributeQuery _query)
+                                         final AttributeQuery _query)
         throws EFapsException
     {
         final String attr = getAttr4Select(_attrName);
         final QNotIn in = new QNotIn(new QAttribute(attr.isEmpty() ? _attrName : attr),
-                        new QSQLValue(_query.getSQLStatement()));
+                        new QSQLValue(_query.getSQLStatement(this.subQueryIdx++)));
         this.compares.add(in);
         return in;
     }
@@ -682,7 +685,7 @@ public class QueryBuilder
                                          final AttributeQuery _query)
         throws EFapsException
     {
-        final QNotIn in = new QNotIn(new QAttribute(_attr), new QSQLValue(_query.getSQLStatement()));
+        final QNotIn in = new QNotIn(new QAttribute(_attr), new QSQLValue(_query.getSQLStatement(this.subQueryIdx++)));
         this.compares.add(in);
         return in;
     }
