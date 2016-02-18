@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
@@ -36,12 +33,10 @@ import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
 
-
 /**
  * Abstract class for the different image updates/inserts.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 public abstract class AbstractFileUpdate
     extends AbstractUpdate
@@ -52,17 +47,21 @@ public abstract class AbstractFileUpdate
     private final String root;
 
     /**
-     * @param _url                  URL to the import definition file
+     * Instantiates a new abstract file update.
+     *
+     * @param _installFile the install file
      * @param _dataModelTypeName    name of the datamodel type
      */
     protected AbstractFileUpdate(final InstallFile _installFile,
-                                  final String _dataModelTypeName)
+                                 final String _dataModelTypeName)
     {
         this(_installFile, _dataModelTypeName, null);
     }
 
     /**
-     * @param _url                  URL to the import definition file
+     * Instantiates a new abstract file update.
+     *
+     * @param _installFile the install file
      * @param _dataModelTypeName    name of the datamodel type
      * @param _links                set of links
      */

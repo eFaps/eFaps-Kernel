@@ -48,6 +48,17 @@ public class SystemConfigurationUpdate
 {
 
     /**
+     * The Enum AttributeUpdate.
+     */
+    public enum AttributeUpdate
+    {
+        /** The default. */
+        DEFAULT,
+        /** Force update. */
+        FORCE;
+    }
+
+    /**
      * Default constructor to initialize this system configuration update
      * instance for given <code>_url</code>.
      *
@@ -73,6 +84,8 @@ public class SystemConfigurationUpdate
     /**
      * Handles the definition of one version for an attribute definition
      * defined within XML configuration item file.
+     *
+     * @author The eFaps Team
      */
     public class AttributeDefinition
         extends AbstractDefinition
@@ -103,6 +116,7 @@ public class SystemConfigurationUpdate
         private AttributeUpdate attributeUpdate = AttributeUpdate.DEFAULT;
 
         /**
+         * Read xml.
          *
          * @param _tags         current path as list of single tags
          * @param _attributes   attributes for current path
@@ -130,6 +144,8 @@ public class SystemConfigurationUpdate
         }
 
         /**
+         * Update in db.
+         *
          * @param _instance     instance to update
          * @throws EFapsException if update failed
          */
@@ -196,6 +212,8 @@ public class SystemConfigurationUpdate
     /**
      * Handles the definition of one version for an system configuration
      * defined within XML configuration item file.
+     *
+     * @author The eFaps Team
      */
     public class Definition
         extends AbstractDefinition
@@ -216,6 +234,7 @@ public class SystemConfigurationUpdate
             = new ArrayList<SystemConfigurationUpdate.AttributeDefinition>();
 
         /**
+         * Read xml.
          *
          * @param _tags         current path as list of single tags
          * @param _attributes   attributes for current path
@@ -273,8 +292,5 @@ public class SystemConfigurationUpdate
         }
     }
 
-    public static enum AttributeUpdate
-    {
-        DEFAULT, FORCE;
-    }
+
 }

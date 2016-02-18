@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.integration;
@@ -31,7 +28,6 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
- * @version $Id$
  * TODO:  description
  */
 public class WebDAVUpdate
@@ -41,16 +37,11 @@ public class WebDAVUpdate
      *
      */
     private static final Set<Link> ALLLINKS = new HashSet<Link>();
-    /*{
-
-         * ALLLINKS.add(LINK2ACCESSTYPE); ALLLINKS.add(LINK2DATAMODELTYPE);
-         * ALLLINKS.add(LINK2PERSON); ALLLINKS.add(LINK2ROLE);
-         * ALLLINKS.add(LINK2GROUP);
-    }*/
 
     /**
+     * Instantiates a new web dav update.
      *
-     * @param _url        URL of the file
+     * @param _installFile the install file
      */
     public WebDAVUpdate(final InstallFile _installFile)
     {

@@ -73,6 +73,7 @@ public class RestEQLInvoker
     @Path("print")
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
+    @SuppressWarnings("checkstyle:illegalcatch")
     public Response print(@QueryParam("origin") final String _origin,
                           @QueryParam("stmt") final String _stmt)
     {
@@ -113,9 +114,7 @@ public class RestEQLInvoker
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
-        //CHECKSTYLE:OFF
         } catch (final Exception e) {
-        //CHECKSTYLE:ON
             LOG.error("Error processing data.", e);
         }
         return ret;
@@ -131,6 +130,7 @@ public class RestEQLInvoker
     @Path("update")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
+    @SuppressWarnings("checkstyle:illegalcatch")
     public String update(@QueryParam("origin") final String _origin,
                          @QueryParam("stmt") final String _stmt)
     {
@@ -151,9 +151,7 @@ public class RestEQLInvoker
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
-        //CHECKSTYLE:OFF
         } catch (final Exception e) {
-        //CHECKSTYLE:ON
             LOG.error("Error processing data.", e);
         }
         return ret;
@@ -169,6 +167,7 @@ public class RestEQLInvoker
     @Path("insert")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
+    @SuppressWarnings("checkstyle:illegalcatch")
     public String insert(@QueryParam("origin") final String _origin,
                          @QueryParam("stmt") final String _stmt)
     {
@@ -190,9 +189,7 @@ public class RestEQLInvoker
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
-        //CHECKSTYLE:OFF
         } catch (final Exception e) {
-        //CHECKSTYLE:ON
             LOG.error("Error processing data.", e);
         }
         return ret;
@@ -208,6 +205,7 @@ public class RestEQLInvoker
     @Path("delete")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
+    @SuppressWarnings("checkstyle:illegalcatch")
     public String delete(@QueryParam("origin") final String _origin,
                          @QueryParam("stmt") final String _stmt)
     {
@@ -228,9 +226,7 @@ public class RestEQLInvoker
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
-        //CHECKSTYLE:OFF
         } catch (final Exception e) {
-        //CHECKSTYLE:ON
             LOG.error("Error processing data.", e);
         }
         return ret;
@@ -246,6 +242,7 @@ public class RestEQLInvoker
     @Path("execute")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
+    @SuppressWarnings("checkstyle:illegalcatch")
     public String execute(@QueryParam("origin") final String _origin,
                           @QueryParam("stmt") final String _stmt)
     {
@@ -266,7 +263,6 @@ public class RestEQLInvoker
             }
         } catch (final JsonProcessingException | EFapsException e) {
             LOG.error("Error processing data.", e);
-
         } catch (final Exception e) {
             LOG.error("Error processing data.", e);
         }

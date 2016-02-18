@@ -78,6 +78,7 @@ public final class JSONData
      * @return a DataList
      * @throws EFapsException on error
      */
+    @SuppressWarnings("checkstyle:illegalcatch")
     public static DataList getDataList(final IPrintStmt _printStmt)
         throws EFapsException
     {

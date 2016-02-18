@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.update.schema.ui;
@@ -31,7 +28,6 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author The eFaps Team
- * @version $Id$
  */
 public class MenuUpdate
     extends CommandUpdate
@@ -57,7 +53,9 @@ public class MenuUpdate
     }
 
     /**
-     * @param _url URL to the Configuration Item.
+     * Instantiates a new menu update.
+     *
+     * @param _installFile the install file
      */
     public MenuUpdate(final InstallFile _installFile)
     {
@@ -65,8 +63,9 @@ public class MenuUpdate
     }
 
     /**
+     * Instantiates a new menu update.
      *
-     * @param _url        URL to the Configuration Item.
+     * @param _installFile the install file
      * @param _typeName     Name of the type
      * @param _allLinks     link definitions
      */
