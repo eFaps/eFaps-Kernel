@@ -39,7 +39,7 @@ import org.efaps.util.cache.CacheReloadException;
  * Value = inactive
  *
  * @author The eFaps Team
- * @version $Id$
+ *
  */
 public class BooleanUI
     extends AbstractUI

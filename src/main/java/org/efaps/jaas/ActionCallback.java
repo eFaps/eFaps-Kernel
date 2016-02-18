@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.jaas;
@@ -27,7 +24,7 @@ import javax.security.auth.callback.Callback;
  * the difference between a login and an import of all persons.
  *
  * @author The eFaps Team
- * @version $Id$
+ *
  */
 public class ActionCallback
     implements Callback

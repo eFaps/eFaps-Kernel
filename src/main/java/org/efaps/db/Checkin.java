@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,6 @@
  * limitations under the License.
  *
  * Author:          tmo
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.db;
@@ -34,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * The class is used to check in a file to a given attribute of an object.
  *
  * @author The eFaps Team
- * @version $Id$
+ *
  */
 public class Checkin
     extends AbstractAction
