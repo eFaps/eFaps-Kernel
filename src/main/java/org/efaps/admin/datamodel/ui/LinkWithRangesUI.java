@@ -17,18 +17,16 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
-import org.efaps.admin.ui.field.Field;
+import org.efaps.api.ui.IOption;
 import org.efaps.util.EFapsException;
 
 /**
@@ -42,93 +40,10 @@ import org.efaps.util.EFapsException;
  *
  */
 public class LinkWithRangesUI
-    extends AbstractUI
+    implements IUIProvider, Serializable
 {
-
-    /**
-     * Needed for serialization.
-     */
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue) throws EFapsException
-    {
-        final StringBuilder ret = new StringBuilder();
-        final Attribute attribute = _fieldValue.getAttribute();
-        if (_fieldValue.getValue() != null) {
-            if (attribute.hasEvents(EventType.RANGE_VALUE)) {
-                for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE,
-                                                           ParameterValues.UIOBJECT, _fieldValue,
-                                                           ParameterValues.ACCESSMODE, _fieldValue.getTargetMode())) {
-                    final Map<?, ?> map = (Map<?, ?>) values.get(ReturnValues.VALUES);
-                    for (final Entry<?, ?> entry : map.entrySet()) {
-                        if (entry.getValue().equals(_fieldValue.getValue().toString())) {
-                            ret.append(entry.getKey().toString());
-                        }
-                    }
-                }
-            }
-        }
-        return ret.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getEditHtml(final FieldValue _fieldValue)
-        throws EFapsException
-    {
-        final StringBuilder ret = new StringBuilder();
-        final Attribute attribute = _fieldValue.getAttribute();
-        if (_fieldValue.getTargetMode().equals(TargetMode.SEARCH)) {
-            final Field field = _fieldValue.getField();
-            ret.append("<input type=\"text\" ")
-                .append("size=\"").append(field.getCols())
-                .append("\" name=\"").append(field.getName())
-                .append("\" value=\"*\"").append("/>").toString();
-        } else {
-            if (attribute.hasEvents(EventType.RANGE_VALUE)) {
-                for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE,
-                                                           ParameterValues.UIOBJECT, _fieldValue,
-                                                           ParameterValues.ACCESSMODE, _fieldValue.getTargetMode())) {
-                    ret.append("<select name=\"").append(_fieldValue.getField().getName()).append("\" ")
-                        .append(UIInterface.EFAPSTMPTAG).append(" size=\"1\">");
-                    final Iterator<?> iter = ((TreeMap<?, ?>) values.get(ReturnValues.VALUES)).entrySet().iterator();
-
-                    while (iter.hasNext()) {
-                        final Entry<?, ?> entry = (Entry<?, ?>) iter.next();
-                        ret.append("<option value=\"").append(entry.getValue());
-                        if (_fieldValue.getValue() != null
-                                        && ((!_fieldValue.getTargetMode().equals(TargetMode.CREATE)
-                                                        && _fieldValue.getValue().toString().equals(entry.getValue()))
-                                        || (_fieldValue.getTargetMode().equals(TargetMode.CREATE)
-                                                        && _fieldValue.getValue().toString().equals(entry.getKey())))) {
-                            ret.append("\" selected=\"selected");
-                        }
-                        ret.append("\">").append(entry.getKey()).append("</option>");
-                    }
-                    ret.append("</select>");
-                }
-            }
-        }
-        return ret.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int compare(final FieldValue _fieldValue,
-                       final FieldValue _fieldValue2)
-        throws EFapsException
-    {
-        return _fieldValue.getValue().toString().compareTo(_fieldValue2.getValue().toString());
-    }
-
 
     /**
      * {@inheritDoc}
@@ -138,15 +53,32 @@ public class LinkWithRangesUI
     public Object getValue(final UIValue _uiValue)
         throws EFapsException
     {
-        final Map<Object, Object> ret = new TreeMap<Object, Object>();
+        final List<IOption> ret = new ArrayList<>();
         final Attribute attribute = _uiValue.getAttribute();
         if (attribute != null && attribute.hasEvents(EventType.RANGE_VALUE)) {
-            for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE,
-                                                       ParameterValues.UIOBJECT, _uiValue,
-                                                       ParameterValues.ACCESSMODE, _uiValue.getTargetMode())) {
-                ret.putAll((Map<Object, Object>) values.get(ReturnValues.VALUES));
+            for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE, ParameterValues.UIOBJECT,
+                            _uiValue, ParameterValues.ACCESSMODE, _uiValue.getTargetMode())) {
+                ret.addAll((List<IOption>) values.get(ReturnValues.VALUES));
             }
         }
         return ret;
+    }
+
+    @Override
+    public String validateValue(final UIValue _uiValue)
+        throws EFapsException
+    {
+        return null;
+    }
+
+    @Override
+    public Object transformObject(final UIValue _uiValue,
+                                  final Object _object)
+        throws EFapsException
+    {
+        if (_object instanceof Serializable) {
+            _uiValue.setDbValue((Serializable) _object);
+        }
+        return _object;
     }
 }
