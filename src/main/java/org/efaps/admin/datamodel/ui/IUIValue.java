@@ -53,6 +53,13 @@ public interface IUIValue
     Instance getInstance();
 
     /**
+     * Gets the call instance.
+     *
+     * @return the call instance
+     */
+    Instance getCallInstance();
+
+    /**
      * Gets the object.
      *
      * @return the object
