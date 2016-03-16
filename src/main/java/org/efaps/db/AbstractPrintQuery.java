@@ -23,8 +23,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.dbutils.handlers.ArrayListHandler;
@@ -36,6 +38,7 @@ import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.ci.CIAttribute;
+import org.efaps.ci.CIMsgPhrase;
 import org.efaps.db.print.OneSelect;
 import org.efaps.db.print.Phrase;
 import org.efaps.db.transaction.ConnectionResource;
@@ -420,6 +423,39 @@ public abstract class AbstractPrintQuery
     }
 
     /**
+     * Adds the message phrase.
+     *
+     * @param _ciMsgPhrases the _ci msg phrases
+     * @return this PrintQuery
+     * @throws EFapsException on error
+     */
+    public AbstractPrintQuery addMsgPhrase(final CIMsgPhrase... _ciMsgPhrases)
+        throws EFapsException
+    {
+        return addMsgPhrase(null, _ciMsgPhrases);
+    }
+
+    /**
+     * Adds the msg phrase.
+     *
+     * @param _selectBldr the select bldr
+     * @param _ciMsgPhrases the _ci msg phrases
+     * @return the abstract print query
+     * @throws EFapsException on error
+     */
+    public AbstractPrintQuery addMsgPhrase(final SelectBuilder _selectBldr,
+                                           final CIMsgPhrase... _ciMsgPhrases)
+        throws EFapsException
+    {
+        final Set<MsgPhrase> msgPhrases = new HashSet<>();
+        for (final CIMsgPhrase ciMsgPhrase : _ciMsgPhrases) {
+            msgPhrases.add(ciMsgPhrase.getMsgPhrase());
+        }
+        return addMsgPhrase(_selectBldr, msgPhrases.toArray(new MsgPhrase[msgPhrases.size()]));
+    }
+
+
+    /**
      * @param _msgPhrase phrase to add
      * @throws EFapsException on error
      * @return this PrintQuery
@@ -529,6 +565,34 @@ public abstract class AbstractPrintQuery
         throws EFapsException
     {
         return getMsgPhrase(null, MsgPhrase.get(_msgPhrase));
+    }
+
+    /**
+     * Get the String representation of a phrase.
+     *
+     * @param _msgPhrase the msg phrase
+     * @return String representation of the phrase
+     * @throws EFapsException on error
+     */
+    public String getMsgPhrase(final CIMsgPhrase _msgPhrase)
+        throws EFapsException
+    {
+        return getMsgPhrase(null, _msgPhrase);
+    }
+
+    /**
+     * Get the String representation of a phrase.
+     *
+     * @param _selectBldr the select bldr
+     * @param _msgPhrase the msg phrase
+     * @return String representation of the phrase
+     * @throws EFapsException on error
+     */
+    public String getMsgPhrase(final SelectBuilder _selectBldr,
+                               final CIMsgPhrase _msgPhrase)
+        throws EFapsException
+    {
+        return getMsgPhrase(_selectBldr, _msgPhrase.getMsgPhrase());
     }
 
     /**
