@@ -39,6 +39,7 @@ import org.efaps.admin.datamodel.IEnum;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAttribute;
+import org.efaps.ci.CIStatus;
 import org.efaps.ci.CIType;
 import org.efaps.db.search.AbstractQPart;
 import org.efaps.db.search.QAnd;
@@ -849,6 +850,8 @@ public class QueryBuilder
             ret = new QBooleanValue((Boolean) _value);
         } else if (_value instanceof Status) {
             ret = new QNumberValue(((Status) _value).getId());
+        } else if (_value instanceof CIStatus) {
+            ret = new QNumberValue(Status.find((CIStatus) _value).getId());
         } else if (_value instanceof Instance) {
             if (!((Instance) _value).isValid()) {
                 QueryBuilder.LOG.error("the given Instance was not valid and cannot be used as filter criteria",
