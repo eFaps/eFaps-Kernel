@@ -312,6 +312,7 @@ public final class Context
         this.parameters = _parameters == null ? new HashMap<String, String[]>() : _parameters;
         this.fileParameters = _fileParameters == null ? new HashMap<String, FileParameter>() : _fileParameters;
         this.sessionAttributes = _sessionAttributes == null ? new HashMap<String, Object>() : _sessionAttributes;
+        this.locale = _locale == null ? Locale.ENGLISH : _locale;
         try {
             setConnection(Context.DATASOURCE.getConnection());
         } catch (final SQLException e) {
@@ -1061,14 +1062,14 @@ public final class Context
         } catch (final NotSupportedException e) {
             throw new EFapsException(Context.class, "begin.beginNotSupportedException", e);
         }
-        Transaction transaction;
+        final Transaction transaction;
         try {
             transaction = Context.TRANSMANAG.getTransaction();
         } catch (final SystemException e) {
             throw new EFapsException(Context.class, "begin.getTransactionSystemException", e);
         }
-        final Context context = new Context(transaction, _locale == null ? Locale.ENGLISH : _locale,
-                        _sessionAttributes, _parameters, _fileParameters, Inheritance.Inheritable.equals(_inheritance));
+        final Context context = new Context(transaction, _locale, _sessionAttributes, _parameters,
+                        _fileParameters, Inheritance.Inheritable.equals(_inheritance));
         switch (_inheritance) {
             case Inheritable:
                 Context.INHERITTHREADCONTEXT.set(context);
@@ -1109,7 +1110,6 @@ public final class Context
         }
         return context;
     }
-
 
     /**
      * Save the Context by committing and beginning a new Transaction.
