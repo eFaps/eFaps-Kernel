@@ -29,16 +29,16 @@ import org.efaps.eql.stmt.AbstractUpdateStmt;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: $
  */
 public class UpdateStmt
     extends AbstractUpdateStmt
 {
 
     @Override
-    public void execute()
+    public int execute()
         throws Exception
     {
+        int ret = 0;
         final List<Instance> instances;
         if (getInstances().isEmpty()) {
             instances = QueryBldrUtil.getInstances(this);
@@ -54,6 +54,8 @@ public class UpdateStmt
                 update.add(entry.getKey(), entry.getValue());
             }
             update.execute();
+            ret++;
         }
+        return ret;
     }
 }

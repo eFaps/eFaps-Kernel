@@ -26,6 +26,11 @@ import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
+
 
 /**
  * Base class for all Rest implementations inside eFaps.
@@ -53,5 +58,29 @@ public abstract class AbstractRest
         //Admin_REST
         return Context.getThreadContext().getPerson().isAssigned(Role.get(
                         UUID.fromString("2d142645-140d-46ad-af67-835161a8d732")));
+    }
+
+    /**
+     * Gets the JSON reply.
+     *
+     * @param _jsonObject the _json object
+     * @return the JSON reply
+     * @throws JsonProcessingException the json processing exception
+     */
+    protected String getJSONReply(final Object _jsonObject)
+    {
+        String ret = "";
+        final ObjectMapper mapper = new ObjectMapper();
+        if (LOG.isDebugEnabled()) {
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        }
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        mapper.registerModule(new JodaModule());
+        try {
+            ret =  mapper.writeValueAsString(_jsonObject);
+        } catch (final JsonProcessingException e) {
+            LOG.error("Catched JsonProcessingException", e);
+        }
+        return ret;
     }
 }

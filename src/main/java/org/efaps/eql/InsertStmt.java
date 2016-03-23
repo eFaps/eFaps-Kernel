@@ -26,21 +26,23 @@ import org.efaps.eql.stmt.AbstractInsertStmt;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: $
  */
 public class InsertStmt
     extends AbstractInsertStmt
 {
 
     @Override
-    public void execute()
+    public int execute()
         throws Exception
     {
+        int ret = 0;
         final Insert insert = new Insert(getType());
         for (final Entry<String, String> entry : getAttr2Value().entrySet()) {
             insert.add(entry.getKey(), entry.getValue());
         }
         insert.execute();
         setInstance(insert.getInstance().getOid());
+        ret++;
+        return ret;
     }
 }

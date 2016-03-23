@@ -28,16 +28,16 @@ import org.efaps.eql.stmt.AbstractDeleteStmt;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: $
  */
 public class DeleteStmt
     extends AbstractDeleteStmt
 {
 
     @Override
-    public void execute()
+    public int execute()
         throws Exception
     {
+        int ret = 0;
         final List<Instance> instances;
         if (getInstances().isEmpty()) {
             instances = QueryBldrUtil.getInstances(this);
@@ -50,6 +50,8 @@ public class DeleteStmt
         for (final Instance inst : instances) {
             final Delete delete = new Delete(inst);
             delete.execute();
+            ret++;
         }
+        return ret;
     }
 }
