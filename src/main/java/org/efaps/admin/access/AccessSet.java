@@ -621,7 +621,7 @@ public final class AccessSet
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof AccessSet) {
             ret = ((AccessSet) _obj).getId() == getId();
         } else {

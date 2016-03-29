@@ -74,7 +74,7 @@ public enum AccessTypeEnums
      * @param _uuid universal unique identifier of the access type
      * @see #uuid
      */
-    private AccessTypeEnums(final String _uuid)
+    AccessTypeEnums(final String _uuid)
     {
         this.uuid = UUID.fromString(_uuid);
     }

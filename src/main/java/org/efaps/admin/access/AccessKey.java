@@ -221,6 +221,7 @@ public final class AccessKey
             ret = getInstanceTypeUUID().equals(accessKey.getInstanceTypeUUID())
                             && getInstanceId() == accessKey.getInstanceId()
                             && getPersonId() == accessKey.getPersonId()
+                            && getCompanyId() == accessKey.getCompanyId()
                             && getAccessType().equals(accessKey.getAccessType());
         } else {
             super.equals(_obj);

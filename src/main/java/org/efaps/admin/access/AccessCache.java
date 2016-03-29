@@ -17,8 +17,6 @@
 
 package org.efaps.admin.access;
 
-import java.util.List;
-
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
@@ -37,6 +35,7 @@ import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
 import org.infinispan.notifications.cachelistener.event.CacheEntryCreatedEvent;
 import org.infinispan.query.CacheQuery;
+import org.infinispan.query.ResultIterator;
 import org.infinispan.query.Search;
 import org.infinispan.query.SearchManager;
 import org.slf4j.Logger;
@@ -86,11 +85,11 @@ public final class AccessCache
             final CacheQuery query = searchManager.getQuery(
                             NumericRangeQuery.newLongRange("personId", _personId, _personId, true,
                                             true), AccessKey.class);
-            final List<?> result = query.list();
-            if (result != null) {
-                for (final Object key : result) {
+            try (final ResultIterator iter = query.iterator()) {
+                while (iter.hasNext()) {
+                    final AccessKey key = (AccessKey) iter.next();
                     AccessCache.getKeyCache().remove(key);
-                    indexCache.remove(((AccessKey) key).getIndexKey());
+                    indexCache.remove(key.getIndexKey());
                 }
             }
         }
@@ -117,11 +116,11 @@ public final class AccessCache
                                 true), Occur.MUST);
                 final CacheQuery query = searchManager.getQuery(andQuery, AccessKey.class);
 
-                final List<?> result = query.list();
-                if (result != null) {
-                    for (final Object key : result) {
+                try (final ResultIterator iter = query.iterator()) {
+                    while (iter.hasNext()) {
+                        final AccessKey key = (AccessKey) iter.next();
                         AccessCache.getKeyCache().remove(key);
-                        indexCache.remove(((AccessKey) key).getIndexKey());
+                        indexCache.remove(key.getIndexKey());
                     }
                 }
             }

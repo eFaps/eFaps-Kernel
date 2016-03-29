@@ -18,7 +18,6 @@
 package org.efaps.util.cache;
 
 import org.infinispan.notifications.Listener;
-import org.infinispan.notifications.cachelistener.annotation.CacheEntriesEvicted;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryActivated;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryCreated;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryInvalidated;
@@ -112,9 +111,11 @@ public class CacheLogListener
     public void onCacheEntryModified(final CacheEntryModifiedEvent<?, ?> _event)
     {
         if (_event.isPre()) {
-            this.log.trace("before - modified key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
+            this.log.trace("before - modified key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache()
+                            .getName());
         } else {
-            this.log.trace("after - modified key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache().getName());
+            this.log.trace("after - modified key: '{}' from Cache '{}'. ", _event.getKey(), _event.getCache()
+                            .getName());
         }
     }
 
@@ -139,8 +140,9 @@ public class CacheLogListener
 
     /**
      * @param _event event to be loged
+     * @TODO activate with Java 8
      */
-    @CacheEntriesEvicted
+    //@CacheEntriesEvicted
     public void onCacheEntriesEvicted(final CacheEntriesEvictedEvent<?, ?> _event)
     {
         this.log.trace("evicted entries: '{}' from Cache '{}'. ", _event.getEntries(), _event.getCache().getName());
