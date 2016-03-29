@@ -642,13 +642,13 @@ public abstract class AbstractPrintQuery
         } else {
             baseSel = _selectBldr.toString() + ".";
         }
-        boolean isNotNull = true;
+        boolean allNull = true;
         for (final String select : _msgPhrase.getArguments()) {
             final Object tmpObj = getSelect(baseSel + select);
-            isNotNull = isNotNull && tmpObj != null;
-            objects.add(tmpObj);
+            allNull = allNull && tmpObj == null;
+            objects.add(tmpObj == null ? "" : tmpObj);
         }
-        return isNotNull ? _msgPhrase.format(objects.toArray()) : null;
+        return allNull ? null : _msgPhrase.format(objects.toArray());
     }
 
     /**
