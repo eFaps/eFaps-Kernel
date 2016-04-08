@@ -118,21 +118,4 @@ public class DateUI
         }
         return ret;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object format(final Object _object,
-                         final String _pattern)
-        throws EFapsException
-    {
-        Object ret;
-        if (_object instanceof DateTime) {
-            ret = ((DateTime) _object).toString(_pattern, Context.getThreadContext().getLocale());
-        } else {
-            ret = _object;
-        }
-        return ret;
-    }
 }

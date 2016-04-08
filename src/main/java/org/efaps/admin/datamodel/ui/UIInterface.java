@@ -67,8 +67,6 @@ public interface UIInterface
     String getReadOnlyHtml(final FieldValue _fieldValue)
         throws EFapsException;
 
-
-
     /**
      * Method to get a String representation of the value. This is used e.g. for
      * labels and Phrases.
@@ -102,15 +100,4 @@ public interface UIInterface
                 final FieldValue _fieldValue2)
         throws EFapsException;
 
-    /**
-     * Method to format the given Object.
-     *
-     * @param _object the object to be formated
-     * @param _pattern pattern to be used by the formatter
-     * @return formated object
-     * @throws EFapsException on error
-     */
-    Object format(final Object _object,
-                  final String _pattern)
-        throws EFapsException;
 }

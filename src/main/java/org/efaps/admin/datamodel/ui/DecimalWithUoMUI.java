@@ -166,28 +166,6 @@ public class DecimalWithUoMUI
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Object format(final Object _object,
-                         final String _pattern)
-        throws EFapsException
-    {
-        final Object ret;
-        final DecimalFormat formatter
-            = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext().getLocale());
-        formatter.applyPattern(_pattern);
-        if (_object instanceof Object[]) {
-            final String tmp = formatter.format(((Object[]) _object)[0]);
-            ((Object[]) _object)[0] = tmp;
-            ret = _object;
-        } else {
-            ret = formatter.format(_object);
-        }
-        return ret;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings("unchecked")
     @Override
     public int compare(final FieldValue _fieldValue,

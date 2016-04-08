@@ -19,11 +19,14 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
 import org.efaps.admin.datamodel.Dimension.UoM;
 import org.efaps.admin.datamodel.attributevalue.DecimalWithUoM;
+import org.efaps.db.Context;
 import org.efaps.db.wrapper.AbstractSQLInsertUpdate;
 import org.efaps.util.EFapsException;
 
@@ -36,6 +39,7 @@ import org.efaps.util.EFapsException;
  */
 public class DecimalWithUoMType
     extends AbstractWithUoMType
+    implements IFormattableType
 {
     /**
      * Needed for serialization.
@@ -127,6 +131,27 @@ public class DecimalWithUoMType
             ret = new BigDecimal(_object.toString());
         } else  {
             ret = null;
+        }
+        return ret;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object format(final Object _object,
+                         final String _pattern)
+        throws EFapsException
+    {
+        final Object ret;
+        final DecimalFormat formatter
+            = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext().getLocale());
+        formatter.applyPattern(_pattern);
+        if (_object instanceof Object[]) {
+            final String tmp = formatter.format(((Object[]) _object)[0]);
+            ((Object[]) _object)[0] = tmp;
+            ret = _object;
+        } else {
+            ret = formatter.format(_object);
         }
         return ret;
     }

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.ui.UIInterface;
+import org.efaps.admin.datamodel.attributetype.IFormattableType;
 import org.efaps.db.print.OneSelect;
 import org.efaps.util.EFapsException;
 
@@ -69,22 +69,23 @@ public class FormatValueSelect
      * @return formated object
      * @throws EFapsException on error
      */
+    @Override
     public Object get(final Attribute _attribute,
                          final Object _object)
         throws EFapsException
     {
         Object ret = null;
-        if (_object != null) {
-            final UIInterface ui = _attribute.getAttributeType().getUI();
+        if (_object != null && _attribute.getAttributeType().getDbAttrType() instanceof IFormattableType) {
+            final IFormattableType attrType = (IFormattableType) _attribute.getAttributeType().getDbAttrType();
             if (_object instanceof List<?>) {
                 final List<?> objectList = (List<?>) _object;
                 final List<Object> temp = new ArrayList<Object>();
                 for (final Object object : objectList) {
-                    temp.add(ui.format(object, this.pattern));
+                    temp.add(attrType.format(object, this.pattern));
                 }
                 ret = temp;
             } else {
-                ret = ui.format(_object, this.pattern);
+                ret = attrType.format(_object, this.pattern);
             }
         }
         return ret;

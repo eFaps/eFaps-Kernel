@@ -41,6 +41,7 @@ import org.joda.time.chrono.ISOChronology;
  */
 public class DateTimeType
     extends AbstractType
+    implements IFormattableType
 {
     /**
      * Needed for serialization.
@@ -87,7 +88,7 @@ public class DateTimeType
                 ret.add(null);
             }
         }
-        return _objectList.size() > 0 ? (ret.size() > 1 ? ret : ret.get(0)) : null;
+        return _objectList.size() > 0 ? ret.size() > 1 ? ret : ret.get(0) : null;
     }
 
     /**
@@ -122,7 +123,7 @@ public class DateTimeType
         throws EFapsException
     {
         final Timestamp ret;
-        if ((_value == null) || (_value.length == 0) || (_value[0] == null)) {
+        if (_value == null || _value.length == 0 || _value[0] == null) {
             ret = null;
         } else  {
             final DateTime dateTime = DateTimeUtil.translateFromUI(_value[0]);
@@ -138,7 +139,7 @@ public class DateTimeType
                                                     dateTime.getMinuteOfHour(),
                                                     dateTime.getSecondOfMinute(),
                                                     dateTime.getMillisOfSecond());
-            ret = (localized != null) ? new Timestamp(localized.getMillis()) : null;
+            ret = localized != null ? new Timestamp(localized.getMillis()) : null;
         }
         return ret;
     }
@@ -155,6 +156,23 @@ public class DateTimeType
             ret = Context.getDbType().getStr4DateTime((ReadableDateTime) _value);
         } else if (_value instanceof String) {
             ret = (String) _value;
+        }
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object format(final Object _object,
+                         final String _pattern)
+        throws EFapsException
+    {
+        Object ret;
+        if (_object instanceof DateTime) {
+            ret = ((DateTime) _object).toString(_pattern, Context.getThreadContext().getLocale());
+        } else {
+            ret = _object;
         }
         return ret;
     }

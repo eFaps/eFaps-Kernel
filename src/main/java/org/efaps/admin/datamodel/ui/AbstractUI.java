@@ -112,17 +112,6 @@ public abstract class AbstractUI
      * {@inheritDoc}
      */
     @Override
-    public Object format(final Object _object,
-                         final String _pattern)
-        throws EFapsException
-    {
-        return _object;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Object getValue(final UIValue _uiValue)
         throws EFapsException
     {

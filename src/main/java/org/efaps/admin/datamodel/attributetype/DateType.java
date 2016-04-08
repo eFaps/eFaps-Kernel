@@ -56,7 +56,7 @@ public class DateType
         throws EFapsException
     {
         final Timestamp ret;
-        if ((_value == null) || (_value.length == 0) || (_value[0] == null)) {
+        if (_value == null || _value.length == 0 || _value[0] == null) {
             ret = null;
         } else  {
             DateTime dateTime = new DateTime();
@@ -79,7 +79,7 @@ public class DateType
                                                     0,
                                                     0,
                                                     0);
-            ret = (localized != null) ? new Timestamp(localized.getMillis()) : null;
+            ret = localized != null ? new Timestamp(localized.getMillis()) : null;
         }
         return ret;
     }

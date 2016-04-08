@@ -241,30 +241,4 @@ public class DecimalUI
         }
         return ret;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object format(final Object _object,
-                         final String _pattern)
-        throws EFapsException
-    {
-        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
-                        .getLocale());
-        formatter.applyPattern(_pattern);
-        Object ret;
-        if (_object instanceof BigDecimal
-                        && formatter.getNegativeSuffix().isEmpty() && "-".equals(formatter.getNegativePrefix())
-                        && formatter.getPositiveSuffix().isEmpty() && formatter.getPositivePrefix().isEmpty()) {
-            int scale = formatter.getMinimumFractionDigits();
-            if (scale < formatter.getMaximumFractionDigits()) {
-                scale = formatter.getMaximumFractionDigits();
-            }
-            ret = ((BigDecimal) _object).setScale(scale, BigDecimal.ROUND_HALF_UP);
-        } else {
-            ret = formatter.format(_object);
-        }
-        return ret;
-    }
 }

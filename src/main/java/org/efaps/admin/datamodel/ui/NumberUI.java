@@ -17,11 +17,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**
@@ -83,19 +79,5 @@ public class NumberUI
             ret = DBProperties.getProperty(NumberUI.class.getName() + ".InvalidValue");
         }
         return ret;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object format(final Object _object,
-                         final String _pattern)
-        throws EFapsException
-    {
-        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
-                        .getLocale());
-        formatter.applyPattern(_pattern);
-        return formatter.format(_object);
     }
 }

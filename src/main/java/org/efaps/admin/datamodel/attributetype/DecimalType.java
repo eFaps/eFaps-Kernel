@@ -39,6 +39,7 @@ import org.efaps.util.EFapsException;
  */
 public class DecimalType
     extends AbstractType
+    implements IFormattableType
 {
     /**
      * Needed for serialization.
@@ -69,9 +70,9 @@ public class DecimalType
     {
         final BigDecimal ret;
 
-        if ((_values == null) || (_values.length == 0) || (_values[0] == null))  {
+        if (_values == null || _values.length == 0 || _values[0] == null)  {
             ret = null;
-        } else if ((_values[0] instanceof String) && (((String) _values[0]).length() > 0)) {
+        } else if (_values[0] instanceof String && ((String) _values[0]).length() > 0) {
             try {
                 ret = DecimalType.parseLocalized((String) _values[0]);
             } catch (final EFapsException e) {
@@ -103,7 +104,7 @@ public class DecimalType
                 ret.add(new BigDecimal(object.toString()));
             }
         }
-        return _objectList.size() > 0 ? (ret.size() > 1 ? ret : (ret.size() > 0 ? ret.get(0) : null)) : null;
+        return _objectList.size() > 0 ? ret.size() > 1 ? ret : ret.size() > 0 ? ret.get(0) : null : null;
     }
 
     /**
@@ -139,7 +140,33 @@ public class DecimalType
         } else if (_value instanceof String) {
             ret = (String) _value;
         } else if (_value != null) {
-            ret = (new BigDecimal(_value.toString())).toPlainString();
+            ret = new BigDecimal(_value.toString()).toPlainString();
+        }
+        return ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object format(final Object _object,
+                         final String _pattern)
+        throws EFapsException
+    {
+        final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext()
+                        .getLocale());
+        formatter.applyPattern(_pattern);
+        Object ret;
+        if (_object instanceof BigDecimal
+                        && formatter.getNegativeSuffix().isEmpty() && "-".equals(formatter.getNegativePrefix())
+                        && formatter.getPositiveSuffix().isEmpty() && formatter.getPositivePrefix().isEmpty()) {
+            int scale = formatter.getMinimumFractionDigits();
+            if (scale < formatter.getMaximumFractionDigits()) {
+                scale = formatter.getMaximumFractionDigits();
+            }
+            ret = ((BigDecimal) _object).setScale(scale, BigDecimal.ROUND_HALF_UP);
+        } else {
+            ret = formatter.format(_object);
         }
         return ret;
     }
