@@ -17,18 +17,8 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.Serializable;
 
-import org.apache.commons.lang3.text.StrSubstitutor;
-import org.efaps.admin.EFapsSystemConfiguration;
-import org.efaps.admin.KernelSettings;
-import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.user.Company;
-import org.efaps.admin.user.Group;
-import org.efaps.admin.user.Person;
-import org.efaps.admin.user.Person.AttrName;
-import org.efaps.admin.user.Role;
 import org.efaps.util.EFapsException;
 
 /**
@@ -38,89 +28,35 @@ import org.efaps.util.EFapsException;
  *
  */
 public class UserUI
-    extends AbstractUI
+    implements IUIProvider, Serializable
 {
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue)
+    public Object getValue(final UIValue _uiValue)
         throws EFapsException
     {
-        String ret = null;
-        final Object value = _fieldValue.getValue();
-        if (value instanceof Person) {
-            final Person person = (Person) value;
-            String display = EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.USERUI_DISPLAYPERSON);
-            if (display == null) {
-                display = "${LASTNAME}, ${FIRSTNAME}";
-            }
-            final Map<String, String> values = new HashMap<String, String>();
-            for (final AttrName attr : AttrName.values()) {
-                values.put(attr.name(), person.getAttrValue(attr));
-            }
-            final StrSubstitutor sub = new StrSubstitutor(values);
-            ret =  sub.replace(display);
-        } else if (value instanceof Role) {
-            final Role role = (Role) value;
-            ret = role.getName();
-        } else if (value instanceof Group) {
-            final Group group = (Group) value;
-            ret = group.getName();
-        } else if (value instanceof Company) {
-            final Company company = (Company) value;
-            ret = company.getName();
-        } else {
-            ret = DBProperties.getProperty("org.efaps.admin.datamodel.ui.UserUI.None");
-        }
-        return ret;
+        return _uiValue.getDbValue();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public int compare(final FieldValue _fieldValue,
-                       final FieldValue _fieldValue2)
+    public String validateValue(final UIValue _uiValue)
         throws EFapsException
     {
-        final String value;
-        if (_fieldValue.getValue() instanceof Person) {
-            final Person person = (Person) _fieldValue.getValue();
-            value = person.getName();
-        } else if (_fieldValue.getValue() instanceof Role) {
-            final Role role = (Role) _fieldValue.getValue();
-            value = role.getName();
-        } else if (_fieldValue.getValue() instanceof Group) {
-            final Group group = (Group) _fieldValue.getValue();
-            value = group.getName();
-        } else if (_fieldValue.getValue() instanceof Company) {
-            final Company company = (Company) _fieldValue.getValue();
-            value = company.getName();
-        } else {
-            value = _fieldValue.getValue() == null ? "" : _fieldValue.getValue().toString();
+        return null;
+    }
+
+    @Override
+    public Object transformObject(final UIValue _uiValue,
+                                  final Object _object)
+        throws EFapsException
+    {
+        if (_object instanceof Serializable) {
+            _uiValue.setDbValue((Serializable) _object);
         }
-        final String value2;
-        if (_fieldValue2.getValue() instanceof Person) {
-            final Person person = (Person) _fieldValue2.getValue();
-            value2 = person.getName();
-        } else if (_fieldValue2.getValue() instanceof Role) {
-            final Role role = (Role) _fieldValue2.getValue();
-            value2 = role.getName();
-        } else if (_fieldValue2.getValue() instanceof Group) {
-            final Group group = (Group) _fieldValue2.getValue();
-            value2 = group.getName();
-        } else if (_fieldValue2.getValue() instanceof Company) {
-            final Company company = (Company) _fieldValue2.getValue();
-            value2 = company.getName();
-        } else {
-            value2 = _fieldValue2.getValue() == null ? "" : _fieldValue2.getValue().toString();
-        }
-        return value.compareTo(value2);
+        return _object;
     }
 }
