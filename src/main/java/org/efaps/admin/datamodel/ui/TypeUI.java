@@ -17,8 +17,8 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.dbproperty.DBProperties;
+import java.io.Serializable;
+
 import org.efaps.util.EFapsException;
 
 /**
@@ -28,7 +28,7 @@ import org.efaps.util.EFapsException;
  *
  */
 public class TypeUI
-    extends AbstractUI
+    implements IUIProvider, Serializable
 {
 
     /**
@@ -36,37 +36,28 @@ public class TypeUI
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue)
+    public Object getValue(final UIValue _uiValue)
         throws EFapsException
     {
-        String ret = null;
-        if (_fieldValue.getValue() instanceof Type) {
-            final Type type = (Type) _fieldValue.getValue();
-            ret = type.getLabel();
-        }
-        return ret;
+        return _uiValue.getDbValue();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public int compare(final FieldValue _fieldValue,
-                       final FieldValue _fieldValue2)
+    public String validateValue(final UIValue _uiValue)
+        throws EFapsException
     {
-        String value = null;
-        String value2 = null;
-        if (_fieldValue.getValue() instanceof Type && _fieldValue2.getValue() instanceof Type) {
-            value = DBProperties.getProperty(((Type) _fieldValue.getValue()).getName() + ".Label");
-            value2 = DBProperties.getProperty(((Type) _fieldValue2.getValue()).getName() + ".Label");
-        } else if (_fieldValue.getValue() instanceof String && _fieldValue2.getValue() instanceof String) {
-            value = (String) _fieldValue.getValue();
-            value2 = (String) _fieldValue2.getValue();
+        return null;
+    }
+
+    @Override
+    public Object transformObject(final UIValue _uiValue,
+                                  final Object _object)
+        throws EFapsException
+    {
+        if (_object instanceof Serializable) {
+            _uiValue.setDbValue((Serializable) _object);
         }
-        return value.compareTo(value2);
+        return _object;
     }
 }
