@@ -53,7 +53,7 @@ public class Field
     /**
      * Used to define the different display modes for the Userinterface.
      */
-    public static enum Display {
+    public enum Display {
         /** the displayed Field is editabel. */
         EDITABLE,
         /** the displayed Field is read only.. */
@@ -586,7 +586,7 @@ public class Field
     public MsgPhrase getMsgPhrase()
         throws EFapsException
     {
-        MsgPhrase ret;
+        final MsgPhrase ret;
         if (this.msgPhrase == null) {
             ret = null;
         } else if (this.msgPhrase
@@ -868,20 +868,14 @@ public class Field
     {
         if ("Align".equals(_name)) {
             this.align = _value;
-        } else if ("ClassNameUI".equals(_name)) {
+        } else if ("UIProvider".equals(_name) || "ClassNameUI".equals(_name)) {
             try {
-                this.classUI = (UIInterface) Class.forName(_value).newInstance();
-            } catch (final ClassNotFoundException e) {
-                throw new CacheReloadException("could not found class '" + _value + "' for '" + getName() + "'", e);
-            } catch (final InstantiationException e) {
-                throw new CacheReloadException("could not instantiate class '" + _value + "' for '" + getName() + "'",
-                                e);
-            } catch (final IllegalAccessException e) {
-                throw new CacheReloadException("could not access class '" + _value + "' for '" + getName() + "'", e);
-            }
-        } else if ("UIProvider".equals(_name)) {
-            try {
-                this.uiProvider = (IUIProvider) Class.forName(_value).newInstance();
+                final Object clazz = Class.forName(_value).newInstance();
+                if (clazz instanceof IUIProvider) {
+                    this.uiProvider = (IUIProvider) clazz;
+                } else {
+                    this.classUI = (UIInterface) clazz;
+                }
             } catch (final ClassNotFoundException e) {
                 throw new CacheReloadException("could not found class '" + _value + "' for '" + getName() + "'", e);
             } catch (final InstantiationException e) {
@@ -966,7 +960,7 @@ public class Field
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof Field) {
             ret = ((Field) _obj).getId() == getId();
         } else {
@@ -978,6 +972,6 @@ public class Field
     @Override
     public int hashCode()
     {
-        return  Long.valueOf(getId()).intValue();
+        return Long.valueOf(getId()).intValue();
     }
 }

@@ -17,12 +17,9 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import org.efaps.db.Context;
+import java.io.Serializable;
+
 import org.efaps.util.EFapsException;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeComparator;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 /**
  * Class to represent a Date for the user interface.
@@ -31,7 +28,7 @@ import org.joda.time.format.DateTimeFormatter;
  *
  */
 public class DateUI
-    extends AbstractUI
+    implements IUIProvider, Serializable
 {
 
     /**
@@ -39,83 +36,28 @@ public class DateUI
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String getReadOnlyHtml(final FieldValue _fieldValue)
+    public Object getValue(final UIValue _uiValue)
         throws EFapsException
     {
-        String ret = null;
-        if (_fieldValue.getValue() instanceof DateTime) {
-            final DateTime datetime = (DateTime) _fieldValue.getValue();
-            if (datetime != null) {
-                // format the Date with the Locale and Chronology from the user
-                // context
-                final DateTime dateTmp = new DateTime().withTimeAtStartOfDay()
-                                .withYear(datetime.getYear())
-                                .withMonthOfYear(datetime.getMonthOfYear())
-                                .withDayOfMonth(datetime.getDayOfMonth())
-                                .withChronology(Context.getThreadContext().getChronology());
-
-                final DateTimeFormatter formatter = DateTimeFormat.mediumDate();
-
-                ret = dateTmp.toString(formatter.withLocale(Context.getThreadContext().getLocale()));
-            }
-        } else if (_fieldValue.getValue() instanceof String) {
-            ret = (String) _fieldValue.getValue();
-        } else if (_fieldValue.getValue() != null) {
-            throw new EFapsException(this.getClass(), "getViewHtml.noDateTime", (Object[]) null);
-        }
-        return ret;
+        return _uiValue.getDbValue();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String getStringValue(final FieldValue _fieldValue)
+    public String validateValue(final UIValue _uiValue)
         throws EFapsException
     {
-        String ret = null;
-        if (_fieldValue.getValue() != null) {
-            ret = _fieldValue.getValue().toString();
-        }
-        return ret;
+        return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Object getObject4Compare(final FieldValue _fieldValue)
+    public Object transformObject(final UIValue _uiValue,
+                                  final Object _object)
         throws EFapsException
     {
-        Object ret;
-        if (_fieldValue != null && _fieldValue.getValue() instanceof DateTime) {
-            final DateTime datetime = (DateTime) _fieldValue.getValue();
-            ret = new DateTime().withTimeAtStartOfDay()
-                            .withYear(datetime.getYear())
-                            .withMonthOfYear(datetime.getMonthOfYear())
-                            .withDayOfMonth(datetime.getDayOfMonth())
-                            .withChronology(Context.getThreadContext().getChronology());
-        } else {
-            ret = _fieldValue.getValue();
+        if (_object instanceof Serializable) {
+            _uiValue.setDbValue((Serializable) _object);
         }
-        return ret;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int compare(final FieldValue _fieldValue,
-                       final FieldValue _fieldValue2)
-    {
-        int ret = 0;
-        if (_fieldValue.getValue() instanceof DateTime && _fieldValue2.getValue() instanceof DateTime) {
-            ret = DateTimeComparator.getDateOnlyInstance().compare(_fieldValue.getValue(), _fieldValue2.getValue());
-        }
-        return ret;
+        return _object;
     }
 }
