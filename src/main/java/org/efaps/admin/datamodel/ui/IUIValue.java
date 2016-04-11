@@ -22,6 +22,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
 
 
 /**
@@ -71,6 +72,8 @@ public interface IUIValue
      * Gets the attribute.
      *
      * @return the attribute
+     * @throws EFapsException on error
      */
-    Attribute getAttribute();
+    Attribute getAttribute()
+        throws EFapsException;
 }
