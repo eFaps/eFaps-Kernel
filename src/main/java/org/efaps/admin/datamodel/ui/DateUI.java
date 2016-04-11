@@ -20,6 +20,7 @@ package org.efaps.admin.datamodel.ui;
 import java.io.Serializable;
 
 import org.efaps.util.EFapsException;
+import org.joda.time.DateTime;
 
 /**
  * Class to represent a Date for the user interface.
@@ -28,7 +29,7 @@ import org.efaps.util.EFapsException;
  *
  */
 public class DateUI
-    implements IUIProvider, Serializable
+    extends AbstractProvider
 {
 
     /**
@@ -59,5 +60,18 @@ public class DateUI
             _uiValue.setDbValue((Serializable) _object);
         }
         return _object;
+    }
+
+    @Override
+    public String getStringValue(final IUIValue _uiValue)
+        throws EFapsException
+    {
+        final String ret;
+        if (_uiValue.getObject() != null && _uiValue.getObject() instanceof DateTime) {
+            ret = ((DateTime) _uiValue.getObject()).toLocalDate().toString();
+        } else {
+            ret = super.getStringValue(_uiValue);
+        }
+        return ret;
     }
 }

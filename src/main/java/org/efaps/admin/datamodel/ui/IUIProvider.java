@@ -62,4 +62,15 @@ public interface IUIProvider
                            final Object _object)
         throws EFapsException;
 
+    /**
+     * Method to get a String representation of the value. This is used e.g. for
+     * labels and Phrases.
+     *
+     * @param _uiValue the user value
+     * @return String representation of the object for viewing
+     * @throws EFapsException on error
+     */
+    String getStringValue(final IUIValue _uiValue)
+        throws EFapsException;
+
 }

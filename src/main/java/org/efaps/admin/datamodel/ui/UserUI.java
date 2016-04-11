@@ -19,6 +19,7 @@ package org.efaps.admin.datamodel.ui;
 
 import java.io.Serializable;
 
+import org.efaps.admin.user.AbstractUserObject;
 import org.efaps.util.EFapsException;
 
 /**
@@ -28,7 +29,7 @@ import org.efaps.util.EFapsException;
  *
  */
 public class UserUI
-    implements IUIProvider, Serializable
+    extends AbstractProvider
 {
     /**
      * Needed for serialization.
@@ -58,5 +59,18 @@ public class UserUI
             _uiValue.setDbValue((Serializable) _object);
         }
         return _object;
+    }
+
+    @Override
+    public String getStringValue(final IUIValue _uiValue)
+        throws EFapsException
+    {
+        final String ret;
+        if (_uiValue.getObject() != null && _uiValue.getObject() instanceof AbstractUserObject) {
+            ret = ((AbstractUserObject) _uiValue.getObject()).getName();
+        } else {
+            ret = super.getStringValue(_uiValue);
+        }
+        return ret;
     }
 }

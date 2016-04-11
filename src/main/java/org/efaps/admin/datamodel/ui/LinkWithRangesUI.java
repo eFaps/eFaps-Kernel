@@ -40,7 +40,7 @@ import org.efaps.util.EFapsException;
  *
  */
 public class LinkWithRangesUI
-    implements IUIProvider, Serializable
+    extends AbstractProvider
 {
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;

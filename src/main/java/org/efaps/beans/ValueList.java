@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.db.AbstractPrintQuery;
 import org.efaps.db.Instance;
@@ -182,7 +182,8 @@ public class ValueList
                         value = _print.getSelect(token.value);
                     }
                     if (attr != null) {
-                        buf.append((new FieldValue(null, attr, value, null, _callInstance)).getStringValue(_mode));
+                        buf.append(attr.getAttributeType().getUIProvider().getStringValue(
+                                        UIValue.get(null, attr, value)));
                     } else if (value != null) {
                         buf.append(value);
                     }

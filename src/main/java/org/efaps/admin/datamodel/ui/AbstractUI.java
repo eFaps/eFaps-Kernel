@@ -76,6 +76,15 @@ public abstract class AbstractUI
         return getReadOnlyHtml(_fieldValue);
     }
 
+    @Override
+    public String getStringValue(final IUIValue _uiValue)
+        throws EFapsException
+    {
+        final FieldValue fieldValue = new FieldValue(_uiValue.getField(), _uiValue.getAttribute(), _uiValue.getObject(),
+                        _uiValue.getInstance(), _uiValue.getCallInstance());
+        return getStringValue(fieldValue);
+    }
+
     /**
      * {@inheritDoc}
      */

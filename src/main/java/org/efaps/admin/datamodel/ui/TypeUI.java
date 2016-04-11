@@ -19,6 +19,7 @@ package org.efaps.admin.datamodel.ui;
 
 import java.io.Serializable;
 
+import org.efaps.admin.datamodel.Type;
 import org.efaps.util.EFapsException;
 
 /**
@@ -28,7 +29,7 @@ import org.efaps.util.EFapsException;
  *
  */
 public class TypeUI
-    implements IUIProvider, Serializable
+    extends AbstractProvider
 {
 
     /**
@@ -59,5 +60,18 @@ public class TypeUI
             _uiValue.setDbValue((Serializable) _object);
         }
         return _object;
+    }
+
+    @Override
+    public String getStringValue(final IUIValue _uiValue)
+        throws EFapsException
+    {
+        final String ret;
+        if (_uiValue.getObject() != null && _uiValue.getObject() instanceof Type) {
+            ret = ((Type) _uiValue.getObject()).getLabel();
+        } else {
+            ret = super.getStringValue(_uiValue);
+        }
+        return ret;
     }
 }

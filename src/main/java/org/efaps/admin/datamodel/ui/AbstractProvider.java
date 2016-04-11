@@ -22,51 +22,21 @@ import java.io.Serializable;
 
 import org.efaps.util.EFapsException;
 
-
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- *
  */
-public class BitEnumUI
-    extends AbstractProvider
+public abstract class AbstractProvider
+    implements IUIProvider, Serializable
 {
-
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Object getValue(final UIValue _uiValue)
+    public String getStringValue(final IUIValue _uiValue)
         throws EFapsException
     {
-        return _uiValue.getDbValue();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String validateValue(final UIValue _uiValue)
-        throws EFapsException
-    {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object transformObject(final UIValue _uiValue,
-                                  final Object _object)
-        throws EFapsException
-    {
-        if (_object instanceof Serializable) {
-            _uiValue.setDbValue((Serializable) _object);
-        }
-        return _object;
+        return _uiValue.getObject() == null ? null : String.valueOf(_uiValue.getObject());
     }
 }
