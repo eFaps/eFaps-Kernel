@@ -18,6 +18,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.Field.Display;
 import org.efaps.db.Instance;
@@ -65,4 +66,11 @@ public interface IUIValue
      * @return the object
      */
     Object getObject();
+
+    /**
+     * Gets the attribute.
+     *
+     * @return the attribute
+     */
+    Attribute getAttribute();
 }
