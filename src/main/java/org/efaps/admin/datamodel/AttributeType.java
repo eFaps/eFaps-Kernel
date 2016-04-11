@@ -23,7 +23,6 @@ import java.sql.SQLException;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.ui.IUIProvider;
-import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLPart;
@@ -201,24 +200,6 @@ public class AttributeType
     }
 
     /**
-     * This is the getter method for instance variable {@link #uiAttrType}.
-     *
-     * @return value of instance variable {@link #uiAttrType}
-     * @see #uiAttrType
-     * @see #setUI(Class)
-     */
-    public UIInterface getUI()
-    {
-        UIInterface ret;
-        if (this.uiAttrType instanceof UIInterface) {
-            ret = (UIInterface) this.uiAttrType;
-        } else {
-            ret = null;
-        }
-        return ret;
-    }
-
-    /**
      * This is the getter method for instance variable {@link #uiProvider}.
      *
      * @return value of instance variable {@link #uiProvider}
@@ -391,7 +372,7 @@ public class AttributeType
                     final long id = rs.getLong(1);
                     final String name = rs.getString(2).trim();
                     String uuid = rs.getString(3);
-                    uuid = (uuid == null) ? null : uuid.trim();
+                    uuid = uuid == null ? null : uuid.trim();
 
                     if (AttributeType.LOG.isDebugEnabled()) {
                         AttributeType.LOG.debug("read attribute type '" + name + "' " + "(id = " + id + ", uuid = '"
@@ -424,7 +405,7 @@ public class AttributeType
         } catch (final EFapsException e) {
             throw new CacheReloadException("could not read roles", e);
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 try {
                     con.abort();
                 } catch (final EFapsException e) {

@@ -219,7 +219,7 @@ public class FieldValue
                       final Object _classObject,
                       final AbstractCommand _cmd)
     {
-    //CHECKSTYLE:ON
+        // CHECKSTYLE:ON
         this.field = _field;
         this.attribute = _attr;
         this.value = _value;
@@ -227,12 +227,11 @@ public class FieldValue
         this.callInstance = _callInstance;
         this.requestInstances = _requestInstances;
         this.classObject = _classObject;
-        this.ui = _attr == null
-            ? this.field.getClassUI() == null ? new StringUI()
-            : this.field.getClassUI() : _attr.getAttributeType().getUI();
+        final IUIProvider uiProvider = _attr == null ? this.field.getUIProvider()
+                        : _attr.getAttributeType().getUIProvider();
+        this.ui = (UIInterface) (uiProvider != null && uiProvider instanceof UIInterface ? uiProvider : new StringUI());
         this.cmd = _cmd;
     }
-
 
     /**
      * Constructor used in case of comparison.
@@ -475,6 +474,7 @@ public class FieldValue
      *
      * @return value of instance variable {@link #callInstance}
      */
+    @Override
     public Instance getCallInstance()
     {
         return this.callInstance;
@@ -517,6 +517,7 @@ public class FieldValue
      * @return value of instance variable {@link #attribute}
      * @see #attribute
      */
+    @Override
     public Attribute getAttribute()
     {
         return this.attribute;

@@ -23,7 +23,6 @@ import java.util.UUID;
 
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.datamodel.ui.IUIProvider;
-import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.ui.AbstractCollection;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.AbstractUserInterfaceObject;
@@ -171,14 +170,6 @@ public class Field
      * The numbering for the field is activated/deactivated.
      */
     private boolean showNumbering = false;
-
-    /**
-     * The class is used to generate for a field user specific field values.
-     *
-     * @see #setClassUI
-     * @see #getClassUI
-     */
-    private UIInterface classUI = null;
 
     /**
      * The class is used to generate for a field user specific field values.
@@ -490,25 +481,13 @@ public class Field
     }
 
     /**
-     * This is the setter method for the instance variable {@link #classUI}.
-     *
-     * @return value of instance variable {@link #classUI}
-     * @see #classUI
-     * @see #setClassUI
-     */
-    public UIInterface getClassUI()
-    {
-        return this.classUI;
-    }
-
-    /**
      * This is the getter method for instance variable {@link #classUI}.
      *
      * @return value of instance variable {@link #classUI}
      */
     public IUIProvider getUIProvider()
     {
-        return this.uiProvider == null ? (IUIProvider) this.classUI : this.uiProvider;
+        return this.uiProvider;
     }
 
     /**
@@ -870,12 +849,7 @@ public class Field
             this.align = _value;
         } else if ("UIProvider".equals(_name) || "ClassNameUI".equals(_name)) {
             try {
-                final Object clazz = Class.forName(_value).newInstance();
-                if (clazz instanceof IUIProvider) {
-                    this.uiProvider = (IUIProvider) clazz;
-                } else {
-                    this.classUI = (UIInterface) clazz;
-                }
+                this.uiProvider  = (IUIProvider) Class.forName(_value).newInstance();
             } catch (final ClassNotFoundException e) {
                 throw new CacheReloadException("could not found class '" + _value + "' for '" + getName() + "'", e);
             } catch (final InstantiationException e) {
