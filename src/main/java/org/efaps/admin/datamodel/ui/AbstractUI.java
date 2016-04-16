@@ -92,7 +92,7 @@ public abstract class AbstractUI
     public Object getObject4Compare(final FieldValue _fieldValue)
         throws EFapsException
     {
-        return null;
+        return _fieldValue.getValue();
     }
 
     /**

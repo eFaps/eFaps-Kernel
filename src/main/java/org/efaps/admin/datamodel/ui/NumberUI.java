@@ -17,6 +17,8 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import java.io.Serializable;
+
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.util.EFapsException;
 
@@ -27,42 +29,12 @@ import org.efaps.util.EFapsException;
  *
  */
 public class NumberUI
-    extends StringUI
+    extends AbstractProvider
 {
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object getObject4Compare(final FieldValue _fieldValue)
-        throws EFapsException
-    {
-        return _fieldValue.getValue();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int compare(final FieldValue _fieldValue,
-                       final FieldValue _fieldValue2)
-    {
-        int ret = 0;
-        if (_fieldValue.getValue() instanceof Long && _fieldValue2.getValue() instanceof Long) {
-            final Long num = (Long) _fieldValue.getValue();
-            final Long num2 = (Long) _fieldValue2.getValue();
-            ret = num.compareTo(num2);
-        } else if (_fieldValue.getValue() instanceof Integer && _fieldValue2.getValue() instanceof Integer) {
-            final Integer num = (Integer) _fieldValue.getValue();
-            final Integer num2 = (Integer) _fieldValue2.getValue();
-            ret = num.compareTo(num2);
-        }
-        return ret;
-    }
 
     /**
      * {@inheritDoc}
@@ -79,5 +51,23 @@ public class NumberUI
             ret = DBProperties.getProperty(NumberUI.class.getName() + ".InvalidValue");
         }
         return ret;
+    }
+
+    @Override
+    public Object getValue(final UIValue _uiValue)
+        throws EFapsException
+    {
+        return _uiValue.getDbValue();
+    }
+
+    @Override
+    public Object transformObject(final UIValue _uiValue,
+                                  final Object _object)
+        throws EFapsException
+    {
+        if (_object instanceof Serializable) {
+            _uiValue.setDbValue((Serializable) _object);
+        }
+        return _object;
     }
 }

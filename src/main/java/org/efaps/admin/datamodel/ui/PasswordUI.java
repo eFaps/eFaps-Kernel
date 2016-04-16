@@ -17,7 +17,6 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
 
 /**
@@ -28,25 +27,32 @@ import org.efaps.util.EFapsException;
  *
  */
 public class PasswordUI
-    extends AbstractUI
+    extends AbstractProvider
 {
-
     /**
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String getEditHtml(final FieldValue _fieldValue)
+    public Object getValue(final UIValue _uiValue)
         throws EFapsException
     {
-        final StringBuffer ret = new StringBuffer();
-        final Field field = _fieldValue.getField();
-        ret.append("<input type=\"password\" size=\"").append(field.getCols()).append("\" name=\"").append(
-                        field.getName()).append("\" " + "value=\"\">");
-        return ret.toString();
+        return _uiValue.getDbValue();
+    }
+
+    @Override
+    public String validateValue(final UIValue _uiValue)
+        throws EFapsException
+    {
+        return null;
+    }
+
+    @Override
+    public Object transformObject(final UIValue _uiValue,
+                                  final Object _object)
+        throws EFapsException
+    {
+        return null;
     }
 }
