@@ -926,9 +926,8 @@ public class Field
             } else if ("popup".equals(_value)) {
                 this.target = Target.POPUP;
             }
-        } else {
-            super.setProperty(_name, _value);
         }
+        super.setProperty(_name, _value);
     }
 
     @Override
