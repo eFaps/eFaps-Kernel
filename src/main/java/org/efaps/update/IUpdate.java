@@ -73,4 +73,10 @@ public interface IUpdate
      */
     InstallFile getInstallFile();
 
+    /**
+     * Gets the identifier. This key serves also as sort criteria.
+     *
+     * @return the identifier
+     */
+    String getIdentifier();
 }

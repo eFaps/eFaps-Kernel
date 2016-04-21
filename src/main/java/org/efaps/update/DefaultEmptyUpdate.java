@@ -92,4 +92,10 @@ public class DefaultEmptyUpdate
     {
         return this.installFile;
     }
+
+    @Override
+    public String getIdentifier()
+    {
+        return DefaultEmptyUpdate.class.getName();
+    }
 }

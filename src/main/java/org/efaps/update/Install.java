@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.MapContext;
@@ -82,8 +83,7 @@ public class Install
      * @see #initialise
      * @see #install
      */
-    private final Map<Class<? extends IUpdate>, List<IUpdate>> cache
-        = new HashMap<Class<? extends IUpdate>, List<IUpdate>>();
+    private final Map<String, List<IUpdate>> cache = new TreeMap<>();
 
     /**
      * Evaluate the profiles from SystemConfiguration.
@@ -158,7 +158,7 @@ public class Install
                 if (Install.LOG.isInfoEnabled())  {
                     Install.LOG.info("..Running Lifecycle step " + step);
                 }
-                for (final Map.Entry<Class<? extends IUpdate>, List<IUpdate>> entry : this.cache.entrySet()) {
+                for (final Map.Entry<String, List<IUpdate>> entry : this.cache.entrySet()) {
                     final List<IUpdate> updates = entry.getValue();
                     Collections.sort(updates, new Comparator<IUpdate>()
                     {
@@ -245,7 +245,7 @@ public class Install
             if (Install.LOG.isInfoEnabled()) {
                 Install.LOG.info("..Running Lifecycle step " + step);
             }
-            for (final Map.Entry<Class<? extends IUpdate>, List<IUpdate>> entry : this.cache.entrySet()) {
+            for (final Map.Entry<String, List<IUpdate>> entry : this.cache.entrySet()) {
                 for (final IUpdate update : entry.getValue()) {
                     final Integer latestVersion = versions.get(update.getFileApplication());
                     // initialize JexlContext (used to evaluate version)
@@ -329,10 +329,12 @@ public class Install
                             final SaxHandler handler = new SaxHandler();
                             try {
                                 final IUpdate elem = handler.parse(file);
-                                List<IUpdate> list = this.cache.get(elem.getClass());
-                                if (list == null) {
+                                final List<IUpdate> list;
+                                if (this.cache.containsKey(elem.getIdentifier())) {
+                                    list = this.cache.get(elem.getIdentifier());
+                                } else {
                                     list = new ArrayList<IUpdate>();
-                                    this.cache.put(elem.getClass(), list);
+                                    this.cache.put(elem.getIdentifier(), list);
                                 }
                                 list.add(handler.getUpdate());
                             } catch (final SAXException e) {
@@ -343,11 +345,7 @@ public class Install
                         }
                     }
                 } else {
-                    for (final Class<? extends AbstractUpdate> updateClass : fileType.getClazzes()) {
-
-                        final List<IUpdate> list = new ArrayList<IUpdate>();
-                        this.cache.put(updateClass, list);
-
+                    for (final Class<? extends IUpdate> updateClass : fileType.getClazzes()) {
                         Method method = null;
                         try {
                             method = updateClass.getMethod("readFile", InstallFile.class);
@@ -368,8 +366,16 @@ public class Install
                                 } catch (final InvocationTargetException e) {
                                     throw new InstallationException("initialise()", e);
                                 }
-                                if (obj != null) {
-                                    list.add((AbstractUpdate) obj);
+                                if (obj != null && obj instanceof IUpdate) {
+                                    final IUpdate iUpdate = (IUpdate) obj;
+                                    final List<IUpdate> list;
+                                    if (this.cache.containsKey(iUpdate.getIdentifier())) {
+                                        list = this.cache.get(iUpdate.getIdentifier());
+                                    } else {
+                                        list = new ArrayList<IUpdate>();
+                                        this.cache.put(iUpdate.getIdentifier(), list);
+                                    }
+                                    list.add(iUpdate);
                                 }
                             }
                         }

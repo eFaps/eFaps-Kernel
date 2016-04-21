@@ -280,7 +280,7 @@ public abstract class AbstractUpdate
                                     _installFile.getRevision());
                     final InstanceQuery query = queryBldr.getQuery();
                     query.execute();
-                    Instance appRevInst;
+                    final Instance appRevInst;
                     if (query.next()) {
                         appRevInst = query.getCurrentValue();
                     } else {
@@ -394,6 +394,22 @@ public abstract class AbstractUpdate
     protected Set<Link> getAllLinkTypes()
     {
         return this.allLinkTypes;
+    }
+
+    /**
+     * Gets the sort Criteria.
+     *
+     * @return the priority
+     */
+    protected int getSortCriteria()
+    {
+        return 9999;
+    }
+
+    @Override
+    public String getIdentifier()
+    {
+        return String.format("%04d-", getSortCriteria()) + getClass().getName();
     }
 
     /**
@@ -780,7 +796,7 @@ public abstract class AbstractUpdate
         public boolean isValidVersion(final JexlContext _jexlContext)
             throws InstallationException
         {
-            boolean exec;
+            final boolean exec;
             try {
                 if (this.expression == null) {
                     final Expression jexlExpr = JEXL.createExpression("version==latest");
@@ -1113,7 +1129,7 @@ public abstract class AbstractUpdate
 
                 // 5. Insert the links which are not existing yet and update given values
                 for (final LinkInstance oneLink : _links) {
-                    Update update;
+                    final Update update;
                     boolean exec = false;
                     if (oneLink.getInstance() == null) {
                         update = new Insert(_linktype.linkName);
@@ -1211,16 +1227,15 @@ public abstract class AbstractUpdate
             new Delete(_relInst).executeWithoutTrigger();
         }
 
-
         /**
          * The properties are only set if the object to update could own
          * properties (meaning derived from 'Admin_Abstract').
          *
          * @param _instance instance for which the properties must be set
          * @param _properties new properties to set
-         * @throws EFapsException if properties could not be set TODO: rework of
-         *             the update algorithm (not always a complete delete and
-         *             and new create is needed)
+         * @throws EFapsException if properties could not be set
+         * TODO: rework of the update algorithm (not always a complete delete and
+         * and new create is needed)
          */
         protected void setPropertiesInDb(final Instance _instance,
                                          final Map<String, String> _properties)

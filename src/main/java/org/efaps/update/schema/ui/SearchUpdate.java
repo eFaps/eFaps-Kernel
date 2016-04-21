@@ -56,6 +56,12 @@ public class SearchUpdate
         super(_installFile, "Admin_UI_Search", SearchUpdate.ALLLINKS);
     }
 
+    @Override
+    protected int getSortCriteria()
+    {
+        return 200;
+    }
+
     /**
      * Creates new instance of class {@link SearchDefinition}.
      *

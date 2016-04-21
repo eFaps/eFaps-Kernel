@@ -87,6 +87,12 @@ public abstract class AbstractCollectionUpdate
         super(_url, _typeName, _allLinkTypes);
     }
 
+    @Override
+    protected int getSortCriteria()
+    {
+        return 100;
+    }
+
     /**
      * Creates new instance of class {@link Definition}.
      *
@@ -292,7 +298,7 @@ public abstract class AbstractCollectionUpdate
 
             // append new fields
             for (final FieldDefinition field : this.fields) {
-                Insert insert;
+                final Insert insert;
                 if ("Command".equals(field.character)) {
                     insert = new Insert(CIAdminUserInterface.FieldCommand);
                 } else if ("Target".equals(field.character)) {

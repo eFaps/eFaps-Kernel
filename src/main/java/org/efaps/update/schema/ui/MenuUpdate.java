@@ -76,6 +76,12 @@ public class MenuUpdate
         super(_installFile, _typeName, _allLinks);
     }
 
+    @Override
+    protected int getSortCriteria()
+    {
+        return 200;
+    }
+
     /**
      * Creates new instance of class {@link MenuDefinition}.
      *

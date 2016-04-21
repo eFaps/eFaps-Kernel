@@ -92,7 +92,7 @@ public enum FileType {
     /**
      * Set of all update classes.
      */
-    private final Set<Class<? extends AbstractUpdate>> clazzes = new HashSet<Class<? extends AbstractUpdate>>();
+    private final Set<Class<? extends IUpdate>> clazzes = new HashSet<>();
 
 
     /**
@@ -101,8 +101,8 @@ public enum FileType {
      * @param _type file type
      * @param _extensions extensions of the file type
      */
-    private FileType(final String _type,
-                     final String... _extensions)
+    FileType(final String _type,
+             final String... _extensions)
     {
         this.type = _type;
         for (final String extension : _extensions) {
@@ -142,7 +142,7 @@ public enum FileType {
      *
      * @return value of instance variable {@link #clazzes}
      */
-    public Set<Class<? extends AbstractUpdate>> getClazzes()
+    public Set<Class<? extends IUpdate>> getClazzes()
     {
         return this.clazzes;
     }

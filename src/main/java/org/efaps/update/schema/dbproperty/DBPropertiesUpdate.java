@@ -523,6 +523,12 @@ public class DBPropertiesUpdate
         return this.installFile;
     }
 
+    @Override
+    public String getIdentifier()
+    {
+        return DBPropertiesUpdate.class.getName();
+    }
+
     /**
      * Class to store the different Resources witch can come with one bundle.
      */
