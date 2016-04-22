@@ -20,8 +20,10 @@ import java.util.UUID;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.api.ci.DMAttributeType;
 import org.efaps.eql.stmt.ICIPrintStmt;
 import org.efaps.json.ci.AbstractCI;
+import org.efaps.json.ci.AttributeType;
 import org.efaps.util.UUIDUtil;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -52,7 +54,7 @@ public final class JSONCI
         AbstractCI<?> ret = null;
         switch (_stmt.getCINature()) {
             case TYPE:
-                Type type;
+                final Type type;
                 if (UUIDUtil.isUUID(_stmt.getCI())) {
                     type = Type.get(UUID.fromString(_stmt.getCI()));
                 } else {
@@ -64,8 +66,22 @@ public final class JSONCI
                                     .setUUID(type.getUUID())
                                     .setId(type.getId());
                     for (final Attribute attr : type.getAttributes().values()) {
-                        jsonType.addAttribute(new org.efaps.json.ci.Attribute()
-                                        .setName(attr.getName()));
+                        final AttributeType attrType = new AttributeType()
+                                        .setName(attr.getAttributeType().getName());
+                        switch (DMAttributeType.fromValue(attr.getAttributeType().getName())) {
+                            case LINK:
+                            case LINK_WITH_RANGES:
+                            case STATUS:
+                                if (attr.hasLink()) {
+                                     attrType.setInfo(attr.getLink().getName() + ", " + attr.getLink().getUUID());
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                       jsonType.addAttribute(new org.efaps.json.ci.Attribute()
+                                        .setName(attr.getName())
+                                        .setType(attrType));
                     }
                     ret = jsonType;
                 }
