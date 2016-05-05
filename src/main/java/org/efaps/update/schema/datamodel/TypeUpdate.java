@@ -17,19 +17,25 @@
 
 package org.efaps.update.schema.datamodel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
+import org.efaps.admin.index.FieldType;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.ci.CIAdminDataModel;
+import org.efaps.ci.CIAdminIndex;
 import org.efaps.ci.CIType;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -45,6 +51,7 @@ import org.efaps.update.UpdateLifecycle;
 import org.efaps.update.event.Event;
 import org.efaps.update.util.InstallationException;
 import org.efaps.util.EFapsException;
+import org.efaps.util.UUIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -333,7 +340,7 @@ public class TypeUpdate
             queryBldr.addWhereAttrEqValue(CIAdminDataModel.Attribute.ParentType, _instance.getId());
             final InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
-            Update update;
+            final Update update;
             if (query.next()) {
                 update = new Update(query.getCurrentValue());
             } else {
@@ -604,7 +611,202 @@ public class TypeUpdate
                 final Instance newInstance = event.updateInDB(update.getInstance(), name);
                 setPropertiesInDb(newInstance, event.getProperties());
             }
+        }
+    }
 
+    /**
+     * The Class IndexDefinition.
+     *
+     * @author The eFaps Team
+     */
+    public static class IndexDefinition
+    {
+        /** The msg phrase. */
+        private final String msgPhrase;
+
+        /** The fields. */
+        private final Set<IndexField> fields = new HashSet<>();
+
+        /**
+         * Instantiates a new index definition.
+         *
+         * @param _msgPhrase the msg phrase
+         */
+        public IndexDefinition(final String _msgPhrase)
+        {
+            this.msgPhrase = _msgPhrase;
+        }
+
+        /**
+         * Adds the field.
+         *
+         * @param _field the field
+         */
+        public void addField(final IndexField _field)
+        {
+            this.fields.add(_field);
+        }
+
+        /**
+         * Update in db.
+         *
+         * @param _typeInstance the type instance
+         * @throws EFapsException on error
+         */
+        public void updateInDB(final Instance _typeInstance)
+            throws EFapsException
+        {
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminIndex.IndexDefinition);
+            queryBldr.addWhereAttrEqValue(CIAdminIndex.IndexDefinition.TypeLink, _typeInstance);
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute(CIAdminIndex.IndexDefinition.MsgPhraseLink);
+            multi.executeWithoutAccessCheck();
+
+            final long msgPhraseId = getMsgPhraseId();
+            final boolean execute;
+            final Update update;
+            if (multi.next()) {
+                update = new Update(multi.getCurrentInstance());
+                execute = msgPhraseId == multi.<Long>getAttribute(CIAdminIndex.IndexDefinition.MsgPhraseLink);
+            } else {
+                execute = true;
+                update = new Insert(CIAdminIndex.IndexDefinition);
+                update.add(CIAdminIndex.IndexDefinition.TypeLink, _typeInstance);
+            }
+            if (execute) {
+                update.add(CIAdminIndex.IndexDefinition.MsgPhraseLink, msgPhraseId);
+                update.executeWithoutAccessCheck();
+            }
+            final Set<Instance> fieldInsts = new HashSet<>();
+            // try to update of insert the fields
+            for (final IndexField field : this.fields) {
+                fieldInsts.add(field.updateInDB(update.getInstance()));
+            }
+            removeObsoleteField(update.getInstance(), fieldInsts);
+        }
+
+        /**
+         * Removes the obsolete field.
+         *
+         * @param _indexDefInstance the index def instance
+         * @param _fieldInstances the field instances
+         * @throws EFapsException on error
+         */
+        private static void removeObsoleteField(final Instance _indexDefInstance,
+                                                final Collection<Instance> _fieldInstances)
+            throws EFapsException
+        {
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminIndex.IndexField);
+            queryBldr.addWhereAttrEqValue(CIAdminIndex.IndexField.DefinitionLink, _indexDefInstance);
+            if (CollectionUtils.isNotEmpty(_fieldInstances)) {
+                queryBldr.addWhereAttrNotEqValue(CIAdminIndex.IndexField.ID, _fieldInstances.toArray());
+            }
+            for (final Instance inst : queryBldr.getQuery().executeWithoutAccessCheck()) {
+                new Delete(inst).executeWithoutAccessCheck();
+            }
+        }
+
+        /**
+         * Gets the msg phrase id.
+         *
+         * @return the msg phrase id
+         * @throws EFapsException on error
+         */
+        private long getMsgPhraseId()
+            throws EFapsException
+        {
+            long ret = 0;
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminCommon.MsgPhrase);
+            if (UUIDUtil.isUUID(this.msgPhrase)) {
+                queryBldr.addWhereAttrEqValue(CIAdminCommon.MsgPhrase.UUID, this.msgPhrase);
+            } else {
+                queryBldr.addWhereAttrEqValue(CIAdminCommon.MsgPhrase.Name, this.msgPhrase);
+            }
+            final InstanceQuery query = queryBldr.getQuery();
+            query.executeWithoutAccessCheck();
+            if (query.next()) {
+                ret = query.getCurrentValue().getId();
+            } else {
+                LOG.error("Could not find a MsgPharse for: {}", this.msgPhrase);
+            }
+            if (query.next()) {
+                LOG.error("Found more than one MsgPharse for: {}", this.msgPhrase);
+            }
+            return ret;
+        }
+    }
+
+    /**
+     * The Class IndexField.
+     *
+     * @author The eFaps Team
+     */
+    public static final class IndexField
+        implements Serializable
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        /** The key. */
+        private final String key;
+
+        /** The select. */
+        private final String select;
+
+        /** The field type. */
+        private final FieldType fieldType;
+
+        /**
+         * Instantiates a new index field.
+         *
+         * @param _key the key
+         * @param _select the select
+         * @param _fieldType the field type
+         */
+        private IndexField(final String _key,
+                           final String _select,
+                           final String _fieldType)
+        {
+            this.key = _key;
+            this.select = _select;
+            this.fieldType = FieldType.valueOf(_fieldType);
+        }
+
+        /**
+         * Update in db.
+         *
+         * @param _indexDefInstance the index def instance
+         * @return the instance
+         * @throws EFapsException on error
+         */
+        public Instance updateInDB(final Instance _indexDefInstance)
+            throws EFapsException
+        {
+            final QueryBuilder queryBldr = new QueryBuilder(CIAdminIndex.IndexField);
+            queryBldr.addWhereAttrEqValue(CIAdminIndex.IndexField.DefinitionLink, _indexDefInstance);
+            queryBldr.addWhereAttrEqValue(CIAdminIndex.IndexField.Key, this.key);
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute(CIAdminIndex.IndexField.FieldType, CIAdminIndex.IndexField.Select);
+            multi.executeWithoutAccessCheck();
+            final boolean execute;
+            final Update update;
+            if (multi.next()) {
+                update = new Update(multi.getCurrentInstance());
+                execute = !this.select.equals(multi.getAttribute(CIAdminIndex.IndexField.Select)) || !this.fieldType
+                                .equals(multi.getAttribute(CIAdminIndex.IndexField.FieldType));
+            } else {
+                execute = true;
+                update = new Insert(CIAdminIndex.IndexField);
+                update.add(CIAdminIndex.IndexField.DefinitionLink, _indexDefInstance);
+                update.add(CIAdminIndex.IndexField.Key, this.key);
+            }
+            if (execute) {
+                update.add(CIAdminIndex.IndexField.Select, this.select);
+                update.add(CIAdminIndex.IndexField.FieldType, this.fieldType);
+                update.executeWithoutAccessCheck();
+            }
+            return update.getInstance();
         }
     }
 
@@ -661,6 +863,9 @@ public class TypeUpdate
          * @see #readXML(List, Map, String)
          */
         private AttributeSetDefinition curAttrSet = null;
+
+        /** The index. */
+        private IndexDefinition index = null;
 
         /**
          * @see org.efaps.update.AbstractUpdate.AbstractDefinition#readXML(java.util.List,
@@ -750,6 +955,16 @@ public class TypeUpdate
                 } else {
                     super.readXML(_tags, _attributes, _text);
                 }
+            } else if ("index".equals(value)) {
+                if (_tags.size() == 1) {
+                    this.index = new IndexDefinition(_attributes.get("msgPhrase"));
+                } else if (_tags.size() == 2 && "field".equals(_tags.get(1))) {
+                    this.index.addField(new IndexField(_attributes.get("key"),
+                                    _attributes.get("select"),
+                                    _attributes.get("type")));
+                } else {
+                    super.readXML(_tags, _attributes, _text);
+                }
             } else {
                 super.readXML(_tags, _attributes, _text);
             }
@@ -819,6 +1034,18 @@ public class TypeUpdate
                     }
 
                     removeObsoleteAttributes();
+                    // update the related index informations
+                    if (this.index == null) {
+                        final QueryBuilder queryBldr = new QueryBuilder(CIAdminIndex.IndexDefinition);
+                        queryBldr.addWhereAttrEqValue(CIAdminIndex.IndexDefinition.TypeLink, getInstance());
+                        final InstanceQuery query = queryBldr.getQuery();
+                        for (final Instance inst : query.executeWithoutAccessCheck()) {
+                            IndexDefinition.removeObsoleteField(inst, Collections.<Instance>emptyList());
+                            new Delete(inst).executeWithoutAccessCheck();
+                        }
+                    } else {
+                        this.index.updateInDB(getInstance());
+                    }
                 }
             } catch (final EFapsException e) {
                 throw new InstallationException(" Type can not be updated", e);
