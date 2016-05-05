@@ -17,18 +17,15 @@
 
 package org.efaps.util.cache;
 
-import java.util.AbstractMap;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.infinispan.AdvancedCache;
 import org.infinispan.Cache;
-import org.infinispan.commons.util.CloseableIterator;
-import org.infinispan.commons.util.CloseableIteratorCollection;
-import org.infinispan.commons.util.CloseableIteratorSet;
+import org.infinispan.CacheCollection;
+import org.infinispan.CacheSet;
 import org.infinispan.commons.util.concurrent.NotifyingFuture;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.filter.KeyFilter;
@@ -41,13 +38,10 @@ import org.infinispan.notifications.cachelistener.filter.CacheEventFilter;
  * A Cache that looks like a normal Cache but is not Operational at all.
  *
  * @author The eFaps Team
- * @version $Id: InfinispanCache.java 11733 2014-01-17 01:02:10Z jan@moxter.net
- *          $
  * @param <K> Key
  * @param <V> Value
  */
 public class NoOpCache<K, V>
-    extends AbstractMap<K, V>
     implements Cache<K, V>
 {
 
@@ -412,7 +406,6 @@ public class NoOpCache<K, V>
     public void putForExternalRead(final K _key,
                                    final V _value)
     {
-
     }
 
     @Override
@@ -450,8 +443,6 @@ public class NoOpCache<K, V>
                                 final CacheEventFilter<? super K, ? super V> _filter,
                                 final CacheEventConverter<? super K, ? super V, C> _converter)
     {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -473,65 +464,66 @@ public class NoOpCache<K, V>
     }
 
     @Override
-    public CloseableIteratorSet<K> keySet()
+    public V remove(final Object _key)
     {
-        return new DummySet<K>();
+        return null;
     }
 
     @Override
-    public CloseableIteratorCollection<V> values()
+    public boolean containsKey(final Object _key)
     {
-        return new DummySet<V>();
+        return false;
     }
 
     @Override
-    public CloseableIteratorSet<java.util.Map.Entry<K, V>> entrySet()
+    public boolean containsValue(final Object _value)
     {
-        return new DummySet<java.util.Map.Entry<K, V>>();
+        return false;
     }
 
-    public static class DummySet<E>
-        extends HashSet<E>
-        implements CloseableIteratorSet<E>
+    @Override
+    public V get(final Object _key)
     {
-
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public CloseableIterator<E> iterator()
-        {
-            return new DummyIterator<E>();
-        }
+        return null;
     }
 
-    public static class DummyIterator<E>
-        implements CloseableIterator<E>
+    @Override
+    public boolean isEmpty()
     {
+        return true;
+    }
 
-        @Override
-        public boolean hasNext()
-        {
-            return false;
-        }
+    @Override
+    public void putAll(final Map<? extends K, ? extends V> _m)
+    {
+    }
 
-        @Override
-        public E next()
-        {
-            return null;
-        }
+    @Override
+    public int size()
+    {
+        return 0;
+    }
 
-        @Override
-        public void remove()
-        {
-        }
+    @Override
+    public CacheSet<K> keySet()
+    {
+        return null;
+    }
 
-        @Override
-        public void close()
-        {
-        }
+    @Override
+    public CacheCollection<V> values()
+    {
+        return null;
+    }
 
+    @Override
+    public CacheSet<java.util.Map.Entry<K, V>> entrySet()
+    {
+        return null;
+    }
+
+    @Override
+    public void clear()
+    {
     }
 }
