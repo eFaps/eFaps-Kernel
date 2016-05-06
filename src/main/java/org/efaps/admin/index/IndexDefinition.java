@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminDataModel;
@@ -186,7 +187,7 @@ public final class IndexDefinition
 
         IndexDefinition def;
         if (multi.next()) {
-             def = new IndexDefinition(_typeUUID,
+            def = new IndexDefinition(_typeUUID,
                             multi.<Long>getAttribute(CIAdminIndex.IndexDefinition.MsgPhraseLink));
 
             final QueryBuilder fieldQueryBldr = new QueryBuilder(CIAdminIndex.IndexField);
@@ -355,6 +356,12 @@ public final class IndexDefinition
         public FieldType getFieldType()
         {
             return this.fieldType;
+        }
+
+        @Override
+        public String toString()
+        {
+            return ToStringBuilder.reflectionToString(this);
         }
     }
 }
