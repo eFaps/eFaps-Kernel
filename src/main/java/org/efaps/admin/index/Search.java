@@ -36,8 +36,9 @@ import org.apache.lucene.search.TopDocs;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.index.Indexer.Key;
-import org.efaps.admin.index.SearchResult.Element;
 import org.efaps.db.Instance;
+import org.efaps.json.index.SearchResult;
+import org.efaps.json.index.SearchResult.Element;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +100,7 @@ public final class Search
                 final String text = doc.get(Key.MSGPHRASE.name());
                 LOG.debug("{}. {}\t {}", i + 1, oid, text);
                 final Instance instance = Instance.get(oid);
-                List<Instance> list;
+                final List<Instance> list;
                 if (this.typeMapping.containsKey(instance.getType())) {
                     list = this.typeMapping.get(instance.getType());
                 } else {
