@@ -11,3 +11,5 @@ The kernel enables the following functionalities:
 - BPM integration
 - JasperReport integration
 - JMS integration
+
+See [Wiki](https://github.com/eFaps/eFaps-Kernel/wiki) for some further information.
