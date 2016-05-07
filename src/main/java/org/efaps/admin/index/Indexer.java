@@ -75,9 +75,9 @@ public final class Indexer
     }
 
     /**
-     * Analyse.
+     * Analyze.
      */
-    public static void analyse()
+    public static void analyze()
     {
         try {
             final List<IndexDefinition> defs = IndexDefinition.get();

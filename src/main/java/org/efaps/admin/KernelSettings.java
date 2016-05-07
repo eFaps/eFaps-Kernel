@@ -200,5 +200,17 @@ public interface KernelSettings
      */
     String PROFILES4UPDATE = "org.efaps.kernel.update.Profiles";
 
+    /**
+     * ClassName of the class used for getting the Analyzer. Must implement
+     * org.efaps.admin.index.IAnalyzerProvider
+     */
+    String INDEXANALYZERPROVCLASS = "org.efaps.kernel.index.AnalyzerProvider";
+
+    /**
+     * ClassName of the class used for getting the Directory. Must implement
+     * org.efaps.admin.index.IDirectoryProvider
+     */
+    String INDEXDIRECTORYPROVCLASS = "org.efaps.kernel.index.DirectoryProvider";
+
 }
 

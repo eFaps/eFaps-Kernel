@@ -16,14 +16,15 @@
  */
 package org.efaps.admin.index;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.es.SpanishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.RAMDirectory;
+import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
+import org.efaps.util.EFapsException;
 
 /**
  * The Class Index.
@@ -32,6 +33,7 @@ import org.apache.lucene.store.FSDirectory;
  */
 public final class Index
 {
+
     /**
      * Instantiates a new index.
      */
@@ -43,21 +45,64 @@ public final class Index
      * Gets the analyzer.
      *
      * @return the analyzer
+     * @throws EFapsException on error
      */
     public static Analyzer getAnalyzer()
+        throws EFapsException
     {
-        return new StandardAnalyzer(SpanishAnalyzer.getDefaultStopSet());
+        IAnalyzerProvider provider = null;
+        if (EFapsSystemConfiguration.get().containsAttributeValue(KernelSettings.INDEXANALYZERPROVCLASS)) {
+            final String clazzname = EFapsSystemConfiguration.get().getAttributeValue(
+                            KernelSettings.INDEXANALYZERPROVCLASS);
+            try {
+                final Class<?> clazz = Class.forName(clazzname, false, EFapsClassLoader.getInstance());
+                provider = (IAnalyzerProvider) clazz.newInstance();
+            } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                throw new EFapsException(Index.class, "Could not instanciate IAnalyzerProvider", e);
+            }
+        } else {
+            provider = new IAnalyzerProvider()
+            {
+                @Override
+                public Analyzer getAnalyzer()
+                {
+                    return new StandardAnalyzer(SpanishAnalyzer.getDefaultStopSet());
+                }
+            };
+        }
+        return provider.getAnalyzer();
     }
 
     /**
      * Gets the directory.
      *
      * @return the directory
-     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws EFapsException on error
      */
     public static Directory getDirectory()
-        throws IOException
+        throws EFapsException
     {
-        return FSDirectory.open(new File("/eFaps/index").toPath());
+        IDirectoryProvider provider = null;
+        if (EFapsSystemConfiguration.get().containsAttributeValue(KernelSettings.INDEXDIRECTORYPROVCLASS)) {
+            final String clazzname = EFapsSystemConfiguration.get().getAttributeValue(
+                            KernelSettings.INDEXDIRECTORYPROVCLASS);
+            try {
+                final Class<?> clazz = Class.forName(clazzname, false, EFapsClassLoader.getInstance());
+                provider = (IDirectoryProvider) clazz.newInstance();
+            } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                throw new EFapsException(Index.class, "Could not instanciate IDirectoryProvider", e);
+            }
+        } else {
+            provider = new IDirectoryProvider()
+            {
+                @Override
+                public Directory getDirectory()
+                    throws EFapsException
+                {
+                    return new RAMDirectory();
+                }
+            };
+        }
+        return provider.getDirectory();
     }
 }
