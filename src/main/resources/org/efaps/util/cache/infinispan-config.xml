@@ -30,19 +30,27 @@
                 <indexed-entities>
                     <indexed-entity>org.efaps.admin.access.AccessKey</indexed-entity>
                 </indexed-entities>
-                <!-- Use our custom IndexManager; TODO autoinject by default? -->
-                <property name="hibernate.search.default.indexmanager">org.infinispan.query.indexmanager.InfinispanIndexManager</property>
-                <!-- specify the managed index is to be shared across the nodes -->
-                <property name="hibernate.search.default.directory_provider">infinispan</property>
-                <!-- Supporting exclusive index usage will require lock cleanup on crashed nodes to be implemented -->
-                <property name="hibernate.search.default.exclusive_index_use">false</property>
-                <!-- Use latest Lucene version -->
                 <property name="hibernate.search.lucene_version">LUCENE_CURRENT</property>
-
-                <property name="hibernate.search.default.locking_cachename">LuceneIndexesLocking</property>
-                <property name="hibernate.search.default.data_cachename">LuceneIndexesData</property>
-                <property name="hibernate.search.default.metadata_cachename">LuceneIndexesMetadata</property>
+                <property name="hibernate.search.default.indexmanager">org.infinispan.query.indexmanager.InfinispanIndexManager</property>
+                <property name="hibernate.search.default.directory_provider">infinispan</property>
+                <property name="hibernate.search.default.exclusive_index_use">true</property>
+                <property name="hibernate.search.default.locking_cachename">org.efaps.admin.access.AccessCache.LuceneIndexesLocking</property>
+                <property name="hibernate.search.default.data_cachename">org.efaps.admin.access.AccessCache.LuceneIndexesData</property>
+                <property name="hibernate.search.default.metadata_cachename">org.efaps.admin.access.AccessCache.LuceneIndexesMetadata</property>
+                <property name="hibernate.search.default.reader.strategy">shared</property>
            </indexing>
+        </local-cache>
+
+        <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesMetadata">
+            <indexing index="NONE"/>
+        </local-cache>
+
+        <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesData">
+            <indexing index="NONE"/>
+        </local-cache>
+
+        <local-cache name="org.efaps.admin.access.AccessCache.LuceneIndexesLocking">
+            <indexing index="NONE"/>
         </local-cache>
 
         <local-cache name="org.efaps.admin.access.AccessCache.AccessKey">
@@ -51,26 +59,6 @@
             <expiration lifespan="600000" max-idle="300000" />
         </local-cache>
 
-        <!-- *************************************** -->
-        <!-- Cache to store Lucene's file metadata -->
-        <!-- *************************************** -->
-        <local-cache name="LuceneIndexesMetadata">
-            <indexing index="NONE"/>
-        </local-cache>
-
-        <!-- **************************** -->
-        <!-- Cache to store Lucene data -->
-        <!-- **************************** -->
-        <local-cache name="LuceneIndexesData">
-            <indexing index="NONE"/>
-        </local-cache>
-
-        <!-- ***************************** -->
-        <!-- Cache to store Lucene locks -->
-        <!-- ***************************** -->
-        <local-cache name="LuceneIndexesLocking">
-            <indexing index="NONE"/>
-        </local-cache>
 
         <!-- the Sql Query cache -->
         <local-cache name="org.efaps.db.QueryCache.Sql">
@@ -86,19 +74,27 @@
                 <indexed-entities>
                     <indexed-entity>org.efaps.db.QueryKey</indexed-entity>
                 </indexed-entities>
-                <!-- Use our custom IndexManager; TODO autoinject by default? -->
-                <property name="hibernate.search.default.indexmanager">org.infinispan.query.indexmanager.InfinispanIndexManager</property>
-                <!-- specify the managed index is to be shared across the nodes -->
-                <property name="hibernate.search.default.directory_provider">infinispan</property>
-                <!-- Supporting exclusive index usage will require lock cleanup on crashed nodes to be implemented -->
-                <property name="hibernate.search.default.exclusive_index_use">false</property>
-                <!-- Use latest Lucene version -->
                 <property name="hibernate.search.lucene_version">LUCENE_CURRENT</property>
-
-                <property name="hibernate.search.default.locking_cachename">LuceneIndexesLocking</property>
-                <property name="hibernate.search.default.data_cachename">LuceneIndexesData</property>
-                <property name="hibernate.search.default.metadata_cachename">LuceneIndexesMetadata</property>
+                <property name="hibernate.search.default.indexmanager">org.infinispan.query.indexmanager.InfinispanIndexManager</property>
+                <property name="hibernate.search.default.directory_provider">infinispan</property>
+                <property name="hibernate.search.default.exclusive_index_use">true</property>
+                <property name="hibernate.search.default.locking_cachename">org.efaps.db.QueryCache.LuceneIndexesLocking</property>
+                <property name="hibernate.search.default.data_cachename">org.efaps.db.QueryCache.LuceneIndexesData</property>
+                <property name="hibernate.search.default.metadata_cachename">org.efaps.db.QueryCache.LuceneIndexesMetadata</property>
+                <property name="hibernate.search.default.reader.strategy">shared</property>
             </indexing>
+        </local-cache>
+
+         <local-cache name="org.efaps.db.QueryCache.LuceneIndexesMetadata">
+            <indexing index="NONE"/>
+        </local-cache>
+
+        <local-cache name="org.efaps.db.QueryCache.LuceneIndexesData">
+            <indexing index="NONE"/>
+        </local-cache>
+
+        <local-cache name="org.efaps.db.QueryCache.LuceneIndexesLocking">
+            <indexing index="NONE"/>
         </local-cache>
 
 
