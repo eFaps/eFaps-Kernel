@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.StoredField;
@@ -29,9 +28,10 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.store.Directory;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.index.IndexDefinition.IndexField;
+import org.efaps.admin.user.Company;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
@@ -105,26 +105,31 @@ public final class Indexer
     public static void index(final List<Instance> _instances)
         throws EFapsException
     {
-        Indexer.index(Index.getAnalyzer(), Index.getDirectory(), _instances);
+        Indexer.index(new IndexContext().setAnalyzer(Index.getAnalyzer()).setDirectory(Index.getDirectory())
+                        .setLanguage(Context.getThreadContext().getLanguage())
+                        .setCompanyId(Context.getThreadContext().getCompany().getId()), _instances);
     }
 
     /**
      * Index or reindex a given list of instances. The given instances m,ust be
      * all of the same type!
      *
+     * @param _context the _context
      * @param _instances the instances
-     * @param _analyzer the analyzer
-     * @param _directory the directory
      * @throws EFapsException the e faps exception
      */
-    public static void index(final Analyzer _analyzer,
-                             final Directory _directory,
+    public static void index(final IndexContext _context,
                              final List<Instance> _instances)
         throws EFapsException
     {
         if (CollectionUtils.isNotEmpty(_instances)) {
-            final IndexWriterConfig config = new IndexWriterConfig(_analyzer);
-            try (IndexWriter writer = new IndexWriter(_directory, config)) {
+            final Company currentCompany = Context.getThreadContext().getCompany();
+            final String currentLanguage = Context.getThreadContext().getLanguage();
+
+            Context.getThreadContext().setCompany(Company.get(_context.getCompanyId()));
+            Context.getThreadContext().setLanguage(_context.getLanguage());
+            final IndexWriterConfig config = new IndexWriterConfig(_context.getAnalyzer());
+            try (IndexWriter writer = new IndexWriter(_context.getDirectory(), config)) {
                 final IndexDefinition def = IndexDefinition.get(_instances.get(0).getType().getUUID());
                 final MultiPrintQuery multi = new MultiPrintQuery(_instances);
                 for (final IndexField field : def.getFields()) {
@@ -178,6 +183,9 @@ public final class Indexer
                 writer.close();
             } catch (final IOException e) {
                 throw new EFapsException(Indexer.class, "IOException", e);
+            } finally {
+                Context.getThreadContext().setCompany(currentCompany);
+                Context.getThreadContext().setLanguage(currentLanguage);
             }
         }
     }

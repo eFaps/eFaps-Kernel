@@ -325,7 +325,7 @@ public final class Context
      */
     private ThreadLocal<Context> getThreadLocal()
     {
-        ThreadLocal<Context> ret;
+        final ThreadLocal<Context> ret;
         if (this.inherit) {
             ret = Context.INHERITTHREADCONTEXT;
         } else {
@@ -922,6 +922,16 @@ public final class Context
     public String getLanguage()
     {
         return this.language;
+    }
+
+    /**
+     * Setter method for instance variable {@link #language}.
+     *
+     * @param _language value for instance variable {@link #language}
+     */
+    public void setLanguage(final String _language)
+    {
+        this.language = _language;
     }
 
     /**
