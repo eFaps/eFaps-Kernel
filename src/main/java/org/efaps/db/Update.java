@@ -43,6 +43,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.index.Queue;
 import org.efaps.ci.CIAttribute;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLUpdate;
@@ -372,6 +373,7 @@ public class Update
             throw new EFapsException(getClass(), "execute.NoAccess", Context.getThreadContext().getPerson());
         }
         executeWithoutAccessCheck();
+        Queue.registerUpdate(getInstance());
     }
 
     /**

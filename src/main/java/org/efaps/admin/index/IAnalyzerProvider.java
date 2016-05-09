@@ -28,7 +28,8 @@ public interface IAnalyzerProvider
 {
 
     /**
-     * Gets the analyzer.
+     * Gets the analyzer. The method is responsible to provide the correct
+     * Analyzer for the current Context. (Company dependend, Language etc.)
      *
      * @return the analyzer
      * @throws EFapsException on error

@@ -30,6 +30,10 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public final class EFapsSystemConfiguration
 {
+
+    /** The uuid. */
+    public static final UUID UUID = java.util.UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079");
+
     /**
      * Utility Class.
      */
@@ -48,6 +52,6 @@ public final class EFapsSystemConfiguration
     public static SystemConfiguration get()
         throws CacheReloadException
     {
-        return SystemConfiguration.get(UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"));
+        return SystemConfiguration.get(UUID);
     }
 }

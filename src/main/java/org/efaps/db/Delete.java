@@ -29,6 +29,7 @@ import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.index.Queue;
 import org.efaps.db.store.Resource;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLDelete;
@@ -105,6 +106,7 @@ public class Delete
             throw new EFapsException(getClass(), "execute.NoAccess", this.instance);
         }
         executeWithoutAccessCheck();
+        Queue.registerUpdate(getInstance());
     }
 
     /**
@@ -163,7 +165,7 @@ public class Delete
                     storeRsrc.commit();
                 }
             } finally {
-                if ((storeRsrc != null) && storeRsrc.isOpened()) {
+                if (storeRsrc != null && storeRsrc.isOpened()) {
                     storeRsrc.abort();
                 }
             }
@@ -172,7 +174,7 @@ public class Delete
                 defs.addAll(GeneralInstance.getDeleteDefintion(getInstance(), con.getConnection()));
                 final SQLTable mainTable = getInstance().getType().getMainTable();
                 for (final SQLTable curTable : getInstance().getType().getTables()) {
-                    if ((curTable != mainTable) && !curTable.isReadOnly()) {
+                    if (curTable != mainTable && !curTable.isReadOnly()) {
                         defs.add(new DeleteDefintion(curTable.getSqlTable(),
                                         curTable.getSqlColId(), getInstance().getId()));
                     }
@@ -186,7 +188,7 @@ public class Delete
             }
             con.commit();
         } finally {
-            if ((con != null) && con.isOpened()) {
+            if (con != null && con.isOpened()) {
                 con.abort();
             }
         }

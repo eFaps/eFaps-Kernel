@@ -201,6 +201,12 @@ public interface KernelSettings
     String PROFILES4UPDATE = "org.efaps.kernel.update.Profiles";
 
     /**
+     * Activate the general index mechanism.
+     */
+    String INDEXACTIVATE = "org.efaps.kernel.index.Activate";
+
+
+    /**
      * ClassName of the class used for getting the Analyzer. Must implement
      * org.efaps.admin.index.IAnalyzerProvider
      */

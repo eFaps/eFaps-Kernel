@@ -19,6 +19,8 @@ package org.efaps.admin.index;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.StoredField;
@@ -27,8 +29,11 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.store.Directory;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.index.IndexDefinition.IndexField;
+import org.efaps.db.Instance;
+import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
@@ -42,6 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class Indexer
 {
+
     /**
      * The Enum Key.
      *
@@ -71,23 +77,56 @@ public final class Indexer
      */
     private Indexer()
     {
-
     }
 
     /**
-     * Analyze.
+     * Index or reindex using the Indexdefinitions.
+     *
+     * @throws EFapsException the e faps exception
      */
-    public static void analyze()
+    public static void index()
+        throws EFapsException
     {
-        try {
-            final List<IndexDefinition> defs = IndexDefinition.get();
+        final List<IndexDefinition> defs = IndexDefinition.get();
+        for (final IndexDefinition def : defs) {
+            final QueryBuilder queryBldr = new QueryBuilder(def.getUUID());
+            final InstanceQuery query = queryBldr.getQuery();
+            index(query.execute());
+        }
+    }
 
-            final IndexWriterConfig config = new IndexWriterConfig(Index.getAnalyzer());
-            final IndexWriter writer = new IndexWriter(Index.getDirectory(), config);
+    /**
+     * Index or reindex a given list of instances. The given instances m,ust be
+     * all of the same type!
+     *
+     * @param _instances the _instances
+     * @throws EFapsException the e faps exception
+     */
+    public static void index(final List<Instance> _instances)
+        throws EFapsException
+    {
+        Indexer.index(Index.getAnalyzer(), Index.getDirectory(), _instances);
+    }
 
-            for (final IndexDefinition def : defs) {
-                final QueryBuilder queryBldr = new QueryBuilder(def.getUUID());
-                final MultiPrintQuery multi = queryBldr.getPrint();
+    /**
+     * Index or reindex a given list of instances. The given instances m,ust be
+     * all of the same type!
+     *
+     * @param _instances the instances
+     * @param _analyzer the analyzer
+     * @param _directory the directory
+     * @throws EFapsException the e faps exception
+     */
+    public static void index(final Analyzer _analyzer,
+                             final Directory _directory,
+                             final List<Instance> _instances)
+        throws EFapsException
+    {
+        if (CollectionUtils.isNotEmpty(_instances)) {
+            final IndexWriterConfig config = new IndexWriterConfig(_analyzer);
+            try (IndexWriter writer = new IndexWriter(_directory, config)) {
+                final IndexDefinition def = IndexDefinition.get(_instances.get(0).getType().getUUID());
+                final MultiPrintQuery multi = new MultiPrintQuery(_instances);
                 for (final IndexField field : def.getFields()) {
                     multi.addSelect(field.getSelect());
                 }
@@ -101,7 +140,7 @@ public final class Indexer
                     doc.add(new StringField("type", type, Store.YES));
 
                     final StringBuilder allBldr = new StringBuilder()
-                                .append(type).append(" ");
+                                    .append(type).append(" ");
 
                     for (final IndexField field : def.getFields()) {
                         final String name = DBProperties.getProperty(field.getKey());
@@ -133,14 +172,13 @@ public final class Indexer
                     }
                     doc.add(new StoredField(Key.MSGPHRASE.name(), multi.getMsgPhrase(def.getMsgPhrase())));
                     doc.add(new TextField(Key.ALL.name(), allBldr.toString(), Store.NO));
-                    //writer.addDocument(doc);
                     writer.updateDocument(new Term("oid", oid), doc);
                     LOG.debug("Add Document: {}", doc);
                 }
+                writer.close();
+            } catch (final IOException e) {
+                throw new EFapsException(Indexer.class, "IOException", e);
             }
-            writer.close();
-        } catch (final IOException | EFapsException e) {
-            LOG.error("Catched Exception", e);
         }
     }
 }
