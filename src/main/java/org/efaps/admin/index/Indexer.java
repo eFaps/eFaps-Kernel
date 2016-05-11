@@ -147,7 +147,7 @@ public final class Indexer
                     final String type = multi.getCurrentInstance().getType().getLabel();
                     final Document doc = new Document();
                     doc.add(new StringField(Key.OID.name(), oid, Store.YES));
-                    doc.add(new StringField("type", type, Store.YES));
+                    doc.add(new StringField(DBProperties.getProperty("index.Type"), type, Store.YES));
 
                     final StringBuilder allBldr = new StringBuilder()
                                     .append(type).append(" ");
