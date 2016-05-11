@@ -28,6 +28,12 @@ public enum FieldType
 {
 
     /** {@link org.apache.lucene.document.StringField} not Stored. */
+    SEARCHLONG,
+
+    /** {@link org.apache.lucene.document.StringField}. */
+    LONG,
+
+    /** {@link org.apache.lucene.document.StringField} not Stored. */
     SEARCHSTRING,
 
     /** {@link org.apache.lucene.document.StringField}. */

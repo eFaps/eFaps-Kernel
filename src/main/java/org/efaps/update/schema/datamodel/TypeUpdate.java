@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Classification;
@@ -36,6 +37,7 @@ import org.efaps.admin.index.FieldType;
 import org.efaps.ci.CIAdminCommon;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.ci.CIAdminIndex;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.ci.CIType;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -625,7 +627,7 @@ public class TypeUpdate
         private final String msgPhrase;
 
         /** The fields. */
-        private final Set<IndexField> fields = new HashSet<>();
+        private final List<IndexField> fields = new ArrayList<>();
 
         /**
          * Instantiates a new index definition.
@@ -757,20 +759,32 @@ public class TypeUpdate
         /** The field type. */
         private final FieldType fieldType;
 
+        /** The transform esjp. */
+        private final String transform;
+
+        /** The field identifier. */
+        private final String identifier;
+
         /**
          * Instantiates a new index field.
          *
+         * @param _idx the idx
          * @param _key the key
          * @param _select the select
          * @param _fieldType the field type
+         * @param _transform the transform
          */
-        private IndexField(final String _key,
+        private IndexField(final String _identifier,
+                           final String _key,
                            final String _select,
-                           final String _fieldType)
+                           final String _fieldType,
+                           final String _transform)
         {
+            this.identifier = _identifier;
             this.key = _key;
             this.select = _select;
             this.fieldType = FieldType.valueOf(_fieldType);
+            this.transform = _transform;
         }
 
         /**
@@ -785,28 +799,65 @@ public class TypeUpdate
         {
             final QueryBuilder queryBldr = new QueryBuilder(CIAdminIndex.IndexField);
             queryBldr.addWhereAttrEqValue(CIAdminIndex.IndexField.DefinitionLink, _indexDefInstance);
-            queryBldr.addWhereAttrEqValue(CIAdminIndex.IndexField.Key, this.key);
+            queryBldr.addWhereAttrEqValue(CIAdminIndex.IndexField.Identifier, this.identifier);
             final MultiPrintQuery multi = queryBldr.getPrint();
-            multi.addAttribute(CIAdminIndex.IndexField.FieldType, CIAdminIndex.IndexField.Select);
+            multi.addAttribute(CIAdminIndex.IndexField.FieldType, CIAdminIndex.IndexField.Select,
+                            CIAdminIndex.IndexField.TransformerLink);
             multi.executeWithoutAccessCheck();
+
+            final Long transformId = getESJPId();
             final boolean execute;
             final Update update;
             if (multi.next()) {
                 update = new Update(multi.getCurrentInstance());
-                execute = !this.select.equals(multi.getAttribute(CIAdminIndex.IndexField.Select)) || !this.fieldType
-                                .equals(multi.getAttribute(CIAdminIndex.IndexField.FieldType));
+                execute = !this.key.equals(multi.getAttribute(CIAdminIndex.IndexField.Key))
+                            || !this.select.equals(multi.getAttribute(CIAdminIndex.IndexField.Select))
+                            || !this.fieldType.equals(multi.getAttribute(CIAdminIndex.IndexField.FieldType))
+                            || (transformId == null
+                                && multi.getAttribute(CIAdminIndex.IndexField.TransformerLink) != null)
+                            || (transformId != null
+                                && !transformId.equals(multi.getAttribute(CIAdminIndex.IndexField.TransformerLink)));
             } else {
                 execute = true;
                 update = new Insert(CIAdminIndex.IndexField);
                 update.add(CIAdminIndex.IndexField.DefinitionLink, _indexDefInstance);
-                update.add(CIAdminIndex.IndexField.Key, this.key);
+                update.add(CIAdminIndex.IndexField.Identifier, this.identifier);
             }
             if (execute) {
+                update.add(CIAdminIndex.IndexField.Key, this.key);
+                update.add(CIAdminIndex.IndexField.TransformerLink, transformId);
                 update.add(CIAdminIndex.IndexField.Select, this.select);
                 update.add(CIAdminIndex.IndexField.FieldType, this.fieldType);
                 update.executeWithoutAccessCheck();
             }
             return update.getInstance();
+        }
+
+        /**
+         * Gets the msg phrase id.
+         *
+         * @return the msg phrase id
+         * @throws EFapsException on error
+         */
+        private Long getESJPId()
+            throws EFapsException
+        {
+            Long ret = null;
+            if (StringUtils.isNotEmpty(this.transform)) {
+                final QueryBuilder queryBldr = new QueryBuilder(CIAdminProgram.Java);
+                queryBldr.addWhereAttrEqValue(CIAdminProgram.Java.Name, this.transform);
+                final InstanceQuery query = queryBldr.getQuery();
+                query.executeWithoutAccessCheck();
+                if (query.next()) {
+                    ret = query.getCurrentValue().getId();
+                } else {
+                    LOG.error("Could not find a ESJP for: {}", this.transform);
+                }
+                if (query.next()) {
+                    LOG.error("Found more than one ESJP for: {}", this.transform);
+                }
+            }
+            return ret;
         }
     }
 
@@ -959,9 +1010,11 @@ public class TypeUpdate
                 if (_tags.size() == 1) {
                     this.index = new IndexDefinition(_attributes.get("msgPhrase"));
                 } else if (_tags.size() == 2 && "field".equals(_tags.get(1))) {
-                    this.index.addField(new IndexField(_attributes.get("key"),
+                    this.index.addField(new IndexField(_attributes.get("id"),
+                                    _attributes.get("key"),
                                     _attributes.get("select"),
-                                    _attributes.get("type")));
+                                    _attributes.get("type"),
+                                    _attributes.get("transform")));
                 } else {
                     super.readXML(_tags, _attributes, _text);
                 }

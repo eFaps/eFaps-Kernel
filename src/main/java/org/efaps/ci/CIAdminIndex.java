@@ -46,8 +46,6 @@ public class CIAdminIndex
         public final CIAttribute Modified = new CIAttribute(this, "Modified");
     }
 
-
-
     public static final _IndexField IndexField = new _IndexField("ab470ba9-29dc-40b1-beb4-cd54f0f7133a");
 
     public static class _IndexField
@@ -60,9 +58,11 @@ public class CIAdminIndex
         }
 
         public final CIAttribute DefinitionLink = new CIAttribute(this, "DefinitionLink");
+        public final CIAttribute Identifier = new CIAttribute(this, "Identifier");
         public final CIAttribute Key = new CIAttribute(this, "Key");
         public final CIAttribute Select = new CIAttribute(this, "Select");
         public final CIAttribute FieldType = new CIAttribute(this, "FieldType");
+        public final CIAttribute TransformerLink = new CIAttribute(this, "TransformerLink");
         public final CIAttribute Creator = new CIAttribute(this, "Creator");
         public final CIAttribute Created = new CIAttribute(this, "Created");
         public final CIAttribute Modifier = new CIAttribute(this, "Modifier");

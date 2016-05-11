@@ -28,6 +28,7 @@ import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.ci.CIAdminDataModel;
 import org.efaps.ci.CIAdminIndex;
+import org.efaps.ci.CIAdminProgram;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.SelectBuilder;
@@ -194,12 +195,18 @@ public final class IndexDefinition
             fieldQueryBldr.addWhereAttrEqValue(CIAdminIndex.IndexField.DefinitionLink, multi.getCurrentInstance());
             final MultiPrintQuery fieldMulti = fieldQueryBldr.getPrint();
             fieldMulti.addAttribute(CIAdminIndex.IndexField.Key, CIAdminIndex.IndexField.Select,
-                            CIAdminIndex.IndexField.FieldType);
+                            CIAdminIndex.IndexField.FieldType, CIAdminIndex.IndexField.Identifier);
+            final SelectBuilder selTransName = SelectBuilder.get().linkto(CIAdminIndex.IndexField.TransformerLink)
+                            .attribute(CIAdminProgram.Java.Name);
+            fieldMulti.addSelect(selTransName);
             fieldMulti.executeWithoutAccessCheck();
             while (fieldMulti.next()) {
-                final IndexField field = new IndexField(fieldMulti.<String>getAttribute(CIAdminIndex.IndexField.Key),
+                final IndexField field = new IndexField(fieldMulti.<String>getAttribute(
+                                    CIAdminIndex.IndexField.Identifier),
+                                fieldMulti.<String>getAttribute(CIAdminIndex.IndexField.Key),
                                 fieldMulti.<String>getAttribute(CIAdminIndex.IndexField.Select),
-                                fieldMulti.<FieldType>getAttribute(CIAdminIndex.IndexField.FieldType));
+                                fieldMulti.<FieldType>getAttribute(CIAdminIndex.IndexField.FieldType),
+                                fieldMulti.<String>getSelect(selTransName));
                 def.fields.add(field);
             }
         } else {
@@ -227,14 +234,14 @@ public final class IndexDefinition
                     def = new IndexDefinition(_typeUUID, parentDef.msgPhraseId);
                 }
                 for (final IndexField currentField : def.fields) {
-                    if (currentField.getKey().equals(parentField.getKey())) {
+                    if (currentField.getIdentifier().equals(parentField.getIdentifier())) {
                         found = true;
                         break;
                     }
                 }
                 if (!found) {
-                    def.fields.add(new IndexField(parentField.getKey(), parentField.getSelect(), parentField
-                                    .getFieldType()));
+                    def.fields.add(new IndexField(parentField.getIdentifier(), parentField.getKey(),
+                                    parentField.getSelect(), parentField.getFieldType(), parentField.getTransform()));
                     dirty = true;
                 }
             }
@@ -303,6 +310,9 @@ public final class IndexDefinition
         /** The Constant serialVersionUID. */
         private static final long serialVersionUID = 1L;
 
+        /** The identifier. */
+        private final String identifier;
+
         /** The key. */
         private final String key;
 
@@ -312,20 +322,29 @@ public final class IndexDefinition
         /** The field type. */
         private final FieldType fieldType;
 
+        /** The transform esjp classname. */
+        private final String transform;
+
         /**
          * Instantiates a new index field.
          *
+         * @param _identifier the identifier
          * @param _key the key
          * @param _select the select
          * @param _fieldType the field type
+         * @param _transform the transform
          */
-        private IndexField(final String _key,
+        private IndexField(final String _identifier,
+                           final String _key,
                            final String _select,
-                           final FieldType _fieldType)
+                           final FieldType _fieldType,
+                           final String _transform)
         {
+            this.identifier = _identifier;
             this.key = _key;
             this.select = _select;
             this.fieldType = _fieldType;
+            this.transform = _transform;
         }
 
         /**
@@ -356,6 +375,26 @@ public final class IndexDefinition
         public FieldType getFieldType()
         {
             return this.fieldType;
+        }
+
+        /**
+         * Gets the transform esjp classname.
+         *
+         * @return the transform esjp classname
+         */
+        public String getTransform()
+        {
+            return this.transform;
+        }
+
+        /**
+         * Gets the identifier.
+         *
+         * @return the identifier
+         */
+        public String getIdentifier()
+        {
+            return this.identifier;
         }
 
         @Override

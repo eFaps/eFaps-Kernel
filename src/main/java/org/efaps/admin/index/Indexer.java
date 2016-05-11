@@ -20,8 +20,11 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
@@ -39,6 +42,8 @@ import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+
 
 /**
  * The Class Indexer.
@@ -149,30 +154,57 @@ public final class Indexer
 
                     for (final IndexField field : def.getFields()) {
                         final String name = DBProperties.getProperty(field.getKey());
-                        final Object value = multi.getSelect(field.getSelect());
-                        switch (field.getFieldType()) {
-                            case STRING:
-                                doc.add(new StringField(name, String.valueOf(value), Store.YES));
-                                allBldr.append(value).append(" ");
-                                break;
-                            case SEARCHSTRING:
-                                doc.add(new StringField(name, String.valueOf(value), Store.NO));
-                                allBldr.append(value).append(" ");
-                                break;
-                            case TEXT:
-                                doc.add(new TextField(name, String.valueOf(value), Store.YES));
-                                allBldr.append(value).append(" ");
-                                break;
-                            case SEARCHTEXT:
-                                doc.add(new TextField(name, String.valueOf(value), Store.NO));
-                                allBldr.append(value).append(" ");
-                                break;
-                            case STORED:
-                                doc.add(new StoredField(name, String.valueOf(value)));
-                                allBldr.append(value).append(" ");
-                                break;
-                            default:
-                                break;
+                        Object value = multi.getSelect(field.getSelect());
+                        if (value != null) {
+                            if (StringUtils.isNoneEmpty(field.getTransform())) {
+                                final Class<?> clazz = Class.forName(field.getTransform());
+                                final ITransformer transformer = (ITransformer) clazz.newInstance();
+                                value = transformer.transform(value);
+                            }
+                            switch (field.getFieldType()) {
+                                case LONG:
+                                    long val = 0;
+                                    if (value instanceof String) {
+                                        val = NumberUtils.toLong((String) value);
+                                    } else if (value instanceof Number) {
+                                        val = ((Number) value).longValue();
+                                    }
+                                    doc.add(new LongField(name, val, Store.YES));
+                                    allBldr.append(value).append(" ");
+                                    break;
+                                case SEARCHLONG:
+                                    long val2 = 0;
+                                    if (value instanceof String) {
+                                        val2 = NumberUtils.toLong((String) value);
+                                    } else if (value instanceof Number) {
+                                        val2 = ((Number) value).longValue();
+                                    }
+                                    doc.add(new LongField(name, val2, Store.NO));
+                                    allBldr.append(value).append(" ");
+                                    break;
+                                case STRING:
+                                    doc.add(new StringField(name, String.valueOf(value), Store.YES));
+                                    allBldr.append(value).append(" ");
+                                    break;
+                                case SEARCHSTRING:
+                                    doc.add(new StringField(name, String.valueOf(value), Store.NO));
+                                    allBldr.append(value).append(" ");
+                                    break;
+                                case TEXT:
+                                    doc.add(new TextField(name, String.valueOf(value), Store.YES));
+                                    allBldr.append(value).append(" ");
+                                    break;
+                                case SEARCHTEXT:
+                                    doc.add(new TextField(name, String.valueOf(value), Store.NO));
+                                    allBldr.append(value).append(" ");
+                                    break;
+                                case STORED:
+                                    doc.add(new StoredField(name, String.valueOf(value)));
+                                    allBldr.append(value).append(" ");
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
                     doc.add(new StoredField(Key.MSGPHRASE.name(), multi.getMsgPhrase(def.getMsgPhrase())));
@@ -181,7 +213,7 @@ public final class Indexer
                     LOG.debug("Add Document: {}", doc);
                 }
                 writer.close();
-            } catch (final IOException e) {
+            } catch (final IOException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 throw new EFapsException(Indexer.class, "IOException", e);
             } finally {
                 Context.getThreadContext().setCompany(currentCompany);
