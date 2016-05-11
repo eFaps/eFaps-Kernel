@@ -106,7 +106,6 @@ public class Delete
             throw new EFapsException(getClass(), "execute.NoAccess", this.instance);
         }
         executeWithoutAccessCheck();
-        Queue.registerUpdate(getInstance());
     }
 
     /**
@@ -182,6 +181,9 @@ public class Delete
                 defs.add(new DeleteDefintion(mainTable.getSqlTable(), mainTable.getSqlColId(), getInstance().getId()));
                 final SQLDelete delete = Context.getDbType().newDelete(defs.toArray(new DeleteDefintion[defs.size()]));
                 delete.execute(con.getConnection());
+
+                AccessCache.registerUpdate(getInstance());
+                Queue.registerUpdate(getInstance());
             } catch (final SQLException e) {
                 throw new EFapsException(getClass(),
                                          "executeWithoutAccessCheck.SQLException", e, this.instance);

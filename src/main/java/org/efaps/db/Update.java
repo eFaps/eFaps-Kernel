@@ -373,7 +373,6 @@ public class Update
             throw new EFapsException(getClass(), "execute.NoAccess", Context.getThreadContext().getPerson());
         }
         executeWithoutAccessCheck();
-        Queue.registerUpdate(getInstance());
     }
 
     /**
@@ -459,6 +458,8 @@ public class Update
                     }
                 }
                 con.commit();
+                AccessCache.registerUpdate(getInstance());
+                Queue.registerUpdate(getInstance());
             } catch (final SQLException e) {
                 Update.LOG.error("Update of '" + this.instance + "' not possible", e);
                 throw new EFapsException(getClass(), "executeWithoutTrigger.SQLException", e, this.instance);

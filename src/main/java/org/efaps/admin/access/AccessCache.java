@@ -20,6 +20,7 @@ package org.efaps.admin.access;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.TermQuery;
 import org.efaps.admin.AppConfigHandler;
@@ -110,11 +111,11 @@ public final class AccessCache
                 final SearchManager searchManager = Search.getSearchManager(indexCache);
                 final Term typeUUIDTerm = new Term("instanceTypeUUID", _instance.getTypeUUID().toString());
 
-                final BooleanQuery andQuery = new BooleanQuery();
-                andQuery.add(new TermQuery(typeUUIDTerm), Occur.MUST);
-                andQuery.add(NumericRangeQuery.newLongRange("instanceId", _instance.getId(), _instance.getId(), true,
+                final Builder builder = new BooleanQuery.Builder();
+                builder.add(new TermQuery(typeUUIDTerm), Occur.MUST);
+                builder.add(NumericRangeQuery.newLongRange("instanceId", _instance.getId(), _instance.getId(), true,
                                 true), Occur.MUST);
-                final CacheQuery query = searchManager.getQuery(andQuery, AccessKey.class);
+                final CacheQuery query = searchManager.getQuery(builder.build(), AccessKey.class);
 
                 try (final ResultIterator iter = query.iterator()) {
                     while (iter.hasNext()) {

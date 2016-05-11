@@ -55,7 +55,8 @@ public final class Queue
         throws EFapsException
     {
         if (EFapsSystemConfiguration.get().getAttributeValueAsBoolean(KernelSettings.INDEXACTIVATE)) {
-            if (IndexDefinition.get(_instance.getType().getUUID()) != null) {
+            if (_instance != null && _instance.getType() != null
+                            && IndexDefinition.get(_instance.getType().getUUID()) != null) {
                 final AdvancedCache<String, String> cache = InfinispanCache.get()
                                 .<String, String>getIgnReCache(CACHENAME);
                 cache.put(RandomStringUtils.random(12), _instance.getOid());

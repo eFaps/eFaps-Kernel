@@ -34,6 +34,7 @@ import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
+import org.efaps.admin.index.Queue;
 import org.efaps.ci.CIType;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLInsert;
@@ -233,6 +234,7 @@ public class Insert
                 }
             }
             con.commit();
+            Queue.registerUpdate(getInstance());
         } finally {
             if (con != null && con.isOpened()) {
                 con.abort();
