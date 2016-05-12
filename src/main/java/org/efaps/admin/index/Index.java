@@ -105,4 +105,46 @@ public final class Index
         }
         return provider.getDirectory();
     }
+
+    /**
+     * Gets the directory.
+     *
+     * @return the directory
+     * @throws EFapsException on error
+     */
+    public static ISearch getSearch()
+        throws EFapsException
+    {
+        ISearch ret = null;
+        if (EFapsSystemConfiguration.get().containsAttributeValue(KernelSettings.INDEXSEARCHCLASS)) {
+            final String clazzname = EFapsSystemConfiguration.get().getAttributeValue(
+                            KernelSettings.INDEXSEARCHCLASS);
+            try {
+                final Class<?> clazz = Class.forName(clazzname, false, EFapsClassLoader.getInstance());
+                ret = (ISearch) clazz.newInstance();
+            } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                throw new EFapsException(Index.class, "Could not instanciate IDirectoryProvider", e);
+            }
+        } else {
+            ret = new ISearch()
+            {
+
+                /** The query. */
+                private String query;
+
+                @Override
+                public void setQuery(final String _query)
+                {
+                    this.query = _query;
+                }
+
+                @Override
+                public String getQuery()
+                {
+                    return this.query;
+                }
+            };
+        }
+        return ret;
+    }
 }

@@ -58,7 +58,7 @@ public class Search
     {
         Response ret;
         try {
-            final SearchResult result = org.efaps.admin.index.Search.search(_query);
+            final SearchResult result = org.efaps.admin.index.Searcher.search(_query);
             ret = Response.ok().type(MediaType.APPLICATION_JSON).entity(getJSONReply(result)).build();
         } catch (final Exception e) {
             LOG.error("Error processing data.", e);

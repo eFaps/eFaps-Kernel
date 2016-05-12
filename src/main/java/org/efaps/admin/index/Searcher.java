@@ -18,6 +18,7 @@ package org.efaps.admin.index;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,13 +49,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author The eFaps Team
  */
-public final class Search
+public final class Searcher
 {
 
     /**
      * Logging instance used in this class.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(Search.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Searcher.class);
 
     /** The types. */
     private final Map<Type, List<Instance>> typeMapping = new HashMap<>();
@@ -65,32 +66,30 @@ public final class Search
     /**
      * Instantiates a new search.
      */
-    private Search()
+    private Searcher()
     {
     }
 
     /**
      * Search.
      *
-     * @param _query the query
-     * @param _numHits the num hits
+     * @param _search the search
      * @return the search result
      * @throws EFapsException on error
      */
-    public SearchResult search(final String _query,
-                               final int _numHits)
+    protected SearchResult executeSearch(final ISearch _search)
         throws EFapsException
     {
         final SearchResult ret = new SearchResult();
         try {
-            LOG.debug("Starting search with: {}", _query);
+            LOG.debug("Starting search with: {}", _search.getQuery());
             final StandardQueryParser queryParser = new StandardQueryParser(Index.getAnalyzer());
-            final Query query = queryParser.parse(_query, "ALL");
+            final Query query = queryParser.parse(_search.getQuery(), "ALL");
 
             final IndexReader reader = DirectoryReader.open(Index.getDirectory());
 
             final IndexSearcher searcher = new IndexSearcher(reader);
-            final TopDocs docs = searcher.search(query, _numHits);
+            final TopDocs docs = searcher.search(query, _search.getNumHits());
             final ScoreDoc[] hits = docs.scoreDocs;
 
             LOG.debug("Found {} hits.", hits.length);
@@ -108,7 +107,16 @@ public final class Search
                     this.typeMapping.put(instance.getType(), list);
                 }
                 list.add(instance);
-                this.elements.put(instance, new Element().setOid(oid).setText(text));
+                final Element element = new Element().setOid(oid).setText(text);
+                for (final Entry<String, Collection<String>> entry : _search.getResultFields().entrySet()) {
+                    for (final String name : entry.getValue()) {
+                        final String value = doc.get(name);
+                        if (value != null) {
+                            element.addField(name, value);
+                        }
+                    }
+                }
+                this.elements.put(instance, element);
             }
             reader.close();
             checkAccess();
@@ -146,6 +154,21 @@ public final class Search
     public static SearchResult search(final String _query)
         throws EFapsException
     {
-        return new Search().search(_query, 1000);
+        final ISearch searchDef = Index.getSearch();
+        searchDef.setQuery(_query);
+        return search(searchDef);
+    }
+
+    /**
+     * Search.
+     *
+     * @param _search the search
+     * @return the search result
+     * @throws EFapsException on error
+     */
+    public static SearchResult search(final ISearch _search)
+        throws EFapsException
+    {
+        return new Searcher().executeSearch(_search);
     }
 }

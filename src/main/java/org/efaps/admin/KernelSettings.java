@@ -218,5 +218,11 @@ public interface KernelSettings
      */
     String INDEXDIRECTORYPROVCLASS = "org.efaps.kernel.index.DirectoryProvider";
 
+    /**
+     * ClassName of the class used for getting the SearchDefinition. Must implement
+     * org.efaps.admin.index.ISearchDefinition.
+     */
+    String INDEXSEARCHCLASS = "org.efaps.kernel.index.Search";
+
 }
 
