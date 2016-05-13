@@ -33,6 +33,8 @@ import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopDocs;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
@@ -84,39 +86,47 @@ public final class Searcher
         try {
             LOG.debug("Starting search with: {}", _search.getQuery());
             final StandardQueryParser queryParser = new StandardQueryParser(Index.getAnalyzer());
+            queryParser.setAllowLeadingWildcard(true);
             final Query query = queryParser.parse(_search.getQuery(), "ALL");
 
             final IndexReader reader = DirectoryReader.open(Index.getDirectory());
+            Sort sort = _search.getSort();
+            if (sort == null) {
+                sort  = new Sort(new SortField(Key.CREATED.name(), SortField.Type.LONG, true));
+            }
 
             final IndexSearcher searcher = new IndexSearcher(reader);
-            final TopDocs docs = searcher.search(query, _search.getNumHits());
-            final ScoreDoc[] hits = docs.scoreDocs;
+            ret.setHitCount(searcher.count(query));
+            if (ret.getHitCount() > 0) {
+                final TopDocs docs = searcher.search(query, _search.getNumHits(), sort);
+                final ScoreDoc[] hits = docs.scoreDocs;
 
-            LOG.debug("Found {} hits.", hits.length);
-            for (int i = 0; i < hits.length; ++i) {
-                final Document doc = searcher.doc(hits[i].doc);
-                final String oid = doc.get(Key.OID.name());
-                final String text = doc.get(Key.MSGPHRASE.name());
-                LOG.debug("{}. {}\t {}", i + 1, oid, text);
-                final Instance instance = Instance.get(oid);
-                final List<Instance> list;
-                if (this.typeMapping.containsKey(instance.getType())) {
-                    list = this.typeMapping.get(instance.getType());
-                } else {
-                    list = new ArrayList<Instance>();
-                    this.typeMapping.put(instance.getType(), list);
-                }
-                list.add(instance);
-                final Element element = new Element().setOid(oid).setText(text);
-                for (final Entry<String, Collection<String>> entry : _search.getResultFields().entrySet()) {
-                    for (final String name : entry.getValue()) {
-                        final String value = doc.get(name);
-                        if (value != null) {
-                            element.addField(name, value);
+                LOG.debug("Found {} hits.", hits.length);
+                for (int i = 0; i < hits.length; ++i) {
+                    final Document doc = searcher.doc(hits[i].doc);
+                    final String oid = doc.get(Key.OID.name());
+                    final String text = doc.get(Key.MSGPHRASE.name());
+                    LOG.debug("{}. {}\t {}", i + 1, oid, text);
+                    final Instance instance = Instance.get(oid);
+                    final List<Instance> list;
+                    if (this.typeMapping.containsKey(instance.getType())) {
+                        list = this.typeMapping.get(instance.getType());
+                    } else {
+                        list = new ArrayList<Instance>();
+                        this.typeMapping.put(instance.getType(), list);
+                    }
+                    list.add(instance);
+                    final Element element = new Element().setOid(oid).setText(text);
+                    for (final Entry<String, Collection<String>> entry : _search.getResultFields().entrySet()) {
+                        for (final String name : entry.getValue()) {
+                            final String value = doc.get(name);
+                            if (value != null) {
+                                element.addField(name, value);
+                            }
                         }
                     }
+                    this.elements.put(instance, element);
                 }
-                this.elements.put(instance, element);
             }
             reader.close();
             checkAccess();

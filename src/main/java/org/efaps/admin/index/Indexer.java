@@ -25,12 +25,15 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.attributetype.CreatedType;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.index.IndexDefinition.IndexField;
 import org.efaps.admin.user.Company;
@@ -40,6 +43,7 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,8 +72,10 @@ public final class Indexer
         ALL,
 
         /** The msgphrase. */
-        MSGPHRASE;
+        MSGPHRASE,
 
+        /** The created field. */
+        CREATED;
     }
 
     /**
@@ -140,14 +146,27 @@ public final class Indexer
                 for (final IndexField field : def.getFields()) {
                     multi.addSelect(field.getSelect());
                 }
+                Attribute createdAttr = null;
+                if (!_instances.get(0).getType().getAttributes(CreatedType.class).isEmpty()) {
+                    createdAttr = _instances.get(0).getType().getAttributes(CreatedType.class).iterator().next();
+                    multi.addAttribute(createdAttr);
+                }
                 multi.addMsgPhrase(def.getMsgPhrase());
                 multi.executeWithoutAccessCheck();
                 while (multi.next()) {
                     final String oid = multi.getCurrentInstance().getOid();
                     final String type = multi.getCurrentInstance().getType().getLabel();
+                    final DateTime created;
+                    if (createdAttr == null) {
+                        created = new DateTime();
+                    } else {
+                        created = multi.getAttribute(createdAttr);
+                    }
+
                     final Document doc = new Document();
                     doc.add(new StringField(Key.OID.name(), oid, Store.YES));
-                    doc.add(new StringField(DBProperties.getProperty("index.Type"), type, Store.YES));
+                    doc.add(new TextField(DBProperties.getProperty("index.Type"), type, Store.YES));
+                    doc.add(new NumericDocValuesField(Key.CREATED.name(), created.getMillis()));
 
                     final StringBuilder allBldr = new StringBuilder()
                                     .append(type).append(" ");

@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.lucene.search.Sort;
+
 /**
  * The Interface IResultProvider.
  *
@@ -62,4 +64,26 @@ public interface ISearch
     {
         return Collections.emptyMap();
     }
+
+    /**
+     * Gets the result fields. Mapping of field keys
+     * and names already translated to requested language.
+     *
+     * @return the field names
+     */
+    default Map<String, String> getResultLabel()
+    {
+        return Collections.emptyMap();
+    }
+
+    /**
+     * Gets the sort criteria.
+     *
+     * @return the sort
+     */
+    default Sort getSort()
+    {
+        return null;
+    };
+
 }
