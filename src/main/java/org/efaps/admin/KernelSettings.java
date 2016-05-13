@@ -200,5 +200,29 @@ public interface KernelSettings
      */
     String PROFILES4UPDATE = "org.efaps.kernel.update.Profiles";
 
+    /**
+     * Activate the general index mechanism.
+     */
+    String INDEXACTIVATE = "org.efaps.kernel.index.Activate";
+
+
+    /**
+     * ClassName of the class used for getting the Analyzer. Must implement
+     * org.efaps.admin.index.IAnalyzerProvider
+     */
+    String INDEXANALYZERPROVCLASS = "org.efaps.kernel.index.AnalyzerProvider";
+
+    /**
+     * ClassName of the class used for getting the Directory. Must implement
+     * org.efaps.admin.index.IDirectoryProvider
+     */
+    String INDEXDIRECTORYPROVCLASS = "org.efaps.kernel.index.DirectoryProvider";
+
+    /**
+     * ClassName of the class used for getting the SearchDefinition. Must implement
+     * org.efaps.admin.index.ISearchDefinition.
+     */
+    String INDEXSEARCHCLASS = "org.efaps.kernel.index.Search";
+
 }
 

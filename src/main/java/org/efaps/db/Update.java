@@ -43,6 +43,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.index.Queue;
 import org.efaps.ci.CIAttribute;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.wrapper.SQLUpdate;
@@ -457,6 +458,8 @@ public class Update
                     }
                 }
                 con.commit();
+                AccessCache.registerUpdate(getInstance());
+                Queue.registerUpdate(getInstance());
             } catch (final SQLException e) {
                 Update.LOG.error("Update of '" + this.instance + "' not possible", e);
                 throw new EFapsException(getClass(), "executeWithoutTrigger.SQLException", e, this.instance);

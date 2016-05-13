@@ -101,7 +101,7 @@ public class Attribute
          *
          * @param _uuid UUID to set
          */
-        private AttributeTypeDef(final String _uuid)
+        AttributeTypeDef(final String _uuid)
         {
             this.uuid = UUID.fromString(_uuid);
         }
@@ -428,6 +428,9 @@ public class Attribute
     public Type getLink()
         throws CacheReloadException
     {
+        if (this.link == null) {
+            LOG.error("Access on Attribute Link without parent defintion: {}", this);
+        }
         return Type.get(this.link);
     }
 
@@ -565,14 +568,12 @@ public class Attribute
      * @return Dimension
      */
     public Dimension getDimension()
-
     {
         Dimension ret = null;
         try {
             ret = Dimension.get(UUID.fromString(this.dimensionUUID));
         } catch (final CacheReloadException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Catched CacheReloadException", e);
         }
         return ret;
     }
@@ -819,7 +820,7 @@ public class Attribute
     @Override
     public boolean equals(final Object _obj)
     {
-        boolean ret;
+        final boolean ret;
         if (_obj instanceof Attribute) {
             ret = ((Attribute) _obj).getId() == getId();
         } else {

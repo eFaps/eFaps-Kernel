@@ -478,7 +478,7 @@ public abstract class AbstractPrintQuery
                                            final MsgPhrase... _msgPhrase)
         throws EFapsException
     {
-        String baseSel;
+        final String baseSel;
         if (_selectBldr == null) {
             baseSel = "";
         } else {
@@ -636,7 +636,7 @@ public abstract class AbstractPrintQuery
         throws EFapsException
     {
         final List<Object> objects = new ArrayList<>();
-        String baseSel;
+        final String baseSel;
         if (_selectBldr == null) {
             baseSel = "";
         } else {
