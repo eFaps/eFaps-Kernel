@@ -36,6 +36,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.CreatedType;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.index.IndexDefinition.IndexField;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -176,7 +177,8 @@ public final class Indexer
                         Object value = multi.getSelect(field.getSelect());
                         if (value != null) {
                             if (StringUtils.isNoneEmpty(field.getTransform())) {
-                                final Class<?> clazz = Class.forName(field.getTransform());
+                                final Class<?> clazz = Class.forName(field.getTransform(),
+                                                false, EFapsClassLoader.getInstance());
                                 final ITransformer transformer = (ITransformer) clazz.newInstance();
                                 value = transformer.transform(value);
                             }
