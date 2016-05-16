@@ -230,7 +230,7 @@ public final class Indexer
                     }
                     doc.add(new StoredField(Key.MSGPHRASE.name(), multi.getMsgPhrase(def.getMsgPhrase())));
                     doc.add(new TextField(Key.ALL.name(), allBldr.toString(), Store.NO));
-                    writer.updateDocument(new Term("oid", oid), doc);
+                    writer.updateDocument(new Term(Key.OID.name(), oid), doc);
                     LOG.debug("Add Document: {}", doc);
                 }
                 writer.close();
