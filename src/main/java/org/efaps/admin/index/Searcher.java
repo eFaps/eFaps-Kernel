@@ -25,17 +25,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
+import org.apache.lucene.queryparser.flexible.standard.config.StandardQueryConfigHandler;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopDocs;
+import org.efaps.admin.EFapsSystemConfiguration;
+import org.efaps.admin.KernelSettings;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.index.Indexer.Key;
@@ -87,6 +91,12 @@ public final class Searcher
             LOG.debug("Starting search with: {}", _search.getQuery());
             final StandardQueryParser queryParser = new StandardQueryParser(Index.getAnalyzer());
             queryParser.setAllowLeadingWildcard(true);
+            if (EFapsSystemConfiguration.get().containsAttributeValue(KernelSettings.INDEXDEFAULTOP)) {
+                queryParser.setDefaultOperator(EnumUtils.getEnum(StandardQueryConfigHandler.Operator.class,
+                                EFapsSystemConfiguration.get().getAttributeValue(KernelSettings.INDEXDEFAULTOP)));
+            } else {
+                queryParser.setDefaultOperator(StandardQueryConfigHandler.Operator.AND);
+            }
             final Query query = queryParser.parse(_search.getQuery(), "ALL");
 
             final IndexReader reader = DirectoryReader.open(Index.getDirectory());
@@ -96,6 +106,7 @@ public final class Searcher
             }
 
             final IndexSearcher searcher = new IndexSearcher(reader);
+
             ret.setHitCount(searcher.count(query));
             if (ret.getHitCount() > 0) {
                 final TopDocs docs = searcher.search(query, _search.getNumHits(), sort);

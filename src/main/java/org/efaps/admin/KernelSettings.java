@@ -205,7 +205,6 @@ public interface KernelSettings
      */
     String INDEXACTIVATE = "org.efaps.kernel.index.Activate";
 
-
     /**
      * ClassName of the class used for getting the Analyzer. Must implement
      * org.efaps.admin.index.IAnalyzerProvider
@@ -223,6 +222,12 @@ public interface KernelSettings
      * org.efaps.admin.index.ISearchDefinition.
      */
     String INDEXSEARCHCLASS = "org.efaps.kernel.index.Search";
+
+    /**
+     * The default operator for the QueryParser Can be 'AND' or 'OR'. Default is set
+     * to 'AND' for eFaps.
+     */
+    String INDEXDEFAULTOP = "org.efaps.kernel.index.DefaultOperator4Search";
 
 }
 
