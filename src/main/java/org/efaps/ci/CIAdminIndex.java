@@ -40,6 +40,7 @@ public class CIAdminIndex
 
         public final CIAttribute TypeLink = new CIAttribute(this, "TypeLink");
         public final CIAttribute MsgPhraseLink = new CIAttribute(this, "MsgPhraseLink");
+        public final CIAttribute Active = new CIAttribute(this, "Active");
         public final CIAttribute Creator = new CIAttribute(this, "Creator");
         public final CIAttribute Created = new CIAttribute(this, "Created");
         public final CIAttribute Modifier = new CIAttribute(this, "Modifier");

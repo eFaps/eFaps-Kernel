@@ -181,6 +181,7 @@ public final class IndexDefinition
     {
         final Type type = Type.get(_typeUUID);
         final QueryBuilder queryBldr = new QueryBuilder(CIAdminIndex.IndexDefinition);
+        queryBldr.addWhereAttrEqValue(CIAdminIndex.IndexDefinition.Active, true);
         queryBldr.addWhereAttrEqValue(CIAdminIndex.IndexDefinition.TypeLink, type.getId());
         final MultiPrintQuery multi = queryBldr.getPrint();
         multi.addAttribute(CIAdminIndex.IndexDefinition.MsgPhraseLink);
