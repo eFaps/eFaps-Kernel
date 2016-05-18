@@ -20,6 +20,7 @@ package org.efaps.admin.datamodel.attributetype;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
@@ -57,7 +58,7 @@ public class CompanyLinkType
         checkSQLColumnSize(_attribute, 1);
         // if a value was explicitly set the value is used, else the company
         // id from the context
-        if ((_values != null) && (_values.length > 0) && _values[0] != null) {
+        if (_values != null && _values.length > 0 && _values[0] != null) {
             if (_values[0] instanceof Long) {
                 _insertUpdate.column(_attribute.getSqlColNames().get(0), (Long) _values[0]);
             } else {
@@ -82,15 +83,17 @@ public class CompanyLinkType
         throws EFapsException
     {
         Object ret = null;
-        final Object obj = _objectList.get(0);
-        if (obj != null) {
-            long id = 0;
-            if (obj instanceof Number) {
-                id = ((Number) obj).longValue();
-            } else if (obj != null) {
-                id = Long.parseLong(obj.toString());
+        if (CollectionUtils.isNotEmpty(_objectList)) {
+            final Object obj = _objectList.get(0);
+            if (obj != null) {
+                long id = 0;
+                if (obj instanceof Number) {
+                    id = ((Number) obj).longValue();
+                } else if (obj != null) {
+                    id = Long.parseLong(obj.toString());
+                }
+                ret = Company.get(id);
             }
-            ret = Company.get(id);
         }
         return ret;
     }
