@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.ConsortiumLinkType;
@@ -376,10 +377,13 @@ public abstract class AbstractObjectQuery<T>
                     }
                 }
             }
-            if (this.where == null) {
-                this.where = new QWhereSection(eqPart);
-            } else {
-                this.where.setPart(new QAnd(this.where.getPart(), eqPart));
+            // only add if an actual filter was set. A background process might not use Companies at all.
+            if (CollectionUtils.isNotEmpty(eqPart.getValues())) {
+                if (this.where == null) {
+                    this.where = new QWhereSection(eqPart);
+                } else {
+                    this.where.setPart(new QAnd(this.where.getPart(), eqPart));
+                }
             }
         }
         if (this.where != null) {
