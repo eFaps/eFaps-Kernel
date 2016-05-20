@@ -101,10 +101,59 @@ public final class Index
                 {
                     return new RAMDirectory();
                 }
+
+                @Override
+                public Directory getTaxonomyDirectory()
+                    throws EFapsException
+                {
+                    return null;
+                }
             };
         }
         return provider.getDirectory();
     }
+
+
+    /**
+     * Gets the directory.
+     *
+     * @return the directory
+     * @throws EFapsException on error
+     */
+    public static Directory getTaxonomyDirectory()
+        throws EFapsException
+    {
+        IDirectoryProvider provider = null;
+        if (EFapsSystemConfiguration.get().containsAttributeValue(KernelSettings.INDEXDIRECTORYPROVCLASS)) {
+            final String clazzname = EFapsSystemConfiguration.get().getAttributeValue(
+                            KernelSettings.INDEXDIRECTORYPROVCLASS);
+            try {
+                final Class<?> clazz = Class.forName(clazzname, false, EFapsClassLoader.getInstance());
+                provider = (IDirectoryProvider) clazz.newInstance();
+            } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                throw new EFapsException(Index.class, "Could not instanciate IDirectoryProvider", e);
+            }
+        } else {
+            provider = new IDirectoryProvider()
+            {
+                @Override
+                public Directory getDirectory()
+                    throws EFapsException
+                {
+                    return null;
+                }
+
+                @Override
+                public Directory getTaxonomyDirectory()
+                    throws EFapsException
+                {
+                    return new RAMDirectory();
+                }
+            };
+        }
+        return provider.getTaxonomyDirectory();
+    }
+
 
     /**
      * Gets the directory.

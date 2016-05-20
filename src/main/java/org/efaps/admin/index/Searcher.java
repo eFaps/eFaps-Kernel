@@ -30,9 +30,9 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.facet.FacetResult;
 import org.apache.lucene.facet.Facets;
 import org.apache.lucene.facet.FacetsCollector;
-import org.apache.lucene.facet.sortedset.DefaultSortedSetDocValuesReaderState;
-import org.apache.lucene.facet.sortedset.SortedSetDocValuesFacetCounts;
-import org.apache.lucene.facet.sortedset.SortedSetDocValuesReaderState;
+import org.apache.lucene.facet.FacetsConfig;
+import org.apache.lucene.facet.taxonomy.FastTaxonomyFacetCounts;
+import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyReader;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
@@ -43,7 +43,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
-import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
@@ -112,22 +111,23 @@ public final class Searcher
             if (sort == null) {
                 sort  = new Sort(new SortField(Key.CREATED.name(), SortField.Type.LONG, true));
             }
+            final FacetsConfig facetConfig = new FacetsConfig();
+            facetConfig.setIndexFieldName("DIMTYPE", DBProperties.getProperty("index.Type"));
+            facetConfig.setHierarchical("DIMTYPE", true);
 
-            final SortedSetDocValuesReaderState state =
-                            new DefaultSortedSetDocValuesReaderState(reader, DBProperties.getProperty("index.Type"));
+            final DirectoryTaxonomyReader taxoReader = new DirectoryTaxonomyReader(Index.getTaxonomyDirectory());
 
             final IndexSearcher searcher = new IndexSearcher(reader);
-            final FacetsCollector coll = new FacetsCollector();
-            final TopFieldDocs docss = FacetsCollector.search(searcher, query, _search.getNumHits(), sort, coll);
-            System.out.println(docss);
-            final Facets facets = new SortedSetDocValuesFacetCounts(state, coll);
-            final FacetResult result = facets.getTopChildren(100, "TYPE");
-            System.out.println(result);
+            final FacetsCollector fc = new FacetsCollector();
 
-            ret.setHitCount(searcher.count(query));
+            final TopFieldDocs topFieldDocs = FacetsCollector.search(searcher, query, _search.getNumHits(), sort, fc);
+            final Facets facetsFolder = new FastTaxonomyFacetCounts(DBProperties.getProperty("index.Type"), taxoReader,
+                            facetConfig, fc);
+            final FacetResult result = facetsFolder.getTopChildren(100, "DIMTYPE");
+            LOG.debug("result", result);
+            ret.setHitCount(topFieldDocs.totalHits);
             if (ret.getHitCount() > 0) {
-                final TopDocs docs = searcher.search(query, _search.getNumHits(), sort);
-                final ScoreDoc[] hits = docs.scoreDocs;
+                final ScoreDoc[] hits = topFieldDocs.scoreDocs;
 
                 LOG.debug("Found {} hits.", hits.length);
                 for (int i = 0; i < hits.length; ++i) {

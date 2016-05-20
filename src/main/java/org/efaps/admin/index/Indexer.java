@@ -29,8 +29,10 @@ import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.facet.FacetField;
 import org.apache.lucene.facet.FacetsConfig;
-import org.apache.lucene.facet.sortedset.SortedSetDocValuesFacetField;
+import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
+import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyWriter;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
@@ -143,7 +145,10 @@ public final class Indexer
             Context.getThreadContext().setCompany(Company.get(_context.getCompanyId()));
             Context.getThreadContext().setLanguage(_context.getLanguage());
             final IndexWriterConfig config = new IndexWriterConfig(_context.getAnalyzer());
-            try (IndexWriter writer = new IndexWriter(_context.getDirectory(), config);) {
+            try (
+                    IndexWriter writer = new IndexWriter(_context.getDirectory(), config);
+                    TaxonomyWriter taxonomyWriter = new DirectoryTaxonomyWriter(_context.getTaxonomyDirectory());
+                ) {
 
                 final IndexDefinition def = IndexDefinition.get(_instances.get(0).getType().getUUID());
                 final MultiPrintQuery multi = new MultiPrintQuery(_instances);
@@ -167,12 +172,12 @@ public final class Indexer
                         created = multi.getAttribute(createdAttr);
                     }
 
-                    final SortedSetDocValuesFacetField facetField = new SortedSetDocValuesFacetField(DBProperties.getProperty("index.Type"), type);
                     final FacetsConfig facetConfig = new FacetsConfig();
-                    facetConfig.setIndexFieldName("TYPE", DBProperties.getProperty("index.Type"));
+                    facetConfig.setIndexFieldName("DIMTYPE", DBProperties.getProperty("index.Type"));
+                    facetConfig.setHierarchical("DIMTYPE", true);
 
                     final Document doc = new Document();
-                    doc.add(facetField);
+                    doc.add(new FacetField("DIMTYPE", type));
                     doc.add(new StringField(Key.OID.name(), oid, Store.YES));
                     doc.add(new TextField(DBProperties.getProperty("index.Type"), type, Store.YES));
                     doc.add(new NumericDocValuesField(Key.CREATED.name(), created.getMillis()));
@@ -238,10 +243,11 @@ public final class Indexer
                     }
                     doc.add(new StoredField(Key.MSGPHRASE.name(), multi.getMsgPhrase(def.getMsgPhrase())));
                     doc.add(new TextField(Key.ALL.name(), allBldr.toString(), Store.NO));
-                    writer.updateDocument(new Term(Key.OID.name(), oid), facetConfig.build(doc));
+                    writer.updateDocument(new Term(Key.OID.name(), oid), facetConfig.build(taxonomyWriter, doc));
                     LOG.debug("Add Document: {}", doc);
                 }
                 writer.close();
+                taxonomyWriter.close();
             } catch (final IOException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 throw new EFapsException(Indexer.class, "IOException", e);
             } finally {
