@@ -34,6 +34,9 @@ public class IndexContext
     /** The directory. */
     private Directory directory;
 
+    /** The directory. */
+    private Directory taxonomyDirectory;
+
     /** The company id. */
     private long companyId;
 
@@ -125,6 +128,27 @@ public class IndexContext
     public IndexContext setLanguage(final String _language)
     {
         this.language = _language;
+        return this;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #taxonomyDirectory}.
+     *
+     * @return value of instance variable {@link #taxonomyDirectory}
+     */
+    public Directory getTaxonomyDirectory()
+    {
+        return this.taxonomyDirectory;
+    }
+
+    /**
+     * Setter method for instance variable {@link #taxonomyDirectory}.
+     *
+     * @param _taxonomyDirectory value for instance variable {@link #taxonomyDirectory}
+     */
+    public IndexContext setTaxonomyDirectory(final Directory _taxonomyDirectory)
+    {
+        this.taxonomyDirectory = _taxonomyDirectory;
         return this;
     }
 }

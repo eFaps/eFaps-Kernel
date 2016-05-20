@@ -29,6 +29,9 @@ import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.facet.FacetField;
+import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
+import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyWriter;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
@@ -50,6 +53,7 @@ import org.slf4j.LoggerFactory;
 
 
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class Indexer.
  *
@@ -60,8 +64,6 @@ public final class Indexer
 
     /**
      * The Enum Key.
-     *
-     * @author The eFaps Team
      */
     public enum Key
     {
@@ -77,6 +79,19 @@ public final class Indexer
 
         /** The created field. */
         CREATED;
+    }
+
+    /**
+     * The Enum Dim.
+     */
+    public enum Dimension
+    {
+
+        /** The type. */
+        DIMTYPE,
+
+        /** The created. */
+        DIMCREATED;
     }
 
     /**
@@ -141,7 +156,11 @@ public final class Indexer
             Context.getThreadContext().setCompany(Company.get(_context.getCompanyId()));
             Context.getThreadContext().setLanguage(_context.getLanguage());
             final IndexWriterConfig config = new IndexWriterConfig(_context.getAnalyzer());
-            try (IndexWriter writer = new IndexWriter(_context.getDirectory(), config)) {
+            try (
+                    IndexWriter writer = new IndexWriter(_context.getDirectory(), config);
+                    TaxonomyWriter taxonomyWriter = new DirectoryTaxonomyWriter(_context.getTaxonomyDirectory());
+                ) {
+
                 final IndexDefinition def = IndexDefinition.get(_instances.get(0).getType().getUUID());
                 final MultiPrintQuery multi = new MultiPrintQuery(_instances);
                 for (final IndexField field : def.getFields()) {
@@ -165,6 +184,9 @@ public final class Indexer
                     }
 
                     final Document doc = new Document();
+                    doc.add(new FacetField(Dimension.DIMTYPE.name(), type));
+                    doc.add(new FacetField(Dimension.DIMCREATED.name(), String.valueOf(created.getYear()),
+                                    String.valueOf(created.getMonthOfYear())));
                     doc.add(new StringField(Key.OID.name(), oid, Store.YES));
                     doc.add(new TextField(DBProperties.getProperty("index.Type"), type, Store.YES));
                     doc.add(new NumericDocValuesField(Key.CREATED.name(), created.getMillis()));
@@ -230,10 +252,12 @@ public final class Indexer
                     }
                     doc.add(new StoredField(Key.MSGPHRASE.name(), multi.getMsgPhrase(def.getMsgPhrase())));
                     doc.add(new TextField(Key.ALL.name(), allBldr.toString(), Store.NO));
-                    writer.updateDocument(new Term(Key.OID.name(), oid), doc);
+                    writer.updateDocument(new Term(Key.OID.name(), oid),
+                                    Index.getFacetsConfig().build(taxonomyWriter, doc));
                     LOG.debug("Add Document: {}", doc);
                 }
                 writer.close();
+                taxonomyWriter.close();
             } catch (final IOException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 throw new EFapsException(Indexer.class, "IOException", e);
             } finally {

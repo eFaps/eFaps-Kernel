@@ -28,11 +28,21 @@ public interface IDirectoryProvider
 {
 
     /**
-     * Gets the directory.
+     * Gets the directory for the standart index.
      *
      * @return the directory
      * @throws EFapsException on error
      */
     Directory getDirectory()
         throws EFapsException;
+
+    /**
+     * Gets the directory for the taxonomy.
+     *
+     * @return the directory
+     * @throws EFapsException on error
+     */
+    Directory getTaxonomyDirectory()
+        throws EFapsException;
+
 }

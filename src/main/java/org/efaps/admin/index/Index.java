@@ -19,6 +19,7 @@ package org.efaps.admin.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.es.SpanishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.facet.FacetsConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.efaps.admin.EFapsSystemConfiguration;
@@ -39,6 +40,18 @@ public final class Index
      */
     private Index()
     {
+    }
+
+    /**
+     * Gets the facets config.
+     *
+     * @return the facets config
+     */
+    public static FacetsConfig getFacetsConfig()
+    {
+        final FacetsConfig ret = new FacetsConfig();
+        ret.setHierarchical(Indexer.Dimension.DIMCREATED.name(), true);
+        return ret;
     }
 
     /**
@@ -101,10 +114,59 @@ public final class Index
                 {
                     return new RAMDirectory();
                 }
+
+                @Override
+                public Directory getTaxonomyDirectory()
+                    throws EFapsException
+                {
+                    return null;
+                }
             };
         }
         return provider.getDirectory();
     }
+
+
+    /**
+     * Gets the directory.
+     *
+     * @return the directory
+     * @throws EFapsException on error
+     */
+    public static Directory getTaxonomyDirectory()
+        throws EFapsException
+    {
+        IDirectoryProvider provider = null;
+        if (EFapsSystemConfiguration.get().containsAttributeValue(KernelSettings.INDEXDIRECTORYPROVCLASS)) {
+            final String clazzname = EFapsSystemConfiguration.get().getAttributeValue(
+                            KernelSettings.INDEXDIRECTORYPROVCLASS);
+            try {
+                final Class<?> clazz = Class.forName(clazzname, false, EFapsClassLoader.getInstance());
+                provider = (IDirectoryProvider) clazz.newInstance();
+            } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                throw new EFapsException(Index.class, "Could not instanciate IDirectoryProvider", e);
+            }
+        } else {
+            provider = new IDirectoryProvider()
+            {
+                @Override
+                public Directory getDirectory()
+                    throws EFapsException
+                {
+                    return null;
+                }
+
+                @Override
+                public Directory getTaxonomyDirectory()
+                    throws EFapsException
+                {
+                    return new RAMDirectory();
+                }
+            };
+        }
+        return provider.getTaxonomyDirectory();
+    }
+
 
     /**
      * Gets the directory.
