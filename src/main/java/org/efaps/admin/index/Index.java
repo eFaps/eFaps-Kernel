@@ -19,6 +19,7 @@ package org.efaps.admin.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.es.SpanishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.facet.FacetsConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.efaps.admin.EFapsSystemConfiguration;
@@ -39,6 +40,18 @@ public final class Index
      */
     private Index()
     {
+    }
+
+    /**
+     * Gets the facets config.
+     *
+     * @return the facets config
+     */
+    public static FacetsConfig getFacetsConfig()
+    {
+        final FacetsConfig ret = new FacetsConfig();
+        ret.setHierarchical(Indexer.Dimension.DIMCREATED.name(), true);
+        return ret;
     }
 
     /**

@@ -31,6 +31,8 @@ import org.apache.lucene.facet.FacetResult;
 import org.apache.lucene.facet.Facets;
 import org.apache.lucene.facet.FacetsCollector;
 import org.apache.lucene.facet.FacetsConfig;
+import org.apache.lucene.facet.FacetsConfig.DimConfig;
+import org.apache.lucene.facet.LabelAndValue;
 import org.apache.lucene.facet.taxonomy.FastTaxonomyFacetCounts;
 import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyReader;
 import org.apache.lucene.index.DirectoryReader;
@@ -48,11 +50,12 @@ import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.index.Indexer.Key;
 import org.efaps.db.Instance;
 import org.efaps.json.index.SearchResult;
-import org.efaps.json.index.SearchResult.Element;
+import org.efaps.json.index.result.DimValue;
+import org.efaps.json.index.result.Dimension;
+import org.efaps.json.index.result.Element;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,20 +114,30 @@ public final class Searcher
             if (sort == null) {
                 sort  = new Sort(new SortField(Key.CREATED.name(), SortField.Type.LONG, true));
             }
-            final FacetsConfig facetConfig = new FacetsConfig();
-            facetConfig.setIndexFieldName("DIMTYPE", DBProperties.getProperty("index.Type"));
-            facetConfig.setHierarchical("DIMTYPE", true);
 
+            final FacetsConfig facetConfig = Index.getFacetsConfig();
             final DirectoryTaxonomyReader taxoReader = new DirectoryTaxonomyReader(Index.getTaxonomyDirectory());
 
             final IndexSearcher searcher = new IndexSearcher(reader);
             final FacetsCollector fc = new FacetsCollector();
 
             final TopFieldDocs topFieldDocs = FacetsCollector.search(searcher, query, _search.getNumHits(), sort, fc);
-            final Facets facetsFolder = new FastTaxonomyFacetCounts(DBProperties.getProperty("index.Type"), taxoReader,
-                            facetConfig, fc);
-            final FacetResult result = facetsFolder.getTopChildren(100, "DIMTYPE");
-            LOG.debug("result", result);
+            final Facets facets = new FastTaxonomyFacetCounts(taxoReader, facetConfig, fc);
+
+            for (final FacetResult result : facets.getAllDims(1000)) {
+                LOG.debug("FacetResult {}.", result);
+                final DimConfig dimConfig = facetConfig.getDimConfig(result.dim);
+                final Dimension retDim = new Dimension().setKey(result.dim);
+                ret.getDimensions().add(retDim);
+                for (final LabelAndValue labelValue : result.labelValues) {
+                    final DimValue dimValue = new DimValue().setLabel(labelValue.label)
+                                    .setValue(labelValue.value.intValue());
+                    retDim.getValues().add(dimValue);
+                    if (dimConfig.hierarchical) {
+                        addSubDimension(facets, dimValue, result.dim, labelValue.label);
+                    }
+                }
+            }
             ret.setHitCount(topFieldDocs.totalHits);
             if (ret.getHitCount() > 0) {
                 final ScoreDoc[] hits = topFieldDocs.scoreDocs;
@@ -163,6 +176,33 @@ public final class Searcher
             LOG.error("Catched Exception", e);
         }
         return ret;
+    }
+
+    /**
+     * Recursive method to get the sub dimension.
+     *
+     * @param _facets the facets
+     * @param _dimValue the _dim value
+     * @param _dim the _dim
+     * @param _path the _path
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    private void addSubDimension(final Facets _facets,
+                                 final DimValue _dimValue,
+                                 final String _dim,
+                                 final String _path)
+        throws IOException
+    {
+        final FacetResult result = _facets.getTopChildren(1000, _dim, _path);
+        if (result != null) {
+            LOG.debug("FacetResult {}.", result);
+            for (final LabelAndValue labelValue : result.labelValues) {
+                final DimValue dimValue = new DimValue().setLabel(labelValue.label)
+                                .setValue(labelValue.value.intValue());
+                _dimValue.getChildren().add(dimValue);
+                addSubDimension(_facets, dimValue, _dim, _path + "/" + labelValue.label);
+            }
+        }
     }
 
     /**
