@@ -27,6 +27,12 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.facet.FacetResult;
+import org.apache.lucene.facet.Facets;
+import org.apache.lucene.facet.FacetsCollector;
+import org.apache.lucene.facet.sortedset.DefaultSortedSetDocValuesReaderState;
+import org.apache.lucene.facet.sortedset.SortedSetDocValuesFacetCounts;
+import org.apache.lucene.facet.sortedset.SortedSetDocValuesReaderState;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
@@ -38,10 +44,12 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopFieldDocs;
 import org.efaps.admin.EFapsSystemConfiguration;
 import org.efaps.admin.KernelSettings;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.index.Indexer.Key;
 import org.efaps.db.Instance;
 import org.efaps.json.index.SearchResult;
@@ -105,7 +113,16 @@ public final class Searcher
                 sort  = new Sort(new SortField(Key.CREATED.name(), SortField.Type.LONG, true));
             }
 
+            final SortedSetDocValuesReaderState state =
+                            new DefaultSortedSetDocValuesReaderState(reader, DBProperties.getProperty("index.Type"));
+
             final IndexSearcher searcher = new IndexSearcher(reader);
+            final FacetsCollector coll = new FacetsCollector();
+            final TopFieldDocs docss = FacetsCollector.search(searcher, query, _search.getNumHits(), sort, coll);
+            System.out.println(docss);
+            final Facets facets = new SortedSetDocValuesFacetCounts(state, coll);
+            final FacetResult result = facets.getTopChildren(100, "TYPE");
+            System.out.println(result);
 
             ret.setHitCount(searcher.count(query));
             if (ret.getHitCount() > 0) {
