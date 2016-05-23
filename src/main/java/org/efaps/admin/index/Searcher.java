@@ -122,19 +122,22 @@ public final class Searcher
             final FacetsCollector fc = new FacetsCollector();
 
             final TopFieldDocs topFieldDocs = FacetsCollector.search(searcher, query, _search.getNumHits(), sort, fc);
-            final Facets facets = new FastTaxonomyFacetCounts(taxoReader, facetConfig, fc);
 
-            for (final FacetResult result : facets.getAllDims(1000)) {
-                LOG.debug("FacetResult {}.", result);
-                final DimConfig dimConfig = facetConfig.getDimConfig(result.dim);
-                final Dimension retDim = new Dimension().setKey(result.dim);
-                ret.getDimensions().add(retDim);
-                for (final LabelAndValue labelValue : result.labelValues) {
-                    final DimValue dimValue = new DimValue().setLabel(labelValue.label)
-                                    .setValue(labelValue.value.intValue());
-                    retDim.getValues().add(dimValue);
-                    if (dimConfig.hierarchical) {
-                        addSubDimension(facets, dimValue, result.dim, labelValue.label);
+            if (_search.getConfigs().contains(SearchConfig.ACTIVATE_DIMENSION)) {
+                final Facets facets = new FastTaxonomyFacetCounts(taxoReader, facetConfig, fc);
+
+                for (final FacetResult result : facets.getAllDims(1000)) {
+                    LOG.debug("FacetResult {}.", result);
+                    final DimConfig dimConfig = facetConfig.getDimConfig(result.dim);
+                    final Dimension retDim = new Dimension().setKey(result.dim);
+                    ret.getDimensions().add(retDim);
+                    for (final LabelAndValue labelValue : result.labelValues) {
+                        final DimValue dimValue = new DimValue().setLabel(labelValue.label)
+                                        .setValue(labelValue.value.intValue());
+                        retDim.getValues().add(dimValue);
+                        if (dimConfig.hierarchical) {
+                            addSubDimension(facets, dimValue, result.dim, labelValue.label);
+                        }
                     }
                 }
             }

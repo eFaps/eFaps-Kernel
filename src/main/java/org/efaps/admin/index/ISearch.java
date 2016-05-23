@@ -18,9 +18,11 @@ package org.efaps.admin.index;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.search.Sort;
+import org.efaps.util.EFapsException;
 
 /**
  * The Interface IResultProvider.
@@ -86,4 +88,15 @@ public interface ISearch
         return null;
     };
 
+    /**
+     * Gets the config.
+     *
+     * @return the config
+     * @throws EFapsException the e faps exception
+     */
+    default List<SearchConfig> getConfigs()
+        throws EFapsException
+    {
+        return Collections.emptyList();
+    }
 }
