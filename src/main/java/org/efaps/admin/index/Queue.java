@@ -54,7 +54,9 @@ public final class Queue
     public static void registerUpdate(final Instance _instance)
         throws EFapsException
     {
-        if (EFapsSystemConfiguration.get().getAttributeValueAsBoolean(KernelSettings.INDEXACTIVATE)) {
+        // check if SystemConfiguration exists, necessary during install
+        if (EFapsSystemConfiguration.get() != null
+                        && EFapsSystemConfiguration.get().getAttributeValueAsBoolean(KernelSettings.INDEXACTIVATE)) {
             if (_instance != null && _instance.getType() != null
                             && IndexDefinition.get(_instance.getType().getUUID()) != null) {
                 final AdvancedCache<String, String> cache = InfinispanCache.get()

@@ -768,7 +768,7 @@ public class TypeUpdate
         /**
          * Instantiates a new index field.
          *
-         * @param _idx the idx
+         * @param _identifier the identifier
          * @param _key the key
          * @param _select the select
          * @param _fieldType the field type
@@ -1089,12 +1089,15 @@ public class TypeUpdate
                     removeObsoleteAttributes();
                     // update the related index informations
                     if (this.index == null) {
-                        final QueryBuilder queryBldr = new QueryBuilder(CIAdminIndex.IndexDefinition);
-                        queryBldr.addWhereAttrEqValue(CIAdminIndex.IndexDefinition.TypeLink, getInstance());
-                        final InstanceQuery query = queryBldr.getQuery();
-                        for (final Instance inst : query.executeWithoutAccessCheck()) {
-                            IndexDefinition.removeObsoleteField(inst, Collections.<Instance>emptyList());
-                            new Delete(inst).executeWithoutAccessCheck();
+                        //check needed during first installation
+                        if (CIAdminIndex.IndexDefinition.getType() != null) {
+                            final QueryBuilder queryBldr = new QueryBuilder(CIAdminIndex.IndexDefinition);
+                            queryBldr.addWhereAttrEqValue(CIAdminIndex.IndexDefinition.TypeLink, getInstance());
+                            final InstanceQuery query = queryBldr.getQuery();
+                            for (final Instance inst : query.executeWithoutAccessCheck()) {
+                                IndexDefinition.removeObsoleteField(inst, Collections.<Instance>emptyList());
+                                new Delete(inst).executeWithoutAccessCheck();
+                            }
                         }
                     } else {
                         this.index.updateInDB(getInstance());
