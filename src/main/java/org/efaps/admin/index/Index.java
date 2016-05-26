@@ -190,6 +190,8 @@ public final class Index
         } else {
             ret = new ISearch()
             {
+                /** The Constant serialVersionUID. */
+                private static final long serialVersionUID = 1L;
 
                 /** The query. */
                 private String query;

@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.LongField;
@@ -51,9 +52,6 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-// TODO: Auto-generated Javadoc
 /**
  * The Class Indexer.
  *
@@ -77,8 +75,11 @@ public final class Indexer
         /** The msgphrase. */
         MSGPHRASE,
 
-        /** The created field. */
-        CREATED;
+        /** The created numeric field used for sorting. */
+        CREATED,
+
+        /** The created string field used for searching. */
+        CREATEDSTR;
     }
 
     /**
@@ -186,10 +187,12 @@ public final class Indexer
                     final Document doc = new Document();
                     doc.add(new FacetField(Dimension.DIMTYPE.name(), type));
                     doc.add(new FacetField(Dimension.DIMCREATED.name(), String.valueOf(created.getYear()),
-                                    String.valueOf(created.getMonthOfYear())));
+                                    String.format("%02d", created.getMonthOfYear())));
                     doc.add(new StringField(Key.OID.name(), oid, Store.YES));
                     doc.add(new TextField(DBProperties.getProperty("index.Type"), type, Store.YES));
                     doc.add(new NumericDocValuesField(Key.CREATED.name(), created.getMillis()));
+                    doc.add(new StringField(Key.CREATEDSTR.name(),
+                                    DateTools.dateToString(created.toDate(), DateTools.Resolution.DAY), Store.NO));
 
                     final StringBuilder allBldr = new StringBuilder()
                                     .append(type).append(" ");
