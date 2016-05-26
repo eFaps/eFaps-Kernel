@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.facet.FacetResult;
@@ -134,6 +135,7 @@ public final class Searcher
                     for (final LabelAndValue labelValue : result.labelValues) {
                         final DimValue dimValue = new DimValue().setLabel(labelValue.label)
                                         .setValue(labelValue.value.intValue());
+                        dimValue.setPath(new String[] { retDim.getKey() });
                         retDim.getValues().add(dimValue);
                         if (dimConfig.hierarchical) {
                             addSubDimension(facets, dimValue, result.dim, labelValue.label);
@@ -202,6 +204,7 @@ public final class Searcher
             for (final LabelAndValue labelValue : result.labelValues) {
                 final DimValue dimValue = new DimValue().setLabel(labelValue.label)
                                 .setValue(labelValue.value.intValue());
+                dimValue.setPath(ArrayUtils.addAll(_dimValue.getPath(), result.path));
                 _dimValue.getChildren().add(dimValue);
                 addSubDimension(_facets, dimValue, _dim, _path + "/" + labelValue.label);
             }

@@ -16,6 +16,7 @@
  */
 package org.efaps.admin.index;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.efaps.util.EFapsException;
  * @author The eFaps Team
  */
 public interface ISearch
+    extends Serializable
 {
 
     /**
@@ -45,6 +47,16 @@ public interface ISearch
      * @return the query
      */
     String getQuery();
+
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
+    default String getName()
+    {
+        return this.getClass().getName();
+    };
 
     /**
      * Gets the num hits.
